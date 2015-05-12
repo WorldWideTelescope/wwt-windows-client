@@ -4,5 +4,7 @@ WorldWide Telescope (WWT) enables you to explore the universe, bringing together
 The source code will be coming soon.  Please see the other code repositories for related projects:
 
 https://github.com/MSRConnections/OpenWWT-Wiki
+
 https://github.com/MSRConnections/OpenWWT-Website
+
 https://github.com/MSRConnections/OpenWWT-WebClient
