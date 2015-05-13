@@ -6,7 +6,7 @@ This repository contains the source code for the WWT Windows Client.  You will n
 
 Because of GitHub's 100mb file limit you will also have to unzip the datafiles for setup (see [Setup1/ReadMe.txt](Setup1/ReadMe.txt)).
 
-Other source for the supporting website and tools are located in other repositories:
+Source code for the OpenWWT web client, and for the supporting website and tools, are located in other repositories:
 
 * https://github.com/OpenWWT/openwwt-web-client
 * https://github.com/OpenWWT/openwwt-website
