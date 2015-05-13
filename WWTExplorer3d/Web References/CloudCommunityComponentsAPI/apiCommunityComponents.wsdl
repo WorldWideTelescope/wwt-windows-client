@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://wwtserver/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://wwtserver/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://wwtserver/">
+      <s:element name="GetUsers">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageSize" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageNumber" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUsersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUsersResult" type="tns:ArrayOfWWTUsersSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfWWTUsersSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTUsersSt" type="tns:WWTUsersSt" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WWTUsersSt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsDeleted" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreationDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="PermissionInCommunity" nillable="true" type="tns:Permission" />
+          <s:element minOccurs="0" maxOccurs="1" name="FacebookUserId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FacebookKey" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="Permission">
+        <s:restriction base="s:string">
+          <s:enumeration value="NONE" />
+          <s:enumeration value="WRITE" />
+          <s:enumeration value="READ" />
+          <s:enumeration value="OWNER" />
+          <s:enumeration value="PENDING" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="ChangeUserPermission">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="permission" type="tns:Permission" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeUserPermissionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ChangeUserPermissionResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Create">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentTypeId" type="tns:WWTComponentTypes" />
+            <s:element minOccurs="1" maxOccurs="1" name="OwnerComponentId" nillable="true" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="ComponentName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ComponentLogo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ComponentWTML" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="PublicAccess" nillable="true" type="tns:PublicPermission" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:simpleType name="WWTComponentTypes">
+        <s:restriction base="s:string">
+          <s:enumeration value="WWTCollection" />
+          <s:enumeration value="WWTImage" />
+          <s:enumeration value="WWTPlateImage" />
+          <s:enumeration value="WWTSimpleComponent" />
+          <s:enumeration value="WWTTour" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="PublicPermission">
+        <s:restriction base="s:string">
+          <s:enumeration value="NONE" />
+          <s:enumeration value="PUBLIC_READ" />
+          <s:enumeration value="REGISTERED_READ" />
+          <s:enumeration value="REGISTERED_WRITE" />
+          <s:enumeration value="PREAD_RWRITE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="CreateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateResult" type="tns:WWTCommunityComponentSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="WWTCommunityComponentSt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="OwnerComponentId" nillable="true" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="ViewerAccess" type="tns:Permission" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsDeleted" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="Approved" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="PublicAccess" type="tns:PublicPermission" />
+          <s:element minOccurs="1" maxOccurs="1" name="ComponentTypeId" type="tns:WWTComponentTypes" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Logo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="viewerId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="WTML" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreationTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="LastUpdateTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="offenseReportCount" type="tns:ArrayOfWWTOffensiveSt" />
+          <s:element minOccurs="0" maxOccurs="1" name="components" type="tns:ArrayOfWWTCommunityComponentSt" />
+          <s:element minOccurs="1" maxOccurs="1" name="OrderContentsId" type="tns:OrderContentMethods" />
+          <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="OwnerId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="OrderPosition" type="s:long" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfWWTOffensiveSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTOffensiveSt" type="tns:WWTOffensiveSt" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WWTOffensiveSt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="count" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="status" type="tns:OffensiveStatus" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="OffensiveStatus">
+        <s:restriction base="s:string">
+          <s:enumeration value="New" />
+          <s:enumeration value="Archived" />
+          <s:enumeration value="Deleted" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfWWTCommunityComponentSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTCommunityComponentSt" type="tns:WWTCommunityComponentSt" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="OrderContentMethods">
+        <s:restriction base="s:string">
+          <s:enumeration value="Arbitrary" />
+          <s:enumeration value="Date" />
+          <s:enumeration value="Rating" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="Get">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="offensive" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="recursive" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetResult" type="tns:WWTCommunityComponentSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetComponents">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="offensive" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetComponentsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetComponentsResult" type="tns:ArrayOfWWTCommunityComponentSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Delete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="DeleteResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Update">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="ComponentName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ComponentLogo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ComponentWTML" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="UpdateWTML" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="PublicAccess" nillable="true" type="tns:PublicPermission" />
+            <s:element minOccurs="1" maxOccurs="1" name="OrderContentsId" nillable="true" type="tns:OrderContentMethods" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="UpdateResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangePosition">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="Position" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangePositionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ChangePositionResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeOwnership">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="newComponentOwner" nillable="true" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeOwnershipResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ChangeOwnershipResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReportAsOffensive">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReportAsOffensiveResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ReportAsOffensiveResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ArchiveReports">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ArchiveReportsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ArchiveReportsResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Share">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ShareResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ShareResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddComment">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="Comment" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddCommentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AddCommentResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetComments">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageSize" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="pageNumber" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="offensive" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCommentsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCommentsResult" type="tns:ArrayOfWWTCommentsSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfWWTCommentsSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTCommentsSt" type="tns:WWTCommentsSt" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WWTCommentsSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Comment" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsDeleted" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreationTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="CommunityComponentId" nillable="true" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="CommentId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="offenseReportCount" type="tns:ArrayOfWWTOffensiveSt" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetUsersSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUsers" />
+  </wsdl:message>
+  <wsdl:message name="GetUsersSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="ChangeUserPermissionSoapIn">
+    <wsdl:part name="parameters" element="tns:ChangeUserPermission" />
+  </wsdl:message>
+  <wsdl:message name="ChangeUserPermissionSoapOut">
+    <wsdl:part name="parameters" element="tns:ChangeUserPermissionResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSoapIn">
+    <wsdl:part name="parameters" element="tns:Get" />
+  </wsdl:message>
+  <wsdl:message name="GetSoapOut">
+    <wsdl:part name="parameters" element="tns:GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetComponentsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetComponents" />
+  </wsdl:message>
+  <wsdl:message name="GetComponentsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetComponentsResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:Delete" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:Update" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ChangePositionSoapIn">
+    <wsdl:part name="parameters" element="tns:ChangePosition" />
+  </wsdl:message>
+  <wsdl:message name="ChangePositionSoapOut">
+    <wsdl:part name="parameters" element="tns:ChangePositionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ChangeOwnershipSoapIn">
+    <wsdl:part name="parameters" element="tns:ChangeOwnership" />
+  </wsdl:message>
+  <wsdl:message name="ChangeOwnershipSoapOut">
+    <wsdl:part name="parameters" element="tns:ChangeOwnershipResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReportAsOffensiveSoapIn">
+    <wsdl:part name="parameters" element="tns:ReportAsOffensive" />
+  </wsdl:message>
+  <wsdl:message name="ReportAsOffensiveSoapOut">
+    <wsdl:part name="parameters" element="tns:ReportAsOffensiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="ArchiveReportsSoapIn">
+    <wsdl:part name="parameters" element="tns:ArchiveReports" />
+  </wsdl:message>
+  <wsdl:message name="ArchiveReportsSoapOut">
+    <wsdl:part name="parameters" element="tns:ArchiveReportsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ShareSoapIn">
+    <wsdl:part name="parameters" element="tns:Share" />
+  </wsdl:message>
+  <wsdl:message name="ShareSoapOut">
+    <wsdl:part name="parameters" element="tns:ShareResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddCommentSoapIn">
+    <wsdl:part name="parameters" element="tns:AddComment" />
+  </wsdl:message>
+  <wsdl:message name="AddCommentSoapOut">
+    <wsdl:part name="parameters" element="tns:AddCommentResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCommentsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetComments" />
+  </wsdl:message>
+  <wsdl:message name="GetCommentsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCommentsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="apiCommunityComponentsSoap">
+    <wsdl:operation name="GetUsers">
+      <wsdl:input message="tns:GetUsersSoapIn" />
+      <wsdl:output message="tns:GetUsersSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeUserPermission">
+      <wsdl:input message="tns:ChangeUserPermissionSoapIn" />
+      <wsdl:output message="tns:ChangeUserPermissionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get">
+      <wsdl:input message="tns:GetSoapIn" />
+      <wsdl:output message="tns:GetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetComponents">
+      <wsdl:input message="tns:GetComponentsSoapIn" />
+      <wsdl:output message="tns:GetComponentsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <wsdl:input message="tns:DeleteSoapIn" />
+      <wsdl:output message="tns:DeleteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input message="tns:UpdateSoapIn" />
+      <wsdl:output message="tns:UpdateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangePosition">
+      <wsdl:input message="tns:ChangePositionSoapIn" />
+      <wsdl:output message="tns:ChangePositionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeOwnership">
+      <wsdl:input message="tns:ChangeOwnershipSoapIn" />
+      <wsdl:output message="tns:ChangeOwnershipSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReportAsOffensive">
+      <wsdl:input message="tns:ReportAsOffensiveSoapIn" />
+      <wsdl:output message="tns:ReportAsOffensiveSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ArchiveReports">
+      <wsdl:input message="tns:ArchiveReportsSoapIn" />
+      <wsdl:output message="tns:ArchiveReportsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Share">
+      <wsdl:input message="tns:ShareSoapIn" />
+      <wsdl:output message="tns:ShareSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddComment">
+      <wsdl:input message="tns:AddCommentSoapIn" />
+      <wsdl:output message="tns:AddCommentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetComments">
+      <wsdl:input message="tns:GetCommentsSoapIn" />
+      <wsdl:output message="tns:GetCommentsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="apiCommunityComponentsSoap" type="tns:apiCommunityComponentsSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetUsers">
+      <soap:operation soapAction="http://wwtserver/GetUsers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeUserPermission">
+      <soap:operation soapAction="http://wwtserver/ChangeUserPermission" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap:operation soapAction="http://wwtserver/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get">
+      <soap:operation soapAction="http://wwtserver/Get" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetComponents">
+      <soap:operation soapAction="http://wwtserver/GetComponents" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap:operation soapAction="http://wwtserver/Delete" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap:operation soapAction="http://wwtserver/Update" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangePosition">
+      <soap:operation soapAction="http://wwtserver/ChangePosition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeOwnership">
+      <soap:operation soapAction="http://wwtserver/ChangeOwnership" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReportAsOffensive">
+      <soap:operation soapAction="http://wwtserver/ReportAsOffensive" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArchiveReports">
+      <soap:operation soapAction="http://wwtserver/ArchiveReports" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Share">
+      <soap:operation soapAction="http://wwtserver/Share" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddComment">
+      <soap:operation soapAction="http://wwtserver/AddComment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetComments">
+      <soap:operation soapAction="http://wwtserver/GetComments" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="apiCommunityComponentsSoap12" type="tns:apiCommunityComponentsSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetUsers">
+      <soap12:operation soapAction="http://wwtserver/GetUsers" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeUserPermission">
+      <soap12:operation soapAction="http://wwtserver/ChangeUserPermission" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap12:operation soapAction="http://wwtserver/Create" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get">
+      <soap12:operation soapAction="http://wwtserver/Get" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetComponents">
+      <soap12:operation soapAction="http://wwtserver/GetComponents" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap12:operation soapAction="http://wwtserver/Delete" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap12:operation soapAction="http://wwtserver/Update" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangePosition">
+      <soap12:operation soapAction="http://wwtserver/ChangePosition" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeOwnership">
+      <soap12:operation soapAction="http://wwtserver/ChangeOwnership" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReportAsOffensive">
+      <soap12:operation soapAction="http://wwtserver/ReportAsOffensive" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArchiveReports">
+      <soap12:operation soapAction="http://wwtserver/ArchiveReports" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Share">
+      <soap12:operation soapAction="http://wwtserver/Share" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddComment">
+      <soap12:operation soapAction="http://wwtserver/AddComment" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetComments">
+      <soap12:operation soapAction="http://wwtserver/GetComments" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="apiCommunityComponents">
+    <wsdl:port name="apiCommunityComponentsSoap" binding="tns:apiCommunityComponentsSoap">
+      <soap:address location="http://wwtserver/apiCommunityComponents.asmx" />
+    </wsdl:port>
+    <wsdl:port name="apiCommunityComponentsSoap12" binding="tns:apiCommunityComponentsSoap12">
+      <soap12:address location="http://wwtserver/apiCommunityComponents.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

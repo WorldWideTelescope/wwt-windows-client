@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6C205CAA-423D-48B8-813B-E586E105C71B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WWTCore</RootNamespace>
+    <AssemblyName>WWTCore</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\SharpDX\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\SharpDX\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\SharpDX\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\SharpDX\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Astrocalc\AAAberration.cs" />
+    <Compile Include="Astrocalc\AAAngularSeparation.cs" />
+    <Compile Include="Astrocalc\AABinaryStar.cs" />
+    <Compile Include="Astrocalc\AACoordinateTransformation.cs" />
+    <Compile Include="Astrocalc\AADate.cs" />
+    <Compile Include="Astrocalc\AADiameters.cs" />
+    <Compile Include="Astrocalc\AADynamicalTime.cs" />
+    <Compile Include="Astrocalc\AAEarth.cs" />
+    <Compile Include="Astrocalc\AAEaster.cs" />
+    <Compile Include="Astrocalc\AAEclipses.cs" />
+    <Compile Include="Astrocalc\AAEclipticalElements.cs" />
+    <Compile Include="Astrocalc\AAElementsPlanetaryOrbit.cs" />
+    <Compile Include="Astrocalc\AAElliptical.cs" />
+    <Compile Include="Astrocalc\AAEquationOfTime.cs" />
+    <Compile Include="Astrocalc\AAEquinoxesAndSolstices.cs" />
+    <Compile Include="Astrocalc\AAFK5.cs" />
+    <Compile Include="Astrocalc\AAGalileanMoons.cs" />
+    <Compile Include="Astrocalc\AAGlobe.cs" />
+    <Compile Include="Astrocalc\AAIlluminatedFraction.cs" />
+    <Compile Include="Astrocalc\AAInterpolate.cs" />
+    <Compile Include="Astrocalc\AAJewishCalendar.cs" />
+    <Compile Include="Astrocalc\AAJupiter.cs" />
+    <Compile Include="Astrocalc\AAKepler.cs" />
+    <Compile Include="Astrocalc\AAMars.cs" />
+    <Compile Include="Astrocalc\AAMercury.cs" />
+    <Compile Include="Astrocalc\AAMoon.cs" />
+    <Compile Include="Astrocalc\AAMoonIlluminatedFraction.cs" />
+    <Compile Include="Astrocalc\AAMoonMaxDeclinations.cs" />
+    <Compile Include="Astrocalc\AAMoonNodes.cs" />
+    <Compile Include="Astrocalc\AAMoonPerigeeApogee.cs" />
+    <Compile Include="Astrocalc\AAMoonPhases.cs" />
+    <Compile Include="Astrocalc\AAMoslemCalendar.cs" />
+    <Compile Include="Astrocalc\AANearParabolic.cs" />
+    <Compile Include="Astrocalc\AANeptune.cs" />
+    <Compile Include="Astrocalc\AANodes.cs" />
+    <Compile Include="Astrocalc\AANutation.cs" />
+    <Compile Include="Astrocalc\AAParabolic.cs" />
+    <Compile Include="Astrocalc\AAParallactic.cs" />
+    <Compile Include="Astrocalc\AAParallax.cs" />
+    <Compile Include="Astrocalc\AAPhysicalJupiter.cs" />
+    <Compile Include="Astrocalc\AAPhysicalMars.cs" />
+    <Compile Include="Astrocalc\AAPhysicalMoon.cs" />
+    <Compile Include="Astrocalc\AAPhysicalSun.cs" />
+    <Compile Include="Astrocalc\AAPlanetaryPhenomena.cs" />
+    <Compile Include="Astrocalc\AAPlanetPerihelionAphelion.cs" />
+    <Compile Include="Astrocalc\AAPluto.cs" />
+    <Compile Include="Astrocalc\AAPrecession.cs" />
+    <Compile Include="Astrocalc\AARefraction.cs" />
+    <Compile Include="Astrocalc\AARiseTransitSet.cs" />
+    <Compile Include="Astrocalc\AASaturn.cs" />
+    <Compile Include="Astrocalc\AASaturnMoons.cs" />
+    <Compile Include="Astrocalc\AASaturnRings.cs" />
+    <Compile Include="Astrocalc\AASidereal.cs" />
+    <Compile Include="Astrocalc\AAStellarMagnitudes.cs" />
+    <Compile Include="Astrocalc\AASun.cs" />
+    <Compile Include="Astrocalc\AATest.cs" />
+    <Compile Include="Astrocalc\AAUranus.cs" />
+    <Compile Include="Astrocalc\AAVenus.cs" />
+    <Compile Include="Astrocalc\AstroCalc.cs" />
+    <Compile Include="BlendState.cs" />
+    <Compile Include="BufferPool11.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="ConstellationFilters.cs" />
+    <Compile Include="Coordinates.cs" />
+    <Compile Include="double3d.cs" />
+    <Compile Include="DX11Tools.cs" />
+    <Compile Include="HiResTimer.cs" />
+    <Compile Include="IScriptable.cs" />
+    <Compile Include="ISettings.cs" />
+    <Compile Include="Primitives3d.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderContext11.cs" />
+    <Compile Include="Shaders.cs" />
+    <Compile Include="Shaders11.cs" />
+    <Compile Include="SpaceTimeController.cs" />
+    <Compile Include="Texture11.cs" />
+    <Compile Include="Triangle.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

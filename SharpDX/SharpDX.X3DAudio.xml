@@ -1,0 +1,666 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SharpDX.X3DAudio</name>
+    </assembly>
+    <members>
+        <member name="T:SharpDX.X3DAudio.AssemblyDoc">
+            <summary>
+            The <see cref="A:SharpDX.X3DAudio"/> assembly provides managed X3DAudio API.
+            </summary>
+            <msdn-id>ee415714</msdn-id>
+            <unmanaged>X3DAudio</unmanaged>	
+            <unmanaged-short>X3DAudio</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.DistanceCurve">
+            <summary>	
+            Defines a DSP setting at a given normalized distance.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DISTANCE_CURVE']/*"/>	
+            <msdn-id>ee419056</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DistanceCurve.PointsPointer">
+            <summary>	
+            <dd> Normalized distance. This must be within 0.0f to 1.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DISTANCE_CURVE::pPoints']/*"/>	
+            <msdn-id>ee419056</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE_POINT* pPoints</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE_POINT pPoints</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DistanceCurve.PointCount">
+            <summary>	
+            <dd> DSP control setting. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DISTANCE_CURVE::PointCount']/*"/>	
+            <msdn-id>ee419056</msdn-id>	
+            <unmanaged>unsigned int PointCount</unmanaged>	
+            <unmanaged-short>unsigned int PointCount</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.Emitter">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- Failed to insert some or all of included XML --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER']/*"/>	
+            <unmanaged>X3DAUDIO_EMITTER</unmanaged>	
+            <summary>	
+            Defines a single-point or multiple-point 3D audio source that is used with an arbitrary number of sound channels.	
+            </summary>	
+            <remarks>	
+            <p><strong><see cref="T:SharpDX.X3DAudio.Emitter"/></strong> only supports a cone in a single-point emitter. Multi-point emitters are a convenient and efficient way to manage a related group of sound sources. Many properties are shared among all channel points, such as Doppler?the same Doppler shift is applied to all channels in the emitter. Thus, the Doppler value need only be calculated once, not per-point as would be needed with multiple separate single-point emitters. Because <strong><see cref="T:SharpDX.X3DAudio.Emitter"/></strong> only has one orientation vector, a multi-point emitter cone would be of limited usefulness, forcing all channels to behave as if they were facing the same direction. If multiple independent cones are needed, multiple single-point emitters should be used, each with its own orientation.</p> <p>The parameter type <strong>X3DAUDIO_VECTOR</strong> is typed to <strong>DirectX::XMFLOAT3</strong>, to provide <em>x</em> , <em>y</em> , and <em>z</em> floating-point values.</p> <p>X3DAudio uses a left-handed Cartesian coordinate system, with values on the x-axis increasing from left to right, on the y-axis from bottom to top, and on the z-axis from near to far. Azimuths are measured clockwise from a given reference direction.</p> <p>For user-defined distance curves, the distance field of the first point must be 0.0f and the distance field of the last point must be 1.0f.</p> <p>If an emitter moves beyond a distance of (<strong>CurveDistanceScaler</strong> ? 1.0f), the last point on the curve is used to compute the volume output level. The last point is determined by the following:</p> <pre><see cref="T:SharpDX.X3DAudio.DistanceCurve"/>.pPoints[PointCount-1].DSPSetting)</pre>  Inner Radius and Inner Radius Angle <p><strong>InnerRadius</strong> is used to specify an area of smooth transition around the origin point as a sound travels directly through, above or below the listener. Elevation is accounted for by specifying an <strong>InnerRadiusAngle</strong>, whereby a sound whose elevation increases or decreases, will eventually start to bleed the sound into more than just two speakers.</p> <p>When Inner Radius and Inner Radius Angle are not used, emitters are audible in the two closest speakers to their current position/orientation (or, if directly on a line with one speaker's defined angle, solely from that one speaker).</p> <p>Inner Radius and Inner Radius Angle have no effect on emitters positioned outside of the cones they describe. Inside of the cone, they will gradually cause the sound to bleed into the opposite speakers, until the sound will be equally heard in all speakers when the emitter is at the same position as (or directly above or below) the listener.</p>	
+            </remarks>	
+            <!-- Failed to insert some or all of included XML --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_EMITTER</unmanaged>	
+            <unmanaged-short>X3DAUDIO_EMITTER</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.Cone">
+            <summary>
+            Reference to Cone data.
+            </summary>
+            <unmanaged>X3DAUDIO_CONE* pCone</unmanaged>	
+        </member>
+        <member name="M:SharpDX.X3DAudio.Emitter.__MarshalTo(SharpDX.X3DAudio.Emitter.__Native@)">
+            disabled as it is not used
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.ConePointer">
+            <summary>	
+            <dd> Pointer to a sound cone. Used only with single-channel emitters for matrix, LPF (both direct and reverb paths), and reverb calculations. <c>null</c> specifies the emitter is omnidirectional. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pCone']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_CONE* pCone</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CONE pCone</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.OrientFront">
+            <summary>	
+            <dd> Orientation of the front direction. This value must be orthonormal with <strong>OrientTop</strong>. <strong>OrientFront</strong> must be normalized when used. For single-channel emitters without cones <strong>OrientFront</strong> is only used for emitter angle calculations. For multi channel emitters or single-channel with cones <strong>OrientFront</strong> is used for matrix, LPF (both direct and reverb paths), and reverb calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::OrientFront']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>D3DVECTOR OrientFront</unmanaged>	
+            <unmanaged-short>D3DVECTOR OrientFront</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.OrientTop">
+            <summary>	
+            <dd> Orientation of the top direction. This value must be orthonormal with <strong>OrientFront</strong>. <strong>OrientTop</strong> is only used with multi-channel emitters for matrix calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::OrientTop']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>D3DVECTOR OrientTop</unmanaged>	
+            <unmanaged-short>D3DVECTOR OrientTop</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.Position">
+            <summary>	
+            <dd> Position in user-defined world units. This value does not affect <strong>Velocity</strong>. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::Position']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>D3DVECTOR Position</unmanaged>	
+            <unmanaged-short>D3DVECTOR Position</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.Velocity">
+            <summary>	
+            <dd> Velocity vector in user-defined world units/second. This value is used only for doppler calculations. It does not affect <strong>Position</strong>. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::Velocity']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>D3DVECTOR Velocity</unmanaged>	
+            <unmanaged-short>D3DVECTOR Velocity</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.InnerRadius">
+            <summary>	
+            <dd> Value to be used for the inner radius calculations. If <strong>InnerRadius</strong> is 0, then no inner radius is used, but <strong>InnerRadiusAngle</strong> may still be used. This value must be between 0.0f and MAX_FLT. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::InnerRadius']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>float InnerRadius</unmanaged>	
+            <unmanaged-short>float InnerRadius</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.InnerRadiusAngle">
+            <summary>	
+            <dd> Value to be used for the inner radius angle calculations. This value must be between 0.0f and X3DAUDIO_PI/4.0. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::InnerRadiusAngle']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>float InnerRadiusAngle</unmanaged>	
+            <unmanaged-short>float InnerRadiusAngle</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.ChannelCount">
+            <summary>	
+            <dd> Number of emitters defined by the <strong><see cref="T:SharpDX.X3DAudio.Emitter"/></strong> structure. Must be greater than 0. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::ChannelCount']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>unsigned int ChannelCount</unmanaged>	
+            <unmanaged-short>unsigned int ChannelCount</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.ChannelRadius">
+            <summary>	
+            <dd> Distance from <strong>Position</strong> that channels will be placed if <strong>ChannelCount</strong> is greater than 1. <strong>ChannelRadius</strong> is only used with multi-channel emitters for matrix calculations. Must be greater than or equal to 0.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::ChannelRadius']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>float ChannelRadius</unmanaged>	
+            <unmanaged-short>float ChannelRadius</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.ChannelAzimuthsPointer">
+            <summary>	
+            <dd> Table of channel positions, expressed as an azimuth in radians along the channel radius with respect to the front orientation vector in the plane orthogonal to the top orientation vector. An azimuth of X3DAUDIO_2PI specifies a channel is a low-frequency effects (LFE) channel. LFE channels are positioned at the emitter base and are calculated with respect to <strong>pLFECurve</strong> only, never <strong>pVolumeCurve</strong>. <strong>pChannelAzimuths</strong> must have at least <strong>ChannelCount</strong> elements. The table values must be within 0.0f to X3DAUDIO_2PI. <strong>pChannelAzimuths</strong> is used with multi-channel emitters for matrix calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pChannelAzimuths']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>float* pChannelAzimuths</unmanaged>	
+            <unmanaged-short>float pChannelAzimuths</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.VolumeCurvePointer">
+            <summary>	
+            <dd> Volume-level distance curve, which is used only for matrix calculations. <c>null</c> specifies a specialized default curve that conforms to the inverse square law, such that when distance is between 0.0f and <strong>CurveDistanceScaler</strong> ? 1.0f, no attenuation is applied. <p>When distance is greater than <strong>CurveDistanceScaler</strong> ? 1.0f, the amplification factor is (<strong>CurveDistanceScaler</strong> ? 1.0f)/distance. At a distance of <strong>CurveDistanceScaler</strong> ? 2.0f, the sound will be at half volume or -6 dB, at a distance of <strong>CurveDistanceScaler</strong> ? 4.0f, the sound will be at one quarter volume or -12 dB, and so on.</p> <p><strong>pVolumeCurve</strong> and <strong>pLFECurve</strong> are independent of each other. <strong>pVolumeCurve</strong> does not affect LFE channel volume.</p> </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pVolumeCurve']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE* pVolumeCurve</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE pVolumeCurve</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.LFECurvePointer">
+            <summary>	
+            <dd> LFE roll-off distance curve, or <c>null</c> to use default curve: [0.0f, <strong>CurveDistanceScaler</strong> ?1.0f], [<strong>CurveDistanceScaler</strong> ?1.0f, 0.0f]. A <c>null</c> value for <strong>pLFECurve</strong> specifies a default curve that conforms to the inverse square law with distances &lt;= <strong>CurveDistanceScaler</strong> clamped to no attenuation. <p><strong>pVolumeCurve</strong> and <strong>pLFECurve</strong> are independent of each other. <strong>pLFECurve</strong> does not affect non LFE channel volume.</p> </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pLFECurve']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE* pLFECurve</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE pLFECurve</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.LPFDirectCurvePointer">
+            <summary>	
+            <dd> Low-pass filter (LPF) direct-path coefficient distance curve, or <c>null</c> to use the default curve: [0.0f, 1.0f], [1.0f, 0.75f]. <strong>pLPFDirectCurve</strong> is only used for LPF direct-path calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pLPFDirectCurve']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE* pLPFDirectCurve</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE pLPFDirectCurve</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.LPFReverbCurvePointer">
+            <summary>	
+            <dd> LPF reverb-path coefficient distance curve, or <c>null</c> to use default curve: [0.0f, 0.75f], [1.0f, 0.75f]. <strong>pLPFReverbCurve</strong> is only used for LPF reverb path calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pLPFReverbCurve']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE* pLPFReverbCurve</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE pLPFReverbCurve</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.ReverbCurvePointer">
+            <summary>	
+            <dd> Reverb send level distance curve, or <c>null</c> to use default curve: [0.0f, 1.0f], [1.0f, 0.0f]. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::pReverbCurve']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE* pReverbCurve</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE pReverbCurve</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.CurveDistanceScaler">
+            <summary>	
+            <dd> Curve distance scaler that is used to scale normalized distance curves to user-defined world units, and/or to exaggerate their effect. This does not affect any other calculations. The value must be within the range FLT_MIN to FLT_MAX. <strong>CurveDistanceScaler</strong> is only used for matrix, LPF (both direct and reverb paths), and reverb calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::CurveDistanceScaler']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>float CurveDistanceScaler</unmanaged>	
+            <unmanaged-short>float CurveDistanceScaler</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Emitter.DopplerScaler">
+            <summary>	
+            <dd> Doppler shift scaler that is used to exaggerate Doppler shift effect. <strong>DopplerScaler</strong> is only used for Doppler calculations and does not affect any other calculations. The value must be within the range 0.0f to FLT_MAX. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_EMITTER::DopplerScaler']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_emitter</msdn-id>	
+            <unmanaged>float DopplerScaler</unmanaged>	
+            <unmanaged-short>float DopplerScaler</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.DspSettings">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- Failed to insert some or all of included XML --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS']/*"/>	
+            <unmanaged>X3DAUDIO_DSP_SETTINGS</unmanaged>	
+            <summary>	
+            Receives the results from a call toX3DAudioCalculate.	
+            </summary>	
+            <remarks>	
+            <p>The following members must be initialized before passing this structure to the <see cref="M:SharpDX.X3DAudio.X3DAudio.X3DAudioCalculate(SharpDX.X3DAudio.X3DAudioHandle@,SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,SharpDX.X3DAudio.DspSettings)"/> function:</p> <ul> <li> <p><strong>pMatrixCoefficients</strong></p> </li> <li> <p><strong>pDelayTimes</strong></p> </li> <li> <p><strong>SrcChannelCount</strong></p> </li> <li> <p><strong>DstChannelCount</strong></p> </li> </ul> <p>The following members are returned by passing this structure to the <see cref="M:SharpDX.X3DAudio.X3DAudio.X3DAudioCalculate(SharpDX.X3DAudio.X3DAudioHandle@,SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,SharpDX.X3DAudio.DspSettings)"/> function:</p> <ul> <li> <p><strong>pMatrixCoefficients</strong></p> </li> <li> <p><strong>pDelayTimes</strong></p> </li> <li> <p><strong>LPFDirectCoefficient</strong></p> </li> <li> <p><strong>LPFReverbCoefficient</strong></p> </li> <li> <p><strong>ReverbLevel</strong></p> </li> <li> <p><strong>DopplerFactor</strong></p> </li> <li> <p><strong>EmitterToListenerAngle</strong></p> </li> <li> <p><strong>EmitterToListenerDistance</strong></p> </li> <li> <p><strong>EmitterVelocityComponent</strong></p> </li> <li> <p><strong>ListenerVelocityComponent</strong></p> </li> </ul> <table><tr><th>Note </th></tr><tr><td>For <strong>pMatrixCoefficients</strong> and <strong>pDelayTimes</strong>, <see cref="M:SharpDX.X3DAudio.X3DAudio.X3DAudioCalculate(SharpDX.X3DAudio.X3DAudioHandle@,SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,SharpDX.X3DAudio.DspSettings)"/> does not allocate additional memory. <see cref="M:SharpDX.X3DAudio.X3DAudio.X3DAudioCalculate(SharpDX.X3DAudio.X3DAudioHandle@,SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,SharpDX.X3DAudio.DspSettings)"/> merely modifies the values at the memory locations allocated for these references.</td></tr></table>	
+            </remarks>	
+            <!-- Failed to insert some or all of included XML --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS']/*"/>	
+            <msdn-id>ee419057</msdn-id>	
+            <unmanaged>X3DAUDIO_DSP_SETTINGS</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DSP_SETTINGS</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.MatrixCoefficientsPointer">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::pMatrixCoefficients']/*"/>	
+            <unmanaged>float* pMatrixCoefficients</unmanaged>	
+            <unmanaged-short>float pMatrixCoefficients</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.DelayTimesPointer">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::pDelayTimes']/*"/>	
+            <unmanaged>float* pDelayTimes</unmanaged>	
+            <unmanaged-short>float pDelayTimes</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.SourceChannelCount">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::SrcChannelCount']/*"/>	
+            <unmanaged>unsigned int SrcChannelCount</unmanaged>	
+            <unmanaged-short>unsigned int SrcChannelCount</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.DestinationChannelCount">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::DstChannelCount']/*"/>	
+            <unmanaged>unsigned int DstChannelCount</unmanaged>	
+            <unmanaged-short>unsigned int DstChannelCount</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.LpfDirectCoefficient">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::LPFDirectCoefficient']/*"/>	
+            <unmanaged>float LPFDirectCoefficient</unmanaged>	
+            <unmanaged-short>float LPFDirectCoefficient</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.LpfReverbCoefficient">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::LPFReverbCoefficient']/*"/>	
+            <unmanaged>float LPFReverbCoefficient</unmanaged>	
+            <unmanaged-short>float LPFReverbCoefficient</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.ReverbLevel">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::ReverbLevel']/*"/>	
+            <unmanaged>float ReverbLevel</unmanaged>	
+            <unmanaged-short>float ReverbLevel</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.DopplerFactor">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::DopplerFactor']/*"/>	
+            <unmanaged>float DopplerFactor</unmanaged>	
+            <unmanaged-short>float DopplerFactor</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.EmitterToListenerAngle">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::EmitterToListenerAngle']/*"/>	
+            <unmanaged>float EmitterToListenerAngle</unmanaged>	
+            <unmanaged-short>float EmitterToListenerAngle</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.EmitterToListenerDistance">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::EmitterToListenerDistance']/*"/>	
+            <unmanaged>float EmitterToListenerDistance</unmanaged>	
+            <unmanaged-short>float EmitterToListenerDistance</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.EmitterVelocityComponent">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::EmitterVelocityComponent']/*"/>	
+            <unmanaged>float EmitterVelocityComponent</unmanaged>	
+            <unmanaged-short>float EmitterVelocityComponent</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.DspSettings.ListenerVelocityComponent">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DSP_SETTINGS::ListenerVelocityComponent']/*"/>	
+            <unmanaged>float ListenerVelocityComponent</unmanaged>	
+            <unmanaged-short>float ListenerVelocityComponent</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.CalculateFlags">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAudioCalculateFlags']/*"/>	
+            <unmanaged>X3DAudioCalculateFlags</unmanaged>	
+            <unmanaged-short>X3DAudioCalculateFlags</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.Matrix">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_MATRIX']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_MATRIX</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_MATRIX</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.Delay">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_DELAY']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_DELAY</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_DELAY</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.LpfDirect">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_LPF_DIRECT']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_LPF_DIRECT</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_LPF_DIRECT</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.LpfReverb">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_LPF_REVERB']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_LPF_REVERB</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_LPF_REVERB</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.Reverb">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_REVERB']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_REVERB</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_REVERB</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.Doppler">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_DOPPLER']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_DOPPLER</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_DOPPLER</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.EmitterAngle">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_EMITTER_ANGLE']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_EMITTER_ANGLE</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_EMITTER_ANGLE</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.ZeroCenter">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_ZEROCENTER']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_ZEROCENTER</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_ZEROCENTER</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CalculateFlags.RedirectToLfe">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CALCULATE_REDIRECT_TO_LFE']/*"/>	
+            <unmanaged>X3DAUDIO_CALCULATE_REDIRECT_TO_LFE</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CALCULATE_REDIRECT_TO_LFE</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.X3DAudio">
+            <summary>	
+            Functions	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='SharpDX.X3DAudio.X3DAudio']/*"/>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.X3DAudio.SpeedOfSound">
+            <summary>
+            Speed of sound in the air.
+            </summary>
+        </member>
+        <member name="M:SharpDX.X3DAudio.X3DAudio.X3DAudioInitialize(SharpDX.Multimedia.Speakers,System.Single,SharpDX.X3DAudio.X3DAudioHandle@)">
+            <summary>	
+            Sets all global 3D audio constants.	
+            </summary>	
+            <param name="speakerChannelMask"><dd>[in]  Assignment of channels to speaker positions. This value must not be zero. The only permissible value on Xbox 360 is SPEAKER_XBOX. </dd></param>	
+            <param name="speedOfSound"><dd>[in]  Speed of sound, in user-defined world units per second. Use this value only for doppler calculations.  It must be greater than or equal to FLT_MIN. </dd></param>	
+            <param name="instance"><dd>[out]  3D audio instance handle. Use this handle when you call <see cref="M:SharpDX.X3DAudio.X3DAudio.X3DAudioCalculate(SharpDX.X3DAudio.X3DAudioHandle@,SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,SharpDX.X3DAudio.DspSettings)"/>. </dd></param>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAudioInitialize']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudioinitialize</msdn-id>	
+            <unmanaged>void X3DAudioInitialize([In] SPEAKER_FLAGS SpeakerChannelMask,[In] float SpeedOfSound,[Out] X3DAUDIOHANDLE* Instance)</unmanaged>	
+            <unmanaged-short>X3DAudioInitialize</unmanaged-short>	
+        </member>
+        <member name="M:SharpDX.X3DAudio.X3DAudio.X3DAudioCalculate(SharpDX.X3DAudio.X3DAudioHandle@,SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,SharpDX.X3DAudio.DspSettings)">
+            <summary>	
+            Calculates DSP settings with respect to 3D parameters.	
+            </summary>	
+            <param name="instance"><dd>[in]  3D audio instance handle. Call <see cref="M:SharpDX.X3DAudio.X3DAudio.X3DAudioInitialize(SharpDX.Multimedia.Speakers,System.Single,SharpDX.X3DAudio.X3DAudioHandle@)"/> to get this handle. </dd></param>	
+            <param name="listenerRef"><dd>[in]  Pointer to an <see cref="T:SharpDX.X3DAudio.Listener"/> representing the point of reception. </dd></param>	
+            <param name="emitterRef"><dd>[in]  Pointer to an <see cref="T:SharpDX.X3DAudio.Emitter"/> representing the sound source. </dd></param>	
+            <param name="flags"><dd>[in]  Flags used to control which DSP settings are calculated: <table><tr><th>Value</th><th>Description</th></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.Matrix"/></td><td>Enables matrix coefficient table calculation.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.Delay"/></td><td>Enables delay time array calculation (stereo only).?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.LpfDirect"/></td><td>Enables low pass filter (LPF) direct-path coefficient calculation.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.LpfReverb"/></td><td>Enables LPF reverb-path coefficient calculation.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.Reverb"/></td><td>Enables reverb send level calculation.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.Doppler"/></td><td>Enables Doppler shift factor calculation.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.EmitterAngle"/></td><td>Enables emitter-to-listener interior angle calculation.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.ZeroCenter"/></td><td>Fills the center channel with silence. This flag allows you to keep a 6-channel matrix so you do not have to remap the channels,  but the center channel will be silent.  This flag is only valid if you also set <see cref="F:SharpDX.X3DAudio.CalculateFlags.Matrix"/>.?</td></tr><tr><td><see cref="F:SharpDX.X3DAudio.CalculateFlags.RedirectToLfe"/></td><td> Applies an equal mix of all source channels to a low frequency effect (LFE) destination channel. It only applies to matrix calculations with a source that does not have an LFE channel and a destination that does have an LFE channel.  This flag is only valid  if you also set <see cref="F:SharpDX.X3DAudio.CalculateFlags.Matrix"/>.?</td></tr></table> </dd></param>	
+            <param name="dSPSettingsRef"><dd>[in, out]  Pointer to an <see cref="T:SharpDX.X3DAudio.DspSettings"/> structure  that receives the calculation results. </dd></param>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAudioCalculate']/*"/>	
+            <msdn-id>ee419052</msdn-id>	
+            <unmanaged>void X3DAudioCalculate([In] const X3DAUDIOHANDLE* Instance,[In] const X3DAUDIO_LISTENER* pListener,[In] const X3DAUDIO_EMITTER* pEmitter,[In] X3DAudioCalculateFlags Flags,[InOut] X3DAUDIO_DSP_SETTINGS* pDSPSettings)</unmanaged>	
+            <unmanaged-short>X3DAudioCalculate</unmanaged-short>	
+        </member>
+        <member name="M:SharpDX.X3DAudio.X3DAudio.#ctor(SharpDX.Multimedia.Speakers)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.X3DAudio.X3DAudio"/> class.
+            </summary>
+            <param name="speakers">The speakers config.</param>
+        </member>
+        <member name="M:SharpDX.X3DAudio.X3DAudio.#ctor(SharpDX.Multimedia.Speakers,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SharpDX.X3DAudio.X3DAudio"/> class.
+            </summary>
+            <param name="speakers">The speakers config.</param>
+            <param name="speedOfSound">The speed of sound.</param>
+        </member>
+        <member name="M:SharpDX.X3DAudio.X3DAudio.Calculate(SharpDX.X3DAudio.Listener,SharpDX.X3DAudio.Emitter,SharpDX.X3DAudio.CalculateFlags,System.Int32,System.Int32)">
+            <summary>
+            Calculates dsp settings for the specified listener and emitter.
+            </summary>
+            <param name="listener">The listener.</param>
+            <param name="emitter">The emitter.</param>
+            <param name="flags">The flags.</param>
+            <param name="sourceChannelCount">The source channel count.</param>
+            <param name="destinationChannelCount">The destination channel count.</param>
+            <returns>Dsp settings</returns>
+        </member>
+        <member name="T:SharpDX.X3DAudio.Listener">
+            <summary>	
+            No documentation.	
+            </summary>	
+            <!-- Failed to insert some or all of included XML --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER']/*"/>	
+            <unmanaged>X3DAUDIO_LISTENER</unmanaged>	
+            <summary>	
+            Defines a point of 3D audio reception.	
+            </summary>	
+            <remarks>	
+            <p>The parameter type <strong>X3DAUDIO_VECTOR</strong> is typed to DirectX::XMFLOAT3, to provide x, y and z floating-point values.</p> <p>A listener's front and top vectors must be orthonormal. To be considered orthonormal, a pair of vectors must have a magnitude of 1 +- 1x10-5 and a dot product of 0 +- 1x10-5.</p>	
+            </remarks>	
+            <!-- Failed to insert some or all of included XML --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_listener</msdn-id>	
+            <unmanaged>X3DAUDIO_LISTENER</unmanaged>	
+            <unmanaged-short>X3DAUDIO_LISTENER</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Listener.Cone">
+            <summary>
+            Reference to Cone data.
+            </summary>
+            <unmanaged>X3DAUDIO_CONE* pCone</unmanaged>	
+        </member>
+        <member name="M:SharpDX.X3DAudio.Listener.__MarshalTo(SharpDX.X3DAudio.Listener.__Native@)">
+            Disabled as it is not used
+        </member>
+        <member name="F:SharpDX.X3DAudio.Listener.OrientFront">
+            <summary>	
+            <dd> Orientation of front direction. When <strong>pCone</strong> is <c>null</c> <strong>OrientFront</strong> is used only for matrix and delay calculations. When <strong>pCone</strong> is not <c>null</c> <strong>OrientFront</strong> is used for matrix, LPF (both direct and reverb paths), and reverb calculations. This value must be orthonormal with <strong>OrientTop</strong> when used. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER::OrientFront']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_listener</msdn-id>	
+            <unmanaged>D3DVECTOR OrientFront</unmanaged>	
+            <unmanaged-short>D3DVECTOR OrientFront</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Listener.OrientTop">
+            <summary>	
+            <dd> Orientation of top direction, used only for matrix and delay calculations. This value must be orthonormal with <strong>OrientFront</strong> when used </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER::OrientTop']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_listener</msdn-id>	
+            <unmanaged>D3DVECTOR OrientTop</unmanaged>	
+            <unmanaged-short>D3DVECTOR OrientTop</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Listener.Position">
+            <summary>	
+            <dd> Position in user-defined world units. This value does not affect <strong>Velocity</strong>. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER::Position']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_listener</msdn-id>	
+            <unmanaged>D3DVECTOR Position</unmanaged>	
+            <unmanaged-short>D3DVECTOR Position</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Listener.Velocity">
+            <summary>	
+            <dd> Velocity vector in user-defined world units per second, used only for doppler calculations. This value does not affect <strong>Position</strong>. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER::Velocity']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_listener</msdn-id>	
+            <unmanaged>D3DVECTOR Velocity</unmanaged>	
+            <unmanaged-short>D3DVECTOR Velocity</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Listener.ConePointer">
+            <summary>	
+            <dd> Pointer to an <see cref="T:SharpDX.X3DAudio.Cone"/> structure for this listener. Providing a listener cone will specify that additional calculations are performed when determining the volume and filter DSP parameters for individual sound sources. A <c>null</c> <strong>pCone</strong> value specifies an omnidirectional sound and no cone processing is applied. <strong>pCone</strong> is only used for matrix, LPF (both direct and reverb paths), and reverb calculations. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_LISTENER::pCone']/*"/>	
+            <msdn-id>microsoft.directx_sdk.x3daudio.x3daudio_listener</msdn-id>	
+            <unmanaged>X3DAUDIO_CONE* pCone</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CONE pCone</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.Cone">
+            <summary>	
+            Specifies directionality for a single-channel non-LFE emitter by scaling DSP behavior with respect to the emitter's orientation.	
+            </summary>	
+            <remarks>	
+            <p>For a detailed explanation of sound cones see Sound Cones.</p>	
+            </remarks>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>X3DAUDIO_CONE</unmanaged>	
+            <unmanaged-short>X3DAUDIO_CONE</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.InnerAngle">
+            <summary>	
+            <dd> Inner cone angle in radians. This value must be within 0.0f to X3DAUDIO_2PI. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::InnerAngle']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float InnerAngle</unmanaged>	
+            <unmanaged-short>float InnerAngle</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.OuterAngle">
+            <summary>	
+            <dd> Outer cone angle in radians. This value must be within <strong>InnerAngle</strong> to X3DAUDIO_2PI. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::OuterAngle']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float OuterAngle</unmanaged>	
+            <unmanaged-short>float OuterAngle</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.InnerVolume">
+            <summary>	
+            <dd> Volume scaler on/within inner cone. This value must be within 0.0f to 2.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::InnerVolume']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float InnerVolume</unmanaged>	
+            <unmanaged-short>float InnerVolume</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.OuterVolume">
+            <summary>	
+            <dd> Volume scaler on/beyond outer cone. This value must be within 0.0f to 2.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::OuterVolume']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float OuterVolume</unmanaged>	
+            <unmanaged-short>float OuterVolume</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.InnerLpf">
+            <summary>	
+            <dd> LPF direct-path or reverb-path coefficient scaler on/within inner cone. This value is only used for LPF calculations and must be within 0.0f to 1.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::InnerLPF']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float InnerLPF</unmanaged>	
+            <unmanaged-short>float InnerLPF</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.OuterLpf">
+            <summary>	
+            <dd> LPF direct-path or reverb-path coefficient scaler on or beyond outer cone. This value is only used for LPF calculations and must be within 0.0f to 1.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::OuterLPF']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float OuterLPF</unmanaged>	
+            <unmanaged-short>float OuterLPF</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.InnerReverb">
+            <summary>	
+            <dd> Reverb send level scaler on or within inner cone. This must be within 0.0f to 2.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::InnerReverb']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float InnerReverb</unmanaged>	
+            <unmanaged-short>float InnerReverb</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.Cone.OuterReverb">
+            <summary>	
+            <dd> Reverb send level scaler on/beyond outer cone. This must be within 0.0f to 2.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_CONE::OuterReverb']/*"/>	
+            <msdn-id>ee419054</msdn-id>	
+            <unmanaged>float OuterReverb</unmanaged>	
+            <unmanaged-short>float OuterReverb</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.CurvePoint">
+            <summary>	
+            Defines a DSP setting at a given normalized distance.	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DISTANCE_CURVE_POINT']/*"/>	
+            <msdn-id>ee419056</msdn-id>	
+            <unmanaged>X3DAUDIO_DISTANCE_CURVE_POINT</unmanaged>	
+            <unmanaged-short>X3DAUDIO_DISTANCE_CURVE_POINT</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CurvePoint.Distance">
+            <summary>	
+            <dd> Normalized distance. This must be within 0.0f to 1.0f. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DISTANCE_CURVE_POINT::Distance']/*"/>	
+            <msdn-id>ee419056</msdn-id>	
+            <unmanaged>float Distance</unmanaged>	
+            <unmanaged-short>float Distance</unmanaged-short>	
+        </member>
+        <member name="F:SharpDX.X3DAudio.CurvePoint.DspSetting">
+            <summary>	
+            <dd> DSP control setting. </dd>	
+            </summary>	
+            <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='X3DAUDIO_DISTANCE_CURVE_POINT::DSPSetting']/*"/>	
+            <msdn-id>ee419056</msdn-id>	
+            <unmanaged>float DSPSetting</unmanaged>	
+            <unmanaged-short>float DSPSetting</unmanaged-short>	
+        </member>
+        <member name="T:SharpDX.X3DAudio.NamespaceDoc">
+            <summary>
+            The <see cref="N:SharpDX.X3DAudio"/> namespace provides a managed X3DAudio API.
+            </summary>
+            <msdn-id>ee415714</msdn-id>
+            <unmanaged>X3DAudio</unmanaged>	
+            <unmanaged-short>X3DAudio</unmanaged-short>	
+        </member>
+    </members>
+</doc>

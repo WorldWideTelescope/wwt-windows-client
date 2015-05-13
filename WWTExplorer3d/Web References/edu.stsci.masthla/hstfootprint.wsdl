@@ -1,0 +1,2066 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://nvo.stsci.edu/footprint" xmlns:s1="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s2="http://www.w3.org/1999/xlink" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://nvo.stsci.edu/footprint" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">This is the VO service for the HST STIS,ACS, and WFPC2 footprints. It returns IVOA Space Time Coordinate (STC v1.3) compliant region descriptions.&lt;br&gt;&lt;i&gt;Conforms to WS-I Basic Profile 1.1&lt;/i&gt;</wsdl:documentation>
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://nvo.stsci.edu/footprint">
+      <s:import namespace="http://www.ivoa.net/xml/STC/stc-v1.30.xsd" />
+      <s:element name="ACS_PointFootprintL1">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ra" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="dec" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_PointFootprintL1Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ACS_PointFootprintL1Result" type="s1:STCRegion" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_PointFootprintL2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ra" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="dec" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_PointFootprintL2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ACS_PointFootprintL2Result" type="s1:STCRegion" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_ConeFootprintL1">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ra" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="dec" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="sr" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_ConeFootprintL1Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ACS_ConeFootprintL1Result" type="s1:STCRegion" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_ConeFootprintL2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ra" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="dec" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="sr" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACS_ConeFootprintL2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ACS_ConeFootprintL2Result" type="s1:STCRegion" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckACSIntersect">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="region1ID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="region2ID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckACSIntersectResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CheckACSIntersectResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACSIntersect">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="region1ID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="region2ID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ACSIntersectResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ACSIntersectResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="STCRegion" nillable="true" type="s1:STCRegion" />
+      <s:element name="boolean" type="s:boolean" />
+      <s:element name="int" type="s:int" />
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.ivoa.net/xml/STC/stc-v1.30.xsd">
+      <s:import namespace="http://www.w3.org/1999/xlink" />
+      <s:complexType name="STCRegion">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcMetadataType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="AstroCoordSystem" nillable="true" type="s1:astroCoordSystemType" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="1" maxOccurs="1" name="Difference" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection" nillable="true" type="s1:intersectionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon" nillable="true" type="s1:polygonType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector" nillable="true" type="s1:sectorType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Union" nillable="true" type="s1:unionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Convex" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull" nillable="true" type="s1:convexHullType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse" nillable="true" type="s1:ellipseType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="stcMetadataType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="stcBaseType" abstract="true">
+        <s:attribute name="id" type="s:ID" />
+        <s:attribute name="idref" type="s:IDREF" />
+        <s:attribute ref="s2:type" />
+        <s:attribute ref="s2:href" />
+      </s:complexType>
+      <s:complexType name="coordIntervalType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:attribute default="true" name="lo_include" type="s:boolean" />
+            <s:attribute default="true" name="hi_include" type="s:boolean" />
+            <s:attribute default="1" name="fill_factor" type="s:float" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="timeIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="StartTime" type="s1:astronTimeType" />
+              <s:element minOccurs="0" maxOccurs="1" name="StopTime" type="s1:astronTimeType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="astronTimeType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Timescale" type="s1:timeScaleType" />
+          <s:element minOccurs="0" maxOccurs="1" name="TimeOffset" type="s1:timeOffsetType" />
+          <s:choice minOccurs="1" maxOccurs="1">
+            <s:element minOccurs="0" maxOccurs="1" name="MJDTime" type="s1:jdTimeType" />
+            <s:element minOccurs="1" maxOccurs="1" name="TimeOrigin" type="s1:relocatableOriginType" />
+            <s:element minOccurs="0" maxOccurs="1" name="ISOTime" type="s1:isoTimeType" />
+            <s:element minOccurs="0" maxOccurs="1" name="JDTime" type="s1:jdTimeType" />
+          </s:choice>
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="timeScaleType">
+        <s:restriction base="s:string">
+          <s:enumeration value="TT" />
+          <s:enumeration value="TDT" />
+          <s:enumeration value="ET" />
+          <s:enumeration value="TDB" />
+          <s:enumeration value="TEB" />
+          <s:enumeration value="TCG" />
+          <s:enumeration value="TCB" />
+          <s:enumeration value="TAI" />
+          <s:enumeration value="IAT" />
+          <s:enumeration value="UTC" />
+          <s:enumeration value="LST" />
+          <s:enumeration value="LOCAL" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="timeOffsetType">
+        <s:simpleContent>
+          <s:extension base="s:decimal">
+            <s:attribute name="id" type="s:ID" />
+            <s:attribute name="idref" type="s:IDREF" />
+            <s:attribute ref="s2:type" />
+            <s:attribute ref="s2:href" />
+            <s:attribute default="s" name="unit" type="s1:timeUnitType" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:simpleType name="timeUnitType">
+        <s:restriction base="s:string">
+          <s:enumeration value="s" />
+          <s:enumeration value="h" />
+          <s:enumeration value="d" />
+          <s:enumeration value="a" />
+          <s:enumeration value="yr" />
+          <s:enumeration value="cy" />
+          <s:enumeration value="" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="jdTimeType">
+        <s:simpleContent>
+          <s:extension base="s:decimal">
+            <s:attribute name="id" type="s:ID" />
+            <s:attribute name="idref" type="s:IDREF" />
+            <s:attribute ref="s2:type" />
+            <s:attribute ref="s2:href" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:simpleType name="relocatableOriginType">
+        <s:restriction base="s:string">
+          <s:enumeration value="RELOCATABLE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="isoTimeType">
+        <s:simpleContent>
+          <s:extension base="s:dateTime">
+            <s:attribute name="id" type="s:ID" />
+            <s:attribute name="idref" type="s:IDREF" />
+            <s:attribute ref="s2:type" />
+            <s:attribute ref="s2:href" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="coordScalarIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit" type="s:double" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit" type="s:double" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="redshiftIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordScalarIntervalType">
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="posUnitType">
+        <s:restriction base="s:string">
+          <s:enumeration value="deg" />
+          <s:enumeration value="deg deg m" />
+          <s:enumeration value="deg deg Mpc" />
+          <s:enumeration value="rad" />
+          <s:enumeration value="h" />
+          <s:enumeration value="arcmin" />
+          <s:enumeration value="arcsec" />
+          <s:enumeration value="m" />
+          <s:enumeration value="km" />
+          <s:enumeration value="mm" />
+          <s:enumeration value="AU" />
+          <s:enumeration value="pc" />
+          <s:enumeration value="kpc" />
+          <s:enumeration value="Mpc" />
+          <s:enumeration value="lyr" />
+          <s:enumeration value="" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="velTimeUnitType">
+        <s:restriction base="s:string">
+          <s:enumeration value="s" />
+          <s:enumeration value="h" />
+          <s:enumeration value="d" />
+          <s:enumeration value="a" />
+          <s:enumeration value="yr" />
+          <s:enumeration value="cy" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="spectralIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordScalarIntervalType">
+            <s:attribute name="unit" type="s1:spectralUnitType" use="required" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="spectralUnitType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Hz" />
+          <s:enumeration value="kHz" />
+          <s:enumeration value="MHz" />
+          <s:enumeration value="GHz" />
+          <s:enumeration value="m" />
+          <s:enumeration value="mm" />
+          <s:enumeration value="um" />
+          <s:enumeration value="nm" />
+          <s:enumeration value="Angstrom" />
+          <s:enumeration value="eV" />
+          <s:enumeration value="keV" />
+          <s:enumeration value="MeV" />
+          <s:enumeration value="GeV" />
+          <s:enumeration value="TeV" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="coord2VecIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit2Vec" type="s1:double2Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit2Vec" type="s1:double2Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="double2Type">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="C1" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="C2" type="s1:double1Type" />
+            </s:sequence>
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="double1Type">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute name="id" type="s:ID" />
+            <s:attribute name="idref" type="s:IDREF" />
+            <s:attribute ref="s2:type" />
+            <s:attribute ref="s2:href" />
+            <s:attribute name="time_unit" type="s1:timeUnitType" />
+            <s:attribute name="pos_unit" type="s1:posUnitType" />
+            <s:attribute name="pos_angle_unit" type="s1:angleUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+            <s:attribute name="spectral_unit" type="s1:spectralUnitType" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:simpleType name="angleUnitType">
+        <s:restriction base="s:string">
+          <s:enumeration value="deg" />
+          <s:enumeration value="rad" />
+          <s:enumeration value="h" />
+          <s:enumeration value="arcmin" />
+          <s:enumeration value="arcsec" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="coord3VecIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit3Vec" type="s1:double3Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit3Vec" type="s1:double3Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="double3Type">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="C1" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="C2" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="C3" type="s1:double1Type" />
+            </s:sequence>
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="spatialIntervalType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordIntervalType">
+            <s:attribute name="epoch" type="s:decimal" />
+            <s:attribute name="unit" type="s1:posUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="sphereType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Radius" type="s:double" />
+              <s:element minOccurs="0" maxOccurs="1" name="Center" type="s1:double3Type" />
+            </s:sequence>
+            <s:attribute default="deg" name="radius_unit" type="s1:posUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="posScalarIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit" type="s:double" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit" type="s:double" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="pos3VecIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit3Vec" type="s1:double3Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit3Vec" type="s1:double3Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="velocityIntervalType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" use="required" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="velScalarIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velocityIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit" type="s:double" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit" type="s:double" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="vel2VecIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velocityIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit2Vec" type="s1:double2Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit2Vec" type="s1:double2Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="vel3VecIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velocityIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit3Vec" type="s1:double3Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit3Vec" type="s1:double3Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="velocitySphereType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velocityIntervalType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Radius" type="s:double" />
+              <s:element minOccurs="0" maxOccurs="1" name="Center" type="s1:double3Type" />
+            </s:sequence>
+            <s:attribute default="deg" name="radius_unit" type="s1:posUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="regionFileType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="File" type="s:anyURI" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="regionType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Area" type="s1:regionAreaType" />
+            </s:sequence>
+            <s:attribute name="note" type="s:string" />
+            <s:attribute name="coord_system_id" type="s:IDREF" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="regionAreaType">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute name="linearAreaUnit" type="s1:posUnitType" use="required" />
+            <s:attribute name="validArea" type="s:boolean" use="required" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="shapeType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:regionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="sectorType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Position" type="s1:double2Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="PosAngle1" type="s1:posAngleType" />
+              <s:element minOccurs="0" maxOccurs="1" name="PosAngle2" type="s1:posAngleType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="posAngleType">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="deg" name="unit" type="s1:angleUnitType" />
+            <s:attribute default="X" name="reference" type="s1:posAngleReferenceType" />
+            <s:attribute name="id" type="s:ID" />
+            <s:attribute name="idref" type="s:IDREF" />
+            <s:attribute ref="s2:type" />
+            <s:attribute ref="s2:href" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:simpleType name="posAngleReferenceType">
+        <s:restriction base="s:string">
+          <s:enumeration value="North" />
+          <s:enumeration value="X" />
+          <s:enumeration value="Y" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="skyIndexType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ellipseType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Center" type="s1:double2Type" />
+              <s:element minOccurs="1" maxOccurs="1" name="SemiMajorAxis" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="SemiMinorAxis" type="s:double" />
+              <s:element minOccurs="0" maxOccurs="1" name="PosAngle" type="s1:posAngleType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="convexHullType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Point" type="s1:double3Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="convexType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Halfspace" type="s1:halfspaceType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="halfspaceType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Vector" type="s1:double3Type" />
+          <s:element minOccurs="1" maxOccurs="1" name="Offset" type="s:double" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="circleType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Center" type="s1:double2Type" />
+              <s:element minOccurs="1" maxOccurs="1" name="Radius" type="s:double" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="boxType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Center" type="s1:double2Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="Size" type="s1:double2Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="allSkyType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="polygonType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:shapeType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Vertex" type="s1:vertexType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="vertexType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Position" type="s1:double2Type" />
+          <s:element minOccurs="1" maxOccurs="1" name="SmallCircle" nillable="true" type="s1:smallCircleType" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="smallCircleType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Pole" type="s1:double2Type" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="intersectionType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:regionType">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="1" maxOccurs="1" name="Union" nillable="true" type="s1:unionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector" nillable="true" type="s1:sectorType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Convex" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull" nillable="true" type="s1:convexHullType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Difference" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse" nillable="true" type="s1:ellipseType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection" nillable="true" type="s1:intersectionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon" nillable="true" type="s1:polygonType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="unionType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:regionType">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="1" maxOccurs="1" name="Union" nillable="true" type="s1:unionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Convex" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull" nillable="true" type="s1:convexHullType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Difference" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse" nillable="true" type="s1:ellipseType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection" nillable="true" type="s1:intersectionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon" nillable="true" type="s1:polygonType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector" nillable="true" type="s1:sectorType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="diffType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:regionType">
+            <s:sequence>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon" nillable="true" type="s1:polygonType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Union" nillable="true" type="s1:unionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Convex" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector" nillable="true" type="s1:sectorType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull" nillable="true" type="s1:convexHullType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Difference" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse" nillable="true" type="s1:ellipseType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection" nillable="true" type="s1:intersectionType" />
+              </s:choice>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse2" nillable="true" type="s1:ellipseType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection2" nillable="true" type="s1:intersectionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle2" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Convex2" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box2" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Difference2" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky2" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation2" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull2" nillable="true" type="s1:convexHullType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon2" nillable="true" type="s1:polygonType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector2" nillable="true" type="s1:sectorType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Union2" nillable="true" type="s1:unionType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="negationType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:regionType">
+            <s:sequence>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="1" maxOccurs="1" name="Difference" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse" nillable="true" type="s1:ellipseType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon" nillable="true" type="s1:polygonType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Union" nillable="true" type="s1:unionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector" nillable="true" type="s1:sectorType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Convex" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection" nillable="true" type="s1:intersectionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull" nillable="true" type="s1:convexHullType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="pos2VecIntervalType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spatialIntervalType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LoLimit2Vec" type="s1:double2Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="HiLimit2Vec" type="s1:double2Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="coordAreaType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TimeInterval" type="s1:timeIntervalType" />
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="RegionFile" type="s1:regionFileType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Position3VecInterval" type="s1:pos3VecIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PositionScalarInterval" type="s1:posScalarIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Position2VecInterval" type="s1:pos2VecIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Sphere" type="s1:sphereType" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="VelocitySphere" type="s1:velocitySphereType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Velocity2VecInterval" type="s1:vel2VecIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Velocity3VecInterval" type="s1:vel3VecIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="VelocityScalarInterval" type="s1:velScalarIntervalType" />
+              </s:choice>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="SpectralInterval" type="s1:spectralIntervalType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="RedshiftInterval" type="s1:redshiftIntervalType" />
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Coord2VecInterval" type="s1:coord2VecIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Coord3VecInterval" type="s1:coord3VecIntervalType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CoordScalarInterval" type="s1:coordScalarIntervalType" />
+              </s:choice>
+            </s:sequence>
+            <s:attribute name="coord_system_id" type="s:IDREF" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="pixelCoordAreaType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordAreaType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="astroCoordAreaType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordAreaType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="double9Type">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="M11" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M12" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M13" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M21" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M22" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M23" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M31" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M32" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M33" type="s:double" />
+            </s:sequence>
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="double4Type">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="M11" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M12" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M21" type="s:double" />
+              <s:element minOccurs="1" maxOccurs="1" name="M22" type="s:double" />
+            </s:sequence>
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="coordinateType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="pixelCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Value" type="s:double" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="basicCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Value" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Error" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Resolution" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Size" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="PixSize" type="s1:double1Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="scalarCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:basicCoordinateType">
+            <s:attribute name="unit" type="s:string" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="spectralCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:basicCoordinateType">
+            <s:attribute name="unit" type="s1:spectralUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="redshiftCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:basicCoordinateType">
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="timeCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="TimeInstant" type="s1:astronTimeType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Error" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Resolution" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Size" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="PixSize" type="s1:double1Type" />
+            </s:sequence>
+            <s:attribute default="s" name="unit" type="s1:timeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="stringCoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+            </s:sequence>
+            <s:attribute name="unit" type="s:string" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="orbitType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="a" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="e" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="i" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="Node" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="Aop" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="T" type="s1:astronTimeType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="astroCoordsFileType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="FITSFile" type="s1:fitsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="FITSTime" type="s1:coordFITSColumnsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="FITSPosition" type="s1:coordFITSColumnsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="FITSVelocity" type="s1:coordFITSColumnsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="FITSSpectral" type="s1:coordFITSColumnsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="FITSRedshift" type="s1:coordFITSColumnsType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="fitsType">
+        <s:simpleContent>
+          <s:extension base="s:anyURI">
+            <s:attribute name="hdu_num" type="s:integer" />
+            <s:attribute name="hdu_name" type="s:string" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="coordFITSColumnsType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Resolution" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Size" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PixSize" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="velCoordinateType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:attribute name="unit" type="s1:posUnitType" />
+            <s:attribute name="vel_time_unit" type="s1:velTimeUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="velVector2CoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velCoordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name2" type="s:string" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="Value2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Curve2" type="s1:curve2Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Error2Matrix" type="s1:double4Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error2PA" type="s1:size2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error2Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error2" type="s1:double2Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2Matrix" type="s1:double4Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2PA" type="s1:size2Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Size2PA" type="s1:size2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size2Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size2Matrix" type="s1:double4Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize2Matrix" type="s1:double4Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize2PA" type="s1:size2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize2" type="s1:double2Type" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="curve2Type">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="P1" type="s1:double2Type" />
+          <s:element minOccurs="0" maxOccurs="1" name="P2" type="s1:double2Type" />
+        </s:sequence>
+        <s:attribute default="line" name="curve_shape" type="s:string" />
+      </s:complexType>
+      <s:complexType name="size2Type">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Size" type="s1:double2Type" />
+          <s:element minOccurs="0" maxOccurs="1" name="PosAngle" type="s1:posAngleType" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="velVector3CoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velCoordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name3" type="s:string" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="Value3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Curve3" type="s1:curve3Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Error3PA" type="s1:size3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error3Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error3Matrix" type="s1:double9Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3PA" type="s1:size3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3Matrix" type="s1:double9Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Size3Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size3Matrix" type="s1:double9Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size3PA" type="s1:size3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size3" type="s1:double3Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize3Matrix" type="s1:double9Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize3PA" type="s1:size3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize3" type="s1:double3Type" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="curve3Type">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="P1" type="s1:double3Type" />
+          <s:element minOccurs="0" maxOccurs="1" name="P2" type="s1:double3Type" />
+        </s:sequence>
+        <s:attribute default="line" name="curve_shape" type="s:string" />
+      </s:complexType>
+      <s:complexType name="size3Type">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Size" type="s1:double3Type" />
+          <s:element minOccurs="0" maxOccurs="1" name="PosAngle1" type="s1:posAngleType" />
+          <s:element minOccurs="0" maxOccurs="1" name="PosAngle2" type="s1:posAngleType" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="velVector1CoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:velCoordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Value" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Error" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Resolution" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Size" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="PixSize" type="s1:double1Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="posCoordinateType" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordinateType">
+            <s:attribute name="unit" type="s1:posUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="posVector1CoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:posCoordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Value" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Error" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Resolution" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="Size" type="s1:double1Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="PixSize" type="s1:double1Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="posVector3CoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:posCoordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name3" type="s:string" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="Value3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Curve3" type="s1:curve3Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Error3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error3Matrix" type="s1:double9Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error3Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error3PA" type="s1:size3Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3Matrix" type="s1:double9Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3PA" type="s1:size3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution3Radius" type="s1:double1Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Size3Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size3Matrix" type="s1:double9Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size3PA" type="s1:size3Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize3" type="s1:double3Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize3Matrix" type="s1:double9Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize3PA" type="s1:size3Type" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="posVector2CoordinateType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:posCoordinateType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name2" type="s:string" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="Value2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Curve2" type="s1:curve2Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Error2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error2Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error2Matrix" type="s1:double4Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Error2PA" type="s1:size2Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2PA" type="s1:size2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Resolution2Matrix" type="s1:double4Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Size2PA" type="s1:size2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size2Radius" type="s1:double1Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="Size2Matrix" type="s1:double4Type" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize2" type="s1:double2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize2PA" type="s1:size2Type" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixSize2Matrix" type="s1:double4Type" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="coordSysType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcBaseType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TimeFrame" type="s1:timeFrameType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="SpaceFrame" type="s1:spaceFrameType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="SpectralFrame" type="s1:spectralFrameType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="RedshiftFrame" type="s1:redshiftFrameType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="GenericCoordFrame" type="s1:coordFrameType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="PixelCoordFrame" type="s1:coordFrameType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="timeFrameType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordFrameType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="TimeScale" type="s1:timeScaleType" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="GALACTIC_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SATURN" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="URANUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="VENUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GEOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HELIOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="UNKNOWNRefPos" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="BARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CustomRefPos" type="s1:customRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="JUPITER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LOCAL_GROUP_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSR" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="EMBARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRD" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRK" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MARS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="TOPOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MERCURY" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MOON" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="NEPTUNE" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PLUTO" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="RELOCATABLE" type="s1:stdRefPosType" />
+              </s:choice>
+              <s:element minOccurs="0" maxOccurs="1" name="TimeRefDirection" type="s1:astroCoordsType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="coordFrameType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="spectralFrameType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordFrameType">
+            <s:sequence>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="VENUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="RELOCATABLE" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SATURN" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="TOPOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="UNKNOWNRefPos" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="URANUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HELIOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="JUPITER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LOCAL_GROUP_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSR" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRD" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRK" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MARS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MERCURY" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="BARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CustomRefPos" type="s1:customRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="EMBARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GALACTIC_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GEOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PLUTO" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MOON" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="NEPTUNE" type="s1:stdRefPosType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="stdRefPosType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:referencePositionType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="PlanetaryEphem" nillable="true" type="s1:planetaryEphemType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="referencePositionType" abstract="true" />
+      <s:complexType name="customRefPosType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:referencePositionType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="CoordOrigin" type="s1:astroCoordsType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="astroCoordsType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordsType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Time" type="s1:timeCoordinateType" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="Position2D" type="s1:posVector2CoordinateType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Position1D" type="s1:posVector1CoordinateType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Position3D" type="s1:posVector3CoordinateType" />
+              </s:choice>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="Velocity3D" type="s1:velVector3CoordinateType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Velocity2D" type="s1:velVector2CoordinateType" />
+                <s:element minOccurs="0" maxOccurs="1" name="Velocity1D" type="s1:velVector1CoordinateType" />
+              </s:choice>
+              <s:element minOccurs="0" maxOccurs="1" name="Spectral" type="s1:spectralCoordinateType" />
+              <s:element minOccurs="0" maxOccurs="1" name="Redshift" type="s1:redshiftCoordinateType" />
+              <s:element minOccurs="0" maxOccurs="1" name="CoordFile" type="s1:astroCoordsFileType" />
+              <s:element minOccurs="0" maxOccurs="1" name="Orbit" type="s1:orbitType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="coordsType">
+        <s:sequence>
+          <s:choice minOccurs="0" maxOccurs="unbounded">
+            <s:element minOccurs="0" maxOccurs="1" name="PixelCoordinate" type="s1:pixelCoordinateType" />
+            <s:element minOccurs="0" maxOccurs="1" name="ScalarCoordinate" type="s1:scalarCoordinateType" />
+            <s:element minOccurs="0" maxOccurs="1" name="StringCoordinate" type="s1:stringCoordinateType" />
+          </s:choice>
+        </s:sequence>
+        <s:attribute name="coord_system_id" type="s:IDREF" />
+      </s:complexType>
+      <s:complexType name="pixelCoordsType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordsType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="planetaryEphemType">
+        <s:restriction base="s:string">
+          <s:enumeration value="JPL-DE200" />
+          <s:enumeration value="JPL-DE405" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="spaceFrameType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordFrameType">
+            <s:sequence>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="URANUS_C_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="ICRS" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="JUPITER_C_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MERCURY_C" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MERCURY_G" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="BODY" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="NEPTUNE_G_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GEO_D" type="s1:geodType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PLUTO_C" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PLUTO_G" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SATURN_C_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SATURN_G_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SM" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SUPER_GALACTIC" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="UNKNOWNFrame" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CustomSpaceRefFrame" type="s1:customSpaceRefFrameType" />
+                <s:element minOccurs="0" maxOccurs="1" name="JUPITER_G_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GALACTIC_I" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="FK4" type="s1:fkType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HCD" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MAG" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HCI" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MARS_C" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MARS_G" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="FK5" type="s1:fkType" />
+                <s:element minOccurs="0" maxOccurs="1" name="URANUS_G_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="VENUS_C" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HEE" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GSM" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="NEPTUNE_C_III" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="ECLIPTIC" type="s1:fkType" />
+                <s:element minOccurs="0" maxOccurs="1" name="VENUS_G" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LUNA_G" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GSE" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GALACTIC_II" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GEO_C" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LUNA_C" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="AZ_EL" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HEEQ" type="s1:icrsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HGC" type="s1:icrsType" />
+              </s:choice>
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="GEOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRD" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRK" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="TOPOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="JUPITER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LOCAL_GROUP_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSR" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MARS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MERCURY" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MOON" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="NEPTUNE" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PLUTO" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="RELOCATABLE" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SATURN" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CustomRefPos" type="s1:customRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GALACTIC_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="URANUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="VENUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HELIOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="BARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="UNKNOWNRefPos" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="EMBARYCENTER" type="s1:stdRefPosType" />
+              </s:choice>
+              <s:element minOccurs="0" maxOccurs="1" name="OffsetCenter" type="s1:coordValueType" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="SPHERICAL" type="s1:coordFlavorType" />
+                <s:element minOccurs="0" maxOccurs="1" name="UNITSPHERE" type="s1:coordFlavorType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CARTESIAN" type="s1:coordFlavorType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HEALPIX" type="s1:healpixType" />
+                <s:element minOccurs="0" maxOccurs="1" name="POLAR" type="s1:coordFlavorType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="icrsType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spaceRefFrameType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="spaceRefFrameType" abstract="true">
+        <s:attribute name="epoch" type="s:decimal" />
+      </s:complexType>
+      <s:complexType name="customSpaceRefFrameType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spaceRefFrameType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Frame" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Pole_Zaxis" type="s1:astroCoordsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="Xaxis" type="s1:astroCoordsType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="fkType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:spaceRefFrameType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Equinox" nillable="true" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="geodType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:icrsType">
+            <s:attribute default="6378140" name="radius" type="s:double" />
+            <s:attribute default="298.257" name="inv_flattening" type="s:double" />
+            <s:attribute default="m" name="unit" type="s1:posUnitType" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="coordValueType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Value" type="s1:double1Type" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="coordFlavorType">
+        <s:attribute default="2" name="coord_naxes" type="s:integer" />
+        <s:attribute default="false" name="coord_vel" type="s:boolean" />
+      </s:complexType>
+      <s:complexType name="healpixType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordFlavorType">
+            <s:attribute default="4" name="healpix_H" type="s:integer" />
+            <s:attribute default="3" name="healpix_K" type="s:integer" />
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="redshiftFrameType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordFrameType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="DopplerDefinition" nillable="true" type="s1:dopplerDefinitionType" />
+              <s:choice minOccurs="1" maxOccurs="1">
+                <s:element minOccurs="0" maxOccurs="1" name="URANUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="VENUS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRD" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="UNKNOWNRefPos" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="BARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CustomRefPos" type="s1:customRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="EMBARYCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GALACTIC_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="GEOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="HELIOCENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="JUPITER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LOCAL_GROUP_CENTER" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSR" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="LSRK" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MARS" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MERCURY" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="MOON" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="NEPTUNE" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PLUTO" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="RELOCATABLE" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="SATURN" type="s1:stdRefPosType" />
+                <s:element minOccurs="0" maxOccurs="1" name="TOPOCENTER" type="s1:stdRefPosType" />
+              </s:choice>
+            </s:sequence>
+            <s:attribute default="VELOCITY" name="value_type">
+              <s:simpleType>
+                <s:restriction base="s:string">
+                  <s:enumeration value="VELOCITY" />
+                  <s:enumeration value="REDSHIFT" />
+                </s:restriction>
+              </s:simpleType>
+            </s:attribute>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="dopplerDefinitionType">
+        <s:restriction base="s:string">
+          <s:enumeration value="OPTICAL" />
+          <s:enumeration value="RADIO" />
+          <s:enumeration value="RELATIVISTIC" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="astroCoordSystemType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordSysType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="pixelCoordSystemType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:coordSysType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="obsDataLocationType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcMetadataType">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ObservatoryLocation" type="s1:observatoryLocationType" />
+              <s:element minOccurs="0" maxOccurs="1" name="ObservationLocation" type="s1:observationLocationType" />
+              <s:element minOccurs="0" maxOccurs="1" name="PixelSpace" type="s1:pixelSpaceType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="observatoryLocationType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcDescriptionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="stcDescriptionType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcMetadataType">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="1" maxOccurs="1" name="AstroCoordSystem" nillable="true" type="s1:astroCoordSystemType" />
+                <s:element minOccurs="1" maxOccurs="1" name="PixelCoordSystem" nillable="true" type="s1:pixelCoordSystemType" />
+                <s:element minOccurs="1" maxOccurs="1" name="CoordSys" nillable="true" type="s1:coordSysType" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="Coords" type="s1:coordsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="PixelCoords" type="s1:pixelCoordsType" />
+                <s:element minOccurs="0" maxOccurs="1" name="AstroCoords" type="s1:astroCoordsType" />
+              </s:choice>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="PixelCoordArea" type="s1:pixelCoordAreaType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AstroCoordArea" nillable="true" type="s1:astroCoordAreaType" />
+                <s:element minOccurs="0" maxOccurs="1" name="CoordArea" type="s1:coordAreaType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="searchLocationType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcDescriptionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="pixelSpaceType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcDescriptionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="stcResourceProfileType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcDescriptionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="catalogEntryLocationType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcDescriptionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="observationLocationType">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcDescriptionType" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="STCCoordinate">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcMetadataType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="AstroCoordSystem" nillable="true" type="s1:astroCoordSystemType" />
+              <s:element minOccurs="0" maxOccurs="1" name="AstroCoords" type="s1:astroCoordsType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="STCCoordinateList">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcMetadataType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="AstroCoordSystem" nillable="true" type="s1:astroCoordSystemType" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="AstroCoords" type="s1:astroCoordsType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="STCRegionList">
+        <s:complexContent mixed="false">
+          <s:extension base="s1:stcMetadataType">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="AstroCoordSystem" nillable="true" type="s1:astroCoordSystemType" />
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="1" maxOccurs="1" name="Convex" nillable="true" type="s1:convexType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Box" nillable="true" type="s1:boxType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Circle" nillable="true" type="s1:circleType" />
+                <s:element minOccurs="1" maxOccurs="1" name="ConvexHull" nillable="true" type="s1:convexHullType" />
+                <s:element minOccurs="1" maxOccurs="1" name="AllSky" nillable="true" type="s1:allSkyType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Difference" nillable="true" type="s1:diffType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Ellipse" nillable="true" type="s1:ellipseType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Intersection" nillable="true" type="s1:intersectionType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Negation" nillable="true" type="s1:negationType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Polygon" nillable="true" type="s1:polygonType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Sector" nillable="true" type="s1:sectorType" />
+                <s:element minOccurs="1" maxOccurs="1" name="Union" nillable="true" type="s1:unionType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.w3.org/1999/xlink">
+      <s:attribute default="simple" name="type">
+        <s:simpleType>
+          <s:restriction base="s:string">
+            <s:enumeration value="simple" />
+            <s:enumeration value="extended" />
+            <s:enumeration value="locator" />
+            <s:enumeration value="arc" />
+            <s:enumeration value="resource" />
+            <s:enumeration value="title" />
+          </s:restriction>
+        </s:simpleType>
+      </s:attribute>
+      <s:attribute name="href" type="s:anyURI" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ACS_PointFootprintL1SoapIn">
+    <wsdl:part name="parameters" element="tns:ACS_PointFootprintL1" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL1SoapOut">
+    <wsdl:part name="parameters" element="tns:ACS_PointFootprintL1Response" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL2SoapIn">
+    <wsdl:part name="parameters" element="tns:ACS_PointFootprintL2" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL2SoapOut">
+    <wsdl:part name="parameters" element="tns:ACS_PointFootprintL2Response" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL1SoapIn">
+    <wsdl:part name="parameters" element="tns:ACS_ConeFootprintL1" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL1SoapOut">
+    <wsdl:part name="parameters" element="tns:ACS_ConeFootprintL1Response" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL2SoapIn">
+    <wsdl:part name="parameters" element="tns:ACS_ConeFootprintL2" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL2SoapOut">
+    <wsdl:part name="parameters" element="tns:ACS_ConeFootprintL2Response" />
+  </wsdl:message>
+  <wsdl:message name="CheckACSIntersectSoapIn">
+    <wsdl:part name="parameters" element="tns:CheckACSIntersect" />
+  </wsdl:message>
+  <wsdl:message name="CheckACSIntersectSoapOut">
+    <wsdl:part name="parameters" element="tns:CheckACSIntersectResponse" />
+  </wsdl:message>
+  <wsdl:message name="ACSIntersectSoapIn">
+    <wsdl:part name="parameters" element="tns:ACSIntersect" />
+  </wsdl:message>
+  <wsdl:message name="ACSIntersectSoapOut">
+    <wsdl:part name="parameters" element="tns:ACSIntersectResponse" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL1HttpGetIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL1HttpGetOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL2HttpGetIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL2HttpGetOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL1HttpGetIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+    <wsdl:part name="sr" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL1HttpGetOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL2HttpGetIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+    <wsdl:part name="sr" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL2HttpGetOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="CheckACSIntersectHttpGetIn">
+    <wsdl:part name="region1ID" type="s:string" />
+    <wsdl:part name="region2ID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CheckACSIntersectHttpGetOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="ACSIntersectHttpGetIn">
+    <wsdl:part name="region1ID" type="s:string" />
+    <wsdl:part name="region2ID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACSIntersectHttpGetOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL1HttpPostIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL1HttpPostOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL2HttpPostIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_PointFootprintL2HttpPostOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL1HttpPostIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+    <wsdl:part name="sr" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL1HttpPostOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL2HttpPostIn">
+    <wsdl:part name="ra" type="s:string" />
+    <wsdl:part name="dec" type="s:string" />
+    <wsdl:part name="sr" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACS_ConeFootprintL2HttpPostOut">
+    <wsdl:part name="Body" element="tns:STCRegion" />
+  </wsdl:message>
+  <wsdl:message name="CheckACSIntersectHttpPostIn">
+    <wsdl:part name="region1ID" type="s:string" />
+    <wsdl:part name="region2ID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CheckACSIntersectHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="ACSIntersectHttpPostIn">
+    <wsdl:part name="region1ID" type="s:string" />
+    <wsdl:part name="region2ID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ACSIntersectHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:portType name="HSTFootprintSoap">
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 2 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_PointFootprintL1SoapIn" />
+      <wsdl:output message="tns:ACS_PointFootprintL1SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_PointFootprintL2SoapIn" />
+      <wsdl:output message="tns:ACS_PointFootprintL2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_ConeFootprintL1SoapIn" />
+      <wsdl:output message="tns:ACS_ConeFootprintL1SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_ConeFootprintL2SoapIn" />
+      <wsdl:output message="tns:ACS_ConeFootprintL2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Derive the boolean intersection between 2 ACS RegionIDs&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; boolean</wsdl:documentation>
+      <wsdl:input message="tns:CheckACSIntersectSoapIn" />
+      <wsdl:output message="tns:CheckACSIntersectSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Derive the intersection between 2 ACS RegionIDs&lt;br&gt;0=false, 1=true, 2=failed&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; integer</wsdl:documentation>
+      <wsdl:input message="tns:ACSIntersectSoapIn" />
+      <wsdl:output message="tns:ACSIntersectSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="HSTFootprintHttpGet">
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 2 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_PointFootprintL1HttpGetIn" />
+      <wsdl:output message="tns:ACS_PointFootprintL1HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_PointFootprintL2HttpGetIn" />
+      <wsdl:output message="tns:ACS_PointFootprintL2HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_ConeFootprintL1HttpGetIn" />
+      <wsdl:output message="tns:ACS_ConeFootprintL1HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_ConeFootprintL2HttpGetIn" />
+      <wsdl:output message="tns:ACS_ConeFootprintL2HttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Derive the boolean intersection between 2 ACS RegionIDs&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; boolean</wsdl:documentation>
+      <wsdl:input message="tns:CheckACSIntersectHttpGetIn" />
+      <wsdl:output message="tns:CheckACSIntersectHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Derive the intersection between 2 ACS RegionIDs&lt;br&gt;0=false, 1=true, 2=failed&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; integer</wsdl:documentation>
+      <wsdl:input message="tns:ACSIntersectHttpGetIn" />
+      <wsdl:output message="tns:ACSIntersectHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="HSTFootprintHttpPost">
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 2 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_PointFootprintL1HttpPostIn" />
+      <wsdl:output message="tns:ACS_PointFootprintL1HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_PointFootprintL2HttpPostIn" />
+      <wsdl:output message="tns:ACS_PointFootprintL2HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_ConeFootprintL1HttpPostIn" />
+      <wsdl:output message="tns:ACS_ConeFootprintL1HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Return the ACS Level 1 footprint in STC format for input coordinates&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; region</wsdl:documentation>
+      <wsdl:input message="tns:ACS_ConeFootprintL2HttpPostIn" />
+      <wsdl:output message="tns:ACS_ConeFootprintL2HttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Derive the boolean intersection between 2 ACS RegionIDs&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; boolean</wsdl:documentation>
+      <wsdl:input message="tns:CheckACSIntersectHttpPostIn" />
+      <wsdl:output message="tns:CheckACSIntersectHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Derive the intersection between 2 ACS RegionIDs&lt;br&gt;0=false, 1=true, 2=failed&lt;br&gt;&lt;b&gt;Output:&lt;/b&gt; integer</wsdl:documentation>
+      <wsdl:input message="tns:ACSIntersectHttpPostIn" />
+      <wsdl:output message="tns:ACSIntersectHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="HSTFootprintSoap" type="tns:HSTFootprintSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <soap:operation soapAction="http://nvo.stsci.edu/footprint/ACS_PointFootprintL1" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <soap:operation soapAction="http://nvo.stsci.edu/footprint/ACS_PointFootprintL2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <soap:operation soapAction="http://nvo.stsci.edu/footprint/ACS_ConeFootprintL1" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <soap:operation soapAction="http://nvo.stsci.edu/footprint/ACS_ConeFootprintL2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <soap:operation soapAction="http://nvo.stsci.edu/footprint/CheckACSIntersect" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <soap:operation soapAction="http://nvo.stsci.edu/footprint/ACSIntersect" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="HSTFootprintSoap12" type="tns:HSTFootprintSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <soap12:operation soapAction="http://nvo.stsci.edu/footprint/ACS_PointFootprintL1" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <soap12:operation soapAction="http://nvo.stsci.edu/footprint/ACS_PointFootprintL2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <soap12:operation soapAction="http://nvo.stsci.edu/footprint/ACS_ConeFootprintL1" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <soap12:operation soapAction="http://nvo.stsci.edu/footprint/ACS_ConeFootprintL2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <soap12:operation soapAction="http://nvo.stsci.edu/footprint/CheckACSIntersect" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <soap12:operation soapAction="http://nvo.stsci.edu/footprint/ACSIntersect" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="HSTFootprintHttpGet" type="tns:HSTFootprintHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <http:operation location="/ACS_PointFootprintL1" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <http:operation location="/ACS_PointFootprintL2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <http:operation location="/ACS_ConeFootprintL1" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <http:operation location="/ACS_ConeFootprintL2" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <http:operation location="/CheckACSIntersect" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <http:operation location="/ACSIntersect" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="HSTFootprintHttpPost" type="tns:HSTFootprintHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="ACS_PointFootprintL1">
+      <http:operation location="/ACS_PointFootprintL1" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_PointFootprintL2">
+      <http:operation location="/ACS_PointFootprintL2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL1">
+      <http:operation location="/ACS_ConeFootprintL1" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACS_ConeFootprintL2">
+      <http:operation location="/ACS_ConeFootprintL2" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckACSIntersect">
+      <http:operation location="/CheckACSIntersect" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ACSIntersect">
+      <http:operation location="/ACSIntersect" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="HSTFootprint">
+    <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">This is the VO service for the HST STIS,ACS, and WFPC2 footprints. It returns IVOA Space Time Coordinate (STC v1.3) compliant region descriptions.&lt;br&gt;&lt;i&gt;Conforms to WS-I Basic Profile 1.1&lt;/i&gt;</wsdl:documentation>
+    <wsdl:port name="HSTFootprintSoap" binding="tns:HSTFootprintSoap">
+      <soap:address location="http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx" />
+    </wsdl:port>
+    <wsdl:port name="HSTFootprintSoap12" binding="tns:HSTFootprintSoap12">
+      <soap12:address location="http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx" />
+    </wsdl:port>
+    <wsdl:port name="HSTFootprintHttpGet" binding="tns:HSTFootprintHttpGet">
+      <http:address location="http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx" />
+    </wsdl:port>
+    <wsdl:port name="HSTFootprintHttpPost" binding="tns:HSTFootprintHttpPost">
+      <http:address location="http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

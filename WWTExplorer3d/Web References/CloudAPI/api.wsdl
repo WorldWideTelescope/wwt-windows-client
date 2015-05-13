@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://wwtserver/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://wwtserver/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://wwtserver/">
+      <s:element name="FBAttachmentDelete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="FBFileId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FBAttachmentDeleteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="FBAttachmentDeleteResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getFBFileUrl">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="FBUserId" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="md5" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getFBFileUrlResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getFBFileUrlResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getFBRealFileUrl">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="FBUserId" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="md5" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="contentType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getFBRealFileUrlResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getFBRealFileUrlResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeBlockedFacebookUser">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FBUserId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="block" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeBlockedFacebookUserResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ChangeBlockedFacebookUserResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getContainers">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getContainersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getContainersResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="listBlobsInContainer">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="container" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="listBlobsInContainerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="listBlobsInContainerResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="listBlobsInDirectory">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="directory" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="listBlobsInDirectoryResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="listBlobsInDirectoryResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deleteContainer">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="container" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deleteContainerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="deleteContainerResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deleteBlockBlob">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="blob" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deleteBlockBlobResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="deleteBlockBlobResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getBlockBlob">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="blob" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getBlockBlobResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getBlockBlobResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="FBAttachmentDeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:FBAttachmentDelete" />
+  </wsdl:message>
+  <wsdl:message name="FBAttachmentDeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:FBAttachmentDeleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="getFBFileUrlSoapIn">
+    <wsdl:part name="parameters" element="tns:getFBFileUrl" />
+  </wsdl:message>
+  <wsdl:message name="getFBFileUrlSoapOut">
+    <wsdl:part name="parameters" element="tns:getFBFileUrlResponse" />
+  </wsdl:message>
+  <wsdl:message name="getFBRealFileUrlSoapIn">
+    <wsdl:part name="parameters" element="tns:getFBRealFileUrl" />
+  </wsdl:message>
+  <wsdl:message name="getFBRealFileUrlSoapOut">
+    <wsdl:part name="parameters" element="tns:getFBRealFileUrlResponse" />
+  </wsdl:message>
+  <wsdl:message name="ChangeBlockedFacebookUserSoapIn">
+    <wsdl:part name="parameters" element="tns:ChangeBlockedFacebookUser" />
+  </wsdl:message>
+  <wsdl:message name="ChangeBlockedFacebookUserSoapOut">
+    <wsdl:part name="parameters" element="tns:ChangeBlockedFacebookUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="getContainersSoapIn">
+    <wsdl:part name="parameters" element="tns:getContainers" />
+  </wsdl:message>
+  <wsdl:message name="getContainersSoapOut">
+    <wsdl:part name="parameters" element="tns:getContainersResponse" />
+  </wsdl:message>
+  <wsdl:message name="listBlobsInContainerSoapIn">
+    <wsdl:part name="parameters" element="tns:listBlobsInContainer" />
+  </wsdl:message>
+  <wsdl:message name="listBlobsInContainerSoapOut">
+    <wsdl:part name="parameters" element="tns:listBlobsInContainerResponse" />
+  </wsdl:message>
+  <wsdl:message name="listBlobsInDirectorySoapIn">
+    <wsdl:part name="parameters" element="tns:listBlobsInDirectory" />
+  </wsdl:message>
+  <wsdl:message name="listBlobsInDirectorySoapOut">
+    <wsdl:part name="parameters" element="tns:listBlobsInDirectoryResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteContainerSoapIn">
+    <wsdl:part name="parameters" element="tns:deleteContainer" />
+  </wsdl:message>
+  <wsdl:message name="deleteContainerSoapOut">
+    <wsdl:part name="parameters" element="tns:deleteContainerResponse" />
+  </wsdl:message>
+  <wsdl:message name="deleteBlockBlobSoapIn">
+    <wsdl:part name="parameters" element="tns:deleteBlockBlob" />
+  </wsdl:message>
+  <wsdl:message name="deleteBlockBlobSoapOut">
+    <wsdl:part name="parameters" element="tns:deleteBlockBlobResponse" />
+  </wsdl:message>
+  <wsdl:message name="getBlockBlobSoapIn">
+    <wsdl:part name="parameters" element="tns:getBlockBlob" />
+  </wsdl:message>
+  <wsdl:message name="getBlockBlobSoapOut">
+    <wsdl:part name="parameters" element="tns:getBlockBlobResponse" />
+  </wsdl:message>
+  <wsdl:portType name="apiSoap">
+    <wsdl:operation name="FBAttachmentDelete">
+      <wsdl:input message="tns:FBAttachmentDeleteSoapIn" />
+      <wsdl:output message="tns:FBAttachmentDeleteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getFBFileUrl">
+      <wsdl:input message="tns:getFBFileUrlSoapIn" />
+      <wsdl:output message="tns:getFBFileUrlSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getFBRealFileUrl">
+      <wsdl:input message="tns:getFBRealFileUrlSoapIn" />
+      <wsdl:output message="tns:getFBRealFileUrlSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeBlockedFacebookUser">
+      <wsdl:input message="tns:ChangeBlockedFacebookUserSoapIn" />
+      <wsdl:output message="tns:ChangeBlockedFacebookUserSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getContainers">
+      <wsdl:input message="tns:getContainersSoapIn" />
+      <wsdl:output message="tns:getContainersSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="listBlobsInContainer">
+      <wsdl:input message="tns:listBlobsInContainerSoapIn" />
+      <wsdl:output message="tns:listBlobsInContainerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="listBlobsInDirectory">
+      <wsdl:input message="tns:listBlobsInDirectorySoapIn" />
+      <wsdl:output message="tns:listBlobsInDirectorySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteContainer">
+      <wsdl:input message="tns:deleteContainerSoapIn" />
+      <wsdl:output message="tns:deleteContainerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteBlockBlob">
+      <wsdl:input message="tns:deleteBlockBlobSoapIn" />
+      <wsdl:output message="tns:deleteBlockBlobSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getBlockBlob">
+      <wsdl:input message="tns:getBlockBlobSoapIn" />
+      <wsdl:output message="tns:getBlockBlobSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="apiSoap" type="tns:apiSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="FBAttachmentDelete">
+      <soap:operation soapAction="http://wwtserver/FBAttachmentDelete" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFBFileUrl">
+      <soap:operation soapAction="http://wwtserver/getFBFileUrl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFBRealFileUrl">
+      <soap:operation soapAction="http://wwtserver/getFBRealFileUrl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeBlockedFacebookUser">
+      <soap:operation soapAction="http://wwtserver/ChangeBlockedFacebookUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getContainers">
+      <soap:operation soapAction="http://wwtserver/getContainers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listBlobsInContainer">
+      <soap:operation soapAction="http://wwtserver/listBlobsInContainer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listBlobsInDirectory">
+      <soap:operation soapAction="http://wwtserver/listBlobsInDirectory" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteContainer">
+      <soap:operation soapAction="http://wwtserver/deleteContainer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteBlockBlob">
+      <soap:operation soapAction="http://wwtserver/deleteBlockBlob" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getBlockBlob">
+      <soap:operation soapAction="http://wwtserver/getBlockBlob" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="apiSoap12" type="tns:apiSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="FBAttachmentDelete">
+      <soap12:operation soapAction="http://wwtserver/FBAttachmentDelete" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFBFileUrl">
+      <soap12:operation soapAction="http://wwtserver/getFBFileUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFBRealFileUrl">
+      <soap12:operation soapAction="http://wwtserver/getFBRealFileUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeBlockedFacebookUser">
+      <soap12:operation soapAction="http://wwtserver/ChangeBlockedFacebookUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getContainers">
+      <soap12:operation soapAction="http://wwtserver/getContainers" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listBlobsInContainer">
+      <soap12:operation soapAction="http://wwtserver/listBlobsInContainer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listBlobsInDirectory">
+      <soap12:operation soapAction="http://wwtserver/listBlobsInDirectory" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteContainer">
+      <soap12:operation soapAction="http://wwtserver/deleteContainer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteBlockBlob">
+      <soap12:operation soapAction="http://wwtserver/deleteBlockBlob" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getBlockBlob">
+      <soap12:operation soapAction="http://wwtserver/getBlockBlob" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="api">
+    <wsdl:port name="apiSoap" binding="tns:apiSoap">
+      <soap:address location="http://wwtserver/api.asmx" />
+    </wsdl:port>
+    <wsdl:port name="apiSoap12" binding="tns:apiSoap12">
+      <soap12:address location="http://wwtserver/api.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

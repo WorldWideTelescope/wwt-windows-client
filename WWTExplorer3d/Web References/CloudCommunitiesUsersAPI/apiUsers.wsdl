@@ -1,0 +1,886 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://wwtserver/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://wwtserver/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://wwtserver/">
+      <s:element name="Create">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="liveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="liveId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="facebookKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="facebookUserId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WithPasswd">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Passwd" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="facebookKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="facebookUserId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WithPasswdResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="WithPasswdResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetResult" type="tns:WWTUsersSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="WWTUsersSt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsDeleted" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreationDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="PermissionInCommunity" nillable="true" type="tns:Permission" />
+          <s:element minOccurs="0" maxOccurs="1" name="FacebookUserId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FacebookKey" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="Permission">
+        <s:restriction base="s:string">
+          <s:enumeration value="NONE" />
+          <s:enumeration value="WRITE" />
+          <s:enumeration value="READ" />
+          <s:enumeration value="OWNER" />
+          <s:enumeration value="PENDING" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetByEmail">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetByEmailResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetByEmailResult" type="tns:WWTUsersSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetByLiveId">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetByLiveIdResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetByLiveIdResult" type="tns:WWTUsersSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetByToken">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetByTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetByTokenResult" type="tns:WWTUsersSt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Update">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FacebookKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FacebookUserId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="UpdateResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NoFacebook">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NoFacebookResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="NoFacebookResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Delete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="DeleteResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCommunities">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="seeOffenseStatus" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="structOnly" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCommunitiesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCommunitiesResult" type="tns:ArrayOfWWTCommunitySt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfWWTCommunitySt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTCommunitySt" type="tns:WWTCommunitySt" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WWTCommunitySt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="IsDeleted" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ViewerAccess" type="tns:Permission" />
+          <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="OwnerId" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Logo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="viewerId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="PublicAccess" type="tns:PublicPermission" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreationTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="LastUpdateTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="offenseReportCount" type="tns:ArrayOfWWTOffensiveSt" />
+          <s:element minOccurs="0" maxOccurs="1" name="components" type="tns:ArrayOfWWTCommunityComponentSt" />
+          <s:element minOccurs="1" maxOccurs="1" name="OrderContentsId" type="tns:OrderContentMethods" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="PublicPermission">
+        <s:restriction base="s:string">
+          <s:enumeration value="NONE" />
+          <s:enumeration value="PUBLIC_READ" />
+          <s:enumeration value="REGISTERED_READ" />
+          <s:enumeration value="REGISTERED_WRITE" />
+          <s:enumeration value="PREAD_RWRITE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfWWTOffensiveSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTOffensiveSt" type="tns:WWTOffensiveSt" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WWTOffensiveSt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="count" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="status" type="tns:OffensiveStatus" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="OffensiveStatus">
+        <s:restriction base="s:string">
+          <s:enumeration value="New" />
+          <s:enumeration value="Archived" />
+          <s:enumeration value="Deleted" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfWWTCommunityComponentSt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WWTCommunityComponentSt" type="tns:WWTCommunityComponentSt" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WWTCommunityComponentSt">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="OwnerComponentId" nillable="true" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="ViewerAccess" type="tns:Permission" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsDeleted" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="Approved" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="PublicAccess" type="tns:PublicPermission" />
+          <s:element minOccurs="1" maxOccurs="1" name="ComponentTypeId" type="tns:WWTComponentTypes" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Logo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="viewerId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="WTML" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreationTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="LastUpdateTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="offenseReportCount" type="tns:ArrayOfWWTOffensiveSt" />
+          <s:element minOccurs="0" maxOccurs="1" name="components" type="tns:ArrayOfWWTCommunityComponentSt" />
+          <s:element minOccurs="1" maxOccurs="1" name="OrderContentsId" type="tns:OrderContentMethods" />
+          <s:element minOccurs="1" maxOccurs="1" name="ComponentId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="OwnerId" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="OrderPosition" type="s:long" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="WWTComponentTypes">
+        <s:restriction base="s:string">
+          <s:enumeration value="WWTCollection" />
+          <s:enumeration value="WWTImage" />
+          <s:enumeration value="WWTPlateImage" />
+          <s:enumeration value="WWTSimpleComponent" />
+          <s:enumeration value="WWTTour" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="OrderContentMethods">
+        <s:restriction base="s:string">
+          <s:enumeration value="Arbitrary" />
+          <s:enumeration value="Date" />
+          <s:enumeration value="Rating" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetOwnedCommunities">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="seeOffenseStatus" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="recursive" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="structOnly" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetOwnedCommunitiesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetOwnedCommunitiesResult" type="tns:ArrayOfWWTCommunitySt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetJoinedCommunities">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="seeOffenseStatus" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="recursive" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="structOnly" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetJoinedCommunitiesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetJoinedCommunitiesResult" type="tns:ArrayOfWWTCommunitySt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="JoinCommunity">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="JoinCommunityResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="JoinCommunityResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="QuitCommunity">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CommunityId" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="QuitCommunityResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="QuitCommunityResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UploadFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="binData" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="contentType" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="isAttachment" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UploadFileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UploadFileResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getFileUrl">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="md5" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getFileUrlResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getFileUrlResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getRealFileUrl">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LiveToken" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="md5" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="contentType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getRealFileUrlResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getRealFileUrlResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="WithPasswdSoapIn">
+    <wsdl:part name="parameters" element="tns:WithPasswd" />
+  </wsdl:message>
+  <wsdl:message name="WithPasswdSoapOut">
+    <wsdl:part name="parameters" element="tns:WithPasswdResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSoapIn">
+    <wsdl:part name="parameters" element="tns:Get" />
+  </wsdl:message>
+  <wsdl:message name="GetSoapOut">
+    <wsdl:part name="parameters" element="tns:GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetByEmailSoapIn">
+    <wsdl:part name="parameters" element="tns:GetByEmail" />
+  </wsdl:message>
+  <wsdl:message name="GetByEmailSoapOut">
+    <wsdl:part name="parameters" element="tns:GetByEmailResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetByLiveIdSoapIn">
+    <wsdl:part name="parameters" element="tns:GetByLiveId" />
+  </wsdl:message>
+  <wsdl:message name="GetByLiveIdSoapOut">
+    <wsdl:part name="parameters" element="tns:GetByLiveIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetByTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:GetByToken" />
+  </wsdl:message>
+  <wsdl:message name="GetByTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:GetByTokenResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:Update" />
+  </wsdl:message>
+  <wsdl:message name="UpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="NoFacebookSoapIn">
+    <wsdl:part name="parameters" element="tns:NoFacebook" />
+  </wsdl:message>
+  <wsdl:message name="NoFacebookSoapOut">
+    <wsdl:part name="parameters" element="tns:NoFacebookResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:Delete" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCommunitiesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCommunities" />
+  </wsdl:message>
+  <wsdl:message name="GetCommunitiesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCommunitiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetOwnedCommunitiesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetOwnedCommunities" />
+  </wsdl:message>
+  <wsdl:message name="GetOwnedCommunitiesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetOwnedCommunitiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetJoinedCommunitiesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetJoinedCommunities" />
+  </wsdl:message>
+  <wsdl:message name="GetJoinedCommunitiesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetJoinedCommunitiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="JoinCommunitySoapIn">
+    <wsdl:part name="parameters" element="tns:JoinCommunity" />
+  </wsdl:message>
+  <wsdl:message name="JoinCommunitySoapOut">
+    <wsdl:part name="parameters" element="tns:JoinCommunityResponse" />
+  </wsdl:message>
+  <wsdl:message name="QuitCommunitySoapIn">
+    <wsdl:part name="parameters" element="tns:QuitCommunity" />
+  </wsdl:message>
+  <wsdl:message name="QuitCommunitySoapOut">
+    <wsdl:part name="parameters" element="tns:QuitCommunityResponse" />
+  </wsdl:message>
+  <wsdl:message name="UploadFileSoapIn">
+    <wsdl:part name="parameters" element="tns:UploadFile" />
+  </wsdl:message>
+  <wsdl:message name="UploadFileSoapOut">
+    <wsdl:part name="parameters" element="tns:UploadFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="getFileUrlSoapIn">
+    <wsdl:part name="parameters" element="tns:getFileUrl" />
+  </wsdl:message>
+  <wsdl:message name="getFileUrlSoapOut">
+    <wsdl:part name="parameters" element="tns:getFileUrlResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRealFileUrlSoapIn">
+    <wsdl:part name="parameters" element="tns:getRealFileUrl" />
+  </wsdl:message>
+  <wsdl:message name="getRealFileUrlSoapOut">
+    <wsdl:part name="parameters" element="tns:getRealFileUrlResponse" />
+  </wsdl:message>
+  <wsdl:portType name="apiUsersSoap">
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input name="WithPasswd" message="tns:WithPasswdSoapIn" />
+      <wsdl:output name="WithPasswd" message="tns:WithPasswdSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get">
+      <wsdl:input message="tns:GetSoapIn" />
+      <wsdl:output message="tns:GetSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetByEmail">
+      <wsdl:input message="tns:GetByEmailSoapIn" />
+      <wsdl:output message="tns:GetByEmailSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetByLiveId">
+      <wsdl:input message="tns:GetByLiveIdSoapIn" />
+      <wsdl:output message="tns:GetByLiveIdSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetByToken">
+      <wsdl:input message="tns:GetByTokenSoapIn" />
+      <wsdl:output message="tns:GetByTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input message="tns:UpdateSoapIn" />
+      <wsdl:output message="tns:UpdateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input name="NoFacebook" message="tns:NoFacebookSoapIn" />
+      <wsdl:output name="NoFacebook" message="tns:NoFacebookSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <wsdl:input message="tns:DeleteSoapIn" />
+      <wsdl:output message="tns:DeleteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCommunities">
+      <wsdl:input message="tns:GetCommunitiesSoapIn" />
+      <wsdl:output message="tns:GetCommunitiesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOwnedCommunities">
+      <wsdl:input message="tns:GetOwnedCommunitiesSoapIn" />
+      <wsdl:output message="tns:GetOwnedCommunitiesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetJoinedCommunities">
+      <wsdl:input message="tns:GetJoinedCommunitiesSoapIn" />
+      <wsdl:output message="tns:GetJoinedCommunitiesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="JoinCommunity">
+      <wsdl:input message="tns:JoinCommunitySoapIn" />
+      <wsdl:output message="tns:JoinCommunitySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="QuitCommunity">
+      <wsdl:input message="tns:QuitCommunitySoapIn" />
+      <wsdl:output message="tns:QuitCommunitySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadFile">
+      <wsdl:input message="tns:UploadFileSoapIn" />
+      <wsdl:output message="tns:UploadFileSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getFileUrl">
+      <wsdl:input message="tns:getFileUrlSoapIn" />
+      <wsdl:output message="tns:getFileUrlSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getRealFileUrl">
+      <wsdl:input message="tns:getRealFileUrlSoapIn" />
+      <wsdl:output message="tns:getRealFileUrlSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="apiUsersSoap" type="tns:apiUsersSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Create">
+      <soap:operation soapAction="http://wwtserver/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap:operation soapAction="http://wwtserver/WithPasswd" style="document" />
+      <wsdl:input name="WithPasswd">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="WithPasswd">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get">
+      <soap:operation soapAction="http://wwtserver/Get" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetByEmail">
+      <soap:operation soapAction="http://wwtserver/GetByEmail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetByLiveId">
+      <soap:operation soapAction="http://wwtserver/GetByLiveId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetByToken">
+      <soap:operation soapAction="http://wwtserver/GetByToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap:operation soapAction="http://wwtserver/Update" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap:operation soapAction="http://wwtserver/NoFacebook" style="document" />
+      <wsdl:input name="NoFacebook">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="NoFacebook">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap:operation soapAction="http://wwtserver/Delete" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCommunities">
+      <soap:operation soapAction="http://wwtserver/GetCommunities" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOwnedCommunities">
+      <soap:operation soapAction="http://wwtserver/GetOwnedCommunities" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetJoinedCommunities">
+      <soap:operation soapAction="http://wwtserver/GetJoinedCommunities" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="JoinCommunity">
+      <soap:operation soapAction="http://wwtserver/JoinCommunity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="QuitCommunity">
+      <soap:operation soapAction="http://wwtserver/QuitCommunity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadFile">
+      <soap:operation soapAction="http://wwtserver/UploadFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFileUrl">
+      <soap:operation soapAction="http://wwtserver/getFileUrl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRealFileUrl">
+      <soap:operation soapAction="http://wwtserver/getRealFileUrl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="apiUsersSoap12" type="tns:apiUsersSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Create">
+      <soap12:operation soapAction="http://wwtserver/Create" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap12:operation soapAction="http://wwtserver/WithPasswd" style="document" />
+      <wsdl:input name="WithPasswd">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="WithPasswd">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get">
+      <soap12:operation soapAction="http://wwtserver/Get" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetByEmail">
+      <soap12:operation soapAction="http://wwtserver/GetByEmail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetByLiveId">
+      <soap12:operation soapAction="http://wwtserver/GetByLiveId" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetByToken">
+      <soap12:operation soapAction="http://wwtserver/GetByToken" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap12:operation soapAction="http://wwtserver/Update" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap12:operation soapAction="http://wwtserver/NoFacebook" style="document" />
+      <wsdl:input name="NoFacebook">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="NoFacebook">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap12:operation soapAction="http://wwtserver/Delete" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCommunities">
+      <soap12:operation soapAction="http://wwtserver/GetCommunities" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOwnedCommunities">
+      <soap12:operation soapAction="http://wwtserver/GetOwnedCommunities" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetJoinedCommunities">
+      <soap12:operation soapAction="http://wwtserver/GetJoinedCommunities" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="JoinCommunity">
+      <soap12:operation soapAction="http://wwtserver/JoinCommunity" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="QuitCommunity">
+      <soap12:operation soapAction="http://wwtserver/QuitCommunity" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadFile">
+      <soap12:operation soapAction="http://wwtserver/UploadFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFileUrl">
+      <soap12:operation soapAction="http://wwtserver/getFileUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRealFileUrl">
+      <soap12:operation soapAction="http://wwtserver/getRealFileUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="apiUsers">
+    <wsdl:port name="apiUsersSoap" binding="tns:apiUsersSoap">
+      <soap:address location="http://wwtserver/apiUsers.asmx" />
+    </wsdl:port>
+    <wsdl:port name="apiUsersSoap12" binding="tns:apiUsersSoap12">
+      <soap12:address location="http://wwtserver/apiUsers.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

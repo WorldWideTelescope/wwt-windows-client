@@ -1,0 +1,64 @@
+﻿using System;
+using System.Threading.Tasks;
+using MicrosoftAccount.WindowsForms;
+
+
+namespace MSAuth
+{
+    public static class OAuthAuthenticator
+    {
+        private const string msa_client_id = "000000004813DA7C";//"0000000044128B55";
+        private const string msa_client_secret = "-l6FXTdT1K8xLkBM8mVPed9jJdMy-wLz";//"amw-eMF4Ps-jzDVv6qwL4scqp2iFI29l";
+
+        public static async Task<OAuthTicket> SignInToMicrosoftAccount(System.Windows.Forms.IWin32Window parentWindow)
+        {
+            string oldRefreshToken = TerraViewer.Properties.Settings.Default.RefreshToken;
+            AppTokenResult appToken = null;
+            if (!string.IsNullOrEmpty(oldRefreshToken))
+            {
+                appToken = await MicrosoftAccountOAuth.RedeemRefreshTokenAsync(msa_client_id, msa_client_secret, oldRefreshToken);
+                
+            }
+
+            if (null == appToken)
+            {
+                appToken = await MicrosoftAccountOAuth.LoginAuthorizationCodeFlowAsync(msa_client_id,
+                    msa_client_secret,
+                    new[] { /*"wl.offline_access", "wl.basic", */"wl.signin", "wl.emails"/*, "onedrive.readwrite"*/ });
+            }                       
+
+            if (null != appToken)
+            {
+                SaveRefreshToken(appToken.RefreshToken);
+
+                return new OAuthTicket(appToken);
+            }
+
+            return null;
+        }
+
+        private static void SaveRefreshToken(string refreshToken)
+        {
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                var settings = TerraViewer.Properties.Settings.Default;
+                settings.RefreshToken = refreshToken;
+                settings.Save();
+            }
+        }
+
+        public static async Task<AppTokenResult> RenewAccessTokenAsync(OAuthTicket ticket)
+        {
+            string oldRefreshToken = ticket.RefreshToken;
+            AppTokenResult appToken = null;
+
+            if (!string.IsNullOrEmpty(oldRefreshToken))
+            {
+                appToken = await MicrosoftAccountOAuth.RedeemRefreshTokenAsync(msa_client_id, msa_client_secret, oldRefreshToken);
+                SaveRefreshToken(appToken.RefreshToken);
+            }
+
+            return appToken;
+        }
+    }
+}

@@ -1,0 +1,2479 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{733C84E7-58F2-4E09-AC82-58AFD7E7BDD3}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>wwt.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>WWTExplorer</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TerraViewer</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <SignManifests>false</SignManifests>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DSMRender, Version=5.2.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\DSMRender.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualC" />
+    <Reference Include="MicrosoftAccount.WindowsForms">
+      <HintPath>..\packages\MicrosoftAccount.WindowsForms.1.0.3.0\lib\net45\MicrosoftAccount.WindowsForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SharpDX">
+      <HintPath>..\SharpDX\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\SharpDX\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\SharpDX\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects">
+      <HintPath>..\SharpDX\SharpDX.Direct3D11.Effects.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\SharpDX\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WWTThumbnails, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Aliases>global</Aliases>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Authentication\IAuthenticationInfo.cs" />
+    <Compile Include="Authentication\OAuthAuthenticator.cs" />
+    <Compile Include="Authentication\OAuthTicket.cs" />
+    <Compile Include="Authentication\UserObject.cs" />
+    <Compile Include="CoverageMap.cs" />
+    <Compile Include="ExportSTL.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportSTL.Designer.cs">
+      <DependentUpon>ExportSTL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReferenceFrameScripting.cs" />
+    <Compile Include="3dWIndow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AnimationTarget.cs" />
+    <Compile Include="ArrowButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ArrowButton.Designer.cs">
+      <DependentUpon>ArrowButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AscomTelescope.cs" />
+    <Compile Include="AudioPlayer.cs" />
+    <Compile Include="AudioProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AudioProperties.Designer.cs">
+      <DependentUpon>AudioProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AudioTrack.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AudioTrack.Designer.cs">
+      <DependentUpon>AudioTrack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ButtonGroupControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ButtonGroupControl.Designer.cs">
+      <DependentUpon>ButtonGroupControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ButtonProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ButtonProperties.Designer.cs">
+      <DependentUpon>ButtonProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CacheTilePyramid.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CacheTilePyramid.Designer.cs">
+      <DependentUpon>CacheTilePyramid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\Calibration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\Calibration.Designer.cs">
+      <DependentUpon>Calibration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\CalibrationScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\CalibrationScreen.Designer.cs">
+      <DependentUpon>CalibrationScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\Derivatives.cs" />
+    <Compile Include="Callibration\Edge.cs" />
+    <Compile Include="Callibration\EdgeProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\EdgeProperties.Designer.cs">
+      <DependentUpon>EdgeProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\GroundTruthPointProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\GroundTruthPointProperties.Designer.cs">
+      <DependentUpon>GroundTruthPointProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\LevenbergMarquardt.cs" />
+    <Compile Include="Callibration\Matrix4.cs" />
+    <Compile Include="Callibration\Parameter.cs" />
+    <Compile Include="Callibration\ProjectorEntry.cs" />
+    <Compile Include="Callibration\ProjectorProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\ProjectorProperties.Designer.cs">
+      <DependentUpon>ProjectorProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\CalibrationInfo.cs" />
+    <Compile Include="Callibration\ProjectorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Callibration\ProjectorView.Designer.cs">
+      <DependentUpon>ProjectorView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\SolveAlignment.cs" />
+    <Compile Include="Callibration\WarpMapper.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="CurveEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CurveEditor.Designer.cs">
+      <DependentUpon>CurveEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GridLayer.cs" />
+    <Compile Include="IAnimatable.cs" />
+    <Compile Include="ISSLayer.cs" />
+    <Compile Include="Key.cs" />
+    <Compile Include="KeyGroup.cs" />
+    <Compile Include="KeyProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="KeyProperties.Designer.cs">
+      <DependentUpon>KeyProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LayerScripting.cs" />
+    <Compile Include="OverlayList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OverlayList.Designer.cs">
+      <DependentUpon>OverlayList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PointSpriteSet.cs" />
+    <Compile Include="Reticle.cs" />
+    <Compile Include="SettingsAnimator.cs" />
+    <Compile Include="SpaceNavigator\3DxMouse.cs" />
+    <Compile Include="Sprite2d.cs" />
+    <Compile Include="ClearCache.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClearCache.Designer.cs">
+      <DependentUpon>ClearCache.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClientNodeList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClientNodeList.Designer.cs">
+      <DependentUpon>ClientNodeList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConstellationFigureEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConstellationFigureEditor.Designer.cs">
+      <DependentUpon>ConstellationFigureEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControllerProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControllerProperties.Designer.cs">
+      <DependentUpon>ControllerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizard.cs" />
+    <Compile Include="DataWizardCartesian.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardCartesian.Designer.cs">
+      <DependentUpon>DataWizardCartesian.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardColorMap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardColorMap.Designer.cs">
+      <DependentUpon>DataWizardColorMap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardCoordinates.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardCoordinates.Designer.cs">
+      <DependentUpon>DataWizardCoordinates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardDateTime.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardDateTime.Designer.cs">
+      <DependentUpon>DataWizardDateTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardFinal.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardFinal.Designer.cs">
+      <DependentUpon>DataWizardFinal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardInfoPopup.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardInfoPopup.Designer.cs">
+      <DependentUpon>DataWizardInfoPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardMarkers.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardMarkers.Designer.cs">
+      <DependentUpon>DataWizardMarkers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardOrbits.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardOrbits.Designer.cs">
+      <DependentUpon>DataWizardOrbits.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardSize.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardSize.Designer.cs">
+      <DependentUpon>DataWizardSize.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataWizardWelcome.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataWizardWelcome.Designer.cs">
+      <DependentUpon>DataWizardWelcome.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DatePopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DatePopup.Designer.cs">
+      <DependentUpon>DatePopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DEM\AdaptiveModel.cs" />
+    <Compile Include="DEM\BitIO.cs" />
+    <Compile Include="DEM\BitstreamDecoder.cs" />
+    <Compile Include="DEM\CAdaptiveHuffman.cs" />
+    <Compile Include="DEM\CCodingContext.cs" />
+    <Compile Include="DEM\ContainerDecoder.cs" />
+    <Compile Include="DEM\DemCodec.cs" />
+    <Compile Include="DEM\DemTile.cs" />
+    <Compile Include="DEM\HDPhotoBase.cs" />
+    <Compile Include="DEM\HDPhotoDecoder.cs" />
+    <Compile Include="DEM\PointerArray.cs" />
+    <Compile Include="DEM\SimpleBitIO.cs" />
+    <Compile Include="DomePreviewPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DomePreviewPopup.Designer.cs">
+      <DependentUpon>DomePreviewPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DomeSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DomeSetup.Designer.cs">
+      <DependentUpon>DomeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DragThumbnail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DragThumbnail.Designer.cs">
+      <DependentUpon>DragThumbnail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DurrationEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DurrationEditor.Designer.cs">
+      <DependentUpon>DurrationEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="egm96geoid.cs" />
+    <Compile Include="EOCalls.cs" />
+    <Compile Include="EulaReader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EulaReader.Designer.cs">
+      <DependentUpon>EulaReader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FastBitmap.cs" />
+    <Compile Include="FileCabnet.cs" />
+    <Compile Include="FileDownload.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileDownload.Designer.cs">
+      <DependentUpon>FileDownload.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FilterGraphTool.cs" />
+    <Compile Include="FitsImage.cs" />
+    <Compile Include="FlipbookSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FlipbookSetup.Designer.cs">
+      <DependentUpon>FlipbookSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Folder.cs" />
+    <Compile Include="FolderBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FolderBrowser.Designer.cs">
+      <DependentUpon>FolderBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Folder_Metadata.cs" />
+    <Compile Include="FrameWizard.cs" />
+    <Compile Include="FrameWizardCartisian.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardCartisian.Designer.cs">
+      <DependentUpon>FrameWizardCartisian.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameWizardFinal.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardFinal.Designer.cs">
+      <DependentUpon>FrameWizardFinal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameWizardMain.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardMain.Designer.cs">
+      <DependentUpon>FrameWizardMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameWizardOrbital.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardOrbital.Designer.cs">
+      <DependentUpon>FrameWizardOrbital.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameWizardPosition.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardPosition.Designer.cs">
+      <DependentUpon>FrameWizardPosition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameWizardTrajectory.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardTrajectory.Designer.cs">
+      <DependentUpon>FrameWizardTrajectory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameWizardWelcome.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameWizardWelcome.Designer.cs">
+      <DependentUpon>FrameWizardWelcome.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Glu.cs" />
+    <Compile Include="GreatCircleProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GreatCircleProperties.Designer.cs">
+      <DependentUpon>GreatCircleProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GreatCirlceRouteLayer.cs" />
+    <Compile Include="GroundOverlayLayer.cs" />
+    <Compile Include="GroundOverlayProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GroundOverlayProperties.Designer.cs">
+      <DependentUpon>GroundOverlayProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HTTPClientStatus.cs" />
+    <Compile Include="HTTPImageFiles.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HTTPImagesetWtml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HTTPLayerApi.cs" />
+    <Compile Include="ImageSetLayer.cs" />
+    <Compile Include="ITimeSeriesDescription.cs" />
+    <Compile Include="KeyFramer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="KeyFramer.Designer.cs">
+      <DependentUpon>KeyFramer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="KioskTitleBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="KioskTitleBar.Designer.cs">
+      <DependentUpon>KioskTitleBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="KmlLayer.cs" />
+    <Compile Include="LayerContainer.cs" />
+    <Compile Include="LayerLifetimeProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LayerLifetimeProperties.Designer.cs">
+      <DependentUpon>LayerLifetimeProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LayerUI.cs" />
+    <Compile Include="LocationSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LocationSearch.designer.cs">
+      <DependentUpon>LocationSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MidiIO.cs" />
+    <Compile Include="MidiMap.cs" />
+    <Compile Include="MidiMapManager.cs" />
+    <Compile Include="MidiSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MidiSetup.Designer.cs">
+      <DependentUpon>MidiSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MinorPlanets.cs" />
+    <Compile Include="NewBinding.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewBinding.Designer.cs">
+      <DependentUpon>NewBinding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Object3dProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Object3dProperties.Designer.cs">
+      <DependentUpon>Object3dProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OpacityPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OpacityPopup.Designer.cs">
+      <DependentUpon>OpacityPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Orbit.cs" />
+    <Compile Include="OrbitLayer.cs" />
+    <Compile Include="OutputTourToVideo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OutputTourToVideo.Designer.cs">
+      <DependentUpon>OutputTourToVideo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OverlayProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OverlayProperties.Designer.cs">
+      <DependentUpon>OverlayProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Callibration\ProjectionTransformEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Callibration\ProjectionTransformEditor.Designer.cs">
+      <DependentUpon>ProjectionTransformEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressPopup.Designer.cs">
+      <DependentUpon>ProgressPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropsShell.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropsShell.Designer.cs">
+      <DependentUpon>PropsShell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PushPin.cs" />
+    <Compile Include="PushPinPickerPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PushPinPickerPopup.Designer.cs">
+      <DependentUpon>PushPinPickerPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReferenceFrame.cs" />
+    <Compile Include="RemoteAccessControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RemoteAccessControl.Designer.cs">
+      <DependentUpon>RemoteAccessControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RenderProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RenderProgress.Designer.cs">
+      <DependentUpon>RenderProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ScreenBroadcast.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScreenBroadcast.Designer.cs">
+      <DependentUpon>ScreenBroadcast.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptActions.cs" />
+    <Compile Include="SkyOverlays.cs" />
+    <Compile Include="SkyText.cs" />
+    <Compile Include="Tab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tab.Designer.cs">
+      <DependentUpon>Tab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Table.cs" />
+    <Compile Include="TimeLine.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TimeLine.Designer.cs">
+      <DependentUpon>TimeLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TimeSeriesLayer.cs" />
+    <Compile Include="ToastTools.cs" />
+    <Compile Include="TrackButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TrackButton.Designer.cs">
+      <DependentUpon>TrackButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransitionPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TransitionPicker.Designer.cs">
+      <DependentUpon>TransitionPicker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransitionsPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TransitionsPopup.Designer.cs">
+      <DependentUpon>TransitionsPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisibleKey.cs" />
+    <Compile Include="VoTableLayer.cs" />
+    <Compile Include="WizardPropsBinding.cs" />
+    <Compile Include="WizardShell.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WizardShell.Designer.cs">
+      <DependentUpon>WizardShell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GameController.cs" />
+    <Compile Include="Grids.cs" />
+    <Compile Include="Handlers.cs" />
+    <Compile Include="Histogram.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Histogram.Designer.cs">
+      <DependentUpon>Histogram.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HTTPCrossDomain.cs" />
+    <Compile Include="HttpXmlRpc.cs" />
+    <Compile Include="HttpUtility.cs" />
+    <Compile Include="IImageSet.cs" />
+    <Compile Include="ImageAlignmentUI.cs" />
+    <Compile Include="ImageAlignPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageAlignPopup.Designer.cs">
+      <DependentUpon>ImageAlignPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageProperties.Designer.cs">
+      <DependentUpon>ImageProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageStack.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageStack.Designer.cs">
+      <DependentUpon>ImageStack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IPlace.cs" />
+    <Compile Include="IThumbnail.cs" />
+    <Compile Include="ITourResult.cs" />
+    <Compile Include="IUndoStep.cs" />
+    <Compile Include="IViewMover.cs" />
+    <Compile Include="Layer.cs" />
+    <Compile Include="LayerManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LayerManager.Designer.cs">
+      <DependentUpon>LayerManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Object3d.cs" />
+    <Compile Include="RenderHost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RenderHost.Designer.cs">
+      <DependentUpon>RenderHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectLink.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectLink.Designer.cs">
+      <DependentUpon>SelectLink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShapeFileRenderer.cs" />
+    <Compile Include="Shapefile\FileHeader.cs" />
+    <Compile Include="Shapefile\Shape.cs" />
+    <Compile Include="Shapefile\ShapeFile.cs" />
+    <Compile Include="SpreadSheetLayer.cs" />
+    <Compile Include="SpreadSheetProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpreadSheetProperties.Designer.cs">
+      <DependentUpon>SpreadSheetProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WcsImage.cs" />
+    <Compile Include="JoystickHelp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JoystickHelp.Designer.cs">
+      <DependentUpon>JoystickHelp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="KmlObject.cs" />
+    <Compile Include="Language.cs" />
+    <Compile Include="LanguageSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LanguageSelect.Designer.cs">
+      <DependentUpon>LanguageSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MyCollections.cs" />
+    <Compile Include="ObjectProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectProperties.Designer.cs">
+      <DependentUpon>ObjectProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlaceEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlaceEditor.Designer.cs">
+      <DependentUpon>PlaceEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planets.cs" />
+    <Compile Include="PlotTile.cs" />
+    <Compile Include="PopupTextEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PopupTextEditor.Designer.cs">
+      <DependentUpon>PopupTextEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PopupVolume.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PopupVolume.Designer.cs">
+      <DependentUpon>PopupVolume.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RenderTarget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RenderTarget.Designer.cs">
+      <DependentUpon>RenderTarget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samp.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SettingsTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsTab.Designer.cs">
+      <DependentUpon>SettingsTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SimbadSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SimbadSearch.Designer.cs">
+      <DependentUpon>SimbadSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SimpleInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SimpleInput.Designer.cs">
+      <DependentUpon>SimpleInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SphericalTile.cs" />
+    <Compile Include="Communities.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Communities.Designer.cs">
+      <DependentUpon>Communities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config.cs" />
+    <Compile Include="Constellations.cs" />
+    <Compile Include="ContextSearch.cs" />
+    <Compile Include="ObjectPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectPopup.Designer.cs">
+      <DependentUpon>ObjectPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToastTile.cs" />
+    <Compile Include="Overlay.cs" />
+    <Compile Include="PopupColorPicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PopupColorPicker.Designer.cs">
+      <DependentUpon>PopupColorPicker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SavedColor.cs" />
+    <Compile Include="Selection.cs" />
+    <Compile Include="TaxonomyTree.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TaxonomyTree.Designer.cs">
+      <DependentUpon>TaxonomyTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TelescopeTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TelescopeTab.Designer.cs">
+      <DependentUpon>TelescopeTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextEditor.Designer.cs">
+      <DependentUpon>TextEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextObject.cs" />
+    <Compile Include="ThumbMenuNode.cs" />
+    <Compile Include="Thumbnailer.cs" />
+    <Compile Include="TourEditor.cs" />
+    <Compile Include="TourPlayer.cs">
+    </Compile>
+    <Compile Include="TourPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TourPopup.Designer.cs">
+      <DependentUpon>TourPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TourStopList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TourStopList.Designer.cs">
+      <DependentUpon>TourStopList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenuTabs.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MenuTabs.Designer.cs">
+      <DependentUpon>MenuTabs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TourEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TourEdit.Designer.cs">
+      <DependentUpon>TourEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dataset.cs" />
+    <Compile Include="DataSetManager.cs" />
+    <Compile Include="DebugBitmap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DebugBitmap.Designer.cs">
+      <DependentUpon>DebugBitmap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DropDownList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DropDownList.Designer.cs">
+      <DependentUpon>DropDownList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EquirectangularTile.cs" />
+    <Compile Include="FieldOfView.cs" />
+    <Compile Include="FieldOfViewSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldOfViewSetup.Designer.cs">
+      <DependentUpon>FieldOfViewSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Imager.cs" />
+    <Compile Include="Label.cs" />
+    <Compile Include="Overview.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Overview.Designer.cs">
+      <DependentUpon>Overview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Paginator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Paginator.Designer.cs">
+      <DependentUpon>Paginator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PinUp.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PinUp.Designer.cs">
+      <DependentUpon>PinUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Search.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Search.Designer.cs">
+      <DependentUpon>Search.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocationSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageSet.cs" />
+    <Compile Include="LineSet.cs" />
+    <Compile Include="MercatorTile.cs" />
+    <Compile Include="NetControl.cs" />
+    <Compile Include="ObjectLookup.cs" />
+    <Compile Include="Place.cs" />
+    <Compile Include="Places.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Queue List.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SkyBall.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SkyBall.designer.cs">
+      <DependentUpon>SkyBall.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SkyImage.cs" />
+    <Compile Include="Splash.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Splash.Designer.cs">
+      <DependentUpon>Splash.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabForm.Designer.cs">
+      <DependentUpon>TabForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TangentTile.cs" />
+    <Compile Include="Telescope.cs" />
+    <Compile Include="ContextPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContextPanel.Designer.cs">
+      <DependentUpon>ContextPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ThumbnailList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ThumbnailList.Designer.cs">
+      <DependentUpon>ThumbnailList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileCache.cs" />
+    <Compile Include="Tour.cs" />
+    <Compile Include="TourProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TourProperties.Designer.cs">
+      <DependentUpon>TourProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TourStop.cs" />
+    <Compile Include="TreeDictionary.cs" />
+    <Compile Include="TreeDictionaryKeyEnumerator.cs" />
+    <Compile Include="TreeDictionaryKeyValuePairEnumerator.cs" />
+    <Compile Include="TreeDictionaryValueEnumerator.cs" />
+    <Compile Include="UiTools.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Undo.cs" />
+    <Compile Include="UserRating.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserRating.Designer.cs">
+      <DependentUpon>UserRating.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VampWCSImageReader.cs" />
+    <Compile Include="VideoOut.cs" />
+    <Compile Include="View.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View.Designer.cs">
+      <DependentUpon>View.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewMover.cs">
+    </Compile>
+    <Compile Include="VORegistryBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VORegistryBrowser.Designer.cs">
+      <DependentUpon>VORegistryBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VORegistryProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VORegistryProperties.Designer.cs">
+      <DependentUpon>VORegistryProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VOTable.cs" />
+    <Compile Include="VOTableViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VOTableViewer.Designer.cs">
+      <DependentUpon>VOTableViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WcsFitter.cs" />
+    <Compile Include="Web References\edu.stsci.masthla\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\edu.stsci.nvo\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\fr.u-strasbg.cdsws\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\org.worldwidetelescope.www\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="WebServer.cs" />
+    <Compile Include="WebWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WebWindow.Designer.cs">
+      <DependentUpon>WebWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Welcome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Welcome.Designer.cs">
+      <DependentUpon>Welcome.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wms.cs" />
+    <Compile Include="WmsLayer.cs" />
+    <Compile Include="WmsLayerWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WmsLayerWizard.Designer.cs">
+      <DependentUpon>WmsLayerWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WmsTiledService.cs" />
+    <Compile Include="WwtButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WwtButton.Designer.cs">
+      <DependentUpon>WwtButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WWTCheckbox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WWTCheckbox.Designer.cs">
+      <DependentUpon>WWTCheckbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WwtCombo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WwtCombo.Designer.cs">
+      <DependentUpon>WwtCombo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WwtTrackBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WwtTrackBar.Designer.cs">
+      <DependentUpon>WwtTrackBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WwtUpDown.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WwtUpDown.Designer.cs">
+      <DependentUpon>WwtUpDown.cs</DependentUpon>
+    </Compile>
+    <Compile Include="XBoxConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="XBoxConfig.Designer.cs">
+      <DependentUpon>XBoxConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZipArchive.cs" />
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AudioProperties.resx">
+      <DependentUpon>AudioProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ButtonGroupControl.resx">
+      <DependentUpon>ButtonGroupControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ButtonProperties.resx">
+      <DependentUpon>ButtonProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CacheTilePyramid.resx">
+      <DependentUpon>CacheTilePyramid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClientNodeList.resx">
+      <DependentUpon>ClientNodeList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Communities.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Communities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControllerProperties.resx">
+      <DependentUpon>ControllerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CurveEditor.resx">
+      <DependentUpon>CurveEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DebugBitmap.resx">
+      <DependentUpon>DebugBitmap.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DomePreviewPopup.resx">
+      <DependentUpon>DomePreviewPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DropDownList.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DropDownList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EulaReader.resx">
+      <DependentUpon>EulaReader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportSTL.resx">
+      <DependentUpon>ExportSTL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldOfViewSetup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FieldOfViewSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GreatCircleProperties.resx">
+      <DependentUpon>GreatCircleProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KeyFramer.resx">
+      <DependentUpon>KeyFramer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KeyProperties.resx">
+      <DependentUpon>KeyProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocationSearch.resx">
+      <DependentUpon>LocationSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MidiSetup.resx">
+      <DependentUpon>MidiSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewBinding.resx">
+      <DependentUpon>NewBinding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OverlayList.resx">
+      <DependentUpon>OverlayList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OverlayProperties.resx">
+      <DependentUpon>OverlayProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Overview.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Overview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Paginator.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Paginator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PinUp.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PinUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Search.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Search.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocationSetup.resx">
+      <DependentUpon>LocationSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Queue List.resx">
+      <DependentUpon>Queue List.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SkyBall.resx">
+      <DependentUpon>SkyBall.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Splash.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Splash.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContextPanel.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ContextPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TabForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThumbnailList.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ThumbnailList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimeLine.resx">
+      <DependentUpon>TimeLine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TrackButton.resx">
+      <DependentUpon>TrackButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TransitionPicker.resx">
+      <DependentUpon>TransitionPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TransitionsPopup.resx">
+      <DependentUpon>TransitionsPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WwtButton.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WwtButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WwtCombo.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WwtCombo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="XBoxConfig.resx">
+      <DependentUpon>XBoxConfig.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Terms_of_use_Nov_2011.rtf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Web References\fr.u-strasbg.cdsws\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\fr.u-strasbg.cdsws\Sesame.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://cdsws.u-strasbg.fr/axis/services/Sesame%3fwsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\fr.u-strasbg.cdsws\</RelPath>
+      <UpdateFromURL>http://cdsws.u-strasbg.fr/axis/services/Sesame%3fwsdl</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>WWTExplorer_fr_u_strasbg_cdsws_SesameService</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\edu.stsci.masthla\</RelPath>
+      <UpdateFromURL>http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>WWTExplorer_edu_stsci_masthla_HSTFootprint</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://nvo.stsci.edu/VORegistry/registry.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\edu.stsci.nvo\</RelPath>
+      <UpdateFromURL>http://nvo.stsci.edu/VORegistry/registry.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>WWTExplorer_edu_stsci_nvo_Registry</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\org.worldwidetelescope.www\</RelPath>
+      <UpdateFromURL>http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>WWTExplorer_org_worldwidetelescope_www_WWTWebService</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MenuTabs.resx">
+      <DependentUpon>MenuTabs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="resources\BtnEndDisabled.png" />
+    <None Include="resources\BtnEndHover.png" />
+    <None Include="resources\BtnEndPushed.png" />
+    <None Include="resources\BtnEndRest.png" />
+    <None Include="resources\BtnEndSelected.png" />
+    <None Include="resources\BtnStartDisabled.png" />
+    <None Include="resources\BtnStartHover.png" />
+    <None Include="resources\BtnStartPushed.png" />
+    <None Include="resources\BtnStartRest.png" />
+    <None Include="resources\BtnStartSelected.png" />
+    <None Include="resources\buttonBackground.png" />
+    <None Include="resources\DarkNebula.jpg" />
+    <None Include="resources\DoubleStar.jpg" />
+    <None Include="resources\DropDisabled.png" />
+    <None Include="resources\DropHover.png" />
+    <None Include="resources\DropPressed.png" />
+    <None Include="resources\DropRest.png" />
+    <None Include="resources\EditDisabled.png" />
+    <None Include="resources\EditHover.png" />
+    <None Include="resources\EditPressed.png" />
+    <None Include="resources\EditRest.png" />
+    <None Include="resources\ElipticalGalaxy.jpg" />
+    <None Include="resources\Galaxy.jpg" />
+    <None Include="resources\GlobularCluster.jpg" />
+    <None Include="resources\LeftArrow.png" />
+    <None Include="resources\LeftArrowDisabled.png" />
+    <None Include="resources\Meade4m.png" />
+    <None Include="resources\OpenCluster.jpg" />
+    <None Include="resources\PinB_C_D.png" />
+    <None Include="resources\PinB_C_H.png" />
+    <None Include="resources\PinB_C_P.png" />
+    <None Include="resources\PinB_C_R.png" />
+    <None Include="resources\PinB_E_D.png" />
+    <None Include="resources\PinB_E_H.png" />
+    <None Include="resources\PinB_E_P.png" />
+    <None Include="resources\PinB_E_R.png" />
+    <None Include="resources\PinT_C_D.png" />
+    <None Include="resources\PinT_C_H.png" />
+    <None Include="resources\PinT_C_P.png" />
+    <None Include="resources\PinT_C_R.png" />
+    <None Include="resources\PinT_E_D.png" />
+    <None Include="resources\PinT_E_H.png" />
+    <None Include="resources\PinT_E_P.png" />
+    <None Include="resources\PinT_E_R.png" />
+    <None Include="resources\PlanetaryNebula.jpg" />
+    <None Include="resources\ReflectionNebula.jpg" />
+    <None Include="resources\RightArrow.png" />
+    <None Include="resources\RIghtArrowDisabled.png" />
+    <None Include="resources\SpiralGalaxy.jpg" />
+    <None Include="resources\Star.jpg" />
+    <None Include="resources\tabBackground.png" />
+    <None Include="resources\tabHover.png" />
+    <None Include="resources\tabSelected.png" />
+    <None Include="resources\tabSelectedHover.png" />
+    <None Include="resources\tabWwtLogo.png" />
+    <None Include="resources\thumbBackground.png" />
+    <None Include="resources\ThumbBackgroundHover.png" />
+    <None Include="resources\thumbBackgroundWide.png" />
+    <None Include="resources\ThumbBackgroundWideHover.png" />
+    <EmbeddedResource Include="TourProperties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TourProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="resources\Unidentified.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PopupColorPicker.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PopupColorPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TaxonomyTree.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TaxonomyTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TextEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TourEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TourEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TourStopList.resx">
+      <DependentUpon>TourStopList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="resources\tourHover.png" />
+    <None Include="resources\tourSelected.png" />
+    <None Include="resources\tourSelectedHover.png" />
+    <EmbeddedResource Include="WebWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WebWindow.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsBottomHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsCenteredVerticalHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsLeftHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsRightHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsTopHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AudioHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\boldhs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Color_font.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ColorHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DeleteHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Edit_UndoHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FontDialogHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FormRunHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\InsertHyperlinkHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\InsertPictureHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ItalicHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LineColorHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\List_BulletsHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\List_NumberedHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PauseHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PublishToWebHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RecordHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\saveHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SpeechMicHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\StopHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ZoomHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsCenteredHorizontalHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AlignObjectsCenteredVerticalHS1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ThumbnailLoadingHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\video.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\ColorPickerHex.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="3dWIndow.resx">
+      <DependentUpon>3dWIndow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ArrowButton.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ArrowButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AudioTrack.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AudioTrack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearCache.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ClearCache.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConstellationFigureEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ConstellationFigureEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DatePopup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DatePopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DragThumbnail.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DragThumbnail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DurrationEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DurrationEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileDownload.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FileDownload.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FolderBrowser.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FolderBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageProperties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ImageProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JoystickHelp.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>JoystickHelp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ObjectPopup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ObjectPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ObjectProperties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ObjectProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlaceEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PlaceEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PopupTextEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PopupTextEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PopupVolume.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PopupVolume.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Resources\Selhand.bmp" />
+    <EmbeddedResource Include="RenderTarget.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>RenderTarget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingsTab.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SettingsTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SimbadSearch.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SimbadSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SimpleInput.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SimpleInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TelescopeTab.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TelescopeTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TourPopup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TourPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserRating.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>UserRating.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>View.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Welcome.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Welcome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WWTCheckbox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WWTCheckbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WwtTrackBar.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WwtTrackBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WwtUpDown.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WwtUpDown.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Cosmos\cosmos.bin" />
+    <None Include="Resources\PropertiesHS.png" />
+    <None Include="BadImage.png" />
+    <None Include="Resources\ascom.jpg" />
+    <None Include="Resources\DragInsertMarker.png" />
+    <None Include="Resources\master.png" />
+    <None Include="Resources\menuArrow.png" />
+    <None Include="resources\BadImage.png" />
+    <None Include="resources\checkbox_checked_disabled.png" />
+    <None Include="resources\checkbox_checked_hover.png" />
+    <None Include="resources\checkbox_checked_press.png" />
+    <None Include="resources\checkbox_checked_rest.png" />
+    <None Include="resources\checkbox_unchecked_disabled.png" />
+    <None Include="resources\checkbox_unchecked_hover.png" />
+    <None Include="resources\checkbox_unchecked_press.png" />
+    <None Include="Resources\chandra.png" />
+    <None Include="Resources\constellations.png" />
+    <None Include="Resources\hubble.png" />
+    <None Include="Resources\messier.png" />
+    <None Include="Resources\sloan.png" />
+    <None Include="Resources\Spitzer.png" />
+    <None Include="resources\checkbox_unchecked_rest.png" />
+    <None Include="resources\tabHoverMenu.png" />
+    <None Include="resources\tabHoverTab.png" />
+    <None Include="Web References\edu.stsci.masthla\hstfootprint.wsdl" />
+    <None Include="Web References\edu.stsci.masthla\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\edu.stsci.masthla\STCRegion.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\edu.stsci.nvo\DBResource.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\edu.stsci.nvo\oai_dcType.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\edu.stsci.nvo\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\edu.stsci.nvo\registry.wsdl" />
+    <None Include="Web References\edu.stsci.nvo\Resource.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\edu.stsci.nvo\SimpleResource.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\org.worldwidetelescope.www\AstroObjectsDataset.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\org.worldwidetelescope.www\AstroObjectsDataset.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web References\org.worldwidetelescope.www\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\org.worldwidetelescope.www\Tour.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\org.worldwidetelescope.www\wwtwebservice.disco" />
+    <None Include="GenericThumbnails\Asterism.png" />
+    <None Include="GenericThumbnails\BlackHole.png" />
+    <None Include="GenericThumbnails\ClusterOfGalaxies.png" />
+    <None Include="GenericThumbnails\Constellation.png" />
+    <None Include="GenericThumbnails\DarkNebula.png" />
+    <None Include="GenericThumbnails\DoubleStar.png" />
+    <None Include="GenericThumbnails\EllipticalGalaxy.png" />
+    <None Include="GenericThumbnails\EmissionNebula.png" />
+    <None Include="GenericThumbnails\Galaxy.png" />
+    <None Include="GenericThumbnails\GiantMolecularCloud.png" />
+    <None Include="GenericThumbnails\GlobularCluster.png" />
+    <None Include="GenericThumbnails\InterstellarDust.png" />
+    <None Include="GenericThumbnails\IrregularGalaxy.png" />
+    <None Include="GenericThumbnails\MultipleStars.png" />
+    <None Include="GenericThumbnails\Nebula.png" />
+    <None Include="GenericThumbnails\NeutronStar.png" />
+    <None Include="GenericThumbnails\OpenCluster.png" />
+    <None Include="GenericThumbnails\PlanetaryNebula.png" />
+    <None Include="GenericThumbnails\Quasar.png" />
+    <None Include="GenericThumbnails\ReflectionNebula.png" />
+    <None Include="GenericThumbnails\SpiralGalaxy.png" />
+    <None Include="GenericThumbnails\Star.png" />
+    <None Include="GenericThumbnails\Supernova.png" />
+    <None Include="GenericThumbnails\SupernovaRemnant.png" />
+    <None Include="Resources\tool_icon_picture_24.png" />
+    <None Include="Resources\tool_icon_shape_24.png" />
+    <None Include="Resources\tool_icon_text_24.png" />
+    <None Include="Resources\tool_icon_video_24.png" />
+    <None Include="Resources\button_pause_disabled.png" />
+    <None Include="Resources\button_pause_hover.png" />
+    <None Include="Resources\button_pause_normal.png" />
+    <None Include="Resources\button_pause_pressed.png" />
+    <None Include="Resources\button_play_disabled.png" />
+    <None Include="Resources\button_play_hover.png" />
+    <None Include="Resources\button_play_normal.png" />
+    <None Include="Resources\button_play_pressed.png" />
+    <None Include="Resources\glyph_mute_off_disabled.png" />
+    <None Include="Resources\glyph_mute_off_enabled.png" />
+    <None Include="Resources\glyph_mute_on_disabled.png" />
+    <None Include="Resources\glyph_mute_on_enabled.png" />
+    <None Include="Resources\trackbar_gripper_disabled.png" />
+    <None Include="Resources\trackbar_gripper_hover.png" />
+    <None Include="Resources\trackbar_gripper_normal.png" />
+    <None Include="Resources\trackbar_gripper_pressed.png" />
+    <None Include="Resources\trackbar_selection_disabled.png" />
+    <None Include="Resources\trackbar_selection_hover.png" />
+    <None Include="Resources\trackbar_selection_normal.png" />
+    <None Include="Resources\trackbar_selection_pressed.png" />
+    <None Include="Resources\trackbar_track_disabled.png" />
+    <None Include="Resources\trackbar_track_hover.png" />
+    <None Include="Resources\trackbar_track_normal.png" />
+    <None Include="Resources\trackbar_track_pressed.png" />
+    <None Include="wwt.ico" />
+    <None Include="Resources\scroll_background_left.png" />
+    <None Include="Resources\scroll_background_middle.png" />
+    <None Include="Resources\scroll_background_right.png" />
+    <None Include="Resources\scroll_bar_left.png" />
+    <None Include="Resources\scroll_bar_middle.png" />
+    <None Include="Resources\scroll_bar_right.png" />
+    <None Include="Resources\sun.png" />
+    <None Include="Resources\DataContainer_MoveNextHS.png" />
+    <None Include="Resources\DataContainer_MovePreviousHS.png" />
+    <None Include="Resources\DoubleLeftArrowHS.png" />
+    <None Include="Resources\DoubleRightArrowHS.png" />
+    <None Include="Resources\jupiter.png" />
+    <None Include="Resources\LeftArrowHS.png" />
+    <None Include="Resources\mars.png" />
+    <None Include="Resources\mercury.png" />
+    <None Include="Resources\PlayHS.png" />
+    <None Include="Resources\pluto.png" />
+    <None Include="Resources\RightArrowHS.png" />
+    <None Include="Resources\saturn.png" />
+    <None Include="Resources\uranus.png" />
+    <None Include="Resources\venus.png" />
+    <None Include="Resources\neptune.png" />
+    <None Include="Resources\moon.png" />
+    <None Include="Resources\button_arrow_down_disabled.png" />
+    <None Include="Resources\button_arrow_down_hover.png" />
+    <None Include="Resources\button_arrow_down_normal.png" />
+    <None Include="Resources\button_arrow_down_pressed.png" />
+    <None Include="Resources\button_arrow_up_disabled.png" />
+    <None Include="Resources\button_arrow_up_hover.png" />
+    <None Include="Resources\button_arrow_up_normal.png" />
+    <None Include="Resources\button_arrow_up_pressed.png" />
+    <None Include="Resources\callisto.png" />
+    <None Include="Resources\europa.png" />
+    <None Include="Resources\ganymede.png" />
+    <None Include="Resources\io.png" />
+    <None Include="Resources\pointsourcemoon.png" />
+    <None Include="Resources\moonshadow.png" />
+    <EmbeddedResource Include="Resources\pushpin.png" />
+    <None Include="Resources\PropertiesBackground.png" />
+    <None Include="Resources\PropertiesBackgroundNoFinder.png" />
+    <None Include="Resources\icon_rating_star_large_off.png" />
+    <None Include="Resources\icon_rating_star_large_on.png" />
+    <None Include="Resources\icon_rating_star_off.png" />
+    <None Include="Resources\icon_rating_star_on.png" />
+    <None Include="Resources\StarRatingBackground.png" />
+    <None Include="Resources\StarRatingForeground.png" />
+    <None Include="Resources\StarRatingBackgroundSmall.png" />
+    <None Include="Resources\StarRatingForegroundSmall.png" />
+    <None Include="Resources\circle.png" />
+    <EmbeddedResource Include="betaSplash.png" />
+    <None Include="resources\Folder.png" />
+    <None Include="resources\info.png" />
+    <None Include="Resources\wwt_icon1.png" />
+    <None Include="Resources\wwt_wordmark.png" />
+    <None Include="Resources\sunEclipse.png" />
+    <None Include="Resources\sunCorona.png" />
+    <None Include="Resources\TourIcon.png" />
+    <None Include="Resources\StarProfile.png" />
+    <None Include="Resources\xBoxController.png" />
+    <None Include="Resources\xbox.png" />
+    <EmbeddedResource Include="DomeSetup.resx">
+      <DependentUpon>DomeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlipbookSetup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FlipbookSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Histogram.resx">
+      <DependentUpon>Histogram.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageAlignPopup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ImageAlignPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageStack.resx">
+      <DependentUpon>ImageStack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguageSelect.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LanguageSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PunchIn.png" />
+    <EmbeddedResource Include="Resources\PunchInOutBlock.png" />
+    <EmbeddedResource Include="Resources\PunchOut.png" />
+    <EmbeddedResource Include="SelectLink.resx">
+      <DependentUpon>SelectLink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VORegistryBrowser.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>VORegistryBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VORegistryProperties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>VORegistryProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VOTableViewer.resx">
+      <DependentUpon>VOTableViewer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="Resources\callistoMap.jpg" />
+    <None Include="Resources\earth.png" />
+    <None Include="Resources\neptuneMap.jpg" />
+    <None Include="Resources\plutoMap.jpg" />
+    <None Include="Resources\saturnMap.jpg" />
+    <None Include="Resources\sunMap.jpg" />
+    <None Include="Resources\uranusMap.jpg" />
+    <None Include="Resources\venusMap.jpg" />
+    <None Include="Resources\earthMap.jpg" />
+    <None Include="Resources\jupiterMap.jpg" />
+    <None Include="Resources\marsMap.jpg" />
+    <None Include="Resources\mercuryMap.jpg" />
+    <None Include="Resources\SaturnRings.png" />
+    <None Include="Resources\ioMap.jpg" />
+    <None Include="Resources\moonMap.jpg" />
+    <None Include="Resources\europaMap.jpg" />
+    <None Include="Resources\ganymedeMap.jpg" />
+    <None Include="Resources\GalacticCloud.png" />
+    <None Include="Resources\milkyWay.png" />
+    <None Include="Resources\planetShadow.png" />
+    <None Include="Resources\ringShadow.png" />
+    <None Include="Resources\galSpiral.png" />
+    <None Include="Resources\g000.png" />
+    <None Include="Resources\g001.png" />
+    <None Include="Resources\g002.png" />
+    <None Include="Resources\g003.png" />
+    <None Include="Resources\g004.png" />
+    <None Include="Resources\g005.png" />
+    <None Include="Resources\g006.png" />
+    <None Include="Resources\g007.png" />
+    <None Include="Resources\g008.png" />
+    <None Include="Resources\g009.png" />
+    <None Include="Resources\g010.png" />
+    <None Include="Resources\g011.png" />
+    <None Include="Resources\g012.png" />
+    <None Include="Resources\g013.png" />
+    <None Include="Resources\g014.png" />
+    <None Include="Resources\g015.png" />
+    <None Include="Resources\g016.png" />
+    <None Include="Resources\g017.png" />
+    <None Include="Resources\g018.png" />
+    <None Include="Resources\g019.png" />
+    <None Include="Web References\edu.stsci.masthla\hstfootprint.disco" />
+    <None Include="Web References\edu.stsci.nvo\registry.disco" />
+    <None Include="Resources\ZoomIn.png" />
+    <None Include="Resources\ZoomOut.png" />
+    <None Include="Resources\hist.png" />
+    <None Include="WWTThumbnails.dll" />
+    <None Include="resources\CloseHover.png" />
+    <None Include="resources\ClosePush.png" />
+    <None Include="resources\CloseRest.png" />
+    <None Include="Web References\org.worldwidetelescope.www\wwtwebservice.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Shell32">
+      <Guid>{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Callibration\Calibration.resx">
+      <DependentUpon>Calibration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\CalibrationScreen.resx">
+      <DependentUpon>CalibrationScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\EdgeProperties.resx">
+      <DependentUpon>EdgeProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\GroundTruthPointProperties.resx">
+      <DependentUpon>GroundTruthPointProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\ProjectorProperties.resx">
+      <DependentUpon>ProjectorProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\ProjectorView.resx">
+      <DependentUpon>ProjectorView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Cosmos\gal_0000.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0001.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0002.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0003.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0004.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0005.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0006.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0007.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0008.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0009.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0010.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0011.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0012.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0013.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0014.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0015.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0016.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0017.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0018.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0019.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0020.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0021.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0022.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0023.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0024.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0025.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0026.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0027.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0028.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0029.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0030.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0031.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0032.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0033.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0034.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0035.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0036.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0037.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0038.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0039.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0040.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0041.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0042.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0043.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0044.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0045.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0046.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0047.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0048.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0049.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0050.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0051.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0052.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0053.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0054.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0055.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0056.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0057.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0058.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0059.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0060.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0061.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0062.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0063.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0064.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0065.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0066.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0067.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0068.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0069.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0070.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0071.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0072.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0073.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0074.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0075.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0076.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0077.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0078.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0079.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0080.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0081.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0082.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0083.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0084.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0085.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0086.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0087.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0088.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0089.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0090.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0091.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0092.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0093.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0094.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0095.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0096.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0097.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0098.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0099.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0100.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0101.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0102.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0103.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0104.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0105.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0106.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0107.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0108.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0109.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0110.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0111.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0112.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0113.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0114.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0115.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0116.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0117.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0118.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0119.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0120.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0121.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0122.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0123.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0124.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0125.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0126.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0127.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0128.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0129.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0130.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0131.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0132.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0133.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0134.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0135.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0136.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0137.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0138.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0139.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0140.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0141.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0142.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0143.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0144.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0145.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0146.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0147.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0148.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0149.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0150.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0151.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0152.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0153.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0154.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0155.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0156.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0157.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0158.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0159.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0160.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0161.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0162.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0163.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0164.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0165.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0166.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0167.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0168.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0169.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0170.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0171.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0172.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0173.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0174.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0175.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0176.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0177.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0178.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0179.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0180.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0181.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0182.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0183.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0184.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0185.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0186.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0187.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0188.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0189.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0190.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0191.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0192.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0193.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0194.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0195.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0196.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0197.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0198.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0199.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0200.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0201.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0202.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0203.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0204.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0205.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0206.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0207.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0208.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0209.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0210.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0211.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0212.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0213.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0214.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0215.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0216.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0217.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0218.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0219.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0220.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0221.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0222.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0223.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0224.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0225.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0226.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0227.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0228.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0229.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0230.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0231.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0232.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0233.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0234.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0235.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0236.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0237.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0238.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0239.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0240.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0241.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0242.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0243.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0244.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0245.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0246.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0247.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0248.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0249.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0250.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0251.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0252.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0253.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0254.jpg" />
+    <EmbeddedResource Include="Cosmos\gal_0255.jpg" />
+    <EmbeddedResource Include="DataWizardCartesian.resx">
+      <DependentUpon>DataWizardCartesian.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardColorMap.resx">
+      <DependentUpon>DataWizardColorMap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardCoordinates.resx">
+      <DependentUpon>DataWizardCoordinates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardDateTime.resx">
+      <DependentUpon>DataWizardDateTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardFinal.resx">
+      <DependentUpon>DataWizardFinal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardInfoPopup.resx">
+      <DependentUpon>DataWizardInfoPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardMarkers.resx">
+      <DependentUpon>DataWizardMarkers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardOrbits.resx">
+      <DependentUpon>DataWizardOrbits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardSize.resx">
+      <DependentUpon>DataWizardSize.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataWizardWelcome.resx">
+      <DependentUpon>DataWizardWelcome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameWizardCartisian.resx">
+      <DependentUpon>FrameWizardCartisian.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameWizardMain.resx">
+      <DependentUpon>FrameWizardMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameWizardOrbital.resx">
+      <DependentUpon>FrameWizardOrbital.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameWizardPosition.resx">
+      <DependentUpon>FrameWizardPosition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameWizardTrajectory.resx">
+      <DependentUpon>FrameWizardTrajectory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameWizardWelcome.resx">
+      <DependentUpon>FrameWizardWelcome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroundOverlayProperties.resx">
+      <DependentUpon>GroundOverlayProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KioskTitleBar.resx">
+      <DependentUpon>KioskTitleBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LayerLifetimeProperties.resx">
+      <DependentUpon>LayerLifetimeProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Object3dProperties.resx">
+      <DependentUpon>Object3dProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpacityPopup.resx">
+      <DependentUpon>OpacityPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\ProjectionTransformEditor.resx">
+      <DependentUpon>ProjectionTransformEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OutputTourToVideo.resx">
+      <DependentUpon>OutputTourToVideo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressPopup.resx">
+      <DependentUpon>ProgressPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropsShell.resx">
+      <DependentUpon>PropsShell.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PushPinPickerPopup.resx">
+      <DependentUpon>PushPinPickerPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenderProgress.resx">
+      <DependentUpon>RenderProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tab.resx">
+      <DependentUpon>Tab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WizardShell.resx">
+      <DependentUpon>WizardShell.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LayerManager.resx">
+      <DependentUpon>LayerManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenderHost.resx">
+      <DependentUpon>RenderHost.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpreadSheetProperties.resx">
+      <DependentUpon>SpreadSheetProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WmsLayerWizard.resx">
+      <DependentUpon>WmsLayerWizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Resources\earthsMapSpec.jpg" />
+    <None Include="Resources\earthMapNight.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\SharpDX\sharpdx_direct3d11_effects_x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\SharpDX\sharpdx_direct3d11_effects_x86.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DSMRender.dll" />
+    <Content Include="Resources\TouchControlsNoHold.png" />
+    <None Include="Resources\xbox360.png" />
+    <None Include="Resources\xbox360Layour.jpg" />
+    <None Include="resources\DelKey.png" />
+    <None Include="resources\Key.png" />
+    <None Include="Resources\DataContainer_MoveFirstHS.png" />
+    <None Include="Resources\DataContainer_MoveLastHS.png" />
+    <None Include="Resources\DataContainer_MoveNextHS1.png" />
+    <None Include="Resources\DataContainer_MovePreviousHS1.png" />
+    <None Include="Resources\StarProfileAlpha.png" />
+    <None Include="Resources\TrackerButton.png" />
+    <None Include="Resources\TransArrow.png" />
+    <None Include="Resources\TransBackground.png" />
+    <None Include="Resources\TransCrossfade.png" />
+    <None Include="Resources\TransCut.png" />
+    <None Include="Resources\TransFadeIn.png" />
+    <None Include="Resources\TransFadeOut.png" />
+    <None Include="Resources\TransFadeOutIn.png" />
+    <None Include="Resources\TransHighlight.png" />
+    <None Include="Resources\Reticle.png" />
+    <None Include="Resources\FocusHandles.png" />
+    <None Include="Resources\MultiSelhand.bmp" />
+    <None Include="Resources\liveidicon.png" />
+    <Content Include="MeshWarps\warp_mirror_16x9.data">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MeshWarps\warp_mirror_4x3.data">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="resources\layersButtonHover.png" />
+    <None Include="resources\layersButton.png" />
+    <None Include="resources\FolderUp.png" />
+    <None Include="Resources\TouchControls.png" />
+    <None Include="Resources\DomeOutline.png" />
+    <EmbeddedResource Include="RemoteAccessControl.resx">
+      <DependentUpon>RemoteAccessControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScreenBroadcast.resx">
+      <DependentUpon>ScreenBroadcast.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WW15MGH.DAC" />
+    <None Include="wwtMars.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\pins.png" />
+    <None Include="resources\tabPlain.png" />
+    <None Include="Resources\milkywaybar.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WWTCore\WWTCore\WWTCore.csproj">
+      <Project>{6c205caa-423d-48b8-813b-e586e105c71b}</Project>
+      <Name>WWTCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+</Project>

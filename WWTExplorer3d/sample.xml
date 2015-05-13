@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ImageSet Name="M51" Url="" BaseTileLevel="0" TileLeves="5" BaseDegreesPerTile="90" FileType="png" BottomsUp="False" Projection="TAN" QuadTreeMap="" CenterX="" CenterY="" DataSetType="Sky" Sparse="True">
+  <Credits>Space Telescope Science Institute</Credits>
+  <Bandpass>RGB Visible Light</Bandpass>
+  <CreditsUrl>http://www.stsci.edu</CreditsUrl>
+</ImageSet>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:intf="urn:Sesame" xmlns:impl="urn:Sesame" targetNamespace="urn:Sesame" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types />
+  <wsdl:message name="SesameResponse">
+    <wsdl:part name="return" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="SesameXMLRequest">
+    <wsdl:part name="name" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="getAvailabilityRequest" />
+  <wsdl:message name="sesameRequest">
+    <wsdl:part name="name" type="xsd:string" />
+    <wsdl:part name="resultType" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="sesameRequest2">
+    <wsdl:part name="name" type="xsd:string" />
+    <wsdl:part name="resultType" type="xsd:string" />
+    <wsdl:part name="all" type="xsd:boolean" />
+    <wsdl:part name="service" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="sesameResponse2">
+    <wsdl:part name="return" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="getAvailabilityResponse">
+    <wsdl:part name="getAvailabilityReturn" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="SesameRequest">
+    <wsdl:part name="name" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="sesameRequest1">
+    <wsdl:part name="name" type="xsd:string" />
+    <wsdl:part name="resultType" type="xsd:string" />
+    <wsdl:part name="all" type="xsd:boolean" />
+  </wsdl:message>
+  <wsdl:message name="sesameResponse1">
+    <wsdl:part name="return" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="sesameResponse">
+    <wsdl:part name="return" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="SesameXMLResponse">
+    <wsdl:part name="return" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:portType name="Sesame">
+    <wsdl:operation name="sesame" parameterOrder="name resultType">
+      <wsdl:input name="sesameRequest" message="impl:sesameRequest" />
+      <wsdl:output name="sesameResponse" message="impl:sesameResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="sesame" parameterOrder="name resultType all">
+      <wsdl:input name="sesameRequest1" message="impl:sesameRequest1" />
+      <wsdl:output name="sesameResponse1" message="impl:sesameResponse1" />
+    </wsdl:operation>
+    <wsdl:operation name="sesame" parameterOrder="name resultType all service">
+      <wsdl:input name="sesameRequest2" message="impl:sesameRequest2" />
+      <wsdl:output name="sesameResponse2" message="impl:sesameResponse2" />
+    </wsdl:operation>
+    <wsdl:operation name="SesameXML" parameterOrder="name">
+      <wsdl:input name="SesameXMLRequest" message="impl:SesameXMLRequest" />
+      <wsdl:output name="SesameXMLResponse" message="impl:SesameXMLResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="Sesame" parameterOrder="name">
+      <wsdl:input name="SesameRequest" message="impl:SesameRequest" />
+      <wsdl:output name="SesameResponse" message="impl:SesameResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="getAvailability">
+      <wsdl:input name="getAvailabilityRequest" message="impl:getAvailabilityRequest" />
+      <wsdl:output name="getAvailabilityResponse" message="impl:getAvailabilityResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SesameSoapBinding" type="impl:Sesame">
+    <wsdlsoap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <wsdl:operation name="sesame">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="sesameRequest">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output name="sesameResponse">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sesame">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="sesameRequest1">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output name="sesameResponse1">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sesame">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="sesameRequest2">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output name="sesameResponse2">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SesameXML">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="SesameXMLRequest">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output name="SesameXMLResponse">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Sesame">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="SesameRequest">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output name="SesameResponse">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAvailability">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="getAvailabilityRequest">
+        <wsdlsoap:body use="encoded" namespace="http://DefaultNamespace" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output name="getAvailabilityResponse">
+        <wsdlsoap:body use="encoded" namespace="urn:Sesame" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SesameService">
+    <wsdl:port name="Sesame" binding="impl:SesameSoapBinding">
+      <wsdlsoap:address location="http://cdsws.u-strasbg.fr/axis/services/Sesame" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

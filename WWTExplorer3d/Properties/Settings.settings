@@ -1,0 +1,624 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TerraViewer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ConstellationBoundryColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">MidnightBlue</Value>
+    </Setting>
+    <Setting Name="ConstellationFigureColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DarkRed</Value>
+    </Setting>
+    <Setting Name="ConstellationSelectionColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DarkGoldenrod</Value>
+    </Setting>
+    <Setting Name="ShowConstellationBoundries" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowConstellationFigures" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowConstellationSelection" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowClouds" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ZoomSpeed" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="ShowElevationModel" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowOceanFloor" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TelescopeID" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ShowCrosshairs" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowDatasetNames" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WWTExplorer_fr_u_strasbg_cdsws_SesameService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://cdsws.u-strasbg.fr/axis/services/Sesame</Value>
+    </Setting>
+    <Setting Name="FovTelescope" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FovCamera" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ShowFieldOfView" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CahceDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ContextSearchFilter" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Unfiltered</Value>
+    </Setting>
+    <Setting Name="ShowEcliptic" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FovColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">White</Value>
+    </Setting>
+    <Setting Name="LocationName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Microsoft Research Building 99</Value>
+    </Setting>
+    <Setting Name="LocationLat" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">47.64222</Value>
+    </Setting>
+    <Setting Name="LocationLng" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-122.142</Value>
+    </Setting>
+    <Setting Name="UserEmail" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="UserKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ShowHorizon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FullScreenGamma" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="WWTExplorer_org_worldwidetelescope_www_WWTWebService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx</Value>
+    </Setting>
+    <Setting Name="ConstellationFiguresFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Default Figures</Value>
+    </Setting>
+    <Setting Name="LocationAltitude" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="FovEyepiece" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="EclipticColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">CornflowerBlue</Value>
+    </Setting>
+    <Setting Name="GridColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">64, 64, 64</Value>
+    </Setting>
+    <Setting Name="LocalHorizonMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ActualPlanetScale" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowSolarSystem" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HighPercitionPlanets" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowHorizonPanorama" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SmoothPan" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowUTCTime" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowMoonsAsPointSource" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PulseMeForUpdate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowSafeArea" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UserRatingGUID" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">00000000-0000-0000-0000-000000000000</Value>
+    </Setting>
+    <Setting Name="ImageQuality" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="FollowMouseOnZoom" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoHideContext" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoHideTabs" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowLinksInFullBrowser" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TranparentWindows" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CheckedForFlashingVideo" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoRepeatTour" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoRepeatTourAll" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowNavHelp" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UpgradeNeeded" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ProxyServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ProxyPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
+    <Setting Name="WWTExplorer_edu_stsci_masthla_HSTFootprint" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://masthla.stsci.edu/hla/footprints/fpws/hstfootprint.asmx</Value>
+    </Setting>
+    <Setting Name="UseJoystick" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowJoystickHelp" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LanguageCode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">en</Value>
+    </Setting>
+    <Setting Name="LineSmoothing" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LanguageUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=lang_en</Value>
+    </Setting>
+    <Setting Name="ExploreRootUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot</Value>
+    </Setting>
+    <Setting Name="ImageSetUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5</Value>
+    </Setting>
+    <Setting Name="LanguageName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">US English</Value>
+    </Setting>
+    <Setting Name="SolarSystemLighting" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SolarSystemOverlays" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SolarSystemOrbits" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SolarSystemStars" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SolarSystemMilkyWay" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SolarSystemCosmos" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SolarSystemScale" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="SolarSystemOrbitColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">64, 64, 64</Value>
+    </Setting>
+    <Setting Name="SolarSystemMultiRes" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="WWTExplorer_edu_stsci_nvo_Registry" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://nvo.stsci.edu/VORegistry/registry.asmx</Value>
+    </Setting>
+    <Setting Name="DomeTilt" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="DomeView" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ListenMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MasterController" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="VOTableVerbosityDefault" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="StartUpLookAt" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="LastLookAtMode" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="UsePlanetColorsForOrbits" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LargeDomeTextures" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LiveIdUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LiveIdToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LiveIdWWTId" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FBApplicationId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">217041268855</Value>
+    </Setting>
+    <Setting Name="FBApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">55d5ef1761749fc8b46aca991fd3bb09</Value>
+    </Setting>
+    <Setting Name="FBApiSecret" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FBUserId" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FBUserKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FBUserSecret" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AdvancedCommunities" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CustomWarpFilename" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DomeTypeIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="SharedCacheServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SolarSystemMinorPlanets" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SolarSystemPlanets" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FullScreenTours" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MinZoonLimitSolar" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">1E-06</Value>
+    </Setting>
+    <Setting Name="MaxZoomLimitSolar" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">1E+16</Value>
+    </Setting>
+    <Setting Name="MaxLatLimit" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">89.999</Value>
+    </Setting>
+    <Setting Name="LastDomeConfigFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LastVideoOutFormat" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="VideoOutputPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ShowTouchControls" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SolarSystemMinorOrbits" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AllowLocalHTTP" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HTTPWhiteList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AllowAllRemoteHTTP" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ScreenOverlayAlt" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">45</Value>
+    </Setting>
+    <Setting Name="ScreenOverlayAz" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ScreenOverlayScale" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">60</Value>
+    </Setting>
+    <Setting Name="ShowLayerManager" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MonochromeImageStyle" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FlatScreenWarp" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FullScreenX" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FullScreenY" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FullScreenWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FullScreenHeight" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="CloudCommunityUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://wwtstaging.azurewebsites.net/</Value>
+    </Setting>
+    <Setting Name="CW" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="OverlaySettings" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ShowEquatorialGridText" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowGalacticGrid" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowGalacticGridText" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowEclipticGrid" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowEclipticGridText" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowAltAzGrid" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowAltAzGridText" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowPrecessionChart" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowConstellationPictures" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ConstellationsEnabled" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="EquatorialGridTextColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">White</Value>
+    </Setting>
+    <Setting Name="GalacticGridColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DeepSkyBlue</Value>
+    </Setting>
+    <Setting Name="GalacticGridTextColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DeepSkyBlue</Value>
+    </Setting>
+    <Setting Name="AltAzGridColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Green</Value>
+    </Setting>
+    <Setting Name="AltAzGridTextColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Green</Value>
+    </Setting>
+    <Setting Name="EclipticGridColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">CornflowerBlue</Value>
+    </Setting>
+    <Setting Name="EclipticGridTextColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">CornflowerBlue</Value>
+    </Setting>
+    <Setting Name="PrecessionChartColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 128, 0</Value>
+    </Setting>
+    <Setting Name="ConstellationnamesColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 128, 0</Value>
+    </Setting>
+    <Setting Name="EclipticOverviewTextColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">CornflowerBlue</Value>
+    </Setting>
+    <Setting Name="ShowConstellationLabels" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FadeColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Black</Value>
+    </Setting>
+    <Setting Name="FadeRemoteOnly" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ColSettingsVersion" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ShowSkyNode" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowSkyOverlays" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowSkyGrids" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Constellations" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MultiSampling" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="ShowConstellationNames" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowGrid" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False,0,2000</Value>
+    </Setting>
+    <Setting Name="ShowEarthSky" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True,0,2000</Value>
+    </Setting>
+    <Setting Name="ShowEclipticOverviewText" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowSkyOverlaysIn3d" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MidiEditWindowHeight" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">636</Value>
+    </Setting>
+    <Setting Name="MidiEditClientSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">784, 598</Value>
+    </Setting>
+    <Setting Name="MidiWindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">100, 140</Value>
+    </Setting>
+    <Setting Name="ClientNodeListLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">200, 200</Value>
+    </Setting>
+    <Setting Name="ClientNodeListSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">190, 580</Value>
+    </Setting>
+    <Setting Name="ShowClientNodeDetails" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CloudMap8k" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ScreenOverlayShowLocal" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoSyncTours" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowReticle" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False,0,2000</Value>
+    </Setting>
+    <Setting Name="ReticleAlt" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ReticleAz" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TerrainScaling" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="EarthCutawayView" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FrameSync" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="TargetFrameRate" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">60</Value>
+    </Setting>
+    <Setting Name="ShowClientNodeList" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MasterHostIPOverride" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ScreenHitTestOffsetX" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ScreenHitTestOffsetY" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="DomeAngle" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TileThrottling" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="ConstellationArtFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">default.wtml</Value>
+    </Setting>
+    <Setting Name="ConstellationArtFilter" Type="TerraViewer.ConstellationFilter" Scope="User">
+      <Value Profile="(Default)">-1,-1,-1</Value>
+    </Setting>
+    <Setting Name="ConstellationFiguresFilter" Type="TerraViewer.ConstellationFilter" Scope="User">
+      <Value Profile="(Default)">-1,-1,-1</Value>
+    </Setting>
+    <Setting Name="ConstellationBoundariesFilter" Type="TerraViewer.ConstellationFilter" Scope="User">
+      <Value Profile="(Default)">-1,-1,-1</Value>
+    </Setting>
+    <Setting Name="ConstellationNamesFilter" Type="TerraViewer.ConstellationFilter" Scope="User">
+      <Value Profile="(Default)">-1,-1,-1</Value>
+    </Setting>
+    <Setting Name="SavedFilters" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ConstellationArtColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">64, 255, 255, 255</Value>
+    </Setting>
+    <Setting Name="UnconstrainedTilt" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FaceNorth" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowSlideNumbers" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="KeyPropsLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 500</Value>
+    </Setting>
+    <Setting Name="FloatTimeline" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="XboxCustomMapping" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="XboxModeMapping" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowISSModel" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FisheyeAngle" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">180</Value>
+    </Setting>
+    <Setting Name="SolarSystemCMB" Type="TerraViewer.BlendState" Scope="User">
+      <Value Profile="(Default)">False,0,2000</Value>
+    </Setting>
+    <Setting Name="NavigationHold" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MinorPlanetsFilter" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">255</Value>
+    </Setting>
+    <Setting Name="PlanetOrbitsFilter" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2147483647</Value>
+    </Setting>
+    <Setting Name="MilkyWayModel" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GalacticMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Show3dCities" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="RefreshToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

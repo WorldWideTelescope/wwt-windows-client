@@ -1,0 +1,1873 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="earthMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\earthMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sun" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\sun.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnStartDisabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnstartdisabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="mars" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\mars.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DropHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\drophover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarRatingBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\starratingbackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g000.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FocusHandles" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\focushandles.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="InsertHyperlinkHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\InsertHyperlinkHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="xbox360" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\xbox360.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GalacticCloud" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\galacticcloud.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DropPressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\droppressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="xbox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\xbox.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g005" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g005.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Key" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\Key.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sunMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sunMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="galSpiral" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\galspiral.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="xBoxController" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\xBoxController.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarRatingForegroundSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\starratingforegroundsmall.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DarkNebula" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\darknebula.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="circle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\circle.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_up_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_up_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pins" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pins.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tourSelectedHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tourselectedhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_play_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_play_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Meade4m" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\meade4m.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TourIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\touricon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EditRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\editrest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColorHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ColorHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g007" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g007.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_down_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_down_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DropRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\droprest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PunchInOutBlock" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\punchinoutblock.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_E_H" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_e_h.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scroll_background_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\scroll_background_left.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_gripper_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_gripper_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_C_P" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_c_p.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_up_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_up_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_rating_star_large_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\icon_rating_star_large_on.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pushpin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pushpin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="jupiterMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\jupiterMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PlanetaryNebula" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\planetarynebula.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_C_D" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_c_d.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ThumbBackgroundWideHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\thumbbackgroundwidehover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_rating_star_large_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\icon_rating_star_large_off.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="hubble" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\hubble.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LeftArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\leftarrow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MultiSelhand" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\multiselhand.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="glyph_mute_off_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\glyph_mute_off_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g013" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g013.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="hist" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\hist.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g009" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g009.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Unidentified" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\unidentified.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scroll_bar_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\scroll_bar_left.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="plutoMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plutoMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnEndDisabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnenddisabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ganymede" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ganymede.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NeutronStar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\neutronstar.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="buttonBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\buttonbackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_unchecked_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_unchecked_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsRightHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsRightHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_pause_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_pause_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SupernovaRemnant" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\supernovaremnant.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ThumbnailLoadingHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ThumbnailLoadingHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnEndRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnendrest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_down_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_down_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="neptune" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\neptune.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RightArrowDisabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\rightarrowdisabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DeleteHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DeleteHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tool_icon_shape_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tool_icon_shape_24.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PauseHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PauseHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g001" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g001.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MultipleStars" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\multiplestars.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnEndSelected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnendselected.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsCenteredVerticalHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsCenteredVerticalHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_E_P" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_e_p.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsBottomHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsBottomHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_checked_press" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_checked_press.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_gripper_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_gripper_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ringShadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ringShadow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g014" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g014.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="marsMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\marsMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Spitzer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\spitzer.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="glyph_mute_on_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\glyph_mute_on_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_checked_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_checked_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DropDisabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\dropdisabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_E_R" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_e_r.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g008" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g008.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="milkyWay" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\milkyway.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="thumbBackgroundWide" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\thumbbackgroundwide.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g003" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g003.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="List_BulletsHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\List_BulletsHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CloseRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\closerest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="thumbBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\thumbbackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g015" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g015.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g012" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g012.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SpeechMicHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SpeechMicHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_down_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_down_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_E_P" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_e_p.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="neptuneMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\neptuneMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnStartRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnstartrest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ClosePush" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\closepush.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g010" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g010.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnEndPushed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnendpushed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IrregularGalaxy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\irregulargalaxy.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StopHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\StopHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsCenteredHorizontalHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsCenteredHorizontalHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SpiralGalaxy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\spiralgalaxy.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabHoverTab" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabhovertab.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tool_icon_video_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tool_icon_video_24.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarRatingBackgroundSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\starratingbackgroundsmall.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabbackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="mercuryMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\mercuryMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wwt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\wwt.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wwtMars" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\wwtmars.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabPlain" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabplain.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_rating_star_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\icon_rating_star_off.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="boldhs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\boldhs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_C_P" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_c_p.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tool_icon_picture_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tool_icon_picture_24.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DomeOutline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\domeoutline.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FolderUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\folderup.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_C_H" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_c_h.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransHighlight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transhighlight.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sloan" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\sloan.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Taxonomy" xml:space="preserve">
+    <value>1	Planet
+1.1	[Type]
+1.1.1	Terrestrial
+1.1.2	Gas Giant
+1.2	[Feature]
+1.2.1	Surface
+1.2.1.1	Mountain
+1.2.1.2	Canyon
+1.2.1.3	Volcanic
+1.2.1.4	Impact
+1.2.1.5	Erosion
+1.2.1.6	Liquid
+1.2.1.7	Ice
+1.2.2	Atmosphere
+1.2.2.1	Cloud
+1.2.2.2	Storm
+1.2.2.3	Belt
+1.2.2.4	Aurora
+1.3	[Special Cases]
+1.3.1	Transiting
+1.3.2	Hot Jupiter
+1.3.3	Pulsar planet
+1.4	Satellite
+1.4.1	[Feature]
+1.4.1.1	Surface
+1.4.1.1.1	Mountain
+1.4.1.1.2	Canyon
+1.4.1.1.3	Volcanic
+1.4.1.1.4	Impact
+1.4.1.1.5	Erosion
+1.4.1.1.6	Liquid
+1.4.1.1.7	Ice
+1.4.1.2	Atmosphere
+1.5	Ring
+2	Interplanetary Body
+2.1	Dwarf planet
+2.2	Comet
+2.2.1	Nucleus
+2.2.2	Coma
+2.2.3	Tail
+2.2.3.1	Dust
+2.2.3.2	Gas
+2.3	Asteroid
+2.4	Meteoroid
+3	Star
+3.1	[Evolutionary Stage]
+3.1.1	Protostar
+3.1.2	Young Stellar Object
+3.1.3	Main Sequence
+3.1.4	Red Giant
+3.1.5	Red Supergiant
+3.1.6	Blue Supergiant
+3.1.7	White Dwarf
+3.1.8	Supernova
+3.1.9	Neutron Star
+3.1.9.1	Pulsar
+3.1.9.2	Magnetar
+3.1.10	Black Hole
+3.2	[Type]
+3.2.1	Variable
+3.2.1.1	Pulsating
+3.2.1.2	Irregular
+3.2.1.3	Eclipsing
+3.2.1.4	Flare Star
+3.2.1.5	Nova
+3.2.2	Carbon
+3.2.3	Brown Dwarf
+3.2.4	Wolf-Rayet
+3.2.5	Blue Straggler
+3.2.6	Exotic
+3.3	[Spectral Type]
+3.3.1	O
+3.3.2	B
+3.3.3	A
+3.3.4	F
+3.3.5	G
+3.3.6	K
+3.3.7	M
+3.3.8	L
+3.3.9	T
+3.4	[Population]
+3.4.1	I
+3.4.2	II
+3.4.3	III
+3.5	[Feature]
+3.5.1	Photosphere
+3.5.1.1	Granulation
+3.5.1.2	Sunspot
+3.5.2	Chromosphere
+3.5.2.1	Flare
+3.5.2.2	Facula
+3.5.3	Corona
+3.5.3.1	Prominence
+3.6	[Grouping]
+3.6.1	Binary
+3.6.2	Triple
+3.6.3	Multiple
+3.6.4	Cluster
+3.6.4.1	Open
+3.6.4.2	Globular
+3.7	Circumstellar Material
+3.7.1	Planetary System
+3.7.2	Disk
+3.7.2.1	Protoplanetary
+3.7.2.2	Accretion
+3.7.2.3	Debris
+3.7.3	Outflow
+3.7.3.1	Solar Wind
+3.7.3.2	Coronal Mass Ejection
+4	Nebula
+4.1	[Type]
+4.1.1	Interstellar Medium
+4.1.2	Star Formation
+4.1.3	Planetary
+4.1.4	Supernova Remnant
+4.1.5	Jet
+4.2	[Appearance]
+4.2.1	Emission
+4.2.1.1	H II Region
+4.2.2	Reflection
+4.2.2.1	Light Echo
+4.2.3	Dark
+4.2.3.1	Molecular Cloud
+4.2.3.2	Bok Globule
+4.2.3.3	Proplyd
+5	Galaxy
+5.1	[Type]
+5.1.1	Spiral
+5.1.2	Barred
+5.1.3	Lenticular
+5.1.4	Elliptical
+5.1.5	Ring
+5.1.6	Irregular
+5.1.7	Interacting
+5.1.8	Gravitationally Lensed
+5.2	[Size]
+5.2.1	Giant
+5.2.2	Dwarf
+5.3	[Activity]
+5.3.1	Normal
+5.3.2	AGN
+5.3.2.1	Quasar
+5.3.2.2	Seyfert
+5.3.2.3	Blazar
+5.3.2.4	Liner
+5.3.3	Starburst
+5.3.4	Ultraluminous
+5.4	[Component]
+5.4.1	Bulge
+5.4.2	Bar
+5.4.3	Disk
+5.4.4	Halo
+5.4.5	Ring
+5.4.6	Central Black Hole
+5.4.7	Spiral Arm
+5.4.8	Dust Lane
+5.5	[Grouping]
+5.5.1	Pair
+5.5.2	Multiple
+5.5.3	Cluster
+5.5.4	Supercluster
+6	Cosmology
+6.1	[Morphology]
+6.1.1	Deep Field
+6.1.2	Large-Scale Structure
+6.1.3	Cosmic Background
+6.2	[Phenomenon]
+6.2.1	Lensing
+6.2.2	Gamma Ray Burst
+6.2.3	Dark Matter
+7	Sky Phenomenon
+7.1	Night Sky
+7.1.1	Constellation
+7.1.2	Asterism
+7.1.3	Milky Way
+7.1.4	Trail
+7.1.4.1	Meteor
+7.1.4.2	Star
+7.1.4.3	Satellite
+7.1.5	Zodiacal Light
+7.1.5.1	Gegenschein
+7.1.6	Night glow
+7.2	Eclipse
+7.2.1	Solar
+7.2.1.1	Total
+7.2.1.2	Partial
+7.2.1.3	Annular
+7.2.2	Lunar
+7.2.2.1	Total
+7.2.2.2	Partial
+7.2.2.3	Penumbral
+7.2.3	Occultation
+7.2.4	Transit
+7.3	Light Phenomenon
+7.3.1	Sunrise-Sunset
+7.3.1.1	Green flash
+7.3.1.2	Refractive Distortion
+7.3.1.3	Sun Pillar
+7.3.2	Cloud
+7.3.2.1	Iridescent
+7.3.2.2	Noctilucent
+7.3.2.3	Nacreous
+7.3.2.4	Corona
+7.3.2.5	Glory
+7.3.3	Rainbow
+7.3.3.1	Moonbow
+7.3.3.2	Fogbow
+7.3.4	Halo
+7.3.4.1	Circle
+7.3.4.2	Parhelia
+7.3.4.3	Arc
+7.3.5	Ray-Shadow
+7.3.5.1	Crepuscular ray
+7.3.5.2	Anti-crepuscular ray
+7.3.5.3	Earth shadow
+7.3.6	Lightning
+7.3.7	Aurora
+8	Technology
+8.1	Observatory
+8.1.1	Facility
+8.1.2	Telescope
+8.1.3	Instrument
+8.2	Spacecraft
+8.2.1	Orbiter
+8.2.2	Probe
+8.2.3	Lander
+8.2.4	Manned</value>
+  </data>
+  <data name="master" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\master.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RightArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\rightarrow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnEndHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnendhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="europaMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\europaMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransCrossfade" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transcrossfade.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_pause_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_pause_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaturnRings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\saturnrings.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_selection_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_selection_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_checked_rest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_checked_rest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_selection_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_selection_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="glyph_mute_on_enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\glyph_mute_on_enabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TouchControls" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\touchcontrols.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EditHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\edithover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabWwtLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabwwtlogo.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Supernova" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\supernova.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pluto" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pluto.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransFadeOut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transfadeout.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarProfile" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\starprofile.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tourHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tourhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ThumbBackgroundHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\thumbbackgroundhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RecordHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RecordHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_rating_star_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\icon_rating_star_on.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabHoverMenu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabhovermenu.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="saturn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\saturn.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Galaxy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\galaxy.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="menuArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\menuarrow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ioMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ioMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Color_font" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Color_font.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="saveHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\saveHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\folder.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="io" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\io.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FontDialogHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FontDialogHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_E_H" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_e_h.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_gripper_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_gripper_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RightArrowHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\rightarrowhs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_play_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_play_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="uranus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\uranus.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="saturnMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\saturnMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="planetShadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\planetshadow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_track_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_track_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_checked_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_checked_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="layersButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\layersbutton.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OpenCluster" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\opencluster.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnStartHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnstarthover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ItalicHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ItalicHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_track_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_track_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LineColorHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LineColorHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsLeftHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsLeftHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="InsertPictureHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\InsertPictureHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DataContainer_MoveFirstHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DataContainer_MoveFirstHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Selhand" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Selhand.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="jupiter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\jupiter.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransCut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transcut.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g002" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g002.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_up_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_up_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PublishToWebHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PublishToWebHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PropertiesBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PropertiesBackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="layersButtonHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\layersbuttonhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EmissionNebula" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\emissionnebula.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scroll_background_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\scroll_background_right.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DataContainer_MovePreviousHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DataContainer_MovePreviousHS1.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_E_D" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_e_d.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g018" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g018.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GiantMolecularCloud" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\giantmolecularcloud.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tool_icon_text_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tool_icon_text_24.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Nebula" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\nebula.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_selection_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_selection_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="InterstellarDust" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\interstellardust.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ascom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ascom.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="callisto" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\callisto.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transbackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnStartPushed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnstartpushed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DelKey" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\DelKey.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="callistoMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\callistoMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="moonshadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\moonshadow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_unchecked_rest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_unchecked_rest.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PropertiesBackgroundNoFinder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PropertiesBackgroundNoFinder.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="liveidicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\liveidicon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransFadeOutIn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transfadeoutin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_track_pressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_track_pressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g017" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g017.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pointsourcemoon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pointsourcemoon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="chandra" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\chandra.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_selection_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_selection_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PunchOut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\punchout.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DataContainer_MoveLastHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DataContainer_MoveLastHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ReflectionNebula" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\reflectionnebula.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_E_R" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_e_r.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="xbox360Layour" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\xbox360Layour.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tourSelected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tourselected.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PlayHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\playhs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_pause_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_pause_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColorPickerHex" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ColorPickerHex.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabSelected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabselected.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PropertiesHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PropertiesHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DataContainer_MoveNextHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DataContainer_MoveNextHS1.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Constellation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\constellation.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_E_D" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_e_d.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ZoomIn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\zoomin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g011.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ganymedeMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ganymedeMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="info" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\info.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scroll_bar_middle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\scroll_bar_middle.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="moon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\moon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_C_R" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_c_r.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_play_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_play_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="milkywaybar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\milkywaybar.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PunchIn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\punchin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scroll_background_middle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\scroll_background_middle.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wwt_wordmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wwt_wordmark.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="video" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\video.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="earth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\earth.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ClusterOfGalaxies" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\clusterofgalaxies.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FormRunHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FormRunHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="venusMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\venusMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_unchecked_press" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_unchecked_press.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Reticle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\reticle.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_C_H" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_c_h.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sunCorona" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sunCorona.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EditDisabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\editdisabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="uranusMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\uranusMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ZoomHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ZoomHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g004" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g004.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="glyph_mute_off_enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\glyph_mute_off_enabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="moonMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\moonMap.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g019" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g019.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Edit_UndoHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Edit_UndoHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinT_C_D" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pint_c_d.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_play_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_play_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AudioHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_gripper_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_gripper_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DragInsertMarker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\draginsertmarker.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BtnStartSelected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\btnstartselected.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsCenteredVerticalHS1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsCenteredVerticalHS1.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AlignObjectsTopHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignObjectsTopHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LeftArrowHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\leftarrowhs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="earthMapNight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\earthmapnight.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_down_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_down_hover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EllipticalGalaxy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\ellipticalgalaxy.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g006" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g006.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="g016" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\g016.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CloseHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\closehover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BlackHole" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\blackhole.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="mercury" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\mercury.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Quasar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\quasar.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BadImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\badimage.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_pause_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_pause_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GlobularCluster" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\globularcluster.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_arrow_up_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\button_arrow_up_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="earthsMapSpec" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\earthsmapspec.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="europa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\europa.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tabSelectedHover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tabselectedhover.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="messier" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\messier.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StarRatingForeground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\starratingforeground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transarrow.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ZoomOut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\zoomout.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DoubleLeftArrowHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\doubleleftarrowhs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Asterism" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\asterism.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LeftArrowDisabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\leftarrowdisabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wwt_icon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wwt_icon1.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DoubleRightArrowHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\doublerightarrowhs.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="List_NumberedHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\List_NumberedHS.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EditPressed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\editpressed.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_unchecked_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\checkbox_unchecked_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scroll_bar_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\scroll_bar_right.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="betaSplash" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\betasplash.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PinB_C_R" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\pinb_c_r.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="venus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\venus.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Star" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\star.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DoubleStar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\genericthumbnails\doublestar.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransFadeIn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\transfadein.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="trackbar_track_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackbar_track_normal.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="xbox3601" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\xbox360.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="XboxDefaults" xml:space="preserve">
+    <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;XboxMapPack xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;XboxMaps&gt;
+    &lt;XboxMap Name="Earth" Slot="0"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowEarthSky" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="EarthCutawayView" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowClouds" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowEarthSky" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="RotateRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="TiltUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+    &lt;XboxMap Name="Planet" Slot="1"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="RotateRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="TiltUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+    &lt;XboxMap Name="Sky" Slot="2"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowGrid" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowConstellationBoundries" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowEcliptic" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowConstellationFigures" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="RotateRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="TiltUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+    &lt;XboxMap Name="Panorama" Slot="3"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="RotateRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="TiltUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+    &lt;XboxMap Name="SolarSystem" Slot="4"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ShowPreviousContext" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ShowNextContext" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="SolarSystemMinorPlanets" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="SolarSystemMilkyWay" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="SolarSystemOrbits" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="SolarSystemStars" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="RotateRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="TiltUp" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+    &lt;XboxMap Name="Sky - Local Horizon Mode" Slot="5"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowGrid" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowConstellationBoundries" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowEcliptic" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" PropertyName="ShowConstellationFigures" Min="0" Max="1" Integer="false" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="DomeRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="DomeUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+    &lt;XboxMap Name="Modeless Xbox Controller Map" Slot="6"&gt;
+      &lt;ControlMaps&gt;
+        &lt;ControlMap Name="DirectionPadUp" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="SetRealtimeNow" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadDown" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="PauseTime" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadLeft" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Slower" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="DirectionPadRight" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="true" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="SpaceTimeController" BindingType="Action" PropertyName="Faster" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Start" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Back" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousMode" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="SolarSystemOverview" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbClick" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="GotoEarth" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="PreviousSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightShoulder" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Navigation" BindingType="Action" PropertyName="NextSlide" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="A" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="B" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="X" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="Y" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="KeyPress" Target="" TargetType="Setting" BindingType="Toggle" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomOut" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightTrigger" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="ZoomIn" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="LeftThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="MoveUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbX" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="RotateRight" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+        &lt;ControlMap Name="RightThumbY" Channel="0" ID="-1" ControlType="KeyPress" ButtonType="Button" AutoRepeat="false" Mapped="false" X="0" Y="0" Width="0.1" Height="0.1"&gt;
+          &lt;BindingA HandlerType="ValueChange" Target="" TargetType="Navigation" BindingType="Action" PropertyName="TiltUp" Min="0" Max="1" Integer="true" /&gt;
+          &lt;BindingB HandlerType="None" Target="" TargetType="Setting" BindingType="Action" Min="0" Max="1" Integer="true" /&gt;
+        &lt;/ControlMap&gt;
+      &lt;/ControlMaps&gt;
+    &lt;/XboxMap&gt;
+  &lt;/XboxMaps&gt;
+&lt;/XboxMapPack&gt;</value>
+  </data>
+  <data name="UpdateRequired" xml:space="preserve">
+    <value>&lt;TourStops&gt;
+    &lt;TourStop Id="63d97857-f04e-44e7-a887-2dd9ab24a23e" Name="" Description="WWT 5.0 Required" Thumbnail="" Duration="00:00:10" Master="False" TransitionType="Slew" TransitionTime="2" TransitionOutTime="2" TransitionHoldTime="4" NextSlide="Next" InterpolationType="Linear" HasLocation="True" LocationAltitude="100" LocationLat="1" LocationLng="1" HasTime="True" StartTime="1/2/2014 7:30:21 PM" EndTime="1/2/2014 7:14:27 PM" ActualPlanetScale="True" ShowClouds="False" EarthCutawayView="False" ShowConstellationBoundries="False" ShowConstellationFigures="True" ShowConstellationSelection="True" ShowEcliptic="False" ShowElevationModel="True" ShowFieldOfView="False" ShowGrid="False" ShowHorizon="False" ShowHorizonPanorama="False" ShowMoonsAsPointSource="False" ShowSolarSystem="True" FovTelescope="0" FovEyepiece="0" FovCamera="0" LocalHorizonMode="False" FadeInOverlays="False" SolarSystemStars="True" SolarSystemMilkyWay="True" SolarSystemCosmos="True" SolarSystemOrbits="True" SolarSystemMinorOrbits="True" SolarSystemOverlays="False" SolarSystemLighting="True" ShowISSModel="True" SolarSystemScale="1" SolarSystemMultiRes="True" SolarSystemMinorPlanets="False" SolarSystemPlanets="True" ShowEarthSky="True" ShowEquatorialGridText="True" ShowGalacticGrid="False" ShowGalacticGridText="True" ShowEclipticGrid="False" ShowEclipticGridText="False" ShowEclipticOverviewText="False" ShowAltAzGrid="False" ShowAltAzGridText="False" ShowPrecessionChart="False" ConstellationPictures="False" ConstellationsEnabled="" ShowConstellationLabels="False" ShowSkyOverlays="True" ShowConstellations="True" ShowSkyNode="True" ShowSkyGrids="True" SkyOverlaysIn3d="False" ConstellationFiguresFilter="0,0,0" ConstellationBoundariesFilter="0,0,0" ConstellationNamesFilter="0,0,0" ConstellationArtFilter="0,0,0"&gt;
+      &lt;Place Name="Current Screen" DataSetType="Sky" RA="19.2399741498048" Dec="71.3167892518211" Constellation="DRA" Classification="Unidentified" Magnitude="0" Distance="0" AngularSize="60" ZoomLevel="360" Rotation="0" Angle="0" Opacity="100" Target="Sun" ViewTarget="0.000822563472252696, 0.000707533788110794, 0.00451731051040917" TargetReferenceFrame="" DomeAlt="0" DomeAz="0"&gt;
+        &lt;Description&gt;&lt;![CDATA[]]&gt;&lt;/Description&gt;
+        &lt;BackgroundImageSet&gt;
+          &lt;ImageSet Generic="False" DataSetType="Sky" BandPass="Visible" Name="Black Sky Background" Url="http://black" DemUrl="" BaseTileLevel="0" TileLevels="0" BaseDegreesPerTile="180" FileType=".png" BottomsUp="False" Projection="Toast" QuadTreeMap="0123" CenterX="0" CenterY="0" OffsetX="0" OffsetY="0" Rotation="0" Sparse="False" ElevationModel="False" StockSet="False" WidthFactor="1" MeanRadius="0" ReferenceFrame="Sky"&gt;
+            &lt;ThumbnailUrl /&gt;
+          &lt;/ImageSet&gt;
+        &lt;/BackgroundImageSet&gt;
+      &lt;/Place&gt;
+      &lt;Overlays&gt;
+        &lt;Overlay Id="927cf475-9b39-4184-8516-8e7dfb608c36" Type="TerraViewer.TextOverlay" Name="This tour has features that requires" X="957.9764" Y="555.4814" Width="1456.769" Height="213.3828" Rotation="0" Color="NamedColor:White" Url="http://www.worldwidetelescope.org" LinkID="" Animate="False" Anchor="Screen"&gt;
+          &lt;Text&gt;
+            &lt;TextObject Bold="False" Italic="False" Underline="False" FontSize="66" FontName="Arial" ForgroundColor="NamedColor:White" BackgroundColor="NamedColor:Black" BorderStyle="None"&gt;This tour has features that requires
+WorldWide Telescope 5.0 or above.&lt;/TextObject&gt;
+          &lt;/Text&gt;
+        &lt;/Overlay&gt;
+      &lt;/Overlays&gt;
+    &lt;/TourStop&gt;
+  &lt;/TourStops&gt;</value>
+  </data>
+  <data name="StarProfileAlpha" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\starprofilealpha.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TrackerButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\trackerbutton.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TouchControlsNoHold" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\touchcontrolsnohold.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>

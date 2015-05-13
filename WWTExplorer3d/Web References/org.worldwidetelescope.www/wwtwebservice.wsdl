@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://research.microsoft.com/WWT/" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s2="http://research.microsoft.com/WWT/AbstractTypes" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://research.microsoft.com/WWT/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://research.microsoft.com/WWT/">
+      <s:import namespace="http://research.microsoft.com/WWT/AstroObjectsDataset.xsd" />
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:import schemaLocation="http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx?schema=AstroObjectsDataset" namespace="http://research.microsoft.com/WWT/AstroObjectsDataset.xsd" />
+      <s:element name="GetAstroObjectsByRaDec">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="Ra" type="s:float" />
+            <s:element minOccurs="1" maxOccurs="1" name="Dec" type="s:float" />
+            <s:element minOccurs="1" maxOccurs="1" name="PlusMinusArcSecs" type="s:float" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAstroObjectsByRaDecResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAstroObjectsByRaDecResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://research.microsoft.com/WWT/AstroObjectsDataset.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAstroObjectsByName">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AstroObjectName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAstroObjectsByNameResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAstroObjectsByNameResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://research.microsoft.com/WWT/AstroObjectsDataset.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAstroObjectsInCatalog">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CatalogName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAstroObjectsInCatalogResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAstroObjectsInCatalogResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any namespace="http://research.microsoft.com/WWT/AstroObjectsDataset.xsd" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ImportTour">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TourXML" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TourBlob" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="TourThumbnail" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="AuthorThumbnail" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ImportTourResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ImportTourResult" type="tns:ArrayOfTour" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfTour">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Tour" nillable="true" type="tns:Tour" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Tour">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="TourGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourTitle" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="WorkFlowStatusCode" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TourSubmittedDateTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="TourApprovedDateTime" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="TourRejectedDateTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourAttributionAndCredits" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuthorName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuthorEmailAddress" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuthorURL" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuthorSecondaryEmailAddress" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuthorContactPhoneNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AuthorContactText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OrganizationName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OrganizationURL" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourKeywordList" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourAstroObjectList" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourExplicitTourLinkList" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="LengthInSecs" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="TourXML" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="UpdateTourWorkFlowStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TourGUID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="WorkFlowStatusCode" type="s1:char" />
+            <s:element minOccurs="0" maxOccurs="1" name="ApprovedRejectedByName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateTourWorkFlowStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UpdateTourWorkFlowStatusResult" type="tns:ArrayOfTour" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForGUID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TourGUID" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForGUIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetToursForGUIDResult" type="tns:ArrayOfTour" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForAuthor">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AuthorName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForAuthorResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetToursForAuthorResult" type="tns:ArrayOfTour" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForKeyword">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Keyword" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForKeywordResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetToursForKeywordResult" type="tns:ArrayOfTour" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForDateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BeginDateTime" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="EndDateTime" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetToursForDateRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetToursForDateRangeResult" type="tns:ArrayOfTour" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AstroObjectsDataset" nillable="true">
+        <s:complexType>
+          <s:sequence>
+            <s:any namespace="http://research.microsoft.com/WWT/AstroObjectsDataset.xsd" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ArrayOfTour" nillable="true" type="tns:ArrayOfTour" />
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="char">
+        <s:restriction base="s:unsignedShort" />
+      </s:simpleType>
+    </s:schema>
+    <s:schema targetNamespace="http://research.microsoft.com/WWT/AbstractTypes">
+      <s:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <s:complexType name="StringArray">
+        <s:complexContent mixed="false">
+          <s:restriction base="soapenc:Array">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="String" type="s:string" />
+            </s:sequence>
+          </s:restriction>
+        </s:complexContent>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetAstroObjectsByRaDecSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAstroObjectsByRaDec" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByRaDecSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAstroObjectsByRaDecResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByNameSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAstroObjectsByName" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByNameSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAstroObjectsByNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsInCatalogSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAstroObjectsInCatalog" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsInCatalogSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAstroObjectsInCatalogResponse" />
+  </wsdl:message>
+  <wsdl:message name="ImportTourSoapIn">
+    <wsdl:part name="parameters" element="tns:ImportTour" />
+  </wsdl:message>
+  <wsdl:message name="ImportTourSoapOut">
+    <wsdl:part name="parameters" element="tns:ImportTourResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTourWorkFlowStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateTourWorkFlowStatus" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTourWorkFlowStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateTourWorkFlowStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForGUIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetToursForGUID" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForGUIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetToursForGUIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForAuthorSoapIn">
+    <wsdl:part name="parameters" element="tns:GetToursForAuthor" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForAuthorSoapOut">
+    <wsdl:part name="parameters" element="tns:GetToursForAuthorResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForKeywordSoapIn">
+    <wsdl:part name="parameters" element="tns:GetToursForKeyword" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForKeywordSoapOut">
+    <wsdl:part name="parameters" element="tns:GetToursForKeywordResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForDateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:GetToursForDateRange" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForDateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:GetToursForDateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByRaDecHttpGetIn">
+    <wsdl:part name="Ra" type="s:string" />
+    <wsdl:part name="Dec" type="s:string" />
+    <wsdl:part name="PlusMinusArcSecs" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByRaDecHttpGetOut">
+    <wsdl:part name="Body" element="tns:AstroObjectsDataset" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByNameHttpGetIn">
+    <wsdl:part name="AstroObjectName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByNameHttpGetOut">
+    <wsdl:part name="Body" element="tns:AstroObjectsDataset" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsInCatalogHttpGetIn">
+    <wsdl:part name="CatalogName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsInCatalogHttpGetOut">
+    <wsdl:part name="Body" element="tns:AstroObjectsDataset" />
+  </wsdl:message>
+  <wsdl:message name="ImportTourHttpGetIn">
+    <wsdl:part name="TourXML" type="s:string" />
+    <wsdl:part name="TourBlob" type="s2:StringArray" />
+    <wsdl:part name="TourThumbnail" type="s2:StringArray" />
+    <wsdl:part name="AuthorThumbnail" type="s2:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="ImportTourHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTourWorkFlowStatusHttpGetIn">
+    <wsdl:part name="TourGUID" type="s:string" />
+    <wsdl:part name="WorkFlowStatusCode" type="s:string" />
+    <wsdl:part name="ApprovedRejectedByName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTourWorkFlowStatusHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForGUIDHttpGetIn">
+    <wsdl:part name="TourGUID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForGUIDHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForAuthorHttpGetIn">
+    <wsdl:part name="AuthorName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForAuthorHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForKeywordHttpGetIn">
+    <wsdl:part name="Keyword" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForKeywordHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForDateRangeHttpGetIn">
+    <wsdl:part name="BeginDateTime" type="s:string" />
+    <wsdl:part name="EndDateTime" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForDateRangeHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByRaDecHttpPostIn">
+    <wsdl:part name="Ra" type="s:string" />
+    <wsdl:part name="Dec" type="s:string" />
+    <wsdl:part name="PlusMinusArcSecs" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByRaDecHttpPostOut">
+    <wsdl:part name="Body" element="tns:AstroObjectsDataset" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByNameHttpPostIn">
+    <wsdl:part name="AstroObjectName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsByNameHttpPostOut">
+    <wsdl:part name="Body" element="tns:AstroObjectsDataset" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsInCatalogHttpPostIn">
+    <wsdl:part name="CatalogName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetAstroObjectsInCatalogHttpPostOut">
+    <wsdl:part name="Body" element="tns:AstroObjectsDataset" />
+  </wsdl:message>
+  <wsdl:message name="ImportTourHttpPostIn">
+    <wsdl:part name="TourXML" type="s:string" />
+    <wsdl:part name="TourBlob" type="s2:StringArray" />
+    <wsdl:part name="TourThumbnail" type="s2:StringArray" />
+    <wsdl:part name="AuthorThumbnail" type="s2:StringArray" />
+  </wsdl:message>
+  <wsdl:message name="ImportTourHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTourWorkFlowStatusHttpPostIn">
+    <wsdl:part name="TourGUID" type="s:string" />
+    <wsdl:part name="WorkFlowStatusCode" type="s:string" />
+    <wsdl:part name="ApprovedRejectedByName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTourWorkFlowStatusHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForGUIDHttpPostIn">
+    <wsdl:part name="TourGUID" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForGUIDHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForAuthorHttpPostIn">
+    <wsdl:part name="AuthorName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForAuthorHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForKeywordHttpPostIn">
+    <wsdl:part name="Keyword" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForKeywordHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForDateRangeHttpPostIn">
+    <wsdl:part name="BeginDateTime" type="s:string" />
+    <wsdl:part name="EndDateTime" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetToursForDateRangeHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfTour" />
+  </wsdl:message>
+  <wsdl:portType name="WWTWebServiceSoap">
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <wsdl:input message="tns:GetAstroObjectsByRaDecSoapIn" />
+      <wsdl:output message="tns:GetAstroObjectsByRaDecSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <wsdl:input message="tns:GetAstroObjectsByNameSoapIn" />
+      <wsdl:output message="tns:GetAstroObjectsByNameSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <wsdl:input message="tns:GetAstroObjectsInCatalogSoapIn" />
+      <wsdl:output message="tns:GetAstroObjectsInCatalogSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <wsdl:input message="tns:ImportTourSoapIn" />
+      <wsdl:output message="tns:ImportTourSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <wsdl:input message="tns:UpdateTourWorkFlowStatusSoapIn" />
+      <wsdl:output message="tns:UpdateTourWorkFlowStatusSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <wsdl:input message="tns:GetToursForGUIDSoapIn" />
+      <wsdl:output message="tns:GetToursForGUIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <wsdl:input message="tns:GetToursForAuthorSoapIn" />
+      <wsdl:output message="tns:GetToursForAuthorSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <wsdl:input message="tns:GetToursForKeywordSoapIn" />
+      <wsdl:output message="tns:GetToursForKeywordSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <wsdl:input message="tns:GetToursForDateRangeSoapIn" />
+      <wsdl:output message="tns:GetToursForDateRangeSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="WWTWebServiceHttpGet">
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <wsdl:input message="tns:GetAstroObjectsByRaDecHttpGetIn" />
+      <wsdl:output message="tns:GetAstroObjectsByRaDecHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <wsdl:input message="tns:GetAstroObjectsByNameHttpGetIn" />
+      <wsdl:output message="tns:GetAstroObjectsByNameHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <wsdl:input message="tns:GetAstroObjectsInCatalogHttpGetIn" />
+      <wsdl:output message="tns:GetAstroObjectsInCatalogHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <wsdl:input message="tns:ImportTourHttpGetIn" />
+      <wsdl:output message="tns:ImportTourHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <wsdl:input message="tns:UpdateTourWorkFlowStatusHttpGetIn" />
+      <wsdl:output message="tns:UpdateTourWorkFlowStatusHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <wsdl:input message="tns:GetToursForGUIDHttpGetIn" />
+      <wsdl:output message="tns:GetToursForGUIDHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <wsdl:input message="tns:GetToursForAuthorHttpGetIn" />
+      <wsdl:output message="tns:GetToursForAuthorHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <wsdl:input message="tns:GetToursForKeywordHttpGetIn" />
+      <wsdl:output message="tns:GetToursForKeywordHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <wsdl:input message="tns:GetToursForDateRangeHttpGetIn" />
+      <wsdl:output message="tns:GetToursForDateRangeHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="WWTWebServiceHttpPost">
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <wsdl:input message="tns:GetAstroObjectsByRaDecHttpPostIn" />
+      <wsdl:output message="tns:GetAstroObjectsByRaDecHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <wsdl:input message="tns:GetAstroObjectsByNameHttpPostIn" />
+      <wsdl:output message="tns:GetAstroObjectsByNameHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <wsdl:input message="tns:GetAstroObjectsInCatalogHttpPostIn" />
+      <wsdl:output message="tns:GetAstroObjectsInCatalogHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <wsdl:input message="tns:ImportTourHttpPostIn" />
+      <wsdl:output message="tns:ImportTourHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <wsdl:input message="tns:UpdateTourWorkFlowStatusHttpPostIn" />
+      <wsdl:output message="tns:UpdateTourWorkFlowStatusHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <wsdl:input message="tns:GetToursForGUIDHttpPostIn" />
+      <wsdl:output message="tns:GetToursForGUIDHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <wsdl:input message="tns:GetToursForAuthorHttpPostIn" />
+      <wsdl:output message="tns:GetToursForAuthorHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <wsdl:input message="tns:GetToursForKeywordHttpPostIn" />
+      <wsdl:output message="tns:GetToursForKeywordHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <wsdl:input message="tns:GetToursForDateRangeHttpPostIn" />
+      <wsdl:output message="tns:GetToursForDateRangeHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WWTWebServiceSoap" type="tns:WWTWebServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetAstroObjectsByRaDec" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetAstroObjectsByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetAstroObjectsInCatalog" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/ImportTour" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/UpdateTourWorkFlowStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetToursForGUID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetToursForAuthor" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetToursForKeyword" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <soap:operation soapAction="http://research.microsoft.com/WWT/GetToursForDateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WWTWebServiceSoap12" type="tns:WWTWebServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetAstroObjectsByRaDec" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetAstroObjectsByName" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetAstroObjectsInCatalog" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/ImportTour" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/UpdateTourWorkFlowStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetToursForGUID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetToursForAuthor" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetToursForKeyword" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <soap12:operation soapAction="http://research.microsoft.com/WWT/GetToursForDateRange" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WWTWebServiceHttpGet" type="tns:WWTWebServiceHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <http:operation location="/GetAstroObjectsByRaDec" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <http:operation location="/GetAstroObjectsByName" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <http:operation location="/GetAstroObjectsInCatalog" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <http:operation location="/ImportTour" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <http:operation location="/UpdateTourWorkFlowStatus" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <http:operation location="/GetToursForGUID" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <http:operation location="/GetToursForAuthor" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <http:operation location="/GetToursForKeyword" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <http:operation location="/GetToursForDateRange" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WWTWebServiceHttpPost" type="tns:WWTWebServiceHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="GetAstroObjectsByRaDec">
+      <http:operation location="/GetAstroObjectsByRaDec" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsByName">
+      <http:operation location="/GetAstroObjectsByName" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAstroObjectsInCatalog">
+      <http:operation location="/GetAstroObjectsInCatalog" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportTour">
+      <http:operation location="/ImportTour" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTourWorkFlowStatus">
+      <http:operation location="/UpdateTourWorkFlowStatus" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForGUID">
+      <http:operation location="/GetToursForGUID" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForAuthor">
+      <http:operation location="/GetToursForAuthor" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForKeyword">
+      <http:operation location="/GetToursForKeyword" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetToursForDateRange">
+      <http:operation location="/GetToursForDateRange" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WWTWebService">
+    <wsdl:port name="WWTWebServiceSoap" binding="tns:WWTWebServiceSoap">
+      <soap:address location="http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WWTWebServiceSoap12" binding="tns:WWTWebServiceSoap12">
+      <soap12:address location="http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WWTWebServiceHttpGet" binding="tns:WWTWebServiceHttpGet">
+      <http:address location="http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WWTWebServiceHttpPost" binding="tns:WWTWebServiceHttpPost">
+      <http:address location="http://www.worldwidetelescope.org/webservices/wwtwebservice.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
