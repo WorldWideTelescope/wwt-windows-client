@@ -4,7 +4,7 @@ WorldWide Telescope (WWT) enables you to explore the universe, bringing together
 This repository contains the source code for the WWT Windows Client.  You will need Visual Studio 2013 with the Setup/Deployment add in to build the code and setup.
 (https://visualstudiogallery.msdn.microsoft.com/9abe329c-9bba-44a1-be59-0fbf6151054d)
 
-Becasue of GitHubs 100mb file limit you will also have to unzip the datafiles for setup (see readme in Setup1 Folder)
+Because of GitHub's 100mb file limit you will also have to unzip the datafiles for setup (see [Setup1/ReadMe.txt](Setup1/ReadMe.txt)).
 
 Other source for the supporting website and tools are located in other repositories:
 
