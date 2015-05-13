@@ -3896,6 +3896,7 @@ namespace TerraViewer
                 frame.Reference = ReferenceFrames.Identity;
                 LayerMap newMap = new LayerMap(frame.Name, ReferenceFrames.Identity);
                 newMap.Frame = frame;
+                newMap.Frame.SystemGenerated = false;
                 parent.AddChild(newMap);
                 newMap.Frame.Parent = parent.Name;
                 AllMaps.Add(frame.Name, newMap);
