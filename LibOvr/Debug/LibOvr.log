@@ -1,8 +1,0 @@
-﻿Build started 5/12/2015 7:33:04 PM.
-     1>Project "C:\Projects\WWTClient\LibOvr\LibOvr.vcxproj" on node 2 (Clean target(s)).
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.MakeFile.Targets(32,5): warning MSB8005: The property 'NMakeCleanCommandLine' doesn't exist.  Skipping...
-     1>Done Building Project "C:\Projects\WWTClient\LibOvr\LibOvr.vcxproj" (Clean target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:00.00

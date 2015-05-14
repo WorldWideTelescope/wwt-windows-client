@@ -46,13 +46,16 @@ local.properties
 [Dd]ebug/
 [Rr]elease/
 x64/
+x86/
 build/
 [Bb]in/
 [Oo]bj/
+LibOvr/Debug/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+[Pp]ackages/
 
 *_i.c
 *_p.c
