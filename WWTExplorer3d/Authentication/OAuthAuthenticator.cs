@@ -7,8 +7,14 @@ namespace MSAuth
 {
     public static class OAuthAuthenticator
     {
-        private const string msa_client_id = "000000004813DA7C";//"0000000044128B55";
-        private const string msa_client_secret = "-l6FXTdT1K8xLkBM8mVPed9jJdMy-wLz";//"amw-eMF4Ps-jzDVv6qwL4scqp2iFI29l";
+        //staging - wwtstaging.azurewebsites.net
+        //private const string msa_client_id = "000000004813DA7C";
+        //private const string msa_client_secret = "-l6FXTdT1K8xLkBM8mVPed9jJdMy-wLz";
+
+        //prod - openwwt.org
+        private const string msa_client_id = "000000004015657B";
+        private const string msa_client_secret = "Ewb5SNjRBfzBDy5Ityx-nO4-kPAIwLrH";
+
 
         public static async Task<OAuthTicket> SignInToMicrosoftAccount(System.Windows.Forms.IWin32Window parentWindow)
         {
