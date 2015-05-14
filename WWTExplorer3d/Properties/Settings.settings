@@ -372,7 +372,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="CloudCommunityUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://wwtstaging.azurewebsites.net/</Value>
+      <Value Profile="(Default)">http://openwwt.org/</Value>
     </Setting>
     <Setting Name="CW" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
