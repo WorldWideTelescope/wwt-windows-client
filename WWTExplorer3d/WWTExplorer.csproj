@@ -2404,6 +2404,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="DSMRender.dll" />
+    <None Include="Resources\point.png" />
+    <None Include="Resources\target1.png" />
+    <None Include="Resources\target2.png" />
     <Content Include="Resources\TouchControlsNoHold.png" />
     <None Include="Resources\xbox360.png" />
     <None Include="Resources\xbox360Layour.jpg" />

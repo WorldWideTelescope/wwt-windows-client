@@ -440,7 +440,7 @@ namespace TerraViewer
         public enum MarkerMixes { Same_For_All, /*Group_by_Range, Group_by_Values */};
         public enum ColorMaps { Same_For_All, /*Group_by_Range, */Group_by_Values, Per_Column_Literal/*, Gradients_by_Range*/ };
 
-        public enum PlotTypes { Gaussian, Point, Circle,/* Square,*/ PushPin/*, Custom */, Column, Cylinder};
+        public enum PlotTypes { Gaussian, Point, Circle, Square, PushPin/*, Custom */, Target1, Target2, Column, Cylinder};
 
         public enum MarkerScales { Screen, World };
         public enum RAUnits { Hours, Degrees };
@@ -793,6 +793,9 @@ namespace TerraViewer
 
         static Texture11 circleTexture = null;
         static Texture11 squareTexture = null;
+        static Texture11 pointTexture = null;
+        static Texture11 target1Texture = null;
+        static Texture11 target2Texture = null;
 
         static Texture11 CircleTexture
         {
@@ -804,6 +807,42 @@ namespace TerraViewer
                 }
 
                 return circleTexture;
+            }
+        }
+        static Texture11 PointTexture
+        {
+            get
+            {
+                if (pointTexture == null)
+                {
+                    pointTexture = Texture11.FromBitmap(Properties.Resources.point);
+                }
+
+                return pointTexture;
+            }
+        }
+        static Texture11 Target1Texture
+        {
+            get
+            {
+                if (target1Texture == null)
+                {
+                    target1Texture = Texture11.FromBitmap(Properties.Resources.target1);
+                }
+
+                return target1Texture;
+            }
+        }
+        static Texture11 Target2Texture
+        {
+            get
+            {
+                if (target2Texture == null)
+                {
+                    target2Texture = Texture11.FromBitmap(Properties.Resources.target2);
+                }
+
+                return target2Texture;
             }
         }
 
@@ -925,7 +964,19 @@ namespace TerraViewer
                     break;
                 case PlotTypes.Point:
                     renderContext.BlendMode = BlendMode.Alpha;
+                    renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, PointTexture.ResourceView);
+                    break;
+                case PlotTypes.Square:
+                    renderContext.BlendMode = BlendMode.Alpha;
                     renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, SquareTexture.ResourceView);
+                    break;
+                case PlotTypes.Target1:
+                    renderContext.BlendMode = BlendMode.Alpha;
+                    renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, Target1Texture.ResourceView);
+                    break;
+                case PlotTypes.Target2:
+                    renderContext.BlendMode = BlendMode.Alpha;
+                    renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, Target2Texture.ResourceView);
                     break;
                 case PlotTypes.PushPin:
                     renderContext.BlendMode = BlendMode.Alpha;
