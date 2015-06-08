@@ -18666,7 +18666,7 @@ namespace TerraViewer
                         case NavigationActions.ZoomIn:
                             if (!string.IsNullOrEmpty(value))
                             {
-                                ZoomRateIn(double.Parse(value));
+                                ZoomIn(double.Parse(value));
                             }
                             else
                             {
@@ -18676,8 +18676,8 @@ namespace TerraViewer
                         case NavigationActions.ZoomOut:
                             if (!string.IsNullOrEmpty(value))
                             {
-                                ZoomRateOut(double.Parse(value));
-                            }
+                                ZoomOut(double.Parse(value));
+                             }
                             else
                             {
                                 ZoomOut();
@@ -18976,7 +18976,14 @@ namespace TerraViewer
                             break;
                         case NavigationActions.GotoJupiter:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Juptier");
+                                IPlace place = Search.FindCatalogObjectExact("Jupiter");
+                                GotoTarget(place, false, false, true);
+
+                            }
+                            break;
+                        case NavigationActions.GotoSaturn:
+                            {
+                                IPlace place = Search.FindCatalogObjectExact("Saturn");
                                 GotoTarget(place, false, false, true);
 
                             }
@@ -19771,7 +19778,7 @@ namespace TerraViewer
 
 
     enum NavigationProperties { Ra, Declination, Latitude, Longitude, Zoom, Angle, Rotation, ZoomRate, PanUpDownRate, PanLeftRightRate, RotationRate, NavigationHold, ImageCrossfade, FadeToBlack, SystemVolume, DomeAlt, DomeAz, DomeTilt, DomeAngle, FisheyeAngle, ScreenFOV };
-    enum NavigationActions { MoveUp, MoveDown, MoveRight, MoveLeft, ZoomIn, ZoomOut, TiltUp, TiltDown, RotateLeft, RotateRight, DomeLeft, DomeRight, DomeUp, DomeDown, AllStop, NextItem, LastItem, Select, Back, SetForeground, SetBackground, NextMode, PreviousMode, ResetCamera, SolarSystemMode, SkyMode, EarthMode, PlanetMode, PanoramaMode, SandboxMode, PlayTour, PauseTour, StopTour, NextSlide, PreviousSlide, MoveToFirstSlide, MoveToEndSlide, ShowNextContext, ShowPreviousContext, ShowNextExplore, ShowPreviousExplore, ResetRiftView, GotoSun, GotoMercury, GotoVenus, GotoEarth, GotoMars, GotoJupiter, GotoUranus, GotoNeptune, GotoPluto, SolarSystemOverview, GotoMilkyWay, GotoSDSSGalaxies, GotoSlide };
+    enum NavigationActions { MoveUp, MoveDown, MoveRight, MoveLeft, ZoomIn, ZoomOut, TiltUp, TiltDown, RotateLeft, RotateRight, DomeLeft, DomeRight, DomeUp, DomeDown, AllStop, NextItem, LastItem, Select, Back, SetForeground, SetBackground, NextMode, PreviousMode, ResetCamera, SolarSystemMode, SkyMode, EarthMode, PlanetMode, PanoramaMode, SandboxMode, PlayTour, PauseTour, StopTour, NextSlide, PreviousSlide, MoveToFirstSlide, MoveToEndSlide, ShowNextContext, ShowPreviousContext, ShowNextExplore, ShowPreviousExplore, ResetRiftView, GotoSun, GotoMercury, GotoVenus, GotoEarth, GotoMars, GotoJupiter, GotoSaturn, GotoUranus, GotoNeptune, GotoPluto, SolarSystemOverview, GotoMilkyWay, GotoSDSSGalaxies, GotoSlide };
 
     public struct RiftInfo
     {
