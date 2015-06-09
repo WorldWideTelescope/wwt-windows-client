@@ -1,4 +1,18 @@
+# WorldWide Telescope -- Windows Client licensing
+
+The WWT Windows Client is open source software released under the MIT
+license.  Some components used by the WWT Windows Client may be under
+other open source licenses; see their respective license files for
+more information for about their terms.
+
+The code in the `LibOvr` directory is not part of the WWT Windows
+Client software, and is not open source, but is included here under
+its own license as a convenience to users wishing to use that code
+with the WWT Windows Client.  Please see `LibOvr/LICENSE.md` for
+details.
+
 The MIT License (MIT)
+---------------------
 
 Copyright (c) 2015 Microsoft Research Connections
 
