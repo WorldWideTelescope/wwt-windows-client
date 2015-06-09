@@ -7,7 +7,7 @@ clearly intended to be a permanent canonical copy of the license text,
 but there is no longer any page at that URL.  To the best of our
 knowledge, the intended license is the one below, which can also be
 found at https://developer.oculus.com/downloads/pc/0.2.2/Oculus_SDK/
-(if you click the "Legal" tab near the top) and at
+(if you click the "Legal" tab near the top), and at
 https://developer.oculus.com/licenses/pc-3.2/.  (Further confusing
 matters, the first of those two pages has HTML saying "The text of
 this may be found at:
@@ -15,13 +15,13 @@ https://developer.oculus.com/licenses/rift-sdk-3.2/" but with that URL
 actually linking to https://developer.oculus.com/licenses/pc-3.2/
 anyway.)
 
-The code in this directory is not is not part of the WWT Windows
-Client, and is not necessary for running the WWT Windows Client
-normally.  It is used for connecting the WWT Windows Client to Oculus
-hardware, and is included here under the Oculus SDK License as a
-convenience to users who wish to use Oculus hardware with WWT.
+The code in this directory is not part of the WWT Windows Client, and
+is not necessary for running the WWT Windows Client normally.  It is
+used for connecting the WWT Windows Client to Oculus hardware, and is
+included here under the Oculus SDK License as a convenience to users
+who wish to use Oculus hardware with WWT.
 
---The WorldWide Telescope team, 2015-06-09
+-- The WorldWide Telescope team, 2015-06-09
 
 Oculus VR, LLC Software Development Kit License Agreement
 =========================================================
