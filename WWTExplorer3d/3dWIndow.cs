@@ -13408,7 +13408,7 @@ namespace TerraViewer
                     if (target != SolarSystemObjects.Undefined)
                     {
                         trackingObject = place;
-                         double jumpTime = 4;
+                        double jumpTime = 4;
 
                         if (target == SolarSystemObjects.Custom)
                         {
