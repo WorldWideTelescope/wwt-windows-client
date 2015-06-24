@@ -13408,12 +13408,7 @@ namespace TerraViewer
                     if (target != SolarSystemObjects.Undefined)
                     {
                         trackingObject = place;
-                        if (target == SolarSystemTrack && !(place.Classification == Classification.Star || place.Classification == Classification.Galaxy))
-                        {
-                            GotoTarget(place.CamParams, noZoom, instant);
-                            return;
-                        }
-                        double jumpTime = 4;
+                         double jumpTime = 4;
 
                         if (target == SolarSystemObjects.Custom)
                         {
