@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TerraViewer
 {
-    enum StockScriptActions { GotoSun, GotoMercury, GotoVenus, GotoEarth, GotoMars, GotoJupiter, GotoUranus, GotoNeptune, GotoPluto, GotoMilkyWay, GotoSDSSGalaxies, GotoComaCluster };
+    enum StockScriptActions { GotoSun, GotoMercury, GotoVenus, GotoEarth, GotoMars, GotoJupiter, GotoSaturn, GotoUranus, GotoNeptune, GotoPluto, GotoMilkyWay, GotoSDSSGalaxies, GotoComaCluster };
     class ScriptActions : IScriptable
     {
     
