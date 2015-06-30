@@ -112,13 +112,13 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="aboutText.Text" xml:space="preserve">
-    <value>Copyright © 2014 Microsoft Corporation
+    <value>Copyright © 2015 Microsoft Corporation
 
 Dedicated to Jim Gray
 
@@ -127,10 +127,11 @@ Additional Imagery credits is contained in Imageset Information properties dialo
 
 Microsoft Research
 Jonathan Fay, Curtis Wong,
-Ed Cook, Rob Fatland, Jessika Gebauer, Darren Gehring, Ron Gilchrist, Rick Gutierrez,
-Nils Kock, Ben Kunz, Gavin Jancke, Paul Johns, Chris Laurel, Chuck Needham, ThuVan Pham,
-Doug Roberts, Phil Rosenfield, Kim Rush, Jina Suh, Dinoj Surendran, Peter Turcan
-Special Thanks to Peter Lee, Rick Rashid, Tony Hey, Dan Fay, Tom Barclay, Wyman Chong
+Eric Carter, Ed Cook, Rob Fatland, Jessika Gebauer, Darren Gehring, Ron Gilchrist,
+Rick Gutierrez, Nils Kock, Ben Kunz, Gavin Jancke, Paul Johns, Chris Laurel, Chuck Needham,
+ThuVan Pham, Doug Roberts, Phil Rosenfield, Kim Rush, Jina Suh, Dinoj Surendran, Peter Turcan
+Special Thanks to Peter Lee, Rick Rashid, Tony Hey, Jim Pinkelman, Michael Zyskowski
+Dan Fay, Tom Barclay, Wyman Chong
 
 In collaboration with:
 Alex Szalay, Miguel Aragon  - Johns Hopkins Univ, Mark Subbarao, Randy Lansberg - Adler SVL
@@ -138,29 +139,7 @@ Alyssa Goodman, Gus Muench, Doug Finkbeiner, Roy Gould  - CfA
 Frank Summers, Brian McLean, Alberto Conti, Carol Christian - STScI, Robert Hurt, John Good - IPAC
 Megan Watzke, Kimberly Kowal Arcand - Chandra, George Djorgovski, Ashish Mahabal, Roy Williams - Cal Tech</value>
   </data>
-  <metadata name="timer1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="timer1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="marsText.Text" xml:space="preserve">
-    <value>Copyright © 2014 Microsoft Corporation
-Dedicated to Jim Gray
-
-Imagery and 3D terrain courtesy of NASA, USGS Astrogeology Branch,
-University of Arizona HiRISE Instrument Team, Malin Space Science Systems,
-ESA/DLR/FU Berlin (G. Neukum), and University of Washington (S. Krughoff). 
-Additional Imagery credits are contained in the Imageset Information properties dialog.
-Microsoft Research and NASA Ames Research Center collaborated on developing
-the hardware/software infrastructure to display NASA Imagery on WWT.
-
-Microsoft Research
-Jonathan Fay, Ron Gilchrist, Chris Laurel, Heather Mitchell, 
-Kim Rush, Ed Cook, Dinoj Surendran, Peter Turcan, Curtis Wong
-Special Thanks to Peter Lee, Rick Rashid, Tony Hey, Dan Fay, Kirsten Wiley, Tom Barclay, Wyman Chong
-
-In collaboration with the National Aeronautics and Space Administration
-Michael Broxton, Ted Scharff, Mike Lundy, Devin Carlen, Lisa Messeri, Kim Lembo,
-Chris C. Kemp, Jesse Andrews, Ross Beyer, Soo Choi, Bill Endter, Terry Fong,
-Samuel Howard, Jyothi Krishnan, Joshua McKenty, Lisa Messeri, Brian Reed
-</value>
-  </data>
 </root>

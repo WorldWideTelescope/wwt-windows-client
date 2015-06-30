@@ -15,7 +15,7 @@ namespace TerraViewer
         {
             try
             {
-                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrl + @"/Resource/Service/User");
+                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/User");
                 string appSecurityToken = Properties.Settings.Default.LiveIdToken;
                 string body;
                 WebRequest request = WebRequest.Create(getQuestionsUri.Uri);
@@ -53,7 +53,7 @@ namespace TerraViewer
                 buffer[count++] = Convert.ToByte(fileStream.ReadByte());
             }
             fileStream.Close();
-            UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrl + @"/Resource/Service/Content/Publish/" + name);
+            UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/Publish/" + name);
             string appSecurityToken = Properties.Settings.Default.LiveIdToken;
             string body;
             WebRequest request = WebRequest.Create(getQuestionsUri.Uri);
@@ -80,7 +80,7 @@ namespace TerraViewer
 
                         if (id > 0)
                         {
-                            WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + @"/Community#/EditContent/" + id.ToString(), true);
+                            WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditContent/" + id.ToString(), true);
                         }
                         // MessageBox.Show(body);
                     }
@@ -115,7 +115,7 @@ namespace TerraViewer
         {
             try
             {
-                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrl + @"/Resource/Service/Content/" + id.ToString());
+                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/" + id.ToString());
                 string appSecurityToken = Properties.Settings.Default.LiveIdToken;
                 string body;
                 WebRequest request = WebRequest.Create(getQuestionsUri.Uri);
@@ -151,7 +151,7 @@ namespace TerraViewer
         {
             try
             {
-                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrl + @"/Resource/Service/Community/" + id.ToString());
+                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Community/" + id.ToString());
                 string appSecurityToken = Properties.Settings.Default.LiveIdToken;
                 string body;
                 WebRequest request = WebRequest.Create(getQuestionsUri.Uri);
@@ -187,7 +187,7 @@ namespace TerraViewer
         {
             try
             {
-                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrl + @"/Resource/Service/Content/Rate/" + id.ToString() + "/" + rating.ToString());
+                UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/Rate/" + id.ToString() + "/" + rating.ToString());
                 string appSecurityToken = Properties.Settings.Default.LiveIdToken;
                 string body;
                 WebRequest request = WebRequest.Create(getQuestionsUri.Uri);
@@ -218,7 +218,7 @@ namespace TerraViewer
 
         public static bool IsUserRegistered()
         {
-            UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrl + @"/Resource/Service/User");
+            UriBuilder getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/User");
             string appSecurityToken = Properties.Settings.Default.LiveIdToken;
             string body;
             WebRequest request = WebRequest.Create(getQuestionsUri.Uri);

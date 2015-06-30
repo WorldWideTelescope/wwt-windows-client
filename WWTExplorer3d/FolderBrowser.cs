@@ -466,7 +466,7 @@ namespace TerraViewer
 
             if (folder.MSRCommunityId > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + @"/Community#/CommunityDetail/" + folder.MSRCommunityId.ToString(), true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/CommunityDetail/" + folder.MSRCommunityId.ToString(), true);
             }
         }
 
@@ -476,7 +476,7 @@ namespace TerraViewer
 
             if (folder.MSRCommunityId > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + @"/Community#/EditCommunity/" + folder.MSRCommunityId.ToString(), true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditCommunity/" + folder.MSRCommunityId.ToString(), true);
             }
         }
 
@@ -590,7 +590,7 @@ namespace TerraViewer
 
             if (id > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + @"/Community#/ContentDetail/" + id, true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/ContentDetail/" + id, true);
             }
 
         }
@@ -614,7 +614,7 @@ namespace TerraViewer
 
             if (id > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + @"/Community#/EditContent/" + id, true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditContent/" + id, true);
             }
         }
 
@@ -693,7 +693,7 @@ namespace TerraViewer
 
             if (folder.MSRCommunityId > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + @"/Community#/EditCommunity/" + folder.MSRCommunityId, true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditCommunity/" + folder.MSRCommunityId, true);
             }
 
         }
@@ -1193,7 +1193,7 @@ namespace TerraViewer
                     }
 
                     // Add Perth Community entry
-                    Folder perthCommunities = Folder.LoadFromUrl(Properties.Settings.Default.CloudCommunityUrl + "/Resource/Service/Payload", false);
+                    Folder perthCommunities = Folder.LoadFromUrl(Properties.Settings.Default.CloudCommunityUrlNew + "/Resource/Service/Payload", false);
                     if (perthCommunities != null)
                     {
                         perthCommunities.ReadOnly = true;

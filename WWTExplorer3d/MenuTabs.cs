@@ -25,7 +25,6 @@ namespace TerraViewer
         Bitmap tourSelectedTab = global::TerraViewer.Properties.Resources.tourSelected;
         Bitmap tourHoverTab = global::TerraViewer.Properties.Resources.tourHover;
         Bitmap tourSelectedHoverTab = global::TerraViewer.Properties.Resources.tourSelectedHover;
-        Bitmap wwtLogo = global::TerraViewer.Properties.Resources.tabWwtLogo;
         Bitmap closeRest = global::TerraViewer.Properties.Resources.CloseRest;
         Bitmap closeHover = global::TerraViewer.Properties.Resources.CloseHover;
         Bitmap closePush = global::TerraViewer.Properties.Resources.ClosePush;

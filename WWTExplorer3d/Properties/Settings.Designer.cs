@@ -1484,13 +1484,13 @@ namespace TerraViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://openwwt.org/")]
-        public string CloudCommunityUrl {
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org")]
+        public string CloudCommunityUrlNew {
             get {
-                return ((string)(this["CloudCommunityUrl"]));
+                return ((string)(this["CloudCommunityUrlNew"]));
             }
             set {
-                this["CloudCommunityUrl"] = value;
+                this["CloudCommunityUrlNew"] = value;
             }
         }
         

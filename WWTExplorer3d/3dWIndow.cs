@@ -11469,7 +11469,7 @@ namespace TerraViewer
             }
 
             //TODO We need to update this via a flag to force upgrades past v5.1 to work
-            if (!File.Exists(Properties.Settings.Default.CahceDirectory + "data\\wwtv5.2.txt"))
+            if (!File.Exists(Properties.Settings.Default.CahceDirectory + "data\\wwtv5.2.7.txt"))
             {
                 extractData = true;
             }
@@ -11497,7 +11497,7 @@ namespace TerraViewer
             string filename = appdir + "\\datafiles.cabinet";
             FileCabinet cab = new FileCabinet(filename, dataDir);
             cab.Extract();
-            File.WriteAllText(Properties.Settings.Default.CahceDirectory + "data\\wwtv5.2.txt", "WWT Version 5 installed");
+            File.WriteAllText(Properties.Settings.Default.CahceDirectory + "data\\wwtv5.2.7.txt", "WWT Version 5.5.7 installed");
         }
 
         int mouseDownX;
@@ -15767,7 +15767,7 @@ namespace TerraViewer
         internal void JoinCommunity()
         {
             //RG: The layerscape home page is now {rootdomain}/Community
-            WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrl + "/Community", true);
+            WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + "/Community", true);
         }
 
         private void showFinderToolStripMenuItem_Click(object sender, EventArgs e)

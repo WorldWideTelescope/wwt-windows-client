@@ -371,8 +371,8 @@
     <Setting Name="FullScreenHeight" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="CloudCommunityUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://openwwt.org/</Value>
+    <Setting Name="CloudCommunityUrlNew" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.worldwidetelescope.org</Value>
     </Setting>
     <Setting Name="CW" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
