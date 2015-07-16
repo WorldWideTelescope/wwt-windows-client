@@ -1622,7 +1622,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_8994134A3002496B9ACD2171AA6B2439"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder]Microsoft Research\\Microsoft WorldWide Telesescope"
+            "DefaultLocation" = "8:[ProgramFilesFolder]Microsoft Research\\Microsoft WorldWide Telescope"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -1686,15 +1686,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:WorldWide Telescope"
-        "ProductCode" = "8:{DF500F13-44A3-428C-B69A-A80B73ED3A95}"
-        "PackageCode" = "8:{26986387-ECC6-463E-815E-7A18412DE71D}"
+        "ProductCode" = "8:{5AAF8C68-9265-437C-8D9A-06EF98F07C09}"
+        "PackageCode" = "8:{25F14D09-6E5F-4ADC-8E96-AE67F7756492}"
         "UpgradeCode" = "8:{543D9051-C7F5-4C6B-BEA5-6CA148C8487F}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.2.08"
+        "ProductVersion" = "8:5.2.09"
         "Manufacturer" = "8:WorldWide Telescope"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
