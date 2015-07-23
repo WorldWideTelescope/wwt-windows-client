@@ -1148,7 +1148,7 @@ namespace TerraViewer
             }
             else
             {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6]", Time, X, Y, Z, H, P, R);
+                return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
             }
 
         }
