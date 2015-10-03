@@ -671,41 +671,23 @@ namespace TerraViewer
 
         public void SlewToCoordinates(double rightAscension, double declination)
         {
-            try
-            {
-                objTypeScope.InvokeMember("SlewToCoordinates",
-                    BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] { rightAscension, declination });
-            }
-            catch
-            {
-            }
+            Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("SlewToCoordinates",
+                BindingFlags.Default | BindingFlags.InvokeMethod,
+                null, objScopeLateBound, new object[] {rightAscension, declination}));
         }
 
         public void SlewToCoordinatesAsync(double rightAscension, double declination)
         {
-            try
-            {
-                objTypeScope.InvokeMember("SlewToCoordinatesAsync",
-                    BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] { rightAscension, declination });
-            }
-            catch
-            {
-            }
+            Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("SlewToCoordinatesAsync",
+                BindingFlags.Default | BindingFlags.InvokeMethod,
+                null, objScopeLateBound, new object[] {rightAscension, declination}));
         }
 
         public void SlewToTarget()
         {
-            try
-            {
-                objTypeScope.InvokeMember("SlewToTarget",
-                    BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] { });
-            }
-            catch
-            {
-            }
+            Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("SlewToTarget",
+                BindingFlags.Default | BindingFlags.InvokeMethod,
+                null, objScopeLateBound, new object[] {}));
         }
 
         public void SlewToTargetAsync()
@@ -789,15 +771,7 @@ namespace TerraViewer
             }
             set
             {
-                try
-                {
-
-                    objTypeScope.InvokeMember("Tracking", BindingFlags.Default | BindingFlags.SetProperty,
-                        null, objScopeLateBound, new object[] { value });
-                }
-                catch
-                {
-                }
+                Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("Tracking", BindingFlags.Default | BindingFlags.SetProperty, null, objScopeLateBound, new object[] {value}));
             }
         }
 
