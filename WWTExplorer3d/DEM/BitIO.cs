@@ -75,7 +75,7 @@ namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compre
 	/// </summary>
     public class BitReader
     {
-		Stream stream;
+	    readonly Stream stream;
 
 		/// <summary>
 		/// Constructor.
