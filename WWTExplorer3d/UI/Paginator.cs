@@ -19,10 +19,10 @@ namespace TerraViewer
             InitializeComponent();
         }
 
-        Bitmap leftArrow = global::TerraViewer.Properties.Resources.LeftArrow;
-        Bitmap rightArrow = global::TerraViewer.Properties.Resources.RightArrow;
-        Bitmap leftArrowDisabled = global::TerraViewer.Properties.Resources.LeftArrowDisabled;
-        Bitmap rightArrowDisabled = global::TerraViewer.Properties.Resources.RightArrowDisabled;
+        readonly Bitmap leftArrow = global::TerraViewer.Properties.Resources.LeftArrow;
+        readonly Bitmap rightArrow = global::TerraViewer.Properties.Resources.RightArrow;
+        readonly Bitmap leftArrowDisabled = global::TerraViewer.Properties.Resources.LeftArrowDisabled;
+        readonly Bitmap rightArrowDisabled = global::TerraViewer.Properties.Resources.RightArrowDisabled;
    
         public event PageChangedEventHandler PageChanged;
 
@@ -57,9 +57,9 @@ namespace TerraViewer
 
         private void Paginator_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            String text = String.Format(Language.GetLocalizedText(290, "{0} of {1}"), currentPage + 1, totalPages);
-            RectangleF rectf = new RectangleF(0,0,Width,Height);
+            var g = e.Graphics;
+            var text = String.Format(Language.GetLocalizedText(290, "{0} of {1}"), currentPage + 1, totalPages);
+            var rectf = new RectangleF(0,0,Width,Height);
             if (currentPage > 0)
             {
                 g.DrawImage(leftArrow,0,Height/2 - 8);
@@ -141,7 +141,7 @@ namespace TerraViewer
             Paginator_MouseClick(this, downArgs);
         }
 
-        MouseEventArgs downArgs = null;
+        MouseEventArgs downArgs;
 
 
         private void Paginator_MouseDown(object sender, MouseEventArgs e)

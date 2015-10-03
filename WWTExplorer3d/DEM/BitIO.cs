@@ -97,14 +97,14 @@ namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compre
         {
             if (bitCount == 0)
             {
-				int nextByte = stream.ReadByte();
+				var nextByte = stream.ReadByte();
 				if (nextByte == -1)
 					throw new EndOfStreamException();
 				bitBuffer = (byte) nextByte;
                 bitCount = 8;
             }
 
-            bool bit = bitBuffer >= 128;
+            var bit = bitBuffer >= 128;
             bitBuffer <<= 1;
             bitCount--;
 

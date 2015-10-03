@@ -27,10 +27,10 @@ namespace TerraViewer
 
 
         
-        static WebClient client = new WebClient();
-        static bool complete = false;
-        static bool canceled = false;
-        static FileDownload dialog = null;
+        static readonly WebClient client = new WebClient();
+        static bool complete;
+        static bool canceled;
+        static FileDownload dialog;
         static FileDownload()
         {
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
@@ -61,10 +61,10 @@ namespace TerraViewer
                 }
                 File.Delete(filename);
             }
-            Uri uri = new Uri(url);
+            var uri = new Uri(url);
             if (uri.IsFile)
             {
-                string source = uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
+                var source = uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
                 File.Copy(source, filename);
                 return true;
             }

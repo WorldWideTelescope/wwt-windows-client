@@ -125,7 +125,7 @@ namespace TerraViewer
 
             }
         }
-        bool inUpdateTime = false;
+        bool inUpdateTime;
         private void UpdateTimeFields()
         {
             if (ScratchTime.Year > 4000)
@@ -272,7 +272,7 @@ namespace TerraViewer
         {
             try
             {
-                int y = Convert.ToInt32(year.Text);
+                var y = Convert.ToInt32(year.Text);
                 ScratchTime = ScratchTime.AddYears(y - ScratchTime.Year);
             }
             catch
@@ -286,7 +286,7 @@ namespace TerraViewer
         {
             try
             {
-                int m = Convert.ToInt32(month.Text);
+                var m = Convert.ToInt32(month.Text);
                 ScratchTime = ScratchTime.AddMonths(m - ScratchTime.Month);
             }
             catch
@@ -301,7 +301,7 @@ namespace TerraViewer
         {
             try
             {
-                int d = Convert.ToInt32(day.Text);
+                var d = Convert.ToInt32(day.Text);
                 ScratchTime = ScratchTime.AddDays(d - ScratchTime.Day);
             }
             catch
@@ -315,7 +315,7 @@ namespace TerraViewer
         {
             try
             {
-                int h = Convert.ToInt32(hours.Text);
+                var h = Convert.ToInt32(hours.Text);
                 ScratchTime = ScratchTime.AddHours(h - ScratchTime.Hour);
             }
             catch
@@ -329,7 +329,7 @@ namespace TerraViewer
         {
             try
             {
-                int m = Convert.ToInt32(min.Text);
+                var m = Convert.ToInt32(min.Text);
                 ScratchTime = ScratchTime.AddMinutes(m - ScratchTime.Minute);
             }
             catch
@@ -343,7 +343,7 @@ namespace TerraViewer
         {
             try
             {
-                int s = Convert.ToInt32( this.sec.Text);
+                var s = Convert.ToInt32( this.sec.Text);
                 ScratchTime = ScratchTime.AddSeconds(s - ScratchTime.Second);
             }
             catch
@@ -355,9 +355,9 @@ namespace TerraViewer
 
         private void Date_TextChanged(object sender, EventArgs e)
         {
-            string s = ((TextBox)sender).Text;
-            string sOut = "";
-            foreach (char c in s)
+            var s = ((TextBox)sender).Text;
+            var sOut = "";
+            foreach (var c in s)
             {
                 if (c >= '0' && c <= '9')
                 {

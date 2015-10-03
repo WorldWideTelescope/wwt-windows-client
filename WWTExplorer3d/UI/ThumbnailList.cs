@@ -101,10 +101,10 @@ namespace TerraViewer
             set { items = value; }
         }
 
-        static Bitmap bmpBackground = global::TerraViewer.Properties.Resources.thumbBackground;
-        static Bitmap bmpBackgroundHover = global::TerraViewer.Properties.Resources.ThumbBackgroundHover;
-        static Bitmap bmpBackgroundWide = global::TerraViewer.Properties.Resources.thumbBackgroundWide;
-        static Bitmap bmpBackgroundWideHover = global::TerraViewer.Properties.Resources.ThumbBackgroundWideHover;
+        static readonly Bitmap bmpBackground = global::TerraViewer.Properties.Resources.thumbBackground;
+        static readonly Bitmap bmpBackgroundHover = global::TerraViewer.Properties.Resources.ThumbBackgroundHover;
+        static readonly Bitmap bmpBackgroundWide = global::TerraViewer.Properties.Resources.thumbBackgroundWide;
+        static readonly Bitmap bmpBackgroundWideHover = global::TerraViewer.Properties.Resources.ThumbBackgroundWideHover;
         static Bitmap bmpDropInsertMarker = global::TerraViewer.Properties.Resources.DragInsertMarker;
 
         public void PageChanged(object sender, PageChange e)
@@ -169,7 +169,7 @@ namespace TerraViewer
             }
         }
 
-        int startIndex = 0;
+        int startIndex;
 
         int selectedItem = -1;
         int hoverItem = -1;
@@ -233,7 +233,7 @@ namespace TerraViewer
 
         private void ThumbnailList_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             RowCount = Math.Max(Height / ThumbHeight, 1);
             ColCount = Math.Max(Width / HorzSpacing, 1);
 
@@ -242,10 +242,10 @@ namespace TerraViewer
             startIndex = (startIndex / ItemsPerPage) * ItemsPerPage;
 
             RectangleF rectf;
-            int index = startIndex;
-            for (int y = 0; y < rowCount; y++)
+            var index = startIndex;
+            for (var y = 0; y < rowCount; y++)
             {
-                for (int x = 0; x < colCount; x++)
+                for (var x = 0; x < colCount; x++)
                 {
                     if (index >= items.Count)
                     {
@@ -263,7 +263,7 @@ namespace TerraViewer
 
 
                     rectf = new RectangleF((float)x * horzMultiple + 3f, y * VertSpacing, ThumbWidth-14, 64);
-                    Brush textBrush = UiTools.StadardTextBrush;
+                    var textBrush = UiTools.StadardTextBrush;
                     if (index == hoverItem || (index == selectedItem && hoverItem == -1))
                     {
                         g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWideHover : bmpBackgroundHover, (int)((float)x * horzMultiple), y * VertSpacing);
@@ -277,7 +277,7 @@ namespace TerraViewer
                     ((IThumbnail)items[index]).Bounds = RectangleToScreen(new Rectangle((int)(x * horzMultiple), (int)(y * VertSpacing), (int)horzMultiple, (int)VertSpacing));
                     try
                     {
-                        Bitmap bmpThumb = ((IThumbnail)items[index]).ThumbNail;
+                        var bmpThumb = ((IThumbnail)items[index]).ThumbNail;
                         if (bmpThumb != null)
                         {
                             g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3,bmpThumb.Width,bmpThumb.Height), new Rectangle(0,0,bmpThumb.Width,bmpThumb.Height),GraphicsUnit.Pixel);
@@ -310,7 +310,7 @@ namespace TerraViewer
             }
         }
 
-        bool showAddButton = false;
+        bool showAddButton;
 
         public bool ShowAddButton
         {
@@ -334,14 +334,14 @@ namespace TerraViewer
             set { addText = value; }
         }
 
-        bool addButtonHover = false;
+        bool addButtonHover;
 
         private int GetItemIndexFromCursor(Point testPoint, out bool imageClicked)
         {
             imageClicked = false;
-            int index = -1;
-            int xpos = (int)((float)testPoint.X / horzMultiple);
-            int xPart = (int)((float)testPoint.X % horzMultiple);
+            var index = -1;
+            var xpos = (int)((float)testPoint.X / horzMultiple);
+            var xPart = (int)((float)testPoint.X % horzMultiple);
             if (xpos >= colCount)
             {
                 return -1;
@@ -351,8 +351,8 @@ namespace TerraViewer
                 return -1;
             }
 
-            int ypos = testPoint.Y / VertSpacing;
-            int yPart = testPoint.Y % VertSpacing;
+            var ypos = testPoint.Y / VertSpacing;
+            var yPart = testPoint.Y % VertSpacing;
             if (ypos >= rowCount)
             {
                 return -1;
@@ -391,7 +391,7 @@ namespace TerraViewer
         private void ThumbnailList_MouseClick(object sender, MouseEventArgs e)
         {
             bool imageClicked;
-            int index = GetItemIndexFromCursor(e.Location, out imageClicked);
+            var index = GetItemIndexFromCursor(e.Location, out imageClicked);
             if (index > -1)
             {
                 if (e.Button != MouseButtons.Right)
@@ -434,7 +434,7 @@ namespace TerraViewer
         private void ThumbnailList_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             bool imageClicked;
-            int index = GetItemIndexFromCursor(e.Location, out imageClicked);
+            var index = GetItemIndexFromCursor(e.Location, out imageClicked);
             if (index > -1 && ItemDoubleClicked != null)
             {
                 ItemDoubleClicked.Invoke(this, items[index]);
@@ -458,7 +458,7 @@ namespace TerraViewer
         {
             bool imageClicked;
            
-            int newHover = GetItemIndexFromCursor(e.Location, out imageClicked);
+            var newHover = GetItemIndexFromCursor(e.Location, out imageClicked);
             if (hoverItem != newHover)
             {
                 hoverItem = newHover;
@@ -637,7 +637,7 @@ namespace TerraViewer
 
         public bool ShowNext(bool fromStart, bool doubleClick)
         {
-            int wrappedCount = 0;
+            var wrappedCount = 0;
             if ((items != null && items.Count > 0 ))
             {
                 do
@@ -778,7 +778,7 @@ namespace TerraViewer
             {
             }
         }
-        bool dontStealFocus = false;
+        bool dontStealFocus;
 
         public bool DontStealFocus
         {

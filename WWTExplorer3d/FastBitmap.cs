@@ -38,9 +38,9 @@ namespace WwtDataUtils
     {
         int x;
         int y;
-        FastBitmap fastBitmap;
+        readonly FastBitmap fastBitmap;
         PixelData* pCurrentPixel;
-        bool locked;
+        readonly bool locked;
 
         public FastBitmapEnumerator(FastBitmap fastBitmap)
         {
@@ -97,11 +97,11 @@ namespace WwtDataUtils
     /// </summary>
     public unsafe class FastBitmap
     {
-        Bitmap bitmap;
+        readonly Bitmap bitmap;
 
         // three elements used for MakeGreyUnsafe
         int width;
-        BitmapData bitmapData = null;
+        BitmapData bitmapData;
         Byte* pBase = null;
         PixelData* pCurrentPixel = null;
         int xLocation;
@@ -117,8 +117,8 @@ namespace WwtDataUtils
         {
             this.bitmap = bitmap;
 
-            GraphicsUnit unit = GraphicsUnit.Pixel;
-            RectangleF bounds = bitmap.GetBounds(ref unit);
+            var unit = GraphicsUnit.Pixel;
+            var bounds = bitmap.GetBounds(ref unit);
 
             size = new Point((int)bounds.Width, (int)bounds.Height);
         }
@@ -174,7 +174,7 @@ namespace WwtDataUtils
         /// <returns>The next pixel, or null if done</returns>
         public PixelData* GetNextPixel()
         {
-            PixelData* pReturnPixel = pCurrentPixel;
+            var pReturnPixel = pCurrentPixel;
             if (xLocation == size.X)
             {
                 xLocation = 0;
@@ -225,9 +225,9 @@ namespace WwtDataUtils
         /// </summary>
         public void LockBitmap()
         {
-            GraphicsUnit unit = GraphicsUnit.Pixel;
-            RectangleF boundsF = bitmap.GetBounds(ref unit);
-            Rectangle bounds = new Rectangle((int)boundsF.X,
+            var unit = GraphicsUnit.Pixel;
+            var boundsF = bitmap.GetBounds(ref unit);
+            var bounds = new Rectangle((int)boundsF.X,
                 (int)boundsF.Y,
                 (int)boundsF.Width,
                 (int)boundsF.Height);
@@ -251,9 +251,9 @@ namespace WwtDataUtils
 
         public void LockBitmapRgb()
         {
-            GraphicsUnit unit = GraphicsUnit.Pixel;
-            RectangleF boundsF = bitmap.GetBounds(ref unit);
-            Rectangle bounds = new Rectangle((int)boundsF.X,
+            var unit = GraphicsUnit.Pixel;
+            var boundsF = bitmap.GetBounds(ref unit);
+            var bounds = new Rectangle((int)boundsF.X,
                 (int)boundsF.Y,
                 (int)boundsF.Width,
                 (int)boundsF.Height);
@@ -287,21 +287,21 @@ namespace WwtDataUtils
 
         public PixelData GetFilteredPixel(double xd, double yd)
         {
-            int x = (int)(xd);
+            var x = (int)(xd);
 
-            double xr = xd - (double)x;
+            var xr = xd - (double)x;
 
-            int y = (int)(yd);
+            var y = (int)(yd);
 
-            double yr = yd - (double)y;
+            var yr = yd - (double)y;
 
             if (x < 0 || x > (bitmap.Width - 1) || y < 0 || y > (bitmap.Height - 1))
             {
                 return new PixelData();
             }
 
-            int stepX = 1;
-            int stepY = 1;
+            var stepX = 1;
+            var stepY = 1;
 
             if (x == bitmap.Width - 1)
             {
@@ -312,10 +312,10 @@ namespace WwtDataUtils
                 stepY = 0;
             }
 
-            PixelData* tl = this[x, y];
-            PixelData* tr = this[x + stepX, y];
-            PixelData* bl = this[x, y + stepY];
-            PixelData* br = this[x + stepX, y + stepY];
+            var tl = this[x, y];
+            var tr = this[x + stepX, y];
+            var bl = this[x, y + stepY];
+            var br = this[x + stepX, y + stepY];
 
             PixelData result;
 

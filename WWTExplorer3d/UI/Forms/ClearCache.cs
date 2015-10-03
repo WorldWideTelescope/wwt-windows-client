@@ -35,15 +35,15 @@ namespace TerraViewer
         {
 
         }
-        long totalImagery = 0;
-        long totalCatalog = 0;
-        long totalTours = 0;
-        long grandTotal = 0;
+        long totalImagery;
+        long totalCatalog;
+        long totalTours;
+        long grandTotal;
         public long totalDeleted = 0;
-        bool purgeMode = false;
-        bool purgeImagery = false;
-        bool purgeTours = false;
-        bool purgeCatalogs = false;
+        bool purgeMode;
+        bool purgeImagery;
+        bool purgeTours;
+        bool purgeCatalogs;
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -104,7 +104,7 @@ namespace TerraViewer
             progressBar.Value = 100;
             scanCompleted = true;
         }
-        int percentage = 0;
+        int percentage;
 
         public void TotalDirecotry(string parent, ref long totalBytes, int level)
         {
@@ -113,13 +113,13 @@ namespace TerraViewer
             {
                 return;
             }
-            foreach (string dir in Directory.GetDirectories(parent))
+            foreach (var dir in Directory.GetDirectories(parent))
             {
                 TotalDirecotry(dir, ref totalBytes, level);
             }
-            foreach (string file in Directory.GetFiles(parent))
+            foreach (var file in Directory.GetFiles(parent))
             {
-                FileInfo fi = new FileInfo(file);
+                var fi = new FileInfo(file);
                 totalBytes += fi.Length;
             }
 
@@ -138,13 +138,13 @@ namespace TerraViewer
             {
                 return;
             }
-            foreach (string dir in Directory.GetDirectories(parent))
+            foreach (var dir in Directory.GetDirectories(parent))
             {
                 TotalDir(dir, ref totalBytes, level);
             }
-            foreach (string file in Directory.GetFiles(parent))
+            foreach (var file in Directory.GetFiles(parent))
             {
-                FileInfo fi = new FileInfo(file);
+                var fi = new FileInfo(file);
                 totalBytes += fi.Length;
             }
         }
@@ -152,14 +152,14 @@ namespace TerraViewer
         private void PurgeDirecotry(string parent, ref long totalBytes)
         {
             //Directory.Delete(dir, true);
-            foreach (string dir in Directory.GetDirectories(parent))
+            foreach (var dir in Directory.GetDirectories(parent))
             {
                 PurgeDirecotry(dir, ref totalBytes);
                 Directory.Delete(dir, false);
             }
-            foreach (string file in Directory.GetFiles(parent))
+            foreach (var file in Directory.GetFiles(parent))
             {
-                FileInfo fi = new FileInfo(file);
+                var fi = new FileInfo(file);
                 totalBytes += fi.Length;
                 File.Delete(file);
 
@@ -169,7 +169,7 @@ namespace TerraViewer
         static public void PurgeDirecotryNoProgress(string parent, ref long totalBytes)
         {
             //Directory.Delete(dir, true);
-            foreach (string dir in Directory.GetDirectories(parent))
+            foreach (var dir in Directory.GetDirectories(parent))
             {
                 PurgeDirecotryNoProgress(dir, ref totalBytes);
                 if (Directory.Exists(dir))
@@ -183,12 +183,12 @@ namespace TerraViewer
                     }
                 }
             }
-            foreach (string file in Directory.GetFiles(parent))
+            foreach (var file in Directory.GetFiles(parent))
             {
-                FileInfo fi = new FileInfo(file);
+                var fi = new FileInfo(file);
                 try
                 {
-                    long fileBytes = fi.Length;
+                    var fileBytes = fi.Length;
                     File.Delete(file);
                     totalBytes += fileBytes;
                 }
@@ -205,9 +205,9 @@ namespace TerraViewer
             {
             }
         }  
-        bool scanStarted = false;
+        bool scanStarted;
 
-        bool scanCompleted = false;
+        bool scanCompleted;
         private void timer_Tick(object sender, EventArgs e)
         {
             if (!scanStarted)

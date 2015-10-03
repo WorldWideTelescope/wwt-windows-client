@@ -24,7 +24,7 @@ namespace TerraViewer
             this.label1.Text = Language.GetLocalizedText(842, "End Date/Time");
             this.label3.Text = Language.GetLocalizedText(841, "The Start and End Dates used with a Time decay allow you to visualize time series data as animation using the Time controls. The time decay controls how long it takes to fade out an event after it triggers. Select the optional start and end data columns to enable this feature and get a preview of the date range for the column.");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {

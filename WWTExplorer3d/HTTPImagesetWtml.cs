@@ -36,29 +36,29 @@ namespace TerraViewer
         public override void ProcessRequest(string request, ref Socket socket, bool authenticated, string body)
         {
 
-            QueryString query = new QueryString(request);
+            var query = new QueryString(request);
 
-            String sMimeType = "text/xml";
-            string data="";
+            var sMimeType = "text/xml";
+            var data="";
 
-            string id = query.GetValues("id")[0];
-            int hash = 0;
+            var id = query.GetValues("id")[0];
+            var hash = 0;
             try
             {
                 hash = Convert.ToInt32(id);
                 if (Earth3d.ImagesetHashTable.ContainsKey(hash))
                 {
                     
-                    StringBuilder sb = new StringBuilder();
-                    StringWriter sw = new StringWriter(sb);
-                    using (XmlTextWriter xmlWriter = new XmlTextWriter( sw ))
+                    var sb = new StringBuilder();
+                    var sw = new StringWriter(sb);
+                    using (var xmlWriter = new XmlTextWriter( sw ))
                     {
                         xmlWriter.Formatting = Formatting.Indented;
                         xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                         xmlWriter.WriteStartElement("Folder");
                         
-                        IImageSet imageset = (IImageSet)Earth3d.ImagesetHashTable[hash];
-                        string alternateUrl = "";
+                        var imageset = (IImageSet)Earth3d.ImagesetHashTable[hash];
+                        var alternateUrl = "";
 
                         try
                         {

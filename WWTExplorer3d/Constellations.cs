@@ -28,9 +28,9 @@ namespace TerraViewer
         }
 		string url;
 		public List<Lineset> lines;
-        int pointCount = 0;
-        bool boundry = false;
-        bool noInterpollation = false;
+        int pointCount;
+	    readonly bool boundry;
+        bool noInterpollation;
         public bool ReadOnly = false;
         public Constellations(string name)
         {
@@ -38,16 +38,16 @@ namespace TerraViewer
             this.name = name;
 			this.url = null;
             lines = new List<Lineset>();
-            foreach(string abbrv in Abbreviations.Values)
+            foreach(var abbrv in Abbreviations.Values)
             {
                 lines.Add(new Lineset(abbrv));
             }
         }
 
-        static List<Constellations> instances = new List<Constellations>();
+        static readonly List<Constellations> instances = new List<Constellations>();
         public static void CleanUpAll()
         {
-            foreach(Constellations item in instances)
+            foreach(var item in instances)
             {
                 item.CleanUp();
             }
@@ -64,7 +64,7 @@ namespace TerraViewer
         {
             if (constellationVertexBuffers != null)
             {
-                foreach (SimpleLineList11 vb in constellationVertexBuffers.Values)
+                foreach (var vb in constellationVertexBuffers.Values)
                 {
                     vb.Clear();
                 }
@@ -125,15 +125,15 @@ namespace TerraViewer
 
             try
             {
-                using (StreamReader sr = new StreamReader(targetPath + name + extention))
+                using (var sr = new StreamReader(targetPath + name + extention))
                 {
                     string line;
                     string abrv;
-                    string abrvOld = "";
+                    var abrvOld = "";
                     double ra;
                     double dec;
                     double lastRa = 0;
-                    PointType type = PointType.Move;
+                    var type = PointType.Move;
                     while (sr.Peek() >= 0)
                     {
                         line = sr.ReadLine();
@@ -221,16 +221,16 @@ namespace TerraViewer
 
         public void Save(string name)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            foreach (Lineset ls in lines)
+            foreach (var ls in lines)
             {
                 if (ls.Points.Count > 0)
                 {
-                    foreach (Linepoint pnt in ls.Points)
+                    foreach (var pnt in ls.Points)
                     {
-                        double ra = (pnt.RA + 180) / 360 * 24;
-                        string line = String.Format("{0:00.0000000} {1}{2:00.0000000} {3}  {4} {5}", ra, Math.Sign(pnt.Dec) == -1 ? "-" : "+", Math.Abs(pnt.Dec), ls.Name, (int)pnt.PointType, pnt.Name);
+                        var ra = (pnt.RA + 180) / 360 * 24;
+                        var line = String.Format("{0:00.0000000} {1}{2:00.0000000} {3}  {4} {5}", ra, Math.Sign(pnt.Dec) == -1 ? "-" : "+", Math.Abs(pnt.Dec), ls.Name, (int)pnt.PointType, pnt.Name);
 
                         sb.AppendLine(line);
                     }
@@ -247,7 +247,7 @@ namespace TerraViewer
                 Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory + @"data\figures\");
             }
 
-            string filename = GetFigurePath(name);
+            var filename = GetFigurePath(name);
 
             File.WriteAllText(filename, sb.ToString());
 
@@ -255,15 +255,15 @@ namespace TerraViewer
         public void SaveWkt(string name)
         {
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
 
 
 
-            foreach (Lineset ls in lines)
+            foreach (var ls in lines)
             {
-                bool firstItem = true;
-                bool firstShape = true;
+                var firstItem = true;
+                var firstShape = true;
                 if (ls.Points.Count > 0)
                 {
                     //sb.Append("Polygon (");
@@ -277,11 +277,11 @@ namespace TerraViewer
                     {
                         sb.Append(",");
                     }
-                    foreach (Linepoint pnt in ls.Points)
+                    foreach (var pnt in ls.Points)
                     {
-                        double ra = (pnt.RA + 180);
-                        double Xcoord = ra;
-                        double Ycoord = pnt.Dec;
+                        var ra = (pnt.RA + 180);
+                        var Xcoord = ra;
+                        var Ycoord = pnt.Dec;
                         if (firstItem)
                         {
                             firstItem = false;
@@ -320,9 +320,9 @@ namespace TerraViewer
             constToDraw = focusConsteallation;
 
             Lineset lsSelected = null;
-            foreach (Lineset ls in this.lines)
+            foreach (var ls in this.lines)
             {
-                bool enabled = boundry ? Settings.Active.ConstellationBoundariesFilter.IsSet(ls.Name) : Settings.Active.ConstellationFiguresFilter.IsSet(ls.Name);
+                var enabled = boundry ? Settings.Active.ConstellationBoundariesFilter.IsSet(ls.Name) : Settings.Active.ConstellationFiguresFilter.IsSet(ls.Name);
                 if (enabled)
                 {
                     if (constToDraw == ls.Name && boundry)
@@ -359,11 +359,11 @@ namespace TerraViewer
         public static void InitializeConstellationNames()
         {
             NamesBatch = new Text3dBatch(80);
-            foreach (IPlace centroid in ConstellationNamePositions.Values)
+            foreach (var centroid in ConstellationNamePositions.Values)
             {
-                Vector3d center = Coordinates.RADecTo3d(centroid.RA + 12, centroid.Dec, 1);
-                Vector3d up = new Vector3d(0, 1, 0);
-                string name = centroid.Name;
+                var center = Coordinates.RADecTo3d(centroid.RA + 12, centroid.Dec, 1);
+                var up = new Vector3d(0, 1, 0);
+                var name = centroid.Name;
 
                 name = FullNames[centroid.Constellation];
 
@@ -386,9 +386,9 @@ namespace TerraViewer
             }
 
             renderContext.BlendMode = BlendMode.Additive;
-            foreach (IImageSet imageset in ConstellationArt)
+            foreach (var imageset in ConstellationArt)
             {
-                BlendState bs = PictureBlendStates[imageset.Name];
+                var bs = PictureBlendStates[imageset.Name];
                 bs.TargetState = Settings.Active.ConstellationArtFilter.IsSet(imageset.Name);
 
                 if (bs.State)
@@ -407,11 +407,11 @@ namespace TerraViewer
             // see if there are any files in the art directory
             if (String.IsNullOrEmpty(Properties.Settings.Default.ConstellationArtFile))
             {
-                foreach( string file in Directory.GetFiles(ArtworkPath,"*.wtml"))
+                foreach( var file in Directory.GetFiles(ArtworkPath,"*.wtml"))
                 {
                     try
                     {
-                        Folder art = Folder.LoadFromFile(file, false);
+                        var art = Folder.LoadFromFile(file, false);
                         if (art.Group == FolderGroup.Constellation)
                         {
                             Properties.Settings.Default.ConstellationArtFile = file;
@@ -445,7 +445,7 @@ namespace TerraViewer
 
 
             ConstellationArt.Clear();
-            Folder art = Folder.LoadFromFile(filename, false);
+            var art = Folder.LoadFromFile(filename, false);
             foreach (IPlace place in art.Items)
             {
                 if (place.BackgroundImageSet != null && FullNames.ContainsKey(place.BackgroundImageSet.Name))
@@ -468,22 +468,22 @@ namespace TerraViewer
 
 
         public static bool UseCached = true;
-        Dictionary<string, SimpleLineList11> constellationVertexBuffers = new Dictionary<string, SimpleLineList11>();
+	    readonly Dictionary<string, SimpleLineList11> constellationVertexBuffers = new Dictionary<string, SimpleLineList11>();
  
         private void DrawSingleConstellation(RenderContext11 renderContext, Lineset ls, float opacity, bool reverse, bool drawAllSky)
         {
             if (!constellationVertexBuffers.ContainsKey(ls.Name))
             {
-                int count = ls.Points.Count;
+                var count = ls.Points.Count;
 
-                SimpleLineList11 linelist = new SimpleLineList11();
+                var linelist = new SimpleLineList11();
                 linelist.DepthBuffered = false;
                 constellationVertexBuffers[ls.Name] = linelist;
 
-                Vector3d currentPoint = new Vector3d();
+                var currentPoint = new Vector3d();
                 Vector3d temp;
  
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
 
                     if (ls.Points[i].PointType == PointType.Move || i == 0)
@@ -529,8 +529,8 @@ namespace TerraViewer
       
         int GetTransparentColor(int color, float opacity)
         {
-            Color inColor = Color.FromArgb(color);
-            Color outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
+            var inColor = Color.FromArgb(color);
+            var outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
             return outColor.ToArgb();
         }
 
@@ -546,13 +546,13 @@ namespace TerraViewer
                 return "UMI";
             }
 
-            foreach (Lineset ls in this.lines)
+            foreach (var ls in this.lines)
             {
-                int count = ls.Points.Count;
+                var count = ls.Points.Count;
 
                 int i;
                 int j;
-                bool inside = false;
+                var inside = false;
                 for ( i = 0, j= count-1; i < count; j = i++)
                 {
                     
@@ -615,14 +615,14 @@ namespace TerraViewer
                 Abbreviations = new Dictionary<string, string>();
                 
                 PictureBlendStates = new Dictionary<string, BlendState>();
-                int id = 0;
+                var id = 0;
 
-                StreamReader sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\constellationNamesRADEC.txt");
+                var sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\constellationNamesRADEC.txt");
                 string line;
                 while (sr.Peek() >= 0)
                 {
                     line = sr.ReadLine();
-                    string[] data = line.Split(new char[] { ',' });
+                    var data = line.Split(new char[] { ',' });
 
                     ConstellationFilter.BitIDs.Add(data[1], id++);
                     PictureBlendStates.Add(data[1], new BlendState(false, 1000, 0));
@@ -637,12 +637,12 @@ namespace TerraViewer
                 while (sr.Peek() >= 0)
                 {
                     line = sr.ReadLine();
-                    string[] data = line.Split(new char[] { ',' });
+                    var data = line.Split(new char[] { ',' });
                     ConstellationNamePositions.Add(data[1], new TourPlace(data[0], Convert.ToDouble(data[3]), Convert.ToDouble(data[2]), Classification.Constellation, data[1], ImageSetType.Sky, 360));
                 }
                 sr.Close();
 
-                string path = ArtworkPath;
+                var path = ArtworkPath;
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -796,18 +796,18 @@ namespace TerraViewer
 
         internal static void ImportArtFile()
         {
-            OpenFileDialog openFile = new OpenFileDialog();
+            var openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(107, "WorldWide Telescope Collection") + "|*.wtml";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                string filename = openFile.FileName;
+                var filename = openFile.FileName;
 
                 try
                 {
-                    Folder newFolder = Folder.LoadFromFile(filename, false);
+                    var newFolder = Folder.LoadFromFile(filename, false);
                     newFolder.Type = FolderType.Sky;
                     newFolder.Group = FolderGroup.Constellation;
-                    string path = ArtworkPath;
+                    var path = ArtworkPath;
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);

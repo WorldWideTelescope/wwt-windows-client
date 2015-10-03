@@ -17,11 +17,11 @@ namespace TerraViewer
 	/// </summary>
 	public class DataSetManager
 	{
-        static Dictionary<string,DataSet> dataSets = null;
+        static Dictionary<string,DataSet> dataSets;
 		public DataSetManager()
 		{
-            int trys = 3;
-            bool citiesLoaded = false;
+            var trys = 3;
+            var citiesLoaded = false;
             XmlDocument doc = null;
             while (trys-- > 0 && !citiesLoaded)
             {
@@ -35,10 +35,10 @@ namespace TerraViewer
                     dataSets = new Dictionary<string, DataSet>();
 
                     XmlNode root = doc["root"];
-                    XmlNode datasets = root.FirstChild;
+                    var datasets = root.FirstChild;
                     foreach (XmlNode dataset in datasets.ChildNodes)
                     {
-                        DataSet ds = new DataSet(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, false, DataSetType.Place);
+                        var ds = new DataSet(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, false, DataSetType.Place);
                         dataSets.Add(ds.Name,ds);
                     }
                     citiesLoaded = true;
@@ -54,7 +54,7 @@ namespace TerraViewer
                 UiTools.ShowMessageBox(Language.GetLocalizedText(185, "The Cities Catalog data file could not be downloaded or has been corrupted. Restart the application with a network connection to download a new file."), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
             }
 
-            bool datasetsLoaded = false;
+            var datasetsLoaded = false;
             trys = 3;
             while (trys-- > 0 && !datasetsLoaded)
             {
@@ -68,12 +68,12 @@ namespace TerraViewer
 
 
                     XmlNode root = doc["root"];
-                    XmlNode datasets = root.FirstChild;
+                    var datasets = root.FirstChild;
                     foreach (XmlNode dataset in datasets.ChildNodes)
                     {
 
 
-                        DataSet ds = new DataSet(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, true, DataSetType.Place);
+                        var ds = new DataSet(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, true, DataSetType.Place);
                         dataSets.Add(ds.Name, ds);
                     }
                     datasetsLoaded = true;
@@ -100,7 +100,7 @@ namespace TerraViewer
                 return false;
             }
  
-            bool didDownload = false;
+            var didDownload = false;
 
             System.Net.WebRequest request = null;
             System.Net.WebResponse response = null;
@@ -152,11 +152,11 @@ namespace TerraViewer
                     s = response.GetResponseStream();
                     fs = new FileStream(fileName, FileMode.Create);
 
-                    byte[] buffer = new byte[4096];
+                    var buffer = new byte[4096];
 
                     while (true)
                     {
-                        int count = s.Read(buffer, 0, 4096);
+                        var count = s.Read(buffer, 0, 4096);
                         fs.Write(buffer, 0, count);
                         if (count == 0)
                         {
@@ -206,20 +206,20 @@ namespace TerraViewer
 		}
         public static IThumbnail GetDataSetsAsFolder()
         {
-            ThumbMenuNode parent = new ThumbMenuNode();
+            var parent = new ThumbMenuNode();
 
             parent.Name = Language.GetLocalizedText(646, "Collections");
 
-            Dictionary<string, DataSet> dataSets = DataSetManager.GetDataSets();
-            foreach (DataSet d in dataSets.Values)
+            var dataSets = DataSetManager.GetDataSets();
+            foreach (var d in dataSets.Values)
             {
                 // Todo Change this to exploere earth, moon etc.
                 if (d.Sky == true)
                 {
                     if (d != null)
                     {
-                        Dictionary<string, Places> placesList = d.GetPlaces();
-                        foreach (Places places in placesList.Values)
+                        var placesList = d.GetPlaces();
+                        foreach (var places in placesList.Values)
                         {
                             if (places != null && places.Browseable)
                             {

@@ -11,7 +11,7 @@ namespace TerraViewer
     public partial class FieldOfViewSetup : Form
     {
 
-        static  FieldOfViewSetup fovSetup = null;
+        static  FieldOfViewSetup fovSetup;
         
         public static void ShowFovSetup(Form owner)
         {
@@ -73,12 +73,12 @@ namespace TerraViewer
 
         private void LoadCameras()
         {
-            List<string> Manufacturers = new List<string>();
+            var Manufacturers = new List<string>();
 
             manufactuerCombo.Items.Clear();
-            int index = 0;
-            int selectedIndex = 0;
-            foreach (Camera cam in FieldOfView.Cameras)
+            var index = 0;
+            var selectedIndex = 0;
+            foreach (var cam in FieldOfView.Cameras)
             {
                 if (!Manufacturers.Contains(cam.Manufacturer))
                 {
@@ -100,12 +100,12 @@ namespace TerraViewer
 
         private void LoadTelescopes()
         {
-            List<string> Manufacturers = new List<string>();
+            var Manufacturers = new List<string>();
 
             organizationCombo.Items.Clear();
-            int index = 0;
-            int selectedIndex = 0;
-            foreach (Telescope scope in FieldOfView.Telescopes)
+            var index = 0;
+            var selectedIndex = 0;
+            foreach (var scope in FieldOfView.Telescopes)
             {
                 if (!Manufacturers.Contains(scope.Manufacturer))
                 {
@@ -134,11 +134,11 @@ namespace TerraViewer
             }
 
             telescopeCombo.Items.Clear();
-            int index = 0;
-            int selectedIndex = 0;
-            string manufacturer = organizationCombo.SelectedItem.ToString();
+            var index = 0;
+            var selectedIndex = 0;
+            var manufacturer = organizationCombo.SelectedItem.ToString();
 
-            foreach (Telescope scope in FieldOfView.Telescopes)
+            foreach (var scope in FieldOfView.Telescopes)
             {
                 if (scope.Manufacturer == manufacturer)
                 {
@@ -160,7 +160,7 @@ namespace TerraViewer
 
         private void telescopeCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Telescope scope = (Telescope)telescopeCombo.SelectedItem;
+            var scope = (Telescope)telescopeCombo.SelectedItem;
 
             focalLengthText.Text = scope.FocalLength.ToString();
             focalRatioText.Text = (Math.Floor(scope.FRatio*100+.5)/100).ToString("0.00");
@@ -218,11 +218,11 @@ namespace TerraViewer
             }
 
             cameraCombo.Items.Clear();
-            int index = 0;
-            int selectedIndex = 0;
-            string manufacturer = manufactuerCombo.SelectedItem.ToString();
+            var index = 0;
+            var selectedIndex = 0;
+            var manufacturer = manufactuerCombo.SelectedItem.ToString();
 
-            foreach (Camera cam in FieldOfView.Cameras)
+            foreach (var cam in FieldOfView.Cameras)
             {
                 if (cam.Manufacturer == manufacturer)
                 {
@@ -243,7 +243,7 @@ namespace TerraViewer
 
         private void cameraCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Camera camera = (Camera)cameraCombo.SelectedItem;
+            var camera = (Camera)cameraCombo.SelectedItem;
 
 
             widthText.Text = camera.Chips[0].Width.ToString();

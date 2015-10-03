@@ -19,7 +19,7 @@ namespace TerraViewer
         {
         }
 
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {

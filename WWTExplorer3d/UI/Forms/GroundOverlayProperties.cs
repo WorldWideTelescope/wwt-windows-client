@@ -40,7 +40,7 @@ namespace TerraViewer
             DialogResult = DialogResult.OK;
             Close();
         }
-        bool initialized = false;
+        bool initialized;
         private void GroundOverlayProperties_Load(object sender, EventArgs e)
         {
             Earth3d.MainWindow.UiController = this;
@@ -68,40 +68,40 @@ namespace TerraViewer
             }
             lines.Clear();
 
-            double width = Overlay.east - Overlay.west;
-            double height = Overlay.north - Overlay.south;
+            var width = Overlay.east - Overlay.west;
+            var height = Overlay.north - Overlay.south;
 
-            double altitude = 1+Earth3d.MainWindow.GetScaledAltitudeForLatLong((Overlay.north + Overlay.south) / 2, (Overlay.east + Overlay.west) / 2);
+            var altitude = 1+Earth3d.MainWindow.GetScaledAltitudeForLatLong((Overlay.north + Overlay.south) / 2, (Overlay.east + Overlay.west) / 2);
 
-            Vector3d topLeftA = Coordinates.GeoTo3dDouble(Overlay.north - height / 20, Overlay.west, altitude);
-            Vector3d topLeftB = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.west, altitude);
-            Vector3d topLeftC = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.west + width / 20, altitude);
-            Vector3d topMiddleA = Coordinates.GeoTo3dDouble(Overlay.north, ((Overlay.east + Overlay.west) / 2) - width / 20, altitude);
-            Vector3d topMiddleB = Coordinates.GeoTo3dDouble(Overlay.north, ((Overlay.east + Overlay.west) / 2) + width / 20, altitude);
-            Vector3d topRightA = Coordinates.GeoTo3dDouble(Overlay.north - height / 20, Overlay.east, altitude);
-            Vector3d topRightB = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.east, altitude);
-            Vector3d topRightC = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.east - width / 20, altitude);
+            var topLeftA = Coordinates.GeoTo3dDouble(Overlay.north - height / 20, Overlay.west, altitude);
+            var topLeftB = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.west, altitude);
+            var topLeftC = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.west + width / 20, altitude);
+            var topMiddleA = Coordinates.GeoTo3dDouble(Overlay.north, ((Overlay.east + Overlay.west) / 2) - width / 20, altitude);
+            var topMiddleB = Coordinates.GeoTo3dDouble(Overlay.north, ((Overlay.east + Overlay.west) / 2) + width / 20, altitude);
+            var topRightA = Coordinates.GeoTo3dDouble(Overlay.north - height / 20, Overlay.east, altitude);
+            var topRightB = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.east, altitude);
+            var topRightC = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.east - width / 20, altitude);
 
-            Vector3d middleRightA = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 - height / 20, Overlay.west, altitude);
-            Vector3d middleRightB = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 + height / 20, Overlay.west, altitude);
-            Vector3d centerA = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2, ((Overlay.east + Overlay.west) / 2) - width / 20, altitude);
-            Vector3d centerB = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2, ((Overlay.east + Overlay.west) / 2) + width / 20, altitude);
-            Vector3d centerC = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 - height / 20, ((Overlay.east + Overlay.west) / 2), altitude);
-            Vector3d centerD = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 + height / 20, ((Overlay.east + Overlay.west) / 2), altitude);
-            Vector3d middleLeftA = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 - height / 20, Overlay.east, altitude);
-            Vector3d middleLeftB = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 + height / 20, Overlay.east, altitude);
+            var middleRightA = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 - height / 20, Overlay.west, altitude);
+            var middleRightB = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 + height / 20, Overlay.west, altitude);
+            var centerA = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2, ((Overlay.east + Overlay.west) / 2) - width / 20, altitude);
+            var centerB = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2, ((Overlay.east + Overlay.west) / 2) + width / 20, altitude);
+            var centerC = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 - height / 20, ((Overlay.east + Overlay.west) / 2), altitude);
+            var centerD = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 + height / 20, ((Overlay.east + Overlay.west) / 2), altitude);
+            var middleLeftA = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 - height / 20, Overlay.east, altitude);
+            var middleLeftB = Coordinates.GeoTo3dDouble((Overlay.north + Overlay.south) / 2 + height / 20, Overlay.east, altitude);
 
 
 
-            Vector3d bottomLeftA = Coordinates.GeoTo3dDouble(Overlay.south + height / 20, Overlay.west, altitude);
-            Vector3d bottomLeftB = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.west, altitude);
-            Vector3d bottomLeftC = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.west + width / 20, altitude);
-            Vector3d bottomMiddleA = Coordinates.GeoTo3dDouble(Overlay.south, ((Overlay.east + Overlay.west) / 2) - width / 20, altitude);
-            Vector3d bottomMiddleB = Coordinates.GeoTo3dDouble(Overlay.south, ((Overlay.east + Overlay.west) / 2) + width / 20, altitude);
-            Vector3d bottomRightA = Coordinates.GeoTo3dDouble(Overlay.south + height / 20, Overlay.east, altitude);
-            Vector3d bottomRightB = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.east, altitude);
-            Vector3d bottomRightC = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.east - width / 20, altitude);
-            Color lineColor = Color.Yellow;
+            var bottomLeftA = Coordinates.GeoTo3dDouble(Overlay.south + height / 20, Overlay.west, altitude);
+            var bottomLeftB = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.west, altitude);
+            var bottomLeftC = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.west + width / 20, altitude);
+            var bottomMiddleA = Coordinates.GeoTo3dDouble(Overlay.south, ((Overlay.east + Overlay.west) / 2) - width / 20, altitude);
+            var bottomMiddleB = Coordinates.GeoTo3dDouble(Overlay.south, ((Overlay.east + Overlay.west) / 2) + width / 20, altitude);
+            var bottomRightA = Coordinates.GeoTo3dDouble(Overlay.south + height / 20, Overlay.east, altitude);
+            var bottomRightB = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.east, altitude);
+            var bottomRightC = Coordinates.GeoTo3dDouble(Overlay.south, Overlay.east - width / 20, altitude);
+            var lineColor = Color.Yellow;
 
             lines.AddLine(topLeftA, topLeftB, lineColor, new Dates());
             lines.AddLine(topLeftB, topLeftC, lineColor, new Dates());
@@ -169,7 +169,7 @@ namespace TerraViewer
 
         #region IUiController Members
 
-        LineList lines = null;
+        LineList lines;
 
         public void PreRender(Earth3d window)
         {
@@ -186,7 +186,7 @@ namespace TerraViewer
         }
         enum DragCorners { None, NW, N, NE, W, C, E, SW, S, SE };
 
-        bool drag = false;
+        bool drag;
 
         DragCorners dragCorner = DragCorners.None;
 
@@ -194,11 +194,11 @@ namespace TerraViewer
         bool IUiController.MouseDown(object sender, MouseEventArgs e)
         {
 
-            double width = Overlay.east - Overlay.west;
-            double height = Overlay.north - Overlay.south;
+            var width = Overlay.east - Overlay.west;
+            var height = Overlay.north - Overlay.south;
 
-            double range = Math.Max(width / 40, height / 40);
-            Coordinates cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
+            var range = Math.Max(width / 40, height / 40);
+            var cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
 
             if (cursor.Distance(Coordinates.FromLatLng(Overlay.north, Overlay.west)) < range)
             {
@@ -282,7 +282,7 @@ namespace TerraViewer
             if (drag)
             {
               
-                Coordinates cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
+                var cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
 
                 switch (dragCorner)
                 {
@@ -331,13 +331,13 @@ namespace TerraViewer
             }
             else
             {
-                Control wnd = (Control)sender;
-                double width = Overlay.east - Overlay.west;
-                double height = Overlay.north - Overlay.south;
+                var wnd = (Control)sender;
+                var width = Overlay.east - Overlay.west;
+                var height = Overlay.north - Overlay.south;
 
-                double range = Math.Max(width / 40, height / 40);
-                Coordinates cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
-                DragCorners dragCorner = DragCorners.None;
+                var range = Math.Max(width / 40, height / 40);
+                var cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
+                var dragCorner = DragCorners.None;
                 if (cursor.Distance(Coordinates.FromLatLng(Overlay.north, Overlay.west)) < range)
                 {
                     dragCorner = DragCorners.NW;

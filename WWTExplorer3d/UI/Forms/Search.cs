@@ -13,7 +13,7 @@ namespace TerraViewer
 {
     public partial class Search : TabForm
     {
-        static TreeDictionary<string, IPlace> autoCompleteList = new TreeDictionary<string, IPlace>(true);
+        static readonly TreeDictionary<string, IPlace> autoCompleteList = new TreeDictionary<string, IPlace>(true);
 
         public Search()
         {
@@ -47,10 +47,10 @@ namespace TerraViewer
 
             key = key.ToLower();
             autoCompleteList.Add(key, place);
-            string[] parts = key.Split(new char[] { ' ' });
+            var parts = key.Split(new char[] { ' ' });
             if (parts.Length > 1)
             {
-                foreach (string part in parts)
+                foreach (var part in parts)
                 {
                     if (!string.IsNullOrEmpty(part))
                     {
@@ -61,7 +61,7 @@ namespace TerraViewer
         }
 
 
-        bool textChanged = false;
+        bool textChanged;
 
         private void searchText_TextChanged(object sender, EventArgs e)
         {
@@ -77,12 +77,12 @@ namespace TerraViewer
 
         private void SearchView_Click(object sender, EventArgs e)
         {
-            Coordinates[] corners = Earth3d.MainWindow.CurrentViewCorners;
+            var corners = Earth3d.MainWindow.CurrentViewCorners;
 
             if (corners != null && !String.IsNullOrEmpty(Earth3d.MainWindow.Constellation))
             {
 
-                IPlace[] results = ContextSearch.FindConteallationObjects(Earth3d.MainWindow.Constellation, corners, Classification.Unfiltered);
+                var results = ContextSearch.FindConteallationObjects(Earth3d.MainWindow.Constellation, corners, Classification.Unfiltered);
                 searchResults.Clear();
                 if (results != null)
                 {
@@ -99,7 +99,7 @@ namespace TerraViewer
         public static IPlace FindCatalogObject(string name)
         {
             InitSearchTable();
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+            foreach (var kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
             {
                 if (kv.Key.ToLower().Replace(" ", "") == name.ToLower().Replace(" ", ""))
                 {
@@ -119,11 +119,11 @@ namespace TerraViewer
         {
             InitSearchTable();
 
-            string shortName = name.ToLower().Replace(" ", "");
+            var shortName = name.ToLower().Replace(" ", "");
 
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+            foreach (var kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
             {
-                IPlace place = kv.Value as IPlace;
+                var place = kv.Value as IPlace;
 
                 if (place != null && place.Name.ToLower().Replace(" ", "") == shortName)
                 {
@@ -135,7 +135,7 @@ namespace TerraViewer
 
             }
 
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+            foreach (var kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
             {
                 if (kv.Key.ToLower().Replace(" ", "") == shortName )
                 {
@@ -147,7 +147,7 @@ namespace TerraViewer
 
             }
 
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+            foreach (var kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
             {
                 if (kv.Key.ToLower().Replace(" ", "").StartsWith(shortName))
                 {
@@ -190,16 +190,16 @@ namespace TerraViewer
                     textChanged = false;
                     return;
                 }               
-                string searchString = CleanSearchString(searchText.Text);
+                var searchString = CleanSearchString(searchText.Text);
 
                 
-                SearchCriteria sc = new SearchCriteria(searchString);
+                var sc = new SearchCriteria(searchString);
 
-                int length = sc.Target.Length;
+                var length = sc.Target.Length;
 
-                List<Object> tempList = new List<Object>();
+                var tempList = new List<Object>();
  
-                foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(sc.Target, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+                foreach (var kv in autoCompleteList.StartFromKey(sc.Target, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
                 {
                     if (tempList.Count > 100)
                     {
@@ -230,7 +230,7 @@ namespace TerraViewer
                     {
                         if (!tempList.Contains(kv.Value))
                         {
-                            Place place = kv.Value as Place;
+                            var place = kv.Value as Place;
                             if (place != null && place.Name.ToLower() == searchString)
                             {
                                 tempList.Insert(0, kv.Value);
@@ -244,7 +244,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        int len = Math.Min(kv.Key.Length, sc.Target.Length);
+                        var len = Math.Min(kv.Key.Length, sc.Target.Length);
                         if (string.Compare(kv.Key.Substring(0, len), sc.Target.Substring(0, len)) > 0)
                         {
                             break;
@@ -254,9 +254,9 @@ namespace TerraViewer
 
                 if (sc.Keywords != null && sc.Keywords.Count > 0)
                 {
-                    foreach (string keyword in sc.Keywords)
+                    foreach (var keyword in sc.Keywords)
                     {
-                        foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(keyword, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+                        foreach (var kv in autoCompleteList.StartFromKey(keyword, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
                         {
                             length = keyword.Length;
 
@@ -290,7 +290,7 @@ namespace TerraViewer
                             {
                                 if (!tempList.Contains(kv.Value))
                                 {
-                                    Place place = kv.Value as Place;
+                                    var place = kv.Value as Place;
                                     //System.Diagnostics.Debug.WriteLine(place.Name);
                                     if (place != null && place.Name == searchString)
                                     {
@@ -305,7 +305,7 @@ namespace TerraViewer
                             }
                             else
                             {
-                                int len = Math.Min(kv.Key.Length, sc.Target.Length);
+                                var len = Math.Min(kv.Key.Length, sc.Target.Length);
                                 if (string.Compare(kv.Key.Substring(0, len), sc.Target.Substring(0, len)) > 0)
                                 {
                                     break;
@@ -331,7 +331,7 @@ namespace TerraViewer
 
             if (searchString.Contains("ngc "))
             {
-                for(int i =0; i<10; i++)
+                for(var i =0; i<10; i++)
                 {
                     searchString = searchString.Replace(string.Format("ngc {0}",i),string.Format("ngc{0}",i));
                 }
@@ -339,28 +339,28 @@ namespace TerraViewer
 
             if (searchString.Contains("ic "))
             {
-                for(int i =0; i<10; i++)
+                for(var i =0; i<10; i++)
                 {
                     searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
                 }
             }
             if (searchString.Contains("hr "))
             {
-                for(int i =0; i<10; i++)
+                for(var i =0; i<10; i++)
                 {
                     searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
                 }
             } 
             if (searchString.Contains("hd "))
             {
-                for(int i =0; i<10; i++)
+                for(var i =0; i<10; i++)
                 {
                     searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
                 }
             }    
             if (searchString.Contains("sao "))
             {
-                for(int i =0; i<10; i++)
+                for(var i =0; i<10; i++)
                 {
                     searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
                 }
@@ -377,7 +377,7 @@ namespace TerraViewer
         {
             if (e is Place)
             {
-                Place p = (Place)e;
+                var p = (Place)e;
                 if (p.Tour != null)
                 {
                     FolderBrowser.LaunchTour(p.Tour);
@@ -406,7 +406,7 @@ namespace TerraViewer
                 IImageSet imageset = null;
                 if (e is IPlace)
                 {
-                    IPlace p = (IPlace)e;
+                    var p = (IPlace)e;
                     Earth3d.MainWindow.SetLabelText(p, true);
                     if (p.BackgroundImageSet != null)
                     {
@@ -520,8 +520,8 @@ namespace TerraViewer
             coordinateType.SelectedIndex = 0;
         }
 
-        static bool searchTableInitialized = false;
-        static Mutex LoadSearchMutex = new Mutex();
+        static bool searchTableInitialized;
+        static readonly Mutex LoadSearchMutex = new Mutex();
         static public void LoadSearchTable()
         {
             try
@@ -531,13 +531,13 @@ namespace TerraViewer
                 {
                     return;
                 }
-                foreach (string abreviation in ContextSearch.constellationObjects.Keys)
+                foreach (var abreviation in ContextSearch.constellationObjects.Keys)
                 {
-                    foreach (IPlace place in ContextSearch.constellationObjects[abreviation])
+                    foreach (var place in ContextSearch.constellationObjects[abreviation])
                     {
                         try
                         {
-                            foreach (string name in place.Names)
+                            foreach (var name in place.Names)
                             {
                                 AddParts(name, place);
                             }
@@ -567,13 +567,13 @@ namespace TerraViewer
         public void DisplaySearchResults(VoTable table)
         {
             searchResults.Clear();
-            int count = 0;
-            foreach(VoRow row in table.Rows)
+            var count = 0;
+            foreach(var row in table.Rows)
             {
-                double ra = Convert.ToDouble(row["RA"])/15;
-                double dec = Convert.ToDouble(row["DEC"]);
+                var ra = Convert.ToDouble(row["RA"])/15;
+                var dec = Convert.ToDouble(row["DEC"]);
 
-                TourPlace pl = new TourPlace(row["id"].ToString(), dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
+                var pl = new TourPlace(row["id"].ToString(), dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
                 searchResults.Add( pl);
                 if (count++ > 200)
                 {
@@ -598,9 +598,9 @@ namespace TerraViewer
                 Earth3d.MainWindow.KmlMarkers.ClearPoints();
                 if (plotResults.Checked)
                 {
-                    foreach (object o in searchResults.Items)
+                    foreach (var o in searchResults.Items)
                     {
-                        IPlace p = (IPlace)o;
+                        var p = (IPlace)o;
                         Earth3d.MainWindow.KmlMarkers.AddPoint(p.Name, p.RA, p.Dec);
                     }
                 }
@@ -609,7 +609,7 @@ namespace TerraViewer
 
         private void searchResults_ItemContextMenu(object sender, object e)
         {
-            Point pntClick = Cursor.Position;
+            var pntClick = Cursor.Position;
 
             if (e is IPlace)
             {
@@ -619,13 +619,13 @@ namespace TerraViewer
 
         private void GoToRADec_Click(object sender, EventArgs e)
         {
-            int index = coordinateType.SelectedIndex;
+            var index = coordinateType.SelectedIndex;
 
 
             double ra = 0;
             double dec = 0;
-            bool raValid = false;
-            bool decValid = false;
+            var raValid = false;
+            var decValid = false;
             switch (index)
             {
                 case 0: // Equitorial
@@ -638,14 +638,14 @@ namespace TerraViewer
                     break;
                 case 2: // Galactic
                     {
-                        double l = Coordinates.Parse(raText.Text);
-                        double b = Coordinates.ParseDec(decText.Text);
+                        var l = Coordinates.Parse(raText.Text);
+                        var b = Coordinates.ParseDec(decText.Text);
                         raValid = Coordinates.Validate(raText.Text);
                         decValid = Coordinates.ValidateDec(decText.Text);
                         if (raValid && decValid)
                         {
 
-                            double[] result = Earth3d.GalactictoJ2000(l, b);
+                            var result = Earth3d.GalactictoJ2000(l, b);
                             ra = result[0] / 15;
                             dec = result[1];
                         }
@@ -653,14 +653,14 @@ namespace TerraViewer
                     break;
                 case 3: // Ecliptic
                     {
-                        double l = Coordinates.Parse(raText.Text);
-                        double b = Coordinates.ParseDec(decText.Text);
+                        var l = Coordinates.Parse(raText.Text);
+                        var b = Coordinates.ParseDec(decText.Text);
                         raValid = Coordinates.Validate(raText.Text);
                         decValid = Coordinates.ValidateDec(decText.Text);
                         if (raValid && decValid)
                         {
 
-                            AstroCalc.AstroRaDec radec = AstroCalc.AstroCalc.EclipticToJ2000(l, b, SpaceTimeController.JNow);
+                            var radec = AstroCalc.AstroCalc.EclipticToJ2000(l, b, SpaceTimeController.JNow);
                             ra = radec.RA;
                             dec = radec.Dec;
                         }
@@ -677,11 +677,11 @@ namespace TerraViewer
                     break;     
                 case 1: // alt/az
                     {
-                        double az = Coordinates.Parse(raText.Text);
-                        double alt = Coordinates.ParseDec(decText.Text);
+                        var az = Coordinates.Parse(raText.Text);
+                        var alt = Coordinates.ParseDec(decText.Text);
                         raValid = Coordinates.Validate(raText.Text);
                         decValid = Coordinates.ValidateDec(decText.Text);
-                        Coordinates radec= Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(alt, az), SpaceTimeController.Location, SpaceTimeController.Now);
+                        var radec= Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(alt, az), SpaceTimeController.Location, SpaceTimeController.Now);
                         ra = radec.RA;
                         dec = radec.Dec;
                     }
@@ -691,12 +691,12 @@ namespace TerraViewer
             {
                 if (Earth3d.MainWindow.SolarSystemMode)
                 {
-                    Vector3d pnt = Coordinates.GeoTo3dDouble(dec, Coordinates.Parse(raText.Text));
+                    var pnt = Coordinates.GeoTo3dDouble(dec, Coordinates.Parse(raText.Text));
 
 
                     pnt = Vector3d.TransformCoordinate(pnt, Planets.EarthMatrix);
                     pnt.Normalize();
-                    Vector2d radec = Coordinates.CartesianToLatLng(pnt);
+                    var radec = Coordinates.CartesianToLatLng(pnt);
 
                     Earth3d.MainWindow.TargetLat = radec.Y;
                     Earth3d.MainWindow.TargetLong = radec.X - 90;
@@ -732,7 +732,7 @@ namespace TerraViewer
 
         private void raText_Validating(object sender, CancelEventArgs e)
         {
-            bool valid = false;
+            var valid = false;
 
             switch (coordinateType.SelectedIndex)
             {
@@ -761,7 +761,7 @@ namespace TerraViewer
 
         private void decText_Validating(object sender, CancelEventArgs e)
         {
-            bool valid = Coordinates.ValidateDec(decText.Text);
+            var valid = Coordinates.ValidateDec(decText.Text);
 
             if (valid)
             {
@@ -780,7 +780,7 @@ namespace TerraViewer
 
         private void coordinateType_SelectionChanged(object sender, EventArgs e)
         {
-            int index = coordinateType.SelectedIndex;
+            var index = coordinateType.SelectedIndex;
             switch (index)
             {
                 case 0: // RA-DEC
@@ -824,10 +824,10 @@ namespace TerraViewer
             
             
 
-            List<string> keywords = new List<string>(searchString.ToLower().Split(new char[] { ' ' }));
+            var keywords = new List<string>(searchString.ToLower().Split(new char[] { ' ' }));
             if (keywords.Count > 1)
             {
-                for (int i = keywords.Count - 1; i > -1; i--)
+                for (var i = keywords.Count - 1; i > -1; i--)
                 {
                     if (keywords[i] == ">" && i > 0 && i < keywords.Count - 1)
                     {
@@ -866,9 +866,9 @@ namespace TerraViewer
                             continue;
                         }
                     }
-                    bool brokeOut = false;
+                    var brokeOut = false;
 
-                    foreach (string classId in Enum.GetNames(typeof(Classification)))
+                    foreach (var classId in Enum.GetNames(typeof(Classification)))
                     {
                         if (keywords[i] == classId.ToLower())
                         {
@@ -901,9 +901,9 @@ namespace TerraViewer
                 }
                 //keywords.Add(searchString);
                 Keywords = keywords;
-                string spacer = "";
+                var spacer = "";
                 Target = "";
-                foreach (string keyword in Keywords)
+                foreach (var keyword in Keywords)
                 {
                     Target += spacer + keyword;
                     spacer = " ";

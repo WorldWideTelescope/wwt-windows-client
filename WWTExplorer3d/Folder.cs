@@ -19,8 +19,8 @@ namespace TerraViewer
         }
         public static Folder LoadFromFile(string filename, bool versionDependent)
         {
-            FileStream reader = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-            Folder folder = LoadFromFileStream(reader, versionDependent);
+            var reader = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var folder = LoadFromFileStream(reader, versionDependent);
 
             folder.loadedFilename = filename;
             reader.Close();
@@ -28,7 +28,7 @@ namespace TerraViewer
            
         }
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private bool versionDependent = false;
+        private bool versionDependent;
 
         public bool VersionDependent
         {
@@ -36,7 +36,7 @@ namespace TerraViewer
             set
             {
                 versionDependent = value;
-                foreach (Folder folder in this.Folder1)
+                foreach (var folder in this.Folder1)
                 {
                     folder.VersionDependent = versionDependent;
                 }
@@ -45,18 +45,18 @@ namespace TerraViewer
 
         public static Folder LoadFromUrl(string url, bool versionDependent)
         {
-            String dir = Properties.Settings.Default.CahceDirectory + "Data\\WTMLCACHE\\";
+            var dir = Properties.Settings.Default.CahceDirectory + "Data\\WTMLCACHE\\";
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
-            string filename = dir + Math.Abs(url.GetHashCode32()).ToString() + ".wtml";
+            var filename = dir + Math.Abs(url.GetHashCode32()).ToString() + ".wtml";
             DataSetManager.DownloadFile(url, filename, false, versionDependent);
             try
             {
                 if (File.Exists(filename))
                 {
-                    Folder temp = LoadFromFile(filename, versionDependent);
+                    var temp = LoadFromFile(filename, versionDependent);
                     return temp;
                 }
             }
@@ -74,7 +74,7 @@ namespace TerraViewer
             set { readOnly = value; }
         }
 
-        bool dirty = false;
+        bool dirty;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool Dirty
@@ -96,8 +96,8 @@ namespace TerraViewer
 
         public static Folder LoadFromFileStream(Stream stream, bool versionDependent)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Folder));
-            Folder newFolder = (Folder)serializer.Deserialize(stream);
+            var serializer = new XmlSerializer(typeof(Folder));
+            var newFolder = (Folder)serializer.Deserialize(stream);
             newFolder.dirty = false;
             newFolder.VersionDependent = versionDependent;
 
@@ -119,11 +119,11 @@ namespace TerraViewer
 
         public void SaveToFile(string filename)
         {
-            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            var ns = new XmlSerializerNamespaces();
             ns.Add("", "");
-            using (FileStream writer = File.Open(filename,FileMode.Create,FileAccess.Write,FileShare.None))
+            using (var writer = File.Open(filename,FileMode.Create,FileAccess.Write,FileShare.None))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Folder));
+                var serializer = new XmlSerializer(typeof(Folder));
                 serializer.Serialize(writer, this, ns);
                 writer.Close();
             }            
@@ -159,7 +159,7 @@ namespace TerraViewer
             dirty = true;
         }
 
-        Bitmap thumbnail = null;
+        Bitmap thumbnail;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public System.Drawing.Bitmap ThumbNail
         {
@@ -234,11 +234,11 @@ namespace TerraViewer
                 return communityIdField != 0 || this.permissionField > 0;
             }
         }
-        private Folder proxyFolder = null;
+        private Folder proxyFolder;
 
         public void Refresh()
         {
-            Folder temp = Folder.LoadFromUrl(Earth3d.MainWindow.PrepareUrl(urlField), VersionDependent);
+            var temp = Folder.LoadFromUrl(Earth3d.MainWindow.PrepareUrl(urlField), VersionDependent);
             if (temp != null)
             {
                 proxyFolder = temp;
@@ -254,7 +254,7 @@ namespace TerraViewer
             {
                 if (String.IsNullOrEmpty(urlField))
                 {
-                    List<object> returnList = new List<object>();
+                    var returnList = new List<object>();
                     if (Folder1 != null)
                     {
                         returnList.AddRange(Folder1);
@@ -280,7 +280,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    TimeSpan ts = lastUpdate.Subtract(DateTime.Now);
+                    var ts = lastUpdate.Subtract(DateTime.Now);
                     // TOdo add add Move Complete Auto Update
                     // todo add URL formating for Ambient Parameters
                     // TODO remove true when perth fixes refresh type on server
@@ -306,7 +306,7 @@ namespace TerraViewer
 
     public partial class Tour : TerraViewer.IThumbnail, TerraViewer.ITourResult
     {
-        Bitmap thumbnail = null;
+        Bitmap thumbnail;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public System.Drawing.Bitmap ThumbNail
         {
@@ -444,7 +444,7 @@ namespace TerraViewer
                 throw new Exception("The method or operation is not implemented.");
             }
         }
-        Bitmap authorImageBitmap = null;
+        Bitmap authorImageBitmap;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public Bitmap AuthorImage
         {
@@ -557,7 +557,7 @@ namespace TerraViewer
     {
         public static Place FromIPlace(IPlace place)
         {
-            Place newPlace = new Place();
+            var newPlace = new Place();
             if (place.BackgroundImageSet != null)
             {
                 newPlace.backgroundImageSetField = new PlaceBackgroundImageSet();
@@ -570,9 +570,9 @@ namespace TerraViewer
             }
             newPlace.CamParams = place.CamParams;
 
-            string names="";
-            string delim = "";
-            foreach (string name in place.Names)
+            var names="";
+            var delim = "";
+            foreach (var name in place.Names)
             {
                 names += delim;
                 names += name;
@@ -627,7 +627,7 @@ namespace TerraViewer
             set { tag = value; }
         }
 
-        Tour tour = null;
+        Tour tour;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public Tour Tour
         {
@@ -684,7 +684,7 @@ namespace TerraViewer
         {
             get
             {
-                CameraParameters cam =  new CameraParameters(latField, lngField, zoomLevelField, rotationField, angleField, (float)opacityField);
+                var cam =  new CameraParameters(latField, lngField, zoomLevelField, rotationField, angleField, (float)opacityField);
                 if (raFieldSpecified)
                 {
                     cam.RA = this.RA;
@@ -721,7 +721,7 @@ namespace TerraViewer
             {
                 if (Classification == Classification.SolarSystem)
                 {
-                    AstroRaDec raDec = Planets.GetPlanetLocation(Name);
+                    var raDec = Planets.GetPlanetLocation(Name);
                     //if (raDec != null)
                     {
                         raField = raDec.RA;
@@ -811,7 +811,7 @@ namespace TerraViewer
             {
                 if (Classification == Classification.SolarSystem)
                 {
-                    AstroRaDec raDec = Planets.GetPlanetLocation(Name);
+                    var raDec = Planets.GetPlanetLocation(Name);
 
                     raField = raDec.RA;
                     decField = raDec.Dec;
@@ -843,7 +843,7 @@ namespace TerraViewer
 
         #region IThumbnail Members
 
-        Bitmap thumbNail = null;
+        Bitmap thumbNail;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public Bitmap ThumbNail
@@ -887,7 +887,7 @@ namespace TerraViewer
                         thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
                         if (thumbNail == null)
                         {
-                            object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
+                            var obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
                             thumbNail = ((System.Drawing.Bitmap)(obj));
                         }
                     }
@@ -957,7 +957,7 @@ namespace TerraViewer
         #region IPlace Members
 
 
-        private double searchDistance = 0;
+        private double searchDistance;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public double SearchDistance
@@ -1046,14 +1046,14 @@ namespace TerraViewer
             set { wcsImage = value; }
         }
 
-        static ushort nextID = 0;
+        static ushort nextID;
        
         private static ushort NextInternalID()
         {
             return nextID++;
         }
 
-        ushort internalID = 0;
+        ushort internalID;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public ushort InternalID
@@ -1073,7 +1073,7 @@ namespace TerraViewer
         }
 
 
-        int hash = 0;
+        int hash;
 
         public int GetHash()
         {
@@ -1090,7 +1090,7 @@ namespace TerraViewer
             {
                 return null;
             }
-            ImageSet newset = new ImageSet();
+            var newset = new ImageSet();
             IImageSet newImageset = newset;
             newImageset.BandPass = imageset.BandPass;
             newImageset.BaseLevel = imageset.BaseLevel;
@@ -1254,8 +1254,8 @@ namespace TerraViewer
             }
         }
 
-        bool isMandelbrot = false;
-        bool mandelChecked = false;
+        bool isMandelbrot;
+        bool mandelChecked;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool IsMandelbrot
@@ -1300,7 +1300,7 @@ namespace TerraViewer
             set { matrix = value; }
         }
 
-        bool matrixComputed = false;
+        bool matrixComputed;
 
         private void ComputeMatrix()
         {
@@ -1370,7 +1370,7 @@ namespace TerraViewer
 
         #region IThumbnail Members
 
-        Bitmap thumbnail = null;
+        Bitmap thumbnail;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public Bitmap ThumbNail
@@ -1393,7 +1393,7 @@ namespace TerraViewer
             }
         }
 
-        bool isCloudCommunityItem = false;
+        bool isCloudCommunityItem;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool IsCloudCommunityItem
         {

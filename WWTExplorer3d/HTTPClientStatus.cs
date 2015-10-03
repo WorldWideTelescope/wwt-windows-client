@@ -29,16 +29,16 @@ namespace TerraViewer
 
         public override void ProcessRequest(string request, ref Socket socket, bool authenticated, string body)
         {
-            QueryString query = new QueryString(request);
+            var query = new QueryString(request);
 
-            String sMimeType = "text/xml";
+            var sMimeType = "text/xml";
 
-            String name = "";
-            int nodeID = -1;
+            var name = "";
+            var nodeID = -1;
             float FPS = 0;
             string error = null;
-            ClientNodeStatus status = ClientNodeStatus.Online;
-            string StatusText = "";
+            var status = ClientNodeStatus.Online;
+            var StatusText = "";
 
             if (!string.IsNullOrEmpty(query["NodeID"]))
             {
@@ -72,12 +72,12 @@ namespace TerraViewer
 
             if (nodeID != -1 && !string.IsNullOrEmpty(name))
             {
-                string ip = ((IPEndPoint)socket.RemoteEndPoint).Address.ToString();
+                var ip = ((IPEndPoint)socket.RemoteEndPoint).Address.ToString();
 
                 NetControl.LogStatusReport(nodeID, name, ip, status, StatusText, FPS, error);
             }
             
-            String data = "<?xml version = \"1.0\" encoding=\"utf-8\"?>" +
+            var data = "<?xml version = \"1.0\" encoding=\"utf-8\"?>" +
                             "<Status>Ok</Status>";
             SendHeaderAndData(data, ref socket, sMimeType);
         }

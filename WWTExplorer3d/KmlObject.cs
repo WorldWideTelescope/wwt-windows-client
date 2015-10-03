@@ -29,7 +29,7 @@ namespace TerraViewer
         public void UpdateNetworkLinks(KmlViewInformation viewInfo)
         {
 
-            foreach (KmlRoot root in Roots)
+            foreach (var root in Roots)
             {
                 UpdateRootLinks(root, viewInfo);
 
@@ -40,7 +40,7 @@ namespace TerraViewer
         {
             if (root.children != null)
             {
-                foreach (KmlFeature child in root.children)
+                foreach (var child in root.children)
                 {
                     UpdateLinks(child, viewInfo);
                 }
@@ -53,10 +53,10 @@ namespace TerraViewer
             {
                 if (feature is KmlContainer)
                 {
-                    KmlContainer container = (KmlContainer)feature;
+                    var container = (KmlContainer)feature;
                     if (container.children != null)
                     {
-                        foreach (KmlFeature child in container.children)
+                        foreach (var child in container.children)
                         {
                             UpdateLinks(child, viewInfo);
                         }
@@ -66,7 +66,7 @@ namespace TerraViewer
                 {
                     if (feature is KmlNetworkLink)
                     {
-                        KmlNetworkLink netLink = (KmlNetworkLink)feature;
+                        var netLink = (KmlNetworkLink)feature;
                         netLink.ConditionalUpdate(viewInfo);
                         if (netLink.LinkRoot != null)
                         {
@@ -82,7 +82,7 @@ namespace TerraViewer
 
     public class KmlRoot
     {
-        private bool sky = false;
+        private bool sky;
 
         public KmlLoadStatus LoadStatus = KmlLoadStatus.NotLoaded;
 
@@ -158,21 +158,21 @@ namespace TerraViewer
 
             if (!File.Exists(filename) && owner != null & owner.BaseUri != null)
             {
-                Uri newUri = new Uri(owner.BaseUri, filename);
+                var newUri = new Uri(owner.BaseUri, filename);
                 filename = newUri.ToString();
             }
 
-            XmlDocument doc = new XmlDocument();
-            XmlNamespaceManager NamespaceManager = new XmlNamespaceManager(doc.NameTable);
+            var doc = new XmlDocument();
+            var NamespaceManager = new XmlNamespaceManager(doc.NameTable);
             NamespaceManager.AddNamespace("atom", "http://www.w3.org/2005/Atom");
 
             if (filename.ToLower().Contains(".kmz"))
             {
                 if (Uri.IsWellFormedUriString(filename, UriKind.Absolute))
                 {
-                    Stream fs = UiTools.GetMemoryStreamFromUrl(filename);
+                    var fs = UiTools.GetMemoryStreamFromUrl(filename);
                     Archive = new ZipArchive(fs);
-                    foreach (ZipEntry entry in Archive.Files)
+                    foreach (var entry in Archive.Files)
                     {
                         if (entry.Filename.ToLower().EndsWith(".kml"))
                         {
@@ -183,10 +183,10 @@ namespace TerraViewer
                 else
                 {
                     // using (FileStream fs = new FileStream(filename, FileMode.Open))
-                    FileStream fs = new FileStream(filename, FileMode.Open);
+                    var fs = new FileStream(filename, FileMode.Open);
                     {
-                        ZipArchive archive = new ZipArchive(fs);
-                        foreach (ZipEntry entry in archive.Files)
+                        var archive = new ZipArchive(fs);
+                        foreach (var entry in archive.Files)
                         {
                             if (entry.Filename.ToLower().EndsWith(".kml"))
                             {
@@ -294,7 +294,7 @@ namespace TerraViewer
                 }
                 else if (BaseUri != null)
                 {
-                    Uri newUri = new Uri(BaseUri, href);
+                    var newUri = new Uri(BaseUri, href);
                     return UiTools.GetMemoryStreamFromUrl(newUri.ToString());
                 }
             }
@@ -303,7 +303,7 @@ namespace TerraViewer
 
         internal string GetStreamUrl(string href)
         {
-            string result = href;
+            var result = href;
             if (CheckArchiveStream(href))
             {
                 // This comes from the internal Zip file
@@ -329,7 +329,7 @@ namespace TerraViewer
                 }
                 else if (BaseUri != null)
                 {
-                    Uri newUri = new Uri(BaseUri, href);
+                    var newUri = new Uri(BaseUri, href);
                     return newUri.ToString();
                 }
             }
@@ -341,7 +341,7 @@ namespace TerraViewer
         {
             if (Archive != null)
             {
-                foreach (ZipEntry file in Archive.Files)
+                foreach (var file in Archive.Files)
                 {
                     if (file.Filename.ToLower() == href.ToLower())
                     {
@@ -356,7 +356,7 @@ namespace TerraViewer
         {
             if (Archive != null)
             {
-                foreach (ZipEntry file in Archive.Files)
+                foreach (var file in Archive.Files)
                 {
                     if (file.Filename.ToLower() == href.ToLower())
                     {
@@ -391,12 +391,12 @@ namespace TerraViewer
                 if (node["color"] != null)
                 {
 
-                    int abgr = Convert.ToInt32(node["color"].InnerText, 16);
+                    var abgr = Convert.ToInt32(node["color"].InnerText, 16);
 
-                    byte alpha = (byte)(abgr >> 24);
-                    byte blue = (byte)(abgr >> 16);
-                    byte green = (byte)(abgr >> 8);
-                    byte red = (byte)(abgr);
+                    var alpha = (byte)(abgr >> 24);
+                    var blue = (byte)(abgr >> 16);
+                    var green = (byte)(abgr >> 8);
+                    var red = (byte)(abgr);
                     return Color.FromArgb(alpha, red, green, blue);
                 }
             }
@@ -410,12 +410,12 @@ namespace TerraViewer
         {
             if (node["bgColor"] != null)
             {
-                int abgr = Convert.ToInt32(node["bgColor"].InnerText, 16);
+                var abgr = Convert.ToInt32(node["bgColor"].InnerText, 16);
 
-                byte alpha = (byte)(abgr >> 24);
-                byte blue = (byte)(abgr >> 16);
-                byte green = (byte)(abgr >> 8);
-                byte red = (byte)(abgr);
+                var alpha = (byte)(abgr >> 24);
+                var blue = (byte)(abgr >> 16);
+                var green = (byte)(abgr >> 8);
+                var red = (byte)(abgr);
                 return Color.FromArgb(alpha, red, green, blue);
             }
             return Color.White;
@@ -644,7 +644,7 @@ namespace TerraViewer
                 UnBoundedBegin = !DateTime.TryParse(node["begin"].InnerText, out BeginTime);
                 if (UnBoundedBegin)
                 {
-                    int year = 0;
+                    var year = 0;
                     if (int.TryParse(node["begin"].InnerText, out year))
                     {
                         year = Math.Max(1, Math.Min(3999,year));
@@ -664,7 +664,7 @@ namespace TerraViewer
                 UnBoundedBegin = !DateTime.TryParse(node["when"].InnerText, out BeginTime);
                 if (UnBoundedBegin)
                 {
-                    int year = 0;
+                    var year = 0;
                     if (int.TryParse(node["when"].InnerText, out year))
                     {
                         year = Math.Max(1, Math.Min(3999, year));
@@ -684,7 +684,7 @@ namespace TerraViewer
                 UnBoundedEnd = !DateTime.TryParse(node["end"].InnerText, out EndTime);
                 if (UnBoundedEnd)
                 {
-                    int year = 0;
+                    var year = 0;
                     if (int.TryParse(node["end"].InnerText, out year))
                     {
                         year = Math.Max(1, Math.Min(3999,year));
@@ -755,8 +755,8 @@ namespace TerraViewer
 
         public bool ShouldDisplay()
         {
-            bool display = visibility;
-            DateTime now = SpaceTimeController.Now;
+            var display = visibility;
+            var now = SpaceTimeController.Now;
 
 
             if (!Time.UnBoundedBegin && Time.BeginTime > now)
@@ -784,7 +784,7 @@ namespace TerraViewer
             {
                 if (child.Name == "Style")
                 {
-                    KmlStyle style = new KmlStyle();
+                    var style = new KmlStyle();
                     style.LoadDetails(child, owner);
                     Style = style;
                     if (!string.IsNullOrEmpty(style.ID))
@@ -794,7 +794,7 @@ namespace TerraViewer
                 }
                 if (child.Name == "StyleMap")
                 {
-                    KmlStyleMap style = new KmlStyleMap();
+                    var style = new KmlStyleMap();
                     style.LoadDetails(child, owner);
                     if (!string.IsNullOrEmpty(style.ID))
                     {
@@ -872,7 +872,7 @@ namespace TerraViewer
 
             if (node["styleUrl"] != null)
             {
-                string url = node["styleUrl"].InnerText;
+                var url = node["styleUrl"].InnerText;
 
                 if (url.StartsWith("#"))
                 {
@@ -981,7 +981,7 @@ namespace TerraViewer
         public bool viewJustStopped = false;
         public bool viewMoving = false;
 
-        static string[] parameterList = null;
+        static string[] parameterList;
 
         public static string[] ParameterList
         {
@@ -1020,10 +1020,10 @@ namespace TerraViewer
 
         public string PrepLinkUrl(string inputLink)
         {
-            string[] list = ParameterList;
+            var list = ParameterList;
 
             // converts string from KML place holders to c# compatible ones.
-            for (int i = 0; i < list.Length; i++)
+            for (var i = 0; i < list.Length; i++)
             {
                 inputLink = inputLink.Replace(list[i], "{" + i.ToString() + "}");
             }
@@ -1044,13 +1044,13 @@ namespace TerraViewer
     //</NetworkLink>
     public class KmlNetworkLink : KmlFeature
     {
-        bool refreshVisibility=false;
-        bool flyToView=false;
+        bool refreshVisibility;
+        bool flyToView;
         KmlLink Link;
 
         DateTime lastUpdate;
         DateTime stopTime;
-        bool pendingUpdate = false;
+        bool pendingUpdate;
 
         public KmlLoadStatus LoadStatus = KmlLoadStatus.NotLoaded;
 
@@ -1190,7 +1190,7 @@ namespace TerraViewer
         public KmlGeometry geometry = null;
         public Rectangle hitTestRect = Rectangle.Empty;
         public KmlPoint Point = null;
-        private bool selected = false;
+        private bool selected;
 
         public bool Selected
         {
@@ -1346,7 +1346,7 @@ namespace TerraViewer
 
             if (node["coordinates"] != null)
             {
-                string[] split = node["coordinates"].InnerText.Split(new char[] { ',' });
+                var split = node["coordinates"].InnerText.Split(new char[] { ',' });
 
                 if (split.Length > 0)
                 {
@@ -1382,7 +1382,7 @@ namespace TerraViewer
 
         public override KmlCoordinate GetCenterPoint()
         {
-            KmlCoordinate point = new KmlCoordinate();
+            var point = new KmlCoordinate();
             point.Lat = this.latitude;
             point.Lng = this.longitude;
             point.Alt = this.altitude;
@@ -1412,13 +1412,13 @@ namespace TerraViewer
         public void ParseWkt(string geoText, string option, double alt, Dates date)
         {
 
-            string[] parts = geoText.Split(new char[] { '(', ',', ')' });
-            foreach (string part in parts)
+            var parts = geoText.Split(new char[] { '(', ',', ')' });
+            foreach (var part in parts)
             {
-                string[] coordinates = part.Trim().Split(new char[] { ' ' });
+                var coordinates = part.Trim().Split(new char[] { ' ' });
                 if (coordinates.Length > 1)
                 {
-                    KmlCoordinate pnt = new KmlCoordinate();
+                    var pnt = new KmlCoordinate();
                     pnt.Lng = double.Parse(coordinates[0]);
                     if (Astronomical)
                     {
@@ -1445,15 +1445,15 @@ namespace TerraViewer
 
             if (node["coordinates"] != null)
             {
-                string data = node["coordinates"].InnerText;
+                var data = node["coordinates"].InnerText;
                 data = data.Replace(", ", ",").Replace(" ,", ",").Replace(" , ", ",").Replace("(", "").Replace(")", "");
-                string[] lines = data.Split(new char[] { '\n', '\r', ' ' });
-                foreach (string line in lines)
+                var lines = data.Split(new char[] { '\n', '\r', ' ' });
+                foreach (var line in lines)
                 {
-                    string[] parts = line.Split(new char[] { ',' });
+                    var parts = line.Split(new char[] { ',' });
                     if (parts.Length > 1)
                     {
-                        KmlCoordinate pnt = new KmlCoordinate();
+                        var pnt = new KmlCoordinate();
                         pnt.Lng = double.Parse(parts[0]);
                         pnt.Lat = double.Parse(parts[1]);
                         if (parts.Length > 2)
@@ -1486,13 +1486,13 @@ namespace TerraViewer
         }
         public override KmlCoordinate GetCenterPoint()
         {
-            KmlCoordinate point = new KmlCoordinate();
+            var point = new KmlCoordinate();
             point.Lat = 0;
             point.Lng = 0;
             point.Alt = 0;
 
 
-            foreach (KmlCoordinate pnt in PointList)
+            foreach (var pnt in PointList)
             {
                 point.Lat += pnt.Lat;
                 point.Lng += pnt.Lng;
@@ -1531,7 +1531,7 @@ namespace TerraViewer
             {
                 if (child.Name == "innerBoundaryIs")
                 {
-                    KmlLinearRing innerRing = new KmlLinearRing();
+                    var innerRing = new KmlLinearRing();
                     innerRing.LoadDetails(child, owner);
                     InnerBoundarys.Add(innerRing);
                 }
@@ -1621,16 +1621,16 @@ namespace TerraViewer
 
         public override KmlCoordinate GetCenterPoint()
         {
-            KmlCoordinate point = new KmlCoordinate();
+            var point = new KmlCoordinate();
             point.Lat = 0;
             point.Lng = 0;
             point.Alt = 0;
 
-            int count = 0;
-            foreach (KmlGeometry child in Children)
+            var count = 0;
+            foreach (var child in Children)
             {
                 count++;
-                KmlCoordinate pnt = child.GetCenterPoint();
+                var pnt = child.GetCenterPoint();
                 point.Lat += pnt.Lat;
                 point.Lng += pnt.Lng;
                 point.Alt += pnt.Alt;
@@ -1729,10 +1729,10 @@ namespace TerraViewer
     //</Icon>
     public class KmlIcon : KmlLink
     {
-        int X = 0;
-        int Y = 0;
-        int W = 0;
-        int H = 0;
+        int X;
+        int Y;
+        int W;
+        int H;
 
         public override void LoadDetails(XmlNode node, KmlRoot owner)
         {
@@ -1756,7 +1756,7 @@ namespace TerraViewer
         }
         public Texture11 texture = null;
 
-        string cacheKey = null;
+        string cacheKey;
         public Texture11 Texture
         {
             get
@@ -1788,7 +1788,7 @@ namespace TerraViewer
                     }
                 }
 
-                IconCacheEntry entry = IconCache[cacheKey];
+                var entry = IconCache[cacheKey];
                 if (entry != null)
                 {
                     return entry.Texture;
@@ -1810,7 +1810,7 @@ namespace TerraViewer
         }
 
         // Icon Cache functions & Members
-        static Dictionary<string, IconCacheEntry> IconCache = new Dictionary<string, IconCacheEntry>();
+        static readonly Dictionary<string, IconCacheEntry> IconCache = new Dictionary<string, IconCacheEntry>();
 
     }
 
@@ -1851,21 +1851,21 @@ namespace TerraViewer
 
         public static void LoadTexture( object objEntry)
         {
-            IconCacheEntry entry = objEntry as IconCacheEntry;
+            var entry = objEntry as IconCacheEntry;
             entry.Requested = true;
            // mut.WaitOne();
             try
             {
-                String dir = Properties.Settings.Default.CahceDirectory + "Data\\KmlCache\\";
+                var dir = Properties.Settings.Default.CahceDirectory + "Data\\KmlCache\\";
                 if (!Directory.Exists(dir))
                 {
                     Directory.CreateDirectory(dir);
                 }
                 // This is a expanded timeout version of WebClient
-                MyWebClient Client = new MyWebClient();
+                var Client = new MyWebClient();
                 
 
-                string filename = dir + ((uint)entry.Href.GetHashCode32()).ToString() + ".png";
+                var filename = dir + ((uint)entry.Href.GetHashCode32()).ToString() + ".png";
 
                 //if (File.Exists(filename))
                 //{
@@ -1892,7 +1892,7 @@ namespace TerraViewer
 
                     if (Uri.IsWellFormedUriString(entry.Href, UriKind.Absolute))
                     {
-                        byte[] data = Client.DownloadData(entry.Href);
+                        var data = Client.DownloadData(entry.Href);
                         stream = new MemoryStream(data);
                     }
                     else
@@ -1905,11 +1905,11 @@ namespace TerraViewer
                     stream = entry.Owner.GetFileStream(entry.Href);
                 }
 
-                FileStream fileStream = File.OpenWrite(filename);
-                byte[] buffer = new byte[32768];
+                var fileStream = File.OpenWrite(filename);
+                var buffer = new byte[32768];
                 while (true) 
                 {
-                    int read = stream.Read(buffer, 0, buffer.Length);
+                    var read = stream.Read(buffer, 0, buffer.Length);
                     if (read <= 0)    
                         break;
                     fileStream.Write(buffer, 0, read);
@@ -1959,12 +1959,12 @@ namespace TerraViewer
             base.LoadDetails(node, owner);
             if (node["geomColor"] != null)
             {
-                int abgr = Convert.ToInt32(node["geomColor"].InnerText, 16);
+                var abgr = Convert.ToInt32(node["geomColor"].InnerText, 16);
 
-                byte alpha = (byte)(abgr >> 24);
-                byte blue = (byte)(abgr >> 16);
-                byte green = (byte)(abgr >> 8);
-                byte red = (byte)(abgr);
+                var alpha = (byte)(abgr >> 24);
+                var blue = (byte)(abgr >> 16);
+                var green = (byte)(abgr >> 8);
+                var red = (byte)(abgr);
                 color = Color.FromArgb(alpha, red, green, blue);
             }
             else if (node["color"] != null)
@@ -2224,17 +2224,17 @@ namespace TerraViewer
         }
 
 
-        private Matrix3d Matrix = new Matrix3d();
+        private Matrix3d Matrix;
         bool MatrixFresh = false;
 
         public Matrix3d GetMatrix()
         {
             if (!MatrixFresh)
             {
-                double fieldWidth = east - west;
-                double fieldHeight = north - south;
+                var fieldWidth = east - west;
+                var fieldHeight = north - south;
 
-                Coordinates center = new Coordinates(0, 0);
+                var center = new Coordinates(0, 0);
                 center.Lat = south + fieldHeight / 2;
                 center.Lng = west + fieldWidth / 2;
 
@@ -2317,7 +2317,7 @@ namespace TerraViewer
 
     public class KmlColorStyle : KmlSubStyle
     {
-        Random rnd = new Random();
+        readonly Random rnd = new Random();
         public Color Color = Color.White;
         public KmlColorModes ColorMode = KmlColorModes.Normal;
 
@@ -2331,10 +2331,10 @@ namespace TerraViewer
 
             if (ColorMode == KmlColorModes.Random)
             {
-                byte red = (Byte)(Color.R * rnd.NextDouble());
-                byte green = (Byte)(Color.G * rnd.NextDouble());
-                byte blue = (Byte)(Color.B * rnd.NextDouble());
-                byte alpha = (Byte)(Color.A * rnd.NextDouble());
+                var red = (Byte)(Color.R * rnd.NextDouble());
+                var green = (Byte)(Color.G * rnd.NextDouble());
+                var blue = (Byte)(Color.B * rnd.NextDouble());
+                var alpha = (Byte)(Color.A * rnd.NextDouble());
                 Color = Color.FromArgb(alpha, red, green, blue);
             }
         }
@@ -2503,8 +2503,8 @@ namespace TerraViewer
     }
     public class KmlStyleMap : KmlStyleSelector
     {
-        string normal = null;
-        string highlight = null;
+        string normal;
+        string highlight;
         public override void LoadDetails(XmlNode node, KmlRoot owner)
         {
             base.LoadDetails(node, owner);

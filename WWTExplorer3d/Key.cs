@@ -160,16 +160,16 @@ namespace TerraViewer
         static Vector2d first = new Vector2d(0, 0);      
         static Vector2d last = new Vector2d(1, 1);
 
-        static KeySpline ks = new KeySpline();
+        static readonly KeySpline ks = new KeySpline();
 
         private Vector2d ComputeSpline(Vector2d begin, Vector2d control1, Vector2d control2, Vector2d end, double tween)
         {
-            Vector2d A1 = Vector2d.Lerp(begin, control1, tween);
-            Vector2d A2 = Vector2d.Lerp(control1, control2, tween);
-            Vector2d A3 = Vector2d.Lerp(control2, end, tween);
+            var A1 = Vector2d.Lerp(begin, control1, tween);
+            var A2 = Vector2d.Lerp(control1, control2, tween);
+            var A3 = Vector2d.Lerp(control2, end, tween);
 
-            Vector2d B1 = Vector2d.Lerp(A1, A2, tween);
-            Vector2d B2 = Vector2d.Lerp(A2, A3, tween);
+            var B1 = Vector2d.Lerp(A1, A2, tween);
+            var B2 = Vector2d.Lerp(A2, A3, tween);
             return Vector2d.Lerp(B1, B2, tween);
         }
     }

@@ -36,7 +36,7 @@ namespace TerraViewer
 
         public DialogResult ShowModal(WizPropsStyle style)
         {
-            WizardShell shell = new WizardShell(this);
+            var shell = new WizardShell(this);
 
             
             return shell.ShowDialog();
@@ -44,7 +44,7 @@ namespace TerraViewer
 
         public void UpdateVisible(Type targetType, bool visible)
         {
-            foreach (WizPropPageElement element in this.Pages)
+            foreach (var element in this.Pages)
             {
                 if (element.Page == targetType)
                 {

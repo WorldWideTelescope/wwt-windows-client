@@ -48,12 +48,12 @@ namespace TerraViewer.Callibration
         public void SyncLookupsAndOwners()
         {
             ProjLookup.Clear();
-            foreach(ProjectorEntry pe in Projectors)
+            foreach(var pe in Projectors)
             {
                 ProjLookup.Add(pe.ID, pe);
             }
 
-            foreach (Edge edge in Edges)
+            foreach (var edge in Edges)
             {
                 edge.Owner = this;
             }

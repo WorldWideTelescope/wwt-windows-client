@@ -10,14 +10,14 @@ namespace TerraViewer
 {
     public partial class TelescopeTab : TabForm
     {
-        AscomTelescope scope = null;
+        AscomTelescope scope;
 
         internal AscomTelescope Scope
         {
             get { return scope; }
             set { scope = value; }
         }
-        bool telescopeConnected = false;
+        bool telescopeConnected;
 
         public bool TelescopeConnected
         {
@@ -159,7 +159,7 @@ namespace TerraViewer
 
         public void ChooseScope()
         {
-            string scopeID = AscomTelescope.ChooseTelescope(Properties.Settings.Default.TelescopeID);
+            var scopeID = AscomTelescope.ChooseTelescope(Properties.Settings.Default.TelescopeID);
             if (platformInstalled && !String.IsNullOrEmpty(scopeID))
             {
                 Properties.Settings.Default.TelescopeID = scopeID;
@@ -268,10 +268,10 @@ namespace TerraViewer
         {
         }
 
-        double TelescopeRa = 0.0;
-        double TelescopeDec = 0.0;
-        double TelescopeAlt = 0.0;
-        double TelescopeAz = 0.0;
+        double TelescopeRa;
+        double TelescopeDec;
+        double TelescopeAlt;
+        double TelescopeAz;
         private void TelescopeTimer_Tick(object sender, EventArgs e)
         {
             try
@@ -333,7 +333,7 @@ namespace TerraViewer
                 scope = null;
             }
         }
-        bool platformInstalled = false;
+        bool platformInstalled;
         private void TelescopeTab_Load(object sender, EventArgs e)
         {
             if (AscomTelescope.IsPlatformInstalled())

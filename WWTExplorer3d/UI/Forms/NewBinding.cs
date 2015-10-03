@@ -41,9 +41,9 @@ namespace TerraViewer
             ControlTypeCombo.SelectedIndex = 0;
 
         }
-        bool firstMessageReceived = false;
+        bool firstMessageReceived;
         MidiMessage firstMessage = MidiMessage.None;
-        int firstValue = 0;
+        int firstValue;
         void Owner_MessageReceived(object sender, MidiMessage message, int channel, int key, int value)
         {
             if (ControlMap != null)

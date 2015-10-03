@@ -16,7 +16,7 @@ namespace TerraViewer.Authentication
 
         public static async Task<OAuthTicket> SignInToMicrosoftAccount(System.Windows.Forms.IWin32Window parentWindow)
         {
-            string oldRefreshToken = Properties.Settings.Default.RefreshToken;
+            var oldRefreshToken = Properties.Settings.Default.RefreshToken;
             AppTokenResult appToken = null;
             if (!string.IsNullOrEmpty(oldRefreshToken))
             {
@@ -53,7 +53,7 @@ namespace TerraViewer.Authentication
 
         public static async Task<AppTokenResult> RenewAccessTokenAsync(OAuthTicket ticket)
         {
-            string oldRefreshToken = ticket.RefreshToken;
+            var oldRefreshToken = ticket.RefreshToken;
             AppTokenResult appToken = null;
 
             if (!string.IsNullOrEmpty(oldRefreshToken))

@@ -25,7 +25,7 @@ namespace TerraViewer
         public VoTable(string filename)
         {
             LoadFilename = filename;
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.Load(filename);
             LoadFromXML(doc);
         }
@@ -39,7 +39,7 @@ namespace TerraViewer
             {
                 return;
             }
-            int index = 0;
+            var index = 0;
             try
             {
                 XmlNode table = voTable["RESOURCE"]["TABLE"];
@@ -49,7 +49,7 @@ namespace TerraViewer
                     {
                         if (node.Name == "FIELD")
                         {
-                            VoColumn col = new VoColumn(node, index++);
+                            var col = new VoColumn(node, index++);
                             Columns.Add(col.Name, col);
                             Column.Add(col);
                         }
@@ -70,7 +70,7 @@ namespace TerraViewer
                     {
                         if (node.Name == "TR")
                         {
-                            VoRow row = new VoRow(this);
+                            var row = new VoRow(this);
                             row.ColumnData = new object[Columns.Count];
                             index = 0;
                             foreach (XmlNode child in node.ChildNodes)
@@ -106,7 +106,7 @@ namespace TerraViewer
         }
         public VoColumn GetColumnByUcd(string ucd)
         {
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (col.Ucd.Replace("_", ".").ToLower().Contains(ucd.ToLower()))
                 {
@@ -118,14 +118,14 @@ namespace TerraViewer
 
         public VoColumn GetRAColumn()
         {
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (col.Ucd.ToLower().Contains("pos.eq.ra") || col.Ucd.ToLower().Contains("pos_eq_ra"))
                 {
                     return col;
                 }
             }
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (col.Name.ToLower().Contains("ra"))
                 {
@@ -138,7 +138,7 @@ namespace TerraViewer
 
         public VoColumn GetDecColumn()
         {
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (col.Ucd.ToLower().Contains("pos.eq.dec") || col.Ucd.ToLower().Contains("pos_eq_dec"))
                 {
@@ -146,7 +146,7 @@ namespace TerraViewer
                 }
             }
 
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (col.Name.ToLower().Contains("dec"))
                 {
@@ -158,7 +158,7 @@ namespace TerraViewer
 
         public VoColumn GetDistanceColumn()
         {
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (col.Ucd.ToLower().Contains("pos.distance") || col.Ucd.ToLower().Contains("pos_distance"))
                 {
@@ -170,11 +170,11 @@ namespace TerraViewer
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            bool first = true;
+            var first = true;
             // Copy header
-            foreach (VoColumn col in this.Columns.Values)
+            foreach (var col in this.Columns.Values)
             {
                 if (first)
                 {
@@ -191,10 +191,10 @@ namespace TerraViewer
 
             // copy rows
 
-            foreach (VoRow row in Rows)
+            foreach (var row in Rows)
             {
                 first = true;
-                foreach (object col in row.ColumnData)
+                foreach (var col in row.ColumnData)
                 {
                     if (first)
                     {
@@ -292,11 +292,11 @@ namespace TerraViewer
             
             if (node.Attributes["arraysize"] != null)
             {
-                string[] split = node.Attributes["arraysize"].Value.Split(new char[] { 'x' });
+                var split = node.Attributes["arraysize"].Value.Split(new char[] { 'x' });
                 Dimentions = split.GetLength(0);
                 Sizes = new int[split.GetLength(0)];
-                int indexer = 0;
-                foreach (string dim in split)
+                var indexer = 0;
+                foreach (var dim in split)
                 {
                     if (!dim.Contains("*"))
                     {
@@ -304,8 +304,8 @@ namespace TerraViewer
                     }
                     else
                     {
-                        int len = 9999;
-                        string lenString = dim.Replace("*","");
+                        var len = 9999;
+                        var lenString = dim.Replace("*","");
                         if (lenString.Length > 0)
                         {
                             len = Convert.ToInt32(lenString);
@@ -329,7 +329,7 @@ namespace TerraViewer
 
         public static Primitives GetType(string type)
         {
-            Primitives Type = Primitives.VoUndefined;
+            var Type = Primitives.VoUndefined;
             switch (type)
             {
                 case "boolean":

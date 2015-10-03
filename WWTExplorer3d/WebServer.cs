@@ -71,13 +71,12 @@ namespace TerraViewer
 
 	public class MyWebServer 
 	{
-
-        List<WebListener> listeners = new List<WebListener>();
+	    readonly List<WebListener> listeners = new List<WebListener>();
         public static string IpAddress;
 
-		private bool _bQuit = false;
+		private bool _bQuit;
 
-        private static int _RunCount = 0;
+        private static int _RunCount;
 
         public static int RunCount
         {
@@ -89,7 +88,7 @@ namespace TerraViewer
 		}
         static public Dictionary<string,string> WhiteList = new Dictionary<string,string>();
 
-        static bool initializedOnce = false;
+        static bool initializedOnce;
 
 		public bool Startup()
 		{
@@ -116,7 +115,7 @@ namespace TerraViewer
                 IpAddress = "";
                 listeners.Clear();
                 WebListener listener = null;
-                foreach (IPAddress ipAdd in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                foreach (var ipAdd in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
                 {
                     if (ipAdd.AddressFamily == AddressFamily.InterNetwork)
                     {
@@ -165,11 +164,11 @@ namespace TerraViewer
 
         public static void SetAccessLists()
         {
-            Dictionary<string,string> whiteList = new Dictionary<string, string>();
+            var whiteList = new Dictionary<string, string>();
 
-            string[] ipList = Properties.Settings.Default.HTTPWhiteList.Split(new char[] { ';' });
+            var ipList = Properties.Settings.Default.HTTPWhiteList.Split(new char[] { ';' });
 
-            foreach (string ip in ipList)
+            foreach (var ip in ipList)
             {
                 whiteList.Add(ip, ip);
             }
@@ -184,12 +183,12 @@ namespace TerraViewer
 
         public static bool IsAuthorized(IPAddress ip)
         {
-            string address = ip.ToString();
-            string[] parts = address.Split(new char[] { '.' });
+            var address = ip.ToString();
+            var parts = address.Split(new char[] { '.' });
 
-            string wild1 = string.Format("{0}.{1}.{2}.*", parts[0], parts[1], parts[2]);
-            string wild2 = string.Format("{0}.{1}.*.*", parts[0], parts[1]);
-            string wild3 = string.Format("{0}.*.*.*", parts[0]);
+            var wild1 = string.Format("{0}.{1}.{2}.*", parts[0], parts[1], parts[2]);
+            var wild2 = string.Format("{0}.{1}.*.*", parts[0], parts[1]);
+            var wild3 = string.Format("{0}.*.*.*", parts[0]);
 
             if (Properties.Settings.Default.AllowLocalHTTP)
             {
@@ -198,7 +197,7 @@ namespace TerraViewer
                     return true;
                 }
 
-                foreach (IPAddress ipAdd in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                foreach (var ipAdd in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
                 {
                     if (ipAdd.AddressFamily == AddressFamily.InterNetwork)
                     {
@@ -238,7 +237,7 @@ namespace TerraViewer
 		{
             if (Earth3d.Logging) { Earth3d.WriteLogMessage("Shutting Down Web Server"); }
             _bQuit = true;
-            foreach (WebListener wl in listeners)
+            foreach (var wl in listeners)
             {
                 wl.Stop();
             }
@@ -276,7 +275,7 @@ namespace TerraViewer
 
 		public void ListenerThreadFunc(object data)
 		{
-            WebListener webListener = data as WebListener;
+            var webListener = data as WebListener;
             if (webListener == null)
             {
                 return;
@@ -288,7 +287,7 @@ namespace TerraViewer
 				try
 				{
 					//Accept a new connection
-                    Socket mySocket = webListener.Listener.AcceptSocket();
+                    var mySocket = webListener.Listener.AcceptSocket();
                     if (mySocket.Connected)
                     {
                         if (AsyncRequests)
@@ -314,8 +313,8 @@ namespace TerraViewer
 
         public static void HandleRequest(object param)
         {
-            Socket mySocket = (Socket) param;
-            int iStartPos = 0;
+            var mySocket = (Socket) param;
+            var iStartPos = 0;
             String sRequest;
             String sErrorMessage;
             try
@@ -325,13 +324,13 @@ namespace TerraViewer
                 //Console.WriteLine("\nClient Connected!!\n==================\nCLient IP {0}\nLocal IP {1}", 		mySocket.RemoteEndPoint, mySocket.LocalEndPoint) ;
 
                 //make a byte array and receive data from the client 
-                Byte[] bReceive = new Byte[4096];
-                int i = mySocket.Receive(bReceive, bReceive.Length, 0);
+                var bReceive = new Byte[4096];
+                var i = mySocket.Receive(bReceive, bReceive.Length, 0);
 
                 //Convert Byte to String
-                string sBuffer = Encoding.UTF8.GetString(bReceive, 0, i);
-                string body = "";
-                int bodySize = 0;
+                var sBuffer = Encoding.UTF8.GetString(bReceive, 0, i);
+                var body = "";
+                var bodySize = 0;
 
                 
                 if (string.IsNullOrEmpty(sBuffer) || (sBuffer.Substring(0, 3) != "GET" && sBuffer.Substring(0, 4) != "POST"))
@@ -342,17 +341,17 @@ namespace TerraViewer
 
                 if (sBuffer.Substring(0, 4) == "POST")
                 {
-                    string contentLength = "Content-Length:";
-                    int start = sBuffer.IndexOf(contentLength);
-                    int bodyLeft = bodySize;
+                    var contentLength = "Content-Length:";
+                    var start = sBuffer.IndexOf(contentLength);
+                    var bodyLeft = bodySize;
                     if (start > -1)
                     {
                         start += contentLength.Length;
-                        string length = sBuffer.Substring(start);
+                        var length = sBuffer.Substring(start);
                         length = length.Substring(0, length.IndexOf("\r"));
                         bodySize = Convert.ToInt32(length);
                         bodyLeft = bodySize;
-                        int bodyStart = sBuffer.IndexOf("\r\n\r\n")+4;
+                        var bodyStart = sBuffer.IndexOf("\r\n\r\n")+4;
                         if (sBuffer.Length > bodyStart)
                         {
                             body = sBuffer.Substring(bodyStart);
@@ -360,16 +359,16 @@ namespace TerraViewer
                         }
 
                     }
-                    bool sentContinue = false;
+                    var sentContinue = false;
 
 
 
-                    int count = 0;
-                    bool firstTime = true;
+                    var count = 0;
+                    var firstTime = true;
                    
                     if (bodyLeft > 0)
                     { 
-                        StringBuilder sb = new StringBuilder(body, bodySize);
+                        var sb = new StringBuilder(body, bodySize);
                         while (bodyLeft > 0)
                         {
                             if (!firstTime && (bodyLeft == bodySize) && !sentContinue && (sBuffer.Contains("Expect: 100-continue")))
@@ -378,7 +377,7 @@ namespace TerraViewer
                                 sentContinue = true;
                             }
                             firstTime = false;
-                            string moreData = RequestHandler.GetBody(bodyLeft, ref mySocket);
+                            var moreData = RequestHandler.GetBody(bodyLeft, ref mySocket);
                             bodyLeft -= moreData.Length;
                             sb.Append(moreData);
                             count++;
@@ -404,10 +403,10 @@ namespace TerraViewer
 
                 // Check authentication from whitelist
 
-                IPEndPoint ipep = mySocket.RemoteEndPoint as IPEndPoint;
+                var ipep = mySocket.RemoteEndPoint as IPEndPoint;
 
 
-                bool authenticated = true;
+                var authenticated = true;
 
                 if (ipep != null)
                 {
@@ -418,7 +417,7 @@ namespace TerraViewer
                 try
                 {
                     if (Earth3d.Logging) { Earth3d.WriteLogMessage("Web Request:" + sRequest); }
-                    RequestHandler rh = RequestHandler.GetHandler(sRequest);
+                    var rh = RequestHandler.GetHandler(sRequest);
                     if (rh != null)
                     {
                         rh.ProcessRequest(sRequest, ref mySocket, authenticated, body);

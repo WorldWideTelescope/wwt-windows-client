@@ -8,11 +8,11 @@ namespace TerraViewer
 {
     class ImageSetLayer : Layer
     {
-        IImageSet imageSet = null;
+        IImageSet imageSet;
 
         ScaleTypes lastScale = ScaleTypes.Linear;
-        double    min = 0;
-        double    max = 0;
+        double    min;
+        double    max;
 
         public IImageSet ImageSet
         {
@@ -30,7 +30,7 @@ namespace TerraViewer
             imageSet = set;
         }
 
-        bool overrideDefaultLayer = false;
+        bool overrideDefaultLayer;
         public bool OverrideDefaultLayer
         {
             get { return overrideDefaultLayer; }
@@ -53,7 +53,7 @@ namespace TerraViewer
         {
             XmlNode imageSetNode = node["ImageSet"];
 
-            ImageSetHelper ish = ImageSetHelper.FromXMLNode(imageSetNode);
+            var ish = ImageSetHelper.FromXMLNode(imageSetNode);
 
             if (!String.IsNullOrEmpty(ish.Url) && Earth3d.ReplacementImageSets.ContainsKey(ish.Url))
             {
@@ -113,7 +113,7 @@ namespace TerraViewer
 
             if (imageSet.WcsImage is FitsImage)
             {
-                FitsImage fi = imageSet.WcsImage as FitsImage;
+                var fi = imageSet.WcsImage as FitsImage;
                 xmlWriter.WriteAttributeString("ScaleType", fi.lastScale.ToString());
                 xmlWriter.WriteAttributeString("MinValue", fi.lastBitmapMin.ToString());
                 xmlWriter.WriteAttributeString("MaxValue", fi.lastBitmapMax.ToString());
@@ -135,13 +135,13 @@ namespace TerraViewer
         {
             if (imageSet.WcsImage != null)
             {
-                string fName = imageSet.WcsImage.Filename;
+                var fName = imageSet.WcsImage.Filename;
 
-                bool copy = !fName.Contains(ID.ToString());
-                string extension = Path.GetExtension(fName);
+                var copy = !fName.Contains(ID.ToString());
+                var extension = Path.GetExtension(fName);
 
-                string fileName = fc.TempDirectory + string.Format("{0}\\{1}{2}", fc.PackageID, this.ID.ToString(), extension);
-                string path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
+                var fileName = fc.TempDirectory + string.Format("{0}\\{1}{2}", fc.PackageID, this.ID.ToString(), extension);
+                var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
 
                 if (fName != fileName)
                 {
@@ -177,13 +177,13 @@ namespace TerraViewer
 
         public override void LoadData(string path)
         {
-            string filename = path.Replace(".txt",  extension);
+            var filename = path.Replace(".txt",  extension);
              if (File.Exists(filename))
              {
                  imageSet.WcsImage = WcsImage.FromFile(filename);
                  if (min != 0 && max != 0)
                  {
-                     FitsImage fi = imageSet.WcsImage as FitsImage;
+                     var fi = imageSet.WcsImage as FitsImage;
                      fi.lastBitmapMax = max;
                      fi.lastBitmapMin = min;
                      fi.lastScale = lastScale;

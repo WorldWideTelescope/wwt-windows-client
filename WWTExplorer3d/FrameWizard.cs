@@ -9,20 +9,20 @@ namespace TerraViewer
     {
         static public DialogResult ShowWizard(ReferenceFrame frame)
         {
-            WizardPropsBinding props = GetPropsObject();
+            var props = GetPropsObject();
             props.Data = frame;
 
             props.UpdateTabVisibility += new UpdateTabDelegate(props_UpdateTabVisibility);
 
-            WizardShell shell = new WizardShell(props);
+            var shell = new WizardShell(props);
 
             return shell.ShowDialog();
         }
 
         static void props_UpdateTabVisibility(object sender, object e)
         {
-            WizardPropsBinding props = e as WizardPropsBinding;
-            ReferenceFrame frame = props.Data as ReferenceFrame;
+            var props = e as WizardPropsBinding;
+            var frame = props.Data as ReferenceFrame;
             switch (frame.ReferenceFrameType)
             {
                 case ReferenceFrameTypes.FixedSherical:
@@ -54,10 +54,10 @@ namespace TerraViewer
 
         static public DialogResult ShowPropertiesSheet(ReferenceFrame frame)
         {
-            WizardPropsBinding props = GetPropsObject();
+            var props = GetPropsObject();
             props.Data = frame;
 
-            PropsShell shell = new PropsShell(props);
+            var shell = new PropsShell(props);
             props.UpdateTabVisibility += new UpdateTabDelegate(props_UpdateTabVisibility);
 
             return shell.ShowDialog();

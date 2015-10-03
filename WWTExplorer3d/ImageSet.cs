@@ -82,7 +82,7 @@ namespace TerraViewer
             set { widthFactor = value; }
         }
 
-        int hash = 0;
+        int hash;
 
         public int GetHash()
         {
@@ -184,7 +184,7 @@ namespace TerraViewer
             get { return quadTreeTileMap; }
             set { quadTreeTileMap = value; }
         }
-        double centerX = 0;
+        double centerX;
 
         public double CenterX
         {
@@ -198,7 +198,7 @@ namespace TerraViewer
                 }
             }
         }
-        double centerY = 0;
+        double centerY;
 
         public double CenterY
         {
@@ -212,7 +212,7 @@ namespace TerraViewer
                 }
             }
         }
-        double rotation = 0;
+        double rotation;
 
         public double Rotation
         {
@@ -258,7 +258,7 @@ namespace TerraViewer
             get { return altUrl; }
             set { altUrl = value; }
         }
-        bool singleImage = false;
+        bool singleImage;
 
         public bool SingleImage
         {
@@ -271,23 +271,23 @@ namespace TerraViewer
         {
             try
             {
-                ImageSetType type = ImageSetType.Sky;
+                var type = ImageSetType.Sky;
 
 
 
-                ProjectionType projection = ProjectionType.Tangent;
+                var projection = ProjectionType.Tangent;
                 if (node.Attributes["DataSetType"] != null)
                 {
                     type = (ImageSetType)Enum.Parse(typeof(ImageSetType), node.Attributes["DataSetType"].Value.ToString(), true);
                 }
 
-                BandPass bandPass = BandPass.Visible;
+                var bandPass = BandPass.Visible;
 
                 if (node.Attributes["BandPass"] != null)
                 {
                     bandPass = (BandPass) Enum.Parse(typeof(BandPass),node.Attributes["BandPass"].Value.ToString());
                 }
-                int wf = 1;
+                var wf = 1;
                 if (node.Attributes["WidthFactor"] != null)
                 {
                     wf = Convert.ToInt32(node.Attributes["WidthFactor"].Value);
@@ -322,7 +322,7 @@ namespace TerraViewer
                             break;
                     }
 
-                    string fileType = node.Attributes["FileType"].Value.ToString();
+                    var fileType = node.Attributes["FileType"].Value.ToString();
                     if (!fileType.StartsWith("."))
                     {
                         fileType = "." + fileType;
@@ -333,8 +333,8 @@ namespace TerraViewer
                     XmlNode thumbUrl = node["ThumbnailUrl"];
                     thumbnailUrl = thumbUrl.InnerText;
 
-                    bool stockSet = false;
-                    bool elevationModel = false;
+                    var stockSet = false;
+                    var elevationModel = false;
 
                     if (node.Attributes["StockSet"] != null)
                     {
@@ -346,13 +346,13 @@ namespace TerraViewer
                         elevationModel = Convert.ToBoolean(node.Attributes["ElevationModel"].Value.ToString());
                     }
 
-                    string demUrl = "";
+                    var demUrl = "";
                     if (node.Attributes["DemUrl"] != null)
                     {
                         demUrl = node.Attributes["DemUrl"].Value.ToString();
                     }
 
-                    string alturl = "";
+                    var alturl = "";
 
                     if (node.Attributes["AltUrl"] != null)
                     {
@@ -374,7 +374,7 @@ namespace TerraViewer
                         offsetY = Convert.ToDouble(node.Attributes["OffsetY"].Value.ToString());
                     }
 
-                    string creditText = "";
+                    var creditText = "";
 
                     XmlNode credits = node["Credits"];
 
@@ -383,7 +383,7 @@ namespace TerraViewer
                         creditText = credits.InnerText;
                     }
 
-                    string creditsUrl = "";
+                    var creditsUrl = "";
 
                     credits = node["CreditsUrl"];
 
@@ -510,7 +510,7 @@ namespace TerraViewer
             {
                 return false;
             }
-            IImageSet b = (IImageSet)obj;
+            var b = (IImageSet)obj;
 
             return (b.GetHash() == this.GetHash() && b.DataSetType == this.DataSetType && b.BandPass == this.BandPass && b.Generic == this.Generic );
             
@@ -530,7 +530,7 @@ namespace TerraViewer
             }
             set { matrix = value; }
         }
-        bool matrixComputed = false;
+        bool matrixComputed;
         private void ComputeMatrix()
         {
             matrixComputed = true;
@@ -550,7 +550,7 @@ namespace TerraViewer
             }
             set { name = value; }
         }
-        private bool sparse = false;
+        private bool sparse;
 
         public bool Sparse
         {
@@ -604,8 +604,8 @@ namespace TerraViewer
 
         }
 
-        bool defaultSet = false;
-        bool elevationModel = false;
+        bool defaultSet;
+        bool elevationModel;
 
         public bool ElevationModel
         {
@@ -618,7 +618,7 @@ namespace TerraViewer
             set { defaultSet = value; }
         }
 
-        double offsetX = 0;
+        double offsetX;
 
         public double OffsetX
         {
@@ -627,7 +627,7 @@ namespace TerraViewer
         }
 
 
-        double offsetY = 0;
+        double offsetY;
 
         public double OffsetY
         {
@@ -651,7 +651,7 @@ namespace TerraViewer
             set { creditsUrl = value; }
         }
 
-        bool isMandelbrot = false;
+        bool isMandelbrot;
         bool mandelChecked = false;
         public bool IsMandelbrot
         {
@@ -731,7 +731,7 @@ namespace TerraViewer
 
         public static string GetTileKeyString(IImageSet imageset, int level, int x, int y)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(imageset.ImageSetID.ToString());
             sb.Append(@"\");
             sb.Append(level.ToString());
@@ -756,7 +756,7 @@ namespace TerraViewer
             {
                 case ProjectionType.Mercator:
                     {
-                        MercatorTile newTile = new MercatorTile(level, x, y, imageset, parent);
+                        var newTile = new MercatorTile(level, x, y, imageset, parent);
                         return newTile;
                     }
                 case ProjectionType.Equirectangular:
@@ -783,18 +783,18 @@ namespace TerraViewer
                 default:
                 case ProjectionType.Tangent:
                     {
-                        TangentTile newTile = new TangentTile(level, x, y, imageset, parent);
+                        var newTile = new TangentTile(level, x, y, imageset, parent);
                         return newTile;
                     }
             }
         }
 
-        static Dictionary<int, ushort> ImageIdMap = new Dictionary<int,ushort>();
+        static readonly Dictionary<int, ushort> ImageIdMap = new Dictionary<int,ushort>();
 
         static ushort nextID = 1;
         public static ushort NextInternalID(string Url)
         {
-            int id = Math.Abs(Url.GetHashCode32());
+            var id = Math.Abs(Url.GetHashCode32());
 
             if (!ImageIdMap.ContainsKey(id))
             {
@@ -805,7 +805,7 @@ namespace TerraViewer
             
         }
 
-        ushort internalID = 0;
+        ushort internalID;
 
 
 

@@ -58,7 +58,7 @@ namespace TerraViewer
 
         public static void StepBack()
         {
-            IUndoStep step = undoStack.Pop();
+            var step = undoStack.Pop();
 
             step.Undo();
 
@@ -67,7 +67,7 @@ namespace TerraViewer
        
         public static void StepForward()
         {
-            IUndoStep step = redoStack.Pop();
+            var step = redoStack.Pop();
 
             step.Redo();
 

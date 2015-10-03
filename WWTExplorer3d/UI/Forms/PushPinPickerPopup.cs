@@ -20,15 +20,15 @@ namespace TerraViewer
             vertScroll.Maximum = (PushPin.PinCount / 40)*40;
         }
 
-        int startIndex = 0;
+        int startIndex;
 
         private void PushPinPickerPopup_Paint(object sender, PaintEventArgs e)
         {
             
-            int index = startIndex;
-            for (int y = 0; y < 5; y++)
+            var index = startIndex;
+            for (var y = 0; y < 5; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (var x = 0; x < 8; x++)
                 {
                     if (SelectedIndex == index)
                     {
@@ -61,7 +61,7 @@ namespace TerraViewer
             mouseDown = false;
 
         }
-        bool mouseDown = false;
+        bool mouseDown;
         private void PushPinPickerPopup_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;

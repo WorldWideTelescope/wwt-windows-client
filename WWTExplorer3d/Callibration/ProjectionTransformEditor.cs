@@ -80,69 +80,69 @@ namespace TerraViewer.Callibration
 
         private void FovText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             ProjTarget.FOV = UiTools.ParseAndValidateDouble(FovText, ProjTarget.FOV, ref failed);
         }
 
         private void AspectText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             ProjTarget.Aspect = UiTools.ParseAndValidateDouble(AspectText, ProjTarget.Aspect, ref failed);
 
         }
 
         private void OffAxisXText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             ProjTarget.XOffset = UiTools.ParseAndValidateDouble(OffAxisXText, ProjTarget.XOffset, ref failed);
 
         }
 
         private void OffAxisYText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             ProjTarget.YOffset = UiTools.ParseAndValidateDouble(OffAxisYText, ProjTarget.YOffset, ref failed);
 
         }
 
         private void PosXText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             TransTarget.X = UiTools.ParseAndValidateDouble(PosXText, TransTarget.X, ref failed);
 
         }
 
         private void PosYText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             TransTarget.Y = UiTools.ParseAndValidateDouble(PosYText, TransTarget.Y, ref failed);
 
         }
 
         private void PosZText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             TransTarget.Z = UiTools.ParseAndValidateDouble(PosZText, TransTarget.Z, ref failed);
 
         }
 
         private void RotXText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             TransTarget.Pitch = UiTools.ParseAndValidateDouble(PitchText, TransTarget.Pitch, ref failed);
 
         }
 
         private void RotYText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             TransTarget.Heading = UiTools.ParseAndValidateDouble(HeadingText, TransTarget.Heading, ref failed);
 
         }
 
         private void RotZText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             TransTarget.Roll = UiTools.ParseAndValidateDouble(RollText, TransTarget.Roll, ref failed);
         }
     }

@@ -59,13 +59,13 @@ namespace TerraViewer
             e.Graphics.Clear(this.BackColor);
             if (starSize == StarSizes.Big)
             {
-                Rectangle rect = new Rectangle(0, 0, (int)(stars * 25.4), 24);
+                var rect = new Rectangle(0, 0, (int)(stars * 25.4), 24);
                 e.Graphics.DrawImageUnscaled(Properties.Resources.StarRatingBackground, 0, 0);
                 e.Graphics.DrawImage(Properties.Resources.StarRatingForeground, rect, rect, GraphicsUnit.Pixel);
             }
             else
             {
-                Rectangle rect = new Rectangle(0, 0, (int)(stars * 14), 24);
+                var rect = new Rectangle(0, 0, (int)(stars * 14), 24);
                 e.Graphics.DrawImageUnscaled(Properties.Resources.StarRatingBackgroundSmall, 0, 0);
                 e.Graphics.DrawImage(Properties.Resources.StarRatingForegroundSmall, rect, rect, GraphicsUnit.Pixel);
             }
@@ -90,7 +90,7 @@ namespace TerraViewer
             }
             Invalidate();
         }
-        bool down = false;
+        bool down;
         private void UserRating_MouseDown(object sender, MouseEventArgs e)
         {
             down = true;
@@ -101,9 +101,9 @@ namespace TerraViewer
         {
             if (mode == Interactivity.ReadWrite)
             {
-                double blockSize = starSize == StarSizes.Big ? 25.4 : 14;
+                var blockSize = starSize == StarSizes.Big ? 25.4 : 14;
 
-                int count = Math.Min(5, Math.Max(0, ((int)(xPos / blockSize) + 1)));
+                var count = Math.Min(5, Math.Max(0, ((int)(xPos / blockSize) + 1)));
 
                 stars = count;
                 if (ValueChanged != null)

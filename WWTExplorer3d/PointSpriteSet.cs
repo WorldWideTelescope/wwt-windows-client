@@ -25,7 +25,7 @@ namespace TerraViewer
 
         protected RenderStrategy renderStrategy;
 
-        int count;
+        readonly int count;
 
         private Vector3 pointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);
 
@@ -126,7 +126,7 @@ namespace TerraViewer
 
         private void createIndexBuffer(SharpDX.Direct3D11.Device device, int pointCount)
         {
-            uint[] indices = new uint[pointCount * 6];
+            var indices = new uint[pointCount * 6];
             for (uint i = 0; i < pointCount; ++i)
             {
                 indices[i * 6 + 0] = i * 4 + 0;
@@ -266,8 +266,8 @@ namespace TerraViewer
                 const int verticesPerPoint = 4;
                 var expandedPoints = new CompatibilityPointSpriteShader.Vertex[points.Length * verticesPerPoint];
 
-                int index = 0;
-                foreach (PositionColorSize p in points)
+                var index = 0;
+                foreach (var p in points)
                 {
                     CompatibilityPointSpriteShader.Vertex xp;
                     xp.X = p.X;
@@ -314,8 +314,8 @@ namespace TerraViewer
                 {
                     const int verticesPerPoint = 4;
 
-                    int index = 0;
-                    foreach (PositionColorSize p in points)
+                    var index = 0;
+                    foreach (var p in points)
                     {
                         CompatibilityPointSpriteShader.Vertex xp;
                         xp.X = p.X;
@@ -345,12 +345,12 @@ namespace TerraViewer
 
         protected override void setupShader(RenderContext11 renderContext, Texture11 texture, float opacity)
         {
-            SharpDX.Matrix mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mvp.Transpose();
 
-            float aspectRatio = renderContext.ViewPort.Width / renderContext.ViewPort.Height;
+            var aspectRatio = renderContext.ViewPort.Width / renderContext.ViewPort.Height;
 
-            Color4 color = new Color4(TintColor.Red, TintColor.Green, TintColor.Blue, TintColor.Alpha * opacity);
+            var color = new Color4(TintColor.Red, TintColor.Green, TintColor.Blue, TintColor.Alpha * opacity);
 
             // Set up the shader
             if (renderStrategy == RenderStrategy.GeometryShader)
@@ -370,7 +370,7 @@ namespace TerraViewer
                 CompatibilityPointSpriteShader.ViewportScale = new SharpDX.Vector2(1.0f, aspectRatio) * 0.001f;
                 CompatibilityPointSpriteShader.PointScaleFactors = PointScaleFactors;
                 CompatibilityPointSpriteShader.MinPointSize = MinPointSize;
-                bool useInstancing = renderStrategy == RenderStrategy.Instanced;
+                var useInstancing = renderStrategy == RenderStrategy.Instanced;
                 CompatibilityPointSpriteShader.Use(renderContext.Device.ImmediateContext, useInstancing);
             }
 
@@ -403,8 +403,8 @@ namespace TerraViewer
                 const int verticesPerPoint = 4;
                 var expandedPoints = new DownlevelTimeSeriesPointSpriteShader.Vertex[points.Length * verticesPerPoint];
 
-                int index = 0;
-                foreach (TimeSeriesPointVertex p in points)
+                var index = 0;
+                foreach (var p in points)
                 {
                     DownlevelTimeSeriesPointSpriteShader.Vertex xp;
                     xp.Position = p.Position;
@@ -460,8 +460,8 @@ namespace TerraViewer
                 const int verticesPerPoint = 4;
                 var expandedPoints = new KeplerVertex[points.Length * verticesPerPoint];
 
-                int index = 0;
-                foreach (KeplerVertex p in points)
+                var index = 0;
+                foreach (var p in points)
                 {
                     KeplerVertex xp;
                     xp = p;

@@ -50,8 +50,8 @@ namespace TerraViewer
             this.Opened = true;
             this.ReferenceFrame = "Sky";
 
-            StockSkyOverlay grids = new StockSkyOverlay(Language.GetLocalizedText(1080, "Grids"), StockSkyOverlayTypes.SkyGrids);
-            StockSkyOverlay temp = new StockSkyOverlay(Language.GetLocalizedText(496, "Equatorial Grid"), StockSkyOverlayTypes.EquatorialGrid);
+            var grids = new StockSkyOverlay(Language.GetLocalizedText(1080, "Grids"), StockSkyOverlayTypes.SkyGrids);
+            var temp = new StockSkyOverlay(Language.GetLocalizedText(496, "Equatorial Grid"), StockSkyOverlayTypes.EquatorialGrid);
             grids.Children.Add(temp);
             temp.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1081, "Axis Labels"), StockSkyOverlayTypes.EquatorialGridText));
             temp = new StockSkyOverlay(Language.GetLocalizedText(1082, "Galactic Grid"), StockSkyOverlayTypes.GalacticGrid);
@@ -68,7 +68,7 @@ namespace TerraViewer
             temp.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1086, "Month Labels"), StockSkyOverlayTypes.EclipticOverviewText));
             grids.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1087, "Precession Chart"), StockSkyOverlayTypes.PrecessionChart));
 
-            StockSkyOverlay constellations = new StockSkyOverlay(Language.GetLocalizedText(1088, "Constellations"), StockSkyOverlayTypes.Constellations);
+            var constellations = new StockSkyOverlay(Language.GetLocalizedText(1088, "Constellations"), StockSkyOverlayTypes.Constellations);
             constellations.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1092, "Constellation Pictures"), StockSkyOverlayTypes.ConstellationPictures));
             constellations.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1089, "Constellation Figures"), StockSkyOverlayTypes.ConstellationFigures));
             temp = new StockSkyOverlay(Language.GetLocalizedText(1090, "Constellation Boundaries"), StockSkyOverlayTypes.ConstellationBoundaries);
@@ -92,14 +92,14 @@ namespace TerraViewer
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1096, "Planets (NASA, ETAL)"), StockSkyOverlayTypes.SolarSystemPlanets));
 
 
-            StockSkyOverlay orbits = new StockSkyOverlay(Language.GetLocalizedText(1097, "Planetary Orbits"), StockSkyOverlayTypes.SolarSystemOrbits);
+            var orbits = new StockSkyOverlay(Language.GetLocalizedText(1097, "Planetary Orbits"), StockSkyOverlayTypes.SolarSystemOrbits);
             orbits.Children.Add(new StockSkyOverlay("Orbit Filters", StockSkyOverlayTypes.OrbitFilters));
 
             Children.Add(orbits);
 
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1098, "Moon & Satellite Orbits"), StockSkyOverlayTypes.SolarSystemMinorOrbits));
 
-            StockSkyOverlay mpc = new StockSkyOverlay(Language.GetLocalizedText(1099, "Asteriods (IAU MPC)"), StockSkyOverlayTypes.SolarSystemAsteroids);
+            var mpc = new StockSkyOverlay(Language.GetLocalizedText(1099, "Asteriods (IAU MPC)"), StockSkyOverlayTypes.SolarSystemAsteroids);
             mpc.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1389, "Zone 1 ( < 2.5 au)"), StockSkyOverlayTypes.MPCZone1));
             mpc.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1390, "Zone 2 (2.5-2.83 au)"), StockSkyOverlayTypes.MPCZone2));
             mpc.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1391, "Zone 3 (2.83-2.96 au)"), StockSkyOverlayTypes.MPCZone3));
@@ -127,7 +127,7 @@ namespace TerraViewer
             this.Name = Language.GetLocalizedText(504, "Overlays");
             this.Opened = true;
             this.ReferenceFrame = "Earth";
-            StockSkyOverlay clouds = new StockSkyOverlay(Language.GetLocalizedText(1104, "Cloud Layer"), StockSkyOverlayTypes.ShowEarthCloudLayer);
+            var clouds = new StockSkyOverlay(Language.GetLocalizedText(1104, "Cloud Layer"), StockSkyOverlayTypes.ShowEarthCloudLayer);
             clouds.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1105, "Use 8k Cloud Texture"), StockSkyOverlayTypes.Clouds8k));
             Children.Add(clouds);
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1106, "Elevation Model"), StockSkyOverlayTypes.ShowElevationModel));
@@ -142,7 +142,7 @@ namespace TerraViewer
             this.Name = Language.GetLocalizedText(504, "Overlays");
             this.Opened = true;
             this.ReferenceFrame = Language.GetLocalizedText(1109, "Dome");
-            StockSkyOverlay fade = new StockSkyOverlay(Language.GetLocalizedText(1110, "Fade to black"), StockSkyOverlayTypes.FadeToBlack);
+            var fade = new StockSkyOverlay(Language.GetLocalizedText(1110, "Fade to black"), StockSkyOverlayTypes.FadeToBlack);
             fade.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1111, "Fade Dome Only"),StockSkyOverlayTypes.FadeRemoteOnly));
             Children.Add(fade);
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1112, "Fade to logo"), StockSkyOverlayTypes.FadeToLogo));
@@ -152,17 +152,17 @@ namespace TerraViewer
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
-            Matrix3d matOld = renderContext.World;
+            var matOld = renderContext.World;
 
             if (astronomical && !flat)
             {
-                double obliquity = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow);
-                Matrix3d mat = Matrix3d.RotationX((float)(-obliquity / 360.0 * (Math.PI * 2)));
+                var obliquity = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow);
+                var mat = Matrix3d.RotationX((float)(-obliquity / 360.0 * (Math.PI * 2)));
                 mat.Multiply(Matrix3d.RotationY(Math.PI));
                 mat.Multiply(matOld);
                 renderContext.World = Matrix3d.Multiply(Matrix3d.Scaling(4000000000, 4000000000, 4000000000), mat);
             }
-            foreach (SkyOverlay overlay in Children)
+            foreach (var overlay in Children)
             {
                 if (overlay.Enabled || overlay.BlendState.State)
                 {
@@ -173,7 +173,7 @@ namespace TerraViewer
             renderContext.World = matOld;
             return true;
         }
-        SkyOverlaysUI primaryUI = null;
+        SkyOverlaysUI primaryUI;
         public override LayerUI GetPrimaryUI()
         {
             if (primaryUI == null)
@@ -215,8 +215,8 @@ namespace TerraViewer
 
         public override List<LayerUITreeNode> GetTreeNodes()
         {
-            List<LayerUITreeNode> nodes = new List<LayerUITreeNode>();
-            foreach (SkyOverlay overlay in Layer.Children)
+            var nodes = new List<LayerUITreeNode>();
+            foreach (var overlay in Layer.Children)
             {
 
                 AddNode(nodes, overlay);
@@ -226,18 +226,18 @@ namespace TerraViewer
 
         private void AddNode(List<LayerUITreeNode> nodes, SkyOverlay overlay)
         {
-            LayerUITreeNode node = new LayerUITreeNode();
+            var node = new LayerUITreeNode();
             node.Name = overlay.Name;
             node.Tag = overlay;
             node.Checked = overlay.Enabled;
             node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
             node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
             nodes.Add(node);
-            foreach (SkyOverlay child in overlay.Children)
+            foreach (var child in overlay.Children)
             {
                 AddNode(node.Nodes, child);
             }
-            StockSkyOverlay so = overlay as StockSkyOverlay;
+            var so = overlay as StockSkyOverlay;
             if (so != null)
             {
                 if (so.StockType == StockSkyOverlayTypes.ConstellationPictures)
@@ -260,7 +260,7 @@ namespace TerraViewer
         private void AddFilters(List<LayerUITreeNode> nodes, StockSkyOverlay so, ConstellationFilter filter)
         {
 
-                LayerUITreeNode filterNode = new LayerUITreeNode();
+                var filterNode = new LayerUITreeNode();
                 filterNode.Name = Language.GetLocalizedText(1115, "Filter");
                 filterNode.Tag = filter;
                 filterNode.Checked = true;
@@ -274,7 +274,7 @@ namespace TerraViewer
    
         void filterNode_NodeChecked(LayerUITreeNode node, bool newState)
         {
-            ConstellationFilter filter = node.Tag as ConstellationFilter;
+            var filter = node.Tag as ConstellationFilter;
             if (filter != null)
             {
                 filter.SetAll(newState);
@@ -288,11 +288,11 @@ namespace TerraViewer
 
         private void AddConstellationParts(LayerUITreeNode filterNode, ConstellationFilter constellationFilter)
         {
-            foreach (KeyValuePair<string, int> kv in ConstellationFilter.BitIDs)
+            foreach (var kv in ConstellationFilter.BitIDs)
             {
                 if (constellationFilter.IsSet(kv.Key))
                 {
-                    LayerUITreeNode constellationNodes = filterNode.Add(Constellations.FullName(kv.Key));
+                    var constellationNodes = filterNode.Add(Constellations.FullName(kv.Key));
                     constellationNodes.Tag = filterNode.Tag;
                     constellationNodes.Checked = true;
                     constellationNodes.NodeSelected += new LayerUITreeNodeSelectedDelegate(constellationNodes_NodeSelected);
@@ -304,7 +304,7 @@ namespace TerraViewer
 
         bool constellationNodes_IsChecked(LayerUITreeNode node)
         {
-            ConstellationFilter filter = node.Tag as ConstellationFilter;
+            var filter = node.Tag as ConstellationFilter;
             if (filter != null)
             {
                 return filter.IsSet(Constellations.Abbreviation(node.Name));
@@ -315,7 +315,7 @@ namespace TerraViewer
 
         void constellationNodes_NodeChecked(LayerUITreeNode node, bool newState)
         {
-            ConstellationFilter filter = node.Tag as ConstellationFilter;
+            var filter = node.Tag as ConstellationFilter;
             if (filter != null)
             {
                 filter.Set(Constellations.Abbreviation(node.Name), newState);
@@ -331,7 +331,7 @@ namespace TerraViewer
 
         void node_NodeChecked(LayerUITreeNode node, bool newState)
         {
-            SkyOverlay child = node.Tag as SkyOverlay;
+            var child = node.Tag as SkyOverlay;
 
             if (child != null)
             {
@@ -347,13 +347,13 @@ namespace TerraViewer
 
         public override List<LayerUIMenuItem> GetNodeContextMenu(LayerUITreeNode node)
         {
-            List<LayerUIMenuItem> items = new List<LayerUIMenuItem>();
+            var items = new List<LayerUIMenuItem>();
 
-            LayerUIMenuItem colorMenu = new LayerUIMenuItem();
+            var colorMenu = new LayerUIMenuItem();
             colorMenu.Name = Language.GetLocalizedText(1116, "Color");
             colorMenu.MenuItemSelected += new MenuItemSelectedDelegate(ColorMenu_MenuItemSelected);
             colorMenu.Tag = node.Tag;
-            StockSkyOverlay so = node.Tag as StockSkyOverlay;
+            var so = node.Tag as StockSkyOverlay;
             if (so != null && so.HasColor)
             {
                 items.Add(colorMenu);
@@ -361,7 +361,7 @@ namespace TerraViewer
          
             if (so != null && so.StockType == StockSkyOverlayTypes.FiledOfView)
             {
-                LayerUIMenuItem setupMenu = new LayerUIMenuItem();
+                var setupMenu = new LayerUIMenuItem();
                 setupMenu.Name = Language.GetLocalizedText(379, "Setup");
                 setupMenu.MenuItemSelected += new MenuItemSelectedDelegate(setupMenu_MenuItemSelected);
                 setupMenu.Tag = node.Tag;
@@ -370,7 +370,7 @@ namespace TerraViewer
 
             if (so != null && so.StockType == StockSkyOverlayTypes.ScreenBroadcast)
             {
-                LayerUIMenuItem setupMenuB = new LayerUIMenuItem();
+                var setupMenuB = new LayerUIMenuItem();
                 setupMenuB.Name = Language.GetLocalizedText(379, "Setup");
                 setupMenuB.MenuItemSelected += new MenuItemSelectedDelegate(setupMenuB_MenuItemSelected);
                 setupMenuB.Tag = node.Tag;
@@ -379,42 +379,42 @@ namespace TerraViewer
 
             if (so != null && so.StockType == StockSkyOverlayTypes.ConstellationPictures)
             {
-                LayerUIMenuItem Import = new LayerUIMenuItem();
+                var Import = new LayerUIMenuItem();
                 Import.Name = Language.GetLocalizedText(1117, "Import...");
                 Import.MenuItemSelected += new MenuItemSelectedDelegate(Import_MenuItemSelected);
                 Import.Tag = node.Tag;
                 items.Add(Import);
             }
 
-            ConstellationFilter filter = node.Tag as ConstellationFilter;
+            var filter = node.Tag as ConstellationFilter;
             if (filter != null && node.Parent== null)
             {
-                LayerUIMenuItem applyMenu = new LayerUIMenuItem();
+                var applyMenu = new LayerUIMenuItem();
                 applyMenu.Name = Language.GetLocalizedText(195, "Apply");
                 applyMenu.Tag = filter;
                 AddFilterListApply(applyMenu);
                 items.Add(applyMenu);
 
 
-                LayerUIMenuItem includeMenu = new LayerUIMenuItem();
+                var includeMenu = new LayerUIMenuItem();
                 includeMenu.Name = Language.GetLocalizedText(1118, "Include");
                 includeMenu.Tag = filter;
                 AddFilterListInclude(includeMenu);
                 items.Add(includeMenu);  
                 
-                LayerUIMenuItem excludeMenu = new LayerUIMenuItem();
+                var excludeMenu = new LayerUIMenuItem();
                 excludeMenu.Name = Language.GetLocalizedText(1119, "Exclude");
                 excludeMenu.Tag = filter;
                 AddFilterListExclude(excludeMenu);
                 items.Add(excludeMenu);
 
-                LayerUIMenuItem newFilterMenu = new LayerUIMenuItem();
+                var newFilterMenu = new LayerUIMenuItem();
                 newFilterMenu.Name = Language.GetLocalizedText(1120, "New Filter...");
                 newFilterMenu.MenuItemSelected += new MenuItemSelectedDelegate(newFilterMenu_MenuItemSelected); ;
                 newFilterMenu.Tag = node.Tag;
                 items.Add(newFilterMenu);
 
-                LayerUIMenuItem deleteFilter = new LayerUIMenuItem();
+                var deleteFilter = new LayerUIMenuItem();
                 deleteFilter.Name = Language.GetLocalizedText(1269, "Delete Custom Filter");
                 deleteFilter.Tag = filter;
                 AddFilterListDelete(deleteFilter);
@@ -429,7 +429,7 @@ namespace TerraViewer
 
                     if (Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.IsTargetAnimated(so.StockType.ToString()))
                     {
-                        LayerUIMenuItem setupMenuL = new LayerUIMenuItem();
+                        var setupMenuL = new LayerUIMenuItem();
                         setupMenuL.Name = Language.GetLocalizedText(1280, "Add Keyframe");
                         setupMenuL.MenuItemSelected += new MenuItemSelectedDelegate(setupMenuL_MenuItemSelected);
                         setupMenuL.Tag = node.Tag;
@@ -437,7 +437,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        LayerUIMenuItem setupMenuK = new LayerUIMenuItem();
+                        var setupMenuK = new LayerUIMenuItem();
                         setupMenuK.Name = Language.GetLocalizedText(1290, "Add to Timeline");
                         setupMenuK.MenuItemSelected += new MenuItemSelectedDelegate(setupMenuK_MenuItemSelected);
                         setupMenuK.Tag = node.Tag;
@@ -451,7 +451,7 @@ namespace TerraViewer
 
         void setupMenuL_MenuItemSelected(LayerUIMenuItem item)
         {
-            StockSkyOverlay sso = item.Tag as StockSkyOverlay;
+            var sso = item.Tag as StockSkyOverlay;
 
             if (Earth3d.MainWindow.TourEdit != null && sso != null)
             {
@@ -461,7 +461,7 @@ namespace TerraViewer
 
                     Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.KeyFramed = true;
 
-                    AnimationTarget aniTarget = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.FindTarget(sso.StockType.ToString());
+                    var aniTarget = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.FindTarget(sso.StockType.ToString());
                     aniTarget.SetKeyFrame(Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.TweenPosition, Key.KeyType.Linear);
                     TimeLine.RefreshUi();
                 }
@@ -470,21 +470,21 @@ namespace TerraViewer
 
         void setupMenuK_MenuItemSelected(LayerUIMenuItem item)
         {
-            StockSkyOverlay sso = item.Tag as StockSkyOverlay;
+            var sso = item.Tag as StockSkyOverlay;
 
             if (Earth3d.MainWindow.TourEdit != null && sso != null)
             {
                 if (Earth3d.MainWindow.TourEdit.Tour.EditMode && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
                 {
 
-                    IAnimatable target = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.GetSettingAnimator(sso.StockType.ToString());
-                    AnimationTarget.AnimationTargetTypes type = AnimationTarget.AnimationTargetTypes.StockSkyOverlay;
+                    var target = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.GetSettingAnimator(sso.StockType.ToString());
+                    var type = AnimationTarget.AnimationTargetTypes.StockSkyOverlay;
 
                     Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1290, "Add to Timeline"), Earth3d.MainWindow.TourEdit.Tour));
 
                     Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.KeyFramed = true;
 
-                    AnimationTarget aniTarget = new AnimationTarget(Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop);
+                    var aniTarget = new AnimationTarget(Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop);
                     aniTarget.Target = target;
                     aniTarget.TargetType = type;
                     aniTarget.ParameterNames.AddRange(target.GetParamNames());
@@ -500,13 +500,13 @@ namespace TerraViewer
 
         void newFilterMenu_MenuItemSelected(LayerUIMenuItem item)
         {
-            SimpleInput input = new SimpleInput(Language.GetLocalizedText(1121, "Filter name"), Language.GetLocalizedText(238, "Name"), "", 32);
-            bool retry = false;
+            var input = new SimpleInput(Language.GetLocalizedText(1121, "Filter name"), Language.GetLocalizedText(238, "Name"), "", 32);
+            var retry = false;
             do
             {
                 if (input.ShowDialog() == DialogResult.OK)
                 {
-                    foreach(string name in ConstellationFilter.Families.Keys)
+                    foreach(var name in ConstellationFilter.Families.Keys)
                     {
                         if (name.ToLower().Trim() == input.ResultText.ToLower().Trim())
                         {
@@ -523,9 +523,9 @@ namespace TerraViewer
                 }
             } while (retry);
 
-            ConstellationFilter filterIn = item.Tag as ConstellationFilter;
+            var filterIn = item.Tag as ConstellationFilter;
 
-            ConstellationFilter newFilter = filterIn.Clone();
+            var newFilter = filterIn.Clone();
 
             ConstellationFilter.Families.Add(input.ResultText.Trim().Replace(";",""), newFilter);
             ConstellationFilter.SaveCustomFilters();
@@ -533,9 +533,9 @@ namespace TerraViewer
 
         private void AddFilterListApply(LayerUIMenuItem applyMenu)
         {
-            foreach (string id in ConstellationFilter.Families.Keys)
+            foreach (var id in ConstellationFilter.Families.Keys)
             {
-                LayerUIMenuItem filterMenuItem = new LayerUIMenuItem();
+                var filterMenuItem = new LayerUIMenuItem();
 
                 filterMenuItem.Name = id;
                 filterMenuItem.Tag = applyMenu.Tag;
@@ -546,15 +546,15 @@ namespace TerraViewer
 
         void filterMenuItem_ApplyMenuItemSelected(LayerUIMenuItem item)
         {
-            ConstellationFilter filter = item.Tag as ConstellationFilter;
+            var filter = item.Tag as ConstellationFilter;
             filter.Clone(ConstellationFilter.Families[item.Name]);
         }
 
         private void AddFilterListInclude(LayerUIMenuItem includeMenu)
         {
-            foreach (string id in ConstellationFilter.Families.Keys)
+            foreach (var id in ConstellationFilter.Families.Keys)
             {
-                LayerUIMenuItem filterMenuItem = new LayerUIMenuItem();
+                var filterMenuItem = new LayerUIMenuItem();
 
                 filterMenuItem.Name = id;
                 filterMenuItem.Tag = includeMenu.Tag;
@@ -565,16 +565,16 @@ namespace TerraViewer
 
         void filterMenuItem_IncludeMenuItemSelected(LayerUIMenuItem item)
         {
-            ConstellationFilter filter = item.Tag as ConstellationFilter;
+            var filter = item.Tag as ConstellationFilter;
             filter.Combine(ConstellationFilter.Families[item.Name]);
         }
 
 
         private void AddFilterListExclude(LayerUIMenuItem excludeMenu)
         {
-            foreach (string id in ConstellationFilter.Families.Keys)
+            foreach (var id in ConstellationFilter.Families.Keys)
             {
-                LayerUIMenuItem filterMenuItem = new LayerUIMenuItem();
+                var filterMenuItem = new LayerUIMenuItem();
 
                 filterMenuItem.Name = id;
                 filterMenuItem.Tag = excludeMenu.Tag;
@@ -585,19 +585,19 @@ namespace TerraViewer
 
         void filterMenuItem_ExcludeMenuItemSelected(LayerUIMenuItem item)
         {
-            ConstellationFilter filter = item.Tag as ConstellationFilter;
+            var filter = item.Tag as ConstellationFilter;
             filter.Remove(ConstellationFilter.Families[item.Name]);
         }
 
         private void AddFilterListDelete(LayerUIMenuItem excludeMenu)
         {
-            bool anyCustomFilters = false;
+            var anyCustomFilters = false;
 
-            foreach (string id in ConstellationFilter.Families.Keys)
+            foreach (var id in ConstellationFilter.Families.Keys)
             {
                 if (!ConstellationFilter.Families[id].Internal)
                 {
-                    LayerUIMenuItem DeleteFilterMenuItem = new LayerUIMenuItem();
+                    var DeleteFilterMenuItem = new LayerUIMenuItem();
 
                     DeleteFilterMenuItem.Name = id;
                     DeleteFilterMenuItem.Tag = excludeMenu.Tag;
@@ -609,7 +609,7 @@ namespace TerraViewer
 
             if (!anyCustomFilters)
             {
-                LayerUIMenuItem DeleteFilterMenuItem = new LayerUIMenuItem();
+                var DeleteFilterMenuItem = new LayerUIMenuItem();
 
                 DeleteFilterMenuItem.Name = Language.GetLocalizedText(1268, "No Custom Filters to Delete");
                 DeleteFilterMenuItem.Tag = excludeMenu.Tag;
@@ -633,7 +633,7 @@ namespace TerraViewer
 
         void setupMenuB_MenuItemSelected(LayerUIMenuItem item)
         {
-            ScreenBroadcast sb = new ScreenBroadcast();
+            var sb = new ScreenBroadcast();
             sb.Show();
         }
 
@@ -644,10 +644,10 @@ namespace TerraViewer
 
         void ColorMenu_MenuItemSelected(LayerUIMenuItem item)
         {
-            SkyOverlay overlay = item.Tag as SkyOverlay;
+            var overlay = item.Tag as SkyOverlay;
 
 
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 
@@ -683,7 +683,7 @@ namespace TerraViewer
 
         public virtual void Draw(RenderContext11 renderContext, float opacity)
         {
-            foreach (SkyOverlay overlay in Children)
+            foreach (var overlay in Children)
             {
                 if (overlay.Enabled || overlay.BlendState.State)
                 {
@@ -1159,8 +1159,8 @@ namespace TerraViewer
             get
             {
 
-                bool enSetting = base.Enabled;
-                bool enLocal = enSetting;
+                var enSetting = base.Enabled;
+                var enLocal = enSetting;
                 switch (StockType)
                 {
                     case StockSkyOverlayTypes.FadeToBlack:
@@ -1183,7 +1183,7 @@ namespace TerraViewer
                         break;
                     default:
   
-                        SettingParameter sp = Settings.Active.GetSetting(StockType);
+                        var sp = Settings.Active.GetSetting(StockType);
 
                         if (sp.Opacity > -1)
                         {
@@ -1226,8 +1226,8 @@ namespace TerraViewer
                                 case StockSkyOverlayTypes.MPCZone6:
                                 case StockSkyOverlayTypes.MPCZone7:
                                     {
-                                        int id = (int)StockType - (int)StockSkyOverlayTypes.MPCZone1;
-                                        int bit = (int)Math.Pow(2, id);
+                                        var id = (int)StockType - (int)StockSkyOverlayTypes.MPCZone1;
+                                        var bit = (int)Math.Pow(2, id);
                                         if (BlendState.TargetState)
                                         {
                                             Properties.Settings.Default.MinorPlanetsFilter |= bit;
@@ -1350,8 +1350,8 @@ namespace TerraViewer
                     case StockSkyOverlayTypes.MPCZone6:
                     case StockSkyOverlayTypes.MPCZone7:
                         {
-                            int id = (int)StockType - (int)StockSkyOverlayTypes.MPCZone1;
-                            int bit = (int)Math.Pow(2, id);
+                            var id = (int)StockType - (int)StockSkyOverlayTypes.MPCZone1;
+                            var bit = (int)Math.Pow(2, id);
                             if (value)
                             {
                                 Properties.Settings.Default.MinorPlanetsFilter |= bit;

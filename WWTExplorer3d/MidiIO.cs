@@ -11,7 +11,7 @@ namespace MIDI
 
     public class MidiInput
     {
-        private NativeMethods.MidiInProc midiInProc;
+        private readonly NativeMethods.MidiInProc midiInProc;
         private IntPtr handle;
         
         public MidiInput()
@@ -28,9 +28,9 @@ namespace MIDI
         public static int GetDeviceIdByName(string name)
         {
            
-            int count = Count;
+            var count = Count;
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 if (GetDeviceName(i) == name)
                 {
@@ -43,11 +43,11 @@ namespace MIDI
 
         public static string[] GetDeviceList()
         {
-            List<string> list = new List<string>();
+            var list = new List<string>();
 
-            int count = Count;
+            var count = Count;
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 list.Add(GetDeviceName(i));
             }
@@ -57,12 +57,12 @@ namespace MIDI
 
         public static string GetDeviceName(int id)
         {
-            MidiInCaps caps = new MidiInCaps();
+            var caps = new MidiInCaps();
             caps.Name = new char[32];
-            int result = NativeMethods.midiInGetDevCaps(id, ref caps,
+            var result = NativeMethods.midiInGetDevCaps(id, ref caps,
             (uint)Marshal.SizeOf(caps));
-            int len = 0;
-            for (int i = 0; i < 32; i++)
+            var len = 0;
+            for (var i = 0; i < 32; i++)
             {
                 if (caps.Name[i] == 0)
                 {
@@ -76,7 +76,7 @@ namespace MIDI
         }
         public bool Close()
         {
-            bool result = NativeMethods.midiInClose(handle)
+            var result = NativeMethods.midiInClose(handle)
                 == NativeMethods.MMSYSERR_NOERROR;
             handle = IntPtr.Zero;
             return result;
@@ -110,14 +110,14 @@ namespace MIDI
             if (wMsg == 0x03c3)
             {
                 // Data Message
-                byte status = (byte)(dwParam1 & 255);
-                byte key = (byte)((dwParam1 >> 8) & 255);
-                byte data = (byte)((dwParam1 >> 16) & 255);
+                var status = (byte)(dwParam1 & 255);
+                var key = (byte)((dwParam1 >> 8) & 255);
+                var data = (byte)((dwParam1 >> 16) & 255);
 
 
                 System.Diagnostics.Debug.WriteLine(string.Format("Status:{0}, Key:{1}, Value:{2}", status, key, data));
-                int channel = status & 15;
-                MidiMessage message = MidiMessage.None;
+                var channel = status & 15;
+                var message = MidiMessage.None;
                 switch (status >> 4)
                 {
                     case 8: // Note off
@@ -150,7 +150,7 @@ namespace MIDI
             }
             else
             {
-                int x = wMsg;
+                var x = wMsg;
             }
         }
     }
@@ -159,12 +159,12 @@ namespace MIDI
     {
         public static string GetDeviceName(int id)
         {
-            MidiOutCaps caps = new MidiOutCaps();
+            var caps = new MidiOutCaps();
             caps.Name = new char[32];
-            int result = NativeMethods.midiOutGetDevCaps(id, ref caps,
+            var result = NativeMethods.midiOutGetDevCaps(id, ref caps,
             (uint)Marshal.SizeOf(caps));
-            int len = 0;
-            for (int i = 0; i < 32; i++)
+            var len = 0;
+            for (var i = 0; i < 32; i++)
             {
                 if (caps.Name[i] == 0)
                 {
@@ -178,9 +178,9 @@ namespace MIDI
         public static int GetDeviceIdByName(string name)
         {
 
-            int count = Count;
+            var count = Count;
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 if (GetDeviceName(i) == name)
                 {
@@ -206,7 +206,7 @@ namespace MIDI
 
         public bool Close()
         {
-            bool result = NativeMethods.midiOutClose(handle)
+            var result = NativeMethods.midiOutClose(handle)
                 == NativeMethods.MMSYSERR_NOERROR;
             handle = IntPtr.Zero;
             return result;

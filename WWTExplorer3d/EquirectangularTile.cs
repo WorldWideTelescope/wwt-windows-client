@@ -12,7 +12,7 @@ namespace TerraViewer
 {
     public class EquirectangularTile : Tile
     {
-        bool topDown = true;
+        readonly bool topDown = true;
         protected void ComputeBoundingSphere(Tile parent)
         {
             if (!topDown)
@@ -20,20 +20,20 @@ namespace TerraViewer
                 ComputeBoundingSphereBottomsUp(parent);
                 return;
             }
-            double tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
 
-            double latMin = (90 - (((double)this.y) * tileDegrees));
-            double latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
-            double lngMin = (((double)this.x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (90 - (((double)this.y) * tileDegrees));
+            var latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
+            var lngMin = (((double)this.x * tileDegrees) - 180.0);
+            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
 
-            double latCenter = (latMin + latMax) / 2.0;
-            double lngCenter = (lngMin + lngMax) / 2.0;
+            var latCenter = (latMin + latMax) / 2.0;
+            var lngCenter = (lngMin + lngMax) / 2.0;
 
 
             if (level == 12 || level == 19)
             {
-                Vector3d temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
+                var temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
                 localCenter = new Vector3d(temp.X, temp.Y, temp.Z);
             }
             else if (level > 12)
@@ -47,7 +47,7 @@ namespace TerraViewer
             TopRight = GeoTo3dWithAltitude(latMin, lngMax, false);
             BottomLeft = GeoTo3dWithAltitude(latMax, lngMin, false);
 
-            Vector3d distVect = GeoTo3d(latMin, lngMin, false);
+            var distVect = GeoTo3d(latMin, lngMin, false);
             distVect.Subtract(sphereCenter);
             this.sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
@@ -56,20 +56,20 @@ namespace TerraViewer
 
         protected void ComputeBoundingSphereBottomsUp(Tile parent)
         {
-            double tileDegrees = (double)this.dataset.BaseTileDegrees / ((double)Math.Pow(2, this.level));
+            var tileDegrees = (double)this.dataset.BaseTileDegrees / ((double)Math.Pow(2, this.level));
 
 
-            double latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
-            double latMax = (-90 + (((double)this.y) * tileDegrees));
-            double lngMin = (((double)this.x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
+            var latMax = (-90 + (((double)this.y) * tileDegrees));
+            var lngMin = (((double)this.x * tileDegrees) - 180.0);
+            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
 
-            double latCenter = (latMin + latMax) / 2.0;
-            double lngCenter = (lngMin + lngMax) / 2.0;
+            var latCenter = (latMin + latMax) / 2.0;
+            var lngCenter = (lngMin + lngMax) / 2.0;
 
             if (level == 12 || level == 19)
             {
-                Vector3d temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
+                var temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
                 localCenter = new Vector3d(temp.X, temp.Y, temp.Z);
             }
             else if (level > 12)
@@ -83,7 +83,7 @@ namespace TerraViewer
             BottomRight = GeoTo3dWithAltitude(latMax, lngMax, false);
             TopRight = GeoTo3dWithAltitude(latMin, lngMax, false);
             BottomLeft = GeoTo3dWithAltitude(latMax, lngMin, false);
-            Vector3d distVect = TopLeft;
+            var distVect = TopLeft;
             distVect.Subtract(sphereCenter);
             this.sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
@@ -91,7 +91,7 @@ namespace TerraViewer
 
         public override void OnCreateVertexBuffer(VertexBuffer11 vb)
 		{
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 indexBuffer[i] = new IndexBuffer11(typeof(short), ((SubDivisions / 2) * (SubDivisions / 2) * 6), RenderContext11.PrepDevice);
             }
@@ -104,15 +104,15 @@ namespace TerraViewer
                 }
                 double lat, lng;
 
-                int index = 0;
-                double tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+                var index = 0;
+                var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
 
-                double latMin = (90 - (((double)this.y) * tileDegrees));
-                double latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
-                double lngMin = (((double)this.x * tileDegrees) - 180.0);
-                double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
-                double tileDegreesX = lngMax - lngMin;
-                double tileDegreesY = latMax - latMin;
+                var latMin = (90 - (((double)this.y) * tileDegrees));
+                var latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
+                var lngMin = (((double)this.x * tileDegrees) - 180.0);
+                var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+                var tileDegreesX = lngMax - lngMin;
+                var tileDegreesY = latMax - latMin;
 
                 //bugbug altitude broken
                 TopLeft = GeoTo3dWithAltitude(latMin, lngMin, false);
@@ -123,10 +123,10 @@ namespace TerraViewer
 
                  
                 // Create a vertex buffer 
-                PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+                var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
                 int x, y;
 
-                float textureStep = 1.0f / SubDivisions;
+                var textureStep = 1.0f / SubDivisions;
                 for (y = 0; y <= SubDivisions; y++)
                 {
                     if (y != SubDivisions)
@@ -161,17 +161,17 @@ namespace TerraViewer
                 vb.Unlock();
                 TriangleCount = (SubDivisions) * (SubDivisions) * 2;
 
-                int quarterDivisions = SubDivisions / 2;
-                int part = 0;
-                for (int y2 = 0; y2 < 2; y2++)
+                var quarterDivisions = SubDivisions / 2;
+                var part = 0;
+                for (var y2 = 0; y2 < 2; y2++)
                 {
-                    for (int x2 = 0; x2 < 2; x2++)
+                    for (var x2 = 0; x2 < 2; x2++)
                     {
-                        short[] indexArray = (short[])this.indexBuffer[part].Lock();
+                        var indexArray = (short[])this.indexBuffer[part].Lock();
                         index = 0;
-                        for (int y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
+                        for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                         {
-                            for (int x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
+                            for (var x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
                             {
                                 //index = ((y1 * quarterDivisions * 6) + 6 * x1);
                                 // First triangle in quad
@@ -201,22 +201,22 @@ namespace TerraViewer
 
             double lat, lng;
 
-            int index = 0;
-            double tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var index = 0;
+            var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
 
 
-            double latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
-            double latMax = (-90 + (((double)this.y) * tileDegrees));
-            double lngMin = (((double)this.x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
-            double tileDegreesX = lngMax - lngMin;
-            double tileDegreesY = latMax - latMin;
+            var latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
+            var latMax = (-90 + (((double)this.y) * tileDegrees));
+            var lngMin = (((double)this.x * tileDegrees) - 180.0);
+            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var tileDegreesX = lngMax - lngMin;
+            var tileDegreesY = latMax - latMin;
             
             // Create a vertex buffer 
-            PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
             int x, y;
 
-            float textureStep = 1.0f / SubDivisions;
+            var textureStep = 1.0f / SubDivisions;
             for (y = 0; y <= SubDivisions; y++)
             {
                 if (y != SubDivisions)
@@ -251,17 +251,17 @@ namespace TerraViewer
             vb.Unlock();
             TriangleCount = (SubDivisions) * (SubDivisions) * 2;
 
-            int quarterDivisions = SubDivisions / 2;
-            int part = 0;
-            for (int y2 = 0; y2 < 2; y2++)
+            var quarterDivisions = SubDivisions / 2;
+            var part = 0;
+            for (var y2 = 0; y2 < 2; y2++)
             {
-                for (int x2 = 0; x2 < 2; x2++)
+                for (var x2 = 0; x2 < 2; x2++)
                 {
-                    short[] indexArray = (short[])this.indexBuffer[part].Lock();
+                    var indexArray = (short[])this.indexBuffer[part].Lock();
                     index = 0;
-                    for (int y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
+                    for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                     {
-                        for (int x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
+                        for (var x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
                         {
                             //index = ((y1 * quarterDivisions * 6) + 6 * x1);
                             // First triangle in quad

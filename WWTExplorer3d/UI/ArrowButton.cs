@@ -94,8 +94,8 @@ namespace TerraViewer
             set { buttonSize = value; }
         }
 
-        bool hover = false;
-        bool pressed = false;
+        bool hover;
+        bool pressed;
 
         private void ArrowButton_Paint(object sender, PaintEventArgs e)
         {

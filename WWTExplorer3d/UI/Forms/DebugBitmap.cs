@@ -21,7 +21,7 @@ namespace TerraViewer
         }
         public static void ShowBitmap(Bitmap image)
         {
-            DBmp dialog = new DBmp();
+            var dialog = new DBmp();
 
             dialog.pictureBox1.Image = image;
             dialog.Show();

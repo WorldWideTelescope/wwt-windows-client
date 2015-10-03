@@ -155,7 +155,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		private void ReadWMIHeader(SimpleBitIO bitIO)
 		{
 			// check signature
-			for (int i=0; i<Constant.GDISignature.Length; i++)
+			for (var i=0; i<Constant.GDISignature.Length; i++)
 			{
 				if ((byte)bitIO.GetBit32_SB(8) != Constant.GDISignature[i])
 				{

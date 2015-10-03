@@ -17,11 +17,11 @@ namespace TerraViewer
         public double Distance;
         public string Text;
         public LabelSytle Style;
-        Vector3d pos;
+        readonly Vector3d pos;
         Vector3 center = new Vector3(0, 0, 0);
         Rectangle rect = new Rectangle(0, 0, 20, 20);
 
-        Text3dBatch textBatch = null;
+        readonly Text3dBatch textBatch;
         public SkyLabel(RenderContext11 renderContext, double ra, double dec, string text, LabelSytle style, double distance)
         {
             RA = ra;
@@ -36,8 +36,8 @@ namespace TerraViewer
                 texture = Texture11.FromBitmap(Properties.Resources.circle, 0);
             }
 
-            Vector3d up = new Vector3d();
-            Vector3d textPos = new Vector3d();
+            var up = new Vector3d();
+            var textPos = new Vector3d();
             if (Earth3d.MainWindow.SolarSystemMode)
             {
                 pos = Coordinates.RADecTo3d(ra, -dec, distance);
@@ -62,7 +62,7 @@ namespace TerraViewer
             if (style == LabelSytle.Telrad)
             {
                 // Telrad-style labels are always screen-aligned
-                Text3d t3 = new Text3d(new Vector3d(0, 0, 0.1), new Vector3d(0, 1, 0), text, 20, .01);
+                var t3 = new Text3d(new Vector3d(0, 0, 0.1), new Vector3d(0, 1, 0), text, 20, .01);
                 t3.alignment = Text3d.Alignment.Left;
                 textBatch.Add(t3);
             }
@@ -95,7 +95,7 @@ namespace TerraViewer
             if (style == LabelSytle.Telrad)
             {
                 // Telrad-style labels are always screen-aligned
-                Text3d t3 = new Text3d(new Vector3d(0, 0, 0.1), new Vector3d(0, 1, 0), text, 20, .01);
+                var t3 = new Text3d(new Vector3d(0, 0, 0.1), new Vector3d(0, 1, 0), text, 20, .01);
                 t3.alignment = Text3d.Alignment.Left;
                 textBatch.Add(t3);
             }
@@ -108,7 +108,7 @@ namespace TerraViewer
 
         public void Draw(RenderContext11 renderContext, bool space3d)
         {
-            Vector3d cam = Vector3d.TransformCoordinate(Earth3d.MainWindow.RenderContext11.CameraPosition, Matrix3d.Invert(Earth3d.WorldMatrix));
+            var cam = Vector3d.TransformCoordinate(Earth3d.MainWindow.RenderContext11.CameraPosition, Matrix3d.Invert(Earth3d.WorldMatrix));
 
             if (!space3d)
             {
@@ -117,20 +117,20 @@ namespace TerraViewer
                     return;
                 }
             }
-            Vector3d temp = pos;
+            var temp = pos;
 
             if (Earth3d.MainWindow.SolarSystemMode)
             {
                 temp.Add( Earth3d.MainWindow.viewCamera.ViewTarget);
             }
 
-            Matrix3d wvp = renderContext.World * renderContext.View * renderContext.Projection;
+            var wvp = renderContext.World * renderContext.View * renderContext.Projection;
 
-            Vector3 screenPos = Vector3.Project(temp.Vector311, renderContext.ViewPort.TopLeftX, renderContext.ViewPort.TopLeftY,renderContext.ViewPort.Width,renderContext.ViewPort.Height, 0, 1, wvp.Matrix11);
+            var screenPos = Vector3.Project(temp.Vector311, renderContext.ViewPort.TopLeftX, renderContext.ViewPort.TopLeftY,renderContext.ViewPort.Width,renderContext.ViewPort.Height, 0, 1, wvp.Matrix11);
             
             // Get the w component of the transformed object position; if it's negative the
             // object is behind the viewer.
-            double w = wvp.M14 * temp.X + wvp.M24 * temp.Y + wvp.M34 * temp.Z + wvp.M44;
+            var w = wvp.M14 * temp.X + wvp.M24 * temp.Y + wvp.M34 * temp.Z + wvp.M44;
             if (w < 0.0 && Earth3d.MainWindow.SolarSystemMode)
             {
                 // Don't show labels that are behind the viewer
@@ -144,11 +144,11 @@ namespace TerraViewer
 
             if (Earth3d.MainWindow.SolarSystemMode || Style == LabelSytle.Telrad)
             {
-                Matrix3d worldMatrix = renderContext.World;
-                Matrix3d viewMatrix = renderContext.View;
-                Matrix3d projectionMatrix = renderContext.Projection;
+                var worldMatrix = renderContext.World;
+                var viewMatrix = renderContext.View;
+                var projectionMatrix = renderContext.Projection;
 
-                double labelScale = Earth3d.MainWindow.SolarSystemMode ? 8.0 : 30.0;
+                var labelScale = Earth3d.MainWindow.SolarSystemMode ? 8.0 : 30.0;
                 renderContext.World =
                     Matrix3d.Scaling(labelScale, labelScale, 1.0) *
                     Matrix3d.Translation(screenPos.X + 10.0, -screenPos.Y, 0.0) *
@@ -205,13 +205,13 @@ namespace TerraViewer
         public double RA;
         public double Dec;
         public string Text;
-        List<Vector3> positions;
-        List<String> names;
+        readonly List<Vector3> positions;
+        readonly List<String> names;
         Vector3[] points = null;
         Vector3 center = new Vector3(0, 0, 0);
         Rectangle rect = new Rectangle(0, 0, 32, 32);
 
-        Texture11 star = null;
+        Texture11 star;
         public KmlLabels()
         {
        
@@ -241,7 +241,7 @@ namespace TerraViewer
    
         public int CurrentTextureIndex = 2;
 
-        List<KmlGroundOverlay> GroundOverlays = new List<KmlGroundOverlay>();
+        readonly List<KmlGroundOverlay> GroundOverlays = new List<KmlGroundOverlay>();
 
         public void AddGroundOverlay(KmlGroundOverlay overlay)
         {
@@ -250,7 +250,7 @@ namespace TerraViewer
 
         public void ClearGroundOverlays()
         {
-            foreach (KmlGroundOverlay overlay in GroundOverlays)
+            foreach (var overlay in GroundOverlays)
             {
                 //overlay.Dispose();
             }        
@@ -261,8 +261,8 @@ namespace TerraViewer
         {
             get
             {
-                int count = 0;
-                foreach (KmlGroundOverlay overlay in GroundOverlays)
+                var count = 0;
+                foreach (var overlay in GroundOverlays)
                 {
                     if (overlay.Icon.Texture != null)
                         ++count;
@@ -285,8 +285,8 @@ namespace TerraViewer
             }
 
             // Count the number of overlays so that we can choose the appropriate shader
-            int overlayCount = 0;
-            foreach (KmlGroundOverlay overlay in GroundOverlays)
+            var overlayCount = 0;
+            foreach (var overlay in GroundOverlays)
             {
                 if (overlay.Icon.Texture != null)
                 {
@@ -303,16 +303,16 @@ namespace TerraViewer
 
             // Get a shader identical to the one currently in use, but which supports
             // the required number of overlays.
-            PlanetShaderKey key = renderContext.Shader.Key;
+            var key = renderContext.Shader.Key;
             key.overlayTextureCount = overlayCount;
-            PlanetShader11 overlayShader = PlanetShader11.GetPlanetShader(renderContext.Device, key);
+            var overlayShader = PlanetShader11.GetPlanetShader(renderContext.Device, key);
             renderContext.Shader = overlayShader;
             renderContext.Shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-            SharpDX.Direct3D11.DeviceContext devContext = renderContext.Device.ImmediateContext;
-            int overlayIndex = 0;
-            foreach (KmlGroundOverlay overlay in GroundOverlays)
+            var devContext = renderContext.Device.ImmediateContext;
+            var overlayIndex = 0;
+            foreach (var overlay in GroundOverlays)
             {
-                Texture11 texture = overlay.Icon.Texture;
+                var texture = overlay.Icon.Texture;
                 if ( texture != null)
                 {
                     if (overlayIndex < PlanetShader11.MaxOverlayTextures)
@@ -354,12 +354,12 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.DepthStencilMode = DepthStencilMode.Off;
             renderContext.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mvp.Transpose();
             PointSpriteShader11.WVPMatrix = mvp;
             PointSpriteShader11.Color = SharpDX.Color.White;
 
-            float adjustedScale = .01f; // (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
+            var adjustedScale = .01f; // (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
 
             PointSpriteShader11.ViewportScale = new SharpDX.Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
             PointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);
@@ -384,14 +384,14 @@ namespace TerraViewer
             Vector3 dist;
             if (defaultPlace != null)
             {
-                Vector3 testPoint = Coordinates.RADecTo3d(defaultPlace.RA, -defaultPlace.Dec, -1.0).Vector311;
+                var testPoint = Coordinates.RADecTo3d(defaultPlace.RA, -defaultPlace.Dec, -1.0).Vector311;
                 dist = searchPoint - testPoint;
                 distance = dist.Length();
             }
 
-            int closestItem = -1;
-            int index = 0;
-            foreach (Vector3 point in positions)
+            var closestItem = -1;
+            var index = 0;
+            foreach (var point in positions)
             {
                 dist = searchPoint - point;
                 if (dist.Length() < distance)
@@ -409,13 +409,13 @@ namespace TerraViewer
                 return defaultPlace;
             }
 
-            Coordinates pnt = Coordinates.CartesianToSpherical(positions[closestItem]);
-            string name = this.names[closestItem];
+            var pnt = Coordinates.CartesianToSpherical(positions[closestItem]);
+            var name = this.names[closestItem];
             if (String.IsNullOrEmpty(name))
             {
                 name = string.Format("RA={0}, Dec={1}", Coordinates.FormatHMS(pnt.RA), Coordinates.FormatDMS(pnt.Dec));
             }
-            TourPlace place = new TourPlace(name, pnt.Dec, pnt.RA, Classification.Unidentified, "", ImageSetType.Sky, -1);
+            var place = new TourPlace(name, pnt.Dec, pnt.RA, Classification.Unidentified, "", ImageSetType.Sky, -1);
             return place;
         }
 
@@ -437,20 +437,20 @@ namespace TerraViewer
         }
                
                
-        PositionColorSizeVertexBuffer11 labelBuffer = null;
+        PositionColorSizeVertexBuffer11 labelBuffer;
 
         void InitLabelBuffer()
         {
             if (labelBuffer == null)
             {
-                int count = positions.Count;
+                var count = positions.Count;
 
                 labelBuffer = new PositionColorSizeVertexBuffer11(count, RenderContext11.PrepDevice);
 
-                PositionColorSize[] labelPoints = (PositionColorSize[])labelBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+                var labelPoints = (PositionColorSize[])labelBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
 
-                int index = 0;
-                foreach (Vector3 point in positions)
+                var index = 0;
+                foreach (var point in positions)
                 {
                     labelPoints[index].Position = new SharpDX.Vector3(point.X, point.Y, point.Z);
                     labelPoints[index].Color = Color.White;
@@ -508,9 +508,9 @@ namespace TerraViewer
             searchPoint = -searchPoint;
             Vector3 dist;
             
-            int closestItem = -1;
-            int index = 0;
-            foreach (Vector3 point in positions)
+            var closestItem = -1;
+            var index = 0;
+            foreach (var point in positions)
             {
                 dist = searchPoint - point;
                 if (dist.Length() < distance)

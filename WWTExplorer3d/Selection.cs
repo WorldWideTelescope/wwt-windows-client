@@ -13,13 +13,14 @@ namespace TerraViewer
 {
     public class Selection
     {
-        Texture11 SingleSelectHandles = null;
-        Texture11 MultiSelectHandles = null;
-        Texture11 FocusHandles = null;
+        Texture11 SingleSelectHandles;
+        Texture11 MultiSelectHandles;
+        Texture11 FocusHandles;
         public Selection()
         {
         }
-        List<Overlay> selectionSet = new List<Overlay>();
+
+        readonly List<Overlay> selectionSet = new List<Overlay>();
 
         public Overlay[] SelectionSet
         {
@@ -76,7 +77,7 @@ namespace TerraViewer
             selectionSet.AddRange(overlays);
         }
 
-        Overlay focus = null;
+        Overlay focus;
 
         public Overlay Focus
         {
@@ -107,7 +108,7 @@ namespace TerraViewer
 
             if (selectionSet.Count > 1)
             {
-                foreach (Overlay overlay in selectionSet)
+                foreach (var overlay in selectionSet)
                 {
                     if (overlay == focus)
                     {
@@ -123,22 +124,22 @@ namespace TerraViewer
             }
             else
             {
-                foreach (Overlay overlay in selectionSet)
+                foreach (var overlay in selectionSet)
                 {
                     DrawSelectionHandles(renderContext, overlay, SingleSelectHandles);
                 }
             }
         }
 
-        private static PositionColoredTextured[] points = new PositionColoredTextured[9 * 3 * 2];
+        private static readonly PositionColoredTextured[] points = new PositionColoredTextured[9 * 3 * 2];
         private void DrawSelectionHandles(RenderContext11 renderContext, Overlay overlay, Texture11 handleTexture)
         {
-            RectangleF[] handles = MakeHandles(overlay);
-            float angle = overlay.RotationAngle;
+            var handles = MakeHandles(overlay);
+            var angle = overlay.RotationAngle;
             
-            int i = 0;
-            int j = 0;
-            foreach (RectangleF handle in handles)
+            var i = 0;
+            var j = 0;
+            foreach (var handle in handles)
             {
                 points[i + 0].Position = overlay.MakePosition(centerX, centerY, handle.Left - centerX, handle.Top - centerY, angle).Vector4;
                 points[i + 0].Tu = j * (1f / 9f);
@@ -189,9 +190,9 @@ namespace TerraViewer
 
         public PointF PointToSelectionSpace(PointF pntIn)
         {
-            System.Drawing.Drawing2D.Matrix mat = new System.Drawing.Drawing2D.Matrix();
+            var mat = new System.Drawing.Drawing2D.Matrix();
 
-            PointF[] tempPoints = new PointF[1];
+            var tempPoints = new PointF[1];
             tempPoints[0] = new PointF(pntIn.X, pntIn.Y);
 
             mat.RotateAt(-selectionSet[0].RotationAngle, new PointF((float)(selectionSet[0].X ), (float)(selectionSet[0].Y )));
@@ -201,9 +202,9 @@ namespace TerraViewer
 
         public PointF PointToScreenSpace(PointF pntIn)
         {
-            System.Drawing.Drawing2D.Matrix mat = new System.Drawing.Drawing2D.Matrix();
+            var mat = new System.Drawing.Drawing2D.Matrix();
 
-            PointF[] tempPoints = new PointF[1];
+            var tempPoints = new PointF[1];
             tempPoints[0] = new PointF(pntIn.X, pntIn.Y);
 
             mat.RotateAt(selectionSet[0].RotationAngle, new PointF((float)(selectionSet[0].X ), (float)(selectionSet[0].Y )));
@@ -215,13 +216,13 @@ namespace TerraViewer
         {
             if (selectionSet.Count == 1)
             {
-                foreach (Overlay overlay in selectionSet)
+                foreach (var overlay in selectionSet)
                 {
-                    RectangleF[] handles = MakeHandles(overlay);
-                    int index = 0;
+                    var handles = MakeHandles(overlay);
+                    var index = 0;
 
-                    PointF testPoint = PointToSelectionSpace(position);
-                    foreach (RectangleF rectf in handles)
+                    var testPoint = PointToSelectionSpace(position);
+                    foreach (var rectf in handles)
                     {
                         if (rectf.Contains(testPoint))
                         {
@@ -236,20 +237,20 @@ namespace TerraViewer
 
         }
 
-        float centerX = 0;
-        float centerY = 0;
+        float centerX;
+        float centerY;
         public RectangleF[] MakeHandles(Overlay overlay)
         {
-            float x = (float)((int)(overlay.X-(overlay.Width/2)))+.5f;
-            float y = ((int)overlay.Y-(overlay.Height/2))+.5f;
+            var x = (float)((int)(overlay.X-(overlay.Width/2)))+.5f;
+            var y = ((int)overlay.Y-(overlay.Height/2))+.5f;
 
             centerX = overlay.X;
             centerY = overlay.Y;
 
-            float width = overlay.Width;
-            float height = overlay.Height;
-            float handleSize = 12*ratio;
-            RectangleF[] handles = new RectangleF[9];
+            var width = overlay.Width;
+            var height = overlay.Height;
+            var handleSize = 12*ratio;
+            var handles = new RectangleF[9];
 
             handles[0] = new RectangleF(x - handleSize, y - handleSize, handleSize, handleSize);
             handles[1] = new RectangleF((x + (width / 2)) - (handleSize/2), y - handleSize, handleSize, handleSize);

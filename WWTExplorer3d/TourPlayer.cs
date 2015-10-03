@@ -16,7 +16,8 @@ namespace TerraViewer
         {
             callStack.Clear();
         }
-        BlendState overlayBlend = new BlendState(false, 1000);
+
+        readonly BlendState overlayBlend = new BlendState(false, 1000);
 
         public bool ProjectorServer = false;
 
@@ -70,7 +71,7 @@ namespace TerraViewer
                             tour.CurrentTourStop.VoiceTrack.Play();
                         }
 
-                        foreach (Overlay overlay in tour.CurrentTourStop.Overlays)
+                        foreach (var overlay in tour.CurrentTourStop.Overlays)
                         {
                             overlay.Play();
                         }
@@ -107,7 +108,7 @@ namespace TerraViewer
 
             if (currentMasterSlide != null)
             {
-                foreach (Overlay overlay in currentMasterSlide.Overlays)
+                foreach (var overlay in currentMasterSlide.Overlays)
                 {
                     overlay.TweenFactor = 1f;
 
@@ -119,7 +120,7 @@ namespace TerraViewer
 
             if (onTarget || ProjectorServer)
             {
-                foreach (Overlay overlay in tour.CurrentTourStop.Overlays)
+                foreach (var overlay in tour.CurrentTourStop.Overlays)
                 {
                     if (!Tour.CurrentTourStop.KeyFramed || (overlay.Animate && overlay.AnimationTarget == null))
                     {
@@ -130,7 +131,7 @@ namespace TerraViewer
             }     
         }
 
-        TourDocument tour = null;
+        TourDocument tour;
 
         public TourDocument Tour
         {
@@ -138,7 +139,7 @@ namespace TerraViewer
             set { tour = value; }
         }
 
-        static bool playing = false;
+        static bool playing;
 
         static public bool Playing
         {
@@ -146,9 +147,9 @@ namespace TerraViewer
             set { playing = value; }
         }
 
-        bool onTarget = false;
+        bool onTarget;
         DateTime slideStartTime;
-        TourStop currentMasterSlide = null;
+        TourStop currentMasterSlide;
         public void NextSlide()
         {
             // Stop any existing current Slide
@@ -166,7 +167,7 @@ namespace TerraViewer
                         tour.CurrentTourStop.VoiceTrack.Stop();
                     }
 
-                    foreach (Overlay overlay in tour.CurrentTourStop.Overlays)
+                    foreach (var overlay in tour.CurrentTourStop.Overlays)
                     {
                         overlay.Stop();
                     }
@@ -232,7 +233,7 @@ namespace TerraViewer
                     StopCurrentMaster();
                 }
 
-                bool instant = false;
+                var instant = false;
                 switch (tour.CurrentTourStop.Transition)
                 {
                     case TransitionType.Slew:
@@ -323,7 +324,7 @@ namespace TerraViewer
                     currentMasterSlide.VoiceTrack.Stop();
                 }
 
-                foreach (Overlay overlay in currentMasterSlide.Overlays)
+                foreach (var overlay in currentMasterSlide.Overlays)
                 {
                     overlay.Stop();
                 }
@@ -332,8 +333,8 @@ namespace TerraViewer
         }
 
         static public event EventHandler TourEnded;
-        static bool switchedToFullScreen = false;
-        Stack<int> callStack = new Stack<int>();
+        static bool switchedToFullScreen;
+        readonly Stack<int> callStack = new Stack<int>();
         public void Play()
         {
 
@@ -408,7 +409,7 @@ namespace TerraViewer
 
             if (!tour.CurrentTourStop.MasterSlide)
             {
-                double elapsed = tour.ElapsedTimeSinceLastMaster(tour.CurrentTourstopIndex, out currentMasterSlide);
+                var elapsed = tour.ElapsedTimeSinceLastMaster(tour.CurrentTourstopIndex, out currentMasterSlide);
                 if (currentMasterSlide != null)
                 {
                     if (currentMasterSlide.MusicTrack != null)
@@ -424,7 +425,7 @@ namespace TerraViewer
                         currentMasterSlide.VoiceTrack.Seek(elapsed);
                     }
 
-                    foreach (Overlay overlay in currentMasterSlide.Overlays)
+                    foreach (var overlay in currentMasterSlide.Overlays)
                     {
                         overlay.Play();
                         overlay.Seek(elapsed);
@@ -456,7 +457,7 @@ namespace TerraViewer
                     tour.CurrentTourStop.VoiceTrack.Stop();
                 }
 
-                foreach (Overlay overlay in tour.CurrentTourStop.Overlays)
+                foreach (var overlay in tour.CurrentTourStop.Overlays)
                 {
                     overlay.Stop();
                 }
@@ -473,7 +474,7 @@ namespace TerraViewer
                     currentMasterSlide.VoiceTrack.Stop();
                 }
 
-                foreach (Overlay overlay in currentMasterSlide.Overlays)
+                foreach (var overlay in currentMasterSlide.Overlays)
                 {
                     overlay.Stop();
                 }
@@ -485,12 +486,12 @@ namespace TerraViewer
         public double PreRollTime = 2;
         public void UpdateSlideStates()
         {
-            bool slideChanging = false;
+            var slideChanging = false;
 
 
             if (!ProjectorServer)
             {
-                TimeSpan slideElapsedTime = SpaceTimeController.MetaNow - slideStartTime;
+                var slideElapsedTime = SpaceTimeController.MetaNow - slideStartTime;
 
                 if ((slideElapsedTime > tour.CurrentTourStop.Duration && playing) || (slideElapsedTime.TotalSeconds > PreRollTime && PreRoll))
                 {
@@ -537,7 +538,7 @@ namespace TerraViewer
             if (tour.CurrentTourStop != null)
             {
                 Tile.fastLoad = false;
-                double elapsedSeconds = tour.CurrentTourStop.TweenPosition * tour.CurrentTourStop.Duration.TotalSeconds;
+                var elapsedSeconds = tour.CurrentTourStop.TweenPosition * tour.CurrentTourStop.Duration.TotalSeconds;
                 if (slideChanging)
                 {
                     Earth3d.MainWindow.CrossFadeFrame = false;
@@ -572,7 +573,7 @@ namespace TerraViewer
                     case TransitionType.CrossFade:
                         {
                             Earth3d.MainWindow.CrossFadeFrame = true;
-                            double opacity = Math.Max(0, 1 - Math.Min(1, (elapsedSeconds-tour.CurrentTourStop.TransitionHoldTime) / tour.CurrentTourStop.TransitionTime));
+                            var opacity = Math.Max(0, 1 - Math.Min(1, (elapsedSeconds-tour.CurrentTourStop.TransitionHoldTime) / tour.CurrentTourStop.TransitionTime));
                             tour.CurrentTourStop.FaderOpacity = (float)opacity;
                             if (slideChanging)
                             {
@@ -585,7 +586,7 @@ namespace TerraViewer
                     case TransitionType.FadeIn:
                         {
                             Earth3d.MainWindow.CrossFadeFrame = false;
-                            double opacity = Math.Max(0, 1 - Math.Min(1, (elapsedSeconds - tour.CurrentTourStop.TransitionHoldTime) / tour.CurrentTourStop.TransitionTime));
+                            var opacity = Math.Max(0, 1 - Math.Min(1, (elapsedSeconds - tour.CurrentTourStop.TransitionHoldTime) / tour.CurrentTourStop.TransitionTime));
                             tour.CurrentTourStop.FaderOpacity = (float)opacity;
                         }
                         break;
@@ -599,8 +600,8 @@ namespace TerraViewer
 
                 if (!tour.CurrentTourStop.IsLinked && tour.CurrentTourstopIndex < (tour.TourStops.Count-1))
                 {
-                    TransitionType nextTrans = tour.TourStops[tour.CurrentTourstopIndex + 1].Transition;
-                    double nextTransTime = tour.TourStops[tour.CurrentTourstopIndex + 1].TransitionOutTime;
+                    var nextTrans = tour.TourStops[tour.CurrentTourstopIndex + 1].Transition;
+                    var nextTransTime = tour.TourStops[tour.CurrentTourstopIndex + 1].TransitionOutTime;
 
 
                     switch (nextTrans)
@@ -612,7 +613,7 @@ namespace TerraViewer
                                 if (tour.CurrentTourStop.FaderOpacity == 0)
                                 {
                                     Earth3d.MainWindow.CrossFadeFrame = false;
-                                    double opacity = Math.Max(0, 1 - Math.Min(1, (tour.CurrentTourStop.Duration.TotalSeconds - elapsedSeconds) / nextTransTime));
+                                    var opacity = Math.Max(0, 1 - Math.Min(1, (tour.CurrentTourStop.Duration.TotalSeconds - elapsedSeconds) / nextTransTime));
                                     tour.CurrentTourStop.FaderOpacity = (float)opacity;
                                 }
                             }
@@ -627,7 +628,7 @@ namespace TerraViewer
 
         public float UpdateTweenPosition(float tween)
         {
-            TimeSpan slideElapsedTime = SpaceTimeController.MetaNow - slideStartTime;
+            var slideElapsedTime = SpaceTimeController.MetaNow - slideStartTime;
 
             if (tween > -1)
             {
@@ -650,21 +651,21 @@ namespace TerraViewer
 
         public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            PointF location = PointToView(e.Location);
+            var location = PointToView(e.Location);
 
             if (tour == null || tour.CurrentTourStop == null)
             {
                 return false;
             }
 
-            for (int i = tour.CurrentTourStop.Overlays.Count - 1; i >= 0; i--)
+            for (var i = tour.CurrentTourStop.Overlays.Count - 1; i >= 0; i--)
             {
 
                 if (tour.CurrentTourStop.Overlays[i].HitTest(location))
                 {
                     if (!string.IsNullOrEmpty(tour.CurrentTourStop.Overlays[i].Url))
                     {
-                        Overlay linkItem = tour.CurrentTourStop.Overlays[i];
+                        var linkItem = tour.CurrentTourStop.Overlays[i];
                         WebWindow.OpenUrl(linkItem.Url, true);
                         return true;
                     }
@@ -714,14 +715,14 @@ namespace TerraViewer
 
         public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            PointF location = PointToView(e.Location);
+            var location = PointToView(e.Location);
 
             if (tour == null || tour.CurrentTourStop == null)
             {
                 return false;
             }
 
-            for (int i = tour.CurrentTourStop.Overlays.Count - 1; i >= 0; i--)
+            for (var i = tour.CurrentTourStop.Overlays.Count - 1; i >= 0; i--)
             {
                 if (tour.CurrentTourStop.Overlays[i].HitTest(location) && (!string.IsNullOrEmpty(tour.CurrentTourStop.Overlays[i].Url) ||!string.IsNullOrEmpty(tour.CurrentTourStop.Overlays[i].LinkID)))
                 {
@@ -859,9 +860,9 @@ namespace TerraViewer
         {
             float clientHeight = Earth3d.MainWindow.RenderWindow.ClientRectangle.Height;
             float clientWidth = Earth3d.MainWindow.RenderWindow.ClientRectangle.Width;
-            float viewWidth = ((float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
-            float x = (((float)pnt.X) / ((float)clientWidth) * viewWidth) - ((viewWidth - 1920) / 2);
-            float y = ((float)pnt.Y) / clientHeight * 1116;
+            var viewWidth = ((float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
+            var x = (((float)pnt.X) / ((float)clientWidth) * viewWidth) - ((viewWidth - 1920) / 2);
+            var y = ((float)pnt.Y) / clientHeight * 1116;
 
             return new PointF(x, y);
         }

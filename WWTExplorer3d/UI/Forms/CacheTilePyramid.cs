@@ -30,18 +30,18 @@ namespace TerraViewer
         static string statusText = "";
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            WebClient client = new WebClient();
-            IImageSet layer = imageSet;
+            var client = new WebClient();
+            var layer = imageSet;
             fileCount = 0;
             maxFileCount = 0;
-            for (int level = layer.BaseLevel; level < (levelCount + 1); level++)
+            for (var level = layer.BaseLevel; level < (levelCount + 1); level++)
             {
-                int maxX = Earth3d.GetTilesXForLevel(layer, level);
-                int maxY = Earth3d.GetTilesYForLevel(layer, level);
+                var maxX = Earth3d.GetTilesXForLevel(layer, level);
+                var maxY = Earth3d.GetTilesYForLevel(layer, level);
 
-                for (int x = 0; x < maxX; x++)
+                for (var x = 0; x < maxX; x++)
                 {
-                    for (int y = 0; y < maxY; y++)
+                    for (var y = 0; y < maxY; y++)
                     {
                         maxFileCount++;
                         
@@ -50,14 +50,14 @@ namespace TerraViewer
             }
 
 
-            for (int level = layer.BaseLevel; level < (levelCount+1); level++)
+            for (var level = layer.BaseLevel; level < (levelCount+1); level++)
             {
-                int maxX = Earth3d.GetTilesXForLevel(layer, level);
-                int maxY = Earth3d.GetTilesYForLevel(layer, level);
+                var maxX = Earth3d.GetTilesXForLevel(layer, level);
+                var maxY = Earth3d.GetTilesYForLevel(layer, level);
 
-                for (int x = 0; x < maxX; x++)
+                for (var x = 0; x < maxX; x++)
                 {
-                    for (int y = 0; y < maxY; y++)
+                    for (var y = 0; y < maxY; y++)
                     {
                         fileCount++;
 
@@ -69,9 +69,9 @@ namespace TerraViewer
                         }
                         try
                         {
-                            string url = Tile.GetUrl(layer, level, x, y);
-                            string filename = Tile.GetFilename(layer, level, x, y);
-                            string dir = Path.GetDirectoryName(filename);
+                            var url = Tile.GetUrl(layer, level, x, y);
+                            var filename = Tile.GetFilename(layer, level, x, y);
+                            var dir = Path.GetDirectoryName(filename);
                             if (!Directory.Exists(dir))
                             {
                                 Directory.CreateDirectory(dir);
@@ -83,10 +83,10 @@ namespace TerraViewer
                             if (!string.IsNullOrEmpty(layer.DemUrl))
                             {
                                 //do it for DEM as well
-                                string urlDem = Tile.GetDemUrl(layer, level, x, y);
-                                string filenameDem = Tile.GetDemFilename(layer, level, x, y);
+                                var urlDem = Tile.GetDemUrl(layer, level, x, y);
+                                var filenameDem = Tile.GetDemFilename(layer, level, x, y);
 
-                                string dirDem = Path.GetDirectoryName(filenameDem);
+                                var dirDem = Path.GetDirectoryName(filenameDem);
                                 if (!Directory.Exists(dirDem))
                                 {
                                     Directory.CreateDirectory(dirDem);
@@ -113,9 +113,9 @@ namespace TerraViewer
         }
 
     
-        int fileCount = 0;
-        int maxFileCount = 0;
-        int levelCount = 0;
+        int fileCount;
+        int maxFileCount;
+        int levelCount;
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             progressText.Text = Language.GetLocalizedText(1047, "Download Complete");

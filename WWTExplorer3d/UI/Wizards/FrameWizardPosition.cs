@@ -25,14 +25,14 @@ namespace TerraViewer
             this.GetFromView.Text = Language.GetLocalizedText(259, "Get From View");
         }
 
-        ReferenceFrame frame = null;
+        ReferenceFrame frame;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
         }
         public override bool Save()
         {
-            bool failed = false;
+            var failed = false;
 
             frame.Lat = ParseAndValidateCoordinate(Lattitude, frame.Lat, ref failed);
             frame.Lng = ParseAndValidateCoordinate(Longitude, frame.Lng, ref failed);
@@ -53,7 +53,7 @@ namespace TerraViewer
 
         private void GetFromView_Click(object sender, EventArgs e)
         {
-            Vector2d point = Earth3d.MainWindow.GetEarthCoordinates();
+            var point = Earth3d.MainWindow.GetEarthCoordinates();
 
 
             Lattitude.Text = Coordinates.FormatDMS(point.Y);

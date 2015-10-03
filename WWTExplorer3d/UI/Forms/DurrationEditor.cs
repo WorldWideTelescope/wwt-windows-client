@@ -30,9 +30,9 @@ namespace TerraViewer
         {
             get
             {
-                double miniutes = Convert.ToDouble(timeEdit.Text.Substring(0, 2));
-                double seconds = Convert.ToDouble(timeEdit.Text.Substring(3));
-                double milliseconds = (seconds - (int)seconds) * 1000;
+                var miniutes = Convert.ToDouble(timeEdit.Text.Substring(0, 2));
+                var seconds = Convert.ToDouble(timeEdit.Text.Substring(3));
+                var milliseconds = (seconds - (int)seconds) * 1000;
 
                 return new TimeSpan(0, 0, (int)miniutes, (int)seconds, (int)milliseconds);
             }
@@ -127,7 +127,7 @@ namespace TerraViewer
 
         private void arrowDown_Pushed(object sender, EventArgs e)
         {
-            TimeSpan ts = TimeText;
+            var ts = TimeText;
             if (ts.TotalSeconds > 1)
             {
                 ts = ts - new TimeSpan(0, 0, 1);
@@ -137,7 +137,7 @@ namespace TerraViewer
 
         private void arrowUp_Pushed(object sender, EventArgs e)
         {
-            TimeSpan ts = TimeText;
+            var ts = TimeText;
             if (ts.TotalSeconds < 3599)
             {
                 ts = ts + new TimeSpan(0, 0, 1);

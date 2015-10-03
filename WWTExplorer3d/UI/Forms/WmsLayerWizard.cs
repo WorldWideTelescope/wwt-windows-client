@@ -56,8 +56,8 @@ namespace TerraViewer
             LayersTree.Nodes.Clear();
             Abstract.Text = "";
 
-            WmsServerEntry wse = (WmsServerEntry)ServerList.SelectedItem;
-            string req = "REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0";
+            var wse = (WmsServerEntry)ServerList.SelectedItem;
+            var req = "REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0";
 
             if (wse.Url.Contains("?"))
             {
@@ -68,10 +68,10 @@ namespace TerraViewer
                 req = "?" + req;
             }
 
-            string url = wse.Url + req;
+            var url = wse.Url + req;
 
-            string filename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()).ToString() + ".xml";
-            string tiledFilename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()).ToString() + ".tiled.xml";
+            var filename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()).ToString() + ".xml";
+            var tiledFilename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()).ToString() + ".tiled.xml";
 
             if (!File.Exists(filename) && !download)
             {
@@ -84,13 +84,13 @@ namespace TerraViewer
                 return;
             }
 
-            bool tiled = false;
-            string tiledUrl = "";
+            var tiled = false;
+            var tiledUrl = "";
             try
             {
                 using (Stream stream = File.Open(filename, FileMode.Open))
                 {
-                    WMS_Capabilities caps = WMS_Capabilities.LoadFromSream(stream);
+                    var caps = WMS_Capabilities.LoadFromSream(stream);
 
                     serviceUrl = caps.Capability.Request.GetMap.DCPType[0].HTTP.Get.OnlineResource.href;
                     if (!serviceUrl.Contains("?"))
@@ -124,7 +124,7 @@ namespace TerraViewer
 
                     using (Stream stream = File.Open(filename, FileMode.Open))
                     {
-                        WMT_MS_Capabilities caps = WMT_MS_Capabilities.LoadFromSream(stream);
+                        var caps = WMT_MS_Capabilities.LoadFromSream(stream);
 
                         serviceUrl = caps.Capability.Request.GetMap.DCPType[0].HTTP.Get.OnlineResource.href;
                         if (!serviceUrl.Contains("?"))
@@ -166,7 +166,7 @@ namespace TerraViewer
                     }
                     using (Stream stream = File.Open(tiledFilename, FileMode.Open))
                     {
-                        WMS_Tile_Service wts = WMS_Tile_Service.LoadFromSream(stream);
+                        var wts = WMS_Tile_Service.LoadFromSream(stream);
                         AddChildren(wts.TiledPatterns[0].TiledGroup, LayersTree.Nodes);
                     }
 
@@ -187,9 +187,9 @@ namespace TerraViewer
         {
             if (layer.Children != null)
             {
-                foreach (WMS.Layer child in layer.Children)
+                foreach (var child in layer.Children)
                 {
-                    TreeNode childNode = nodes.Add(child.Title);
+                    var childNode = nodes.Add(child.Title);
                     childNode.Tag = child;
                     AddChildren(child, childNode.Nodes);
                 }
@@ -197,11 +197,11 @@ namespace TerraViewer
 
             if (layer.Style != null)
             {
-                foreach (WMS.Style style in layer.Style)
+                foreach (var style in layer.Style)
                 {
 
                     //   layer.Style[0].
-                    TreeNode styleNode = nodes.Add(style.Title);
+                    var styleNode = nodes.Add(style.Title);
                     styleNode.Tag = style;
                 }
             }
@@ -211,9 +211,9 @@ namespace TerraViewer
         {
             if (layer != null)
             {
-                foreach (WMS_Tile_ServiceTiledPatternsTiledGroup child in layer)
+                foreach (var child in layer)
                 {
-                    TreeNode childNode = nodes.Add(child.Title);
+                    var childNode = nodes.Add(child.Title);
                     childNode.Tag = child;
                 }
             }
@@ -221,12 +221,12 @@ namespace TerraViewer
 
         private void SaveServerList()
         {
-            string path = Properties.Settings.Default.CahceDirectory + "data\\WMS_Servers.txt";
+            var path = Properties.Settings.Default.CahceDirectory + "data\\WMS_Servers.txt";
 
-            StreamWriter sw = new StreamWriter(path);
-            foreach (object item in ServerList.Items)
+            var sw = new StreamWriter(path);
+            foreach (var item in ServerList.Items)
             {
-                WmsServerEntry wse = (WmsServerEntry)item;
+                var wse = (WmsServerEntry)item;
                 sw.WriteLine(wse.Name + "\t" + wse.Url);
             }
             sw.Close();
@@ -234,22 +234,22 @@ namespace TerraViewer
 
         private void WmsLayerWizard_Load(object sender, EventArgs e)
         {
-            string path = Properties.Settings.Default.CahceDirectory + "data\\WMS_Servers.txt";
+            var path = Properties.Settings.Default.CahceDirectory + "data\\WMS_Servers.txt";
 
             if (!File.Exists(path))
             {
                 return;
             }
 
-            string[] lines = File.ReadAllLines(path);
-            foreach (string line in lines)
+            var lines = File.ReadAllLines(path);
+            foreach (var line in lines)
             {
-                string[] parts = line.Split(new char[] { '\t' });
+                var parts = line.Split(new char[] { '\t' });
 
-                WmsServerEntry entry = new WmsServerEntry();
+                var entry = new WmsServerEntry();
                 entry.Name = parts[0];
                 entry.Url = parts[1];
-                int index = ServerList.Items.Add(entry);
+                var index = ServerList.Items.Add(entry);
             }
             if (ServerList.Items.Count > 0)
             {
@@ -268,13 +268,13 @@ namespace TerraViewer
 
         private void AddTiledLayer(WMS_Tile_ServiceTiledPatternsTiledGroup tileGroup)
         {
-            string tilePatern = GetPattern(tileGroup.TilePattern[0].Value);
+            var tilePatern = GetPattern(tileGroup.TilePattern[0].Value);
 
-            double degrees = GetLngDegrees(tilePatern);
+            var degrees = GetLngDegrees(tilePatern);
 
-            foreach(WMS_Tile_ServiceTiledPatternsTiledGroupTilePattern pat in tileGroup.TilePattern)
+            foreach(var pat in tileGroup.TilePattern)
             {
-                double deg = GetLngDegrees(pat.Value);
+                var deg = GetLngDegrees(pat.Value);
 
                 if (deg < degrees)
                 {
@@ -284,8 +284,8 @@ namespace TerraViewer
 
 
 
-            double baseTileDegrees = degrees;
-            int totalLevels = -1;
+            var baseTileDegrees = degrees;
+            var totalLevels = -1;
 
             while (baseTileDegrees < 180)
             {
@@ -294,8 +294,8 @@ namespace TerraViewer
             }
 
 
-            string url = serviceUrl + FillBoundingBoxUrl(tilePatern.Replace("&time=${time}",""));
-            int baseLevel = 3;
+            var url = serviceUrl + FillBoundingBoxUrl(tilePatern.Replace("&time=${time}",""));
+            var baseLevel = 3;
 
             //if (tileGroup.TilePattern.Length > totalLevels)
             {
@@ -303,14 +303,14 @@ namespace TerraViewer
             }
 
 
-            string imageType = ".png";
+            var imageType = ".png";
             double meanRadius = 300000000; //todo
 
-            string referenceFrame = LayerManager.CurrentMap;
+            var referenceFrame = LayerManager.CurrentMap;
 
-            string thumbUrl = "http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=" + referenceFrame;
+            var thumbUrl = "http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=" + referenceFrame;
 
-            ImageSetHelper ish = new ImageSetHelper(tileGroup.Title, url, ImageSetType.Planet, BandPass.Visible, ProjectionType.Equirectangular, (int)(uint)url.GetHashCode32(), baseLevel, totalLevels, 512, baseTileDegrees, imageType, true,"", 0, 0, 0, false, thumbUrl, false, false, 1, 0, 0, tileGroup.Abstract, "", "", "", meanRadius, referenceFrame);
+            var ish = new ImageSetHelper(tileGroup.Title, url, ImageSetType.Planet, BandPass.Visible, ProjectionType.Equirectangular, (int)(uint)url.GetHashCode32(), baseLevel, totalLevels, 512, baseTileDegrees, imageType, true,"", 0, 0, 0, false, thumbUrl, false, false, 1, 0, 0, tileGroup.Abstract, "", "", "", meanRadius, referenceFrame);
 
             if (AddAsLayer.Checked == false)
             {
@@ -318,7 +318,7 @@ namespace TerraViewer
             }
             else
             {
-                ImageSetLayer layer = new ImageSetLayer(ish);
+                var layer = new ImageSetLayer(ish);
                 layer.Enabled = true;
                 layer.Name = tileGroup.Title;
                 layer.ReferenceFrame = LayerManager.CurrentMap;
@@ -330,11 +330,11 @@ namespace TerraViewer
 
         private string GetPattern(string pattern)
         {
-            string[] tilePaterns = pattern.Split(new char[] { '\n' });
+            var tilePaterns = pattern.Split(new char[] { '\n' });
 
-            for (int i = 0; i < tilePaterns.Length; i++)
+            for (var i = 0; i < tilePaterns.Length; i++)
             {
-                string part = tilePaterns[i].Trim();
+                var part = tilePaterns[i].Trim();
                 if (!String.IsNullOrEmpty(part))
                 {
                     return part;
@@ -347,33 +347,33 @@ namespace TerraViewer
         private double GetLngDegrees(string url)
         {
           
-            int start = url.IndexOf("bbox=", StringComparison.OrdinalIgnoreCase) + 5;
+            var start = url.IndexOf("bbox=", StringComparison.OrdinalIgnoreCase) + 5;
 
-            int end = url.IndexOf("&", start);
+            var end = url.IndexOf("&", start);
 
             if (end == -1)
             {
                 end = url.Length;
             }
 
-            string bbox = url.Substring(start, end - start);
+            var bbox = url.Substring(start, end - start);
 
-            string[] parts = bbox.Split(new char[] { ',' });
+            var parts = bbox.Split(new char[] { ',' });
 
-            double lngMin = double.Parse(parts[0]);
-            double lngMax = double.Parse(parts[2]);
-            double degrees = lngMax - lngMin;
+            var lngMin = double.Parse(parts[0]);
+            var lngMax = double.Parse(parts[2]);
+            var degrees = lngMax - lngMin;
             return degrees;
         }
 
         private string FillBoundingBoxUrl(string url)
         {
         
-            string firstPart = url.Substring(0, url.IndexOf("bbox=", StringComparison.OrdinalIgnoreCase)+5);
+            var firstPart = url.Substring(0, url.IndexOf("bbox=", StringComparison.OrdinalIgnoreCase)+5);
 
-            int indexEnd = url.IndexOf("&", firstPart.Length);
+            var indexEnd = url.IndexOf("&", firstPart.Length);
 
-            string lastPart= "";
+            var lastPart= "";
             
             if (indexEnd > -1)
             {
@@ -391,7 +391,7 @@ namespace TerraViewer
                 return;
             }
             
-            WMS_Tile_ServiceTiledPatternsTiledGroup tileGroup = LayersTree.SelectedNode.Tag as WMS_Tile_ServiceTiledPatternsTiledGroup;
+            var tileGroup = LayersTree.SelectedNode.Tag as WMS_Tile_ServiceTiledPatternsTiledGroup;
 
             if (tileGroup != null)
             {
@@ -399,9 +399,9 @@ namespace TerraViewer
                 return;
             }
 
-            WMS.Layer wmsLayer = LayersTree.SelectedNode.Tag as WMS.Layer;
+            var wmsLayer = LayersTree.SelectedNode.Tag as WMS.Layer;
 
-            WMS.Style style = LayersTree.SelectedNode.Tag as WMS.Style;
+            var style = LayersTree.SelectedNode.Tag as WMS.Style;
 
             if (style != null && LayersTree.SelectedNode.Parent != null)
             {
@@ -421,8 +421,8 @@ namespace TerraViewer
                 double north = 90;
                 double south = -90;
 
-                int width = 2048;
-                int height = 2048;
+                var width = 2048;
+                var height = 2048;
 
                 if (wmsLayer.EX_GeographicBoundingBox != null)
                 {
@@ -442,7 +442,7 @@ namespace TerraViewer
 
                 if (wmsLayer.fixedHeight != null )
                 {
-                    int h = int.Parse(wmsLayer.fixedHeight);
+                    var h = int.Parse(wmsLayer.fixedHeight);
                     if (h > 0)
                     {
                         height = h;
@@ -451,7 +451,7 @@ namespace TerraViewer
 
                 if (wmsLayer.fixedWidth != null)
                 {
-                    int w = int.Parse(wmsLayer.fixedWidth);
+                    var w = int.Parse(wmsLayer.fixedWidth);
 
                     if (w > 0)
                     {
@@ -460,7 +460,7 @@ namespace TerraViewer
 
                 }
                 
-                WmsLayer layer = new WmsLayer();
+                var layer = new WmsLayer();
 
                 //string path = MakeWmsGetMapUrl(wmsLayer.Name, style != null ? style.Name : "",
                 //    west,north, east, south,
@@ -480,13 +480,13 @@ namespace TerraViewer
                 layer.Width = width;
                 if (wmsLayer.Dimension != null)
                 {
-                    foreach (Dimension dim in wmsLayer.Dimension)
+                    foreach (var dim in wmsLayer.Dimension)
                     {
                         if (dim.name == "time")
                         {
-                            string[] dates = wmsLayer.Dimension[0].Value.Split(new char[] { ',' });
+                            var dates = wmsLayer.Dimension[0].Value.Split(new char[] { ',' });
 
-                            foreach (string date in dates)
+                            foreach (var date in dates)
                             {
                                 layer.TimeRanges.Add(new TimeRange(date));
                             }
@@ -509,23 +509,23 @@ namespace TerraViewer
         {
        
             double baseTileDegrees = 180;
-            int totalLevels = 12;
+            var totalLevels = 12;
 
-            string styles = style != null ? style.Name : "";
+            var styles = style != null ? style.Name : "";
 
-            string url = FillBoundingBoxUrl(MakeWmsGetMapUrl(wmsLayer.Name, styles, 0, 0, 0, 0, 256, 256, "", ""));
+            var url = FillBoundingBoxUrl(MakeWmsGetMapUrl(wmsLayer.Name, styles, 0, 0, 0, 0, 256, 256, "", ""));
             
-            int baseLevel = 1;
+            var baseLevel = 1;
 
 
-            string imageType = ".png";
+            var imageType = ".png";
             double meanRadius = 300000000; //todo
 
-            string referenceFrame = LayerManager.CurrentMap;
+            var referenceFrame = LayerManager.CurrentMap;
 
-            string thumbUrl = "http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=" + referenceFrame;
+            var thumbUrl = "http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=" + referenceFrame;
 
-            ImageSetHelper ish = new ImageSetHelper(wmsLayer.Title, url, ImageSetType.Planet, BandPass.Visible, ProjectionType.Equirectangular, (int)(uint)url.GetHashCode32(), baseLevel, totalLevels, 512, baseTileDegrees, imageType, true, "", 0, 0, 0, false, thumbUrl, false, false, 1, 0, 0, wmsLayer.Abstract, "", "", "", meanRadius, referenceFrame);
+            var ish = new ImageSetHelper(wmsLayer.Title, url, ImageSetType.Planet, BandPass.Visible, ProjectionType.Equirectangular, (int)(uint)url.GetHashCode32(), baseLevel, totalLevels, 512, baseTileDegrees, imageType, true, "", 0, 0, 0, false, thumbUrl, false, false, 1, 0, 0, wmsLayer.Abstract, "", "", "", meanRadius, referenceFrame);
 
             if (AddAsLayer.Checked == false)
             {
@@ -533,7 +533,7 @@ namespace TerraViewer
             }
             else
             {
-                ImageSetLayer layer = new ImageSetLayer(ish);
+                var layer = new ImageSetLayer(ish);
                 layer.Enabled = true;
                 layer.Name = wmsLayer.Title;
                 layer.ReferenceFrame = LayerManager.CurrentMap;
@@ -551,17 +551,17 @@ namespace TerraViewer
             {
                 return;
             }
-            string url = wmsUrl.Text;
+            var url = wmsUrl.Text;
 
 
 
-            int index = url.IndexOf("?");
+            var index = url.IndexOf("?");
 
             if (index > -1)
             {
                 url = url.Substring(0, index);
             }
-            WmsServerEntry entry = new WmsServerEntry();
+            var entry = new WmsServerEntry();
             entry.Name = ServerName.Text;
 
             if (dontParse.Checked)
@@ -615,11 +615,11 @@ namespace TerraViewer
 
         private void LayersTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            WMS.Layer wmsLayer = LayersTree.SelectedNode.Tag as WMS.Layer;
+            var wmsLayer = LayersTree.SelectedNode.Tag as WMS.Layer;
 
-            WMS.Style style = LayersTree.SelectedNode.Tag as WMS.Style;
+            var style = LayersTree.SelectedNode.Tag as WMS.Style;
 
-            WMS_Tile_ServiceTiledPatternsTiledGroup tileGroup = LayersTree.SelectedNode.Tag as WMS_Tile_ServiceTiledPatternsTiledGroup;
+            var tileGroup = LayersTree.SelectedNode.Tag as WMS_Tile_ServiceTiledPatternsTiledGroup;
 
  
             if (style != null && LayersTree.SelectedNode.Parent != null)

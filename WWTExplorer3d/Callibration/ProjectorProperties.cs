@@ -32,11 +32,11 @@ namespace TerraViewer.Callibration
 
         private void ProjectorProperties_Load(object sender, EventArgs e)
         {
-            int selected = 0;
-            int index = 0;
+            var selected = 0;
+            var index = 0;
             if (!AddMode)
             {
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
                     if (pe == Projector)
                     {
@@ -139,7 +139,7 @@ namespace TerraViewer.Callibration
 
         private void CopySolved_Click(object sender, EventArgs e)
         {
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
                 pe.ProjectorProjection = pe.SolvedProjection.Copy();
                 pe.ProjectorTransform = pe.SolvedTransform.Copy();
@@ -150,7 +150,7 @@ namespace TerraViewer.Callibration
 
         private void CopyView_Click(object sender, EventArgs e)
         {
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
                 pe.ProjectorProjection = pe.ViewProjection.Copy();
                 pe.ProjectorTransform = pe.ViewTransform.Copy();

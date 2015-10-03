@@ -291,7 +291,7 @@ namespace TerraViewer
             set { meanRadiusFieldSpecified = value; }
         }
   
-        long communityIdField = 0;
+        long communityIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRCommunityId
         {
@@ -299,7 +299,7 @@ namespace TerraViewer
             set { communityIdField = value; }
         }
 
-        long componentIdField = 0;
+        long componentIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRComponentId
         {
@@ -307,7 +307,7 @@ namespace TerraViewer
             set { componentIdField = value; }
         }
 
-        long permissionField = 0;
+        long permissionField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long Permission
         {
@@ -1114,14 +1114,14 @@ namespace TerraViewer
 
         private string thumbnailField;
 
-        long communityIdField = 0;
+        long communityIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRCommunityId
         {
             get { return communityIdField; }
             set { communityIdField = value; }
         }
-        long componentIdField = 0;
+        long componentIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRComponentId
         {
@@ -1129,7 +1129,7 @@ namespace TerraViewer
             set { componentIdField = value; }
         }
 
-        long permissionField = 0;
+        long permissionField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long Permission
         {
@@ -1873,7 +1873,7 @@ namespace TerraViewer
 
         private string relatedToursField;
 
-        long communityIdField = 0;
+        long communityIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRCommunityId
         {
@@ -1881,7 +1881,7 @@ namespace TerraViewer
             set { communityIdField = value; }
         }
 
-        long componentIdField = 0;
+        long componentIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRComponentId
         {
@@ -1889,7 +1889,7 @@ namespace TerraViewer
             set { componentIdField = value; }
         }
 
-        long permissionField = 0;
+        long permissionField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long Permission
         {
@@ -2352,7 +2352,7 @@ namespace TerraViewer
         /// <remarks/>
         /// 
 
-        long communityIdField = 0;
+        long communityIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRCommunityId
         {
@@ -2360,7 +2360,7 @@ namespace TerraViewer
             set { communityIdField = value; }
         }
 
-        long componentIdField = 0;
+        long componentIdField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long MSRComponentId
         {
@@ -2368,7 +2368,7 @@ namespace TerraViewer
             set { componentIdField = value; }
         }
 
-        long permissionField = 0;
+        long permissionField;
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public long Permission
         {

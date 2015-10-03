@@ -137,7 +137,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				bitIO.GetBit16((uint)(iSymbol & ((1 << Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
 			}
 
-			int iSymbolHuff = iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
+			var iSymbolHuff = iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
 
 			if (iSymbolHuff < 0)
 			{
@@ -168,7 +168,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		internal void AdaptDiscriminant()
 		{
-			bool bChange = false;
+			var bChange = false;
 
 			if (!m_bInitialize)
 			{
@@ -223,7 +223,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 					m_iDiscriminant1 = Constant.THRESHOLD * Constant.MEMORY;
 				}
 
-			int t = m_iTableIndex;
+			var t = m_iTableIndex;
 			System.Diagnostics.Debug.Assert(t >= 0);
 			System.Diagnostics.Debug.Assert(t < Constant.gMaxTables[m_iNSymbols]);
 

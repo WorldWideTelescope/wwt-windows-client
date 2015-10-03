@@ -40,8 +40,8 @@ namespace ShapefileTools
             try
             {
                 
-                FileStream fs = new FileStream(fileName, FileMode.Open);
-                long fileLength = fs.Length;
+                var fs = new FileStream(fileName, FileMode.Open);
+                var fileLength = fs.Length;
                 data = new Byte[fileLength];
                 fs.Read(data, 0, (int)fileLength);
                 fs.Close();
@@ -90,8 +90,8 @@ namespace ShapefileTools
         // byte order.
         private int ReadIntLittleEndian(byte[] dataStream, int streamPosition)
         {
-            byte[] bytes = new byte[4];
-            for (int i = 0; i < 4; i++)
+            var bytes = new byte[4];
+            for (var i = 0; i < 4; i++)
             {
                 bytes[i] = dataStream[streamPosition + i];
             }
@@ -103,8 +103,8 @@ namespace ShapefileTools
         // byte order.
         private double ReadDoubleLittleEndian(byte[] dataStream, int streamPosition)
         {
-            byte[] bytes = new byte[8];
-            for (int i = 0; i < 8; i++)
+            var bytes = new byte[8];
+            for (var i = 0; i < 8; i++)
             {
                 bytes[i] = dataStream[streamPosition + i];
             }
@@ -117,8 +117,8 @@ namespace ShapefileTools
         // order.
         private int ReadIntBigEndian(byte[] dataStream, int streamPosition)
         {
-            byte[] bytes = new byte[4];
-            for (int i = 0; i < 4; i++)
+            var bytes = new byte[4];
+            for (var i = 0; i < 4; i++)
             {
                 bytes[i] = dataStream[streamPosition + i];
             }
@@ -135,7 +135,7 @@ namespace ShapefileTools
             this.fileHeader = this.ReadFileHeader();
 
             // Spatial reference system parameters are stored in a file with the same name but a different (.prj) extension. 
-            string prjFile = fName.Replace(".shp", ".prj");
+            var prjFile = fName.Replace(".shp", ".prj");
             prjFile = prjFile.Replace(".SHP", ".PRJ");
             this.ReadSRSInfo(prjFile);
 
@@ -144,7 +144,7 @@ namespace ShapefileTools
             this.ReadShapes();
 
             // dBase file has the same name but a different (.dbf) extension. 
-            string dbaseFile = fName.Replace(".shp", ".dbf");
+            var dbaseFile = fName.Replace(".shp", ".dbf");
             dbaseFile = dbaseFile.Replace(".SHP", ".DBF");
             this.ReadDBaseFile(dbaseFile);
 
@@ -184,13 +184,13 @@ namespace ShapefileTools
             if (!File.Exists(prjFile)) {
                 return;
             }
-             GeographicCoordinateSystem gcs = new GeographicCoordinateSystem();
-             Projection prj = new Projection();
+             var gcs = new GeographicCoordinateSystem();
+             var prj = new Projection();
 
              System.IO.TextReader tr = new StreamReader(prjFile);
-             string prjContent = tr.ReadLine();
+             var prjContent = tr.ReadLine();
 
-            Regex projected = new Regex("(?:PROJCS\\[\")(?<PRJName>.*)(?:\",GEOGCS\\[\")(?<CRSName>.*"+
+            var projected = new Regex("(?:PROJCS\\[\")(?<PRJName>.*)(?:\",GEOGCS\\[\")(?<CRSName>.*"+
       ")(?:\",DATUM\\[\")(?<DatumName>.*)(?:\",SPHEROID\\[\")(?<Sph"+
       "eroidName>.*)(?:\",)(?<InverseFlatteningRatio>.*)(?:,)(?<Ax"+
       "is>.*)(?:\\]\\],PRIMEM\\[\")(?<PMName>.*)(?:\",)(?<Longitude"+
@@ -198,7 +198,7 @@ namespace ShapefileTools
       "(?:\\]\\],PROJECTION\\[\")(?<ProjectionName>.*)(?:\"\\],)(?<"+
       "Parameters>.*)(?:,UNIT\\[\")(?<ProjectionUnit>.*)(?:\",)(?<P"+
       "rjUnitConversion>.*)(?:\\]\\])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
-            Regex geo = new Regex("(?:GEOGCS\\[\")(?<CRSName>.*"+
+            var geo = new Regex("(?:GEOGCS\\[\")(?<CRSName>.*"+
       ")(?:\",DATUM\\[\")(?<DatumName>.*)(?:\",SPHEROID\\[\")(?<Sph"+
       "eroidName>.*)(?:\",)(?<InverseFlatteningRatio>.*)(?:,)(?<Ax"+
       "is>.*)(?:\\]\\],PRIMEM\\[\")(?<PMName>.*)(?:\",)(?<Longitude"+
@@ -207,64 +207,64 @@ namespace ShapefileTools
              if (projected.IsMatch(prjContent))
                             {
 
-                                Match m = projected.Match(prjContent);
+                                var m = projected.Match(prjContent);
                                 gcs.Name = m.Groups["CRSName"].Value;
-                                RefDatum rd = new RefDatum();
+                                var rd = new RefDatum();
                                 rd.Name = m.Groups["DatumName"].Value;
                                 gcs.Datum = rd;
-                                RefSpheroid rs = new RefSpheroid();
+                                var rs = new RefSpheroid();
                                 rs.Name = m.Groups["SpheroidName"].Value;
                                 rs.InverseFlatteningRatio = double.Parse(m.Groups["InverseFlatteningRatio"].Value);
                                 rs.Axis = double.Parse(m.Groups["Axis"].Value);
                                 rd.Spheroid = rs;
-                                PriMem pm = new PriMem();
+                                var pm = new PriMem();
                                 pm.Name = m.Groups["PMName"].Value;
                                 pm.Longitude = double.Parse(m.Groups["Longitude"].Value);
                                 gcs.PrimeMeridian = pm;
-                                Unit cunit = new Unit();
+                                var cunit = new Unit();
                                 cunit.Name = m.Groups["UnitName"].Value;
                                 cunit.ConversionFactor = double.Parse(m.Groups["Conversion"].Value);
                                 gcs.Units = cunit;
 
                                 prj.Name = m.Groups["ProjectionName"].Value;
-                                Unit punits = new Unit();
+                                var punits = new Unit();
                                 punits.Name = m.Groups["ProjectionUnit"].Value;
                                 punits.ConversionFactor = double.Parse(m.Groups["PrjUnitConversion"].Value);
                                 prj.Units = punits;
-                                String [] prjParamsArray = m.Groups["Parameters"].Value.Split(new Char [] {','});
-                                List <ProjectionParameter>  prjParams = new List<ProjectionParameter>();
-                                 for (int i = 0; i < prjParamsArray.Length-1; i++)
+                                var prjParamsArray = m.Groups["Parameters"].Value.Split(new Char [] {','});
+                                var  prjParams = new List<ProjectionParameter>();
+                                 for (var i = 0; i < prjParamsArray.Length-1; i++)
                                  {
                                      prjParams.Add(new ProjectionParameter(prjParamsArray[i].Replace("PARAMETER[","").Replace("\"",""),double.Parse(prjParamsArray[i+1].Replace("]",""))));
                                      i++;
                                  }
                                 prj.Parameters = prjParams;
                             } else if (geo.IsMatch(prjContent)){
-                                Match m = geo.Match(prjContent);
+                                var m = geo.Match(prjContent);
                                 gcs.Name = m.Groups["CRSName"].Value;
-                                RefDatum rd = new RefDatum();
+                                var rd = new RefDatum();
                                 rd.Name = m.Groups["DatumName"].Value;
                                 gcs.Datum = rd;
-                                RefSpheroid rs = new RefSpheroid();
+                                var rs = new RefSpheroid();
                                 rs.Name = m.Groups["SpheroidName"].Value;
                                 rs.InverseFlatteningRatio = double.Parse(m.Groups["InverseFlatteningRatio"].Value);
                                 rs.Axis = double.Parse(m.Groups["Axis"].Value);
-                                PriMem pm = new PriMem();
+                                var pm = new PriMem();
                                 pm.Name = m.Groups["PMName"].Value;
                                 pm.Longitude = double.Parse(m.Groups["Longitude"].Value);
                                 gcs.PrimeMeridian = pm;
-                                Unit cunit = new Unit();
+                                var cunit = new Unit();
                                 cunit.Name = m.Groups["UnitName"].Value;
                                 cunit.ConversionFactor = double.Parse(m.Groups["Conversion"].Value);
                                 gcs.Units = cunit;
 
 
                                 prj.Name = "Not projected";
-                                Unit punits = new Unit();
+                                var punits = new Unit();
                                 punits.Name = "N/A";
                                 punits.ConversionFactor = 0;
                                 prj.Units = punits;
-                                List <ProjectionParameter>  prjParams = new List<ProjectionParameter>();
+                                var  prjParams = new List<ProjectionParameter>();
                                 prj.Parameters = prjParams;
                             }
 
@@ -279,7 +279,7 @@ namespace ShapefileTools
 
         private void ReadPoint(Byte[] dataStream, int streamPosition)
         {
-            Point p = new Point();
+            var p = new Point();
             p.X = ReadDoubleLittleEndian(dataStream,streamPosition);
             p.Y = ReadDoubleLittleEndian(dataStream, streamPosition+8);
             Shapes.Add(p);
@@ -288,7 +288,7 @@ namespace ShapefileTools
 
         private void ReadPointM(Byte[] dataStream, int streamPosition)
         {
-            PointM p = new PointM();
+            var p = new PointM();
             p.X = ReadDoubleLittleEndian(dataStream, streamPosition);
             p.Y = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             p.M = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
@@ -297,7 +297,7 @@ namespace ShapefileTools
 
         private void ReadPointZ(Byte[] dataStream, int streamPosition)
         {
-            PointZ p = new PointZ();
+            var p = new PointZ();
             p.X = ReadDoubleLittleEndian(dataStream, streamPosition);
             p.Y = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             p.Z = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
@@ -308,16 +308,16 @@ namespace ShapefileTools
 
         private void ReadMultipoint(Byte[] dataStream, int streamPosition)
         {
-            MultiPoint mp = new MultiPoint();
+            var mp = new MultiPoint();
             mp.BoundingBox = new Double[4];
             mp.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             mp.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             mp.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 32);
             mp.Points = new Point[numberOfPoints];
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 mp.Points[i].X = ReadDoubleLittleEndian(dataStream, streamPosition + 36 + (i * 16));
                 mp.Points[i].Y = ReadDoubleLittleEndian(dataStream, streamPosition + 36 + (i * 16) + 8);
@@ -327,16 +327,16 @@ namespace ShapefileTools
 
         private void ReadMultipointM(Byte[] dataStream, int streamPosition)
         {
-            MultiPointM mp = new MultiPointM();
+            var mp = new MultiPointM();
             mp.BoundingBox = new Double[4];
             mp.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             mp.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             mp.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 32);
             mp.Points = new PointM[numberOfPoints];
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 mp.Points[i].X = ReadDoubleLittleEndian(dataStream, streamPosition + 36 + (i * 16));
                 mp.Points[i].Y = ReadDoubleLittleEndian(dataStream, streamPosition + 36 + (i * 16) + 8);
@@ -347,7 +347,7 @@ namespace ShapefileTools
             mp.MMin = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.MMax = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 mp.Points[i].M = ReadDoubleLittleEndian(dataStream, streamPosition + 16 + (i * 8));
             }
@@ -358,16 +358,16 @@ namespace ShapefileTools
 
         private void ReadMultipointZ(Byte[] dataStream, int streamPosition)
         {
-            MultiPointZ mp = new MultiPointZ();
+            var mp = new MultiPointZ();
             mp.BoundingBox = new Double[4];
             mp.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             mp.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             mp.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 32);
             mp.Points = new PointZ[numberOfPoints];
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 mp.Points[i].X = ReadDoubleLittleEndian(dataStream, streamPosition + 36 + (i * 16));
                 mp.Points[i].Y = ReadDoubleLittleEndian(dataStream, streamPosition + 36 + (i * 16) + 8);
@@ -378,7 +378,7 @@ namespace ShapefileTools
             mp.ZMin = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.ZMax = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 mp.Points[i].Z = ReadDoubleLittleEndian(dataStream, streamPosition + 16 + (i * 8));
             }
@@ -388,7 +388,7 @@ namespace ShapefileTools
             mp.MMin = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.MMax = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 mp.Points[i].M = ReadDoubleLittleEndian(dataStream, streamPosition + 16 + (i * 8));
             }
@@ -397,36 +397,36 @@ namespace ShapefileTools
 
         private void ReadPolyLine(Byte[] dataStream, int streamPosition)
         {
-            PolyLine pl = new PolyLine();
+            var pl = new PolyLine();
             pl.BoundingBox = new Double[4];
             pl.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             pl.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             pl.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             pl.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             pl.Lines = new Line[numberOfParts];
-            int [] parts = new int [numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int [numberOfParts];
+            var pos = streamPosition + 40;
 
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i-1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) -1 ;
             }
 
             parts[numberOfParts - 1] = numberOfPoints - 1;
             pos = pos + 4 * numberOfParts;
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
-            Line ln = new Line();
-            List <Point> pts = new List<Point> ();
-            for (int i = 0; i < numberOfPoints; i++)
+            var ln = new Line();
+            var pts = new List<Point> ();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
                     // End of line, add the last point and wrap up
-                    Point p = new Point();
+                    var p = new Point();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -442,7 +442,7 @@ namespace ShapefileTools
                 else
                 {
                     // Keep adding the points
-                    Point p = new Point();
+                    var p = new Point();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -455,36 +455,36 @@ namespace ShapefileTools
 
         private void ReadPolyLineM(Byte[] dataStream, int streamPosition)
         {
-            PolyLineM pl = new PolyLineM();
+            var pl = new PolyLineM();
             pl.BoundingBox = new Double[4];
             pl.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             pl.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             pl.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             pl.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             pl.Lines = new LineM[numberOfParts];
-            int[] parts = new int[numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int[numberOfParts];
+            var pos = streamPosition + 40;
 
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i - 1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) - 1;
             }
 
             parts[numberOfParts - 1] = numberOfPoints - 1;
             pos = pos + 4 * numberOfParts;
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
-            LineM ln = new LineM();
-            List<PointM> pts = new List<PointM>();
-            for (int i = 0; i < numberOfPoints; i++)
+            var ln = new LineM();
+            var pts = new List<PointM>();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
                     // End of line, add the last point and wrap up
-                    PointM p = new PointM();
+                    var p = new PointM();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -497,7 +497,7 @@ namespace ShapefileTools
                 else
                 {
                     // Keep adding the points
-                    PointM p = new PointM();
+                    var p = new PointM();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -508,10 +508,10 @@ namespace ShapefileTools
 
             pl.MMin = ReadDoubleLittleEndian(dataStream, pos);
             pl.MMax = ReadDoubleLittleEndian(dataStream, pos + 8);
-            int pointIndex = 0;
-            for (int i = 0; i < pl.Lines.Length; i++)
+            var pointIndex = 0;
+            for (var i = 0; i < pl.Lines.Length; i++)
             {
-                for (int k = 0; k < pl.Lines[i].Points.Length; k++) {
+                for (var k = 0; k < pl.Lines[i].Points.Length; k++) {
                     pl.Lines[i].Points[k].M = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
                 }
@@ -523,36 +523,36 @@ namespace ShapefileTools
 
         private void ReadPolyLineZ(Byte[] dataStream, int streamPosition)
         {
-            PolyLineZ pl = new PolyLineZ();
+            var pl = new PolyLineZ();
             pl.BoundingBox = new Double[4];
             pl.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             pl.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             pl.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             pl.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             pl.Lines = new LineZ[numberOfParts];
-            int[] parts = new int[numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int[numberOfParts];
+            var pos = streamPosition + 40;
 
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i - 1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) - 1;
             }
 
             parts[numberOfParts - 1] = numberOfPoints - 1;
             pos = pos + 4 * numberOfParts;
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
-            LineZ ln = new LineZ();
-            List<PointZ> pts = new List<PointZ>();
-            for (int i = 0; i < numberOfPoints; i++)
+            var ln = new LineZ();
+            var pts = new List<PointZ>();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
                     // End of line, add the last point and wrap up
-                    PointZ p = new PointZ();
+                    var p = new PointZ();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -565,7 +565,7 @@ namespace ShapefileTools
                 else
                 {
                     // Keep adding the points
-                    PointZ p = new PointZ();
+                    var p = new PointZ();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -576,10 +576,10 @@ namespace ShapefileTools
 
             pl.ZMin = ReadDoubleLittleEndian(dataStream, pos);
             pl.ZMax = ReadDoubleLittleEndian(dataStream, pos + 8);
-            int pointIndex = 0;
-            for (int i = 0; i < pl.Lines.Length; i++)
+            var pointIndex = 0;
+            for (var i = 0; i < pl.Lines.Length; i++)
             {
-                for (int k = 0; k < pl.Lines[i].Points.Length; k++)
+                for (var k = 0; k < pl.Lines[i].Points.Length; k++)
                 {
                     pl.Lines[i].Points[k].Z = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -590,9 +590,9 @@ namespace ShapefileTools
             pl.MMin = ReadDoubleLittleEndian(dataStream, pos);
             pl.MMax = ReadDoubleLittleEndian(dataStream, pos + 8);
             pointIndex = 0;
-            for (int i = 0; i < pl.Lines.Length; i++)
+            for (var i = 0; i < pl.Lines.Length; i++)
             {
-                for (int k = 0; k < pl.Lines[i].Points.Length; k++)
+                for (var k = 0; k < pl.Lines[i].Points.Length; k++)
                 {
                     pl.Lines[i].Points[k].M = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -604,20 +604,20 @@ namespace ShapefileTools
 
         private void ReadPolygon(Byte[] dataStream, int streamPosition)
         {
-            Polygon pg = new Polygon();
+            var pg = new Polygon();
             pg.BoundingBox = new Double[4];
             pg.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             pg.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             pg.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             pg.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             pg.Rings = new Ring[numberOfParts];
-            int[] parts = new int[numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int[numberOfParts];
+            var pos = streamPosition + 40;
 
             // Convert starting indices to ending indices for the geometry. Skip first record.
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i - 1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) - 1;
             }
@@ -626,17 +626,17 @@ namespace ShapefileTools
             parts[numberOfParts - 1] = numberOfPoints - 1;
 
             pos = pos + 4 * numberOfParts;
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
-            Ring rng = new Ring();
-            List<Point> pts = new List<Point>();
-            for (int i = 0; i < numberOfPoints; i++)
+            var rng = new Ring();
+            var pts = new List<Point>();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
                     // End of polygon. Add the last point and wrap up.
-                    Point p = new Point();
+                    var p = new Point();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -648,7 +648,7 @@ namespace ShapefileTools
                 }
                 else
                 {
-                    Point p = new Point();
+                    var p = new Point();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -660,20 +660,20 @@ namespace ShapefileTools
 
         private void ReadPolygonM(Byte[] dataStream, int streamPosition)
         {
-            PolygonM pg = new PolygonM();
+            var pg = new PolygonM();
             pg.BoundingBox = new Double[4];
             pg.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             pg.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             pg.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             pg.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             pg.Rings = new RingM[numberOfParts];
-            int[] parts = new int[numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int[numberOfParts];
+            var pos = streamPosition + 40;
 
             // Convert starting indices to ending indices for the geometry. Skip first record.
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i - 1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) - 1;
             }
@@ -682,17 +682,17 @@ namespace ShapefileTools
             parts[numberOfParts - 1] = numberOfPoints - 1;
 
             pos = pos + 4 * numberOfParts;
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
-            RingM rng = new RingM();
-            List<PointM> pts = new List<PointM>();
-            for (int i = 0; i < numberOfPoints; i++)
+            var rng = new RingM();
+            var pts = new List<PointM>();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
                     // End of polygon. Add the last point and wrap up.
-                    PointM p = new PointM();
+                    var p = new PointM();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -704,7 +704,7 @@ namespace ShapefileTools
                 }
                 else
                 {
-                    PointM p = new PointM();
+                    var p = new PointM();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -716,10 +716,10 @@ namespace ShapefileTools
 
             pg.MMin = ReadDoubleLittleEndian(dataStream, pos);
             pg.MMax = ReadDoubleLittleEndian(dataStream, pos + 8);
-            int pointIndex = 0;
-            for (int i = 0; i < pg.Rings.Length; i++)
+            var pointIndex = 0;
+            for (var i = 0; i < pg.Rings.Length; i++)
             {
-                for (int k = 0; k < pg.Rings[i].Points.Length; k++)
+                for (var k = 0; k < pg.Rings[i].Points.Length; k++)
                 {
                     pg.Rings[i].Points[k].M = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -732,20 +732,20 @@ namespace ShapefileTools
 
         private void ReadPolygonZ(Byte[] dataStream, int streamPosition)
         {
-            PolygonZ pg = new PolygonZ();
+            var pg = new PolygonZ();
             pg.BoundingBox = new Double[4];
             pg.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             pg.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             pg.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             pg.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             pg.Rings = new RingZ[numberOfParts];
-            int[] parts = new int[numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int[numberOfParts];
+            var pos = streamPosition + 40;
 
             // Convert starting indices to ending indices for the geometry. Skip first record.
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i - 1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) - 1;
             }
@@ -754,17 +754,17 @@ namespace ShapefileTools
             parts[numberOfParts - 1] = numberOfPoints - 1;
 
             pos = pos + 4 * numberOfParts;
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
-            RingZ rng = new RingZ();
-            List<PointZ> pts = new List<PointZ>();
-            for (int i = 0; i < numberOfPoints; i++)
+            var rng = new RingZ();
+            var pts = new List<PointZ>();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
                     // End of polygon. Add the last point and wrap up.
-                    PointZ p = new PointZ();
+                    var p = new PointZ();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -776,7 +776,7 @@ namespace ShapefileTools
                 }
                 else
                 {
-                    PointZ p = new PointZ();
+                    var p = new PointZ();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -788,10 +788,10 @@ namespace ShapefileTools
 
             pg.ZMin = ReadDoubleLittleEndian(dataStream, pos);
             pg.ZMax = ReadDoubleLittleEndian(dataStream, pos + 8);
-            int pointIndex = 0;
-            for (int i = 0; i < pg.Rings.Length; i++)
+            var pointIndex = 0;
+            for (var i = 0; i < pg.Rings.Length; i++)
             {
-                for (int k = 0; k < pg.Rings[i].Points.Length; k++)
+                for (var k = 0; k < pg.Rings[i].Points.Length; k++)
                 {
                     pg.Rings[i].Points[k].Z = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -803,9 +803,9 @@ namespace ShapefileTools
             pg.MMin = ReadDoubleLittleEndian(dataStream, pos);
             pg.MMax = ReadDoubleLittleEndian(dataStream, pos + 8);
             pointIndex = 0;
-            for (int i = 0; i < pg.Rings.Length; i++)
+            for (var i = 0; i < pg.Rings.Length; i++)
             {
-                for (int k = 0; k < pg.Rings[i].Points.Length; k++)
+                for (var k = 0; k < pg.Rings[i].Points.Length; k++)
                 {
                     pg.Rings[i].Points[k].M = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -833,7 +833,7 @@ namespace ShapefileTools
                     return new UndefinedRing();
                 default:
                     {
-                        string msg = String.Format(System.Globalization.CultureInfo.InvariantCulture, "PartType {0} is not supported.", (MultiPatchPartType)partType);
+                        var msg = String.Format(System.Globalization.CultureInfo.InvariantCulture, "PartType {0} is not supported.", (MultiPatchPartType)partType);
                         throw new Exception(msg);
                     }
             }
@@ -844,21 +844,21 @@ namespace ShapefileTools
 
         private void ReadMultiPatch(Byte[] dataStream, int streamPosition)
         {
-            MultiPatch mp = new MultiPatch();
+            var mp = new MultiPatch();
             mp.BoundingBox = new Double[4];
             mp.BoundingBox[0] = ReadDoubleLittleEndian(dataStream, streamPosition);
             mp.BoundingBox[1] = ReadDoubleLittleEndian(dataStream, streamPosition + 8);
             mp.BoundingBox[2] = ReadDoubleLittleEndian(dataStream, streamPosition + 16);
             mp.BoundingBox[3] = ReadDoubleLittleEndian(dataStream, streamPosition + 24);
-            int numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
-            int numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
+            var numberOfParts = ReadIntLittleEndian(dataStream, streamPosition + 32);
+            var numberOfPoints = ReadIntLittleEndian(dataStream, streamPosition + 36);
             mp.Parts = new MultiPatchElement[numberOfParts];
-            int[] parts = new int[numberOfParts];
-            int[] partTypes = new int[numberOfParts];
-            int pos = streamPosition + 40;
+            var parts = new int[numberOfParts];
+            var partTypes = new int[numberOfParts];
+            var pos = streamPosition + 40;
 
             // Convert starting indices to ending indices for the geometry. Skip first record.
-            for (int i = 1; i < numberOfParts; i++)
+            for (var i = 1; i < numberOfParts; i++)
             {
                 parts[i - 1] = ReadIntLittleEndian(dataStream, pos + (i * 4)) - 1;
             }
@@ -869,23 +869,23 @@ namespace ShapefileTools
             pos = pos + 4 * numberOfParts;
 
             // Convert starting indices to ending indices for the geometry. Skip first record.
-            for (int i = 0; i < numberOfParts; i++)
+            for (var i = 0; i < numberOfParts; i++)
             {
                 partTypes[i] = ReadIntLittleEndian(dataStream, pos + (i * 4));
             }
 
             pos = pos + 4 * numberOfParts;
 
-            int z = 0;
+            var z = 0;
             int lineEndsAt;
             MultiPatchElement sh;
-            List<PointZ> pts = new List<PointZ>();
-            for (int i = 0; i < numberOfPoints; i++)
+            var pts = new List<PointZ>();
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 lineEndsAt = parts[z];
                 if (i == lineEndsAt)
                 {
-                    PointZ p = new PointZ();
+                    var p = new PointZ();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     sh = CreateMultiPatchGeometry(partTypes[z]);
@@ -899,7 +899,7 @@ namespace ShapefileTools
                 {
            
 
-                    PointZ p = new PointZ();
+                    var p = new PointZ();
                     p.X = ReadDoubleLittleEndian(dataStream, pos + (i * 16));
                     p.Y = ReadDoubleLittleEndian(dataStream, pos + (i * 16) + 8);
                     pts.Add(p);
@@ -911,10 +911,10 @@ namespace ShapefileTools
 
             mp.ZMin = ReadDoubleLittleEndian(dataStream, pos);
             mp.ZMax = ReadDoubleLittleEndian(dataStream, pos + 8);
-            int pointIndex = 0;
-            for (int i = 0; i < mp.Parts.Length; i++)
+            var pointIndex = 0;
+            for (var i = 0; i < mp.Parts.Length; i++)
             {
-                for (int k = 0; k < mp.Parts[i].Points.Length; k++)
+                for (var k = 0; k < mp.Parts[i].Points.Length; k++)
                 {
                     mp.Parts[i].Points[k].Z = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -926,9 +926,9 @@ namespace ShapefileTools
             mp.MMin = ReadDoubleLittleEndian(dataStream, pos);
             mp.MMax = ReadDoubleLittleEndian(dataStream, pos + 8);
             pointIndex = 0;
-            for (int i = 0; i < mp.Parts.Length; i++)
+            for (var i = 0; i < mp.Parts.Length; i++)
             {
-                for (int k = 0; k < mp.Parts[i].Points.Length; k++)
+                for (var k = 0; k < mp.Parts[i].Points.Length; k++)
                 {
                     mp.Parts[i].Points[k].M = ReadDoubleLittleEndian(dataStream, pos + 16 + (pointIndex * 8));
                     pointIndex++;
@@ -948,9 +948,9 @@ namespace ShapefileTools
             if (!File.Exists(dbfFile))
                 return;
 
-            FileInfo fInfo = new FileInfo(dbfFile);
-            string dirName = fInfo.DirectoryName;
-            string fName = fInfo.Name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+            var fInfo = new FileInfo(dbfFile);
+            var dirName = fInfo.DirectoryName;
+            var fName = fInfo.Name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
             if (fName.EndsWith(".DBF"))
                 fName = fName.Substring(0, fName.Length - 4);
 
@@ -958,14 +958,14 @@ namespace ShapefileTools
             {
                 if (fName.Contains(" "))
                 {
-                    string noSpaces = fName.Replace(" ", "");
+                    var noSpaces = fName.Replace(" ", "");
                     if (noSpaces.Length > 8)
                         fName = noSpaces;
                 }
                 fName = fName.Substring(0, 6) + "~1";
             }
 
-            DBFReader reader = new DBFReader(dirName + @"\" + fName + ".dbf");
+            var reader = new DBFReader(dirName + @"\" + fName + ".dbf");
 
             Table = reader.Table;
             if (Table != null && Table.Rows.Count > 0)
@@ -1007,7 +1007,7 @@ namespace ShapefileTools
         private void AssociateAttributes(DataTable table)
         {
             Table = table;
-            int index = 0;
+            var index = 0;
             foreach (DataRow row in table.Rows)
             {
                 if (index >= this.Shapes.Count)
@@ -1020,18 +1020,18 @@ namespace ShapefileTools
         private void ReadShapes()
         {
 
-            Byte[] data = this.data;
+            var data = this.data;
 
             // Skip to the end of file header
-            int pos = 100;
+            var pos = 100;
             while (pos < (this.fileHeader.FileLength*2))
             {
                 // Record header
-                int recordNumber = ReadIntBigEndian(data, pos);
-                int contentLength = ReadIntBigEndian(data, pos + 4);
+                var recordNumber = ReadIntBigEndian(data, pos);
+                var contentLength = ReadIntBigEndian(data, pos + 4);
                 // Get shape type
                 // Record headers have a fixed length of 8 bytes
-                int shapeType = ReadIntLittleEndian(data, pos +  8);
+                var shapeType = ReadIntLittleEndian(data, pos +  8);
                 // plus 4 bytes for the shape type 
                 pos = pos + 12;
                 switch (shapeType)
@@ -1079,7 +1079,7 @@ namespace ShapefileTools
                         break;
                     default:
                         {
-                            string msg = String.Format(System.Globalization.CultureInfo.InvariantCulture, "ShapeType {0} is not supported.", (ShapeType)shapeType);
+                            var msg = String.Format(System.Globalization.CultureInfo.InvariantCulture, "ShapeType {0} is not supported.", (ShapeType)shapeType);
                             throw new Exception(msg);
                         }
                 }
@@ -1090,8 +1090,8 @@ namespace ShapefileTools
 
         private FileHeader ReadFileHeader()
         {
-            Byte[] data = this.data;
-            FileHeader fh = new FileHeader();
+            var data = this.data;
+            var fh = new FileHeader();
             fh.FileCode = ReadIntBigEndian(data, 0);
             fh.FileLength = ReadIntBigEndian(data, 24);
             fh.Version = ReadIntLittleEndian(data, 28);
@@ -1120,18 +1120,18 @@ namespace ShapefileTools
     class DBFReader
     {
         public DataTable Table = new DataTable();
-        uint recordCount = 0;
-        uint recordLength = 0;
-        uint headerSize = 0;
+        uint recordCount;
+        uint recordLength;
+        uint headerSize;
 
 
-        List<DBFField> Fields = new List<DBFField>();
+        readonly List<DBFField> Fields = new List<DBFField>();
 
         public DBFReader(string filename)
         {
 
             Stream s = File.OpenRead(filename);
-            BinaryReader br = new BinaryReader(s, Encoding.ASCII);
+            var br = new BinaryReader(s, Encoding.ASCII);
 
             br.ReadBytes(4);
             recordCount = br.ReadUInt32();
@@ -1141,8 +1141,8 @@ namespace ShapefileTools
             br.BaseStream.Seek(32, SeekOrigin.Begin);
 
 
-            string columnName = "default";
-            Type columnType = typeof(string);
+            var columnName = "default";
+            var columnType = typeof(string);
 
             while (true)
             {
@@ -1151,17 +1151,17 @@ namespace ShapefileTools
                 {
                     break;
                 }
-                DBFField field = new DBFField();
+                var field = new DBFField();
 
-                byte[] name = br.ReadBytes(11);
-                int nameLen = 0;
+                var name = br.ReadBytes(11);
+                var nameLen = 0;
                 while (name[nameLen++] != 0) ;
 
 
                 columnName = Encoding.ASCII.GetString(name, 0, nameLen - 1);
                 field.Name = columnName;
 
-                byte fieldType = br.ReadByte();
+                var fieldType = br.ReadByte();
                 field.Type = Encoding.ASCII.GetString(new byte[] { fieldType }, 0, 1);
 
                 switch (fieldType)
@@ -1202,21 +1202,21 @@ namespace ShapefileTools
                 Fields.Add(field);
             }
             br.ReadBytes(1);
-            for (int i = 0; i < recordCount; i++)
+            for (var i = 0; i < recordCount; i++)
             {
-                DataRow row = Table.NewRow();
+                var row = Table.NewRow();
 
-                byte[] bytes = br.ReadBytes((int)recordLength);
-                string data = Encoding.ASCII.GetString(bytes, 0, (int)recordLength);
+                var bytes = br.ReadBytes((int)recordLength);
+                var data = Encoding.ASCII.GetString(bytes, 0, (int)recordLength);
                 if (data[0] != 32)
                 {
                     continue;
                 }
 
-                int index = 1;
-                foreach (DBFField field in Fields)
+                var index = 1;
+                foreach (var field in Fields)
                 {
-                    string fieldData = data.Substring(index, field.Length);
+                    var fieldData = data.Substring(index, field.Length);
                     index += field.Length;
                     row[field.Name] = System.DBNull.Value;
                     switch (field.Type)

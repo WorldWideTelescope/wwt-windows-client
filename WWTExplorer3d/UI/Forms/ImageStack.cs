@@ -66,9 +66,9 @@ namespace TerraViewer
         }
         private void fadeTimer_Tick(object sender, EventArgs e)
         {
-            Rectangle rect = this.RectangleToScreen(this.ClientRectangle);
+            var rect = this.RectangleToScreen(this.ClientRectangle);
             rect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
-            bool inside = MenuTabs.MouseInTabs || rect.Contains(Cursor.Position) || !(TourPlayer.Playing || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
+            var inside = MenuTabs.MouseInTabs || rect.Contains(Cursor.Position) || !(TourPlayer.Playing || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
 
             if (inside != fader.TargetState)
             {
@@ -116,7 +116,8 @@ namespace TerraViewer
                 Opacity = 1.0;
             }
         }
-        BlendState fader = new BlendState(false, 1000.0);
+
+        readonly BlendState fader = new BlendState(false, 1000.0);
 
         private void TabForm_MouseEnter(object sender, EventArgs e)
         {
@@ -138,6 +139,6 @@ namespace TerraViewer
                 e.Cancel = true;
             }
         }
-        bool dontClose = false;
+        bool dontClose;
     }
 }

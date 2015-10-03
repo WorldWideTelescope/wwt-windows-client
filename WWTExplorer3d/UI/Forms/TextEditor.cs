@@ -44,9 +44,9 @@ namespace TerraViewer
                 TextObject = DefaultTextobject;
             }
 
-            int i = 0;
-            int selectedIndex = 0;
-            foreach (FontFamily oneFontFamily in FontFamily.Families)
+            var i = 0;
+            var selectedIndex = 0;
+            foreach (var oneFontFamily in FontFamily.Families)
             {
                 FontName.Items.Add(oneFontFamily.Name);
                 if (TextObject.FontName == oneFontFamily.Name)
@@ -96,12 +96,12 @@ namespace TerraViewer
             DefaultTextobject.Text = "";
             Close();
         }
-        bool initialized = false;
+        bool initialized;
         private void UpdateTextCharacteristics()
         {
             if (initialized)
             {
-                FontStyle style = (FontBold.Checked ? FontStyle.Bold : FontStyle.Regular) | (FontItalic.Checked ? FontStyle.Italic : FontStyle.Regular);
+                var style = (FontBold.Checked ? FontStyle.Bold : FontStyle.Regular) | (FontItalic.Checked ? FontStyle.Italic : FontStyle.Regular);
                 float fontSize = (int)textBox.Font.Size;
                 try
                 {
@@ -111,7 +111,7 @@ namespace TerraViewer
                 {
                 }
 
-                System.Drawing.Font font = new Font((string)FontName.SelectedItem, fontSize, style);
+                var font = new Font((string)FontName.SelectedItem, fontSize, style);
 
                 textBox.Font = font;
 
@@ -148,7 +148,7 @@ namespace TerraViewer
 
         private void FontColor_Click(object sender, EventArgs e)
         {
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 
@@ -163,7 +163,7 @@ namespace TerraViewer
         Color TextBackgroundColor = Color.Black;
         private void BackgroundColor_Click(object sender, EventArgs e)
         {
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 

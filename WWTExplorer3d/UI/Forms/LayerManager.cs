@@ -15,8 +15,8 @@ namespace TerraViewer
 {
     public partial class LayerManager : Form, IUIServicesCallbacks
     {
-        static LayerManager master = null;
-        static int version = 0;
+        static LayerManager master;
+        static int version;
 
         public static int Version
         {
@@ -59,10 +59,10 @@ namespace TerraViewer
         {
 
 
-            ShapeFile shapefile = new ShapeFile(path);
+            var shapefile = new ShapeFile(path);
             shapefile.Read();
 
-            ShapeFileRenderer layer = new ShapeFileRenderer(shapefile);
+            var layer = new ShapeFileRenderer(shapefile);
             layer.Enabled = true;
             layer.Name = path.Substring(path.LastIndexOf('\\') + 1);
             LayerList.Add(layer.ID, layer);
@@ -78,7 +78,7 @@ namespace TerraViewer
         {
 
 
-            Object3dLayer layer = new Object3dLayer();
+            var layer = new Object3dLayer();
             layer.LoadData(path);
 
             layer.Enabled = true;
@@ -97,11 +97,11 @@ namespace TerraViewer
         {
 
 
-            string data = File.ReadAllText(path);
-            string layerName = path.Substring(path.LastIndexOf('\\') + 1);
+            var data = File.ReadAllText(path);
+            var layerName = path.Substring(path.LastIndexOf('\\') + 1);
 
 
-            SpreadSheetLayer layer = new SpreadSheetLayer((string)data, true);
+            var layer = new SpreadSheetLayer((string)data, true);
             layer.Enabled = true;
             layer.Name = layerName;
 
@@ -124,7 +124,7 @@ namespace TerraViewer
         {
             if (!string.IsNullOrEmpty(CurrentMap))
             {
-                ImageSetLayer layer = new ImageSetLayer(imageSet);
+                var layer = new ImageSetLayer(imageSet);
                 layer.Name = imageSet.Name;
                 LayerList.Add(layer.ID, layer);
                 layer.ReferenceFrame = CurrentMap;
@@ -159,7 +159,7 @@ namespace TerraViewer
         public static VoTableLayer AddVoTableLayer(VoTable table, string title)
         {
 
-            VoTableLayer layer = new VoTableLayer(table);
+            var layer = new VoTableLayer(table);
             layer.Name = title;
             layer.Astronomical = true;
             layer.ReferenceFrame = "Sky";
@@ -173,7 +173,7 @@ namespace TerraViewer
             return layer;
         }
 
-        static bool tourLayers = false;
+        static bool tourLayers;
 
         public static bool TourLayers
         {
@@ -300,7 +300,7 @@ namespace TerraViewer
 
         static void AddIss()
         {
-            ISSLayer layer = new ISSLayer();
+            var layer = new ISSLayer();
 
             layer.Name = Language.GetLocalizedText(1314, "ISS Model  (Toshiyuki Takahei)");
             layer.Enabled = Properties.Settings.Default.ShowISSModel;
@@ -312,12 +312,12 @@ namespace TerraViewer
 
         static public Vector3d GetPrimarySandboxLight()
         {
-            LayerMap sandbox = AllMaps["Sandbox"];
+            var sandbox = AllMaps["Sandbox"];
             if (sandbox != null)
             {
-                foreach (Layer layer in sandbox.Layers)
+                foreach (var layer in sandbox.Layers)
                 {
-                    Object3dLayer light = layer as Object3dLayer;
+                    var light = layer as Object3dLayer;
                     if (light != null && light.LightID == 1)
                     {
                         return light.Translate;
@@ -329,12 +329,12 @@ namespace TerraViewer
         }
         static public Color GetPrimarySandboxLightColor()
         {
-            LayerMap sandbox = AllMaps["Sandbox"];
+            var sandbox = AllMaps["Sandbox"];
             if (sandbox != null)
             {
-                foreach (Layer layer in sandbox.Layers)
+                foreach (var layer in sandbox.Layers)
                 {
-                    Object3dLayer light = layer as Object3dLayer;
+                    var light = layer as Object3dLayer;
                     if (light != null && light.LightID == 1)
                     {
                         return light.Color;
@@ -356,12 +356,12 @@ namespace TerraViewer
             LayerMap l2 = null;
             if (!TourLayers)
             {
-                string[] isstle = new string[0];
+                var isstle = new string[0];
                 try
                 {
                     //This is downloaded now on startup
-                    string url = "http://www.worldwidetelescope.org/wwtweb/isstle.aspx";
-                    string filename = string.Format(@"{0}data\isstle.txt", Properties.Settings.Default.CahceDirectory);
+                    var url = "http://www.worldwidetelescope.org/wwtweb/isstle.aspx";
+                    var filename = string.Format(@"{0}data\isstle.txt", Properties.Settings.Default.CahceDirectory);
                     DataSetManager.DownloadFile(url, filename, false, false);
 
                     isstle = File.ReadAllLines(filename);
@@ -477,7 +477,7 @@ namespace TerraViewer
 
         private static void ClearLayers()
         {
-            foreach (Layer layer in LayerList.Values)
+            foreach (var layer in LayerList.Values)
             {
                 layer.CleanUp();
             }
@@ -488,22 +488,22 @@ namespace TerraViewer
 
         private static void AddMoons()
         {
-            string filename = Properties.Settings.Default.CahceDirectory + "\\data\\moons.txt";
+            var filename = Properties.Settings.Default.CahceDirectory + "\\data\\moons.txt";
             DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=moons", filename, false, true);
 
-            string[] data = File.ReadAllLines(filename);
+            var data = File.ReadAllLines(filename);
 
-            bool first = true;
-            foreach (string line in data)
+            var first = true;
+            foreach (var line in data)
             {
                 if (first)
                 {
                     first = false;
                     continue;
                 }
-                string[] parts = line.Split(new char[] { '\t' });
-                string planet = parts[0];
-                LayerMap frame = new LayerMap(parts[2], ReferenceFrames.Custom);
+                var parts = line.Split(new char[] { '\t' });
+                var planet = parts[0];
+                var frame = new LayerMap(parts[2], ReferenceFrames.Custom);
                 frame.Frame.SystemGenerated = true;
                 frame.Frame.Epoch = double.Parse(parts[1]);
                 frame.Frame.SemiMajorAxis = double.Parse(parts[3]) * 1000;
@@ -529,7 +529,7 @@ namespace TerraViewer
 
         private static void AddAllMaps(Dictionary<string, LayerMap> maps, String parent)
         {
-            foreach (LayerMap map in maps.Values)
+            foreach (var map in maps.Values)
             {
                 map.Frame.Parent = parent;
                 AllMaps.Add(map.Name, map);
@@ -539,7 +539,7 @@ namespace TerraViewer
 
 
 
-        bool initialized = false;
+        bool initialized;
         private void Layers_Load(object sender, EventArgs e)
         {
             breadcrumbs.Push(Language.GetLocalizedText(664, "Layers"));
@@ -557,7 +557,7 @@ namespace TerraViewer
 
         public static int updateCount = 0;
 
-        bool needTreeUpdate = false;
+        bool needTreeUpdate;
 
         void Default_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -604,14 +604,14 @@ namespace TerraViewer
         private void SyncTree(TreeNode node)
         {
 
-            Layer layer = node.Tag as Layer;
+            var layer = node.Tag as Layer;
 
             if (layer != null && layer.Enabled != node.Checked)
             {
                 node.Checked = layer.Enabled;
             }
 
-            LayerUITreeNode lutn = node.Tag as LayerUITreeNode;
+            var lutn = node.Tag as LayerUITreeNode;
 
             if (lutn != null )
             {
@@ -619,7 +619,7 @@ namespace TerraViewer
                 {
                     node.Checked = lutn.Checked;
                 }
-                SkyOverlay sol = lutn.Tag as SkyOverlay;
+                var sol = lutn.Tag as SkyOverlay;
 
                 if (sol != null && sol.Enabled != node.Checked)
                 {
@@ -661,19 +661,19 @@ namespace TerraViewer
         }
 
 
-        static object currentSelection = null;
+        static object currentSelection;
 
         public static object CurrentSelection
         {
             get { return LayerManager.currentSelection; }
             set { LayerManager.currentSelection = value; }
         }
-        TreeNode nodeCurrentSelection = null;
-        Stack<object> breadcrumbs = new Stack<object>();
+        TreeNode nodeCurrentSelection;
+        readonly Stack<object> breadcrumbs = new Stack<object>();
         private void LoadTreeLocal()
         {
-            string text = "";
-            foreach (object item in breadcrumbs)
+            var text = "";
+            foreach (var item in breadcrumbs)
             {
                 if (tourLayers && text == "")
                 {
@@ -705,7 +705,7 @@ namespace TerraViewer
             }
             layerTree.Nodes.Clear();
 
-            bool solarSystem = Earth3d.MainWindow.SolarSystemMode;
+            var solarSystem = Earth3d.MainWindow.SolarSystemMode;
 
             LoadTreeMaps(LayerMaps, layerTree.Nodes);
 
@@ -719,13 +719,13 @@ namespace TerraViewer
             initialized = true;
             layerTree.EndUpdate();
         }
-        bool foundRoot = false;
+        bool foundRoot;
 
         private void LoadTreeMaps(Dictionary<string, LayerMap> LayerMaps, TreeNodeCollection treeNodeCollection)
         {
-            foreach (LayerMap map in LayerMaps.Values)
+            foreach (var map in LayerMaps.Values)
             {
-                bool keepLooking = true;
+                var keepLooking = true;
                 if (!foundRoot && map == breadcrumbs.Peek())
                 {
                     foundRoot = true;
@@ -734,7 +734,7 @@ namespace TerraViewer
 
 
 
-                TreeNodeCollection nodeCollextion = treeNodeCollection;
+                var nodeCollextion = treeNodeCollection;
                 TreeNode frame = null;
                 if (foundRoot && keepLooking)
                 {
@@ -758,10 +758,10 @@ namespace TerraViewer
                     }
                 }
 
-                List<Layer> layers = map.Layers;
-                foreach (Layer layer in layers)
+                var layers = map.Layers;
+                foreach (var layer in layers)
                 {
-                    bool loadChildred = true;
+                    var loadChildred = true;
                     if (!foundRoot && layer == breadcrumbs.Peek())
                     {
                         foundRoot = false;
@@ -771,12 +771,12 @@ namespace TerraViewer
 
                     if (foundRoot && loadChildred)
                     {
-                        TreeNode node = nodeCollextion.Add(layer.Name);
+                        var node = nodeCollextion.Add(layer.Name);
                         node.Tag = layer;
                         node.Checked = layer.Enabled;
                         node.Name = node.Text;
 
-                        Layer sel = currentSelection as Layer;
+                        var sel = currentSelection as Layer;
                         if (currentSelection == layer || (sel != null && layer.ID == sel.ID))
                         {
                             nodeCurrentSelection = node;
@@ -813,15 +813,15 @@ namespace TerraViewer
 
         private void LoadLayerChildren(Layer layer, TreeNode node)
         {
-            LayerUI layerUI = layer.GetPrimaryUI();
+            var layerUI = layer.GetPrimaryUI();
             layerUI.SetUICallbacks(this);
 
             if (layerUI == null || !layerUI.HasTreeViewNodes)
             {
                 return;
             }
-            List<LayerUITreeNode> nodes = layerUI.GetTreeNodes();
-            foreach (LayerUITreeNode layerNode in nodes)
+            var nodes = layerUI.GetTreeNodes();
+            foreach (var layerNode in nodes)
             {
                 LoadLayerChild(layerNode, node);
             }
@@ -830,14 +830,14 @@ namespace TerraViewer
 
         private void LoadLayerChild(LayerUITreeNode layerNode, TreeNode parent)
         {
-            TreeNode node = parent.Nodes.Add(layerNode.Name);
+            var node = parent.Nodes.Add(layerNode.Name);
             node.Tag = layerNode;
             node.Checked = layerNode.Checked;
             node.Name = node.Text;
             layerNode.ReferenceTag = node;
             layerNode.NodeUpdated += new LayerUITreeNodeUpdatedDelegate(layerNode_NodeUpdated);
 
-            foreach (LayerUITreeNode child in layerNode.Nodes)
+            foreach (var child in layerNode.Nodes)
             {
                 LoadLayerChild(child, node);
             }
@@ -855,7 +855,7 @@ namespace TerraViewer
                 // ignore events we started.
                 return;
             }
-            TreeNode node = layerNode.ReferenceTag as TreeNode;
+            var node = layerNode.ReferenceTag as TreeNode;
             if (node != null)
             {
                 if (node.Checked != layerNode.Checked)
@@ -885,24 +885,24 @@ namespace TerraViewer
 
         private void LoadTreeLocalOld()
         {
-            TreeNode currentSelection = layerTree.SelectedNode;
+            var currentSelection = layerTree.SelectedNode;
 
             layerTree.Nodes.Clear();
 
-            bool solarSystem = Earth3d.MainWindow.SolarSystemMode;
+            var solarSystem = Earth3d.MainWindow.SolarSystemMode;
 
 
-            foreach (string name in Enum.GetNames(typeof(ReferenceFrames)))
+            foreach (var name in Enum.GetNames(typeof(ReferenceFrames)))
             {
-                LayerMap map = LayerMaps[name];
-                List<Layer> layers = map.Layers;
-                TreeNode frame = layerTree.Nodes.Add(name);
+                var map = LayerMaps[name];
+                var layers = map.Layers;
+                var frame = layerTree.Nodes.Add(name);
                 frame.Tag = map;
                 frame.Checked = map.Enabled;
 
-                foreach (Layer layer in layers)
+                foreach (var layer in layers)
                 {
-                    TreeNode node = frame.Nodes.Add(layer.Name);
+                    var node = frame.Nodes.Add(layer.Name);
                     node.Tag = layer;
                     node.Checked = layer.Enabled;
                 }
@@ -925,7 +925,7 @@ namespace TerraViewer
         // This is only for Edit Mode Tours... Not for Tours Layers
         public static bool CheckForTourLoadedLayers()
         {
-            foreach (Layer layer in layerList.Values)
+            foreach (var layer in layerList.Values)
             {
                 if (layer.LoadedFromTour)
                 {
@@ -937,8 +937,8 @@ namespace TerraViewer
 
         internal static void CloseAllTourLoadedLayers()
         {
-            List<Guid> purgeTargets = new List<Guid>();
-            foreach (Layer layer in layerList.Values)
+            var purgeTargets = new List<Guid>();
+            foreach (var layer in layerList.Values)
             {
                 if (layer.LoadedFromTour)
                 {
@@ -946,14 +946,14 @@ namespace TerraViewer
                 }
             }
 
-            foreach (Guid guid in purgeTargets)
+            foreach (var guid in purgeTargets)
             {
                 DeleteLayerByID(guid, true, false);
             }
 
-            List<string> purgeMapsNames = new List<string>();
+            var purgeMapsNames = new List<string>();
 
-            foreach (LayerMap map in AllMaps.Values)
+            foreach (var map in AllMaps.Values)
             {
                 if (map.LoadedFromTour && map.Layers.Count == 0)
                 {
@@ -961,7 +961,7 @@ namespace TerraViewer
                 }
             }
 
-            foreach (string name in purgeMapsNames)
+            foreach (var name in purgeMapsNames)
             {
                 PurgeLayerMapDeep(AllMaps[name], true);
             }
@@ -975,7 +975,7 @@ namespace TerraViewer
 
         internal static void CleanAllTourLoadedLayers()
         {
-            foreach (Layer layer in layerList.Values)
+            foreach (var layer in layerList.Values)
             {
                 if (layer.LoadedFromTour)
                 {
@@ -990,14 +990,14 @@ namespace TerraViewer
         {
 
             tourLayers = false;
-            bool OverWrite = false;
-            bool CollisionChecked = false;
+            var OverWrite = false;
+            var CollisionChecked = false;
 
-            foreach (LayerMap map in allMapsTours.Values)
+            foreach (var map in allMapsTours.Values)
             {
                 if (!allMaps.ContainsKey(map.Name))
                 {
-                    LayerMap newMap = new LayerMap(map.Name, ReferenceFrames.Custom);
+                    var newMap = new LayerMap(map.Name, ReferenceFrames.Custom);
                     newMap.Frame = map.Frame;
                     newMap.LoadedFromTour = true;
                     LayerManager.AllMaps.Add(newMap.Name, newMap);
@@ -1006,7 +1006,7 @@ namespace TerraViewer
             ConnectAllChildren();
 
 
-            foreach (Layer layer in layerListTours.Values)
+            foreach (var layer in layerListTours.Values)
             {
                 if (LayerList.ContainsKey(layer.ID))
                 {
@@ -1054,7 +1054,7 @@ namespace TerraViewer
         {
             foreach (TreeNode child in node.Nodes)
             {
-                LayerUITreeNode uiNode = child.Tag as LayerUITreeNode;
+                var uiNode = child.Tag as LayerUITreeNode;
                 if (uiNode != null)
                 {
                     uiNode.Checked = node.Checked;
@@ -1072,13 +1072,13 @@ namespace TerraViewer
                 return;
             }
 
-            TreeNode node = e.Node;
+            var node = e.Node;
             if (node != null && node.Tag is LayerUITreeNode)
             {
                 if (e.Action != TreeViewAction.Unknown)
                 {
 
-                    LayerUITreeNode layerNode = node.Tag as LayerUITreeNode;
+                    var layerNode = node.Tag as LayerUITreeNode;
                     layerNode.UiUpdating = true;
 
                     layerNode.Checked = node.Checked;
@@ -1090,7 +1090,7 @@ namespace TerraViewer
 
             if (e.Node.Tag != null && e.Node.Tag is Layer)
             {
-                Layer layer = (Layer)e.Node.Tag;
+                var layer = (Layer)e.Node.Tag;
                 layer.Enabled = e.Node.Checked;
                 if (e.Node.Checked != layer.Enabled)
                 {
@@ -1105,13 +1105,13 @@ namespace TerraViewer
 
             if (e.Node.Tag != null && e.Node.Tag is LayerMap)
             {
-                LayerMap layerMap = (LayerMap)e.Node.Tag;
+                var layerMap = (LayerMap)e.Node.Tag;
                 layerMap.Enabled = e.Node.Checked;
                 version++;
 
                 if (layerMap.Frame.Reference == ReferenceFrames.Identity)
                 {
-                    foreach (Layer layer in layerMap.Layers)
+                    foreach (var layer in layerMap.Layers)
                     {
                         layer.Enabled = layerMap.Enabled;
                     }
@@ -1138,7 +1138,7 @@ namespace TerraViewer
             version++;
         }
 
-        ContextMenuStrip contextMenu = null;
+        ContextMenuStrip contextMenu;
 
         private void layerTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -1153,40 +1153,40 @@ namespace TerraViewer
             {
                 if (layerTree.SelectedNode != null && ((layerTree.SelectedNode.Tag is Layer) && !(layerTree.SelectedNode.Tag is SkyOverlays)))
                 {
-                    Layer selectedLayer = (Layer)layerTree.SelectedNode.Tag;
+                    var selectedLayer = (Layer)layerTree.SelectedNode.Tag;
 
                     contextMenu = new ContextMenuStrip();
-                    ToolStripMenuItem renameMenu = new ToolStripMenuItem(Language.GetLocalizedText(225, "Rename"));
-                    ToolStripMenuItem Expand = new ToolStripMenuItem(Language.GetLocalizedText(981, "Expand"));
-                    ToolStripMenuItem Collapse = new ToolStripMenuItem(Language.GetLocalizedText(982, "Collapse"));
-                    ToolStripMenuItem copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
-                    ToolStripMenuItem deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-                    ToolStripMenuItem saveMenu = new ToolStripMenuItem(Language.GetLocalizedText(960, "Save..."));
-                    ToolStripMenuItem publishMenu = new ToolStripMenuItem(Language.GetLocalizedText(983, "Publish to Community..."));
-                    ToolStripMenuItem colorMenu = new ToolStripMenuItem(Language.GetLocalizedText(458, "Color/Opacity"));
-                    ToolStripMenuItem opacityMenu = new ToolStripMenuItem(Language.GetLocalizedText(305, "Opacity"));
-                    ToolStripMenuItem addToTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1290, "Add to Timeline"));
-                    ToolStripMenuItem addKeyframe = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
+                    var renameMenu = new ToolStripMenuItem(Language.GetLocalizedText(225, "Rename"));
+                    var Expand = new ToolStripMenuItem(Language.GetLocalizedText(981, "Expand"));
+                    var Collapse = new ToolStripMenuItem(Language.GetLocalizedText(982, "Collapse"));
+                    var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
+                    var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+                    var saveMenu = new ToolStripMenuItem(Language.GetLocalizedText(960, "Save..."));
+                    var publishMenu = new ToolStripMenuItem(Language.GetLocalizedText(983, "Publish to Community..."));
+                    var colorMenu = new ToolStripMenuItem(Language.GetLocalizedText(458, "Color/Opacity"));
+                    var opacityMenu = new ToolStripMenuItem(Language.GetLocalizedText(305, "Opacity"));
+                    var addToTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1290, "Add to Timeline"));
+                    var addKeyframe = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
 
-                    ToolStripMenuItem popertiesMenu = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
-                    ToolStripMenuItem scaleMenu = new ToolStripMenuItem(Language.GetLocalizedText(1291, "Scale/Histogram"));
-                    ToolStripMenuItem showGraphTool = new ToolStripMenuItem(Language.GetLocalizedText(1292, "Show Graph Tool"));
-                    ToolStripMenuItem barChartChoose = new ToolStripMenuItem(Language.GetLocalizedText(1293, "Bar Chart Columns"));
-                    ToolStripMenuItem lifeTimeMenu = new ToolStripMenuItem(Language.GetLocalizedText(683, "Lifetime"));
-                    ToolStripSeparator spacer1 = new ToolStripSeparator();
-                    ToolStripMenuItem top = new ToolStripMenuItem(Language.GetLocalizedText(684, "Move to Top"));
-                    ToolStripMenuItem up = new ToolStripMenuItem(Language.GetLocalizedText(685, "Move Up"));
-                    ToolStripMenuItem down = new ToolStripMenuItem(Language.GetLocalizedText(686, "Move Down"));
-                    ToolStripMenuItem bottom = new ToolStripMenuItem(Language.GetLocalizedText(687, "Move to Bottom"));
-                    ToolStripMenuItem showViewer = new ToolStripMenuItem(Language.GetLocalizedText(957, "VO Table Viewer"));
+                    var popertiesMenu = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
+                    var scaleMenu = new ToolStripMenuItem(Language.GetLocalizedText(1291, "Scale/Histogram"));
+                    var showGraphTool = new ToolStripMenuItem(Language.GetLocalizedText(1292, "Show Graph Tool"));
+                    var barChartChoose = new ToolStripMenuItem(Language.GetLocalizedText(1293, "Bar Chart Columns"));
+                    var lifeTimeMenu = new ToolStripMenuItem(Language.GetLocalizedText(683, "Lifetime"));
+                    var spacer1 = new ToolStripSeparator();
+                    var top = new ToolStripMenuItem(Language.GetLocalizedText(684, "Move to Top"));
+                    var up = new ToolStripMenuItem(Language.GetLocalizedText(685, "Move Up"));
+                    var down = new ToolStripMenuItem(Language.GetLocalizedText(686, "Move Down"));
+                    var bottom = new ToolStripMenuItem(Language.GetLocalizedText(687, "Move to Bottom"));
+                    var showViewer = new ToolStripMenuItem(Language.GetLocalizedText(957, "VO Table Viewer"));
 
-                    ToolStripSeparator spacer2 = new ToolStripSeparator();
-                    ToolStripMenuItem dynamicData = new ToolStripMenuItem(Language.GetLocalizedText(984, "Dynamic Data"));
+                    var spacer2 = new ToolStripSeparator();
+                    var dynamicData = new ToolStripMenuItem(Language.GetLocalizedText(984, "Dynamic Data"));
 
-                    ToolStripMenuItem autoRefresh = new ToolStripMenuItem(Language.GetLocalizedText(985, "Auto Refresh"));
-                    ToolStripMenuItem refreshNow = new ToolStripMenuItem(Language.GetLocalizedText(986, "Refresh Now"));
+                    var autoRefresh = new ToolStripMenuItem(Language.GetLocalizedText(985, "Auto Refresh"));
+                    var refreshNow = new ToolStripMenuItem(Language.GetLocalizedText(986, "Refresh Now"));
                     
-                    ToolStripMenuItem defaultImageset = new ToolStripMenuItem(Language.GetLocalizedText(1294, "Background Image Set"));
+                    var defaultImageset = new ToolStripMenuItem(Language.GetLocalizedText(1294, "Background Image Set"));
                     
 
                     top.Click += new EventHandler(top_Click);
@@ -1213,10 +1213,10 @@ namespace TerraViewer
 
                     barChartChoose.DropDownOpening += new EventHandler(barChartChoose_DropDownOpening);
 
-                    ToolStripMenuItem Histogram = new ToolStripMenuItem(Language.GetLocalizedText(863, "Histogram"));
-                    ToolStripMenuItem DomainBarchar = new ToolStripMenuItem(Language.GetLocalizedText(1295, "Barchart by Domain Values"));
-                    ToolStripMenuItem TimeChart = new ToolStripMenuItem(Language.GetLocalizedText(1296, "Time Chart"));
-                    ToolStripMenuItem OpenedCharts = new ToolStripMenuItem(Language.GetLocalizedText(1297, "Current Filters"));
+                    var Histogram = new ToolStripMenuItem(Language.GetLocalizedText(863, "Histogram"));
+                    var DomainBarchar = new ToolStripMenuItem(Language.GetLocalizedText(1295, "Barchart by Domain Values"));
+                    var TimeChart = new ToolStripMenuItem(Language.GetLocalizedText(1296, "Time Chart"));
+                    var OpenedCharts = new ToolStripMenuItem(Language.GetLocalizedText(1297, "Current Filters"));
 
 
                     DomainBarchar.DropDownOpening += new EventHandler(showGraphTool_DropDownOpening);
@@ -1268,7 +1268,7 @@ namespace TerraViewer
                     if (selectedLayer is SpreadSheetLayer)
                     {
 
-                        SpreadSheetLayer sslayer = selectedLayer as SpreadSheetLayer;
+                        var sslayer = selectedLayer as SpreadSheetLayer;
                         if (sslayer.DynamicData)
                         {
                             autoRefresh.Checked = sslayer.AutoUpdate;
@@ -1283,7 +1283,7 @@ namespace TerraViewer
                     {
                         contextMenu.Items.Add(defaultImageset);
 
-                        ImageSetLayer isl = layerTree.SelectedNode.Tag as ImageSetLayer;
+                        var isl = layerTree.SelectedNode.Tag as ImageSetLayer;
                         defaultImageset.Checked = isl.OverrideDefaultLayer;
                     }
 
@@ -1310,7 +1310,7 @@ namespace TerraViewer
 
                     if (layerTree.SelectedNode.Tag is ImageSetLayer)
                     {
-                        ImageSetLayer isl = layerTree.SelectedNode.Tag as ImageSetLayer;
+                        var isl = layerTree.SelectedNode.Tag as ImageSetLayer;
                         if (isl.FitsImage != null)
                         {
                             contextMenu.Items.Add(scaleMenu);
@@ -1332,30 +1332,30 @@ namespace TerraViewer
                 else if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag is LayerMap)
                 {
                     contextMenu = new ContextMenuStrip();
-                    ToolStripMenuItem trackFrame = new ToolStripMenuItem(Language.GetLocalizedText(1298, "Track this frame"));
-                    ToolStripMenuItem goTo = new ToolStripMenuItem(Language.GetLocalizedText(1299, "Fly Here"));
-                    ToolStripMenuItem showOrbit = new ToolStripMenuItem("Show Orbit");
-                    ToolStripMenuItem newMenu = new ToolStripMenuItem(Language.GetLocalizedText(674, "New Reference Frame"));
-                    ToolStripMenuItem newLayerGroupMenu = new ToolStripMenuItem(Language.GetLocalizedText(675, "New Layer Group"));
-                    ToolStripMenuItem addMenu = new ToolStripMenuItem(Language.GetLocalizedText(166, "Add"));
-                    ToolStripMenuItem newLight = new ToolStripMenuItem("Add Light");
-                    ToolStripMenuItem addFeedMenu = new ToolStripMenuItem(Language.GetLocalizedText(956, "Add OData/table feed as Layer"));
-                    ToolStripMenuItem addWmsLayer = new ToolStripMenuItem(Language.GetLocalizedText(987, "New WMS Layer"));
-                    ToolStripMenuItem addGirdLayer = new ToolStripMenuItem(Language.GetLocalizedText(1300, "New Lat/Lng Grid"));
-                    ToolStripMenuItem addGreatCircle = new ToolStripMenuItem(Language.GetLocalizedText(988, "New Great Circle"));
-                    ToolStripMenuItem importTLE = new ToolStripMenuItem(Language.GetLocalizedText(989, "Import Orbital Elements"));
-                    ToolStripMenuItem addMpc = new ToolStripMenuItem(Language.GetLocalizedText(1301, "Add Minor Planet"));
-                    ToolStripMenuItem deleteFrameMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-                    ToolStripMenuItem pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
-                    ToolStripMenuItem addToTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1290, "Add to Timeline"));
-                    ToolStripMenuItem addKeyframe = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
+                    var trackFrame = new ToolStripMenuItem(Language.GetLocalizedText(1298, "Track this frame"));
+                    var goTo = new ToolStripMenuItem(Language.GetLocalizedText(1299, "Fly Here"));
+                    var showOrbit = new ToolStripMenuItem("Show Orbit");
+                    var newMenu = new ToolStripMenuItem(Language.GetLocalizedText(674, "New Reference Frame"));
+                    var newLayerGroupMenu = new ToolStripMenuItem(Language.GetLocalizedText(675, "New Layer Group"));
+                    var addMenu = new ToolStripMenuItem(Language.GetLocalizedText(166, "Add"));
+                    var newLight = new ToolStripMenuItem("Add Light");
+                    var addFeedMenu = new ToolStripMenuItem(Language.GetLocalizedText(956, "Add OData/table feed as Layer"));
+                    var addWmsLayer = new ToolStripMenuItem(Language.GetLocalizedText(987, "New WMS Layer"));
+                    var addGirdLayer = new ToolStripMenuItem(Language.GetLocalizedText(1300, "New Lat/Lng Grid"));
+                    var addGreatCircle = new ToolStripMenuItem(Language.GetLocalizedText(988, "New Great Circle"));
+                    var importTLE = new ToolStripMenuItem(Language.GetLocalizedText(989, "Import Orbital Elements"));
+                    var addMpc = new ToolStripMenuItem(Language.GetLocalizedText(1301, "Add Minor Planet"));
+                    var deleteFrameMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+                    var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
+                    var addToTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1290, "Add to Timeline"));
+                    var addKeyframe = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
 
-                    ToolStripMenuItem popertiesMenu = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
-                    ToolStripMenuItem saveMenu = new ToolStripMenuItem(Language.GetLocalizedText(990, "Save Layers"));
-                    ToolStripMenuItem publishLayers = new ToolStripMenuItem(Language.GetLocalizedText(991, "Publish Layers to Community"));
-                    ToolStripSeparator spacer1 = new ToolStripSeparator();
-                    ToolStripSeparator spacer0 = new ToolStripSeparator();
-                    ToolStripSeparator spacer2 = new ToolStripSeparator();
+                    var popertiesMenu = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
+                    var saveMenu = new ToolStripMenuItem(Language.GetLocalizedText(990, "Save Layers"));
+                    var publishLayers = new ToolStripMenuItem(Language.GetLocalizedText(991, "Publish Layers to Community"));
+                    var spacer1 = new ToolStripSeparator();
+                    var spacer0 = new ToolStripSeparator();
+                    var spacer2 = new ToolStripSeparator();
                     trackFrame.Click += new EventHandler(trackFrame_Click);
                     goTo.Click += new EventHandler(goTo_Click);
                     addMpc.Click += new EventHandler(addMpc_Click);
@@ -1377,7 +1377,7 @@ namespace TerraViewer
                     addGirdLayer.Click += new EventHandler(addGirdLayer_Click);
 
 
-                    LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+                    var map = layerTree.SelectedNode.Tag as LayerMap;
 
                     if (map.Frame.Reference != ReferenceFrames.Identity)
                     {
@@ -1390,13 +1390,13 @@ namespace TerraViewer
 
                                 try
                                 {
-                                    string name = map.Frame.Reference.ToString();
+                                    var name = map.Frame.Reference.ToString();
                                     if (name != "Sandbox")
                                     {
-                                        SolarSystemObjects ssObj = (SolarSystemObjects)Enum.Parse(typeof(SolarSystemObjects), name, true);
-                                        int id = (int)ssObj;
+                                        var ssObj = (SolarSystemObjects)Enum.Parse(typeof(SolarSystemObjects), name, true);
+                                        var id = (int)ssObj;
 
-                                        int bit = (int)Math.Pow(2, id);
+                                        var bit = (int)Math.Pow(2, id);
 
                                         showOrbit.Checked = (Properties.Settings.Default.PlanetOrbitsFilter & bit) != 0;
                                         showOrbit.Click += new EventHandler(showOrbitPlanet_Click);
@@ -1471,30 +1471,30 @@ namespace TerraViewer
                 }
                 else if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag is LayerUITreeNode)
                 {
-                    LayerUITreeNode node = layerTree.SelectedNode.Tag as LayerUITreeNode;
+                    var node = layerTree.SelectedNode.Tag as LayerUITreeNode;
                     contextMenu = new ContextMenuStrip();
 
-                    Layer layer = GetParentLayer(layerTree.SelectedNode);
+                    var layer = GetParentLayer(layerTree.SelectedNode);
 
                     if (layer != null)
                     {
-                        LayerUI ui = layer.GetPrimaryUI();
-                        List<LayerUIMenuItem> items = ui.GetNodeContextMenu(node);
+                        var ui = layer.GetPrimaryUI();
+                        var items = ui.GetNodeContextMenu(node);
 
                         if (items != null)
                         {
-                            foreach (LayerUIMenuItem item in items)
+                            foreach (var item in items)
                             {
-                                ToolStripMenuItem menuItem = new ToolStripMenuItem(item.Name);
+                                var menuItem = new ToolStripMenuItem(item.Name);
                                 menuItem.Tag = item;
                                 menuItem.Click += new EventHandler(menuItem_Click);
                                 contextMenu.Items.Add(menuItem);
 
                                 if (item.SubMenus != null)
                                 {
-                                    foreach (LayerUIMenuItem subItem in item.SubMenus)
+                                    foreach (var subItem in item.SubMenus)
                                     {
-                                        ToolStripMenuItem subMenuItem = new ToolStripMenuItem(subItem.Name);
+                                        var subMenuItem = new ToolStripMenuItem(subItem.Name);
                                         subMenuItem.Tag = subItem;
                                         subMenuItem.Click += new EventHandler(menuItem_Click);
                                         menuItem.DropDownItems.Add(subMenuItem);
@@ -1513,9 +1513,9 @@ namespace TerraViewer
 
         void newLight_Click(object sender, EventArgs e)
         {
-            LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+            var map = layerTree.SelectedNode.Tag as LayerMap;
 
-            Object3dLayer layer = new Object3dLayer();
+            var layer = new Object3dLayer();
             layer.LightID = 1;
             layer.Name = "Primary Light";
             layer.ReferenceFrame = map.Name;
@@ -1528,7 +1528,7 @@ namespace TerraViewer
         void showOrbit_Click(object sender, EventArgs e)
         {
             // Flip the state
-            LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+            var map = layerTree.SelectedNode.Tag as LayerMap;
 
             map.Frame.ShowOrbitPath = !map.Frame.ShowOrbitPath;
         }
@@ -1537,7 +1537,7 @@ namespace TerraViewer
         {
             try
             {
-                int bit = int.Parse(((ToolStripMenuItem)sender).Tag.ToString());
+                var bit = int.Parse(((ToolStripMenuItem)sender).Tag.ToString());
 
                 // Flip the state
                 if ((Properties.Settings.Default.PlanetOrbitsFilter & bit) == 0)
@@ -1557,9 +1557,9 @@ namespace TerraViewer
 
         void goTo_Click(object sender, EventArgs e)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
 
-            IPlace place = Search.FindCatalogObjectExact(target.Frame.Reference.ToString());
+            var place = Search.FindCatalogObjectExact(target.Frame.Reference.ToString());
             if (place != null)
             {
                 Earth3d.MainWindow.GotoTarget(place, false, false, true);
@@ -1568,7 +1568,7 @@ namespace TerraViewer
 
         void addKeyframe_Click(object sender, EventArgs e)
         {
-            IAnimatable target = layerTree.SelectedNode.Tag as IAnimatable;
+            var target = layerTree.SelectedNode.Tag as IAnimatable;
             if (target == null)
             {
                 if (layerTree.SelectedNode.Tag is LayerMap)
@@ -1585,7 +1585,7 @@ namespace TerraViewer
 
                     Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.KeyFramed = true;
 
-                    AnimationTarget aniTarget = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.FindTarget(target.GetIndentifier());
+                    var aniTarget = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.FindTarget(target.GetIndentifier());
                     if (aniTarget != null)
                     {
                         aniTarget.SetKeyFrame(Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.TweenPosition, Key.KeyType.Linear);
@@ -1597,8 +1597,8 @@ namespace TerraViewer
 
         void addToTimeline_Click(object sender, EventArgs e)
         {
-            IAnimatable target = layerTree.SelectedNode.Tag as IAnimatable;
-            AnimationTarget.AnimationTargetTypes type = AnimationTarget.AnimationTargetTypes.Layer;
+            var target = layerTree.SelectedNode.Tag as IAnimatable;
+            var type = AnimationTarget.AnimationTargetTypes.Layer;
             if (target == null)
             {
                 if (layerTree.SelectedNode.Tag is LayerMap)
@@ -1616,7 +1616,7 @@ namespace TerraViewer
 
                     Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.KeyFramed = true;
 
-                    AnimationTarget aniTarget = new AnimationTarget(Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop);
+                    var aniTarget = new AnimationTarget(Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop);
                     aniTarget.Target = target;
                     aniTarget.TargetType = type;
                     aniTarget.ParameterNames.AddRange(target.GetParamNames());
@@ -1632,8 +1632,8 @@ namespace TerraViewer
 
         void addMpc_Click(object sender, EventArgs e)
         {
-            SimpleInput input = new SimpleInput(Language.GetLocalizedText(1302, "Minor planet name or designation"), Language.GetLocalizedText(238, "Name"), "", 32);
-            bool retry = false;
+            var input = new SimpleInput(Language.GetLocalizedText(1302, "Minor planet name or designation"), Language.GetLocalizedText(238, "Name"), "", 32);
+            var retry = false;
             do
             {
                 if (input.ShowDialog() == DialogResult.OK)
@@ -1660,20 +1660,20 @@ namespace TerraViewer
 
         string GetMpc(string id)
         {
-            WebClient client = new WebClient();
+            var client = new WebClient();
 
-            string data = client.DownloadString("http://www.minorplanetcenter.net/db_search/show_object?object_id=" + id);
+            var data = client.DownloadString("http://www.minorplanetcenter.net/db_search/show_object?object_id=" + id);
 
 
-            int startform = data.IndexOf("show-orbit-button");
+            var startform = data.IndexOf("show-orbit-button");
 
-            int lastForm = data.IndexOf("/form", startform);
+            var lastForm = data.IndexOf("/form", startform);
 
-            string formpart = data.Substring(startform, lastForm - startform);
+            var formpart = data.Substring(startform, lastForm - startform);
 
-            string name = id;
+            var name = id;
 
-            LayerMap orbit = new LayerMap(name.Trim(), ReferenceFrames.Custom);
+            var orbit = new LayerMap(name.Trim(), ReferenceFrames.Custom);
             orbit.Frame.Oblateness = 0;
             orbit.Frame.ShowOrbitPath = true;
             orbit.Frame.ShowAsPoint = true;
@@ -1710,15 +1710,15 @@ namespace TerraViewer
         string GetValueByID(string data, string id)
         {
           
-            int valStart = data.IndexOf("id=\"" + id + "\"");
+            var valStart = data.IndexOf("id=\"" + id + "\"");
             valStart = data.IndexOf("value=", valStart)+7;
-            int valEnd = data.IndexOf("\"",valStart);
+            var valEnd = data.IndexOf("\"",valStart);
             return data.Substring(valStart, valEnd - valStart);
         }
 
         void addGirdLayer_Click(object sender, EventArgs e)
         {
-            GridLayer layer = new GridLayer();
+            var layer = new GridLayer();
 
             layer.Enabled = true;
             layer.Name = "Lat-Lng Grid";
@@ -1733,16 +1733,16 @@ namespace TerraViewer
 
         void defaultImageset_Click(object sender, EventArgs e)
         {
-            ImageSetLayer isl = layerTree.SelectedNode.Tag as ImageSetLayer;
+            var isl = layerTree.SelectedNode.Tag as ImageSetLayer;
             isl.OverrideDefaultLayer = ! isl.OverrideDefaultLayer;
         }
 
         void menuItem_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
             if (item != null)
             {
-                LayerUIMenuItem menuItem = item.Tag as LayerUIMenuItem;
+                var menuItem = item.Tag as LayerUIMenuItem;
                 if (menuItem != null)
                 {
                     menuItem.FireMenuItemSelected();
@@ -1769,16 +1769,16 @@ namespace TerraViewer
 
         void OpenedCharts_DropDownOpening(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = layerTree.SelectedNode.Tag as SpreadSheetLayer;
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
-            int index = 0;
+            var layer = layerTree.SelectedNode.Tag as SpreadSheetLayer;
+            var item = sender as ToolStripMenuItem;
+            var index = 0;
             if (item.DropDownItems.Count == 0)
             {
                 if (layer.Filters.Count > 0)
                 {
-                    foreach (FilterGraphTool fgt in layer.Filters)
+                    foreach (var fgt in layer.Filters)
                     {
-                        ToolStripMenuItem filterItem = new ToolStripMenuItem(fgt.Title);
+                        var filterItem = new ToolStripMenuItem(fgt.Title);
                         filterItem.Click += new EventHandler(filterItem_Click);
                         item.DropDownItems.Add(filterItem);
                         filterItem.Tag = fgt;
@@ -1796,14 +1796,14 @@ namespace TerraViewer
 
         void filterItem_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
             Earth3d.MainWindow.UiController = item.Tag as FilterGraphTool;
         }
 
 
         void trackFrame_Click(object sender, EventArgs e)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
 
             Earth3d.MainWindow.SolarSystemTrack = SolarSystemObjects.Custom;
             Earth3d.MainWindow.TrackingFrame = target.Name;
@@ -1814,7 +1814,7 @@ namespace TerraViewer
 
         void scaleMenu_Click(object sender, EventArgs e)
         {
-            ImageSetLayer isl = layerTree.SelectedNode.Tag as ImageSetLayer;
+            var isl = layerTree.SelectedNode.Tag as ImageSetLayer;
             Histogram.ShowHistogram(isl.ImageSet, false, Cursor.Position);
         }
 
@@ -1823,12 +1823,12 @@ namespace TerraViewer
             if (Earth3d.IsLoggedIn)
             {
 
-                LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+                var target = (LayerMap)layerTree.SelectedNode.Tag;
 
-                string name = target.Name + ".wwtl";
-                string filename = Path.GetTempFileName();
+                var name = target.Name + ".wwtl";
+                var filename = Path.GetTempFileName();
 
-                LayerContainer layers = new LayerContainer();
+                var layers = new LayerContainer();
                 layers.TopLevel = target.Name;
                 layers.SaveToFile(filename);
                 layers.Dispose();
@@ -1843,7 +1843,7 @@ namespace TerraViewer
 
         void refreshNow_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = layerTree.SelectedNode.Tag as SpreadSheetLayer;
+            var layer = layerTree.SelectedNode.Tag as SpreadSheetLayer;
 
             if (layer != null)
             {
@@ -1853,7 +1853,7 @@ namespace TerraViewer
 
         void autoRefresh_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = layerTree.SelectedNode.Tag as SpreadSheetLayer;
+            var layer = layerTree.SelectedNode.Tag as SpreadSheetLayer;
 
             if (layer != null)
             {
@@ -1867,12 +1867,12 @@ namespace TerraViewer
             if (Earth3d.IsLoggedIn)
             {
 
-                Layer target = (Layer)layerTree.SelectedNode.Tag;
+                var target = (Layer)layerTree.SelectedNode.Tag;
 
-                string name = target.Name + ".wwtl";
-                string filename = Path.GetTempFileName();
+                var name = target.Name + ".wwtl";
+                var filename = Path.GetTempFileName();
 
-                LayerContainer layers = new LayerContainer();
+                var layers = new LayerContainer();
                 layers.SoloGuid = target.ID;
 
                 layers.SaveToFile(filename);
@@ -1888,9 +1888,9 @@ namespace TerraViewer
 
         void SaveLayers_Click(object sender, EventArgs e)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
 
-            SaveFileDialog saveDialog = new SaveFileDialog();
+            var saveDialog = new SaveFileDialog();
             saveDialog.Filter = Language.GetLocalizedText(992, "WorldWide Telescope Layer File") + "(*.wwtl)|*.wwtl";
             saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             saveDialog.AddExtension = true;
@@ -1899,7 +1899,7 @@ namespace TerraViewer
             if (saveDialog.ShowDialog() == DialogResult.OK)
             {
                 // Todo add dialog for dynamic content options.
-                LayerContainer layers = new LayerContainer();
+                var layers = new LayerContainer();
                 layers.TopLevel = target.Name;
                 layers.SaveToFile(saveDialog.FileName);
                 layers.Dispose();
@@ -1909,8 +1909,8 @@ namespace TerraViewer
 
         void saveMenu_Click(object sender, EventArgs e)
         {
-            Layer layer = (Layer)layerTree.SelectedNode.Tag;
-            SaveFileDialog saveDialog = new SaveFileDialog();
+            var layer = (Layer)layerTree.SelectedNode.Tag;
+            var saveDialog = new SaveFileDialog();
             saveDialog.Filter = Language.GetLocalizedText(993, "WorldWide Telescope Layer File(*.wwtl)") + "|*.wwtl";
             saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             saveDialog.AddExtension = true;
@@ -1919,7 +1919,7 @@ namespace TerraViewer
             if (saveDialog.ShowDialog() == DialogResult.OK)
             {
                 // Todo add dialog for dynamic content options.
-                LayerContainer layers = new LayerContainer();
+                var layers = new LayerContainer();
                 layers.SoloGuid = layer.ID;
                 layers.SaveToFile(saveDialog.FileName);
                 layers.Dispose();
@@ -1929,15 +1929,15 @@ namespace TerraViewer
 
         void barChartChoose_DropDownOpening(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
-            int index = 0;
+            var item = sender as ToolStripMenuItem;
+            var index = 0;
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string col in layer.Header)
+                foreach (var col in layer.Header)
                 {
-                    ToolStripMenuItem barChartColumn = new ToolStripMenuItem(col);
+                    var barChartColumn = new ToolStripMenuItem(col);
                     barChartColumn.Click += new EventHandler(barChartColumn_Click);
                     item.DropDownItems.Add(barChartColumn);
                     barChartColumn.Checked = (layer.BarChartBitmask & (int)Math.Pow(2, index)) > 0;
@@ -1949,10 +1949,10 @@ namespace TerraViewer
 
         void barChartColumn_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
-            int col = 0;
-            foreach (string headerName in layer.Header)
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var item = sender as ToolStripMenuItem;
+            var col = 0;
+            foreach (var headerName in layer.Header)
             {
                 if (headerName == item.Text)
                 {
@@ -1967,15 +1967,15 @@ namespace TerraViewer
 
         void TimeChart_DropDownOpening(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string col in layer.Header)
+                foreach (var col in layer.Header)
                 {
-                    ToolStripMenuItem timeChild = new ToolStripMenuItem(col);
+                    var timeChild = new ToolStripMenuItem(col);
                     timeChild.DropDownOpening += new EventHandler(timeChild_Click);
                     item.DropDownItems.Add(timeChild);
                 }
@@ -1984,15 +1984,15 @@ namespace TerraViewer
 
         void timeChild_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
             targetItemText = item.Text;
 
 
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string dateFilter in Enum.GetNames(typeof(DateFilter)))
+                foreach (var dateFilter in Enum.GetNames(typeof(DateFilter)))
                 {
-                    ToolStripMenuItem dateFilterChild = new ToolStripMenuItem(dateFilter);
+                    var dateFilterChild = new ToolStripMenuItem(dateFilter);
 
                     dateFilterChild.Click += new EventHandler(dateFilterChild_Click);
 
@@ -2004,17 +2004,17 @@ namespace TerraViewer
 
         void dateFilterChild_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
-            FilterGraphTool fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
+            var fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
             fgt.ChartType = ChartTypes.TimeChart;
             fgt.StatType = StatTypes.Count;
             Earth3d.MainWindow.UiController = fgt;
            
-            int col = 0;
-            foreach (string headerName in layer.Header)
+            var col = 0;
+            foreach (var headerName in layer.Header)
             {
                 if (headerName == targetItemText)
                 {
@@ -2032,15 +2032,15 @@ namespace TerraViewer
 
         void Histogram_DropDownOpened(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string col in layer.Header)
+                foreach (var col in layer.Header)
                 {
-                    ToolStripMenuItem histogramChild = new ToolStripMenuItem(col);
+                    var histogramChild = new ToolStripMenuItem(col);
                     histogramChild.Click += new EventHandler(histogramChild_Click);
                     item.DropDownItems.Add(histogramChild);
                 }
@@ -2049,17 +2049,17 @@ namespace TerraViewer
 
         void histogramChild_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
-            FilterGraphTool fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
+            var fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
             fgt.ChartType = ChartTypes.Histogram;
             fgt.StatType = StatTypes.Count;
             Earth3d.MainWindow.UiController = fgt;
            
-            int col = 0;
-            foreach (string headerName in layer.Header)
+            var col = 0;
+            foreach (var headerName in layer.Header)
             {
                 if (headerName == item.Text)
                 {
@@ -2074,7 +2074,7 @@ namespace TerraViewer
 
         void ConnectLayerUi(Layer layer)
         {
-            LayerUI layerUI = layer.GetPrimaryUI();
+            var layerUI = layer.GetPrimaryUI();
             layerUI.SetUICallbacks(this);
         }
 
@@ -2085,15 +2085,15 @@ namespace TerraViewer
 
         void showGraphTool_DropDownOpening(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string col in layer.Header)
+                foreach (var col in layer.Header)
                 {
-                    ToolStripMenuItem child = new ToolStripMenuItem(col);
+                    var child = new ToolStripMenuItem(col);
                     child.DropDownOpening += new EventHandler(child_DropDownOpening);
                     item.DropDownItems.Add(child);
                 }
@@ -2107,15 +2107,15 @@ namespace TerraViewer
         string statTypeText = "";
         void child_DropDownOpening(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
             targetItemText = item.Text;
 
 
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string statType in Enum.GetNames(typeof(StatTypes)))
+                foreach (var statType in Enum.GetNames(typeof(StatTypes)))
                 {
-                    ToolStripMenuItem statTypeChild = new ToolStripMenuItem(statType);
+                    var statTypeChild = new ToolStripMenuItem(statType);
                     if (statType == StatTypes.Ratio.ToString())
                     {
                         statTypeChild.DropDownOpening += new EventHandler(statTypeChild_DropDownOpening);
@@ -2132,14 +2132,14 @@ namespace TerraViewer
 
         void statTypeChild_DropDownOpening(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var item = sender as ToolStripMenuItem;
             statTypeText = item.Text;
             if (item.DropDownItems.Count == 0)
             {
-                foreach (string col in layer.Header)
+                foreach (var col in layer.Header)
                 {
-                    ToolStripMenuItem denominatorMenu = new ToolStripMenuItem(col);
+                    var denominatorMenu = new ToolStripMenuItem(col);
                     denominatorMenu.Click += new EventHandler(denominatorMenu_Click);
                     item.DropDownItems.Add(denominatorMenu);
                 }
@@ -2148,18 +2148,18 @@ namespace TerraViewer
 
         void denominatorMenu_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
-            FilterGraphTool fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
+            var fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
             fgt.StatType = (StatTypes)Enum.Parse(typeof(StatTypes), statTypeText);
             fgt.ChartType = ChartTypes.BarChart;
             Earth3d.MainWindow.UiController = fgt;
             
             fgt.DomainColumn = layer.NameColumn;
-            int col = 0;
-            foreach (string headerName in layer.Header)
+            var col = 0;
+            foreach (var headerName in layer.Header)
             {
                 if (headerName == targetItemText)
                 {
@@ -2170,7 +2170,7 @@ namespace TerraViewer
             }
 
             col = 0;
-            foreach (string headerName in layer.Header)
+            foreach (var headerName in layer.Header)
             {
                 if (headerName == item.Text)
                 {
@@ -2185,18 +2185,18 @@ namespace TerraViewer
 
         void child_Click(object sender, EventArgs e)
         {
-            SpreadSheetLayer layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+            var layer = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
 
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
-            FilterGraphTool fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
+            var fgt = new FilterGraphTool((SpreadSheetLayer)layerTree.SelectedNode.Tag);
             fgt.StatType = (StatTypes)Enum.Parse(typeof(StatTypes), item.Text);
             fgt.ChartType = ChartTypes.BarChart;
             Earth3d.MainWindow.UiController = fgt;
             
             fgt.DomainColumn = layer.NameColumn;
-            int col = 0;
-            foreach (string headerName in layer.Header)
+            var col = 0;
+            foreach (var headerName in layer.Header)
             {
                 if (headerName == targetItemText)
                 {
@@ -2215,7 +2215,7 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode.Tag is VoTableLayer)
             {
-                VoTableLayer layer = layerTree.SelectedNode.Tag as VoTableLayer;
+                var layer = layerTree.SelectedNode.Tag as VoTableLayer;
 
                 if (layer.Viewer != null)
                 {
@@ -2223,7 +2223,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    VOTableViewer viewer = new VOTableViewer();
+                    var viewer = new VOTableViewer();
                     viewer.Layer = layer;
                     viewer.Show();
                 }
@@ -2232,7 +2232,7 @@ namespace TerraViewer
 
         void bottom_Click(object sender, EventArgs e)
         {
-            Layer layer = layerTree.SelectedNode.Tag as Layer;
+            var layer = layerTree.SelectedNode.Tag as Layer;
             if (layer != null)
             {
                 AllMaps[layer.ReferenceFrame].Layers.Remove(layer);
@@ -2244,10 +2244,10 @@ namespace TerraViewer
 
         void down_Click(object sender, EventArgs e)
         {
-            Layer layer = layerTree.SelectedNode.Tag as Layer;
+            var layer = layerTree.SelectedNode.Tag as Layer;
             if (layer != null)
             {
-                int index = AllMaps[layer.ReferenceFrame].Layers.LastIndexOf(layer);
+                var index = AllMaps[layer.ReferenceFrame].Layers.LastIndexOf(layer);
                 if (index < (AllMaps[layer.ReferenceFrame].Layers.Count - 1))
                 {
                     AllMaps[layer.ReferenceFrame].Layers.Remove(layer);
@@ -2260,10 +2260,10 @@ namespace TerraViewer
 
         void up_Click(object sender, EventArgs e)
         {
-            Layer layer = layerTree.SelectedNode.Tag as Layer;
+            var layer = layerTree.SelectedNode.Tag as Layer;
             if (layer != null)
             {
-                int index = AllMaps[layer.ReferenceFrame].Layers.LastIndexOf(layer);
+                var index = AllMaps[layer.ReferenceFrame].Layers.LastIndexOf(layer);
                 if (index > 0)
                 {
                     AllMaps[layer.ReferenceFrame].Layers.Remove(layer);
@@ -2276,7 +2276,7 @@ namespace TerraViewer
 
         void top_Click(object sender, EventArgs e)
         {
-            Layer layer = layerTree.SelectedNode.Tag as Layer;
+            var layer = layerTree.SelectedNode.Tag as Layer;
             if (layer != null)
             {
                 AllMaps[layer.ReferenceFrame].Layers.Remove(layer);
@@ -2288,11 +2288,11 @@ namespace TerraViewer
 
         void importTLE_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
+            var openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(994, "Orbital Elements File (TLE)") + "|*.tle;*.txt";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                string filename = openFile.FileName;
+                var filename = openFile.FileName;
                 try
                 {
                     ImportTLEFile(filename);
@@ -2308,17 +2308,17 @@ namespace TerraViewer
 
         private void ImportTLEFile(string filename)
         {
-            string name = filename.Substring(filename.LastIndexOf("\\") + 1);
+            var name = filename.Substring(filename.LastIndexOf("\\") + 1);
             name = name.Substring(0, name.LastIndexOf("."));
 
             MakeLayerGroup(name);
 
 
-            string[] data = File.ReadAllLines(filename);
+            var data = File.ReadAllLines(filename);
 
-            for (int i = 0; i < data.Length; i += 3)
+            for (var i = 0; i < data.Length; i += 3)
             {
-                LayerMap orbit = new LayerMap(data[i].Trim(), ReferenceFrames.Custom);
+                var orbit = new LayerMap(data[i].Trim(), ReferenceFrames.Custom);
                 orbit.Frame.Oblateness = 0;
                 orbit.Frame.ShowOrbitPath = true;
                 orbit.Frame.ShowAsPoint = true;
@@ -2346,20 +2346,20 @@ namespace TerraViewer
 
         void addWmsLayer_Click(object sender, EventArgs e)
         {
-            WmsLayerWizard wms = new WmsLayerWizard();
+            var wms = new WmsLayerWizard();
             wms.ShowDialog();
         }
 
         void Collapse_Click(object sender, EventArgs e)
         {
-            Layer selectedLayer = (Layer)layerTree.SelectedNode.Tag;
+            var selectedLayer = (Layer)layerTree.SelectedNode.Tag;
             selectedLayer.Opened = false;
             layerTree.SelectedNode.Nodes.Clear();
         }
 
         void Expand_Click(object sender, EventArgs e)
         {
-            Layer selectedLayer = (Layer)layerTree.SelectedNode.Tag;
+            var selectedLayer = (Layer)layerTree.SelectedNode.Tag;
             selectedLayer.Opened = true;
             LoadLayerChildren(selectedLayer, layerTree.SelectedNode);
             layerTree.SelectedNode.Expand();
@@ -2370,18 +2370,18 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag != null && layerTree.SelectedNode.Tag is Layer)
             {
-                Layer node = (Layer)layerTree.SelectedNode.Tag;
+                var node = (Layer)layerTree.SelectedNode.Tag;
                 node.CopyToClipboard();
             }
         }
 
         void newLayerGroupMenu_Click(object sender, EventArgs e)
         {
-            bool badName = true;
-            string name = Language.GetLocalizedText(676, "Enter Layer Group Name");
+            var badName = true;
+            var name = Language.GetLocalizedText(676, "Enter Layer Group Name");
             while (badName)
             {
-                SimpleInput input = new SimpleInput(name, Language.GetLocalizedText(238, "Name"), Language.GetLocalizedText(677, "Layer Group"), 100);
+                var input = new SimpleInput(name, Language.GetLocalizedText(238, "Name"), Language.GetLocalizedText(677, "Layer Group"), 100);
                 if (input.ShowDialog() == DialogResult.OK)
                 {
                     name = input.ResultText;
@@ -2407,11 +2407,11 @@ namespace TerraViewer
 
         private void MakeLayerGroup(string name)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
-            ReferenceFrame frame = new ReferenceFrame();
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
+            var frame = new ReferenceFrame();
             frame.Name = name;
             frame.Reference = ReferenceFrames.Identity;
-            LayerMap newMap = new LayerMap(frame.Name, ReferenceFrames.Identity);
+            var newMap = new LayerMap(frame.Name, ReferenceFrames.Identity);
             newMap.Frame = frame;
             newMap.Frame.SystemGenerated = false;
             target.AddChild(newMap);
@@ -2425,7 +2425,7 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode.Tag is Layer)
             {
-                LayerLifetimeProperties props = new LayerLifetimeProperties();
+                var props = new LayerLifetimeProperties();
                 props.Target = (Layer)layerTree.SelectedNode.Tag;
                 if (props.ShowDialog() == DialogResult.OK)
                 {
@@ -2438,7 +2438,7 @@ namespace TerraViewer
 
         void deleteFrameMenu_Click(object sender, EventArgs e)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(678, "This will delete this reference frame and all nested reference frames and layers. Do you want to continue?"), Language.GetLocalizedText(680, "Delete Reference Frame"), MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
             {
                 PurgeLayerMapDeep(target, true);
@@ -2452,14 +2452,14 @@ namespace TerraViewer
         public static void PurgeLayerMapDeep(LayerMap target, bool topLevel)
         {
 
-            foreach (Layer layer in target.Layers)
+            foreach (var layer in target.Layers)
             {
                 LayerManager.DeleteLayerByID(layer.ID, false, false);
             }
 
             target.Layers.Clear();
 
-            foreach (LayerMap map in target.ChildMaps.Values)
+            foreach (var map in target.ChildMaps.Values)
             {
                 PurgeLayerMapDeep(map, false);
             }
@@ -2489,9 +2489,9 @@ namespace TerraViewer
 
         void FramePropertiesMenu_Click(object sender, EventArgs e)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
 
-            ReferenceFrame frame = new ReferenceFrame();
+            var frame = new ReferenceFrame();
             if (FrameWizard.ShowPropertiesSheet(target.Frame) == DialogResult.OK)
             {
 
@@ -2500,12 +2500,12 @@ namespace TerraViewer
 
         void newMenu_Click(object sender, EventArgs e)
         {
-            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
-            ReferenceFrame frame = new ReferenceFrame();
+            var target = (LayerMap)layerTree.SelectedNode.Tag;
+            var frame = new ReferenceFrame();
             frame.SystemGenerated = false;
             if (FrameWizard.ShowWizard(frame) == DialogResult.OK)
             {
-                LayerMap newMap = new LayerMap(frame.Name, ReferenceFrames.Custom);
+                var newMap = new LayerMap(frame.Name, ReferenceFrames.Custom);
                 if (!AllMaps.ContainsKey(frame.Name))
                 {
                     newMap.Frame = frame;
@@ -2524,8 +2524,8 @@ namespace TerraViewer
         {
             if (!AllMaps.ContainsKey(name) && AllMaps.ContainsKey(parent))
             {
-                LayerMap target = AllMaps[parent];
-                ReferenceFrame frame = new ReferenceFrame();
+                var target = AllMaps[parent];
+                var frame = new ReferenceFrame();
                 frame.Name = name;
 
                 if (!string.IsNullOrEmpty(xml))
@@ -2536,7 +2536,7 @@ namespace TerraViewer
                     }
                 }
 
-                LayerMap newMap = new LayerMap(frame.Name, ReferenceFrames.Custom);
+                var newMap = new LayerMap(frame.Name, ReferenceFrames.Custom);
                 newMap.Frame = frame;
                 target.AddChild(newMap);
                 newMap.Frame.Parent = target.Name;
@@ -2555,7 +2555,7 @@ namespace TerraViewer
         {
             if (AllMaps.ContainsKey(name))
             {
-                ReferenceFrame frame = AllMaps[name].Frame;
+                var frame = AllMaps[name].Frame;
 
                 return frame.GetProps();
             }
@@ -2585,9 +2585,9 @@ namespace TerraViewer
         {
             if (AllMaps.ContainsKey(name))
             {
-                ReferenceFrame frame = AllMaps[name].Frame;
+                var frame = AllMaps[name].Frame;
              
-                bool retVal = frame.SetProps(xml);
+                var retVal = frame.SetProps(xml);
                 //LoadTree();
                 return retVal;
             }
@@ -2601,7 +2601,7 @@ namespace TerraViewer
         {
             if (AllMaps.ContainsKey(name))
             {
-                ReferenceFrame frame = AllMaps[name].Frame;
+                var frame = AllMaps[name].Frame;
                 return frame.SetProp(propName, propValue);
             }
             else
@@ -2612,7 +2612,7 @@ namespace TerraViewer
 
         void opacityMenu_Click(object sender, EventArgs e)
         {
-            OpacityPopup popup = new OpacityPopup();
+            var popup = new OpacityPopup();
             popup.Target = (Layer)layerTree.SelectedNode.Tag;
             popup.Location = Cursor.Position;
             popup.StartPosition = FormStartPosition.Manual;
@@ -2624,7 +2624,7 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode.Tag is SpreadSheetLayer)
             {
-                SpreadSheetLayer target = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
+                var target = (SpreadSheetLayer)layerTree.SelectedNode.Tag;
                 DataWizard.ShowPropertiesSheet(target);
 
                 target.CleanUp();
@@ -2632,7 +2632,7 @@ namespace TerraViewer
             }
             else if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer)
             {
-                Object3dProperties props = new Object3dProperties();
+                var props = new Object3dProperties();
                 props.layer = (Object3dLayer)layerTree.SelectedNode.Tag;
                 //   props.ShowDialog();
                 props.Owner = Earth3d.MainWindow;
@@ -2640,7 +2640,7 @@ namespace TerraViewer
             }
             else if (layerTree.SelectedNode.Tag is GroundOverlayLayer)
             {
-                GroundOverlayProperties props = new GroundOverlayProperties();
+                var props = new GroundOverlayProperties();
                 props.Overlay = ((GroundOverlayLayer)layerTree.SelectedNode.Tag).Overlay;
                 props.OverlayLayer = ((GroundOverlayLayer)layerTree.SelectedNode.Tag);
                 props.Owner = Earth3d.MainWindow;
@@ -2648,7 +2648,7 @@ namespace TerraViewer
             }
             else if (layerTree.SelectedNode.Tag is GreatCirlceRouteLayer)
             {
-                GreatCircleProperties props = new GreatCircleProperties();
+                var props = new GreatCircleProperties();
                 props.Layer = ((GreatCirlceRouteLayer)layerTree.SelectedNode.Tag);
                 props.Owner = Earth3d.MainWindow;
                 props.Show();
@@ -2657,8 +2657,8 @@ namespace TerraViewer
 
         void renameMenu_Click(object sender, EventArgs e)
         {
-            Layer layer = (Layer)layerTree.SelectedNode.Tag;
-            SimpleInput input = new SimpleInput(Language.GetLocalizedText(225, "Rename"), Language.GetLocalizedText(228, "New Name"), layer.Name, 32);
+            var layer = (Layer)layerTree.SelectedNode.Tag;
+            var input = new SimpleInput(Language.GetLocalizedText(225, "Rename"), Language.GetLocalizedText(228, "New Name"), layer.Name, 32);
 
             if (input.ShowDialog() == DialogResult.OK)
             {
@@ -2674,8 +2674,8 @@ namespace TerraViewer
 
         void colorMenu_Click(object sender, EventArgs e)
         {
-            Layer layer = (Layer)layerTree.SelectedNode.Tag;
-            PopupColorPicker picker = new PopupColorPicker();
+            var layer = (Layer)layerTree.SelectedNode.Tag;
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 
@@ -2689,10 +2689,10 @@ namespace TerraViewer
 
         void addMenu_Click(object sender, EventArgs e)
         {
-            bool overridable = false;
+            var overridable = false;
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag is LayerMap)
             {
-                LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+                var map = layerTree.SelectedNode.Tag as LayerMap;
                 if (map.Frame.reference == ReferenceFrames.Custom)
                 {
                     overridable = true;
@@ -2716,8 +2716,8 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag != null && layerTree.SelectedNode.Tag is Layer)
             {
-                Layer node = (Layer)layerTree.SelectedNode.Tag;
-                TreeNode parent = layerTree.SelectedNode.Parent;
+                var node = (Layer)layerTree.SelectedNode.Tag;
+                var parent = layerTree.SelectedNode.Parent;
                 node.CleanUp();
                 LayerList.Remove(node.ID);
                 AllMaps[CurrentMap].Layers.Remove(node);
@@ -2731,7 +2731,7 @@ namespace TerraViewer
         {
             if (LayerList.ContainsKey(ID))
             {
-                Layer layer = LayerList[ID];
+                var layer = LayerList[ID];
                 layer.CleanUp();
                 if (removeFromParent)
                 {
@@ -2756,7 +2756,7 @@ namespace TerraViewer
 
             if (LayerList.ContainsKey(layerID))
             {
-                Layer layer = LayerList[layerID];
+                var layer = LayerList[layerID];
                 layer.UpadteData(data, !noPurge, purgeAll, hasHeader);
                 layer.CleanUp();
                 layer.Enabled = show;
@@ -2827,9 +2827,9 @@ namespace TerraViewer
             }
             if (AllMaps.ContainsKey(referenceLayer))
             {
-                float currentDistance = distance;
+                var currentDistance = distance;
 
-                foreach (Layer layer in AllMaps[referenceLayer].Layers)
+                foreach (var layer in AllMaps[referenceLayer].Layers)
                 {
                     if (layer.Enabled && astronomical == layer.Astronomical)
                     {
@@ -2854,7 +2854,7 @@ namespace TerraViewer
             }
             if (AllMaps.ContainsKey(referenceFrame))
             {
-                foreach (Layer layer in AllMaps[referenceFrame].Layers)
+                foreach (var layer in AllMaps[referenceFrame].Layers)
                 {
                     if (layer.Enabled)
                     {
@@ -2876,7 +2876,7 @@ namespace TerraViewer
             }
             if (AllMaps.ContainsKey(referenceFrame))
             {
-                foreach (Layer layer in AllMaps[referenceFrame].Layers)
+                foreach (var layer in AllMaps[referenceFrame].Layers)
                 {
                     if (layer.Enabled)
                     {
@@ -2897,7 +2897,7 @@ namespace TerraViewer
             {
                 if (closestPlace.Tag != null)
                 {
-                    Dictionary<String, String> rowData = (Dictionary<String, String>)closestPlace.Tag;
+                    var rowData = (Dictionary<String, String>)closestPlace.Tag;
                     ShowRow(rowData);
                 }
             }
@@ -2907,9 +2907,9 @@ namespace TerraViewer
         {
             NameValues.Items.Clear();
 
-            foreach (KeyValuePair<string, string> kvp in rowData)
+            foreach (var kvp in rowData)
             {
-                ListViewItem item = new ListViewItem(new string[] { kvp.Key, kvp.Value });
+                var item = new ListViewItem(new string[] { kvp.Key, kvp.Value });
                 NameValues.Items.Add(item);
             }
         }
@@ -2918,16 +2918,16 @@ namespace TerraViewer
         
         internal static Vector3d GetFrameTarget(RenderContext11 renderContext, string TrackingFrame)
         {
-            Vector3d targetPoint = Vector3d.Empty;
+            var targetPoint = Vector3d.Empty;
 
             if (!AllMaps.ContainsKey(TrackingFrame))
             {
                 return targetPoint;
             }
 
-            List<LayerMap> mapList = new List<LayerMap>();
+            var mapList = new List<LayerMap>();
 
-            LayerMap current = AllMaps[TrackingFrame];
+            var current = AllMaps[TrackingFrame];
 
             mapList.Add(current);
 
@@ -2937,12 +2937,12 @@ namespace TerraViewer
                 mapList.Insert(0, current);
             }
 
-            Matrix3d matOld = renderContext.World;
-            Matrix3d matOldNonRotating = renderContext.WorldBaseNonRotating;
-            Matrix3d matOldBase = renderContext.WorldBase;
-            double oldNominalRadius = renderContext.NominalRadius;
+            var matOld = renderContext.World;
+            var matOldNonRotating = renderContext.WorldBaseNonRotating;
+            var matOldBase = renderContext.WorldBase;
+            var oldNominalRadius = renderContext.NominalRadius;
 
-            foreach (LayerMap map in mapList)
+            foreach (var map in mapList)
             {
                 if (map.Frame.Reference != ReferenceFrames.Custom)
                 {
@@ -2982,7 +2982,7 @@ namespace TerraViewer
 
         internal static Vector3d GetFrameTarget(RenderContext11 renderContext, string TrackingFrame, out Matrix3d matOut)
         {
-            Vector3d targetPoint = Vector3d.Empty;
+            var targetPoint = Vector3d.Empty;
             matOut = Matrix3d.Identity;
 
             if (!AllMaps.ContainsKey(TrackingFrame))
@@ -2990,9 +2990,9 @@ namespace TerraViewer
                 return targetPoint;
             }
 
-            List<LayerMap> mapList = new List<LayerMap>();
+            var mapList = new List<LayerMap>();
 
-            LayerMap current = AllMaps[TrackingFrame];
+            var current = AllMaps[TrackingFrame];
 
             mapList.Add(current);
 
@@ -3002,12 +3002,12 @@ namespace TerraViewer
                 mapList.Insert(0, current);
             }
 
-            Matrix3d matOld = renderContext.World;
-            Matrix3d matOldNonRotating = renderContext.WorldBaseNonRotating;
-            Matrix3d matOldBase = renderContext.WorldBase;
-            double oldNominalRadius = renderContext.NominalRadius;
+            var matOld = renderContext.World;
+            var matOldNonRotating = renderContext.WorldBaseNonRotating;
+            var matOldBase = renderContext.WorldBase;
+            var oldNominalRadius = renderContext.NominalRadius;
 
-            foreach (LayerMap map in mapList)
+            foreach (var map in mapList)
             {
                 if (map.Frame.Reference != ReferenceFrames.Custom && map.Frame.Reference != ReferenceFrames.Sandbox)
                 {
@@ -3036,9 +3036,9 @@ namespace TerraViewer
 
             targetPoint = renderContext.World.Transform(targetPoint);
 
-            Vector3d lookAt = renderContext.World.Transform(new Vector3d(0, 0, 1));
+            var lookAt = renderContext.World.Transform(new Vector3d(0, 0, 1));
 
-            Vector3d lookUp = renderContext.World.Transform(new Vector3d(0, 1, 0)) - targetPoint;
+            var lookUp = renderContext.World.Transform(new Vector3d(0, 1, 0)) - targetPoint;
 
 
             lookUp.Normalize();
@@ -3082,10 +3082,10 @@ namespace TerraViewer
         {
             if (TourPlayer.Playing)
             {
-                TourPlayer player = Earth3d.MainWindow.UiController as TourPlayer;
+                var player = Earth3d.MainWindow.UiController as TourPlayer;
                 if (player != null)
                 {
-                    TourDocument tour = player.Tour;
+                    var tour = player.Tour;
 
                     if (tour.ProjectorServer)
                     {
@@ -3101,7 +3101,7 @@ namespace TerraViewer
                         {
                             tour.CurrentTourStop.UpdateLayerOpacity();
                             
-                            foreach (LayerInfo info in tour.CurrentTourStop.Layers.Values)
+                            foreach (var info in tour.CurrentTourStop.Layers.Values)
                             {
                                 if (LayerList.ContainsKey(info.ID))
                                 {
@@ -3124,9 +3124,9 @@ namespace TerraViewer
 
         private static bool IsSphereInFrustum(Vector3d sphereCenter, double sphereRadius, PlaneD[] frustum)
         {
-            Vector4d center4 = new Vector4d(sphereCenter.X, sphereCenter.Y, sphereCenter.Z, 1.0);
+            var center4 = new Vector4d(sphereCenter.X, sphereCenter.Y, sphereCenter.Z, 1.0);
 
-            for (int i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 if (frustum[i].Dot(center4) < -sphereRadius)
                 {
@@ -3141,21 +3141,21 @@ namespace TerraViewer
         // The sphere center should be a point in camera space
         private static double ProjectedSizeInPixels(RenderContext11 renderContext, Vector3d center, double radius)
         {
-            Matrix3d projection = renderContext.Projection;
-            SharpDX.Direct3D11.Viewport viewport = renderContext.ViewPort;
+            var projection = renderContext.Projection;
+            var viewport = renderContext.ViewPort;
 
-            double distance = center.Length();
+            var distance = center.Length();
 
             // Calculate pixelsPerUnit which is the number of pixels covered
             // by an object 1 AU at the distance of the planet center from
             // the camera. This calculation works regardless of the projection
             // type.
             double viewportHeight = viewport.Height;
-            double p11 = projection.M11;
-            double p34 = projection.M34;
-            double p44 = projection.M44;
-            double w = Math.Abs(p34) * distance + p44;
-            double pixelsPerUnit = (p11 / w) * viewportHeight;
+            var p11 = projection.M11;
+            var p34 = projection.M34;
+            var p44 = projection.M44;
+            var w = Math.Abs(p34) * distance + p44;
+            var pixelsPerUnit = (p11 / w) * viewportHeight;
 
             return radius * pixelsPerUnit;
         }
@@ -3168,7 +3168,7 @@ namespace TerraViewer
                 return;
             }
 
-            LayerMap thisMap = AllMaps[referenceFrame];
+            var thisMap = AllMaps[referenceFrame];
 
             if (!thisMap.Enabled || (thisMap.ChildMaps.Count == 0 && thisMap.Layers.Count == 0 && !(thisMap.Frame.ShowAsPoint || thisMap.Frame.ShowOrbitPath)))
             {
@@ -3177,9 +3177,9 @@ namespace TerraViewer
 
             //PrepTourLayers();
 
-            Matrix3d matOld = renderContext.World;
-            Matrix3d matOldNonRotating = renderContext.WorldBaseNonRotating;
-            double oldNominalRadius = renderContext.NominalRadius;
+            var matOld = renderContext.World;
+            var matOldNonRotating = renderContext.WorldBaseNonRotating;
+            var oldNominalRadius = renderContext.NominalRadius;
             if (thisMap.Frame.Reference == ReferenceFrames.Custom | thisMap.Frame.Reference == ReferenceFrames.Sandbox)
             {
                 thisMap.ComputeFrame(renderContext);
@@ -3207,16 +3207,16 @@ namespace TerraViewer
             }
 
 
-            PlaneD[] viewFrustum = new PlaneD[6];
+            var viewFrustum = new PlaneD[6];
             RenderContext11.ComputeFrustum(renderContext.Projection, viewFrustum);
 
-            for (int pass = 0; pass < 2; pass++)
+            for (var pass = 0; pass < 2; pass++)
             {
-                foreach (Layer layer in AllMaps[referenceFrame].Layers)
+                foreach (var layer in AllMaps[referenceFrame].Layers)
                 {
                     if ((pass == 0 && layer is ImageSetLayer) || (pass == 1 && !(layer is ImageSetLayer)))
                     {
-                        bool skipLayer = false;
+                        var skipLayer = false;
                         if (pass == 0)
                         {
                             // Skip default image set layer so that it's not drawn twice
@@ -3225,10 +3225,10 @@ namespace TerraViewer
 
                         if (layer.Enabled && !skipLayer) // && astronomical == layer.Astronomical)
                         {
-                            double layerStart = SpaceTimeController.UtcToJulian(layer.StartTime);
-                            double layerEnd = SpaceTimeController.UtcToJulian(layer.EndTime);
-                            double fadeIn = SpaceTimeController.UtcToJulian(layer.StartTime) - ((layer.FadeType == FadeType.In || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
-                            double fadeOut = SpaceTimeController.UtcToJulian(layer.EndTime) + ((layer.FadeType == FadeType.Out || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
+                            var layerStart = SpaceTimeController.UtcToJulian(layer.StartTime);
+                            var layerEnd = SpaceTimeController.UtcToJulian(layer.EndTime);
+                            var fadeIn = SpaceTimeController.UtcToJulian(layer.StartTime) - ((layer.FadeType == FadeType.In || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
+                            var fadeOut = SpaceTimeController.UtcToJulian(layer.EndTime) + ((layer.FadeType == FadeType.Out || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
 
                             if (SpaceTimeController.JNow > fadeIn && SpaceTimeController.JNow < fadeOut)
                             {
@@ -3252,7 +3252,7 @@ namespace TerraViewer
             }
             if (nested)
             {
-                foreach (LayerMap map in AllMaps[referenceFrame].ChildMaps.Values)
+                foreach (var map in AllMaps[referenceFrame].ChildMaps.Values)
                 {
                     if (map.Enabled && map.Frame.ShowOrbitPath && Properties.Settings.Default.SolarSystemMinorOrbits.State)
                     {
@@ -3263,32 +3263,32 @@ namespace TerraViewer
                                 map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, 1,/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
                             }
 
-                            double dd = renderContext.NominalRadius;
+                            var dd = renderContext.NominalRadius;
                             
-                            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
+                            var distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
 
 
 
-                            Matrix3d matSaved = renderContext.World;
+                            var matSaved = renderContext.World;
                             renderContext.World = thisMap.Frame.WorldMatrix * renderContext.WorldBaseNonRotating;
 
                             // orbitCenter is a position in camera space
-                            Vector3d orbitCenter = Vector3d.TransformCoordinate(new Vector3d(0, 0, 0), Matrix3d.Multiply(renderContext.World, renderContext.View));
-                            double worldScale = Math.Sqrt(renderContext.World.M11 * renderContext.World.M11 + renderContext.World.M12 * renderContext.World.M12 + renderContext.World.M13 * renderContext.World.M13) * UiTools.KilometersPerAu;
+                            var orbitCenter = Vector3d.TransformCoordinate(new Vector3d(0, 0, 0), Matrix3d.Multiply(renderContext.World, renderContext.View));
+                            var worldScale = Math.Sqrt(renderContext.World.M11 * renderContext.World.M11 + renderContext.World.M12 * renderContext.World.M12 + renderContext.World.M13 * renderContext.World.M13) * UiTools.KilometersPerAu;
 
 
 
-                            double orbitRadius = map.Frame.Orbit.BoundingRadius / UiTools.KilometersPerAu * worldScale;
-                            bool cull = !IsSphereInFrustum(orbitCenter, orbitRadius, viewFrustum);
+                            var orbitRadius = map.Frame.Orbit.BoundingRadius / UiTools.KilometersPerAu * worldScale;
+                            var cull = !IsSphereInFrustum(orbitCenter, orbitRadius, viewFrustum);
 
 
 
-                            float fade = (float)Math.Min(1, Math.Max(Math.Log(UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance), 10) - 7.3, 0));
+                            var fade = (float)Math.Min(1, Math.Max(Math.Log(UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance), 10) - 7.3, 0));
                             if (Earth3d.MainWindow.TrackingFrame == map.Frame.Name)
                             {
-                                double ratio = map.Frame.MeanRadius / distss;
+                                var ratio = map.Frame.MeanRadius / distss;
 
-                                double val = Math.Log(ratio, 10) + 2.7;
+                                var val = Math.Log(ratio, 10) + 2.7;
                                 fade = (float)Math.Min(1, Math.Max(-val, 0));
 
                             }
@@ -3311,26 +3311,26 @@ namespace TerraViewer
                                 map.Frame.trajectoryLines.ShowFarSide = true;
                                 map.Frame.trajectoryLines.UseNonRotatingFrame = true;
 
-                                int count = map.Frame.Trajectory.Count - 1;
-                                for (int i = 0; i < count; i++)
+                                var count = map.Frame.Trajectory.Count - 1;
+                                for (var i = 0; i < count; i++)
                                 {
-                                    Vector3d pos1 = map.Frame.Trajectory[i].Position;
-                                    Vector3d pos2 = map.Frame.Trajectory[i + 1].Position;
+                                    var pos1 = map.Frame.Trajectory[i].Position;
+                                    var pos2 = map.Frame.Trajectory[i + 1].Position;
                                     pos1.Multiply(1 / renderContext.NominalRadius);
                                     pos2.Multiply(1 / renderContext.NominalRadius);
                                     map.Frame.trajectoryLines.AddLine(pos1, pos2, map.Frame.RepresentativeColor, new Dates());
                                 }
                             }
-                            Matrix3d matSaved = renderContext.World;
+                            var matSaved = renderContext.World;
                             renderContext.World = thisMap.Frame.WorldMatrix * renderContext.WorldBaseNonRotating;
-                            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
+                            var distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
 
-                            float fade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 7.3, 0));
+                            var fade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 7.3, 0));
                             if (Earth3d.MainWindow.TrackingFrame == map.Frame.Name)
                             {
-                                double ratio = map.Frame.MeanRadius / distss;
+                                var ratio = map.Frame.MeanRadius / distss;
 
-                                double val = Math.Log(ratio, 10) + 2.7;
+                                var val = Math.Log(ratio, 10) + 2.7;
                                 fade = (float)Math.Min(1, Math.Max(-val, 0));
                             }
 
@@ -3362,7 +3362,7 @@ namespace TerraViewer
 
 
 
-            LayerMap thisMap = AllMaps[referenceFrame];
+            var thisMap = AllMaps[referenceFrame];
 
             if (thisMap.ChildMaps.Count == 0 && thisMap.Layers.Count == 0)
             {
@@ -3371,9 +3371,9 @@ namespace TerraViewer
 
             //PrepTourLayers();
 
-            Matrix3d matOld = renderContext.World;
-            Matrix3d matOldNonRotating = renderContext.WorldBaseNonRotating;
-            double oldNominalRadius = renderContext.NominalRadius;
+            var matOld = renderContext.World;
+            var matOldNonRotating = renderContext.WorldBaseNonRotating;
+            var oldNominalRadius = renderContext.NominalRadius;
             if (thisMap.Frame.Reference == ReferenceFrames.Custom)
             {
                 thisMap.ComputeFrame(renderContext);
@@ -3395,18 +3395,18 @@ namespace TerraViewer
 
 
 
-            for (int pass = 0; pass < 2; pass++)
+            for (var pass = 0; pass < 2; pass++)
             {
-                foreach (Layer layer in AllMaps[referenceFrame].Layers)
+                foreach (var layer in AllMaps[referenceFrame].Layers)
                 {
                     if ((pass == 0 && layer is ImageSetLayer) || (pass == 1 && !(layer is ImageSetLayer)))
                     {
                         if (layer.Enabled) // && astronomical == layer.Astronomical)
                         {
-                            double layerStart = SpaceTimeController.UtcToJulian(layer.StartTime);
-                            double layerEnd = SpaceTimeController.UtcToJulian(layer.EndTime);
-                            double fadeIn = SpaceTimeController.UtcToJulian(layer.StartTime) - ((layer.FadeType == FadeType.In || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
-                            double fadeOut = SpaceTimeController.UtcToJulian(layer.EndTime) + ((layer.FadeType == FadeType.Out || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
+                            var layerStart = SpaceTimeController.UtcToJulian(layer.StartTime);
+                            var layerEnd = SpaceTimeController.UtcToJulian(layer.EndTime);
+                            var fadeIn = SpaceTimeController.UtcToJulian(layer.StartTime) - ((layer.FadeType == FadeType.In || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
+                            var fadeOut = SpaceTimeController.UtcToJulian(layer.EndTime) + ((layer.FadeType == FadeType.Out || layer.FadeType == FadeType.Both) ? layer.FadeSpan.TotalDays : 0);
 
                             if (SpaceTimeController.JNow > fadeIn && SpaceTimeController.JNow < fadeOut)
                             {
@@ -3433,7 +3433,7 @@ namespace TerraViewer
             }
             if (nested)
             {
-                foreach (LayerMap map in AllMaps[referenceFrame].ChildMaps.Values)
+                foreach (var map in AllMaps[referenceFrame].ChildMaps.Values)
                 {
                     if ((map.Frame.Reference == ReferenceFrames.Custom || map.Frame.Reference == ReferenceFrames.Identity))
                     {
@@ -3455,16 +3455,16 @@ namespace TerraViewer
         {
 
 
-            IDataObject dataObject = Clipboard.GetDataObject();
+            var dataObject = Clipboard.GetDataObject();
             if (dataObject.GetDataPresent(DataFormats.UnicodeText))
             {
-                string[] formats = dataObject.GetFormats();
-                object data = dataObject.GetData(DataFormats.UnicodeText);
+                var formats = dataObject.GetFormats();
+                var data = dataObject.GetData(DataFormats.UnicodeText);
                 if (data is String)
                 {
-                    string layerName = "Pasted Layer";
+                    var layerName = "Pasted Layer";
 
-                    SpreadSheetLayer layer = new SpreadSheetLayer((string)data, true);
+                    var layer = new SpreadSheetLayer((string)data, true);
                     layer.Enabled = true;
                     layer.Name = layerName;
 
@@ -3485,7 +3485,7 @@ namespace TerraViewer
 
         public static Guid CreateLayerFromString(string data, string name, string referenceFrame, bool showUI, int color, DateTime beginDate, DateTime endDate, FadeType fadeType, double fadeRange)
         {
-            SpreadSheetLayer layer = new SpreadSheetLayer((string)data, true);
+            var layer = new SpreadSheetLayer((string)data, true);
             layer.Enabled = true;
             layer.Name = name;
             layer.TimeSeries = true;
@@ -3515,15 +3515,15 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
-                TimeSpan ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
+                var iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+                var ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
 
-                long ticksPerUnit = ts.Ticks / 1000;
+                var ticksPerUnit = ts.Ticks / 1000;
 
                 SpaceTimeController.Now = iTimeSeries.SeriesStartTime + new TimeSpan((long)timeScrubber.Value * ticksPerUnit);
             }
         }
-        bool autoLoop = false;
+        bool autoLoop;
 
         private void autoLoop_CheckedChanged(object sender, EventArgs e)
         {
@@ -3557,7 +3557,7 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+                var iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
                 if (iTimeSeries.IsTimeSeries)
                 {
                     if (SpaceTimeController.Now > iTimeSeries.SeriesEndTime)
@@ -3565,9 +3565,9 @@ namespace TerraViewer
                         SpaceTimeController.Now = iTimeSeries.SeriesStartTime;
                     }
 
-                    TimeSpan ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
+                    var ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
 
-                    long ticksPerUnit = ts.Ticks / 1001;
+                    var ticksPerUnit = ts.Ticks / 1001;
 
                     if (SpaceTimeController.Now < iTimeSeries.SeriesStartTime)
                     {
@@ -3602,7 +3602,7 @@ namespace TerraViewer
         {
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+                var iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
 
                 if (iTimeSeries.IsTimeSeries != timeSeries.Checked)
                 {
@@ -3619,10 +3619,10 @@ namespace TerraViewer
                 currentSelection = layerTree.SelectedNode.Tag;
             }
             DeleteLayer.Enabled = (layerTree.SelectedNode != null);
-            TreeNode node = e.Node;
+            var node = e.Node;
             if (layerTree.SelectedNode.Level > 0)
             {
-                int level = layerTree.SelectedNode.Level;
+                var level = layerTree.SelectedNode.Level;
 
 
                 while (!(node.Tag is LayerMap) && level > 0)
@@ -3630,7 +3630,7 @@ namespace TerraViewer
                     node = node.Parent;
                     level--;
                 }
-                LayerMap map = node.Tag as LayerMap;
+                var map = node.Tag as LayerMap;
                 if (map != null)
                 {
                     CurrentMap = map.Name;
@@ -3641,7 +3641,7 @@ namespace TerraViewer
 
             if (node != null && node.Tag is LayerUITreeNode)
             {
-                LayerUITreeNode layerNode = node.Tag as LayerUITreeNode;
+                var layerNode = node.Tag as LayerUITreeNode;
                 layerNode.FireNodeSelected();
 
             }
@@ -3649,7 +3649,7 @@ namespace TerraViewer
             
             if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+                var iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
 
                 timeSeries.Checked = iTimeSeries.IsTimeSeries;
                 if (iTimeSeries.SeriesStartTime.ToString("HH:mm:ss") == "00:00:00")
@@ -3673,7 +3673,7 @@ namespace TerraViewer
             }
             else if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag is LayerMap)
             {
-                LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+                var map = layerTree.SelectedNode.Tag as LayerMap;
                 if (map != null)
                 {
                     CurrentMap = map.Name;
@@ -3688,13 +3688,13 @@ namespace TerraViewer
 
         private void layerTree_AfterCollapse(object sender, TreeViewEventArgs e)
         {
-            TreeNode node = e.Node;
+            var node = e.Node;
             if (node != null && node.Tag is LayerUITreeNode)
             {
                 if (e.Action != TreeViewAction.Unknown)
                 {
 
-                    LayerUITreeNode layerNode = node.Tag as LayerUITreeNode;
+                    var layerNode = node.Tag as LayerUITreeNode;
                     if (layerNode.Opened != node.IsExpanded)
                     {
                         layerNode.Opened = node.IsExpanded;
@@ -3703,7 +3703,7 @@ namespace TerraViewer
             }
             else if (node != null && node.Tag is LayerMap)
             {
-                LayerMap map = node.Tag as LayerMap;
+                var map = node.Tag as LayerMap;
                 if (map != null)
                 {
                     map.Open = false;
@@ -3713,12 +3713,12 @@ namespace TerraViewer
 
         private void layerTree_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            TreeNode node = e.Node;
+            var node = e.Node;
             if (node != null && node.Tag is LayerUITreeNode)
             {
                 if (e.Action != TreeViewAction.Unknown)
                 {
-                    LayerUITreeNode layerNode = node.Tag as LayerUITreeNode;
+                    var layerNode = node.Tag as LayerUITreeNode;
                     if (layerNode.Opened != node.IsExpanded)
                     {
                         layerNode.Opened = node.IsExpanded;
@@ -3727,7 +3727,7 @@ namespace TerraViewer
             }
             else if (node != null && node.Tag is LayerMap)
             {
-                LayerMap map = node.Tag as LayerMap;
+                var map = node.Tag as LayerMap;
                 if (map != null)
                 {
                     map.Open = true;
@@ -3741,13 +3741,13 @@ namespace TerraViewer
 
         internal static Dictionary<Guid, LayerInfo> GetVisibleLayerList(Dictionary<Guid, LayerInfo> previous)
         {
-            Dictionary<Guid, LayerInfo> list = new Dictionary<Guid, LayerInfo>();
+            var list = new Dictionary<Guid, LayerInfo>();
 
-            foreach (Layer layer in LayerList.Values)
+            foreach (var layer in LayerList.Values)
             {
                 if (layer.Enabled)
                 {
-                    LayerInfo info = new LayerInfo();
+                    var info = new LayerInfo();
                     info.StartOpacity = info.EndOpacity = layer.Opacity;
                     info.ID = layer.ID;
                     info.StartParams = layer.GetParams();
@@ -3770,7 +3770,7 @@ namespace TerraViewer
 
         internal static void SetVisibleLayerList(Dictionary<Guid, LayerInfo> list)
         {
-            foreach (Layer layer in LayerList.Values)
+            foreach (var layer in LayerList.Values)
             {
                 layer.Enabled = list.ContainsKey(layer.ID);
                 try
@@ -3791,12 +3791,12 @@ namespace TerraViewer
 
         private void fadeTimer_Tick(object sender, EventArgs e)
         {
-            Rectangle rect = this.RectangleToScreen(this.ClientRectangle);
+            var rect = this.RectangleToScreen(this.ClientRectangle);
             rect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
 
             InsideLayerManagerRect = rect.Contains(Cursor.Position);
 
-            bool inside = MenuTabs.MouseInTabs || TabForm.InsideTabRect || rect.Contains(Cursor.Position) || !((TourPlayer.Playing && !Settings.DomeView) || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
+            var inside = MenuTabs.MouseInTabs || TabForm.InsideTabRect || rect.Contains(Cursor.Position) || !((TourPlayer.Playing && !Settings.DomeView) || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
 
             if (inside != fader.TargetState)
             {
@@ -3847,7 +3847,8 @@ namespace TerraViewer
                 Opacity = 1.0;
             }
         }
-        BlendState fader = new BlendState(false, 1000.0);
+
+        readonly BlendState fader = new BlendState(false, 1000.0);
 
         private void LayerManager_MouseEnter(object sender, EventArgs e)
         {
@@ -3858,7 +3859,7 @@ namespace TerraViewer
 
         public static void ConnectAllChildren()
         {
-            foreach (LayerMap map in AllMaps.Values)
+            foreach (var map in AllMaps.Values)
             {
                 if (String.IsNullOrEmpty(map.Frame.Parent) && !LayerMaps.ContainsKey(map.Frame.Name))
                 {
@@ -3884,17 +3885,17 @@ namespace TerraViewer
 
         internal static bool CreateLayerGroup(string name, string referenceFrame)
         {
-            LayerMap parent = AllMaps[referenceFrame];
+            var parent = AllMaps[referenceFrame];
             if (parent == null)
             {
                 return false;
             }
             try
             {
-                ReferenceFrame frame = new ReferenceFrame();
+                var frame = new ReferenceFrame();
                 frame.Name = name;
                 frame.Reference = ReferenceFrames.Identity;
-                LayerMap newMap = new LayerMap(frame.Name, ReferenceFrames.Identity);
+                var newMap = new LayerMap(frame.Name, ReferenceFrames.Identity);
                 newMap.Frame = frame;
                 newMap.Frame.SystemGenerated = false;
                 parent.AddChild(newMap);
@@ -3947,7 +3948,7 @@ namespace TerraViewer
             }
             else if (filename.ToLower().EndsWith(".layers"))
             {
-                LayerContainer layers = LayerContainer.FromFile(filename, false, parentFrame, referenceFrameRightClick);
+                var layers = LayerContainer.FromFile(filename, false, parentFrame, referenceFrameRightClick);
                 layers.Dispose();
                 GC.SuppressFinalize(layers);
                 LoadTree();
@@ -3961,7 +3962,7 @@ namespace TerraViewer
 
         public static Layer LoadLayerFile(string filename, string parentFrame, bool referenceFrameRightClick)
         {
-            LayerContainer layers = LayerContainer.FromFile(filename, false, parentFrame, referenceFrameRightClick);
+            var layers = LayerContainer.FromFile(filename, false, parentFrame, referenceFrameRightClick);
             //   layers.ClearTempFiles();
             Earth3d.MainWindow.ShowLayersWindows = true;
             return layers.LastLoadedLayer;
@@ -3970,7 +3971,7 @@ namespace TerraViewer
 
         internal static Layer LoadOrbitsFile(string path, string currentMap)
         {
-            OrbitLayer layer = new OrbitLayer();
+            var layer = new OrbitLayer();
             layer.LoadData(path);
             layer.Enabled = true;
             layer.Name = path.Substring(path.LastIndexOf('\\') + 1);
@@ -3985,7 +3986,7 @@ namespace TerraViewer
 
         private static Layer LoadGroundOverlayFile(string path, string parentFrame, bool interactive)
         {
-            GroundOverlayLayer layer = new GroundOverlayLayer();
+            var layer = new GroundOverlayLayer();
 
             layer.CreateFromFile(path);
             layer.Overlay.north = Earth3d.MainWindow.viewCamera.Lat + 5;
@@ -4004,7 +4005,7 @@ namespace TerraViewer
 
             if (interactive)
             {
-                GroundOverlayProperties props = new GroundOverlayProperties();
+                var props = new GroundOverlayProperties();
                 props.Overlay = layer.Overlay;
                 props.OverlayLayer = layer;
                 props.Owner = Earth3d.MainWindow;
@@ -4015,7 +4016,7 @@ namespace TerraViewer
 
         private static void AddGreatCircleLayer()
         {
-            GreatCirlceRouteLayer layer = new GreatCirlceRouteLayer();
+            var layer = new GreatCirlceRouteLayer();
 
 
             layer.LatStart = Earth3d.MainWindow.viewCamera.Lat;
@@ -4032,7 +4033,7 @@ namespace TerraViewer
             version++;
             LoadTree();
 
-            GreatCircleProperties props = new GreatCircleProperties();
+            var props = new GreatCircleProperties();
             props.Layer = layer;
             props.Owner = Earth3d.MainWindow;
             props.Show();
@@ -4041,8 +4042,8 @@ namespace TerraViewer
 
         private static Layer LoadKmlFile(string path, string parentFrame)
         {
-            KmlRoot newRoot = new KmlRoot(path, (KmlRoot)null);
-            KmlLayer layer = new KmlLayer();
+            var newRoot = new KmlRoot(path, (KmlRoot)null);
+            var layer = new KmlLayer();
             layer.root = newRoot;
             KmlCollection.UpdateRootLinks(layer.root, Earth3d.MainWindow.KmlViewInfo);
             layer.UpdateRetainedVisuals();
@@ -4067,14 +4068,14 @@ namespace TerraViewer
         private static Layer LoadWtmlFile(string filename, string parentFrame)
         {
             IImageSet imageset = null;
-            Folder newFolder = Folder.LoadFromFile(filename, false);
+            var newFolder = Folder.LoadFromFile(filename, false);
 
             if (newFolder.Children.Length > 0)
             {
 
                 if (newFolder.Children[0] is Place)
                 {
-                    Place place = (Place)newFolder.Children[0];
+                    var place = (Place)newFolder.Children[0];
                     if (place.BackgroundImageSet != null && place.BackgroundImageSet.ImageSet != null)
                     {
                         imageset = place.BackgroundImageSet.ImageSet;
@@ -4095,7 +4096,7 @@ namespace TerraViewer
                 return null;
             }
 
-            Layer layer = AddImagesetLayer(imageset);
+            var layer = AddImagesetLayer(imageset);
             version++;
             return layer;
         }
@@ -4104,7 +4105,7 @@ namespace TerraViewer
         {
             try
             {
-                Layer layer = LoadLayer(filename, referenceFrame, false, false);
+                var layer = LoadLayer(filename, referenceFrame, false, false);
                 layer.StartTime = beginDate;
                 layer.EndTime = endDate;
                 layer.Color = Color.FromArgb(color);
@@ -4126,7 +4127,7 @@ namespace TerraViewer
 
         public static Layer NewDynamicLayer()
         {
-            SpreadSheetLayer layer = new SpreadSheetLayer();
+            var layer = new SpreadSheetLayer();
             layer.Enabled = true;
             layer.DynamicData = true;
             layer.Name = Language.GetLocalizedText(1143, "New Dynamic layer");
@@ -4165,7 +4166,7 @@ namespace TerraViewer
         {
             if (LayerList.ContainsKey(ID))
             {
-                Layer layer = LayerList[ID];
+                var layer = LayerList[ID];
                 return layer.GetProps();
             }
             else
@@ -4180,8 +4181,8 @@ namespace TerraViewer
         {
             if (LayerList.ContainsKey(ID))
             {
-                Layer layer = LayerList[ID];
-                bool retVal = layer.SetProp(propName, propValue);
+                var layer = LayerList[ID];
+                var retVal = layer.SetProp(propName, propValue);
                 layer.CleanUp();
                 LoadTree();
                 return retVal;
@@ -4199,9 +4200,9 @@ namespace TerraViewer
         {
             if (LayerList.ContainsKey(ID))
             {
-                Layer layer = LayerList[ID];
+                var layer = LayerList[ID];
 
-                bool retVal = layer.SetProps(xml);
+                var retVal = layer.SetProps(xml);
                 layer.CleanUp();
                 LoadTree();
                 return retVal;
@@ -4216,7 +4217,7 @@ namespace TerraViewer
         {
             if (LayerList.ContainsKey(ID))
             {
-                Layer layer = LayerList[ID];
+                var layer = LayerList[ID];
 
                 if (master != null)
                 {
@@ -4251,7 +4252,7 @@ namespace TerraViewer
 
         private bool ActivateLayerLocal(Layer layer)
         {
-            TreeNode selectNode = FindLayerNode(layerTree.Nodes, layer);
+            var selectNode = FindLayerNode(layerTree.Nodes, layer);
             if (selectNode != null)
             {
                 layerTree.SelectedNode = selectNode;
@@ -4269,7 +4270,7 @@ namespace TerraViewer
                 {
                     return node;
                 }
-                TreeNode found = FindLayerNode(node.Nodes, layer);
+                var found = FindLayerNode(node.Nodes, layer);
                 if (found != null)
                 {
                     return found;
@@ -4308,8 +4309,8 @@ namespace TerraViewer
 
         internal static string GetLayerList(bool layersOnly)
         {
-            MemoryStream ms = new MemoryStream();
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
+            var ms = new MemoryStream();
+            using (var xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
@@ -4325,15 +4326,15 @@ namespace TerraViewer
                 xmlWriter.Close();
 
             }
-            byte[] data = ms.GetBuffer();
+            var data = ms.GetBuffer();
             return Encoding.UTF8.GetString(data);
         }
 
         private static void PrintLayers(XmlTextWriter xmlWriter, bool layersOnly, Dictionary<string, LayerMap> LayerMaps)
         {
-            foreach (LayerMap map in LayerMaps.Values)
+            foreach (var map in LayerMaps.Values)
             {
-                List<Layer> layers = map.Layers;
+                var layers = map.Layers;
                 if (!layersOnly)
                 {
                     if (map.Frame.Reference == ReferenceFrames.Identity)
@@ -4347,7 +4348,7 @@ namespace TerraViewer
                     xmlWriter.WriteAttributeString("Name", map.Name);
                     xmlWriter.WriteAttributeString("Enabled", map.Enabled.ToString());
                 }
-                foreach (Layer layer in layers)
+                foreach (var layer in layers)
                 {
                     xmlWriter.WriteStartElement("Layer");
                     xmlWriter.WriteAttributeString("Name", layer.Name);
@@ -4376,9 +4377,9 @@ namespace TerraViewer
         {
             if (LayerList.ContainsKey(ID))
             {
-                Layer layer = LayerList[ID];
+                var layer = LayerList[ID];
 
-                SpreadSheetLayer sheet = layer as SpreadSheetLayer;
+                var sheet = layer as SpreadSheetLayer;
                 if (sheet != null)
                 {
                     return sheet.Table.ToString();
@@ -4406,7 +4407,7 @@ namespace TerraViewer
         private void Plus_Click(object sender, EventArgs e)
         {
 
-            TreeNode node = layerTree.SelectedNode;
+            var node = layerTree.SelectedNode;
             if (node == null)
             {
                 return;
@@ -4436,7 +4437,7 @@ namespace TerraViewer
         {
             ((Label)sender).ForeColor = Color.White;
         }
-        bool dragging = false;
+        bool dragging;
         System.Drawing.Point downPoint;
         private void LayerManager_MouseDown(object sender, MouseEventArgs e)
         {
@@ -4456,7 +4457,7 @@ namespace TerraViewer
         {
             if (dragging)
             {
-                int change = downPoint.X - e.X;
+                var change = downPoint.X - e.X;
                 this.Width = Math.Min(600, Math.Max(150, Width - change));
 
                 downPoint = e.Location;
@@ -4479,10 +4480,10 @@ namespace TerraViewer
 
         private void layerTree_DoubleClick(object sender, EventArgs e)
         {
-            TreeNode node = layerTree.SelectedNode as TreeNode;
+            var node = layerTree.SelectedNode as TreeNode;
             if (node != null && node.Tag is LayerUITreeNode)
             {
-                LayerUITreeNode layerNode = node.Tag as LayerUITreeNode;
+                var layerNode = node.Tag as LayerUITreeNode;
                 layerNode.FireNodeActivated();
             }
         }
@@ -4491,7 +4492,7 @@ namespace TerraViewer
         {
             if (NameValues.SelectedItems.Count > 0)
             {
-                string url = NameValues.SelectedItems[0].SubItems[1].Text;
+                var url = NameValues.SelectedItems[0].SubItems[1].Text;
 
                 if (url.ToLower().StartsWith("http:") || url.ToLower().StartsWith("https:"))
                 {
@@ -4529,9 +4530,9 @@ namespace TerraViewer
             {
                 if (layer != null)
                 {
-                    TreeNode[] results = layerTree.Nodes.Find(layer.Name, true);
+                    var results = layerTree.Nodes.Find(layer.Name, true);
 
-                    foreach(TreeNode child in results)
+                    foreach(var child in results)
                     {
                         if (child.Tag == layer)
                         {
@@ -4547,7 +4548,7 @@ namespace TerraViewer
         {
             if (AllMaps.ContainsKey(referenceFrame))
             {
-                LayerMap target = AllMaps[referenceFrame];
+                var target = AllMaps[referenceFrame];
                 PurgeLayerMapDeep(target, true);
                 version++;
                 LoadTree();

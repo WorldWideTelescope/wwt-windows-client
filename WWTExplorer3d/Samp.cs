@@ -9,7 +9,7 @@ namespace TerraViewer
 {
     public class Samp
     {
-        Dictionary<string, string> dotSamp = new Dictionary<string, string>();
+        readonly Dictionary<string, string> dotSamp = new Dictionary<string, string>();
         public static Dictionary<string, VoTableLayer> sampKnownTableIds = new Dictionary<string, VoTableLayer>(); 
         public static Dictionary<string, VoTableLayer> sampKnownTableUrls = new Dictionary<string, VoTableLayer>();
         public Samp()
@@ -32,22 +32,22 @@ namespace TerraViewer
         {
             try
             {
-                string personalFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                var personalFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 personalFolder = personalFolder.Substring(0, personalFolder.LastIndexOf("\\"));
-                string filename = personalFolder + "\\.samp";
+                var filename = personalFolder + "\\.samp";
                 if (!File.Exists(filename))
                 {
                     return;
                 }
 
-                using (StreamReader sr = new StreamReader(filename))
+                using (var sr = new StreamReader(filename))
                 {
                     while (sr.Peek() >= 0)
                     {
-                        string line = sr.ReadLine();
+                        var line = sr.ReadLine();
                         if (!line.StartsWith("#"))
                         {
-                            string[] split = line.Split(new char[] { '=' });
+                            var split = line.Split(new char[] { '=' });
                             dotSamp.Add(split[0], split[1]);
                         }
                     }
@@ -60,7 +60,7 @@ namespace TerraViewer
             {
             }
         }
-        private bool connected = false;
+        private bool connected;
 
         public bool Connected
         {
@@ -77,7 +77,7 @@ namespace TerraViewer
                 return;
             }
 
-            StringBuilder callData = new StringBuilder();
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.register</methodName>");
@@ -88,12 +88,12 @@ namespace TerraViewer
 
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
-                string text = ASCIIEncoding.ASCII.GetString(response);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
+                var text = ASCIIEncoding.ASCII.GetString(response);
                 clientId = GetResponseParamValue(text, "samp.private-key");
                 connected = true;
             }
@@ -109,8 +109,8 @@ namespace TerraViewer
             {
                 return;
             }
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.unregister</methodName>");
@@ -121,11 +121,11 @@ namespace TerraViewer
 
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch 
@@ -141,8 +141,8 @@ namespace TerraViewer
             {
                 return;
             }
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.declareMetadata</methodName>");
@@ -160,11 +160,11 @@ namespace TerraViewer
 
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch 
@@ -180,8 +180,8 @@ namespace TerraViewer
             {
                 return null;
             }
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.getSubscribedClients</methodName>");
@@ -190,14 +190,14 @@ namespace TerraViewer
             callData.AppendLine("<param><value><string>" + mType + "</string></value></param>");
             callData.AppendLine("</params>");
             callData.AppendLine("</methodCall>");
-            List<string> list = new List<string>();
+            var list = new List<string>();
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch 
@@ -214,8 +214,8 @@ namespace TerraViewer
                 return;
             }
             
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
@@ -239,11 +239,11 @@ namespace TerraViewer
 
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch 
@@ -259,8 +259,8 @@ namespace TerraViewer
                 return;
             }
             
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.setXmlrpcCallback</methodName>");
@@ -272,11 +272,11 @@ namespace TerraViewer
 
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch 
@@ -292,8 +292,8 @@ namespace TerraViewer
                 return;
             }
 
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
@@ -317,11 +317,11 @@ namespace TerraViewer
             callData.AppendLine("</methodCall>");
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch
@@ -338,8 +338,8 @@ namespace TerraViewer
                 return;
             }
 
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
@@ -366,11 +366,11 @@ namespace TerraViewer
             callData.AppendLine("</methodCall>");
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch
@@ -387,8 +387,8 @@ namespace TerraViewer
                 return;
             }
 
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
@@ -412,11 +412,11 @@ namespace TerraViewer
             callData.AppendLine("</methodCall>");
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch
@@ -431,8 +431,8 @@ namespace TerraViewer
             {
                 return;
             }
-            string responseValue = "";
-            StringBuilder callData = new StringBuilder();
+            var responseValue = "";
+            var callData = new StringBuilder();
             callData.Append("<?xml version=\"1.0\" ?>\r\n");
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.declareSubscriptions</methodName>");
@@ -450,11 +450,11 @@ namespace TerraViewer
 
             try
             {
-                System.Net.WebClient wc = new WebClient();
+                var wc = new WebClient();
                 wc.Headers.Add("User-Agent", "WWT");
                 wc.Headers.Add("Content-Type", "text/xml");
-                byte[] rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
-                byte[] response = wc.UploadData(hubUrl, "POST", rpcData);
+                var rpcData = ASCIIEncoding.ASCII.GetBytes(callData.ToString());
+                var response = wc.UploadData(hubUrl, "POST", rpcData);
                 responseValue = ASCIIEncoding.ASCII.GetString(response);
             }
             catch
@@ -468,10 +468,10 @@ namespace TerraViewer
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(xml);
                 XmlNode node;
-                XmlElement root = doc.DocumentElement;
+                var root = doc.DocumentElement;
                 node = root.SelectSingleNode("/methodResponse/params/param/value/struct/member[name='" + key + "']");
                 XmlNode val = node["value"];
                 //XmlNode node = doc["methodResponse"];

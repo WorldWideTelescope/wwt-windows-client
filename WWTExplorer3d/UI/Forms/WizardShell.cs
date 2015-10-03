@@ -55,7 +55,7 @@ namespace TerraViewer
         }
 
         int currentPageIndex = -1;
-        PropPage currentPage = null;
+        PropPage currentPage;
         private void ShowNextPage()
         {
             target.SendUpdateTab(this);
@@ -65,8 +65,8 @@ namespace TerraViewer
                 return;
             }
 
-            int checkPageIndex = currentPageIndex+1;
-            bool foundVisiblePage = false;
+            var checkPageIndex = currentPageIndex+1;
+            var foundVisiblePage = false;
             while (!(checkPageIndex >= (Target.Pages.Count - 1)))
             {
                 if (Target.Pages[checkPageIndex].Visible)
@@ -95,7 +95,7 @@ namespace TerraViewer
 
             currentPageIndex = checkPageIndex;
 
-            PropPage page = (PropPage)Activator.CreateInstance(Target.Pages[currentPageIndex].Page);
+            var page = (PropPage)Activator.CreateInstance(Target.Pages[currentPageIndex].Page);
             page.Top = this.Contents.Top;
             page.Left = this.Contents.Left;
             page.Binding = target;
@@ -116,8 +116,8 @@ namespace TerraViewer
                 return;
             }
 
-            int checkPageIndex = currentPageIndex - 1;
-            bool foundVisiblePage = false;
+            var checkPageIndex = currentPageIndex - 1;
+            var foundVisiblePage = false;
             while (checkPageIndex >= 0)
             {
                 if (Target.Pages[checkPageIndex].Visible)
@@ -145,7 +145,7 @@ namespace TerraViewer
             
             currentPageIndex = checkPageIndex;
 
-            PropPage page = (PropPage)Activator.CreateInstance(Target.Pages[currentPageIndex].Page);
+            var page = (PropPage)Activator.CreateInstance(Target.Pages[currentPageIndex].Page);
             page.Top = this.Contents.Top;
             page.Left = this.Contents.Left;
             page.Binding = target;
@@ -181,8 +181,8 @@ namespace TerraViewer
 
         private bool IsNextVisible()
         {
-            int checkPageIndex = currentPageIndex + 1;
-            bool foundVisiblePage = false;
+            var checkPageIndex = currentPageIndex + 1;
+            var foundVisiblePage = false;
             while (!(checkPageIndex >= (Target.Pages.Count - 1)))
             {
                 if (Target.Pages[checkPageIndex].Visible)
@@ -217,9 +217,9 @@ namespace TerraViewer
         }
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
-            Pen p = new Pen(Color.FromArgb(71, 84, 108));
+            var p = new Pen(Color.FromArgb(71, 84, 108));
             g.FillRectangle(b, this.ClientRectangle);
             g.DrawRectangle(p, new Rectangle(0, ClientSize.Height - 1, ClientSize.Width - 1, ClientSize.Height - 1));
             p.Dispose();

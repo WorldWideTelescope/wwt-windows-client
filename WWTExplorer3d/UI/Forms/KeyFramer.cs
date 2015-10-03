@@ -17,7 +17,7 @@ namespace TerraViewer
             {
                 if (singleton == null)
                 {
-                    KeyFramer kf = new KeyFramer();
+                    var kf = new KeyFramer();
 
                     kf.Owner = Earth3d.MainWindow;
                     Earth3d.MainWindow.AddOwnedForm(kf);
@@ -58,7 +58,7 @@ namespace TerraViewer
         }
 
    
-        static KeyFramer singleton = null;
+        static KeyFramer singleton;
         public KeyFramer()
         {
             InitializeComponent();

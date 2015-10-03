@@ -38,7 +38,7 @@ namespace TerraViewer
 
         private void UpdatePropertyCombo()
         {
-            BindingTargetType tt = (BindingTargetType)TargetTypeCombo.SelectedIndex;
+            var tt = (BindingTargetType)TargetTypeCombo.SelectedIndex;
 
             TargetPropertyCombo.Items.Clear();
             TargetPropertyCombo.ClearText();
@@ -46,12 +46,12 @@ namespace TerraViewer
             filterLabel.Visible = false;
             filterList.Visible = false;
 
-            ControlBinding binding = ButtonMap.BindingA;
+            var binding = ButtonMap.BindingA;
 
             binding.TargetType = tt;
 
             IScriptable scriptInterface = null;
-            bool comboVisible = true;
+            var comboVisible = true;
             switch (tt)
             {
                 case BindingTargetType.Setting:
@@ -129,7 +129,7 @@ namespace TerraViewer
 
         private void TargetPropertyCombo_SelectionChanged(object sender, EventArgs e)
         {
-            ScriptableProperty prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
+            var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
 
 
             filterLabel.Visible = false;
@@ -147,9 +147,9 @@ namespace TerraViewer
                     filterLabel.Visible = true;
                     filterList.Visible = true;
                     filterList.Items.Clear();
-                    int index = 0;
-                    int selectedIndex = 0;
-                    foreach (string name in ConstellationFilter.Families.Keys)
+                    var index = 0;
+                    var selectedIndex = 0;
+                    foreach (var name in ConstellationFilter.Families.Keys)
                     {
                         filterList.Items.Add(name);
                         if (name == ButtonMap.BindingA.Value)
@@ -224,9 +224,9 @@ namespace TerraViewer
 
         private void filterList_SelectionChanged(object sender, EventArgs e)
         {
-            ControlBinding binding = (ControlBinding)ButtonMap.BindingA;
+            var binding = (ControlBinding)ButtonMap.BindingA;
 
-            ScriptableProperty prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
+            var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
 
             if (prop != null)
             {

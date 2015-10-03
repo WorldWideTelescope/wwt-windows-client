@@ -79,10 +79,10 @@ namespace TerraViewer
             {
                 return;
             }
-            bool change = false;
+            var change = false;
             if (this.corners != null)
             {
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     if (this.corners[i] != corners[i])
                     {
@@ -103,7 +103,7 @@ namespace TerraViewer
             if (Settings.Active.LocalHorizonMode)
             {
                 cornersAltAz = new Coordinates[4];
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     this.cornersAltAz[i] = Coordinates.EquitorialToHorizon(corners[i], SpaceTimeController.Location, SpaceTimeController.Now);
                 }
@@ -178,7 +178,7 @@ namespace TerraViewer
             }
             else
             {
-                Graphics g = e.Graphics;
+                var g = e.Graphics;
                 g.Clear(BackColor);
 
             }
@@ -191,21 +191,21 @@ namespace TerraViewer
         string south = "S";
         private void PaintAltAz(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             g.Clear(BackColor);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            int radius = 33;
+            var radius = 33;
             centerf = new PointF(48, 44);
-            Point center = new Point(48, 44);
+            var center = new Point(48, 44);
 
-            Rectangle rectSphere = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
-            SolidBrush grayBrush = new SolidBrush(Color.Gray);
-            SolidBrush yellowBrush = new SolidBrush(Color.Yellow);
-            SolidBrush darkBlueBrush = new SolidBrush(Color.FromArgb(255, 0, 0, 24));
-            Pen darkYellowPen = new Pen(Color.FromArgb(192, 192, 64));
+            var rectSphere = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+            var grayBrush = new SolidBrush(Color.Gray);
+            var yellowBrush = new SolidBrush(Color.Yellow);
+            var darkBlueBrush = new SolidBrush(Color.FromArgb(255, 0, 0, 24));
+            var darkYellowPen = new Pen(Color.FromArgb(192, 192, 64));
 
-            Rectangle rectMeridians = new Rectangle(center.X - 7, center.Y - radius, 14, radius * 2);
-            Rectangle rectEquator = new Rectangle(center.X - radius, center.Y - 7, radius * 2, 14);
+            var rectMeridians = new Rectangle(center.X - 7, center.Y - radius, 14, radius * 2);
+            var rectEquator = new Rectangle(center.X - radius, center.Y - 7, radius * 2, 14);
 
             g.FillEllipse(grayBrush, rectSphere);
             g.DrawEllipse(Pens.White, rectSphere);
@@ -217,10 +217,10 @@ namespace TerraViewer
             if (cornersAltAz != null)
             {
                 // Draw the FOV indicator
-                PointF[] points = new PointF[4];
+                var points = new PointF[4];
                 const double RC = (Math.PI / 180.0);
 
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     points[i].X = centerf.X - (float)(Math.Cos((cornersAltAz[i].Az+90) * RC) * Math.Cos(cornersAltAz[i].Alt * RC) * radius);
                     points[i].Y = centerf.Y - (float)(Math.Sin((cornersAltAz[i].Az+90) * RC) * Math.Cos(cornersAltAz[i].Alt * RC) * radius);
@@ -249,21 +249,21 @@ namespace TerraViewer
         PointF centerf = new PointF(48, 47);
         private void PaintEquitorial(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             g.Clear(BackColor);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            int radius = 33;
+            var radius = 33;
             centerf = new PointF(48, 47);
-            Point center = new Point(48, 47);
+            var center = new Point(48, 47);
 
-            Rectangle rectSphere = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
-            SolidBrush grayBrush = new SolidBrush(Color.Gray);
-            SolidBrush yellowBrush = new SolidBrush(Color.Yellow);
-            SolidBrush darkYellowBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 0));
-            Pen darkYellowPen = new Pen(Color.FromArgb(192, 192, 64));
+            var rectSphere = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+            var grayBrush = new SolidBrush(Color.Gray);
+            var yellowBrush = new SolidBrush(Color.Yellow);
+            var darkYellowBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 0));
+            var darkYellowPen = new Pen(Color.FromArgb(192, 192, 64));
 
-            Rectangle rectMeridians = new Rectangle(center.X - 7, center.Y - radius, 14, radius * 2);
-            Rectangle rectEquator = new Rectangle(center.X - radius, center.Y - 7, radius * 2, 14);
+            var rectMeridians = new Rectangle(center.X - 7, center.Y - radius, 14, radius * 2);
+            var rectEquator = new Rectangle(center.X - radius, center.Y - 7, radius * 2, 14);
             g.DrawString(north, UiTools.StandardSmall, UiTools.StadardTextBrush, new PointF(center.X - 4, -1));
             g.FillEllipse(grayBrush, rectSphere);
             g.DrawEllipse(Pens.White, rectSphere);
@@ -276,14 +276,14 @@ namespace TerraViewer
             if (corners != null)
             {
                 // Draw the FOV indicator
-                PointF[] points = new PointF[4];
+                var points = new PointF[4];
                 const double RC = (Math.PI / 180.0);
 
                 //return new Vector3((float)(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (float)(Math.Sin(lat * RC) * radius), (float)(Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
                 //return new Vector3((float)(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (float)(Math.Sin(lat * RC) * radius), (float)(Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
 
                 double z = 0;
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     points[i].X = centerf.X - (float)(Math.Cos((corners[i].RA + 6) / 12 * 180 * RC) * Math.Cos(corners[i].Lat * RC) * radius);
                     points[i].Y = centerf.Y - (float)(Math.Sin(corners[i].Lat * RC) * radius);
@@ -313,22 +313,22 @@ namespace TerraViewer
         }
         private void PaintEarth(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             g.Clear(BackColor);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            int radius = 33;
+            var radius = 33;
             centerf = new PointF(48, 47);
-            Point center = new Point(48, 47);
+            var center = new Point(48, 47);
 
-            Rectangle rectSphere = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
-            Rectangle rectInnerSphere = new Rectangle(center.X - 16, center.Y - 16, 16 * 2, 16 * 2);
-            SolidBrush grayBrush = new SolidBrush(Color.Gray);
-            SolidBrush yellowBrush = new SolidBrush(Color.Yellow);
-            SolidBrush darkYellowBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 0));
-            Pen darkYellowPen = new Pen(Color.FromArgb(192, 192, 64));
+            var rectSphere = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+            var rectInnerSphere = new Rectangle(center.X - 16, center.Y - 16, 16 * 2, 16 * 2);
+            var grayBrush = new SolidBrush(Color.Gray);
+            var yellowBrush = new SolidBrush(Color.Yellow);
+            var darkYellowBrush = new SolidBrush(Color.FromArgb(128, 255, 255, 0));
+            var darkYellowPen = new Pen(Color.FromArgb(192, 192, 64));
 
-            Rectangle rectMeridians = new Rectangle(center.X - 7, center.Y - radius, 14, radius * 2);
-            Rectangle rectEquator = new Rectangle(center.X - radius, center.Y - 7, radius * 2, 14);
+            var rectMeridians = new Rectangle(center.X - 7, center.Y - radius, 14, radius * 2);
+            var rectEquator = new Rectangle(center.X - radius, center.Y - 7, radius * 2, 14);
             g.DrawString(north, UiTools.StandardSmall, UiTools.StadardTextBrush, new PointF(center.X - 4, -1));
             g.FillEllipse(grayBrush, rectSphere);
             g.DrawEllipse(Pens.White, rectSphere);
@@ -349,13 +349,13 @@ namespace TerraViewer
             Earth3d.MainWindow.MoveView(-moveVector.X, moveVector.Y, false);
         }
 
-        bool mouseDown = false;
+        bool mouseDown;
         private void SkyBall_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                ContextMenuStrip contextMenu = new ContextMenuStrip();
-                ToolStripMenuItem copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(1277, "Copy Coordinates"));
+                var contextMenu = new ContextMenuStrip();
+                var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(1277, "Copy Coordinates"));
                 copyMenu.Click += new EventHandler(copyMenu_Click);
                 contextMenu.Items.Add(copyMenu);
                 contextMenu.Show(Cursor.Position);
@@ -371,7 +371,7 @@ namespace TerraViewer
         {
             Clipboard.SetText(dec.ToString() + ", " + RA.ToString());
         }
-        PointF moveVector = new PointF();
+        PointF moveVector;
         private void SkyBall_MouseMove(object sender, MouseEventArgs e)
         {
             moveVector = new PointF(centerf.X - e.X, centerf.Y - e.Y);

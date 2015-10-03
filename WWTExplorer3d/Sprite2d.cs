@@ -24,7 +24,7 @@ namespace TerraViewer
             renderContext.devContext.InputAssembler.PrimitiveTopology = primitiveType;
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             WarpOutputShader.MatWVP = mat;
@@ -32,7 +32,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);
@@ -60,7 +60,7 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
 
-            SharpDX.Matrix mat =
+            var mat =
                 SharpDX.Matrix.Translation(-renderContext.ViewPort.Width / 2, -renderContext.ViewPort.Height / 2, 0) *
                 SharpDX.Matrix.Scaling(1f, -1f, 1f)
             * SharpDX.Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
@@ -71,7 +71,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);
@@ -86,14 +86,14 @@ namespace TerraViewer
             renderContext.devContext.Draw(count, 0);
         }
 
-        static PositionColoredTextured[] cornerPoints = new PositionColoredTextured[4];
+        static readonly PositionColoredTextured[] cornerPoints = new PositionColoredTextured[4];
 
         static Matrix3d domeMatrix = Matrix3d.Identity;
 
         public static Vector3d MakePosition(float centerX, float centerY, float offsetX, float offsetY, float angle)
         {
 
-                Vector3d point = new Vector3d(centerX + offsetX, centerY + offsetY, 1);
+                var point = new Vector3d(centerX + offsetX, centerY + offsetY, 1);
 
                 return point;
 
@@ -150,7 +150,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);
@@ -180,7 +180,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);

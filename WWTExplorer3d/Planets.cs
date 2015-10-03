@@ -60,11 +60,11 @@ namespace TerraViewer
             public readonly Vector3d position;
         };
 
-        SolarSystemObjects body;
+        readonly SolarSystemObjects body;
         OrbitPathPoint[] points;
-        uint pointCount;
-        double pathDuration;
-        double coverageDuration;
+        readonly uint pointCount;
+        readonly double pathDuration;
+        readonly double coverageDuration;
 
         //SharpDX.Direct3D11.Buffer vertexBuffer;
         //SharpDX.Direct3D11.VertexBufferBinding vertexBinding;
@@ -90,20 +90,20 @@ namespace TerraViewer
                     points = new OrbitPathPoint[pointCount];
                 }
 
-                double t0 = jd + (pathDuration * (coverageWindowDurationFactor - 1.0) / 2.0);
-                double dt = coverageDuration / (pointCount - 1);
+                var t0 = jd + (pathDuration * (coverageWindowDurationFactor - 1.0) / 2.0);
+                var dt = coverageDuration / (pointCount - 1);
                 if (body == SolarSystemObjects.Earth)
                 {
                     // Optimize calculation of Earth orbit points by omitting light time iteration
-                    double semiMajorAxis = 1.0;
+                    var semiMajorAxis = 1.0;
 
                     const double c = 299792.458;
-                    double approxLightTimeSec = semiMajorAxis * UiTools.KilometersPerAu / c;
-                    double approxLightTimeDays = approxLightTimeSec / 86400.0;
+                    var approxLightTimeSec = semiMajorAxis * UiTools.KilometersPerAu / c;
+                    var approxLightTimeDays = approxLightTimeSec / 86400.0;
 
                     for (uint i = 0; i < pointCount; ++i)
                     {
-                        double t = t0 - i * dt;
+                        var t = t0 - i * dt;
                         points[i] = new OrbitPathPoint(t, Planets.GetPlanetPositionDirect(body, t - approxLightTimeDays));
                     }
                 }
@@ -111,7 +111,7 @@ namespace TerraViewer
                 {
                     for (uint i = 0; i < pointCount; ++i)
                     {
-                        double t = t0 - i * dt;
+                        var t = t0 - i * dt;
                         if (body == SolarSystemObjects.Earth)
                             points[i] = new OrbitPathPoint(t, Planets.GetPlanetPositionDirect(body, t - 8 / 1440.0));
                         else
@@ -128,17 +128,17 @@ namespace TerraViewer
             duration = pathDuration;
             if (vertexBuffer != null)
             {
-                double dt = coverageDuration / ((int) pointCount - 1);
-                double t0 = points[0].jd;
-                int firstPoint = (int)Math.Floor((t0 - jd) / dt);
+                var dt = coverageDuration / ((int) pointCount - 1);
+                var t0 = points[0].jd;
+                var firstPoint = (int)Math.Floor((t0 - jd) / dt);
                 firstPoint = Math.Max(0, firstPoint);
-                int lastPoint = (int)Math.Floor((t0 - (jd - duration)) / dt);
+                var lastPoint = (int)Math.Floor((t0 - (jd - duration)) / dt);
                 lastPoint = Math.Min(points.Length - 1, lastPoint);
-                int drawCount = lastPoint - firstPoint;
+                var drawCount = lastPoint - firstPoint;
 
-                double timeOffset = (t0 - jd) / coverageDuration;
+                var timeOffset = (t0 - jd) / coverageDuration;
 
-                Matrix3d savedWorld = renderContext.World;
+                var savedWorld = renderContext.World;
                 renderContext.World = worldMatrix;
 
                 renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineStrip;
@@ -159,12 +159,12 @@ namespace TerraViewer
                 vertexBuffer = new GenVertexBuffer<SharpDX.Vector4>(RenderContext11.PrepDevice, transferBuffer);
             }
 
-            double t0 = points[0].jd;
+            var t0 = points[0].jd;
 
             // Convert to single precision
             for (uint i = 0; i < pointCount; ++i)
             {
-                OrbitPathPoint pathPoint = points[i];
+                var pathPoint = points[i];
                 transferBuffer[i] = new SharpDX.Vector4((float)pathPoint.position.X,
                                                         (float)pathPoint.position.Y,
                                                         (float)pathPoint.position.Z,
@@ -200,7 +200,7 @@ namespace TerraViewer
         static double[] planetTilts;
         static Vector3d[,] orbits;
         static OrbitTrace[] orbitTraces;
-        static SortedList<double, int> planetDrawOrder = new SortedList<double,int>();
+        static readonly SortedList<double, int> planetDrawOrder = new SortedList<double,int>();
 
         static Texture11 cloudTexture;
         static Texture11 ringsMap;
@@ -248,7 +248,7 @@ namespace TerraViewer
         {
             get
             {
-                bool shouldBe8k = Properties.Settings.Default.CloudMap8k && !RenderContext11.Downlevel;
+                var shouldBe8k = Properties.Settings.Default.CloudMap8k && !RenderContext11.Downlevel;
 
                 if (cloudTexture == null || shouldBe8k != is8k)
                 {
@@ -280,11 +280,11 @@ namespace TerraViewer
         delegate void BackInitDelegate();
 
 
-        static Texture11 clouds8k = null;
-        static Texture11 clouds = null;
+        static Texture11 clouds8k;
+        static Texture11 clouds;
 
-        static bool loading8k = false;
-        static bool loading = false;
+        static bool loading8k;
+        static bool loading;
 
 
         private static void LoadCloudsBackground(bool load8k)
@@ -310,7 +310,7 @@ namespace TerraViewer
         private static void LoadBackground8k()
         {
             loading8k = true;
-            string downloadName = Properties.Settings.Default.CahceDirectory + @"data\bigclouds.dds";
+            var downloadName = Properties.Settings.Default.CahceDirectory + @"data\bigclouds.dds";
             try
             {
                 if (clouds8k == null)
@@ -334,7 +334,7 @@ namespace TerraViewer
         private static void LoadBackground()
         {
             loading = true;
-            string downloadName = Properties.Settings.Default.CahceDirectory + @"data\bigclouds.png";
+            var downloadName = Properties.Settings.Default.CahceDirectory + @"data\bigclouds.png";
             try
             {
                 if (clouds == null)
@@ -402,7 +402,7 @@ namespace TerraViewer
         public static Vector3d GetPlanet3dLocation(SolarSystemObjects target, double jNow)
         {
             // Directly calculate 3D position of all planets but Earth and Jupiter
-            int id = (int)target;
+            var id = (int)target;
             if ((id >= 1 && id <= 3) || (id >= 5 && id <= 8))
             {
                 return GetPlanetPositionDirect(target, jNow);
@@ -410,16 +410,16 @@ namespace TerraViewer
 
             try
             {
-                Vector3d result = new Vector3d();
-                AstroRaDec centerRaDec = AstroCalc.AstroCalc.GetPlanet(jNow, 0, 0, 0, -6378149);
-                Vector3d center = Coordinates.RADecTo3d(centerRaDec.RA, centerRaDec.Dec, centerRaDec.Distance);
+                var result = new Vector3d();
+                var centerRaDec = AstroCalc.AstroCalc.GetPlanet(jNow, 0, 0, 0, -6378149);
+                var center = Coordinates.RADecTo3d(centerRaDec.RA, centerRaDec.Dec, centerRaDec.Distance);
                 if (target == SolarSystemObjects.Earth)
                 {
                     result = new Vector3d(-center.X, -center.Y, -center.Z);
                 }
                 else
                 {
-                    AstroRaDec planet = AstroCalc.AstroCalc.GetPlanet(jNow, (int)target, 0, 0, -6378149);
+                    var planet = AstroCalc.AstroCalc.GetPlanet(jNow, (int)target, 0, 0, -6378149);
                     result = Coordinates.RADecTo3d(planet.RA, planet.Dec, planet.Distance);
                     result.Subtract(center);
                 }
@@ -431,7 +431,7 @@ namespace TerraViewer
                     {
                         case SolarSystemObjects.Moon:
                             {
-                                Vector3d parent = GetPlanet3dLocation(SolarSystemObjects.Earth, jNow);
+                                var parent = GetPlanet3dLocation(SolarSystemObjects.Earth, jNow);
                                 // Parent Centric
                                 result.Subtract(parent);
                                 result.Multiply(Settings.Active.SolarSystemScale / 2);
@@ -443,7 +443,7 @@ namespace TerraViewer
                         case SolarSystemObjects.Ganymede:
                         case SolarSystemObjects.Callisto:
                             {
-                                Vector3d parent = GetPlanet3dLocation(SolarSystemObjects.Jupiter, jNow);
+                                var parent = GetPlanet3dLocation(SolarSystemObjects.Jupiter, jNow);
 
                                 // Parent Centric
                                 result.Subtract(parent);
@@ -465,7 +465,7 @@ namespace TerraViewer
         }
         public static AstroRaDec GetPlanetLocation(string name)
         {
-            int id = GetPlanetIDFromName(name);
+            var id = GetPlanetIDFromName(name);
             if (id > -1)
             {
                 if (planetLocations != null)
@@ -482,7 +482,7 @@ namespace TerraViewer
         }
         public static AstroRaDec GetPlanetLocation(string name, double jNow)
         {
-            int id = GetPlanetIDFromName(name);
+            var id = GetPlanetIDFromName(name);
 
 
             return AstroCalc.AstroCalc.GetPlanet(jNow, id, SpaceTimeController.Location.Lat, SpaceTimeController.Location.Lng, SpaceTimeController.Altitude);
@@ -615,7 +615,7 @@ namespace TerraViewer
         public static Color[] planetColors;
         public static double[] planetRotationPeriod;
 
-        static double jNow = 0;
+        static double jNow;
 
         // Values taken from version 10 of the SPICE planetary constants file, updated
         // October 21, 2011: ftp://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc
@@ -624,7 +624,7 @@ namespace TerraViewer
         //
         // All angles are in degrees.
 
-        static BodyAngles[] planetAngles =
+        static readonly BodyAngles[] planetAngles =
         {
             new BodyAngles { poleRa = 286.13,     poleDec =  63.87,     primeMeridian =  84.176,  rotationRate =   14.18440    }, // Sun
             new BodyAngles { poleRa = 281.0097,   poleDec =  61.4143,   primeMeridian = 329.548,  rotationRate =    6.1385025  }, // Mercury
@@ -648,7 +648,7 @@ namespace TerraViewer
             new BodyAngles { poleRa =   0.0,      poleDec = 90.0, primeMeridian = 190.147, rotationRate = 360.9856235 } // Earth
         };
 
-        static BlendState[] orbitBlendStates = 
+        static readonly BlendState[] orbitBlendStates = 
         {
             new BlendState(true,1000,1),
             new BlendState(true,1000,1),
@@ -815,7 +815,7 @@ namespace TerraViewer
             }
             else
             {
-                for (int i = 0; i < 20; i++)
+                for (var i = 0; i < 20; i++)
                 {
                     if (i < 10)
                     {
@@ -838,16 +838,16 @@ namespace TerraViewer
             // Initialized in declaration
             //planetLocations = new AstroRaDec[20];
             jNow = SpaceTimeController.JNow;
-            Vector3d center = new Vector3d(0, 0, 0);
-            int planetCenter = 0;
+            var center = new Vector3d(0, 0, 0);
+            var planetCenter = 0;
             if (planetCenter > -1)
             {
-                AstroRaDec centerRaDec = AstroCalc.AstroCalc.GetPlanet(jNow, planetCenter, threeDee ? 0 : SpaceTimeController.Location.Lat, threeDee ? 0 : SpaceTimeController.Location.Lng, threeDee ? -6378149 : SpaceTimeController.Altitude);
+                var centerRaDec = AstroCalc.AstroCalc.GetPlanet(jNow, planetCenter, threeDee ? 0 : SpaceTimeController.Location.Lat, threeDee ? 0 : SpaceTimeController.Location.Lng, threeDee ? -6378149 : SpaceTimeController.Altitude);
                 center = Coordinates.RADecTo3d(centerRaDec.RA, centerRaDec.Dec, centerRaDec.Distance);
             }
             planet3dLocations[19] = new Vector3d(-center.X, -center.Y, -center.Z);
             planet3dLocations[19].RotateX(obliquity);
-            for (int i = 0; i < 18; i++)
+            for (var i = 0; i < 18; i++)
             {
                 planetLocations[i] = AstroCalc.AstroCalc.GetPlanet(jNow, i, threeDee ? 0 : SpaceTimeController.Location.Lat, threeDee ? 0 : SpaceTimeController.Location.Lng, threeDee ? -6378149 : SpaceTimeController.Altitude);
                 planet3dLocations[i] = Coordinates.RADecTo3d(planetLocations[i].RA, planetLocations[i].Dec, planetLocations[i].Distance);
@@ -880,12 +880,12 @@ namespace TerraViewer
                 if (Settings.Active.SolarSystemScale != 1)
                 {
 
-                    SolarSystemObjects id = (SolarSystemObjects)i;
+                    var id = (SolarSystemObjects)i;
                     switch (id)
                     {
                         case SolarSystemObjects.Moon:
                             {
-                                Vector3d parent = (planet3dLocations[(int)SolarSystemObjects.Earth]);
+                                var parent = (planet3dLocations[(int)SolarSystemObjects.Earth]);
                                 // Parent Centric
                                 planet3dLocations[i].Subtract(parent);
                                 planet3dLocations[i].Multiply(Settings.Active.SolarSystemScale / 2);
@@ -897,7 +897,7 @@ namespace TerraViewer
                         case SolarSystemObjects.Ganymede:
                         case SolarSystemObjects.Callisto:
                             {
-                                Vector3d parent = (planet3dLocations[(int)SolarSystemObjects.Jupiter]);
+                                var parent = (planet3dLocations[(int)SolarSystemObjects.Jupiter]);
                                 // Parent Centric
                                 planet3dLocations[i].Subtract(parent);
                                 planet3dLocations[i].Multiply(Settings.Active.SolarSystemScale);
@@ -941,7 +941,7 @@ namespace TerraViewer
                 orbitTraces[(int)SolarSystemObjects.Neptune] = new OrbitTrace(SolarSystemObjects.Neptune, 100, 165    * 365.25);
                 orbitTraces[(int)SolarSystemObjects.Pluto]   = new OrbitTrace(SolarSystemObjects.Pluto,   100, 248    * 365.25);
             }
-            for (int i = 0; i < 20; ++i)
+            for (var i = 0; i < 20; ++i)
             {
                 if (orbitTraces[i] != null)
                 {
@@ -955,7 +955,7 @@ namespace TerraViewer
         static int lastPlanetCenterID = -2;
         static int orbitalSampleRate = 256;
         static double obliquity = 23.5 * RC;
-        static Mutex OrbitsMutex = new Mutex();
+        static readonly Mutex OrbitsMutex = new Mutex();
 
         public static void UpdateOrbits(int planetCenter)
         {
@@ -1004,15 +1004,15 @@ namespace TerraViewer
                     {
                         orbits = new Vector3d[20, orbitalSampleRate];
 
-                        for (int i = 1; i < 20; i++)
+                        for (var i = 1; i < 20; i++)
                         {
                             if (i < 9 || i == 19)
                             {
-                                for (int j = 0; j < orbitalSampleRate; j++)
+                                for (var j = 0; j < orbitalSampleRate; j++)
                                 {
-                                    int centerId = planetCenter;
-                                    double now = jNow + ((planetOrbitalYears[i] * 365.25 / (orbitalSampleRate)) * (double)(j - (orbitalSampleRate / 2)));
-                                    Vector3d center = new Vector3d(0, 0, 0);
+                                    var centerId = planetCenter;
+                                    var now = jNow + ((planetOrbitalYears[i] * 365.25 / (orbitalSampleRate)) * (double)(j - (orbitalSampleRate / 2)));
+                                    var center = new Vector3d(0, 0, 0);
 
                                     if (i == (int)SolarSystemObjects.Moon)
                                     {
@@ -1025,14 +1025,14 @@ namespace TerraViewer
 
                                     if (centerId > -1)
                                     {
-                                        AstroRaDec centerRaDec = AstroCalc.AstroCalc.GetPlanet(now, centerId, 0, 0, -6378149);
+                                        var centerRaDec = AstroCalc.AstroCalc.GetPlanet(now, centerId, 0, 0, -6378149);
                                         center = Coordinates.RADecTo3d(centerRaDec.RA, centerRaDec.Dec, centerRaDec.Distance);
                                     }
 
 
                                     if (i != 19)
                                     {
-                                        AstroRaDec planetRaDec = AstroCalc.AstroCalc.GetPlanet(now, i, 0, 0, -6378149);
+                                        var planetRaDec = AstroCalc.AstroCalc.GetPlanet(now, i, 0, 0, -6378149);
                                         // todo move to double precition for less trucation
                                         orbits[i, j] = Coordinates.RADecTo3d(planetRaDec.RA, planetRaDec.Dec, planetRaDec.Distance);
                                         orbits[i, j].Subtract(center);
@@ -1065,7 +1065,7 @@ namespace TerraViewer
         public static bool ReadOrbits()
         {
 
-            string filename = Properties.Settings.Default.CahceDirectory + @"data\orbits.bin";
+            var filename = Properties.Settings.Default.CahceDirectory + @"data\orbits.bin";
             DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=orbitsbin", filename, false, true);
             FileStream fs = null;
             BinaryReader br = null;
@@ -1077,11 +1077,11 @@ namespace TerraViewer
                 br = new BinaryReader(fs);
                 orbits = new Vector3d[20, orbitalSampleRate];
 
-                for (int i = 1; i < 20; i++)
+                for (var i = 1; i < 20; i++)
                 {
                     if (i < 9 || i == 19)
                     {
-                        for (int j = 0; j < orbitalSampleRate; j++)
+                        for (var j = 0; j < orbitalSampleRate; j++)
                         {
 
                             orbits[i, j] = new Vector3d(br.ReadDouble(), br.ReadDouble(), br.ReadDouble());
@@ -1111,17 +1111,17 @@ namespace TerraViewer
 
         public static void DumpOrbitsFile()
         {
-            string filename = Properties.Settings.Default.CahceDirectory + @"data\orbits.bin";
+            var filename = Properties.Settings.Default.CahceDirectory + @"data\orbits.bin";
 
             if (orbits != null)
             {
-                FileStream fs = new FileStream(filename, FileMode.Create);
-                BinaryWriter bw = new BinaryWriter(fs);
-                for (int i = 1; i < 20; i++)
+                var fs = new FileStream(filename, FileMode.Create);
+                var bw = new BinaryWriter(fs);
+                for (var i = 1; i < 20; i++)
                 {
                     if (i < 9 || i == 19)
                     {
-                        for (int j = 0; j < orbitalSampleRate; j++)
+                        for (var j = 0; j < orbitalSampleRate; j++)
                         {
                             bw.Write(orbits[i, j].X);
                             bw.Write(orbits[i, j].Y);
@@ -1142,14 +1142,14 @@ namespace TerraViewer
             }
 
             // Get Moon Phase
-            double elong = GeocentricElongation(planetLocations[9].RA, planetLocations[9].Dec, planetLocations[0].RA, planetLocations[0].Dec);
-            double raDif = planetLocations[9].RA - planetLocations[0].RA;
+            var elong = GeocentricElongation(planetLocations[9].RA, planetLocations[9].Dec, planetLocations[0].RA, planetLocations[0].Dec);
+            var raDif = planetLocations[9].RA - planetLocations[0].RA;
             if (planetLocations[9].RA < planetLocations[0].RA)
             {
                 raDif += 24;
             }
-            double phaseAngle = PhaseAngle(elong, planetLocations[9].Distance, planetLocations[0].Distance);
-            double limbAngle = PositionAngle(planetLocations[9].RA, planetLocations[9].Dec, planetLocations[0].RA, planetLocations[0].Dec);
+            var phaseAngle = PhaseAngle(elong, planetLocations[9].Distance, planetLocations[0].Distance);
+            var limbAngle = PositionAngle(planetLocations[9].RA, planetLocations[9].Dec, planetLocations[0].RA, planetLocations[0].Dec);
 
             if (raDif < 12)
             {
@@ -1158,15 +1158,15 @@ namespace TerraViewer
 
             // Check for solar eclipse
 
-            double dista = (Math.Abs(planetLocations[9].RA - planetLocations[0].RA) * 15) * Math.Cos(Coordinates.DegreesToRadians(planetLocations[0].Dec));
-            double distb = Math.Abs(planetLocations[9].Dec - planetLocations[0].Dec);
-            double sunMoonDist = Math.Sqrt(dista * dista + distb * distb);
+            var dista = (Math.Abs(planetLocations[9].RA - planetLocations[0].RA) * 15) * Math.Cos(Coordinates.DegreesToRadians(planetLocations[0].Dec));
+            var distb = Math.Abs(planetLocations[9].Dec - planetLocations[0].Dec);
+            var sunMoonDist = Math.Sqrt(dista * dista + distb * distb);
 
             double coronaOpacity = 0;
 
-            double moonEffect = (planetScales[9] / 2 - sunMoonDist);
+            var moonEffect = (planetScales[9] / 2 - sunMoonDist);
 
-            int darkLimb = Math.Min(6, (int)(sunMoonDist * 6));
+            var darkLimb = Math.Min(6, (int)(sunMoonDist * 6));
 
             if (moonEffect > (planetScales[0] / 4))
             {
@@ -1175,7 +1175,7 @@ namespace TerraViewer
             }
 
 
-            foreach (int planetId in planetDrawOrder.Values)
+            foreach (var planetId in planetDrawOrder.Values)
             {
                 if (planetId == 9)
                 {
@@ -1238,7 +1238,7 @@ namespace TerraViewer
             planetTexturesMaps[20] = LoadPlanetTexture(Properties.Resources.earthMapNight);
             planetTexturesMaps[21] = LoadPlanetTexture(Properties.Resources.earthsMapSpec);
         }
-        static SortedList<double, int> drawOrder = new SortedList<double, int>();
+        static readonly SortedList<double, int> drawOrder = new SortedList<double, int>();
         public static bool DrawPlanets3D(RenderContext11 renderContext, float opacity, Vector3d centerPoint)
         {
             InitPlanetResources();
@@ -1252,12 +1252,12 @@ namespace TerraViewer
 
             drawOrder.Clear();
             
-            Vector3d camera = new Vector3d(renderContext.CameraPosition);
-            for (int planetId = 0; planetId < 14; planetId++)
+            var camera = new Vector3d(renderContext.CameraPosition);
+            for (var planetId = 0; planetId < 14; planetId++)
             {
                 if (!planetLocations[planetId].Eclipsed)
                 {
-                    Vector3d distVector = camera - (planet3dLocations[planetId] - centerPoint);
+                    var distVector = camera - (planet3dLocations[planetId] - centerPoint);
 
                     if (!drawOrder.ContainsKey(-distVector.Length()))
                     {
@@ -1266,7 +1266,7 @@ namespace TerraViewer
                 }
             }
 
-            Vector3d distVectorEarth = camera - (planet3dLocations[(int)SolarSystemObjects.Earth] - centerPoint);
+            var distVectorEarth = camera - (planet3dLocations[(int)SolarSystemObjects.Earth] - centerPoint);
             if (!drawOrder.ContainsKey(-distVectorEarth.Length()))
             {
                 drawOrder.Add(-distVectorEarth.Length(), (int)SolarSystemObjects.Earth);
@@ -1274,21 +1274,21 @@ namespace TerraViewer
             renderContext.DepthStencilMode = DepthStencilMode.ZReadWrite;
 
             renderContext.setRasterizerState(TriangleCullMode.CullCounterClockwise);
-            foreach (int planetId in drawOrder.Values)
+            foreach (var planetId in drawOrder.Values)
             {
                 DrawPlanet3d(renderContext, planetId, centerPoint, opacity);               
             }
 
-            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
+            var distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
 
 
             //double val1 = Math.Log(200000000, 10)-7.3;
             //double val2 = Math.Log(20000000, 10)-7.3;
 
-            float moonFade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 7.3, 0));
+            var moonFade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 7.3, 0));
             
 
-            float fade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 8.6, 0));
+            var fade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 8.6, 0));
 
 
             if (Properties.Settings.Default.SolarSystemOrbits.State ) // && fade > 0)
@@ -1297,18 +1297,18 @@ namespace TerraViewer
                 renderContext.BlendMode = BlendMode.Alpha;
                 renderContext.setRasterizerState(TriangleCullMode.Off, false);
                 
-                int orbitColor = Color.FromArgb((int)(Properties.Settings.Default.SolarSystemOrbits.Opacity * 255), Properties.Settings.Default.SolarSystemOrbitColor).ToArgb();                
+                var orbitColor = Color.FromArgb((int)(Properties.Settings.Default.SolarSystemOrbits.Opacity * 255), Properties.Settings.Default.SolarSystemOrbitColor).ToArgb();                
                 
-                for (int ii = 1; ii < 10; ii++)
+                for (var ii = 1; ii < 10; ii++)
                 {
-                    int id = ii;
+                    var id = ii;
 
                     if (ii == 9)
                     {
                         id = 19;
                     }
 
-                    double angle = Math.Atan2(planet3dLocations[id].Z, planet3dLocations[id].X);
+                    var angle = Math.Atan2(planet3dLocations[id].Z, planet3dLocations[id].X);
 
 
                     orbitBlendStates[id].TargetState = (Properties.Settings.Default.PlanetOrbitsFilter & (int)Math.Pow(2, id)) != 0;
@@ -1331,18 +1331,18 @@ namespace TerraViewer
                 if (orbitBlendStates[(int)SolarSystemObjects.Moon].State)
                 {
 
-                    int id = (int)SolarSystemObjects.Moon;
+                    var id = (int)SolarSystemObjects.Moon;
                     DrawSingleOrbit(renderContext, UiTools.GetTransparentColor(planetColors[id].ToArgb(), Properties.Settings.Default.SolarSystemOrbits.Opacity * moonFade * orbitBlendStates[(int)SolarSystemObjects.Moon].Opacity), id, centerPoint, 0.0, planet3dLocations[id]);
                 }
 
                 // Show orbits of the Galilean satellites
                 {
-                    double deltaT = 1.0 / 1440.0 * 0.1;
+                    var deltaT = 1.0 / 1440.0 * 0.1;
 
                     // Compute the positions of the Galilean satellites at two times; we need
                     // the second in order to estimate the velocity.
-                    CAAGalileanMoonsDetails gal0 = CAAGalileanMoons.Calculate(jNow);
-                    CAAGalileanMoonsDetails gal1 = CAAGalileanMoons.Calculate(jNow - deltaT);
+                    var gal0 = CAAGalileanMoons.Calculate(jNow);
+                    var gal1 = CAAGalileanMoons.Calculate(jNow - deltaT);
                     CAA3DCoordinate[] position0 = 
                     { gal0.Satellite1.EclipticRectangularCoordinates,
                       gal0.Satellite2.EclipticRectangularCoordinates,
@@ -1355,19 +1355,19 @@ namespace TerraViewer
                       gal1.Satellite4.EclipticRectangularCoordinates };
 
                     SolarSystemObjects[] galileans = { SolarSystemObjects.Io, SolarSystemObjects.Europa, SolarSystemObjects.Ganymede, SolarSystemObjects.Callisto };
-                    for (int i = 0; i < 4; ++i)
+                    for (var i = 0; i < 4; ++i)
                     {
-                        int id = (int)galileans[i];
+                        var id = (int)galileans[i];
                         orbitBlendStates[id].TargetState = (Properties.Settings.Default.PlanetOrbitsFilter & (int)Math.Pow(2, id)) != 0;
                         if (orbitBlendStates[id].State)
                         {
                             // Estimate velocity through differences
-                            Vector3d r0 = new Vector3d(position0[i].X, position0[i].Z, position0[i].Y);
-                            Vector3d r1 = new Vector3d(position1[i].X, position1[i].Z, position1[i].Y);
+                            var r0 = new Vector3d(position0[i].X, position0[i].Z, position0[i].Y);
+                            var r1 = new Vector3d(position1[i].X, position1[i].Z, position1[i].Y);
 
-                            Vector3d v = (r0 - r1) / deltaT;
+                            var v = (r0 - r1) / deltaT;
 
-                            KeplerianElements elements = stateVectorToKeplerian(r0, v, muJupiter);
+                            var elements = stateVectorToKeplerian(r0, v, muJupiter);
 
                             DrawSingleOrbit(renderContext, UiTools.GetTransparentColor(planetColors[id].ToArgb(), Properties.Settings.Default.SolarSystemOrbits.Opacity * moonFade * orbitBlendStates[id].Opacity), id, centerPoint, 0.0, planet3dLocations[id], elements);
                         }
@@ -1414,28 +1414,28 @@ namespace TerraViewer
         // stars, the Milky Way, and other astronomical objects that are not visible during the daytime sky.
         public static float CalculateSkyBrightnessFactor(Matrix3d viewMatrix, Vector3d centerPoint)
         {
-            double skyBrightness = 0.0;
+            var skyBrightness = 0.0;
 
             if (Settings.Active.ShowEarthSky)
             {
                 SolarSystemObjects[] bodiesWithAtmospheres = { SolarSystemObjects.Earth, SolarSystemObjects.Mars };
 
                 // Get the position of the camera in heliocentric coordinates
-                Matrix3d m = viewMatrix;
+                var m = viewMatrix;
                 m.Invert();
-                Vector3d centerOffset = m.Transform(Vector3d.Empty);
-                Vector3d heliocentricCameraPosition = centerOffset - -centerPoint;
+                var centerOffset = m.Transform(Vector3d.Empty);
+                var heliocentricCameraPosition = centerOffset - -centerPoint;
 
-                foreach (SolarSystemObjects planetID in bodiesWithAtmospheres)
+                foreach (var planetID in bodiesWithAtmospheres)
                 {
-                    Vector3d sunPosition = (planet3dLocations[0] - planet3dLocations[(int) planetID]);
+                    var sunPosition = (planet3dLocations[0] - planet3dLocations[(int) planetID]);
 
                     // Get the camera's altitude and the phase angle (which tells us whether it's day or night)
-                    Vector3d cameraToPlanet = heliocentricCameraPosition - planet3dLocations[(int) planetID];
-                    double altitudeKm = cameraToPlanet.Length() * UiTools.KilometersPerAu - GetPlanetRadiusInMeters((int) planetID) / 1000;
-                    double cosSunAngle = Vector3d.Dot(cameraToPlanet, sunPosition) / (cameraToPlanet.Length() * sunPosition.Length());
+                    var cameraToPlanet = heliocentricCameraPosition - planet3dLocations[(int) planetID];
+                    var altitudeKm = cameraToPlanet.Length() * UiTools.KilometersPerAu - GetPlanetRadiusInMeters((int) planetID) / 1000;
+                    var cosSunAngle = Vector3d.Dot(cameraToPlanet, sunPosition) / (cameraToPlanet.Length() * sunPosition.Length());
 
-                    double brightness = Math.Min(1.0, 20.0 * Math.Max(cosSunAngle + 0.05, 0.0)) * Math.Min(1.0, Math.Max(0.0, 1.0 - altitudeKm / 40.0));
+                    var brightness = Math.Min(1.0, 20.0 * Math.Max(cosSunAngle + 0.05, 0.0)) * Math.Min(1.0, Math.Max(0.0, 1.0 - altitudeKm / 40.0));
                     skyBrightness = Math.Max(skyBrightness, brightness);
                 }
             }
@@ -1453,9 +1453,9 @@ namespace TerraViewer
         // a calculate valid Keplerian elements.
         public static Vector3d GetPlanetPositionDirect(SolarSystemObjects id, double jd)
         {
-            double L = 0.0; 
-            double B = 0.0; 
-            double R = 0.0; 
+            var L = 0.0; 
+            var B = 0.0; 
+            var R = 0.0; 
 
             switch (id)
             {
@@ -1516,26 +1516,26 @@ namespace TerraViewer
                     break;
                 case SolarSystemObjects.Io:
                     {
-                        CAAGalileanMoonsDetails galileanInfo = CAAGalileanMoons.Calculate(jd);
-                        CAA3DCoordinate position = galileanInfo.Satellite1.EclipticRectangularCoordinates;
+                        var galileanInfo = CAAGalileanMoons.Calculate(jd);
+                        var position = galileanInfo.Satellite1.EclipticRectangularCoordinates;
                         return new Vector3d(position.X, position.Z, position.Y);
                     }
                 case SolarSystemObjects.Europa:
                     {
-                        CAAGalileanMoonsDetails galileanInfo = CAAGalileanMoons.Calculate(jd);
-                        CAA3DCoordinate position = galileanInfo.Satellite2.EclipticRectangularCoordinates;
+                        var galileanInfo = CAAGalileanMoons.Calculate(jd);
+                        var position = galileanInfo.Satellite2.EclipticRectangularCoordinates;
                         return new Vector3d(position.X, position.Z, position.Y);
                     }
                 case SolarSystemObjects.Ganymede:
                     {
-                        CAAGalileanMoonsDetails galileanInfo = CAAGalileanMoons.Calculate(jd);
-                        CAA3DCoordinate position = galileanInfo.Satellite3.EclipticRectangularCoordinates;
+                        var galileanInfo = CAAGalileanMoons.Calculate(jd);
+                        var position = galileanInfo.Satellite3.EclipticRectangularCoordinates;
                         return new Vector3d(position.X, position.Z, position.Y);
                     }
                 case SolarSystemObjects.Callisto:
                     {
-                        CAAGalileanMoonsDetails galileanInfo = CAAGalileanMoons.Calculate(jd);
-                        CAA3DCoordinate position = galileanInfo.Satellite4.EclipticRectangularCoordinates;
+                        var galileanInfo = CAAGalileanMoons.Calculate(jd);
+                        var position = galileanInfo.Satellite4.EclipticRectangularCoordinates;
                         return new Vector3d(position.X, position.Z, position.Y);
                     }
             }
@@ -1550,11 +1550,11 @@ namespace TerraViewer
 
             L = CAACoordinateTransformation.DegreesToRadians(L);
             B = CAACoordinateTransformation.DegreesToRadians(B);
-            Vector3d eclPos = new Vector3d(Math.Cos(L) * Math.Cos(B), Math.Sin(L) * Math.Cos(B), Math.Sin(B)) * R;
+            var eclPos = new Vector3d(Math.Cos(L) * Math.Cos(B), Math.Sin(L) * Math.Cos(B), Math.Sin(B)) * R;
 
             // Transform from the ecliptic of date to the J2000 ecliptic; this transformation should be deleted
             // once the precession is turned one.
-            double eclipticOfDateRotation = (Coordinates.MeanObliquityOfEcliptic(jd) - Coordinates.MeanObliquityOfEcliptic(2451545.0)) * RC;
+            var eclipticOfDateRotation = (Coordinates.MeanObliquityOfEcliptic(jd) - Coordinates.MeanObliquityOfEcliptic(2451545.0)) * RC;
             eclPos.RotateX(eclipticOfDateRotation);
 
             return new Vector3d(eclPos.X, eclPos.Z, eclPos.Y);
@@ -1573,41 +1573,41 @@ namespace TerraViewer
         private static KeplerianElements stateVectorToKeplerian(Vector3d position, Vector3d velocity, double mu)
         {
             // Work in units of km and seconds
-            Vector3d r = position * UiTools.KilometersPerAu;
-            Vector3d v = velocity / 86400.0 * UiTools.KilometersPerAu;
+            var r = position * UiTools.KilometersPerAu;
+            var v = velocity / 86400.0 * UiTools.KilometersPerAu;
 
-            double rmag = r.Length();
-            double vmag = v.Length();
+            var rmag = r.Length();
+            var vmag = v.Length();
 
-            double sma = 1.0 / (2.0 / rmag - vmag * vmag / mu);
+            var sma = 1.0 / (2.0 / rmag - vmag * vmag / mu);
 
             // h is the orbital angular momentum vector
-            Vector3d h = Vector3d.Cross(r, v);
+            var h = Vector3d.Cross(r, v);
 
             // ecc is the eccentricity vector, which points from the
             // planet at periapsis to the center point.
-            Vector3d ecc = Vector3d.Cross(v, h) / mu - r / rmag;
-            double e = ecc.Length();
+            var ecc = Vector3d.Cross(v, h) / mu - r / rmag;
+            var e = ecc.Length();
 
             h.Normalize();
             ecc.Normalize();
 
             // h, s, and ecc are orthogonal vectors that define a coordinate
             // system. h is normal to the orbital plane.
-            Vector3d s = Vector3d.Cross(h, ecc);
+            var s = Vector3d.Cross(h, ecc);
 
             // Calculate the sine and cosine of the true anomaly
             r.Normalize();
-            double cosNu = Vector3d.Dot(ecc, r);
-            double sinNu = Vector3d.Dot(s, r);
+            var cosNu = Vector3d.Dot(ecc, r);
+            var sinNu = Vector3d.Dot(s, r);
 
             // Compute the eccentric anomaly
-            double E = Math.Atan2(Math.Sqrt(1 - e * e) * sinNu, e + cosNu);
+            var E = Math.Atan2(Math.Sqrt(1 - e * e) * sinNu, e + cosNu);
 
             // Mean anomaly not required
             // double M = E - e * Math.Sin(E);
 
-            KeplerianElements elements = new KeplerianElements();
+            var elements = new KeplerianElements();
 
             // Create a rotation matrix given the three orthogonal vectors:
             //   ecc - eccentricity vector
@@ -1627,7 +1627,7 @@ namespace TerraViewer
 
         private static void DrawSingleOrbit(RenderContext11 renderContext, int eclipticColor, int id, Vector3d centerPoint, double xstartAngle, Vector3d planetNow)
         {
-            double mu = 0.0;
+            var mu = 0.0;
             switch (id)
             {
                 case (int)SolarSystemObjects.Moon:
@@ -1647,13 +1647,13 @@ namespace TerraViewer
             }
 
             // Estimate velocity through differences
-            double deltaT = 1.0 / 1440.0 * 0.1;
-            Vector3d r0 = GetPlanetPositionDirect((SolarSystemObjects)id, jNow);
-            Vector3d r1 = GetPlanetPositionDirect((SolarSystemObjects)id, jNow - deltaT);
+            var deltaT = 1.0 / 1440.0 * 0.1;
+            var r0 = GetPlanetPositionDirect((SolarSystemObjects)id, jNow);
+            var r1 = GetPlanetPositionDirect((SolarSystemObjects)id, jNow - deltaT);
 
-            Vector3d v = (r0 - r1) / deltaT;
+            var v = (r0 - r1) / deltaT;
 
-            KeplerianElements elements = stateVectorToKeplerian(r0, v, mu);
+            var elements = stateVectorToKeplerian(r0, v, mu);
 
             DrawSingleOrbit(renderContext, eclipticColor, id, centerPoint, xstartAngle, planetNow, elements);
         }
@@ -1683,7 +1683,7 @@ namespace TerraViewer
                     break;
             }
 
-            Vector3d translation = -centerPoint;
+            var translation = -centerPoint;
             if (id == (int)SolarSystemObjects.Moon)
             {
                 translation += planet3dLocations[(int)SolarSystemObjects.Earth];
@@ -1693,31 +1693,31 @@ namespace TerraViewer
                 translation += planet3dLocations[(int)SolarSystemObjects.Jupiter];
             }
 
-            Vector3d currentPosition = planetNow - centerPoint;
+            var currentPosition = planetNow - centerPoint;
             if (orbitTraces[id] != null)
             {
-                Matrix3d worldMatrix = Matrix3d.Translation(translation) * renderContext.World;
+                var worldMatrix = Matrix3d.Translation(translation) * renderContext.World;
                 orbitTraces[id].render(renderContext, Color.FromArgb(eclipticColor), worldMatrix, jNow, currentPosition, 0.0);
             }
             else
             {
-                Matrix3d worldMatrix = el.orientation * Matrix3d.Translation(translation) * renderContext.World;
+                var worldMatrix = el.orientation * Matrix3d.Translation(translation) * renderContext.World;
                 EllipseRenderer.DrawEllipse(renderContext, el.a / UiTools.KilometersPerAu * scaleFactor, el.e, el.E, Color.FromArgb(eclipticColor), worldMatrix, currentPosition);
             }
         }
 
 
-        static DateTime lastUpdate = new DateTime();
+        static DateTime lastUpdate;
      
 
         public static bool Lighting = true;
         public static bool IsPlanetInFrustum(RenderContext11 renderContext, float rad)
         {
             rad *= 2;
-            PlaneD[] frustum = renderContext.Frustum;
-            Vector3d center = new Vector3d(0, 0, 0);
-            Vector4d centerV4 = new Vector4d(0, 0, 0, 1f);
-            for (int i = 0; i < 6; i++)
+            var frustum = renderContext.Frustum;
+            var center = new Vector3d(0, 0, 0);
+            var centerV4 = new Vector4d(0, 0, 0, 1f);
+            for (var i = 0; i < 6; i++)
             {
                 if (frustum[i].Dot(centerV4) + rad < 0)
                 {
@@ -1749,7 +1749,7 @@ namespace TerraViewer
         private static PlanetShader11 SetupPlanetSurfaceEffectShader(RenderContext11 renderContext, PlanetShaderKey key, float opacity)
         {
 
-            PlanetShader11 shader = PlanetShader11.GetPlanetShader(renderContext.Device, key);
+            var shader = PlanetShader11.GetPlanetShader(renderContext.Device, key);
 
             // If we've got a shader, make it active on the device and set the
             // shader constants.
@@ -1758,23 +1758,23 @@ namespace TerraViewer
                 shader.use(renderContext.devContext);
 
                 // Set the combined world/view/projection matrix in the shader
-                Matrix3d worldMatrix = renderContext.World;
-                Matrix3d viewMatrix = renderContext.View;
+                var worldMatrix = renderContext.World;
+                var viewMatrix = renderContext.View;
 
-                SharpDX.Matrix wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
+                var wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
-                Matrix3d invWorld = worldMatrix;
+                var invWorld = worldMatrix;
                 invWorld.Invert();
                 
                 // For view-dependent lighting (e.g. specular), we need the position of the camera
                 // in the planet-fixed coordinate system.
-                Matrix3d worldViewMatrix = worldMatrix * viewMatrix;
-                Matrix3d invWorldView = worldViewMatrix;
+                var worldViewMatrix = worldMatrix * viewMatrix;
+                var invWorldView = worldViewMatrix;
                 invWorldView.Invert();
 
-                Vector3d cameraPositionObj = Vector3d.TransformCoordinate(new Vector3d(0.0, 0.0, 0.0), invWorldView);
+                var cameraPositionObj = Vector3d.TransformCoordinate(new Vector3d(0.0, 0.0, 0.0), invWorldView);
                 shader.CameraPosition = cameraPositionObj.Vector311;
             }
 
@@ -1785,7 +1785,7 @@ namespace TerraViewer
              
         private static float GetPlanetAtmosphereScaleHeight(int planetID)
         {
-            float h0 = 0.0f;
+            var h0 = 0.0f;
 
             if (planetID == 0x13)
             {
@@ -1813,8 +1813,8 @@ namespace TerraViewer
             // becomes invisible. The atmosphere density falls off exponentially with height,
             // and we use this to estimate the sky shell radius. The radius would need to be
             // increased for atmospheres that are extremely dense at the surface.
-            float minVisible = RenderContext11.sRGB ? (1.0f / 2048.0f) : (1.0f / 256.0f);
-            float planetRadiusKm = (float)GetPlanetRadiusInMeters(planetID) / 1000.0f;
+            var minVisible = RenderContext11.sRGB ? (1.0f / 2048.0f) : (1.0f / 256.0f);
+            var planetRadiusKm = (float)GetPlanetRadiusInMeters(planetID) / 1000.0f;
             return (float)(-GetPlanetAtmosphereScaleHeight(planetID) * Math.Log(minVisible)) / planetRadiusKm;
         }
 
@@ -1837,20 +1837,20 @@ namespace TerraViewer
             // 1/wavelength^4 in Rayleigh scattering. The invented constants for Mars are meant to simulate
             // the pinkish color of the Martian atmosphere, which is actually due to suspended dust particles
             // rather than Rayleigh scattering.
-            SharpDX.Vector3 earthRayleighCoeff = new SharpDX.Vector3(5.8f, 13.5f, 33.1f) * 1.8f;
-            SharpDX.Vector3 marsRayleighCoeff = new SharpDX.Vector3(13.0f, 9.5f, 8.1f) * 0.85f;
+            var earthRayleighCoeff = new SharpDX.Vector3(5.8f, 13.5f, 33.1f) * 1.8f;
+            var marsRayleighCoeff = new SharpDX.Vector3(13.0f, 9.5f, 8.1f) * 0.85f;
 
-            float planetRadiusKm = (float)GetPlanetRadiusInMeters(planetID) / 1000.0f;
+            var planetRadiusKm = (float)GetPlanetRadiusInMeters(planetID) / 1000.0f;
 
             // Calculate atmosphere constants
-            float atmosphereScaleHeight = GetPlanetAtmosphereScaleHeight(planetID) / planetRadiusKm;
-            SharpDX.Vector3 rayleighCoeff = earthRayleighCoeff;
+            var atmosphereScaleHeight = GetPlanetAtmosphereScaleHeight(planetID) / planetRadiusKm;
+            var rayleighCoeff = earthRayleighCoeff;
             if (planetID == 3)
             {
                 rayleighCoeff = marsRayleighCoeff;
             }
 
-            PlanetShader11 atmosphereShader = renderContext.Shader;
+            var atmosphereShader = renderContext.Shader;
             atmosphereShader.AtmosphereHeight = skyHeight;
             atmosphereShader.AtmosphereZeroHeight = 1.0f / geometryScaleFactor;
             atmosphereShader.AtmosphereInvScaleHeight = 1.0f / atmosphereScaleHeight; ;
@@ -1872,11 +1872,11 @@ namespace TerraViewer
                 }
             }
 
-            Matrix3d matOld = renderContext.World;
-            Matrix3d matOldBase = renderContext.WorldBase;
-            Matrix3d matOldNonRotating = renderContext.WorldBaseNonRotating;
+            var matOld = renderContext.World;
+            var matOldBase = renderContext.WorldBase;
+            var matOldNonRotating = renderContext.WorldBaseNonRotating;
 
-            double radius = GetAdjustedPlanetRadius(planetID);
+            var radius = GetAdjustedPlanetRadius(planetID);
                     
             SetupPlanetMatrix(renderContext, planetID, centerPoint, true);
 
@@ -1892,33 +1892,33 @@ namespace TerraViewer
             if (IsPlanetInFrustum(renderContext, planetWidth))
             {
                 // Save all matrices modified by SetupMatrix...
-                Matrix3d matOld2 = renderContext.World;
-                Matrix3d matOldBase2 = renderContext.WorldBase;
-                Matrix3d matOldNonRotating2 = renderContext.WorldBaseNonRotating;
+                var matOld2 = renderContext.World;
+                var matOldBase2 = renderContext.WorldBase;
+                var matOldNonRotating2 = renderContext.WorldBaseNonRotating;
 
                 renderContext.World = matOld;
                 renderContext.WorldBase = matOldBase;
                 renderContext.WorldBaseNonRotating = matOldNonRotating;
                 SetupMatrixForPlanetGeometry(renderContext, planetID, centerPoint, true);
 
-                Vector3d loc = planet3dLocations[planetID] - centerPoint;
+                var loc = planet3dLocations[planetID] - centerPoint;
                 loc.Subtract(renderContext.CameraPosition);
-                double dist = loc.Length();
-                double sizeIndexParam = (2 * Math.Atan(.5 * (radius / dist))) / Math.PI * 180;
+                var dist = loc.Length();
+                var sizeIndexParam = (2 * Math.Atan(.5 * (radius / dist))) / Math.PI * 180;
 
                 // Calculate pixelsPerUnit which is the number of pixels covered
                 // by an object 1 AU at the distance of the planet center from
                 // the camera. This calculation works regardless of the projection
                 // type.
-                float viewportHeight = renderContext.ViewPort.Height;
-                double p11 = renderContext.Projection.M11;
-                double p34 = renderContext.Projection.M34;
-                double p44 = renderContext.Projection.M44;
-                double w = Math.Abs(p34) * dist + p44;
-                float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
-                float planetRadiusInPixels = (float)(radius * pixelsPerUnit);
+                var viewportHeight = renderContext.ViewPort.Height;
+                var p11 = renderContext.Projection.M11;
+                var p34 = renderContext.Projection.M34;
+                var p44 = renderContext.Projection.M44;
+                var w = Math.Abs(p34) * dist + p44;
+                var pixelsPerUnit = (float)(p11 / w) * viewportHeight;
+                var planetRadiusInPixels = (float)(radius * pixelsPerUnit);
 
-                int sizeIndex = 0;
+                var sizeIndex = 0;
                 if (sizeIndexParam > 10.5)
                 {
                     sizeIndex = 0;
@@ -1940,8 +1940,8 @@ namespace TerraViewer
                     sizeIndex = 4;
                 }
 
-                int eclipseShadowCount = 0;
-                bool hasRingShadowsOnPlanet = false;
+                var eclipseShadowCount = 0;
+                var hasRingShadowsOnPlanet = false;
 
                 // No shadows should be drawn if Solar System Lighting is OFF
                 if (Settings.Active.SolarSystemLighting)
@@ -1951,7 +1951,7 @@ namespace TerraViewer
                     {
                         if (sizeIndex < 2)
                         {
-                            float width = Settings.Active.SolarSystemScale * .00001f;
+                            var width = Settings.Active.SolarSystemScale * .00001f;
 
                             SetupShadow(renderContext, centerPoint, width, SolarSystemObjects.Moon, 0);
 
@@ -1963,7 +1963,7 @@ namespace TerraViewer
                     // Shadow widths based only on moon diameter in relation to Moon diameter
                     if (planetID == (int)SolarSystemObjects.Jupiter && sizeIndex < 3)
                     {
-                        int p = 0;
+                        var p = 0;
                         float width;
 
                         if (planetLocations[(int)SolarSystemObjects.Callisto].Shadow)
@@ -2004,12 +2004,12 @@ namespace TerraViewer
 
                 // Get the position of the Sun relative to the planet center; the position is
                 // in the world coordinate frame.
-                Vector3d sunPosition = (planet3dLocations[0] - planet3dLocations[planetID]);
+                var sunPosition = (planet3dLocations[0] - planet3dLocations[planetID]);
                 renderContext.SunPosition = sunPosition;
 
                 if (sizeIndex < 4)
                 {
-                    bool atmosphereOn = (planetID == 19 || planetID == 3) && Settings.Active.ShowEarthSky;
+                    var atmosphereOn = (planetID == 19 || planetID == 3) && Settings.Active.ShowEarthSky;
 
                     if (planetID == 0 && sizeIndex > 1)
                     {
@@ -2021,7 +2021,7 @@ namespace TerraViewer
                         //device.RenderState.Clipping = true;
                     }
 
-                    PlanetSurfaceStyle surfaceStyle = PlanetSurfaceStyle.Diffuse;
+                    var surfaceStyle = PlanetSurfaceStyle.Diffuse;
                     if (planetID == (int)SolarSystemObjects.Sun || !Settings.Active.SolarSystemLighting)
                     {
                         surfaceStyle = PlanetSurfaceStyle.Emissive;
@@ -2032,9 +2032,9 @@ namespace TerraViewer
                         //   surfaceStyle = PlanetSurfaceStyle.LommelSeeliger;
                     }
 
-                    float skyGeometryHeight = CalcSkyGeometryHeight(planetID);
+                    var skyGeometryHeight = CalcSkyGeometryHeight(planetID);
 
-                    PlanetShaderKey shaderKey = new PlanetShaderKey(surfaceStyle, atmosphereOn, eclipseShadowCount);
+                    var shaderKey = new PlanetShaderKey(surfaceStyle, atmosphereOn, eclipseShadowCount);
                     shaderKey.HasRingShadows = hasRingShadowsOnPlanet;
                     if (kmlMarkers != null)
                     {
@@ -2083,7 +2083,7 @@ namespace TerraViewer
                         }
 
                         // Set eclipse constants
-                        float eclipseShadowWidth = Settings.Active.SolarSystemScale * .00001f;
+                        var eclipseShadowWidth = Settings.Active.SolarSystemScale * .00001f;
                         if (shaderKey.eclipseShadowCount > 0)
                         {
                             SetupShadow(renderContext, centerPoint, eclipseShadowWidth, SolarSystemObjects.Moon, 0);
@@ -2130,14 +2130,14 @@ namespace TerraViewer
                     {
                         // The sky geometry needs to be slightly larger than the planet itself, so adjust the
                         // world matrix by a scale factor a bit greater than 1.0
-                        Matrix3d savedWorld = renderContext.World;
-                        Matrix3d world = renderContext.World;
-                        float skyRadius = skyGeometryHeight + 1.0f;
+                        var savedWorld = renderContext.World;
+                        var world = renderContext.World;
+                        var skyRadius = skyGeometryHeight + 1.0f;
                         world.ScalePrepend(new Vector3d(skyRadius, skyRadius, skyRadius));
                         renderContext.World = world;
 
                         shaderKey.style = PlanetSurfaceStyle.Sky;
-                        PlanetShader11 atmosphereShader = SetupPlanetSurfaceEffect(renderContext, shaderKey, 1.0f);
+                        var atmosphereShader = SetupPlanetSurfaceEffect(renderContext, shaderKey, 1.0f);
                         renderContext.Shader = atmosphereShader;
 
                         // Set the shadow texture if there's an eclipse
@@ -2159,8 +2159,8 @@ namespace TerraViewer
                         //renderContext.BlendMode = BlendMode.Alpha;
                         // Fade out the sky geometry as its screen size gets thin; this prevents terrible
                         // aliasing that occurs.
-                        float skyShellPixels = (float)(skyGeometryHeight * radius * pixelsPerUnit);
-                        float blendFactor = Math.Min(3.0f, skyShellPixels) / 3.0f;
+                        var skyShellPixels = (float)(skyGeometryHeight * radius * pixelsPerUnit);
+                        var blendFactor = Math.Min(3.0f, skyShellPixels) / 3.0f;
 
                         renderContext.BlendMode = BlendMode.BlendFactorInverseAlpha;
                         renderContext.BlendFactor = new SharpDX.Color4(blendFactor, blendFactor, blendFactor, 1.0f);
@@ -2184,7 +2184,7 @@ namespace TerraViewer
 
                     if (planetID == 5)
                     {
-                        PlanetShaderKey ringsKey = new PlanetShaderKey(PlanetSurfaceStyle.PlanetaryRings, false, 0);
+                        var ringsKey = new PlanetShaderKey(PlanetSurfaceStyle.PlanetaryRings, false, 0);
                         SetupPlanetSurfaceEffect(renderContext, ringsKey, 1.0f);
                         DrawRings(renderContext);
                         RestoreDefaultMaterialState(renderContext);
@@ -2198,12 +2198,12 @@ namespace TerraViewer
                     }
                     else if (planetID < (int)SolarSystemObjects.Moon || planetID == (int)SolarSystemObjects.Earth)
                     {
-                        float size = (float)(800 * planetDiameters[planetID]);
+                        var size = (float)(800 * planetDiameters[planetID]);
                         DrawPointPlanet(renderContext, new Vector3d(0, 0, 0), (float)Math.Max(.05, Math.Min(.1f, size)), planetColors[planetID], true, opacity);
                     }
                     else if (sizeIndexParam > .002)
                     {
-                        float size = (float)(800 * planetDiameters[planetID]);
+                        var size = (float)(800 * planetDiameters[planetID]);
                         DrawPointPlanet(renderContext, new Vector3d(0, 0, 0), (float)Math.Max(.05, Math.Min(.1f, size)), planetColors[planetID], true, opacity);
                     }
                 }
@@ -2215,8 +2215,8 @@ namespace TerraViewer
             }
 
             {
-                Vector3d sunPosition = (planet3dLocations[0] - centerPoint);
-                Vector3d planetPosition = planet3dLocations[planetID] - centerPoint;
+                var sunPosition = (planet3dLocations[0] - centerPoint);
+                var planetPosition = planet3dLocations[planetID] - centerPoint;
                 renderContext.SunPosition = sunPosition;
                 renderContext.ReflectedLightPosition = planetPosition;
                 if (planetID == (int)SolarSystemObjects.Earth)
@@ -2255,7 +2255,7 @@ namespace TerraViewer
         // the returned matrix by Y(W * t)
         public static Matrix3d GetPlanetOrientationAtEpoch(int planetID)
         {
-            Matrix3d m = Matrix3d.Identity;
+            var m = Matrix3d.Identity;
 
             // Rotational elements for the planets are in the form used by the
             // IAU Working Group on Cartographic Coordinates and Rotational Elements:
@@ -2300,7 +2300,7 @@ namespace TerraViewer
 
         public static void SetupPlanetMatrix(RenderContext11 renderContext, int planetID,  Vector3d centerPoint, bool makeFrustum)
         {
-            Matrix3d matNonRotating = renderContext.World;
+            var matNonRotating = renderContext.World;
 
             SetupMatrixForPlanetGeometry(renderContext, planetID, centerPoint, makeFrustum);
 
@@ -2308,9 +2308,9 @@ namespace TerraViewer
             {
                 // Don't apply the Sun's orientation to its non-rotating frame; this means that
                 // the Sun's reference frame will be the ecliptic frame.
-                double radius = GetAdjustedPlanetRadius(planetID);
+                var radius = GetAdjustedPlanetRadius(planetID);
                 matNonRotating.Scale(new Vector3d(radius, radius, radius));
-                Vector3d translation = planet3dLocations[planetID] - centerPoint;
+                var translation = planet3dLocations[planetID] - centerPoint;
                 matNonRotating.Multiply(Matrix3d.Translation(translation));
                 renderContext.WorldBaseNonRotating = matNonRotating;
             }
@@ -2320,7 +2320,7 @@ namespace TerraViewer
 
         private static double SetupMatrixForPlanetGeometry(RenderContext11 renderContext, int planetID, Vector3d centerPoint, bool makeFrustum)
         {
-            double radius = GetAdjustedPlanetRadius(planetID);
+            var radius = GetAdjustedPlanetRadius(planetID);
 
 
             double rotationCurrent = 0;
@@ -2338,11 +2338,11 @@ namespace TerraViewer
                 rotationCurrent -= Math.PI / 2;
             }
 
-            Matrix3d matLocal = renderContext.World;
-            Matrix3d matNonRotating = renderContext.World;
-            Vector3d translation = planet3dLocations[planetID] - centerPoint;
+            var matLocal = renderContext.World;
+            var matNonRotating = renderContext.World;
+            var translation = planet3dLocations[planetID] - centerPoint;
 
-            Matrix3d orientationAtEpoch = GetPlanetOrientationAtEpoch(planetID);
+            var orientationAtEpoch = GetPlanetOrientationAtEpoch(planetID);
 
             matLocal.Scale(new Vector3d(radius, radius, radius));
             matLocal.Multiply(Matrix3d.RotationY(-rotationCurrent));
@@ -2407,25 +2407,25 @@ namespace TerraViewer
 
         private static Vector3d SetupShadow(RenderContext11 renderContext, Vector3d centerPoint, float width, SolarSystemObjects shadowCaster, int shadowIndex)
         {
-            SharpDX.Direct3D11.Device device = renderContext.Device;
+            var device = renderContext.Device;
 
             if (PlanetShadow == null)
             {
                 PlanetShadow = Texture11.FromBitmap(device, Properties.Resources.planetShadow);
             }
 
-            Matrix3d invViewCam = renderContext.View;
+            var invViewCam = renderContext.View;
             invViewCam.Invert();
 
-            Vector3d sun = planet3dLocations[0];
+            var sun = planet3dLocations[0];
             sun.Subtract(centerPoint);
 
-            Vector3d moon = planet3dLocations[(int)shadowCaster];
+            var moon = planet3dLocations[(int)shadowCaster];
             moon.Subtract(centerPoint);
 
-            Matrix3d biasd = Matrix3d.Scaling(0.5, 0.5, 0.5) * Matrix3d.Translation(new Vector3d(0.5, 0.5, 0.5));
+            var biasd = Matrix3d.Scaling(0.5, 0.5, 0.5) * Matrix3d.Translation(new Vector3d(0.5, 0.5, 0.5));
 
-            Matrix3d mat =
+            var mat =
                 invViewCam *
                 Matrix3d.LookAtLH(sun, moon, new Vector3d(0, 1, 0)) *
                 Matrix3d.PerspectiveFovLH(width, 1, 0.001f, 200f) *
@@ -2451,10 +2451,10 @@ namespace TerraViewer
             }
 
 
-            double diameter = planetDiameters[planetID];
+            var diameter = planetDiameters[planetID];
 
 
-            double radius = (double)(diameter / 2.0);
+            var radius = (double)(diameter / 2.0);
             if (planetID != 0)
             {
                 radius = radius * (1 + (3 * (Settings.Active.SolarSystemScale - 1)));
@@ -2475,18 +2475,18 @@ namespace TerraViewer
             }
 
 
-            double diameter = planetDiameters[planetID];
+            var diameter = planetDiameters[planetID];
 
 
             return (diameter / 2.0) * UiTools.KilometersPerAu * 1000;
             
         }
 
-        static AstroRaDec[] planetLocations = new AstroRaDec[20];
+        static readonly AstroRaDec[] planetLocations = new AstroRaDec[20];
 
         private static void DrawPlanet(RenderContext11 renderContext, int planetID, float opacity)
         {
-            AstroRaDec planetPosition = planetLocations[planetID];
+            var planetPosition = planetLocations[planetID];
 
             Texture11 currentPlanetTexture;
 
@@ -2494,7 +2494,7 @@ namespace TerraViewer
             {
                 if (planetID < 14)
                 {
-                    Vector3d point = Coordinates.RADecTo3d(planetPosition.RA - 12, planetPosition.Dec, .9);
+                    var point = Coordinates.RADecTo3d(planetPosition.RA - 12, planetPosition.Dec, .9);
                     DrawPointPlanet(renderContext, point, .1f, planetColors[planetID], false, opacity);
                 }
                 return;
@@ -2529,8 +2529,8 @@ namespace TerraViewer
             }
 
 
-            float radius = (float)(planetScales[planetID] / 2.0);
-            float raRadius = (float)(radius / Math.Cos(planetPosition.Dec / 180.0 * Math.PI));
+            var radius = (float)(planetScales[planetID] / 2.0);
+            var raRadius = (float)(radius / Math.Cos(planetPosition.Dec / 180.0 * Math.PI));
             
             drawPlanetPoints[0].Position = Coordinates.RADecTo3d((planetPosition.RA + (raRadius / 15)) - 12, planetPosition.Dec + radius, 1).Vector4;
             drawPlanetPoints[0].Tu = 0;
@@ -2554,12 +2554,12 @@ namespace TerraViewer
             Sprite2d.Draw(renderContext, drawPlanetPoints, 4, currentPlanetTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
 
         }
-        static PositionColoredTextured[] drawPlanetPoints = new PositionColoredTextured[4];
+        static readonly PositionColoredTextured[] drawPlanetPoints = new PositionColoredTextured[4];
 
         private static void DrawPlanetPhase(RenderContext11 renderContext, int planetID, double phase, double angle, int dark, float opacity)
         {
             Texture11 currentPlanetTexture;
-            AstroRaDec planetPosition = planetLocations[planetID];
+            var planetPosition = planetLocations[planetID];
 
             if (planetID < 10)
             {
@@ -2587,11 +2587,11 @@ namespace TerraViewer
             }
 
 
-            float radius = (float)(planetScales[planetID] / 2.0);
-            float raRadius = (float)(radius / Math.Cos(planetPosition.Dec / 180.0 * Math.PI));
+            var radius = (float)(planetScales[planetID] / 2.0);
+            var raRadius = (float)(radius / Math.Cos(planetPosition.Dec / 180.0 * Math.PI));
 
 
-            int index = 0;
+            var index = 0;
 
 
             double top = radius;
@@ -2599,13 +2599,13 @@ namespace TerraViewer
             double left = +(radius / 15);
             double right = -(radius / 15);
 
-            double width = left - right;
-            double height = bottom - top;
+            var width = left - right;
+            var height = bottom - top;
 
-            Color rightColor = Color.FromArgb((int)(opacity*255), dark * 16, dark * 16, dark * 16);
-            Color leftColor = Color.FromArgb((int)(opacity * 255), dark, dark, dark);
+            var rightColor = Color.FromArgb((int)(opacity*255), dark * 16, dark * 16, dark * 16);
+            var leftColor = Color.FromArgb((int)(opacity * 255), dark, dark, dark);
 
-            double phaseFactor = Math.Sin(Coordinates.DegreesToRadians(phase + 90));
+            var phaseFactor = Math.Sin(Coordinates.DegreesToRadians(phase + 90));
             if (phase < 180)
             {
                 rightColor = leftColor;
@@ -2613,20 +2613,20 @@ namespace TerraViewer
                 //  phaseFactor = -phaseFactor;
             }
 
-            double rotation = -Math.Cos(planetPosition.RA / 12 * Math.PI) * 23.5;
+            var rotation = -Math.Cos(planetPosition.RA / 12 * Math.PI) * 23.5;
 
-            SharpDX.Matrix matrix = SharpDX.Matrix.Identity;
+            var matrix = SharpDX.Matrix.Identity;
             matrix = SharpDX.Matrix.Multiply(matrix, SharpDX.Matrix.RotationX((float)(((rotation)) / 180f * Math.PI)));
             matrix = SharpDX.Matrix.Multiply(matrix, SharpDX.Matrix.RotationZ((float)((planetPosition.Dec) / 180f * Math.PI)));
             matrix = SharpDX.Matrix.Multiply(matrix, SharpDX.Matrix.RotationY((float)(((360 - (planetPosition.RA * 15)) + 180) / 180f * Math.PI)));
 
-            double step = 1.0 / planetSegments;
-            for (int i = 0; i <= planetSegments; i++)
+            var step = 1.0 / planetSegments;
+            for (var i = 0; i <= planetSegments; i++)
             {
 
-                double y = i * (1.0 / planetSegments);
-                double yf = (y - .5) * 2;
-                double x = Math.Sqrt(1 - ((yf) * (yf)));
+                var y = i * (1.0 / planetSegments);
+                var yf = (y - .5) * 2;
+                var x = Math.Sqrt(1 - ((yf) * (yf)));
                 double xt;
                 x = x * phaseFactor;
                 x = ((width / 2) + (x * width / 2)) - width / 80;
@@ -2639,7 +2639,7 @@ namespace TerraViewer
                     x = 0;
                 }
                 xt = x / width;
-                double x1 = Math.Sqrt(1 - ((yf) * (yf)));
+                var x1 = Math.Sqrt(1 - ((yf) * (yf)));
                 double x1t;
                 x1 = x1 * phaseFactor;
                 x1 = ((width / 2) + (x1 * width / 2)) + width / 80;
@@ -2675,9 +2675,9 @@ namespace TerraViewer
             }
 
             index = 0;
-            for (int yy = 0; yy < planetSegments; yy++)
+            for (var yy = 0; yy < planetSegments; yy++)
             {
-                for (int xx = 0; xx < 3; xx++)
+                for (var xx = 0; xx < 3; xx++)
                 {
                     triangles[index] = points[yy * 4 + xx];
                     triangles[index + 1] = points[yy * 4 + (xx + 1)];
@@ -2695,8 +2695,8 @@ namespace TerraViewer
 
         }
         static int planetSegments = 128;
-        static PositionColoredTextured[] points = new PositionColoredTextured[4 * (planetSegments + 1)];
-        static PositionColoredTextured[] triangles = new PositionColoredTextured[18 * (planetSegments)];
+        static readonly PositionColoredTextured[] points = new PositionColoredTextured[4 * (planetSegments + 1)];
+        static readonly PositionColoredTextured[] triangles = new PositionColoredTextured[18 * (planetSegments)];
 
         static SharpDX.Vector4 ToVector4(SharpDX.Vector3 vector)
         {
@@ -2739,15 +2739,15 @@ namespace TerraViewer
         static Texture11 PlanetShadow;
         static void DrawSphere(RenderContext11 renderContext, Texture11 texture, int planetID, int sphereIndex, bool noMultires, bool drawLayers, PlanetShaderKey shaderKey)
         {
-            bool useMultires = Settings.Active.SolarSystemMultiRes && !noMultires;
+            var useMultires = Settings.Active.SolarSystemMultiRes && !noMultires;
 
             // Let an override layer take the place of the standard layer
             IImageSet defaultLayer = null;
-            Color defaultLayerColor = Color.White;
+            var defaultLayerColor = Color.White;
             if (drawLayers)
             {
-                string referenceFrameName = Enum.GetName(typeof(SolarSystemObjects), (SolarSystemObjects)planetID);
-                foreach (Layer layer in LayerManager.AllMaps[referenceFrameName].Layers)
+                var referenceFrameName = Enum.GetName(typeof(SolarSystemObjects), (SolarSystemObjects)planetID);
+                foreach (var layer in LayerManager.AllMaps[referenceFrameName].Layers)
                 {
                     if (layer.Enabled && layer is ImageSetLayer)
                     {
@@ -2776,14 +2776,14 @@ namespace TerraViewer
                     }
                     else
                     {
-                        string planetName = GetNameFrom3dId(planetID);
-                        string imageSetName = planetName == "Mars" ? "Visible Imagery" : planetName;
+                        var planetName = GetNameFrom3dId(planetID);
+                        var imageSetName = planetName == "Mars" ? "Visible Imagery" : planetName;
                         planet = Earth3d.MainWindow.GetImagesetByName(imageSetName);
                     }
 
                     if (planet != null)
                     {
-                        SharpDX.Vector4 normColor = new SharpDX.Vector4(defaultLayerColor.R, defaultLayerColor.G, defaultLayerColor.B, defaultLayerColor.A) * (1.0f / 255.0f);
+                        var normColor = new SharpDX.Vector4(defaultLayerColor.R, defaultLayerColor.G, defaultLayerColor.B, defaultLayerColor.A) * (1.0f / 255.0f);
                         if (RenderContext11.sRGB)
                         {
                             normColor.X = (float) Math.Pow(normColor.X, 2.2);
@@ -2798,7 +2798,7 @@ namespace TerraViewer
                         {
                             if (CloudTexture != null)
                             {
-                                PlanetShaderKey cloudShaderKey = new PlanetShaderKey(PlanetSurfaceStyle.Diffuse, Settings.Active.ShowEarthSky, 0);
+                                var cloudShaderKey = new PlanetShaderKey(PlanetSurfaceStyle.Diffuse, Settings.Active.ShowEarthSky, 0);
                                 cloudShaderKey.eclipseShadowCount = shaderKey.eclipseShadowCount;
                                 cloudShaderKey.HasAtmosphere = shaderKey.HasAtmosphere;
 
@@ -2812,8 +2812,8 @@ namespace TerraViewer
 
                                 renderContext.MainTexture = CloudTexture;
 
-                                Matrix3d savedWorld = renderContext.World;
-                                double cloudScale = 1.0 + (EarthCloudHeightMeters) / 6378100.0;
+                                var savedWorld = renderContext.World;
+                                var cloudScale = 1.0 + (EarthCloudHeightMeters) / 6378100.0;
                                 renderContext.World = Matrix3d.Scaling(cloudScale, cloudScale, cloudScale) * renderContext.World;
 
                                 renderContext.setRasterizerState(TriangleCullMode.CullCounterClockwise);
@@ -2862,20 +2862,20 @@ namespace TerraViewer
         }
 
 
-        static int[] triangleCountSphere = null;
-        static int[] vertexCountSphere = null;
+        static int[] triangleCountSphere;
+        static int[] vertexCountSphere;
          static int maxSubDivisionsX = 192*2;
         static int maxSubDivisionsY = 96*2;
        
-        static VertexBuffer11[] sphereVertexBuffers = null;
-        static IndexBuffer11[] sphereIndexBuffers = null;
+        static VertexBuffer11[] sphereVertexBuffers;
+        static IndexBuffer11[] sphereIndexBuffers;
         const int sphereCount = 4;
         static void InitSphere()
         {
             
             if (sphereIndexBuffers != null)
             {
-                foreach (IndexBuffer11 indexBuf in sphereIndexBuffers)
+                foreach (var indexBuf in sphereIndexBuffers)
                 {
                     indexBuf.Dispose();
                     GC.SuppressFinalize(indexBuf);
@@ -2883,7 +2883,7 @@ namespace TerraViewer
             }
             if (sphereVertexBuffers != null)
             {
-                foreach (VertexBuffer11 vertBuf in sphereVertexBuffers)
+                foreach (var vertBuf in sphereVertexBuffers)
                 {
                     vertBuf.Dispose();
                     GC.SuppressFinalize(vertBuf);
@@ -2895,10 +2895,10 @@ namespace TerraViewer
             triangleCountSphere = new int[sphereCount];
             vertexCountSphere = new int[sphereCount];
 
-            int countX = maxSubDivisionsX;
-            int countY = maxSubDivisionsY;
+            var countX = maxSubDivisionsX;
+            var countY = maxSubDivisionsY;
 
-            for (int sphereIndex = 0; sphereIndex < sphereCount; sphereIndex++)
+            for (var sphereIndex = 0; sphereIndex < sphereCount; sphereIndex++)
             {
                 triangleCountSphere[sphereIndex] = countX * countY * 2;
                 vertexCountSphere[sphereIndex] = (countX + 1) * (countY + 1);
@@ -2908,7 +2908,7 @@ namespace TerraViewer
 
                 double lat, lng;
 
-                int index = 0;
+                var index = 0;
                 double latMin = 90;
                 double latMax = -90;
                 double lngMin = -180;
@@ -2916,11 +2916,11 @@ namespace TerraViewer
 
 
                 // Create a vertex buffer 
-                PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])sphereVertexBuffers[sphereIndex].Lock(0, 0); // Lock the buffer (which will return our structs)
+                var verts = (PositionNormalTexturedX2[])sphereVertexBuffers[sphereIndex].Lock(0, 0); // Lock the buffer (which will return our structs)
                 int x1, y1;
 
-                double latDegrees = latMax - latMin;
-                double lngDegrees = lngMax - lngMin;
+                var latDegrees = latMax - latMin;
+                var lngDegrees = lngMax - lngMin;
 
                 double textureStepX = 1.0f / countX;
                 double textureStepY = 1.0f / countY;
@@ -2954,10 +2954,10 @@ namespace TerraViewer
                     }
                 }
                 sphereVertexBuffers[sphereIndex].Unlock();
-                int[] indexArray = (int[])sphereIndexBuffers[sphereIndex].Lock();
+                var indexArray = (int[])sphereIndexBuffers[sphereIndex].Lock();
                 for (y1 = 0; y1 < countY; y1++)
                 {
-                    bool bWinding = (y1 % 2) == 0;
+                    var bWinding = (y1 % 2) == 0;
                     for (x1 = 0; x1 < countX; x1++)
                     {
                         index = (y1 * countX * 6) + 6 * x1;
@@ -2999,7 +2999,7 @@ namespace TerraViewer
         const int subDivisionsRings = 192;
 
         static int triangleCountRings = subDivisionsRings * 2;
-        static VertexBuffer11 ringsVertexBuffer = null;
+        static VertexBuffer11 ringsVertexBuffer;
 
         // Various input layouts used in 3D solar system mode
         // TODO Replace with an input layout cache
@@ -3008,7 +3008,7 @@ namespace TerraViewer
         {
             renderContext.setRasterizerState(TriangleCullMode.Off);
 
-            PlanetShaderKey ringsKey = new PlanetShaderKey(PlanetSurfaceStyle.PlanetaryRings, false, 0);
+            var ringsKey = new PlanetShaderKey(PlanetSurfaceStyle.PlanetaryRings, false, 0);
             SetupPlanetSurfaceEffect(renderContext, ringsKey, 1.0f);
             renderContext.Shader.MainTexture = RingsMap.ResourceView;
 
@@ -3032,20 +3032,20 @@ namespace TerraViewer
                 GC.SuppressFinalize(ringsVertexBuffer);
                 ringsVertexBuffer = null;
             }
-            double inner = 1.113;
-            double outer = 2.25;
+            var inner = 1.113;
+            var outer = 2.25;
 
             ringsVertexBuffer = new VertexBuffer11(typeof(PositionNormalTextured), ((subDivisionsRings + 1) * 4), RenderContext11.PrepDevice);
 
             triangleCountRings = (subDivisionsRings) * 2;
             var verts = (PositionNormalTexturedX2[])ringsVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
 
-            double radStep = Math.PI * 2.0 / (double)subDivisionsRings;
-            int index = 0;
-            for (int x = 0; x <= subDivisionsRings; x += 2)
+            var radStep = Math.PI * 2.0 / (double)subDivisionsRings;
+            var index = 0;
+            for (var x = 0; x <= subDivisionsRings; x += 2)
             {
-                double rads1 = x * radStep;
-                double rads2 = (x + 1) * radStep;
+                var rads1 = x * radStep;
+                var rads2 = (x + 1) * radStep;
 
                 verts[index].Position = new Vector3d((Math.Cos(rads1) * inner), 0, (Math.Sin(rads1) * inner));
                 verts[index].Normal = new Vector3d(0, 1, 0);

@@ -38,10 +38,10 @@ namespace TerraViewer
             this.CloseButton.Text = Language.GetLocalizedText(212, "Close");
             this.research.Text = Language.GetLocalizedText(279, "Research");
         }
-        bool mouseDown = false;
+        bool mouseDown;
         Point pntDown;
 
-        IPlace target = null;
+        IPlace target;
 
         public IPlace Target
         {
@@ -72,7 +72,7 @@ namespace TerraViewer
                 return props != null;
             }
         }
-        static ObjectProperties props = null;
+        static ObjectProperties props;
 
         public static ObjectProperties Props
         {
@@ -108,7 +108,7 @@ namespace TerraViewer
 
         public static void ShowAt(IImageSet imageSet, Point pnt)
         {
-            TourPlace tp = new TourPlace(imageSet.Name, 0, 0, Classification.Unidentified, "", imageSet.DataSetType, 360);
+            var tp = new TourPlace(imageSet.Name, 0, 0, Classification.Unidentified, "", imageSet.DataSetType, 360);
             tp.BackgroundImageSet = imageSet;
 
             ShowAt(tp, pnt);
@@ -116,7 +116,7 @@ namespace TerraViewer
 
         public static void ShowNofinder(IImageSet imageSet, Point pnt)
         {
-            TourPlace tp = new TourPlace(imageSet.Name, 0, 0, Classification.Unidentified, "", imageSet.DataSetType, 360);
+            var tp = new TourPlace(imageSet.Name, 0, 0, Classification.Unidentified, "", imageSet.DataSetType, 360);
             tp.StudyImageset = imageSet;
 
             ShowNofinder(tp, pnt);
@@ -147,7 +147,7 @@ namespace TerraViewer
 
         private void EnsureVisble()
         {
-            Rectangle rect = Screen.GetWorkingArea(this);
+            var rect = Screen.GetWorkingArea(this);
 
             if (this.Left + this.Width > rect.Width)
             {
@@ -257,9 +257,9 @@ namespace TerraViewer
                 }
 
 
-                bool first = true;
+                var first = true;
                 nameValues.Text = "";
-                foreach (string name in target.Names)
+                foreach (var name in target.Names)
                 {
                     if (!first)
                     {
@@ -303,7 +303,7 @@ namespace TerraViewer
 
         private string FriendlyName(string name)
         {
-            for (int i = 1; i < name.Length; i++ )
+            for (var i = 1; i < name.Length; i++ )
             {
                 if (char.IsUpper(name[i]))
                 {
@@ -326,7 +326,7 @@ namespace TerraViewer
 
                 raText.Text = Coordinates.FormatHMS(target.RA);
                 decText.Text = Coordinates.FormatDMSWide(target.Dec);
-                Coordinates altAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(target.RA, target.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
+                var altAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(target.RA, target.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
                 altText.Text = Coordinates.FormatDMSWide(altAz.Alt);
                 azText.Text = Coordinates.FormatDMSWide(altAz.Az);
 
@@ -336,12 +336,12 @@ namespace TerraViewer
                     if (target.Classification == Classification.SolarSystem)
                     {
 
-                        double jNow = ((int)((int)SpaceTimeController.JNow) + .5);
-                        AstroCalc.AstroRaDec p1 = Planets.GetPlanetLocation(target.Name, jNow - 1);
-                        AstroCalc.AstroRaDec p2 = Planets.GetPlanetLocation(target.Name, jNow);
-                        AstroCalc.AstroRaDec p3 = Planets.GetPlanetLocation(target.Name, jNow + 1);
+                        var jNow = ((int)((int)SpaceTimeController.JNow) + .5);
+                        var p1 = Planets.GetPlanetLocation(target.Name, jNow - 1);
+                        var p2 = Planets.GetPlanetLocation(target.Name, jNow);
+                        var p3 = Planets.GetPlanetLocation(target.Name, jNow + 1);
 
-                        int type = 0;
+                        var type = 0;
                         switch (target.Name)
                         {
                             case "Sun":
@@ -402,7 +402,7 @@ namespace TerraViewer
             decText.Text = Coordinates.FormatDMSWide(target.Lat);
             raLabel.Text = "Lng:";
             decLabel.Text = "Lat:";
-            Coordinates altAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(target.RA, target.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
+            var altAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(target.RA, target.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
             altText.Hide();
             azText.Hide();
             altLabel.Hide();
@@ -427,14 +427,14 @@ namespace TerraViewer
             pntDown = this.PointToScreen(e.Location);
         }
 
-        bool moved = false;
+        bool moved;
 
         private void ObjectProperties_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
-                Point loc = this.PointToScreen(e.Location);
-                Point move = new Point(loc.X - pntDown.X, loc.Y - pntDown.Y);
+                var loc = this.PointToScreen(e.Location);
+                var move = new Point(loc.X - pntDown.X, loc.Y - pntDown.Y);
 
                 this.Top += move.Y;
                 this.Left += move.X;
@@ -480,9 +480,9 @@ namespace TerraViewer
 
         const int smallJump = 10;
         const int bigJump = 50;
-        double viewRA = 0;
-        double viewDec = 0;
-        double zoom = 0;
+        double viewRA;
+        double viewDec;
+        double zoom;
 
         private void timer_Tick(object sender, EventArgs e)
         {
@@ -551,22 +551,22 @@ namespace TerraViewer
 
             UpdateLiveValues();
         }
-        IPlace noPlaceDefault = null;
+        IPlace noPlaceDefault;
         private void FindCurrentObject()
         {
-            Point loc = Earth3d.MainWindow.RenderWindow.PointToClient(this.PointToScreen(new Point(300, 88)));
+            var loc = Earth3d.MainWindow.RenderWindow.PointToClient(this.PointToScreen(new Point(300, 88)));
             IPlace closetPlace = null;
-            Coordinates result = new Coordinates(0,0);
+            var result = new Coordinates(0,0);
 
             if (Earth3d.MainWindow.SolarSystemMode)
             {
-                Point pt = loc;
+                var pt = loc;
                 Vector3d PickRayOrig;
                 Vector3d PickRayDir;
-                Rectangle rect = Earth3d.MainWindow.RenderWindow.ClientRectangle;
+                var rect = Earth3d.MainWindow.RenderWindow.ClientRectangle;
 
                 Earth3d.MainWindow.TransformStarPickPointToWorldSpace(pt, rect.Width, rect.Height, out PickRayOrig, out PickRayDir);
-                Vector3d temp = new Vector3d(PickRayOrig);
+                var temp = new Vector3d(PickRayOrig);
                 temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
 
                 //closetPlace = Grids.FindClosestObject(temp , new Vector3d(PickRayDir));
@@ -578,7 +578,7 @@ namespace TerraViewer
 
                 // TODO fix this for earth, plantes, panoramas
                 result = Earth3d.MainWindow.GetCoordinatesForScreenPoint(loc.X, loc.Y);
-                string constellation = Earth3d.MainWindow.ConstellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                var constellation = Earth3d.MainWindow.ConstellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                 //Place[] resultList = ContextSearch.FindClosestMatches(constellation, result.RA, result.Dec, ZoomFactor / 600, 5);
                 closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.DegreesPerPixel * 80);
 
@@ -631,7 +631,7 @@ namespace TerraViewer
 
         private void CallBack(IAsyncResult ar)
         {
-            IPlace place = invokeFindClosestObject.EndInvoke(ar);
+            var place = invokeFindClosestObject.EndInvoke(ar);
 
             if (place == null)
             {
@@ -661,7 +661,7 @@ namespace TerraViewer
         }
         private void CallBack2(IAsyncResult ar)
         {
-            IPlace place = invokeFindClosestMatch.EndInvoke(ar);
+            var place = invokeFindClosestMatch.EndInvoke(ar);
 
 
             MethodInvoker updatePlace = delegate
@@ -760,7 +760,7 @@ namespace TerraViewer
 
         private void research_Click(object sender, EventArgs e)
         {
-            Point pntShow = this.PointToScreen(research.Location);
+            var pntShow = this.PointToScreen(research.Location);
             pntShow.Offset(5, research.Height);
             Earth3d.MainWindow.ShowContextMenu(target, Earth3d.MainWindow.PointToClient(pntShow), false, true);
         }

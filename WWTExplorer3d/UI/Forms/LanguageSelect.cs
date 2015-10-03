@@ -28,9 +28,9 @@ namespace TerraViewer
 
         private void LanguageSelect_Load(object sender, EventArgs e)
         {
-            Language[] items = Language.GetAvailableLanguages();
+            var items = Language.GetAvailableLanguages();
             Language selected = null;
-            foreach (Language item in items)
+            foreach (var item in items)
             {
                 langCombo.Items.Add(item);
                 if (item.Url == Properties.Settings.Default.LanguageUrl || (item.Code == "ZZZZ" && Properties.Settings.Default.LanguageCode=="ZZZZ") )

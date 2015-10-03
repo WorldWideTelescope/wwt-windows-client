@@ -20,9 +20,9 @@ namespace TerraViewer
 
         void GetTaxonomy()
         {
-            StringBuilder taxonomy = new StringBuilder();
-            string seperator = "";
-            string scope = ((Scope)Scope.SelectedItem).ID + ".";
+            var taxonomy = new StringBuilder();
+            var seperator = "";
+            var scope = ((Scope)Scope.SelectedItem).ID + ".";
 
             foreach(TreeNode node in treeView1.Nodes)
             {
@@ -61,13 +61,13 @@ namespace TerraViewer
         }
         void SetTaxonomy()
         {
-            string[] idSplit = Taxonomy.Split(new char[] {';'});
-            List<String> idList = new List<string>();
+            var idSplit = Taxonomy.Split(new char[] {';'});
+            var idList = new List<string>();
             if (idSplit.Length > 0 && !String.IsNullOrEmpty(idSplit[0]) )
             {
                 Scope.SelectedIndex = (int)(idSplit[0].ToUpper()[0]-'A');
 
-                for (int i = 0; i < idSplit.Length; i++)
+                for (var i = 0; i < idSplit.Length; i++)
 		        {
                     try
                     {
@@ -83,7 +83,7 @@ namespace TerraViewer
             foreach(TreeNode node in treeView1.Nodes)
             {
                 node.Checked = false;
-                for (int i = 0; i < idList.Count; i++)
+                for (var i = 0; i < idList.Count; i++)
 		        {
                     if ((string)idList[i] == (string)node.Tag)
                     {
@@ -97,7 +97,7 @@ namespace TerraViewer
                 foreach(TreeNode child in node.Nodes)
                 {
                     child.Checked = false;
-                    for (int i = 0; i < idList.Count; i++)
+                    for (var i = 0; i < idList.Count; i++)
 		            {
                         if ((string)idList[i] == (string)child.Tag)
                         {
@@ -112,7 +112,7 @@ namespace TerraViewer
                     foreach(TreeNode grandChild in child.Nodes)
                     {
                         grandChild.Checked = false;
-                        for (int i = 0; i < idList.Count; i++)
+                        for (var i = 0; i < idList.Count; i++)
 		                {
     			            if ((string)idList[i] == (string)grandChild.Tag)
                             {
@@ -127,7 +127,7 @@ namespace TerraViewer
                         foreach (TreeNode greatGrandChild in grandChild.Nodes)
                         {
                             greatGrandChild.Checked = false;
-                            for (int i = 0; i < idList.Count; i++)
+                            for (var i = 0; i < idList.Count; i++)
                             {
                                 if ((string)idList[i] == (string)greatGrandChild.Tag)
                                 {
@@ -155,41 +155,41 @@ namespace TerraViewer
             Scope.Items.Add(new Scope(Language.GetLocalizedText(377, "Unspecified"), "E"));
             Scope.Text = Language.GetLocalizedText(378, "Select a scope...");
 
-            Stack<TreeNode> Parents = new Stack<TreeNode>();
+            var Parents = new Stack<TreeNode>();
             Parents.Push(null);
-            string filename = Properties.Settings.Default.CahceDirectory + string.Format(@"data\taxonomy_{0}.txt", Language.CurrentLanguage.Code);
+            var filename = Properties.Settings.Default.CahceDirectory + string.Format(@"data\taxonomy_{0}.txt", Language.CurrentLanguage.Code);
 
             DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=taxonomy&L=" + Language.CurrentLanguage.Code, filename, false, false);
-            string taxonomy = File.ReadAllText(filename, Encoding.Unicode);
+            var taxonomy = File.ReadAllText(filename, Encoding.Unicode);
 
-            StringReader sr = new StringReader(taxonomy);
+            var sr = new StringReader(taxonomy);
            
             while( true)
             {
-                string line = sr.ReadLine();
+                var line = sr.ReadLine();
                 if (line == null)
                 {
                     break;
                 }           
                 
-                string[] fields = line.Split(new char[]{'\t'});
+                var fields = line.Split(new char[]{'\t'});
                 if (fields.Length != 2)
                 {
                     continue;
                 }
 
-                string id = fields[0];
-                string name = fields[1];
+                var id = fields[0];
+                var name = fields[1];
 
-                TreeNode node = new TreeNode(name);
+                var node = new TreeNode(name);
                 node.Tag = id;
 
 
 
                 if (Parents.Peek() != null)
                 {
-                    string parent = Parents.Peek().Tag.ToString();
-                    int len = parent.Length;
+                    var parent = Parents.Peek().Tag.ToString();
+                    var len = parent.Length;
                     if (id.Length > len)
                     {
                         // Child Node of parent

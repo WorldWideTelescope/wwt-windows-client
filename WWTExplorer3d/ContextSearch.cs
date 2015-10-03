@@ -16,7 +16,7 @@ namespace TerraViewer
         {
             constellationObjects = new Dictionary<string, List<IPlace>>();
 
-            foreach (string abreviation in Constellations.FullNames.Keys)
+            foreach (var abreviation in Constellations.FullNames.Keys)
             {
                 constellationObjects.Add(abreviation, new List<IPlace>());
 
@@ -31,19 +31,19 @@ namespace TerraViewer
         public static void AddCatalogs(bool sky)
         {
 
-            Dictionary<string, DataSet> dataSets = DataSetManager.GetDataSets();
-            foreach (DataSet d in dataSets.Values)
+            var dataSets = DataSetManager.GetDataSets();
+            foreach (var d in dataSets.Values)
             {
                 if (d.Sky == sky)
                 {
                     if (d != null)
                     {
-                        Dictionary<string, Places> placesList = d.GetPlaces();
-                        foreach (Places places in placesList.Values)
+                        var placesList = d.GetPlaces();
+                        foreach (var places in placesList.Values)
                         {
                             if (places != null)
                             {
-                                ArrayList placeList = places.GetPlaceList();
+                                var placeList = places.GetPlaceList();
                                 foreach (IPlace place in placeList)
                                 {
                                     if (place.StudyImageset != null && (place.StudyImageset.Projection == ProjectionType.Toast || place.StudyImageset.Projection == ProjectionType.Equirectangular))
@@ -62,11 +62,11 @@ namespace TerraViewer
         public static void AddFolderToSearch(Folder parent, bool sky)
         {
 
-            foreach (Object child in parent.Children)
+            foreach (var child in parent.Children)
             {
                 if (child is IImageSet)
                 {
-                    IImageSet childImageset = (IImageSet)child;
+                    var childImageset = (IImageSet)child;
                     if (Earth3d.ProjectorServer)
                     {
                         Earth3d.AddImageSetToTable(childImageset.GetHash(), childImageset);
@@ -74,7 +74,7 @@ namespace TerraViewer
                 }
                 if (child is IPlace)
                 {
-                    IPlace place = (IPlace)child;
+                    var place = (IPlace)child;
                     if (place.StudyImageset != null)
                     {
                         if (Earth3d.ProjectorServer)
@@ -116,13 +116,13 @@ namespace TerraViewer
         {
             if (place.Classification == Classification.Constellation)
             {
-                String constellationID = Constellations.Abbreviation(place.Name);
+                var constellationID = Constellations.Abbreviation(place.Name);
                 place.Constellation = constellationID;
                 constellationObjects["Constellations"].Add(place);
             }
             else if (place.Classification == Classification.SolarSystem)
             {
-                String constellationID = Constellations.Containment.FindConstellationForPoint(place.RA, place.Dec);
+                var constellationID = Constellations.Containment.FindConstellationForPoint(place.RA, place.Dec);
                 place.Constellation = constellationID;
                 if (constellationObjects["SolarSystem"].Find(delegate(IPlace target) { return place.Name == target.Name; }) == null)
                 {
@@ -131,7 +131,7 @@ namespace TerraViewer
             }
             else
             {
-                String constellationID = "Error";
+                var constellationID = "Error";
 
                 if (place.Type == ImageSetType.Planet)
                 {
@@ -171,23 +171,23 @@ namespace TerraViewer
                 return null;
             }
 
-            bool tryIt = false;
+            var tryIt = false;
 
             if (tryIt)
             {
-                string data = DumpJSON();
+                var data = DumpJSON();
             }
 
-            double minDistance = 360.0 * 360.0;
+            var minDistance = 360.0 * 360.0;
             IPlace closestPlace = null;
-            foreach (IPlace place in constellationObjects[constellationID])
+            foreach (var place in constellationObjects[constellationID])
             {
-                string test = ToJSON(place);
+                var test = ToJSON(place);
 
 
-                double distanceRa = (ra - place.RA) * Math.Cos(dec / 180 * Math.PI) * 15;
-                double distanceDec = (dec - place.Dec);
-                double distanceSquared = (distanceDec * distanceDec) + (distanceRa * distanceRa);
+                var distanceRa = (ra - place.RA) * Math.Cos(dec / 180 * Math.PI) * 15;
+                var distanceDec = (dec - place.Dec);
+                var distanceSquared = (distanceDec * distanceDec) + (distanceRa * distanceRa);
                 if (distanceSquared < minDistance)
                 {
                     minDistance = distanceSquared;
@@ -195,11 +195,11 @@ namespace TerraViewer
                 }
             }
 
-            foreach (IPlace place in constellationObjects["SolarSystem"])
+            foreach (var place in constellationObjects["SolarSystem"])
             {
-                double distanceRa = (ra - place.RA) * Math.Cos(dec / 180 * Math.PI) * 15;
-                double distanceDec = (dec - place.Dec);
-                double distanceSquared = (distanceDec * distanceDec) + (distanceRa * distanceRa);
+                var distanceRa = (ra - place.RA) * Math.Cos(dec / 180 * Math.PI) * 15;
+                var distanceDec = (dec - place.Dec);
+                var distanceSquared = (distanceDec * distanceDec) + (distanceRa * distanceRa);
                 if (distanceSquared < minDistance)
                 {
                     minDistance = distanceSquared;
@@ -220,11 +220,11 @@ namespace TerraViewer
 
         public static string DumpJSON()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine("{");
             sb.AppendLine("\"Constellations\" : [");
-            bool firstKey = true;
-            foreach (string key in constellationObjects.Keys)
+            var firstKey = true;
+            foreach (var key in constellationObjects.Keys)
             {
                 if (key.ToLower() != "mars" && constellationObjects[key].Count > 0)
                 {
@@ -239,8 +239,8 @@ namespace TerraViewer
                     }
                     sb.AppendLine("  {");
                     sb.AppendLine(string.Format(" \"{0}\" : \"{1}\"{2}", "name", key, ", \"places\": ["));
-                    bool firstLine = true;
-                    foreach (IPlace place in constellationObjects[key])
+                    var firstLine = true;
+                    foreach (var place in constellationObjects[key])
                     {
                         if (firstLine)
                         {
@@ -266,12 +266,12 @@ namespace TerraViewer
 
         public static string ToJSON(IPlace place)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             sb.Append("  {");
-            string names = "";
-            string delim = "";
-            foreach (string name in place.Names)
+            var names = "";
+            var delim = "";
+            foreach (var name in place.Names)
             {
                 names += delim;
                 names += name;
@@ -302,7 +302,7 @@ namespace TerraViewer
 
         public static string ToJSON(IImageSet imageset)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             sb.Append("  {");
 
@@ -348,21 +348,21 @@ namespace TerraViewer
 
             if (corners != null)
             {
-                double minRa = Math.Min(corners[0].RA, Math.Min(corners[1].RA, Math.Min(corners[2].RA, corners[3].RA)));
-                double maxRa = Math.Max(corners[0].RA, Math.Max(corners[1].RA, Math.Max(corners[2].RA, corners[3].RA)));
+                var minRa = Math.Min(corners[0].RA, Math.Min(corners[1].RA, Math.Min(corners[2].RA, corners[3].RA)));
+                var maxRa = Math.Max(corners[0].RA, Math.Max(corners[1].RA, Math.Max(corners[2].RA, corners[3].RA)));
 
-                double minDec = Math.Min(corners[0].Dec, Math.Min(corners[1].Dec, Math.Min(corners[2].Dec, corners[3].Dec)));
-                double maxDec = Math.Max(corners[0].Dec, Math.Max(corners[1].Dec, Math.Max(corners[2].Dec, corners[3].Dec)));
+                var minDec = Math.Min(corners[0].Dec, Math.Min(corners[1].Dec, Math.Min(corners[2].Dec, corners[3].Dec)));
+                var maxDec = Math.Max(corners[0].Dec, Math.Max(corners[1].Dec, Math.Max(corners[2].Dec, corners[3].Dec)));
 
-                bool wrap = false;
+                var wrap = false;
                 if (Math.Abs(maxRa - minRa) > 12)
                 {
                     wrap = true;
                 }
 
-                List<IPlace> results = new List<IPlace>();
+                var results = new List<IPlace>();
 
-                foreach (IPlace place in constellationObjects[constellationID])
+                foreach (var place in constellationObjects[constellationID])
                 {
                     //TODO Need Serious fixing of RA dec range validation...
                     if ((type & place.Classification) != 0)
@@ -402,9 +402,9 @@ namespace TerraViewer
             }
             else
             {
-                List<IPlace> results = new List<IPlace>();
+                var results = new List<IPlace>();
 
-                foreach (IPlace place in constellationObjects[constellationID])
+                foreach (var place in constellationObjects[constellationID])
                 {
                     if ((type & place.Classification) != 0)
                     {
@@ -423,7 +423,7 @@ namespace TerraViewer
         }
         public static IPlace[] FindConteallationObjectsInCone(string constellationID, double ra, double dec, float distance, Classification type)
         {
-            Vector3d center = Coordinates.RADecTo3d(ra, dec,1);
+            var center = Coordinates.RADecTo3d(ra, dec,1);
 
             if (!constellationObjects.ContainsKey(constellationID))
             {
@@ -433,9 +433,9 @@ namespace TerraViewer
             if (distance > 0)
             {
 
-                List<IPlace> results = new List<IPlace>();
+                var results = new List<IPlace>();
 
-                foreach (IPlace place in constellationObjects[constellationID])
+                foreach (var place in constellationObjects[constellationID])
                 {
                     Vector3d distanceVector;
 
@@ -461,9 +461,9 @@ namespace TerraViewer
             }
             else
             {
-                List<IPlace> results = new List<IPlace>();
+                var results = new List<IPlace>();
 
-                foreach (IPlace place in constellationObjects[constellationID])
+                foreach (var place in constellationObjects[constellationID])
                 {
                     if ((type & place.Classification) != 0)
                     {
@@ -488,9 +488,9 @@ namespace TerraViewer
                 return null;
             }
 
-            List<IPlace> results = new List<IPlace>();
+            var results = new List<IPlace>();
 
-            foreach (IPlace place in constellationObjects[constellationID])
+            foreach (var place in constellationObjects[constellationID])
             {
                 if ((type & place.Classification) != 0)
                 {

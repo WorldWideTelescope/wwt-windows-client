@@ -32,7 +32,7 @@ namespace TerraViewer
 
         public AudioTrack Target = null;
 
-        bool playing = false;
+        bool playing;
 
         private void Preview_Click(object sender, EventArgs e)
         {
@@ -136,25 +136,25 @@ namespace TerraViewer
 
         private void Begin_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             Target.Track.Begin = UiTools.ParseAndValidateDouble(Begin, Target.Track.Begin, ref failed);
         }
 
         private void End_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             Target.Track.End = UiTools.ParseAndValidateDouble(End, Target.Track.End, ref failed);
         }
 
         private void FadeIn_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             Target.Track.FadeIn = UiTools.ParseAndValidateDouble(FadeIn, Target.Track.FadeIn, ref failed);
         }
 
         private void FadeOut_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             Target.Track.FadeOut = UiTools.ParseAndValidateDouble(FadeOut, Target.Track.FadeOut, ref failed);
         }
 

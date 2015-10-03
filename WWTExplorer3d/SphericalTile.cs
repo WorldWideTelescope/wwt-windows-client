@@ -28,7 +28,7 @@ namespace TerraViewer
 
             double lat, lng;
 
-            int index = 0;
+            var index = 0;
             //            double tileDegrees = 360;
 
             double latMin = 90;
@@ -37,11 +37,11 @@ namespace TerraViewer
             double lngMax = 180;
             
             // Create a vertex buffer 
-            PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
             int x1, y1;
 
-            double latDegrees = latMax - latMin;
-            double lngDegrees = lngMax - lngMin;
+            var latDegrees = latMax - latMin;
+            var lngDegrees = lngMax - lngMin;
 
             double textureStepX = 1.0f / subDivisionsX;
             double textureStepY = 1.0f / subDivisionsY;
@@ -72,7 +72,7 @@ namespace TerraViewer
                     verts[index].Normal = verts[index].Position;
                     if (domeMaster)
                     {
-                        double dist = (90-lat) / 180;
+                        var dist = (90-lat) / 180;
                         verts[index].Tu = (float)(.5 +Math.Sin((lng+180)/180*Math.PI)*dist);
                         verts[index].Tv = (float)(.5 + Math.Cos((lng+180) / 180 * Math.PI) * dist);
                     }
@@ -85,7 +85,7 @@ namespace TerraViewer
             }
             vb.Unlock();
             TriangleCount = (subDivisionsX) * (subDivisionsY) * 2;
-            short[] indexArray = (short[])this.indexBuffer[0].Lock();
+            var indexArray = (short[])this.indexBuffer[0].Lock();
 
             for (y1 = 0; y1 < subDivisionsY; y1++)
             {
@@ -141,14 +141,14 @@ namespace TerraViewer
 
             renderContext.SetIndexBuffer( indexBuffer[0]);
 
-            int partCount = this.TriangleCount;
+            var partCount = this.TriangleCount;
             TrianglesRendered += partCount;
 
             renderContext.devContext.DrawIndexed(indexBuffer[0].Count, 0, 0);
 
             return true;
         }
-        bool domeMaster = false;
+        bool domeMaster;
 
         public override bool CreateGeometry(RenderContext11 renderContext, bool uiThread)
         {
@@ -161,7 +161,7 @@ namespace TerraViewer
 
                         texture = BufferPool11.GetTexture(FileName);
 
-                        double aspect = (double)texture.Width / (double)texture.Height;
+                        var aspect = (double)texture.Width / (double)texture.Height;
 
                         if (aspect < 1.5)
                         {

@@ -6,7 +6,7 @@ namespace TerraViewer
 {
     class Settings : TerraViewer.ISettings, IScriptable
     {
-        static ISettings active = new Settings();
+        static readonly ISettings active = new Settings();
 
         internal static ISettings Ambient
         {
@@ -32,7 +32,7 @@ namespace TerraViewer
             }
         }
 
-        static ISettings tourSettings = null;
+        static ISettings tourSettings;
 
         internal static ISettings TourSettings
         {
@@ -49,7 +49,7 @@ namespace TerraViewer
 
             }
         }
-        static bool masterController = false;
+        static bool masterController;
         public static bool MasterController
         {
             get
@@ -63,7 +63,7 @@ namespace TerraViewer
             }
         }
 
-        static bool domeView = false;
+        static bool domeView;
         public static bool DomeView
         {
             get
@@ -496,9 +496,9 @@ namespace TerraViewer
 
         public SettingParameter GetSetting(StockSkyOverlayTypes type)
         {
-            bool edgeTrigger = false;
+            var edgeTrigger = false;
             double opacity = 0;
-            bool targetState = false;
+            var targetState = false;
 
             ConstellationFilter filter = null;
 
@@ -622,8 +622,8 @@ namespace TerraViewer
                 case StockSkyOverlayTypes.MPCZone6:
                 case StockSkyOverlayTypes.MPCZone7:
                     {
-                        int id = (int)type - (int)StockSkyOverlayTypes.MPCZone1;
-                        int bit = (int)Math.Pow(2, id);
+                        var id = (int)type - (int)StockSkyOverlayTypes.MPCZone1;
+                        var bit = (int)Math.Pow(2, id);
                         targetState = (Properties.Settings.Default.MinorPlanetsFilter & bit) != 0;
                         opacity = targetState ? 1 : 0;
                         edgeTrigger = true;

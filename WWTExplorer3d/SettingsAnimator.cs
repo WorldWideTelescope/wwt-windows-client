@@ -7,9 +7,9 @@ namespace TerraViewer
 {
     public class SettingsAnimator : IAnimatable
     {
-        StockSkyOverlayTypes settingsType = StockSkyOverlayTypes.AltAzGrid;
+        readonly StockSkyOverlayTypes settingsType = StockSkyOverlayTypes.AltAzGrid;
 
-        double currentValue = 0;
+        double currentValue;
 
         public double CurrentValue
         {
@@ -26,7 +26,7 @@ namespace TerraViewer
             set { filter = value; }
         }
 
-        bool constant = false;
+        bool constant;
 
         public bool Constant
         {
@@ -44,7 +44,7 @@ namespace TerraViewer
         public SettingsAnimator(StockSkyOverlayTypes type)
         {
             settingsType = type;
-            SettingParameter sp = Settings.Ambient.GetSetting(settingsType);
+            var sp = Settings.Ambient.GetSetting(settingsType);
             constant = sp.EdgeTrigger;
 
             if (sp.Filter != null)
@@ -55,7 +55,7 @@ namespace TerraViewer
 
         public double[] GetParams()
         {
-            SettingParameter sp = Settings.Ambient.GetSetting(settingsType);
+            var sp = Settings.Ambient.GetSetting(settingsType);
             if (sp.Filter == null)
             {
                 return new double[] { sp.Opacity };

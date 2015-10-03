@@ -50,9 +50,9 @@ namespace TerraViewer
 
         private void positionX_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
-            double val  = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Position.X, ref failed);
+            var val  = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Position.X, ref failed);
 
             if (!failed)
             {
@@ -63,9 +63,9 @@ namespace TerraViewer
 
         private void positionY_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
-            double val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Position.X, ref failed);
+            var val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Position.X, ref failed);
 
             if (!failed)
             {
@@ -76,9 +76,9 @@ namespace TerraViewer
 
         private void sizeX_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
-            double val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Width, ref failed);
+            var val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Width, ref failed);
 
             if (!failed)
             {
@@ -88,9 +88,9 @@ namespace TerraViewer
 
         private void sizeY_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
-            double val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Height, ref failed);
+            var val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.Height, ref failed);
 
             if (!failed)
             {
@@ -108,9 +108,9 @@ namespace TerraViewer
 
         private void Rotation_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
-            double val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.RotationAngle, ref failed);
+            var val = UiTools.ParseAndValidateDouble(sender as TextBox, Overlay.RotationAngle, ref failed);
 
             if (!failed)
             {

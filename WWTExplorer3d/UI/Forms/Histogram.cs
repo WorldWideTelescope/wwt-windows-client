@@ -144,9 +144,9 @@ namespace TerraViewer
                     highPosition = Math.Min(255, Math.Max(0, e.X));
                     break;
                 case DragType.Center:
-                    int hWidth = Math.Abs(highPosition-lowPosition)/2;
-                    int adCenter = Math.Min(255 - hWidth, Math.Max(hWidth, e.X));
-                    int moved = center - adCenter;
+                    var hWidth = Math.Abs(highPosition-lowPosition)/2;
+                    var adCenter = Math.Min(255 - hWidth, Math.Max(hWidth, e.X));
+                    var moved = center - adCenter;
                     lowPosition -= moved;
                     highPosition -= moved;
                     break;
@@ -157,9 +157,9 @@ namespace TerraViewer
             }
             center = (lowPosition + highPosition) / 2;
             HistogramView.Refresh();
-            double factor = (image.MaxVal - image.MinVal) / 256.0;
-            double low = image.MinVal + (lowPosition * factor);
-            double hi = image.MinVal + (highPosition * factor);
+            var factor = (image.MaxVal - image.MinVal) / 256.0;
+            var low = image.MinVal + (lowPosition * factor);
+            var hi = image.MinVal + (highPosition * factor);
 
             this.Tile = (SkyImageTile)TileCache.GetTile(Tile.Level, Tile.X, Tile.Y, Tile.Dataset, null);
             updateTimer.Enabled = false;
@@ -180,8 +180,8 @@ namespace TerraViewer
 
         }
 
-        int downPosition = 0;
-        int lowPosition = 0;
+        int downPosition;
+        int lowPosition;
         int highPosition = 255;
         int center = 127;
 
@@ -194,7 +194,7 @@ namespace TerraViewer
             e.Graphics.DrawLine(Pens.Green, new Point(highPosition, 0), new Point(highPosition, 150));
             e.Graphics.DrawEllipse(Pens.Blue, new Rectangle(center-10, 65, 20, 20));
 
-            List<PointF> Curve = new List<PointF>();
+            var Curve = new List<PointF>();
             switch (scaleType.SelectedIndex)
             {
                 case 0: // Linear
@@ -207,12 +207,12 @@ namespace TerraViewer
                 case 1: // Log
                     {
                         Curve.Clear();
-                        double factor = 150 / Math.Log(255);
+                        var factor = 150 / Math.Log(255);
                         double diff = (highPosition - lowPosition);
-                        int jump = Math.Sign(diff);
-                        double step = Math.Abs(256.0 / (diff == 0 ? .000001 : diff));
-                        double val = .000001;
-                        for (int i = lowPosition; i != highPosition; i += jump)
+                        var jump = Math.Sign(diff);
+                        var step = Math.Abs(256.0 / (diff == 0 ? .000001 : diff));
+                        var val = .000001;
+                        for (var i = lowPosition; i != highPosition; i += jump)
                         {
                             Curve.Add(new PointF((float)i, (float)(150 - (Math.Log(val) * factor))));
                             val += step;
@@ -222,12 +222,12 @@ namespace TerraViewer
                 case 2: // Power 2
                     {
                         Curve.Clear();
-                        double factor = 150 / Math.Pow(255, 2);
+                        var factor = 150 / Math.Pow(255, 2);
                         double diff = (highPosition - lowPosition);
-                        int jump = Math.Sign(diff);
-                        double step = Math.Abs(256.0 / (diff == 0 ? .000001 : diff));
-                        double val = .000001;
-                        for (int i = lowPosition; i != highPosition; i += jump)
+                        var jump = Math.Sign(diff);
+                        var step = Math.Abs(256.0 / (diff == 0 ? .000001 : diff));
+                        var val = .000001;
+                        for (var i = lowPosition; i != highPosition; i += jump)
                         {
                             Curve.Add(new PointF((float)i, (float)(150 - (Math.Pow(val, 2) * factor))));
                             val += step;
@@ -238,12 +238,12 @@ namespace TerraViewer
                 case 3: // Square Root
                     {
                         Curve.Clear();
-                        double factor = 150 / Math.Sqrt(255);
+                        var factor = 150 / Math.Sqrt(255);
                         double diff = (highPosition - lowPosition);
-                        int jump = Math.Sign(diff);
-                        double step = Math.Abs(256.0 / (diff == 0 ? .000001 : diff));
-                        double val = .000001;
-                        for (int i = lowPosition; i != highPosition; i += jump)
+                        var jump = Math.Sign(diff);
+                        var step = Math.Abs(256.0 / (diff == 0 ? .000001 : diff));
+                        var val = .000001;
+                        for (var i = lowPosition; i != highPosition; i += jump)
                         {
                             Curve.Add(new PointF((float)i, (float)(150 - (Math.Sqrt(val) * factor))));
                             val += step;
@@ -278,9 +278,9 @@ namespace TerraViewer
         {
             if (image != null)
             {
-                double factor = (image.MaxVal - image.MinVal) / 256.0;
-                double low = image.MinVal + (lowPosition * factor);
-                double hi = image.MinVal + (highPosition * factor);
+                var factor = (image.MaxVal - image.MinVal) / 256.0;
+                var low = image.MinVal + (lowPosition * factor);
+                var hi = image.MinVal + (highPosition * factor);
                 Tile.SetTexture(image.GetBitmap(low, hi, (ScaleTypes)scaleType.SelectedIndex));
             }
             updateTimer.Enabled = false;

@@ -35,7 +35,7 @@ namespace TerraViewer.Callibration
 
         private void OK_Click(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Target.Az = UiTools.ParseAndValidateDouble(AzText, Target.Az, ref failed);
             Target.Alt = UiTools.ParseAndValidateDouble(AltText, Target.Alt, ref failed);

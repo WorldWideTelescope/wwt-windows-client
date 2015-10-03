@@ -17,7 +17,7 @@ namespace TerraViewer
 
         }
 
-        private double p1 = 0;
+        private double p1;
 
         public double P1
         {
@@ -54,7 +54,7 @@ namespace TerraViewer
             }
         }
 
-        private double p4 = 0;
+        private double p4;
 
         public double P4
         {
@@ -84,16 +84,16 @@ namespace TerraViewer
 
         private void CurveEditor_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
 
 
-            int step = Width / 10;
-            for (int x = 0; x <= Width; x += step)
+            var step = Width / 10;
+            for (var x = 0; x <= Width; x += step)
             {
                 g.DrawLine(Pens.Gray, x, 0, x, Height);
             }
 
-            for (int y = 0; y <= Height; y += step)
+            for (var y = 0; y <= Height; y += step)
             {
                 g.DrawLine(Pens.Gray, 0, y, Width, y);
             }
@@ -102,20 +102,20 @@ namespace TerraViewer
 
             g.DrawLine(Pens.White, 0, Height / 2, Width, Height / 2);
 
-            Vector2d first = new Vector2d(0, 0);
-            Vector2d control1 = new Vector2d(P1, P2);
-            Vector2d control2 = new Vector2d(P3, P4);
-            Vector2d last = new Vector2d(1, 1);
+            var first = new Vector2d(0, 0);
+            var control1 = new Vector2d(P1, P2);
+            var control2 = new Vector2d(P3, P4);
+            var last = new Vector2d(1, 1);
 
 
-            Vector2d pnt1 = first;
+            var pnt1 = first;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
             float w = Width - 1;
 
             for (double tween = 0; tween <= 1.05; tween += (1 / 44.0))
             {
-                Vector2d pnt2 = ComputeSpline(first, control1, control2, last, tween);
+                var pnt2 = ComputeSpline(first, control1, control2, last, tween);
                 g.DrawLine(Pens.White, (float)pnt1.X * w, w - (float)pnt1.Y * w, (float)pnt2.X * w, w - (float)pnt2.Y * w);
                 pnt1 = pnt2;
             }
@@ -129,12 +129,12 @@ namespace TerraViewer
             }
         }
 
-        bool dragging1 = false;
-        bool dragging2 = false;
+        bool dragging1;
+        bool dragging2;
         private void CurveEditor_MouseDown(object sender, MouseEventArgs e)
         {
-            double x = Math.Max(0, Math.Min(1, (double)e.X / (double)Width));
-            double y = Math.Max(0, Math.Min(1, 1.0 - (double)e.Y / (double)Height));
+            var x = Math.Max(0, Math.Min(1, (double)e.X / (double)Width));
+            var y = Math.Max(0, Math.Min(1, 1.0 - (double)e.Y / (double)Height));
 
             if (Math.Sqrt((P1 - x) * (P1 - x) + (P2 - y) * (P2 - y)) < .07)
             {
@@ -153,8 +153,8 @@ namespace TerraViewer
 
         private void CurveEditor_MouseMove(object sender, MouseEventArgs e)
         {
-            double x = Math.Max(0, Math.Min(1, (double)e.X / (double)Width));
-            double y = Math.Max(0, Math.Min(1, 1.0 - (double)e.Y / (double)Height));
+            var x = Math.Max(0, Math.Min(1, (double)e.X / (double)Width));
+            var y = Math.Max(0, Math.Min(1, 1.0 - (double)e.Y / (double)Height));
 
             if (dragging1)
             {
@@ -188,12 +188,12 @@ namespace TerraViewer
         {
             if (curveType == Key.KeyType.Custom)
             {
-                Vector2d A1 = Vector2d.Lerp(begin, control1, tween);
-                Vector2d A2 = Vector2d.Lerp(control1, control2, tween);
-                Vector2d A3 = Vector2d.Lerp(control2, end, tween);
+                var A1 = Vector2d.Lerp(begin, control1, tween);
+                var A2 = Vector2d.Lerp(control1, control2, tween);
+                var A3 = Vector2d.Lerp(control2, end, tween);
 
-                Vector2d B1 = Vector2d.Lerp(A1, A2, tween);
-                Vector2d B2 = Vector2d.Lerp(A2, A3, tween);
+                var B1 = Vector2d.Lerp(A1, A2, tween);
+                var B2 = Vector2d.Lerp(A2, A3, tween);
                 return Vector2d.Lerp(B1, B2, tween);
             }
             else

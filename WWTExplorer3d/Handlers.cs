@@ -23,7 +23,7 @@ namespace TerraViewer
 {
 	public class QueryString
 	{
-		Hashtable _htRequest;
+	    readonly Hashtable _htRequest;
 		public QueryString(string request)
 		{
 			_htRequest = new Hashtable();
@@ -33,18 +33,18 @@ namespace TerraViewer
                 return;
             }
 
-			string remaining = request.Substring(request.IndexOf("?")+1);
-			string[] parameters = remaining.Split('&');
+			var remaining = request.Substring(request.IndexOf("?")+1);
+			var parameters = remaining.Split('&');
 			
             if (parameters.GetLength(0) == 1 & parameters[0] == "")
             {
                 return;
             }
 
-			foreach(string keyval in parameters)
+			foreach(var keyval in parameters)
 			{   
-                string key = "";
-                string val = "";
+                var key = "";
+                var val = "";
                 if (keyval.IndexOf("=") > -1)
                 {
                     key = keyval.Substring(0, keyval.IndexOf("="));
@@ -60,14 +60,14 @@ namespace TerraViewer
                     _htRequest[key] = new ArrayList();
                 }
                 
-				ArrayList arValues = (ArrayList)_htRequest[key];
+				var arValues = (ArrayList)_htRequest[key];
 			    arValues.Add(val);
 			}
 		}
 		public string[] GetValues(string key)
 		{
-			ArrayList arValues = (ArrayList)_htRequest[key];
-			string[] vals = new string[arValues.Count];
+			var arValues = (ArrayList)_htRequest[key];
+			var vals = new string[arValues.Count];
 			arValues.CopyTo(vals, 0);
 			return vals;
 		}
@@ -75,7 +75,7 @@ namespace TerraViewer
 		{
 			get 
 			{
-				ArrayList arValues = (ArrayList)_htRequest[key];
+				var arValues = (ArrayList)_htRequest[key];
 				if (arValues == null)
 					return null;
 				return (string)arValues[0];
@@ -85,10 +85,10 @@ namespace TerraViewer
 
 	public abstract class RequestHandler
 	{
-		private static ArrayList _Handlers = new ArrayList();
+		private static readonly ArrayList _Handlers = new ArrayList();
 		public static string HttpVersion="";
         static string _RootWebfiles = "TerraViewer.Cosmos."; // "IMDFrame.WebFiles." 
-        static Dictionary<string, string> _WebTextFileCache = new Dictionary<string, string>();
+        static readonly Dictionary<string, string> _WebTextFileCache = new Dictionary<string, string>();
 
 		public static void RegisterHandler(RequestHandler rh)
 		{
@@ -118,10 +118,10 @@ namespace TerraViewer
         public abstract void ProcessRequest(string request, ref Socket socket, bool authenticated, string body);
         public static void SendContinue(ref Socket mySocket)
         {
-            StringBuilder sBuffer = new StringBuilder("", 1024);
+            var sBuffer = new StringBuilder("", 1024);
 
             sBuffer.Append(HttpVersion + " 100 Continue\r\n\r\n");
-            Byte[] bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString());
+            var bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString());
             SendToBrowser(bSendData, bSendData.Length, ref mySocket);
         }
 
@@ -129,9 +129,9 @@ namespace TerraViewer
         {
             if (size > 0)
             {
-                Byte[] bReceive = new Byte[size];
+                var bReceive = new Byte[size];
                 mySocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 40000);
-                int i = mySocket.Receive(bReceive, bReceive.Length, 0);
+                var i = mySocket.Receive(bReceive, bReceive.Length, 0);
 
                 //Convert Byte to String
                 return Encoding.UTF8.GetString(bReceive, 0, i);
@@ -149,7 +149,7 @@ namespace TerraViewer
 		/// <returns></returns>
 		public static void SendHeader(string sHttpVersion, string sMIMEHeader, int iTotBytes, string sStatusCode, ref Socket mySocket)
 		{
-			StringBuilder sBuffer = new StringBuilder("", 1024);
+			var sBuffer = new StringBuilder("", 1024);
 			// if Mime _CacheType is not provided set default to _Text/html
 			if (sMIMEHeader.Length == 0 )
 			{
@@ -161,7 +161,7 @@ namespace TerraViewer
 			sBuffer.Append("Content-Type: " + sMIMEHeader + "\r\n");
 			sBuffer.Append("Accept-Ranges: bytes\r\n");
 			sBuffer.Append("Content-Length: " + iTotBytes + "\r\n\r\n");
-			Byte[] bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString()); 
+			var bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString()); 
 			SendToBrowser( bSendData, bSendData.Length, ref mySocket);
 		}
 
@@ -169,7 +169,7 @@ namespace TerraViewer
 
 		public static void SendHeader(string sHttpVersion, string sMIMEHeader, int iTotBytes, string sStatusCode, ref Socket mySocket, bool cache)
 		{
-			StringBuilder sBuffer = new StringBuilder("", 1024);
+			var sBuffer = new StringBuilder("", 1024);
 			// if Mime _CacheType is not provided set default to _Text/html
 			if (sMIMEHeader.Length == 0 )
 			{
@@ -188,12 +188,12 @@ namespace TerraViewer
 			sBuffer.Append("Content-Type: " + sMIMEHeader + "\r\n");
 			sBuffer.Append("Accept-Ranges: bytes\r\n");
 			sBuffer.Append("Content-Length: " + iTotBytes + "\r\n\r\n");
-			Byte[] bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString()); 
+			var bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString()); 
 			SendToBrowser( bSendData, bSendData.Length, ref mySocket);
 		}
         public static void SendHeader(string sHttpVersion, string sMIMEHeader, int iTotBytes, string sStatusCode, string location, ref Socket mySocket)
         {
-            StringBuilder sBuffer = new StringBuilder("", 1024);
+            var sBuffer = new StringBuilder("", 1024);
             // if Mime _CacheType is not provided set default to _Text/html
             if (sMIMEHeader.Length == 0)
             {
@@ -206,13 +206,13 @@ namespace TerraViewer
             sBuffer.Append("Location: "+location+"\r\n");
 
             sBuffer.Append("Content-Length: " + iTotBytes + "\r\n\r\n");
-            Byte[] bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString());
+            var bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString());
             SendToBrowser(bSendData, bSendData.Length, ref mySocket);
         }
 
         public static void SendCookieHeaderRedirect(string sHttpVersion, string sMIMEHeader, int iTotBytes, string sStatusCode, string location, ref Socket mySocket, string cookie)
         {
-            StringBuilder sBuffer = new StringBuilder("", 1024);
+            var sBuffer = new StringBuilder("", 1024);
             // if Mime _CacheType is not provided set default to _Text/html
             if (sMIMEHeader.Length == 0)
             {
@@ -226,13 +226,13 @@ namespace TerraViewer
             sBuffer.Append("Set-Cookie: " + cookie + "\r\n");
 
             sBuffer.Append("Content-Length: " + iTotBytes + "\r\n\r\n");
-            Byte[] bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString());
+            var bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString());
             SendToBrowser(bSendData, bSendData.Length, ref mySocket);
         }
 
 		public static void SendHeader(string sHttpVersion, string sMIMEHeader, string filename, bool renderInBrowser, int iTotBytes, string sStatusCode, ref Socket mySocket)
 		{
-			StringBuilder sBuffer = new StringBuilder("", 1024);
+			var sBuffer = new StringBuilder("", 1024);
 			// if Mime _CacheType is not provided set default to _Text/html
 			if (sMIMEHeader.Length == 0 )
 			{
@@ -251,7 +251,7 @@ namespace TerraViewer
 			}
 			sBuffer.Append("Accept-Ranges: bytes\r\n");
 			sBuffer.Append("Content-Length: " + iTotBytes + "\r\n\r\n");
-			Byte[] bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString()); 
+			var bSendData = Encoding.UTF8.GetBytes(sBuffer.ToString()); 
 			SendToBrowser( bSendData, bSendData.Length, ref mySocket);
 		}
 
@@ -262,16 +262,16 @@ namespace TerraViewer
             {
                 fileName = fileName.ToLower();
        
-                string fileNameKey = fileName;
+                var fileNameKey = fileName;
                 
                 if (_WebTextFileCache.ContainsKey(fileNameKey))
                 {
                     return _WebTextFileCache[fileNameKey];
                 }
 
-                Stream file = (Stream)Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles + fileName);
+                var file = (Stream)Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles + fileName);
 
-                StreamReader reader = new StreamReader(file);
+                var reader = new StreamReader(file);
                 contents = reader.ReadToEnd();
 
                 contents = TranslateContents(contents);
@@ -290,16 +290,16 @@ namespace TerraViewer
         {
             MatchCollection mc = null;
 
-            string matchPatern = @"<!--\((?<1>\d*)\)-->[^<]*<!--\(.\)-->";
-            Regex documentTitle = new Regex(matchPatern, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.Singleline);
+            var matchPatern = @"<!--\((?<1>\d*)\)-->[^<]*<!--\(.\)-->";
+            var documentTitle = new Regex(matchPatern, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.Singleline);
             mc = documentTitle.Matches(contents);
 
             if (mc.Count > 0)
             {
-                List<string> keywords = new List<string>();
+                var keywords = new List<string>();
                 foreach (Match m in mc)
                 {
-                    int id = Convert.ToInt32(m.Result("$1"));
+                    var id = Convert.ToInt32(m.Result("$1"));
                    // contents = contents.Replace(m.Value,Language.GetLocalizedText(id));
                 }
             }
@@ -311,7 +311,7 @@ namespace TerraViewer
             try
             {
                 fileName = fileName.ToLower();
-                Stream file = (Stream)Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles+ fileName);
+                var file = (Stream)Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles+ fileName);
                 data = new byte[file.Length];
 
                 file.Read(data, 0, (int)file.Length);
@@ -349,17 +349,17 @@ namespace TerraViewer
 
         public static void SendBinaryFileFromDisk(string filename, ref Socket socket, String sMimeType)
         {
-            FileInfo fi = new FileInfo(filename);
+            var fi = new FileInfo(filename);
 
-            int iTotBytes = (int)fi.Length;
+            var iTotBytes = (int)fi.Length;
             SendHeader(HttpVersion, sMimeType, iTotBytes, " 200 OK", ref socket);
 
 
             Stream file = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            byte[] data = new byte[4096];
+            var data = new byte[4096];
             while (iTotBytes > 0)
             {
-                int sizeToRead = Math.Min(iTotBytes, 4096);
+                var sizeToRead = Math.Min(iTotBytes, 4096);
 
                 sizeToRead = file.Read(data, 0, sizeToRead);
 
@@ -374,8 +374,8 @@ namespace TerraViewer
 
         public static void SendHeaderAndData(string sData, ref Socket socket, String sMimeType)
         {
-            byte[] buf = Encoding.UTF8.GetBytes(sData);
-            int iTotBytes = buf.Length;
+            var buf = Encoding.UTF8.GetBytes(sData);
+            var iTotBytes = buf.Length;
             SendHeader(HttpVersion, sMimeType, iTotBytes, " 200 OK", ref socket);
             SendToBrowser(buf, iTotBytes, ref socket);
         }
@@ -388,7 +388,7 @@ namespace TerraViewer
 		/// <param _Name="mySocket">Socket reference</param>
         public static void SendToBrowser(String sData, ref Socket mySocket)
         {
-            byte[] buf = Encoding.ASCII.GetBytes(sData);
+            var buf = Encoding.ASCII.GetBytes(sData);
             SendToBrowser(buf, buf.Length, ref mySocket);
         }
 
@@ -401,7 +401,7 @@ namespace TerraViewer
 		/// <param _Name="mySocket">Socket reference</param>
 		public static void SendToBrowser(Byte[] bSendData, int len, ref Socket mySocket)
 		{
-			int numBytes = 0;
+			var numBytes = 0;
 			
 			try
 			{
@@ -419,9 +419,9 @@ namespace TerraViewer
 
         public void RedirectToAuthPage(ref Socket socket)
         {
-            string data = "<HTML>Redirected</HTML";
+            var data = "<HTML>Redirected</HTML";
 
-            int iTotBytes = data.Length;
+            var iTotBytes = data.Length;
             SendHeader(HttpVersion, "", iTotBytes, " 302 Moved", "/Configuration/sign_in.html", ref socket);
             SendToBrowser(data, ref socket);
         }

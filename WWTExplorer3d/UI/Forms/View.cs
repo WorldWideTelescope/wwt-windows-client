@@ -116,7 +116,7 @@ namespace TerraViewer
 
         private void ChooseLocation_Click(object sender, EventArgs e)
         {
-            LocationSetup dialog = new LocationSetup();
+            var dialog = new LocationSetup();
 
             dialog.Sky = false;
 
@@ -288,7 +288,7 @@ namespace TerraViewer
                     this.showMinorPlanets.Checked = false;
                     return;
                 }
-                string filename = Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin";
+                var filename = Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin";
 
                 if (!FileDownload.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=mpcbin", filename, true))
                 {
@@ -302,8 +302,8 @@ namespace TerraViewer
         }
 
 
-        Bitmap layerButton = global::TerraViewer.Properties.Resources.layersButton;
-        Bitmap layerButtonHover = global::TerraViewer.Properties.Resources.layersButtonHover;
+        readonly Bitmap layerButton = global::TerraViewer.Properties.Resources.layersButton;
+        readonly Bitmap layerButtonHover = global::TerraViewer.Properties.Resources.layersButtonHover;
 
         private void layerToggle_Click(object sender, EventArgs e)
         {

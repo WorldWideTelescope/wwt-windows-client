@@ -7,7 +7,7 @@ namespace TerraViewer
 {
     class MyCollections : IThumbnail
     {
-        string name;
+        readonly string name;
         public MyCollections(string name)
         {
             this.name = name;
@@ -19,7 +19,7 @@ namespace TerraViewer
         {
             get { return name; }
         }
-        Bitmap thumbnail = null;
+        Bitmap thumbnail;
         public System.Drawing.Bitmap ThumbNail
         {
             get
@@ -66,7 +66,8 @@ namespace TerraViewer
         {
             get { return true; }
         }
-        List<Object> children = new List<Object>();
+
+        readonly List<Object> children = new List<Object>();
         public object[] Children
         {
             get { return children.ToArray(); }

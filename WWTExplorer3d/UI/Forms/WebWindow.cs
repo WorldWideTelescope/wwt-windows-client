@@ -43,7 +43,7 @@ namespace TerraViewer
 
             if (url.ToLower().Contains("layerapi.aspx"))
             {
-                WebClient layerClient = new WebClient();
+                var layerClient = new WebClient();
                 layerClient.DownloadStringCompleted += new DownloadStringCompletedEventHandler(layerClient_DownloadStringCompleted);
                 layerClient.DownloadStringAsync(new Uri(url));
                 return;
@@ -83,7 +83,7 @@ namespace TerraViewer
             }
             else
             {
-                WebWindow ww = new WebWindow();
+                var ww = new WebWindow();
                
                 if (url.ToLower().Contains("worldwidetelescope.org"))
                 {
@@ -103,12 +103,12 @@ namespace TerraViewer
             // DO nothing...
         }
 
-        bool allowFullBrowser = false;
+        bool allowFullBrowser;
         public static void OpenHtmlString(string html)
         {
-            WebWindow ww = new WebWindow();
+            var ww = new WebWindow();
             //string style = "<style type=\"text/css\">@import url(\"http://stc.msn.com/br/hp/en-us/css/38/ushpw.css\");@import url(\"http://stc.msn.com/br/hp/en-us/css/38/ovrN.css\");</style>";
-            string style = "<style> a.nav:link {color: #ffffff; font-family: Arial; font-size: 9pt; font-weight: bold; text-decoration : none;}\n"+ 
+            var style = "<style> a.nav:link {color: #ffffff; font-family: Arial; font-size: 9pt; font-weight: bold; text-decoration : none;}\n"+ 
                             "a.nav:visited {color: #FFFFFF; font-family: Arial; font-size: 9pt; font-weight: bold; text-decoration : none; }\n"+
                             "a.nav:active {color: #FFFFFF; font-family: Arial; font-size: 9pt; font-weight: bold; text-decoration : none;}\n" +
                             "a.nav:hover { color: #FFFF00; font-family: Arial; font-size: 9pt; font-weight: bold; text-decoration : none;}\n" +

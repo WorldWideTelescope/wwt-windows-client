@@ -12,16 +12,16 @@ namespace TerraViewer
 
     public partial class WwtButton : UserControl, IButtonControl
     {
-        Bitmap btnStartRest = global::TerraViewer.Properties.Resources.BtnStartRest;
-        Bitmap btnStartHover = global::TerraViewer.Properties.Resources.BtnStartHover;
-        Bitmap btnStartPressed = global::TerraViewer.Properties.Resources.BtnStartPushed;
-        Bitmap btnStartDisabled = global::TerraViewer.Properties.Resources.BtnStartDisabled;
+        readonly Bitmap btnStartRest = global::TerraViewer.Properties.Resources.BtnStartRest;
+        readonly Bitmap btnStartHover = global::TerraViewer.Properties.Resources.BtnStartHover;
+        readonly Bitmap btnStartPressed = global::TerraViewer.Properties.Resources.BtnStartPushed;
+        readonly Bitmap btnStartDisabled = global::TerraViewer.Properties.Resources.BtnStartDisabled;
         Bitmap btnStartSelected = global::TerraViewer.Properties.Resources.BtnStartSelected;
 
-        Bitmap btnEndRest = global::TerraViewer.Properties.Resources.BtnEndRest;
-        Bitmap btnEndHover = global::TerraViewer.Properties.Resources.BtnEndHover;
-        Bitmap btnEndPressed = global::TerraViewer.Properties.Resources.BtnEndPushed;
-        Bitmap btnEndDisabled = global::TerraViewer.Properties.Resources.BtnEndDisabled;
+        readonly Bitmap btnEndRest = global::TerraViewer.Properties.Resources.BtnEndRest;
+        readonly Bitmap btnEndHover = global::TerraViewer.Properties.Resources.BtnEndHover;
+        readonly Bitmap btnEndPressed = global::TerraViewer.Properties.Resources.BtnEndPushed;
+        readonly Bitmap btnEndDisabled = global::TerraViewer.Properties.Resources.BtnEndDisabled;
         Bitmap btnEndSelected = global::TerraViewer.Properties.Resources.BtnEndSelected;
 
         public WwtButton()
@@ -82,7 +82,7 @@ namespace TerraViewer
         }
 
 
-        bool selected = false;
+        bool selected;
 
         public bool Selected
         {
@@ -90,16 +90,16 @@ namespace TerraViewer
             set { selected = value; }
         }
 
-        bool pressed = false;
-        bool hover = false;
+        bool pressed;
+        bool hover;
 
 
         private void WwtButton_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            RectangleF rectf = new RectangleF(0, 0, Width, Height);
-            Bitmap start = btnStartRest;
-            Bitmap end = btnEndRest;
+            var g = e.Graphics;
+            var rectf = new RectangleF(0, 0, Width, Height);
+            var start = btnStartRest;
+            var end = btnEndRest;
           
             if (hover)
             {

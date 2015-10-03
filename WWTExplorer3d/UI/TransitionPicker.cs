@@ -21,7 +21,7 @@ namespace TerraViewer
 
         public event EventHandler SelectedIndexChanged;
 
-        private int selectedIndex = 0;
+        private int selectedIndex;
 
         public int SelectedIndex
         {
@@ -54,7 +54,7 @@ namespace TerraViewer
 
         private void TransitionPicker_Paint(object sender, PaintEventArgs e)
         {
-            for (int i = 0; i < images.Length; i++)
+            for (var i = 0; i < images.Length; i++)
             {
                 if (SelectedIndex == i)
                 {
@@ -70,7 +70,7 @@ namespace TerraViewer
 
         private void TransitionPicker_MouseDown(object sender, MouseEventArgs e)
         {
-            int indexHit = e.X / 44;
+            var indexHit = e.X / 44;
 
             indexHit = Math.Min(indexHit, 5);
 

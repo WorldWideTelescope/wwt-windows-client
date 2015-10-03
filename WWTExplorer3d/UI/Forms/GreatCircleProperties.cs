@@ -34,21 +34,21 @@ namespace TerraViewer
         private void StartFromView_Click(object sender, EventArgs e)
         {
 
-            Vector2d pnt = Earth3d.MainWindow.GetEarthCoordinates();
+            var pnt = Earth3d.MainWindow.GetEarthCoordinates();
             StartLat.Text = Coordinates.FormatDMS(pnt.Y);
             StartLng.Text = Coordinates.FormatDMS(pnt.X);
         }
 
         private void EndFromView_Click(object sender, EventArgs e)
         {
-            Vector2d pnt = Earth3d.MainWindow.GetEarthCoordinates();
+            var pnt = Earth3d.MainWindow.GetEarthCoordinates();
             EndLat.Text = Coordinates.FormatDMS(pnt.Y);
             EndLng.Text = Coordinates.FormatDMS(pnt.X);
         }
 
         private void StartLat_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Layer.LatStart = UiTools.ParseAndValidateCoordinate(StartLat, Layer.LatStart, ref failed);
             Layer.CleanUp();
@@ -56,7 +56,7 @@ namespace TerraViewer
 
         private void StartLng_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Layer.LngStart = UiTools.ParseAndValidateCoordinate(StartLng, Layer.LngStart, ref failed);
             Layer.CleanUp();
@@ -64,7 +64,7 @@ namespace TerraViewer
 
         private void EndLat_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Layer.LatEnd = UiTools.ParseAndValidateCoordinate(EndLat, Layer.LatEnd, ref failed);
             Layer.CleanUp();
@@ -72,7 +72,7 @@ namespace TerraViewer
 
         private void EndLng_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Layer.LngEnd = UiTools.ParseAndValidateCoordinate(EndLng, Layer.LngEnd, ref failed);
             Layer.CleanUp();
@@ -80,7 +80,7 @@ namespace TerraViewer
 
         private void Percentage_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Layer.PercentComplete = UiTools.ParseAndValidateCoordinate(Percentage, Layer.PercentComplete, ref failed);
             Layer.CleanUp();
@@ -88,7 +88,7 @@ namespace TerraViewer
 
         private void LineWidth_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Layer.Width = UiTools.ParseAndValidateCoordinate(LineWidth, Layer.Width, ref failed);
             Layer.CleanUp();

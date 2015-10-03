@@ -22,7 +22,7 @@ namespace TerraViewer
         protected float decay = 16;
         protected bool timeSeries = false;
    
-        private bool dynamicData = false;
+        private bool dynamicData;
 
         [LayerProperty]
         public bool DynamicData
@@ -31,7 +31,7 @@ namespace TerraViewer
             set { dynamicData = value; }
         }
 
-        private bool autoUpdate = false;
+        private bool autoUpdate;
 
         [LayerProperty]
         public bool AutoUpdate
@@ -107,10 +107,10 @@ namespace TerraViewer
 
         public void MakeColorDomainValues()
         {
-            string[] domainValues = GetDomainValues(ColorMapColumn);
+            var domainValues = GetDomainValues(ColorMapColumn);
             ColorDomainValues.Clear();
-            int index = 0;
-            foreach (string text in domainValues)
+            var index = 0;
+            foreach (var text in domainValues)
             {
                 ColorDomainValues.Add(text, new DomainValue(text, UiTools.KnownColors[(index++) % 173].ToArgb()));
             }
@@ -370,7 +370,7 @@ namespace TerraViewer
             }
         }
 
-        private bool xAxisReverse = false;
+        private bool xAxisReverse;
 
         [LayerProperty]
         public bool XAxisReverse
@@ -385,7 +385,7 @@ namespace TerraViewer
                 }
             }
         }
-        private bool yAxisReverse = false;
+        private bool yAxisReverse;
 
         [LayerProperty]
         public bool YAxisReverse
@@ -400,7 +400,7 @@ namespace TerraViewer
                 }
             }
         }
-        private bool zAxisReverse = false;
+        private bool zAxisReverse;
 
         [LayerProperty]
         public bool ZAxisReverse
@@ -543,7 +543,7 @@ namespace TerraViewer
             }
         }
 
-        private int markerIndex = 0;
+        private int markerIndex;
 
         [LayerProperty]
         public int MarkerIndex
@@ -559,7 +559,7 @@ namespace TerraViewer
             }
         }
 
-        private bool showFarSide = false;
+        private bool showFarSide;
 
         [LayerProperty]
         public bool ShowFarSide
@@ -791,11 +791,11 @@ namespace TerraViewer
         protected Text3dBatch textBatch;
         protected bool bufferIsFlat = false;
 
-        static Texture11 circleTexture = null;
-        static Texture11 squareTexture = null;
-        static Texture11 pointTexture = null;
-        static Texture11 target1Texture = null;
-        static Texture11 target2Texture = null;
+        static Texture11 circleTexture;
+        static Texture11 squareTexture;
+        static Texture11 pointTexture;
+        static Texture11 target1Texture;
+        static Texture11 target2Texture;
 
         static Texture11 CircleTexture
         {
@@ -852,7 +852,7 @@ namespace TerraViewer
             {
                 if (squareTexture == null)
                 {
-                    Bitmap onePixel = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    var onePixel = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     onePixel.SetPixel(0, 0, Color.White);
                     squareTexture = Texture11.FromBitmap(onePixel);
                 }
@@ -876,10 +876,10 @@ namespace TerraViewer
                 PrepVertexBuffer( opacity);
             }
 
-            Matrix3d oldWorld = renderContext.World;
+            var oldWorld = renderContext.World;
             if (astronomical && !bufferIsFlat)
             {
-                double ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
+                var ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
                 renderContext.World = Matrix3d.RotationX(ecliptic) * renderContext.World;
             }
 
@@ -921,7 +921,7 @@ namespace TerraViewer
 
             if (textBatch != null)
             {
-                DepthStencilMode mode = renderContext.DepthStencilMode;
+                var mode = renderContext.DepthStencilMode;
 
                 renderContext.DepthStencilMode = DepthStencilMode.Off;
 
@@ -938,18 +938,18 @@ namespace TerraViewer
                 renderContext.DepthStencilMode = DepthStencilMode.Off;
             }
 
-            DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
+            var baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
             renderContext.setRasterizerState(TriangleCullMode.Off);
           
-            Vector3 cam = Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311;
-            float adjustedScale = scaleFactor;
+            var cam = Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311;
+            var adjustedScale = scaleFactor;
 
             if (flat && astronomical && (markerScale == MarkerScales.World))
             {
                 adjustedScale = (float)(scaleFactor / (Earth3d.MainWindow.ZoomFactor / 360));
             }             
             
-            Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             matrixWVP.Transpose();
             switch (plotType)
             {
@@ -1030,7 +1030,7 @@ namespace TerraViewer
                 else
                 {
                     TimeSeriesPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
-                    double jBase = SpaceTimeController.UtcToJulian(baseDate);
+                    var jBase = SpaceTimeController.UtcToJulian(baseDate);
                     TimeSeriesPointSpriteShader11.Constants.JNow = (float)(SpaceTimeController.JNow - jBase);
                     TimeSeriesPointSpriteShader11.Constants.Decay = timeSeries ? decay : 0f;
                     TimeSeriesPointSpriteShader11.Constants.Scale = ((markerScale == MarkerScales.World) ? ((float)adjustedScale) : (-(float)adjustedScale));
@@ -1063,7 +1063,7 @@ namespace TerraViewer
             return true;
         }
 
-        BlendState columnChartsActivate = new BlendState(false, 1000);
+        readonly BlendState columnChartsActivate = new BlendState(false, 1000);
 
         virtual protected bool PrepVertexBuffer( float opacity)
         {

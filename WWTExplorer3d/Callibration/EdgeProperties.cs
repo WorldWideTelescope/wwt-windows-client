@@ -22,7 +22,7 @@ namespace TerraViewer.Callibration
        
         private void EdgeProperties_Load(object sender, EventArgs e)
         {
-            foreach (ProjectorEntry pe in Edge.Owner.Projectors)
+            foreach (var pe in Edge.Owner.Projectors)
             {
                 leftProjectorCombo.Items.Add(pe);
                 rightProjectorCombo.Items.Add(pe);

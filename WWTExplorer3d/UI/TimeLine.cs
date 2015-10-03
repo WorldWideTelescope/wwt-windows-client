@@ -28,7 +28,7 @@ namespace TerraViewer
             this.toolTip.SetToolTip(this.Pause, Language.GetLocalizedText(440, "Pause"));
         }
 
-        private TourDocument tour = null;
+        private TourDocument tour;
 
         public static TourDocument activeTour = null;
 
@@ -45,18 +45,18 @@ namespace TerraViewer
             }
         }
 
-        static Bitmap bmpScrollBackLeft = global::TerraViewer.Properties.Resources.scroll_background_left;
-        static Bitmap bmpScrollBackMiddle = global::TerraViewer.Properties.Resources.scroll_background_middle;
-        static Bitmap bmpScrollBackRight = global::TerraViewer.Properties.Resources.scroll_background_right;
+        static readonly Bitmap bmpScrollBackLeft = global::TerraViewer.Properties.Resources.scroll_background_left;
+        static readonly Bitmap bmpScrollBackMiddle = global::TerraViewer.Properties.Resources.scroll_background_middle;
+        static readonly Bitmap bmpScrollBackRight = global::TerraViewer.Properties.Resources.scroll_background_right;
 
-        static Bitmap bmpScrollBarLeft = global::TerraViewer.Properties.Resources.scroll_bar_left;
-        static Bitmap bmpScrollBarMiddle = global::TerraViewer.Properties.Resources.scroll_bar_middle;
-        static Bitmap bmpScrollBarRight = global::TerraViewer.Properties.Resources.scroll_bar_right;
+        static readonly Bitmap bmpScrollBarLeft = global::TerraViewer.Properties.Resources.scroll_bar_left;
+        static readonly Bitmap bmpScrollBarMiddle = global::TerraViewer.Properties.Resources.scroll_bar_middle;
+        static readonly Bitmap bmpScrollBarRight = global::TerraViewer.Properties.Resources.scroll_bar_right;
 
 
         public static void RefreshUi()
         {
-            foreach (TimeLine tl in instances)
+            foreach (var tl in instances)
             {
                 tl.EnsureVisible();
                 tl.Invalidate();
@@ -65,7 +65,7 @@ namespace TerraViewer
         
         public static void RefreshUi(bool ensureVisible)
         {
-            foreach (TimeLine tl in instances)
+            foreach (var tl in instances)
             {
                 if (ensureVisible)
                 {
@@ -79,7 +79,7 @@ namespace TerraViewer
         {
             activeTour = tour;
             
-            foreach (TimeLine tl in instances)
+            foreach (var tl in instances)
             {
                 tl.Tour = tour;
                 tl.EnsureVisible();
@@ -91,7 +91,7 @@ namespace TerraViewer
         {
             get
             {
-                foreach (TimeLine tl in instances)
+                foreach (var tl in instances)
                 {
                     if (tl.Visible)
                     {
@@ -102,11 +102,11 @@ namespace TerraViewer
             }
         }
 
-        static List<TimeLine> instances = new List<TimeLine>();
+        static readonly List<TimeLine> instances = new List<TimeLine>();
 
-        List<string> Selection = new List<string>();
+        readonly List<string> Selection = new List<string>();
         string[] lineIds = new string[0];
-        List<VisibleKey> VisibleKeys = new List<VisibleKey>();
+        readonly List<VisibleKey> VisibleKeys = new List<VisibleKey>();
         Dictionary<string, VisibleKey> selectedKeys = new Dictionary<string, VisibleKey>();
 
         public int ScrollPos = 0;
@@ -114,8 +114,8 @@ namespace TerraViewer
         int bottom = 30;
         int tick = 8;
         int step = 8;
-        int offset = 0;
-        int startSecond = 0;
+        int offset;
+        int startSecond;
         int pixelsPerSecond = 8/*tick*/ * 30;
         int totalPixelWith = 2400;
         double secondsOnscreen = 1;
@@ -123,14 +123,14 @@ namespace TerraViewer
         double lastKeyTime = 1;
         int totalFrames = 300;
         double frameTime = 1 / 300;
-        double currentTween = 0;
+        double currentTween;
         int lineHeight = 16;
         int displayLines = 1;
 
         int totalLines = 1;
-        int startLine = 0;
-        int nextLine = 0;
-        bool vScrollBarShown = false;
+        int startLine;
+        int nextLine;
+        bool vScrollBarShown;
 
         public double TweenPosition
         {
@@ -191,8 +191,8 @@ namespace TerraViewer
             }
 
             
-            Graphics g = e.Graphics;
-            Pen p = new Pen(Color.FromArgb(71, 84, 108));
+            var g = e.Graphics;
+            var p = new Pen(Color.FromArgb(71, 84, 108));
 
             offset = left - (int)(((double)ScrollPos / ((double)scrollbarWidth / (double)(Width - left))) % pixelsPerSecond);
 
@@ -214,31 +214,31 @@ namespace TerraViewer
             scrollbarStart = ScrollPos + left;
             startSecond = (int)(((double)ScrollPos / ((double)scrollbarWidth / (double)(Width - left))) / (double)pixelsPerSecond);
 
-            SolidBrush background = new SolidBrush(Color.FromArgb(40, 44, 60));
-            SolidBrush darkBackground = new SolidBrush(this.BackColor);
-            SolidBrush lightBackground = new SolidBrush(Color.FromArgb(30, 33, 46));
+            var background = new SolidBrush(Color.FromArgb(40, 44, 60));
+            var darkBackground = new SolidBrush(this.BackColor);
+            var lightBackground = new SolidBrush(Color.FromArgb(30, 33, 46));
             g.FillRectangle(background, new Rectangle(0, 0, Width, bottom));
 
-            Rectangle buttons = new Rectangle(-3,-3, left+5,37);
+            var buttons = new Rectangle(-3,-3, left+5,37);
 
-            bool buttonsOnly = buttons.Contains(e.ClipRectangle);
+            var buttonsOnly = buttons.Contains(e.ClipRectangle);
 
             if (!buttonsOnly)
             {
 
 
-                for (int y = bottom + lineHeight * 3; y < Height; y += lineHeight * 6)
+                for (var y = bottom + lineHeight * 3; y < Height; y += lineHeight * 6)
                 {
                     g.FillRectangle(lightBackground, new Rectangle(left, y, Width - left, lineHeight * 3));
                 }
 
 
                 step = (tick > 7) ? tick : (tick > 3) ? (tick * 2) : (tick * 5);
-                int endPos = Math.Min(Width - offset, totalPixelWith) + step;
+                var endPos = Math.Min(Width - offset, totalPixelWith) + step;
 
-                for (int x = 0; x < endPos; x += step)
+                for (var x = 0; x < endPos; x += step)
                 {
-                    bool big = (x % (5 * step)) == 0;
+                    var big = (x % (5 * step)) == 0;
 
                     //g.DrawLine(Pens.White, x, big ? 15 : 20, x, bottom);
 
@@ -254,10 +254,10 @@ namespace TerraViewer
                     }
                 }
 
-                TimeSpan ts = new TimeSpan(0, 0, startSecond);
-                TimeSpan inc = new TimeSpan(0, 0, 1);
+                var ts = new TimeSpan(0, 0, startSecond);
+                var inc = new TimeSpan(0, 0, 1);
 
-                for (int x = 0; x < endPos; x += (30 * tick))
+                for (var x = 0; x < endPos; x += (30 * tick))
                 {
                     g.DrawString(string.Format("{0:0#}:{1:0#}", ts.Minutes, ts.Seconds), UiTools.StandardRegular, UiTools.StadardTextBrush, new PointF((x + offset) + 1, 2));
                     g.DrawLine(Pens.White, x + offset, 0, x + offset, Height);
@@ -265,9 +265,9 @@ namespace TerraViewer
                 }
                 if (tick > 3)
                 {
-                    for (int x = 0; x < endPos; x += (5 * step))
+                    for (var x = 0; x < endPos; x += (5 * step))
                     {
-                        int mark = (x / tick) % 30;
+                        var mark = (x / tick) % 30;
 
                         if (mark != 0)
                         {
@@ -279,9 +279,9 @@ namespace TerraViewer
 
                 nextLine = -startLine;
 
-                int indent = 2;
+                var indent = 2;
 
-                bool displayLine = false;
+                var displayLine = false;
                 totalLines = 0;
 
                 displayLines = (Height - bottom) / lineHeight;
@@ -296,13 +296,13 @@ namespace TerraViewer
                     displayLine = true;
                 }
 
-                bool selected = false;
+                var selected = false;
 
-                int displayedLineIndex = 0;
+                var displayedLineIndex = 0;
 
                 VisibleKeys.Clear();
 
-                for (int y = bottom + lineHeight * 3; y < Height; y += lineHeight * 6)
+                for (var y = bottom + lineHeight * 3; y < Height; y += lineHeight * 6)
                 {
                     g.FillRectangle(lightBackground, new Rectangle(0, y, left, lineHeight * 3));
                 }
@@ -310,14 +310,14 @@ namespace TerraViewer
                 // Draw Text
                 if (Tour != null && tour.CurrentTourStop != null && tour.CurrentTourStop.KeyFramed)
                 {
-                    foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                    foreach (var target in tour.CurrentTourStop.AnimationTargets)
                     {
                         if (target.Target == null)
                         {
                             continue;
                         }
-                        string name = target.Target.GetName();
-                        string targetID = target.Target.GetIndentifier();
+                        var name = target.Target.GetName();
+                        var targetID = target.Target.GetIndentifier();
                         if (displayLine)
                         {
                             selected = Selection.Contains(targetID);
@@ -345,23 +345,23 @@ namespace TerraViewer
                             }
                         }
 
-                        for (int i = 0; i < target.ParameterNames.Count; i++)
+                        for (var i = 0; i < target.ParameterNames.Count; i++)
                         {
-                            string line = target.ParameterNames[i];
+                            var line = target.ParameterNames[i];
                             if (displayLine)
                             {
                                 if (target.Expanded)
                                 {
-                                    string id = targetID + "\t" + line;
+                                    var id = targetID + "\t" + line;
                                     selected = Selection.Contains(id);
                                     g.DrawString(line, UiTools.StandardRegular, selected ? UiTools.YellowTextBrush : UiTools.StadardTextBrush, new PointF(indent, nextLine * lineHeight + bottom + 2));
                                     lineIds[displayedLineIndex] = id;
                                     displayedLineIndex++;
                                 }
-                                foreach (Key key in target.KeyFrames[i].Keys.Values)
+                                foreach (var key in target.KeyFrames[i].Keys.Values)
                                 {
-                                    bool keySelected = selectedKeys.ContainsKey(VisibleKey.GetIndexKey(target, i, key.Time));
-                                    int xx = 0;
+                                    var keySelected = selectedKeys.ContainsKey(VisibleKey.GetIndexKey(target, i, key.Time));
+                                    var xx = 0;
 
                                     if (ghostingSelection && keySelected)
                                     {
@@ -374,8 +374,8 @@ namespace TerraViewer
 
                                     if (xx >= left && xx < Width + (step / 2))
                                     {
-                                        int yy = nextLine * lineHeight + bottom + 2;
-                                        VisibleKey vk = new VisibleKey(target, i, line, key.Time, new Point(xx, yy));
+                                        var yy = nextLine * lineHeight + bottom + 2;
+                                        var vk = new VisibleKey(target, i, line, key.Time, new Point(xx, yy));
                                         VisibleKeys.Add(vk);
 
 
@@ -431,7 +431,7 @@ namespace TerraViewer
                     if (displayLine == false)
                     {
                         Brush scrollBar = new SolidBrush(Color.FromArgb(112, 140, 186));
-                        Pen scrollBarOutline = new Pen(scrollBar);
+                        var scrollBarOutline = new Pen(scrollBar);
                         g.FillRectangle(background, new Rectangle(left - 20, bottom, 20, (Height - bottom)));
 
                         vScrollBarShown = true;
@@ -456,7 +456,7 @@ namespace TerraViewer
                     }
 
                     // Draw time location
-                    int tx = TimeToPixel(TweenPosition) - (step / 2);
+                    var tx = TimeToPixel(TweenPosition) - (step / 2);
                     if (tx >= (left - (step / 2)))
                     {
                         g.DrawLine(Pens.Yellow, tx, bottom, tx, Height - 8);
@@ -481,7 +481,7 @@ namespace TerraViewer
 
                 // Draw scrollbar
                 g.DrawImageUnscaled(bmpScrollBackLeft, left, Height - 7);
-                for (int j = left; j < Width - 10; j += 50)
+                for (var j = left; j < Width - 10; j += 50)
                 {
                     g.DrawImageUnscaled(bmpScrollBackMiddle, j, Height - 7);
                 }
@@ -491,7 +491,7 @@ namespace TerraViewer
 
 
                 g.DrawImageUnscaled(bmpScrollBarLeft, scrollbarStart, Height - 6);
-                for (int j = scrollbarStart + 10; j < (scrollbarWidth + scrollbarStart) - 10; j += 50)
+                for (var j = scrollbarStart + 10; j < (scrollbarWidth + scrollbarStart) - 10; j += 50)
                 {
                     g.DrawImageUnscaledAndClipped(bmpScrollBarMiddle, new Rectangle(j, Height - 6, Math.Min(50, ((scrollbarWidth + scrollbarStart) - j) - 10), 6));
                 }
@@ -516,23 +516,23 @@ namespace TerraViewer
 
         }
 
-        bool mouseDown = false;
-        bool scrolling = false;
+        bool mouseDown;
+        bool scrolling;
         int scrollbarWidth = 100;
-        int scrollbarStart = 0;
+        int scrollbarStart;
 
         int vScrollBarHieght = 10;
-        int vScrollBarTop = 0;
+        int vScrollBarTop;
 
         Point pointDown;
-        bool timeDrag = false;
+        bool timeDrag;
 
 
-        bool vScroolling = false;
-        bool selectingKeys = false;
-        bool wasSelectRectDrug = false;
-        bool draggingKeys = false;
-        bool firstMove = false;
+        bool vScroolling;
+        bool selectingKeys;
+        bool wasSelectRectDrug;
+        bool draggingKeys;
+        bool firstMove;
         private void TimeLine_MouseDown(object sender, MouseEventArgs e)
         {
             pointDown = e.Location;
@@ -540,7 +540,7 @@ namespace TerraViewer
             if (e.Y > bottom && e.X < left - 20)
             {
                 // Object tree list selection
-                int index = (e.Y - bottom) / 16;
+                var index = (e.Y - bottom) / 16;
 
                 if (e.X < 20)
                 {
@@ -561,7 +561,7 @@ namespace TerraViewer
                     {
                         Selection.Add(lineIds[index]);
 
-                        AnimationTarget at = FindTarget(lineIds[index]);
+                        var at = FindTarget(lineIds[index]);
                         if (at != null)
                         {
                             TourEditor.CurrentEditor = at.Target.GetEditUI();
@@ -571,20 +571,20 @@ namespace TerraViewer
 
                     if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0 && Selection.Count > 0)
                     {
-                        ContextMenuStrip contextMenu = new ContextMenuStrip();
+                        var contextMenu = new ContextMenuStrip();
 
-                        ToolStripMenuItem deleteItem = new ToolStripMenuItem(Language.GetLocalizedText(1279, "Remove From Timeline"));
-                        ToolStripMenuItem addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
-                        ToolStripMenuItem deleteFrames = new ToolStripMenuItem(Language.GetLocalizedText(1281, "Delete Keyframes"));
-                        ToolStripMenuItem copyPopertyKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1370, "Copy Property Keyframes"));
-                        ToolStripMenuItem pastePropertyKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1372, "Paste Keyframes"));
+                        var deleteItem = new ToolStripMenuItem(Language.GetLocalizedText(1279, "Remove From Timeline"));
+                        var addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
+                        var deleteFrames = new ToolStripMenuItem(Language.GetLocalizedText(1281, "Delete Keyframes"));
+                        var copyPopertyKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1370, "Copy Property Keyframes"));
+                        var pastePropertyKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1372, "Paste Keyframes"));
                         pastePropertyKeyframes.Click += new EventHandler(pastePropertyKeyframes_Click);
                         copyPopertyKeyframes.Click += new EventHandler(copyPopertyKeyframes_Click);
                         deleteItem.Click += new EventHandler(deleteItem_Click);
                         deleteFrames.Click += new EventHandler(deleteFrames_Click);
                         addKey.Click += new EventHandler(addKey_Click);
                         contextMenu.Items.Add(addKey);
-                        IDataObject dataObject = Clipboard.GetDataObject();
+                        var dataObject = Clipboard.GetDataObject();
                         
                         
                         if (Selection.Count == 1 && !Selection[0].Contains("\t"))
@@ -639,15 +639,15 @@ namespace TerraViewer
                 SetTweenPosition(PixelToTime(e.X + (step / 2)));
                 if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
                 {
-                    ContextMenuStrip contextMenu = new ContextMenuStrip();
-                    ToolStripMenuItem addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
-                    ToolStripMenuItem pasteKeys = new ToolStripMenuItem("Paste");
+                    var contextMenu = new ContextMenuStrip();
+                    var addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
+                    var pasteKeys = new ToolStripMenuItem("Paste");
                     pasteKeys.Click += new EventHandler(pasteKeys_Click);
 
                     addKey.Click += new EventHandler(addKey_Click);
                     contextMenu.Items.Add(addKey);
 
-                    IDataObject dataObject = Clipboard.GetDataObject();
+                    var dataObject = Clipboard.GetDataObject();
                     if (dataObject.GetDataPresent(Key.ClipboardFormatSelection))
                     {
                         contextMenu.Items.Add(pasteKeys);
@@ -655,7 +655,7 @@ namespace TerraViewer
 
                     if (dataObject.GetDataPresent(Key.ClipboardFormatColumn))
                     {
-                        ToolStripMenuItem pasteColumn = new ToolStripMenuItem(Language.GetLocalizedText(1373, "Paste at current time"));
+                        var pasteColumn = new ToolStripMenuItem(Language.GetLocalizedText(1373, "Paste at current time"));
                         pasteColumn.Click += new EventHandler(pasteColumn_Click);
 
                         contextMenu.Items.Add(pasteColumn);
@@ -673,7 +673,7 @@ namespace TerraViewer
 
             if (e.X > left - 20 && e.X < left)
             {
-                int y = e.Y - bottom;
+                var y = e.Y - bottom;
 
                 if (y < vScrollBarTop)
                 {
@@ -703,10 +703,10 @@ namespace TerraViewer
                     {
                         if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
                         {
-                            ContextMenuStrip contextMenu = new ContextMenuStrip();
+                            var contextMenu = new ContextMenuStrip();
 
-                            ToolStripMenuItem deleteFrames = new ToolStripMenuItem(Language.GetLocalizedText(1281, "Delete Keyframes"));
-                            ToolStripMenuItem copyKeys = new ToolStripMenuItem(Language.GetLocalizedText(1371, "Copy Selected Keyframes"));
+                            var deleteFrames = new ToolStripMenuItem(Language.GetLocalizedText(1281, "Delete Keyframes"));
+                            var copyKeys = new ToolStripMenuItem(Language.GetLocalizedText(1371, "Copy Selected Keyframes"));
                             deleteFrames.Click += new EventHandler(deleteFrames_Click);
                             copyKeys.Click += new EventHandler(copyKeys_Click);
                             contextMenu.Items.Add(copyKeys);
@@ -726,16 +726,16 @@ namespace TerraViewer
                     Refresh();
                     if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
                     {
-                        ContextMenuStrip contextMenu = new ContextMenuStrip();
-                        ToolStripMenuItem addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
+                        var contextMenu = new ContextMenuStrip();
+                        var addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
                         addKey.Click += new EventHandler(addKey_Click);
                         addKey.Enabled = (Selection.Count > 0);
                         contextMenu.Items.Add(addKey);
 
-                        IDataObject dataObject = Clipboard.GetDataObject();
+                        var dataObject = Clipboard.GetDataObject();
                         if (dataObject.GetDataPresent(Key.ClipboardFormatSelection))
                         {
-                            ToolStripMenuItem pasteKeys = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
+                            var pasteKeys = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
                             pasteKeys.Click += new EventHandler(pasteKeys_Click);
 
                             contextMenu.Items.Add(pasteKeys);
@@ -743,7 +743,7 @@ namespace TerraViewer
 
                         if (dataObject.GetDataPresent(Key.ClipboardFormatColumn))
                         {
-                            ToolStripMenuItem pasteColumn = new ToolStripMenuItem(Language.GetLocalizedText(1373, "Paste at current time"));
+                            var pasteColumn = new ToolStripMenuItem(Language.GetLocalizedText(1373, "Paste at current time"));
                             pasteColumn.Click += new EventHandler(pasteColumn_Click);
 
                             contextMenu.Items.Add(pasteColumn);
@@ -777,23 +777,23 @@ namespace TerraViewer
         {
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(1369, "Paste Keys"), tour));
 
-            IDataObject dataObject = Clipboard.GetDataObject();
-            bool missingTargets = false;
+            var dataObject = Clipboard.GetDataObject();
+            var missingTargets = false;
 
-            string format = relative ? Key.ClipboardFormatColumn : Key.ClipboardFormatSelection;
+            var format = relative ? Key.ClipboardFormatColumn : Key.ClipboardFormatSelection;
 
 
             if (dataObject.GetDataPresent(format))
             {
                 // add try catch block
-                string xml = dataObject.GetData(format) as string;
-                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+                var xml = dataObject.GetData(format) as string;
+                var doc = new System.Xml.XmlDocument();
                 doc.LoadXml(xml);
                 System.Xml.XmlNode node = doc["CopiedKeys"];
                 foreach (System.Xml.XmlNode child in node.ChildNodes)
                 {
-                    string targetID = Selection[0];
-                    AnimationTarget target = GetTargetByID(targetID);
+                    var targetID = Selection[0];
+                    var target = GetTargetByID(targetID);
                     if (target != null)
                     {
                         target.PasteFromXML(child, relative, tour.CurrentTourStop.TweenPosition);
@@ -817,22 +817,22 @@ namespace TerraViewer
             {
                 if (Selection.Count > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
-                    using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+                    var sb = new StringBuilder();
+                    using (var textWriter = new System.IO.StringWriter(sb))
                     {
-                        using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                        using (var writer = new System.Xml.XmlTextWriter(textWriter))
                         {
                             writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                             writer.WriteStartElement("CopiedKeys");
-                            string targetID = Selection[0];
-                            AnimationTarget target = GetTargetByID(targetID);
+                            var targetID = Selection[0];
+                            var target = GetTargetByID(targetID);
 
                             target.SaveToXml(writer);
 
                             writer.WriteEndElement();
                         }
                     }
-                    DataFormats.Format format = DataFormats.GetFormat(Key.ClipboardFormatProperties);
+                    var format = DataFormats.GetFormat(Key.ClipboardFormatProperties);
 
                     IDataObject dataObject = new DataObject();
                     dataObject.SetData(format.Name, false, sb.ToString());
@@ -850,19 +850,19 @@ namespace TerraViewer
         {
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(1369, "Paste Keys"), tour));
 
-            IDataObject dataObject = Clipboard.GetDataObject();
-            bool missingTargets = false;
+            var dataObject = Clipboard.GetDataObject();
+            var missingTargets = false;
             if (dataObject.GetDataPresent(Key.ClipboardFormatSelection))
             {
                 // add try catch block
-                string xml = dataObject.GetData(Key.ClipboardFormatSelection) as string;
-                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+                var xml = dataObject.GetData(Key.ClipboardFormatSelection) as string;
+                var doc = new System.Xml.XmlDocument();
                 doc.LoadXml(xml);
                 System.Xml.XmlNode node = doc["CopiedKeys"];
                 foreach (System.Xml.XmlNode child in node.ChildNodes)
                 {
-                    string targetID = child.Attributes["TargetID"].Value;
-                    AnimationTarget target = GetTargetByID(targetID);
+                    var targetID = child.Attributes["TargetID"].Value;
+                    var target = GetTargetByID(targetID);
                     if (target != null)
                     {
                         target.PasteFromXML(child, false, 0);
@@ -882,7 +882,7 @@ namespace TerraViewer
 
         AnimationTarget GetTargetByID(string id)
         {
-            foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+            foreach (var target in tour.CurrentTourStop.AnimationTargets)
             {
                 if (target.TargetID == id)
                 {
@@ -894,11 +894,11 @@ namespace TerraViewer
 
         private bool IsColumnSelection()
         {
-            int keyTime = -1;
+            var keyTime = -1;
 
-            foreach (VisibleKey vKey in selectedKeys.Values)
+            foreach (var vKey in selectedKeys.Values)
             {
-                Key key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
+                var key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
                 if (key != null)
                 {
                     if (keyTime == -1)
@@ -918,22 +918,22 @@ namespace TerraViewer
 
         void copyKeys_Click(object sender, EventArgs e)
         {
-            bool columnSelection = IsColumnSelection();
+            var columnSelection = IsColumnSelection();
         
 
             if (tour != null && tour.CurrentTourStop != null)
             {
                 if (selectedKeys.Count > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
-                    using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+                    var sb = new StringBuilder();
+                    using (var textWriter = new System.IO.StringWriter(sb))
                     {
-                        using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                        using (var writer = new System.Xml.XmlTextWriter(textWriter))
                         {
                             writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                             writer.WriteStartElement("CopiedKeys");
 
-                            foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                            foreach (var target in tour.CurrentTourStop.AnimationTargets)
                             {
                                 target.SaveSelectedToXml(writer, selectedKeys);
                             }
@@ -942,7 +942,7 @@ namespace TerraViewer
                         }
                     }
 
-                    DataFormats.Format format = DataFormats.GetFormat(Key.ClipboardFormatSelection);
+                    var format = DataFormats.GetFormat(Key.ClipboardFormatSelection);
 
                     IDataObject dataObject = new DataObject();
                     dataObject.SetData(format.Name, false, sb.ToString());
@@ -950,7 +950,7 @@ namespace TerraViewer
                     if (columnSelection)
                     {
                         // Add other data format
-                        DataFormats.Format formatColumn = DataFormats.GetFormat(Key.ClipboardFormatColumn);
+                        var formatColumn = DataFormats.GetFormat(Key.ClipboardFormatColumn);
                         dataObject.SetData(formatColumn.Name, false, sb.ToString());
                     }
 
@@ -990,12 +990,12 @@ namespace TerraViewer
                     {
                         selectedKeys.Clear();
                     }
-                    Point min = new Point( pointDown.X-5,  pointDown.Y-9);
-                    Point max = new Point( pointDown.X+5,  pointDown.Y+5);
+                    var min = new Point( pointDown.X-5,  pointDown.Y-9);
+                    var max = new Point( pointDown.X+5,  pointDown.Y+5);
                     max.Offset(-min.X, -min.Y);
                     selectRect = new Rectangle(min, new Size(max));
 
-                    foreach (VisibleKey vk in VisibleKeys)
+                    foreach (var vk in VisibleKeys)
                     {
                         if (selectRect.Contains(vk.Point))
                         {
@@ -1013,9 +1013,9 @@ namespace TerraViewer
             }
         }
 
-        Rectangle selectRect = new Rectangle();
+        Rectangle selectRect;
 
-        Point lastMouse = new Point();
+        Point lastMouse;
 
         private void TimeLine_MouseMove(object sender, MouseEventArgs e)
         {
@@ -1035,17 +1035,17 @@ namespace TerraViewer
 
             if (timeDrag)
             {
-                double pos = PixelToTime(e.X + (step / 2));
+                var pos = PixelToTime(e.X + (step / 2));
                 if (pos != TweenPosition)
                 {
                     SetTweenPosition(pos);
                     Earth3d.MainWindow.Render();
-                    int oldScroll = offset + (pixelsPerSecond * startSecond);
+                    var oldScroll = offset + (pixelsPerSecond * startSecond);
                     EnsureVisible();
-                    int newScroll = offset + (pixelsPerSecond * startSecond);
+                    var newScroll = offset + (pixelsPerSecond * startSecond);
                     if (oldScroll != newScroll)
                     {
-                        Point pnt = Cursor.Position;
+                        var pnt = Cursor.Position;
                         Cursor.Position = new Point(pnt.X - Math.Max(-(Width-left),Math.Min(Width-left,(newScroll - oldScroll))), pnt.Y);
                     }
                 }
@@ -1054,12 +1054,12 @@ namespace TerraViewer
             if (selectingKeys)
             {
                 selectedKeys.Clear();
-                Point min = new Point(Math.Min(e.X, pointDown.X), Math.Min(e.Y, pointDown.Y));
-                Point max = new Point(Math.Max(e.X, pointDown.X), Math.Max(e.Y, pointDown.Y));
+                var min = new Point(Math.Min(e.X, pointDown.X), Math.Min(e.Y, pointDown.Y));
+                var max = new Point(Math.Max(e.X, pointDown.X), Math.Max(e.Y, pointDown.Y));
                 max.Offset(-min.X, -min.Y);
                 selectRect = new Rectangle(min, new Size(max));
 
-                foreach (VisibleKey vk in VisibleKeys)
+                foreach (var vk in VisibleKeys)
                 {
                     if (selectRect.Contains(vk.Point))
                     {
@@ -1076,10 +1076,10 @@ namespace TerraViewer
 
             if (vScroolling)
             {
-                int dragDist = pointDown.Y - e.Y;
-                double t = (double)vScrollBarHieght / (int)((Height - bottom) / 16);
+                var dragDist = pointDown.Y - e.Y;
+                var t = (double)vScrollBarHieght / (int)((Height - bottom) / 16);
 
-                int m = (int)(dragDist / t);
+                var m = (int)(dragDist / t);
 
                 if (m != 0)
                 {
@@ -1093,7 +1093,7 @@ namespace TerraViewer
 
             if (scrolling)
             {
-                int dragDist = pointDown.X - e.X;
+                var dragDist = pointDown.X - e.X;
                 if (dragDist != 0)
                 {
 
@@ -1113,24 +1113,24 @@ namespace TerraViewer
 
         private void DragKeys(Point point)
         {
-            bool collide = false;
+            var collide = false;
             ghostingSelection = false;
             double first = 1;
             double last = 0;
             FindRange(ref first, ref last);
 
-            Dictionary<string, VisibleKey> newSelection = new Dictionary<string, VisibleKey>();
+            var newSelection = new Dictionary<string, VisibleKey>();
 
-            double moveDist = PixelToTime(point.X) - PixelToTime(pointDown.X);
+            var moveDist = PixelToTime(point.X) - PixelToTime(pointDown.X);
             moveDist = Math.Min(1 - last, moveDist);
 
             moveDist = Math.Max(0 - first, moveDist);
 
             if (moveDist != 0)
             {
-                foreach (VisibleKey vKey in selectedKeys.Values)
+                foreach (var vKey in selectedKeys.Values)
                 {
-                    Key key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
+                    var key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
                     if (key.Time != 0)
                     {
                         collide = collide | vKey.Target.MoveKey(vKey.ParameterIndex, key.Time, key.Time + moveDist);
@@ -1149,14 +1149,14 @@ namespace TerraViewer
             selectedKeys = newSelection;
         }
 
-        bool ghostingSelection = false;
+        bool ghostingSelection;
         private void DragGhostKeys(Point point)
         {
             double first = 1;
             double last = 0;
             FindRange(ref first, ref last);
             ghostingSelection = true;
-            double moveDist = PixelToTime(point.X) - PixelToTime(pointDown.X);
+            var moveDist = PixelToTime(point.X) - PixelToTime(pointDown.X);
 
             moveDist = Math.Min(1 - last, moveDist);
 
@@ -1164,9 +1164,9 @@ namespace TerraViewer
 
             if (moveDist != 0)
             {
-                foreach (VisibleKey vKey in selectedKeys.Values)
+                foreach (var vKey in selectedKeys.Values)
                 {
-                    Key key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
+                    var key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
                     if (key.Time != 0)
                     {
                         key.GhostTime = key.Time + moveDist;
@@ -1176,12 +1176,12 @@ namespace TerraViewer
 
             }
 
-            int oldScroll = offset + (pixelsPerSecond * startSecond);
+            var oldScroll = offset + (pixelsPerSecond * startSecond);
             EnsureVisible(PixelToTime(point.X));
-            int newScroll = offset + (pixelsPerSecond * startSecond);
+            var newScroll = offset + (pixelsPerSecond * startSecond);
             if (oldScroll != newScroll)
             {
-                Point pnt = Cursor.Position;
+                var pnt = Cursor.Position;
                 Cursor.Position = new Point(pnt.X - Math.Max(-(Width - left), Math.Min(Width - left, (newScroll - oldScroll))), pnt.Y);
                 pointDown.X -= Math.Max(-(Width - left), Math.Min(Width - left, (newScroll - oldScroll)));
             }
@@ -1191,9 +1191,9 @@ namespace TerraViewer
         private void FindRange(ref double first, ref double last)
         {
 
-            foreach (VisibleKey vKey in selectedKeys.Values)
+            foreach (var vKey in selectedKeys.Values)
             {
-                Key key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
+                var key = vKey.Target.GetKey(vKey.ParameterIndex, vKey.Time);
                 if (key.Time < first)
                 {
                     first = Math.Max(0, key.Time);
@@ -1207,12 +1207,12 @@ namespace TerraViewer
 
         bool ClickedOnSelection(Point pntDown)
         {
-            Point min = new Point(pntDown.X - 5, pntDown.Y - 9);
-            Point max = new Point(pntDown.X + 5, pntDown.Y + 5);
+            var min = new Point(pntDown.X - 5, pntDown.Y - 9);
+            var max = new Point(pntDown.X + 5, pntDown.Y + 5);
             max.Offset(-min.X, -min.Y);
             selectRect = new Rectangle(min, new Size(max));
 
-            foreach (VisibleKey vk in VisibleKeys)
+            foreach (var vk in VisibleKeys)
             {
                 if (selectRect.Contains(vk.Point))
                 {
@@ -1228,12 +1228,12 @@ namespace TerraViewer
 
         VisibleKey HoverOnSelection(Point pntDown)
         {
-            Point min = new Point(pntDown.X - 5, pntDown.Y - 9);
-            Point max = new Point(pntDown.X + 5, pntDown.Y + 5);
+            var min = new Point(pntDown.X - 5, pntDown.Y - 9);
+            var max = new Point(pntDown.X + 5, pntDown.Y + 5);
             max.Offset(-min.X, -min.Y);
             selectRect = new Rectangle(min, new Size(max));
 
-            foreach (VisibleKey vk in VisibleKeys)
+            foreach (var vk in VisibleKeys)
             {
                 if (selectRect.Contains(vk.Point))
                 {
@@ -1255,7 +1255,7 @@ namespace TerraViewer
             if (tour != null && tour.CurrentTourStop != null)
             {
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1279, "Remove From Timeline"), tour));
-                foreach (string id in Selection)
+                foreach (var id in Selection)
                 {
                     RemoveItem(id);
                 }
@@ -1271,11 +1271,11 @@ namespace TerraViewer
         {
             if (Tour != null)
             {
-                for (int i = tour.CurrentTourStop.AnimationTargets.Count - 1; i > -1; i--)
+                for (var i = tour.CurrentTourStop.AnimationTargets.Count - 1; i > -1; i--)
                 {
                     if (tour.CurrentTourStop.AnimationTargets[i].TargetID == id)
                     {
-                        Overlay overlay = tour.CurrentTourStop.AnimationTargets[i].Target as Overlay;
+                        var overlay = tour.CurrentTourStop.AnimationTargets[i].Target as Overlay;
                         if (overlay != null)
                         {
                             overlay.AnimationTarget = null;
@@ -1291,7 +1291,7 @@ namespace TerraViewer
         {
             if (Tour != null)
             {
-                foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                foreach (var target in tour.CurrentTourStop.AnimationTargets)
                 {
                     if (target.Target.GetIndentifier() == id)
                     {
@@ -1306,11 +1306,11 @@ namespace TerraViewer
 
         private void EnsureVisible()
         {
-            int pos = TimeToPixel(TweenPosition);
+            var pos = TimeToPixel(TweenPosition);
 
             if (scrollbarWidth < (Width - left))
             {
-                int looped = 50;
+                var looped = 50;
                 while ((pos < left || pos > Width) && looped > 0)
                 {
                     looped--;
@@ -1332,11 +1332,11 @@ namespace TerraViewer
 
         private void EnsureVisible(double timePos)
         {
-            int pos = TimeToPixel(timePos);
+            var pos = TimeToPixel(timePos);
 
             if (scrollbarWidth < (Width - left))
             {
-                int looped = 50;
+                var looped = 50;
                 while ((pos < left || pos > Width) && looped > 0)
                 {
                     looped--;
@@ -1362,13 +1362,13 @@ namespace TerraViewer
 
             if (Tour != null && tour.CurrentTourStop != null)
             {
-                foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                foreach (var target in tour.CurrentTourStop.AnimationTargets)
                 {
-                    for (int i = 0; i < target.ParameterNames.Count; i++)
+                    for (var i = 0; i < target.ParameterNames.Count; i++)
                     {
-                        foreach (Key key in target.KeyFrames[i].Keys.Values)
+                        foreach (var key in target.KeyFrames[i].Keys.Values)
                         {
-                            VisibleKey vk = new VisibleKey(target, i, target.ParameterNames[i], key.Time, new Point(0, 0));
+                            var vk = new VisibleKey(target, i, target.ParameterNames[i], key.Time, new Point(0, 0));
                             selectedKeys.Add(vk.IndexKey, vk);
                         }
                     }
@@ -1384,15 +1384,15 @@ namespace TerraViewer
 
             if (Tour != null && tour.CurrentTourStop != null)
             {
-                foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                foreach (var target in tour.CurrentTourStop.AnimationTargets)
                 {
-                    for (int i = 0; i < target.ParameterNames.Count; i++)
+                    for (var i = 0; i < target.ParameterNames.Count; i++)
                     {
-                        foreach (Key key in target.KeyFrames[i].Keys.Values)
+                        foreach (var key in target.KeyFrames[i].Keys.Values)
                         {
                             if (KeyGroup.Quant(key.Time) == KeyGroup.Quant(TweenPosition))
                             {
-                                VisibleKey vk = new VisibleKey(target, i, target.ParameterNames[i], key.Time, new Point(0, 0));
+                                var vk = new VisibleKey(target, i, target.ParameterNames[i], key.Time, new Point(0, 0));
 
                                 selectedKeys.Add(vk.IndexKey, vk);
                             }
@@ -1406,16 +1406,16 @@ namespace TerraViewer
 
         private void NextKey()
         {
-            int currentTime = KeyGroup.Quant(this.QuantizeTimeToFrame( Tour.CurrentTourStop.TweenPosition + frameTime));
-            int closestMatch = KeyGroup.Quant(1);
+            var currentTime = KeyGroup.Quant(this.QuantizeTimeToFrame( Tour.CurrentTourStop.TweenPosition + frameTime));
+            var closestMatch = KeyGroup.Quant(1);
             double closestTime = 1;
             if (Tour != null && tour.CurrentTourStop != null)
             {
-                foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                foreach (var target in tour.CurrentTourStop.AnimationTargets)
                 {
-                    for (int i = 0; i < target.ParameterNames.Count; i++)
+                    for (var i = 0; i < target.ParameterNames.Count; i++)
                     {
-                        foreach (Key key in target.KeyFrames[i].Keys.Values)
+                        foreach (var key in target.KeyFrames[i].Keys.Values)
                         {
                             if (KeyGroup.Quant(key.Time) > currentTime && KeyGroup.Quant(key.Time) < closestMatch)
                             {
@@ -1438,17 +1438,17 @@ namespace TerraViewer
 
         private void PreviousKey()
         {
-            int currentTime = KeyGroup.Quant(Tour.CurrentTourStop.TweenPosition);
-            int closestMatch = 0;
+            var currentTime = KeyGroup.Quant(Tour.CurrentTourStop.TweenPosition);
+            var closestMatch = 0;
             double closestTime = 0;
 
             if (Tour != null && tour.CurrentTourStop != null)
             {
-                foreach (AnimationTarget target in tour.CurrentTourStop.AnimationTargets)
+                foreach (var target in tour.CurrentTourStop.AnimationTargets)
                 {
-                    for (int i = 0; i < target.ParameterNames.Count; i++)
+                    for (var i = 0; i < target.ParameterNames.Count; i++)
                     {
-                        foreach (Key key in target.KeyFrames[i].Keys.Values)
+                        foreach (var key in target.KeyFrames[i].Keys.Values)
                         {
                             if (KeyGroup.Quant(key.Time) < currentTime && KeyGroup.Quant(key.Time) >= closestMatch)
                             {
@@ -1666,15 +1666,15 @@ namespace TerraViewer
 
         public double QuantizeTimeToFrame(double time)
         {
-            int frames = (int)((time * slideTime * 30) + .5);
+            var frames = (int)((time * slideTime * 30) + .5);
             return (double)frames / (double) totalFrames;
         }
 
         private void LastFrame()
         {
-            double newTween = QuantizeTimeToFrame(TweenPosition - frameTime);
+            var newTween = QuantizeTimeToFrame(TweenPosition - frameTime);
  
-            double dd = frameTime * 300;
+            var dd = frameTime * 300;
 
             if (newTween < 0)
             {
@@ -1687,9 +1687,9 @@ namespace TerraViewer
 
         private void NextFrame()
         {
-            double newTween = QuantizeTimeToFrame(TweenPosition + frameTime );
+            var newTween = QuantizeTimeToFrame(TweenPosition + frameTime );
  
-            double dd = newTween - TweenPosition;
+            var dd = newTween - TweenPosition;
 
             if (newTween > 1)
             {
@@ -1707,7 +1707,7 @@ namespace TerraViewer
             if (tour != null && tour.CurrentTourStop != null)
             {
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1284, "Add Keyframes"), tour));
-                foreach (string id in Selection)
+                foreach (var id in Selection)
                 {
                     NewKey(id);
                 }
@@ -1724,12 +1724,12 @@ namespace TerraViewer
             if (id.Contains("\t"))
             {
                 // Child
-                string[] parts = id.Split(new char[] { '\t' });
+                var parts = id.Split(new char[] { '\t' });
 
                 target = FindTarget(parts[0]);
                 if (target != null)
                 {
-                    for (int i = 0; i < target.ParameterNames.Count; i++)
+                    for (var i = 0; i < target.ParameterNames.Count; i++)
                     {
                         if (target.ParameterNames[i] == parts[1])
                         {
@@ -1764,7 +1764,7 @@ namespace TerraViewer
                 if (selectedKeys.Count > 0)
                 {
                     Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1281, "Delete Keyframes"), tour));
-                    foreach (VisibleKey vk in selectedKeys.Values)
+                    foreach (var vk in selectedKeys.Values)
                     {
                         DeleteKey(vk);
                     }
@@ -1781,7 +1781,7 @@ namespace TerraViewer
             target = vk.Target;
             if (target != null)
             {
-                int index = vk.ParameterIndex;
+                var index = vk.ParameterIndex;
                 target.DeleteKey(index, vk.Time);
             }
         }
@@ -1823,16 +1823,16 @@ namespace TerraViewer
 
         private void hoverTimer_Tick(object sender, EventArgs e)
         {
-            TimeSpan ts = DateTime.Now - lastMove;
+            var ts = DateTime.Now - lastMove;
 
             if (ts.TotalMilliseconds > 500)
             {
                 lastMove = DateTime.Now + new TimeSpan(100, 0, 0, 0);
-                Point pnt = lastMouse;
+                var pnt = lastMouse;
 
                 if (pnt.X > left && pnt.Y > bottom && pnt.Y < Height - 8)
                 {
-                    VisibleKey vk = HoverOnSelection(pnt);
+                    var vk = HoverOnSelection(pnt);
                     if (vk != null)
                     {
                         //keyTips = new ToolTip();

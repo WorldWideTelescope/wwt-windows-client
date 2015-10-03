@@ -25,7 +25,7 @@ namespace TerraViewer
 
         private void UpdateTrackStatus()
         {
-            bool enable = Track != null;
+            var enable = Track != null;
             this.Enabled = target!=null;
             Browse.Enabled = this.Enabled;
             if (enable)
@@ -95,7 +95,7 @@ namespace TerraViewer
             
         }
 
-        bool mute = false;
+        bool mute;
 
         public bool Mute
         {
@@ -137,15 +137,15 @@ namespace TerraViewer
                     }
                 }
                 
-                OpenFileDialog fileDialog = new OpenFileDialog();
+                var fileDialog = new OpenFileDialog();
                 fileDialog.Filter = Language.GetLocalizedText(526, "Sound/Music(*.MP3;*.WMA)|*.MP3;*.WMA");
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        string filename = fileDialog.FileName;
-                        AudioOverlay audio = new AudioOverlay( target, filename);
+                        var filename = fileDialog.FileName;
+                        var audio = new AudioOverlay( target, filename);
                         audio.Name = filename.Substring(filename.LastIndexOf("\\") + 1);
                         if (trackType == AudioType.Music)
                         {
@@ -172,7 +172,7 @@ namespace TerraViewer
 
         private void ShowAudioProperties()
         {
-            AudioProperties props = new AudioProperties();
+            var props = new AudioProperties();
             props.Owner = Earth3d.MainWindow;
             props.Target = this;
             props.ShowDialog();
@@ -227,16 +227,16 @@ namespace TerraViewer
 
         private void AudioTrack_Paint(object sender, PaintEventArgs e)
         {
-            Pen p = new Pen(Color.FromArgb(62, 73, 92));
+            var p = new Pen(Color.FromArgb(62, 73, 92));
             e.Graphics.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
             p.Dispose();
-            string label = (trackType == AudioType.Music ? Language.GetLocalizedText(132, "Music: ") : Language.GetLocalizedText(133, "Voiceover: "));
+            var label = (trackType == AudioType.Music ? Language.GetLocalizedText(132, "Music: ") : Language.GetLocalizedText(133, "Voiceover: "));
 
             if (Track != null)
             {
                 label = label + Track.Name;
             }
-            RectangleF rectText = new RectangleF(3,3, 185, 15);
+            var rectText = new RectangleF(3,3, 185, 15);
             e.Graphics.DrawString(label, UiTools.StandardRegular, UiTools.StadardTextBrush, rectText, UiTools.StringFormatBottomLeft);
 
         }
@@ -248,7 +248,7 @@ namespace TerraViewer
 
         private void Volume_ValueChanged(object sender, EventArgs e)
         {
-            ScrollEventArgs eventArgs = (ScrollEventArgs)e;
+            var eventArgs = (ScrollEventArgs)e;
             if (eventArgs.Type == ScrollEventType.EndScroll)
             {
                 //todo localize

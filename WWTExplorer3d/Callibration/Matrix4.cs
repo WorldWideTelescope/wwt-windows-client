@@ -49,7 +49,7 @@ namespace Solver
             var resultMatrix = new Matrix(size, size);
             for(var i = 0; i<size; i++)
             {
-                for (int j = 0; j < size; j++)
+                for (var j = 0; j < size; j++)
                 {
                     resultMatrix[i, j] = (i == j) ? 1.0 : 0.0;
                 }
@@ -60,9 +60,9 @@ namespace Solver
         public Matrix Clone()
         {
             var resultMatrix = new Matrix(_rowCount, _columnCount);
-            for(int i = 0 ; i < _rowCount; i++)
+            for(var i = 0 ; i < _rowCount; i++)
             {
-                for (int j = 0; j < _columnCount; j++)
+                for (var j = 0; j < _columnCount; j++)
                 {
                     resultMatrix[i, j] = this[i, j];
                 }
@@ -92,9 +92,9 @@ namespace Solver
             Debug.Assert(leftMatrix.RowCount == rightMatrix.RowCount);
 
             var resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
-            for(int i=0; i< leftMatrix.RowCount; i++)
+            for(var i=0; i< leftMatrix.RowCount; i++)
             {
-                for (int j = 0; j < leftMatrix.ColumnCount; j++)
+                for (var j = 0; j < leftMatrix.ColumnCount; j++)
                 {
                     resultMatrix[i, j] = leftMatrix[i, j] + rightMatrix[i, j];
                 }
@@ -112,9 +112,9 @@ namespace Solver
             Debug.Assert(leftMatrix.ColumnCount == rightMatrix.ColumnCount);
             Debug.Assert(leftMatrix.RowCount == rightMatrix.RowCount);
             var resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
-            for(int i=0; i < leftMatrix.RowCount; i++)
+            for(var i=0; i < leftMatrix.RowCount; i++)
             {
-                for (int j = 0; j < leftMatrix.ColumnCount; j++)
+                for (var j = 0; j < leftMatrix.ColumnCount; j++)
                 {
                     resultMatrix[i, j] = leftMatrix[i, j] - rightMatrix[i, j];
                 }
@@ -230,18 +230,18 @@ namespace Solver
             double[] result;
             if (leftMatrix.ColumnCount > 1)
             {
-                int numElements = leftMatrix.ColumnCount;
+                var numElements = leftMatrix.ColumnCount;
                 result = new double[numElements];
-                for (int i = 0; i < numElements; i++)
+                for (var i = 0; i < numElements; i++)
                 {
                     result[i] = leftMatrix[0, i];
                 }
             }
             else
             {
-                int numElements = leftMatrix.RowCount;
+                var numElements = leftMatrix.RowCount;
                 result = new double[numElements];
-                for (int i = 0; i < numElements; i++)
+                for (var i = 0; i < numElements; i++)
                 {
                     result[i] = leftMatrix[i, 0];
                 }
@@ -299,7 +299,7 @@ namespace Solver
 
             var resultMatrix = new Matrix(_columnCount, rightMatrix.ColumnCount);
             var resDecomp = LUDecompose();
-            int[] nP = resDecomp.PivotArray;
+            var nP = resDecomp.PivotArray;
             var lMatrix = resDecomp.L;
             var uMatrix = resDecomp.U;
             for(var k=0; k<rightMatrix.ColumnCount; k++)
@@ -308,10 +308,10 @@ namespace Solver
                 double sum;
                 var dMatrix = new Matrix(_rowCount, 1);
                 dMatrix[0, 0] = rightMatrix[nP[0], k] / lMatrix[0, 0];
-                for (int i = 1; i < _rowCount; i++)
+                for (var i = 1; i < _rowCount; i++)
                 {
                     sum = 0.0;
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         sum += lMatrix[i, j] * dMatrix[j, 0];
                     }
@@ -319,10 +319,10 @@ namespace Solver
                 }
                 //Solve for x using Ux = d
                 resultMatrix[_rowCount - 1, k] = dMatrix[_rowCount - 1, 0];
-                for (int i = _rowCount - 2; i >= 0; i--)
+                for (var i = _rowCount - 2; i >= 0; i--)
                 {
                     sum = 0.0;
-                    for (int j = i + 1; j < _rowCount; j++)
+                    for (var j = i + 1; j < _rowCount; j++)
                     {
                         sum += uMatrix[i, j] * resultMatrix[j, k];
                     }
@@ -416,7 +416,7 @@ namespace Solver
                     //pivot array to swap the current row with the pivot row.
                     if (maxRow != pivotArray[i])
                     {
-                        int hold = pivotArray[i];
+                        var hold = pivotArray[i];
                         pivotArray[i] = maxRow;
                         pivotArray[maxPosition] = hold;
                     }

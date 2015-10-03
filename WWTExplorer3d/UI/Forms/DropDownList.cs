@@ -18,7 +18,7 @@ namespace TerraViewer
             InitializeComponent();
         }
 
-        bool filterType = false;
+        bool filterType;
 
         public bool FilterType
         {
@@ -98,10 +98,10 @@ namespace TerraViewer
             }
             set
             {
-                Classification filter = value;
+                var filter = value;
                 foreach (TreeNode node in this.DropList.Nodes)
                 {
-                    Classification type = (Classification)Enum.Parse(typeof(Classification), node.Name.Replace(" ", ""));
+                    var type = (Classification)Enum.Parse(typeof(Classification), node.Name.Replace(" ", ""));
                     node.Checked = (filter & type) == type;
                     
                     foreach (TreeNode child in node.Nodes)
@@ -116,7 +116,7 @@ namespace TerraViewer
 
         private void DropList_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            TreeNode node = e.Node;
+            var node = e.Node;
             if (e.Action != TreeViewAction.ByKeyboard && e.Action != TreeViewAction.ByMouse)
             {
                 return;
@@ -178,12 +178,12 @@ namespace TerraViewer
         {
             if (!FilterType)
             {
-                 Rectangle rect = Screen.GetBounds(this);
+                 var rect = Screen.GetBounds(this);
 
 
-                 int height = rect.Height *10/9;
+                 var height = rect.Height *10/9;
 
-                int count = Items.Count;
+                var count = Items.Count;
                 this.Height = Math.Min(height, listBox.ItemHeight * Math.Max(3, count + 1));
             }
         }

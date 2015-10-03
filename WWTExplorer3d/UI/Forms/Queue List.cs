@@ -137,7 +137,7 @@ namespace TerraViewer
 
         private void timer1_Tick(object sender, System.EventArgs e)
         {
-            object[] tiles = TileCache.GetQueueList();
+            var tiles = TileCache.GetQueueList();
             this.listBox.Items.Clear();
             this.listBox.Items.AddRange(tiles);
         }
@@ -152,7 +152,7 @@ namespace TerraViewer
 			TileCache.ClearCache();
 		}
 
-        bool showFursumTiles = false;
+        bool showFursumTiles;
         private void FrustromTileView_CheckedChanged(object sender, EventArgs e)
         {
             showFursumTiles = checkTilesInView.Checked;
@@ -167,7 +167,7 @@ namespace TerraViewer
         {
             if (listBox.SelectedItem != null)
             {
-                Tile tile = (Tile)listBox.SelectedItem;
+                var tile = (Tile)listBox.SelectedItem;
 
                 System.Diagnostics.Process.Start(tile.URL);
             }

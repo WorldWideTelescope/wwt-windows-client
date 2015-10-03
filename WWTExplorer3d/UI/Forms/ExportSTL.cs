@@ -28,7 +28,7 @@ namespace TerraViewer
         }
 
        
-        bool initialized = false;
+        bool initialized;
 
         private void ExportSTL_Load(object sender, EventArgs e)
         {
@@ -63,40 +63,40 @@ namespace TerraViewer
             }
             lines.Clear();
 
-            double width = Rect.East - Rect.West;
-            double height = Rect.North - Rect.South;
+            var width = Rect.East - Rect.West;
+            var height = Rect.North - Rect.South;
 
-            double altitude = 1 + Earth3d.MainWindow.GetScaledAltitudeForLatLong((Rect.North + Rect.South) / 2, (Rect.East + Rect.West) / 2);
+            var altitude = 1 + Earth3d.MainWindow.GetScaledAltitudeForLatLong((Rect.North + Rect.South) / 2, (Rect.East + Rect.West) / 2);
 
-            Vector3d topLeftA = Coordinates.GeoTo3dDouble(Rect.North - height / 20, Rect.West, altitude);
-            Vector3d topLeftB = Coordinates.GeoTo3dDouble(Rect.North, Rect.West, altitude);
-            Vector3d topLeftC = Coordinates.GeoTo3dDouble(Rect.North, Rect.West + width / 20, altitude);
-            Vector3d topMiddleA = Coordinates.GeoTo3dDouble(Rect.North, ((Rect.East + Rect.West) / 2) - width / 20, altitude);
-            Vector3d topMiddleB = Coordinates.GeoTo3dDouble(Rect.North, ((Rect.East + Rect.West) / 2) + width / 20, altitude);
-            Vector3d topRightA = Coordinates.GeoTo3dDouble(Rect.North - height / 20, Rect.East, altitude);
-            Vector3d topRightB = Coordinates.GeoTo3dDouble(Rect.North, Rect.East, altitude);
-            Vector3d topRightC = Coordinates.GeoTo3dDouble(Rect.North, Rect.East - width / 20, altitude);
+            var topLeftA = Coordinates.GeoTo3dDouble(Rect.North - height / 20, Rect.West, altitude);
+            var topLeftB = Coordinates.GeoTo3dDouble(Rect.North, Rect.West, altitude);
+            var topLeftC = Coordinates.GeoTo3dDouble(Rect.North, Rect.West + width / 20, altitude);
+            var topMiddleA = Coordinates.GeoTo3dDouble(Rect.North, ((Rect.East + Rect.West) / 2) - width / 20, altitude);
+            var topMiddleB = Coordinates.GeoTo3dDouble(Rect.North, ((Rect.East + Rect.West) / 2) + width / 20, altitude);
+            var topRightA = Coordinates.GeoTo3dDouble(Rect.North - height / 20, Rect.East, altitude);
+            var topRightB = Coordinates.GeoTo3dDouble(Rect.North, Rect.East, altitude);
+            var topRightC = Coordinates.GeoTo3dDouble(Rect.North, Rect.East - width / 20, altitude);
 
-            Vector3d middleRightA = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 - height / 20, Rect.West, altitude);
-            Vector3d middleRightB = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 + height / 20, Rect.West, altitude);
-            Vector3d centerA = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2, ((Rect.East + Rect.West) / 2) - width / 20, altitude);
-            Vector3d centerB = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2, ((Rect.East + Rect.West) / 2) + width / 20, altitude);
-            Vector3d centerC = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 - height / 20, ((Rect.East + Rect.West) / 2), altitude);
-            Vector3d centerD = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 + height / 20, ((Rect.East + Rect.West) / 2), altitude);
-            Vector3d middleLeftA = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 - height / 20, Rect.East, altitude);
-            Vector3d middleLeftB = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 + height / 20, Rect.East, altitude);
+            var middleRightA = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 - height / 20, Rect.West, altitude);
+            var middleRightB = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 + height / 20, Rect.West, altitude);
+            var centerA = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2, ((Rect.East + Rect.West) / 2) - width / 20, altitude);
+            var centerB = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2, ((Rect.East + Rect.West) / 2) + width / 20, altitude);
+            var centerC = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 - height / 20, ((Rect.East + Rect.West) / 2), altitude);
+            var centerD = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 + height / 20, ((Rect.East + Rect.West) / 2), altitude);
+            var middleLeftA = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 - height / 20, Rect.East, altitude);
+            var middleLeftB = Coordinates.GeoTo3dDouble((Rect.North + Rect.South) / 2 + height / 20, Rect.East, altitude);
 
 
 
-            Vector3d bottomLeftA = Coordinates.GeoTo3dDouble(Rect.South + height / 20, Rect.West, altitude);
-            Vector3d bottomLeftB = Coordinates.GeoTo3dDouble(Rect.South, Rect.West, altitude);
-            Vector3d bottomLeftC = Coordinates.GeoTo3dDouble(Rect.South, Rect.West + width / 20, altitude);
-            Vector3d bottomMiddleA = Coordinates.GeoTo3dDouble(Rect.South, ((Rect.East + Rect.West) / 2) - width / 20, altitude);
-            Vector3d bottomMiddleB = Coordinates.GeoTo3dDouble(Rect.South, ((Rect.East + Rect.West) / 2) + width / 20, altitude);
-            Vector3d bottomRightA = Coordinates.GeoTo3dDouble(Rect.South + height / 20, Rect.East, altitude);
-            Vector3d bottomRightB = Coordinates.GeoTo3dDouble(Rect.South, Rect.East, altitude);
-            Vector3d bottomRightC = Coordinates.GeoTo3dDouble(Rect.South, Rect.East - width / 20, altitude);
-            Color lineColor = Color.Yellow;
+            var bottomLeftA = Coordinates.GeoTo3dDouble(Rect.South + height / 20, Rect.West, altitude);
+            var bottomLeftB = Coordinates.GeoTo3dDouble(Rect.South, Rect.West, altitude);
+            var bottomLeftC = Coordinates.GeoTo3dDouble(Rect.South, Rect.West + width / 20, altitude);
+            var bottomMiddleA = Coordinates.GeoTo3dDouble(Rect.South, ((Rect.East + Rect.West) / 2) - width / 20, altitude);
+            var bottomMiddleB = Coordinates.GeoTo3dDouble(Rect.South, ((Rect.East + Rect.West) / 2) + width / 20, altitude);
+            var bottomRightA = Coordinates.GeoTo3dDouble(Rect.South + height / 20, Rect.East, altitude);
+            var bottomRightB = Coordinates.GeoTo3dDouble(Rect.South, Rect.East, altitude);
+            var bottomRightC = Coordinates.GeoTo3dDouble(Rect.South, Rect.East - width / 20, altitude);
+            var lineColor = Color.Yellow;
 
             lines.AddLine(topLeftA, topLeftB, lineColor, new Dates());
             lines.AddLine(topLeftB, topLeftC, lineColor, new Dates());
@@ -146,7 +146,7 @@ namespace TerraViewer
 
         }
 
-        LineList lines = null;
+        LineList lines;
 
  
         void IUiController.Render(Earth3d window)
@@ -157,7 +157,7 @@ namespace TerraViewer
         }
         enum DragCorners { None, NW, N, NE, W, C, E, SW, S, SE };
 
-        bool drag = false;
+        bool drag;
 
         DragCorners dragCorner = DragCorners.None;
 
@@ -165,11 +165,11 @@ namespace TerraViewer
         bool IUiController.MouseDown(object sender, MouseEventArgs e)
         {
 
-            double width = Rect.East - Rect.West;
-            double height = Rect.North - Rect.South;
+            var width = Rect.East - Rect.West;
+            var height = Rect.North - Rect.South;
 
-            double range = Math.Max(width / 40, height / 40);
-            Coordinates cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
+            var range = Math.Max(width / 40, height / 40);
+            var cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
 
             if (cursor.Distance(Coordinates.FromLatLng(Rect.North, Rect.West)) < range)
             {
@@ -253,7 +253,7 @@ namespace TerraViewer
             if (drag)
             {
 
-                Coordinates cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
+                var cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
 
                 switch (dragCorner)
                 {
@@ -302,13 +302,13 @@ namespace TerraViewer
             }
             else
             {
-                Control wnd = (Control)sender;
-                double width = Rect.East - Rect.West;
-                double height = Rect.North - Rect.South;
+                var wnd = (Control)sender;
+                var width = Rect.East - Rect.West;
+                var height = Rect.North - Rect.South;
 
-                double range = Math.Max(width / 40, height / 40);
-                Coordinates cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
-                DragCorners dragCorner = DragCorners.None;
+                var range = Math.Max(width / 40, height / 40);
+                var cursor = Earth3d.MainWindow.GetCoordinatesForScreenPoint(e.X, e.Y);
+                var dragCorner = DragCorners.None;
                 if (cursor.Distance(Coordinates.FromLatLng(Rect.North, Rect.West)) < range)
                 {
                     dragCorner = DragCorners.NW;
@@ -425,9 +425,9 @@ namespace TerraViewer
 
         private void Export_Click(object sender, EventArgs e)
         {
-            string filename = "";
+            var filename = "";
 
-            SaveFileDialog saveDialog = new SaveFileDialog();
+            var saveDialog = new SaveFileDialog();
             saveDialog.Filter =  "Standard Tessellation Language" + "|*.stl";
             saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             saveDialog.AddExtension = true;
@@ -448,27 +448,27 @@ namespace TerraViewer
 
             ProgressPopup.Show(this, "Export STL File", "Scanning Elevation Map");
 
-            double baseOffset = double.Parse(baseHeight.Text);
+            var baseOffset = double.Parse(baseHeight.Text);
 
             density = int.Parse(Density.Text);
 
-            double xRate = Rect.West - Rect.East;
-            double yRate = Rect.North - Rect.South;
+            var xRate = Rect.West - Rect.East;
+            var yRate = Rect.North - Rect.South;
 
-            double latCenter = (Rect.North + Rect.South) / 2;
+            var latCenter = (Rect.North + Rect.South) / 2;
 
-            double ratio = Math.Cos(latCenter / 180 * Math.PI);
+            var ratio = Math.Cos(latCenter / 180 * Math.PI);
 
             double sizeY = 100;
-            double sizeX = Math.Abs(((xRate * ratio) / yRate) * sizeY);
+            var sizeX = Math.Abs(((xRate * ratio) / yRate) * sizeY);
 
-            int stepsX = (int)(sizeX * density / 10);
-            int stepsY = (int)(sizeY * density / 10);
+            var stepsX = (int)(sizeX * density / 10);
+            var stepsY = (int)(sizeY * density / 10);
      
             
             //Computer relative altitude to latitude scaling for this planet.
-            double radius = Earth3d.MainWindow.RenderContext11.NominalRadius;
-            double altScaleFactor = ((radius * Math.PI * 2) / 360) * (yRate/sizeY);
+            var radius = Earth3d.MainWindow.RenderContext11.NominalRadius;
+            var altScaleFactor = ((radius * Math.PI * 2) / 360) * (yRate/sizeY);
 
             altScaleFactor = 1 / altScaleFactor;
 
@@ -478,25 +478,25 @@ namespace TerraViewer
             yRate /= stepsY;
 
 
-            Vector3d[,] points = new Vector3d[stepsX, stepsY];
-            double[,] altitude = new double[stepsX, stepsY];
+            var points = new Vector3d[stepsX, stepsY];
+            var altitude = new double[stepsX, stepsY];
             double maxAltitude = -10000000;
             double minAltitude = 100000000;
-            double altScale = double.Parse(AltitudeScale.Text) / 100;
+            var altScale = double.Parse(AltitudeScale.Text) / 100;
 
 
-            int estimatedTotal = stepsX * stepsY;
-            int actualTotal = 0;
+            var estimatedTotal = stepsX * stepsY;
+            var actualTotal = 0;
 
 
-            for (int y = 0; y < stepsY; y++)
+            for (var y = 0; y < stepsY; y++)
             {
-                for (int x = 0; x < stepsX; x++)
+                for (var x = 0; x < stepsX; x++)
                 {
-                    double lat = Rect.North - (yRate * y);
-                    double lng = Rect.East + (xRate * x);
+                    var lat = Rect.North - (yRate * y);
+                    var lng = Rect.East + (xRate * x);
 
-                    double alt = Earth3d.MainWindow.GetAltitudeForLatLongNow(lat, lng);
+                    var alt = Earth3d.MainWindow.GetAltitudeForLatLongNow(lat, lng);
                     altitude[x, y] = alt;
                     maxAltitude = Math.Max(alt, maxAltitude);
                     minAltitude = Math.Min(minAltitude, alt);
@@ -512,18 +512,18 @@ namespace TerraViewer
                 
             }
 
-            double altRange = maxAltitude - minAltitude;
+            var altRange = maxAltitude - minAltitude;
 
             // old altScaleFactor = (10 / altRange) * altScale;
             altScaleFactor *= altScale;
 
-            double stepScaleX = sizeX / stepsX;
-            double stepScaleY = sizeY / stepsY;
+            var stepScaleX = sizeX / stepsX;
+            var stepScaleY = sizeY / stepsY;
 
             // make the verticies
-            for (int y = 0; y < stepsY; y++)
+            for (var y = 0; y < stepsY; y++)
             {
-                for (int x = 0; x < stepsX; x++)
+                for (var x = 0; x < stepsX; x++)
                 {
                     altitude[x, y] = ((altitude[x, y] - minAltitude) * altScaleFactor) + baseOffset;
 
@@ -542,14 +542,14 @@ namespace TerraViewer
             {
                 File.Delete(filename);
             }
-            FileStream fs = File.OpenWrite(filename);
-            BinaryWriter bw = new BinaryWriter(fs);
+            var fs = File.OpenWrite(filename);
+            var bw = new BinaryWriter(fs);
 
             // Write File Header
             bw.Write(new byte[80]);
 
             // x-1*y-1*2
-            int count = ((stepsX - 1) * (stepsY - 1) + (stepsY - 1) + (stepsY - 1) + (stepsX - 1) + (stepsX - 1) + (stepsX - 1) * (stepsY - 1)) * 2;
+            var count = ((stepsX - 1) * (stepsY - 1) + (stepsY - 1) + (stepsY - 1) + (stepsX - 1) + (stepsX - 1) + (stepsX - 1) * (stepsY - 1)) * 2;
 
  
             // Write Triangle Count
@@ -558,11 +558,11 @@ namespace TerraViewer
 
             // Loop thru and create triangles for all quads..
 
-            int writeCount = 0;
+            var writeCount = 0;
 
-            for (int y = 0; y < stepsY - 1; y++)
+            for (var y = 0; y < stepsY - 1; y++)
             {
-                for (int x = 0; x < stepsX - 1; x++)
+                for (var x = 0; x < stepsX - 1; x++)
                 {
                     // Write dummy Normal
                     bw.Write(0f);
@@ -592,12 +592,12 @@ namespace TerraViewer
             }
             ProgressPopup.SetProgress(35, "Writing File");
 
-            Vector3d pnt = new Vector3d();
+            var pnt = new Vector3d();
 
             // Make side Skirts
-            for (int y = 0; y < stepsY - 1; y++)
+            for (var y = 0; y < stepsY - 1; y++)
             {
-                int x = 0;
+                var x = 0;
                 // Write dummy Normal
                 bw.Write(0f);
                 bw.Write(0f);
@@ -635,9 +635,9 @@ namespace TerraViewer
 
             ProgressPopup.SetProgress(45, "Writing File");
 
-            for (int y = 0; y < stepsY - 1; y++)
+            for (var y = 0; y < stepsY - 1; y++)
             {
-                int x = stepsX - 1;
+                var x = stepsX - 1;
                 // Write dummy Normal
                 bw.Write(0f);
                 bw.Write(0f);
@@ -675,9 +675,9 @@ namespace TerraViewer
 
             ProgressPopup.SetProgress(50, "Writing File");
 
-            for (int x = 0; x < stepsX - 1; x++)
+            for (var x = 0; x < stepsX - 1; x++)
             {
-                int y = 0;
+                var y = 0;
                 // Write dummy Normal
                 bw.Write(0f);
                 bw.Write(0f);
@@ -715,9 +715,9 @@ namespace TerraViewer
 
             ProgressPopup.SetProgress(55, "Writing File");
 
-            for (int x = 0; x < stepsX - 1; x++)
+            for (var x = 0; x < stepsX - 1; x++)
             {
-                int y = stepsY - 1;
+                var y = stepsY - 1;
                 // Write dummy Normal
                 bw.Write(0f);
                 bw.Write(0f);
@@ -758,9 +758,9 @@ namespace TerraViewer
 
             ProgressPopup.SetProgress(75, "Writing File");
 
-            for (int y = 0; y < stepsY - 1; y++)
+            for (var y = 0; y < stepsY - 1; y++)
             {
-                for (int x = 0; x < stepsX - 1; x++)
+                for (var x = 0; x < stepsX - 1; x++)
                 {
                     // Write dummy Normal
                     bw.Write(0f);

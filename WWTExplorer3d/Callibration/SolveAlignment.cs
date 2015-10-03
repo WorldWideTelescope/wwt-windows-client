@@ -390,8 +390,8 @@ namespace TerraViewer.Callibration
             var y = point.Y ;
             var dist = Math.Sqrt(x * x + y * y);
 
-            double alt = 90 - ( dist / .5) * 90;
-            double az = ((Math.Atan2(y, x) / Math.PI * 180) + 630) % 360;
+            var alt = 90 - ( dist / .5) * 90;
+            var az = ((Math.Atan2(y, x) / Math.PI * 180) + 630) % 360;
             return new Vector2d(az, alt);
         }
 
@@ -547,7 +547,7 @@ namespace TerraViewer.Callibration
             var pt = new Vector2d(960,540);
             TransformPickPointToWorldSpace(pt, width, height, out PickRayOrig, out PickRayDir);
 
-            Vector2d result = Vector2d.CartesianToSpherical2(PickRayOrig);
+            var result = Vector2d.CartesianToSpherical2(PickRayOrig);
 
             return result;
         }

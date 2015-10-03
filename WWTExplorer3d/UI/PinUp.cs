@@ -24,7 +24,7 @@ namespace TerraViewer
 
             InitializeComponent();
         }
-        static Bitmap[,,] bitmaps = new Bitmap[2,2,4];
+        static readonly Bitmap[,,] bitmaps = new Bitmap[2,2,4];
         const int TopPin = 0;
         const int BottomPin = 1;
         const int Expanding = 0;

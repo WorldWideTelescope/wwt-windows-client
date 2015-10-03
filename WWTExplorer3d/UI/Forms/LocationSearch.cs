@@ -57,12 +57,12 @@ namespace TerraViewer
         {
             objectName = txtName.Text;
 
-            WebClient client = new WebClient();
+            var client = new WebClient();
 
-            string url = string.Format("http://dev.virtualearth.net/REST/v1/Locations?o=xml&q={0}&key=AnEbWVZBhPHNm4_fSF7sklQZYODmK0o4_kkm6AId7V0RXtPnmAXfIJn3EUJbMbmm", HttpUtility.UrlEncode(txtName.Text));
-            string data = client.DownloadString(url);
+            var url = string.Format("http://dev.virtualearth.net/REST/v1/Locations?o=xml&q={0}&key=AnEbWVZBhPHNm4_fSF7sklQZYODmK0o4_kkm6AId7V0RXtPnmAXfIJn3EUJbMbmm", HttpUtility.UrlEncode(txtName.Text));
+            var data = client.DownloadString(url);
             resultsListbox.Items.Clear();
-            int count = ParseResults(data);
+            var count = ParseResults(data);
 
             if (count == 0)
             {
@@ -83,7 +83,7 @@ namespace TerraViewer
             }
             else
             {
-                foreach (IPlace place in resultslist)
+                foreach (var place in resultslist)
                 {
                     resultsListbox.Items.Add(place);
                     resultsListbox.Visible = true;
@@ -138,14 +138,14 @@ namespace TerraViewer
         public IPlace Result = null;
 
 
-        List<IPlace> resultslist = new List<IPlace>();
+        readonly List<IPlace> resultslist = new List<IPlace>();
 
         private int ParseResults(string data)
         {
             resultslist.Clear();
 
-            XmlDocument doc = new XmlDocument();
-            int index = 0;
+            var doc = new XmlDocument();
+            var index = 0;
             try
             {
                 data = data.Substring(data.IndexOf("<?xml"));
@@ -161,12 +161,12 @@ namespace TerraViewer
                         if (node.Name == "Location")
                         {
                             index++;
-                            string name = node["Name"].InnerText;
-                            double lat = double.Parse(node["Point"]["Latitude"].InnerText);
-                            double lng = double.Parse(node["Point"]["Longitude"].InnerText);
-                            string type = node["EntityType"].InnerText;
+                            var name = node["Name"].InnerText;
+                            var lat = double.Parse(node["Point"]["Latitude"].InnerText);
+                            var lng = double.Parse(node["Point"]["Longitude"].InnerText);
+                            var type = node["EntityType"].InnerText;
 
-                            TourPlace place = new TourPlace(name, lat, lng,  Classification.Unidentified, "", ImageSetType.Earth, -1);
+                            var place = new TourPlace(name, lat, lng,  Classification.Unidentified, "", ImageSetType.Earth, -1);
 
                             resultslist.Add((IPlace)place);
                         }

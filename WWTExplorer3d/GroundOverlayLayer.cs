@@ -13,12 +13,12 @@ namespace TerraViewer
 
         public override void AddFilesToCabinet(FileCabinet fc)
         {
-            string fName = filename;
+            var fName = filename;
 
-            bool copy = !fName.Contains(ID.ToString());
+            var copy = !fName.Contains(ID.ToString());
 
-            string fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, this.ID.ToString());
-            string path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, this.ID.ToString());
+            var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
 
             if (copy)
             {

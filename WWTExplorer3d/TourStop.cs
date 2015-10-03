@@ -16,7 +16,7 @@ namespace TerraViewer
         public KeyframeMover KeyFrameMover = new KeyframeMover();
 
         public List<AnimationTarget> AnimationTargets = new List<AnimationTarget>();
-        private bool keyFramed = false;
+        private bool keyFramed;
 
         public bool KeyFramed
         {
@@ -31,9 +31,9 @@ namespace TerraViewer
                     if (keyFramed)
                     {
                         //Create Camera Keyframe
-                        CameraParameters savedCam = Earth3d.MainWindow.viewCamera;
-                        DateTime savedDate = SpaceTimeController.Now;
-                        AnimationTarget at = new AnimationTarget(this);
+                        var savedCam = Earth3d.MainWindow.viewCamera;
+                        var savedDate = SpaceTimeController.Now;
+                        var at = new AnimationTarget(this);
                         at.Target = this.KeyFrameMover;
                         at.TargetType = AnimationTarget.AnimationTargetTypes.Camera;
                         at.ParameterNames.AddRange(at.Target.GetParamNames());
@@ -66,7 +66,7 @@ namespace TerraViewer
         {
             if (keyFramed)
             {
-                foreach (AnimationTarget target in AnimationTargets)
+                foreach (var target in AnimationTargets)
                 {
                     target.SetKeyFrame(0, Key.KeyType.Linear);
                 }
@@ -77,7 +77,7 @@ namespace TerraViewer
         {
             if (keyFramed)
             {
-                foreach (AnimationTarget target in AnimationTargets)
+                foreach (var target in AnimationTargets)
                 {
                     target.SetKeyFrame(1, Key.KeyType.Linear);
                 }
@@ -87,7 +87,7 @@ namespace TerraViewer
 
         public bool IsTargetAnimated(string id)
         {
-            foreach (AnimationTarget t in AnimationTargets)
+            foreach (var t in AnimationTargets)
             {
                 if (t.TargetID == id)
                 {
@@ -99,7 +99,7 @@ namespace TerraViewer
 
         public AnimationTarget FindTarget(string id)
         {
-            foreach (AnimationTarget target in AnimationTargets)
+            foreach (var target in AnimationTargets)
             {
                 if (target.TargetID == id)
                 {
@@ -136,7 +136,7 @@ namespace TerraViewer
             }
         }
 
-        private float tweenPosition = 0;
+        private float tweenPosition;
 
         public float TweenPosition
         {
@@ -162,7 +162,7 @@ namespace TerraViewer
                 KeyFrameMover.ReferenceFrame = this.Target.CamParams.TargetReferenceFrame;
                 KeyFrameMover.MoveTime = (double)(Duration.TotalMilliseconds / 1000.0);
                 //update key framed elements
-                foreach (AnimationTarget target in AnimationTargets)
+                foreach (var target in AnimationTargets)
                 {
                     target.Tween(tweenPosition);
                 }
@@ -173,10 +173,10 @@ namespace TerraViewer
 
         public TourStop Copy()
         {
-            StringBuilder sb = new StringBuilder();
-            using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+            var sb = new StringBuilder();
+            using (var textWriter = new System.IO.StringWriter(sb))
             {
-                using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new System.Xml.XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
 
@@ -187,11 +187,11 @@ namespace TerraViewer
             // add try catch block
             try
             {
-                string xml = sb.ToString();
-                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+                var xml = sb.ToString();
+                var doc = new System.Xml.XmlDocument();
                 doc.LoadXml(xml);
                 System.Xml.XmlNode node = doc["TourStop"];
-                TourStop ts = TourStop.FromXml(this.Owner, node);
+                var ts = TourStop.FromXml(this.Owner, node);
                 ts.Id = Guid.NewGuid().ToString();
                 return ts;
             }
@@ -215,7 +215,7 @@ namespace TerraViewer
 
         }
 
-        TourDocument owner = null;
+        TourDocument owner;
 
         public TourDocument Owner
         {
@@ -283,7 +283,7 @@ namespace TerraViewer
             }
         }
 
-        bool fadeInOverlays = false;
+        bool fadeInOverlays;
 
         public bool FadeInOverlays
         {
@@ -291,7 +291,7 @@ namespace TerraViewer
             set { fadeInOverlays = value; }
         }
 
-        bool masterSlide = false;
+        bool masterSlide;
 
         public bool MasterSlide
         {
@@ -639,7 +639,7 @@ namespace TerraViewer
         }
 
 
-        Dictionary<StockSkyOverlayTypes, SettingsAnimator> SettingsAnimators = new Dictionary<StockSkyOverlayTypes, SettingsAnimator>();
+        readonly Dictionary<StockSkyOverlayTypes, SettingsAnimator> SettingsAnimators = new Dictionary<StockSkyOverlayTypes, SettingsAnimator>();
 
 
 
@@ -648,16 +648,16 @@ namespace TerraViewer
         {
             try
             {
-                StockSkyOverlayTypes type = (StockSkyOverlayTypes)Enum.Parse(typeof(StockSkyOverlayTypes), TargetID);
+                var type = (StockSkyOverlayTypes)Enum.Parse(typeof(StockSkyOverlayTypes), TargetID);
 
                 if (SettingsAnimators.ContainsKey(type))
                 {
-                    SettingsAnimator sa = SettingsAnimators[type];
+                    var sa = SettingsAnimators[type];
                     return sa;
                 }
                 else
                 {
-                    SettingsAnimator sa = new SettingsAnimator(type);
+                    var sa = new SettingsAnimator(type);
                     SettingsAnimators.Add(type, sa);
                     return sa;
                 }
@@ -671,14 +671,14 @@ namespace TerraViewer
         
         public SettingParameter GetSetting(StockSkyOverlayTypes type)
         {
-            bool edgeTrigger = true;
+            var edgeTrigger = true;
             double opacity = 0;
-            bool animated = false;
+            var animated = false;
             ConstellationFilter filter = null;
-            bool targetState = false;
+            var targetState = false;
             if (SettingsAnimators.ContainsKey(type))
             {
-                SettingsAnimator sa = SettingsAnimators[type];           
+                var sa = SettingsAnimators[type];           
                 edgeTrigger = sa.Constant;
                 opacity = sa.CurrentValue;
                 filter = sa.Filter;
@@ -779,8 +779,8 @@ namespace TerraViewer
                     case StockSkyOverlayTypes.MPCZone6:
                     case StockSkyOverlayTypes.MPCZone7:
                         {
-                            int id = (int)type - (int)StockSkyOverlayTypes.MPCZone1;
-                            int bit = (int)Math.Pow(2, id);
+                            var id = (int)type - (int)StockSkyOverlayTypes.MPCZone1;
+                            var bit = (int)Math.Pow(2, id);
                             targetState = (this.minorPlanetsFilter & bit) != 0;
                             opacity = targetState ? 1 : 0;
                             edgeTrigger = true;
@@ -828,7 +828,7 @@ namespace TerraViewer
                 }
             }
 
-            SettingParameter sp = new SettingParameter(edgeTrigger, opacity, opacity != 0, filter);
+            var sp = new SettingParameter(edgeTrigger, opacity, opacity != 0, filter);
             sp.Animated = animated;
             return sp;
         }
@@ -1236,7 +1236,7 @@ namespace TerraViewer
         #endregion
         // End Settings
         string thumbnailString = "";
-        Bitmap thumbnail = null;
+        Bitmap thumbnail;
 
         public Bitmap Thumbnail
         {
@@ -1258,14 +1258,14 @@ namespace TerraViewer
         public Dictionary<Guid,LayerInfo> Layers = new Dictionary<Guid,LayerInfo>();
 
 
-        List<Overlay> overlays = new List<Overlay>();
+        readonly List<Overlay> overlays = new List<Overlay>();
 
         public List<Overlay> Overlays
         {
             get { return overlays; }
         }
 
-        AudioOverlay musicTrack = null;
+        AudioOverlay musicTrack;
 
         public AudioOverlay MusicTrack
         {
@@ -1279,7 +1279,7 @@ namespace TerraViewer
                 }
             }
         }
-        AudioOverlay voiceTrack = null;
+        AudioOverlay voiceTrack;
 
         public AudioOverlay VoiceTrack
         {
@@ -1328,7 +1328,7 @@ namespace TerraViewer
 
         public void CleanUp()
         {
-            foreach (Overlay overlay in Overlays)
+            foreach (var overlay in Overlays)
             {
                 overlay.CleanUp();
             }
@@ -1360,7 +1360,7 @@ namespace TerraViewer
 
         public void BringForward(Overlay target)
         {
-            int index = overlays.FindIndex(delegate(Overlay overlay) { return target == overlay; });
+            var index = overlays.FindIndex(delegate(Overlay overlay) { return target == overlay; });
             if (index < overlays.Count - 1)
             {
                 overlays.Remove(target);
@@ -1371,7 +1371,7 @@ namespace TerraViewer
 
         public void SendBackward(Overlay target)
         {
-            int index = overlays.FindIndex(delegate(Overlay overlay) { return target == overlay; });
+            var index = overlays.FindIndex(delegate(Overlay overlay) { return target == overlay; });
             if (index > 0)
             {
                 overlays.Remove(target);
@@ -1394,7 +1394,7 @@ namespace TerraViewer
                 }
             }
 
-            int index = overlays.FindIndex(delegate(Overlay overlay) { return current == overlay; });
+            var index = overlays.FindIndex(delegate(Overlay overlay) { return current == overlay; });
             if (index < overlays.Count - 1)
             {
                 return overlays[index + 1];
@@ -1418,7 +1418,7 @@ namespace TerraViewer
                     return null;
                 }
             }
-            int index = overlays.FindIndex(delegate(Overlay overlay) { return current == overlay; });
+            var index = overlays.FindIndex(delegate(Overlay overlay) { return current == overlay; });
             if (index > 0)
             {
                 return overlays[index - 1];
@@ -1446,10 +1446,10 @@ namespace TerraViewer
 
         public static string GetXmlText(TourStop ts)
         {
-            StringBuilder sb = new StringBuilder();
-            using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+            var sb = new StringBuilder();
+            using (var textWriter = new System.IO.StringWriter(sb))
             {
-                using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new System.Xml.XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
 
@@ -1567,7 +1567,7 @@ namespace TerraViewer
 
             xmlWriter.WriteStartElement("Overlays");
 
-            foreach (Overlay overlay in overlays)
+            foreach (var overlay in overlays)
             {
                 overlay.SaveToXml(xmlWriter, false);
             }
@@ -1597,7 +1597,7 @@ namespace TerraViewer
             if (KeyFramed)
             {
                 xmlWriter.WriteStartElement("AnimationTargets");
-                foreach (AnimationTarget aniTarget in AnimationTargets)
+                foreach (var aniTarget in AnimationTargets)
                 {
                     aniTarget.SaveToXml(xmlWriter);
                 }
@@ -1613,15 +1613,15 @@ namespace TerraViewer
             {
                 xmlWriter.WriteStartElement("VisibleLayers");
 
-                foreach (LayerInfo info in Layers.Values)
+                foreach (var info in Layers.Values)
                 {
                     xmlWriter.WriteStartElement("Layer");
                     xmlWriter.WriteAttributeString("StartOpacity", info.StartOpacity.ToString());
                     xmlWriter.WriteAttributeString("EndOpacity", info.EndOpacity.ToString());
-                    int len = info.StartParams.Length;
+                    var len = info.StartParams.Length;
 
                     xmlWriter.WriteAttributeString("ParamCount", len.ToString());
-                    for (int i = 0; i < len; i++)
+                    for (var i = 0; i < len; i++)
                     {
                         xmlWriter.WriteAttributeString(string.Format("StartParam{0}",i), info.StartParams[i].ToString());
                         xmlWriter.WriteAttributeString(string.Format("EndParam{0}", i), info.EndParams[i].ToString());
@@ -1657,7 +1657,7 @@ namespace TerraViewer
 
             // TODO Add files that were loaded for display..
 
-            foreach (Overlay overlay in overlays)
+            foreach (var overlay in overlays)
             {
                 overlay.AddFilesToCabinet(fc);
             }
@@ -1667,7 +1667,7 @@ namespace TerraViewer
         internal static TourStop FromXml(TourDocument owner, System.Xml.XmlNode tourStop)
         {
 
-            TourStop newTourStop = new TourStop();
+            var newTourStop = new TourStop();
             newTourStop.owner = owner;
 
             newTourStop.Id = tourStop.Attributes["Id"].Value.ToString();
@@ -2213,7 +2213,7 @@ namespace TerraViewer
 
             foreach (XmlNode child in animationTargetsNode.ChildNodes)
             {
-                AnimationTarget aniTarget = new AnimationTarget(this);
+                var aniTarget = new AnimationTarget(this);
                 aniTarget.FromXml(child);
                 AnimationTargets.Add(aniTarget);
 
@@ -2240,12 +2240,12 @@ namespace TerraViewer
         {
             foreach (XmlNode layer in layersNode)
             {
-                LayerInfo info = new LayerInfo();
+                var info = new LayerInfo();
                 info.ID = new Guid(layer.InnerText);
                 info.StartOpacity = Convert.ToSingle(layer.Attributes["StartOpacity"].Value);
                 info.EndOpacity = Convert.ToSingle(layer.Attributes["EndOpacity"].Value);
 
-                int len = 0;
+                var len = 0;
                 if (layer.Attributes["ParamCount"] != null)
                 {
                     len = Convert.ToInt32(layer.Attributes["ParamCount"].Value);
@@ -2254,7 +2254,7 @@ namespace TerraViewer
                 info.EndParams = new double[len];
                 info.FrameParams = new double[len];
 
-                for (int i = 0; i < len; i++)
+                for (var i = 0; i < len; i++)
                 {
                     info.StartParams[i] = double.Parse(layer.Attributes[string.Format("StartParam{0}", i)].Value);
                     info.EndParams[i] = double.Parse(layer.Attributes[string.Format("EndParam{0}", i)].Value);
@@ -2267,12 +2267,12 @@ namespace TerraViewer
 
         public string GetNextDefaultName(string baseName)
         {
-            int suffixId = 1;
-            foreach (Overlay overlay in overlays)
+            var suffixId = 1;
+            foreach (var overlay in overlays)
             {
                 if (overlay.Name.StartsWith(baseName))
                 {
-                    int id = 0;
+                    var id = 0;
                     try
                     {
                         id = Convert.ToInt32(overlay.Name.Substring(baseName.Length));
@@ -2297,12 +2297,12 @@ namespace TerraViewer
         {
             if (!KeyFramed)
             {
-                foreach (LayerInfo info in Layers.Values)
+                foreach (var info in Layers.Values)
                 {
                     info.FrameOpacity = info.StartOpacity * (1 - tweenPosition) + info.EndOpacity * tweenPosition;
-                    int len = info.StartParams.Length;
+                    var len = info.StartParams.Length;
                     info.FrameParams = new double[len];
-                    for (int i = 0; i < len; i++)
+                    for (var i = 0; i < len; i++)
                     {
                         info.FrameParams[i] = info.StartParams[i] * (1 - tweenPosition) + info.EndParams[i] * tweenPosition;
                     }
@@ -2321,7 +2321,7 @@ namespace TerraViewer
         {
             get
             {
-                SettingParameter sp = GetSetting(StockSkyOverlayTypes.ConstellationFigures);
+                var sp = GetSetting(StockSkyOverlayTypes.ConstellationFigures);
                 return sp.Filter;
             }
         }
@@ -2332,7 +2332,7 @@ namespace TerraViewer
         {
             get
             {
-                SettingParameter sp = GetSetting(StockSkyOverlayTypes.ConstellationBoundaries);
+                var sp = GetSetting(StockSkyOverlayTypes.ConstellationBoundaries);
                 return sp.Filter;
             }
         }
@@ -2342,7 +2342,7 @@ namespace TerraViewer
         {
             get
             {
-                SettingParameter sp = GetSetting(StockSkyOverlayTypes.ConstellationNames);
+                var sp = GetSetting(StockSkyOverlayTypes.ConstellationNames);
                 return sp.Filter;
             }
         }
@@ -2353,7 +2353,7 @@ namespace TerraViewer
         {
             get
             {
-                SettingParameter sp = GetSetting(StockSkyOverlayTypes.ConstellationPictures);
+                var sp = GetSetting(StockSkyOverlayTypes.ConstellationPictures);
                 return sp.Filter;
 
                // return constellationArtFilter;
@@ -2366,7 +2366,7 @@ namespace TerraViewer
         internal void ExtendTimeline(TimeSpan oldDuration, TimeSpan newDuration)
         {
             Duration = newDuration;
-            foreach (AnimationTarget at in AnimationTargets)
+            foreach (var at in AnimationTargets)
             {
                 at.ExtendTimeline(oldDuration, newDuration);
             }
@@ -2386,9 +2386,9 @@ namespace TerraViewer
 
     public class UndoTourStopChange : TerraViewer.IUndoStep
     {
-        string undoXml = "";
+        readonly string undoXml = "";
         string redoXml = "";
-        int currentIndex = 0;
+        readonly int currentIndex;
         string actionText = "";
 
         public string ActionText
@@ -2396,7 +2396,8 @@ namespace TerraViewer
             get { return actionText; }
             set { actionText = value; }
         }
-        TourDocument targetTour = null;
+
+        readonly TourDocument targetTour;
         public UndoTourStopChange(string text, TourDocument tour)
         {
             currentIndex = tour.CurrentTourstopIndex;
@@ -2409,8 +2410,8 @@ namespace TerraViewer
 
         public void Undo()
         {
-            TourStop tsRedo = targetTour.TourStops[currentIndex];
-            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+            var tsRedo = targetTour.TourStops[currentIndex];
+            var doc = new System.Xml.XmlDocument();
             doc.LoadXml(undoXml);
             System.Xml.XmlNode node = doc["TourStop"];
             targetTour.TourStops[currentIndex] = TourStop.FromXml(targetTour, node);
@@ -2428,7 +2429,7 @@ namespace TerraViewer
 
         public void Redo()
         {
-            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+            var doc = new System.Xml.XmlDocument();
 
             doc.LoadXml(redoXml);
             System.Xml.XmlNode node = doc["TourStop"];

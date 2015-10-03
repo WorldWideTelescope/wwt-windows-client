@@ -16,7 +16,7 @@ namespace TerraViewer
             set { frames = value; }
         }
 
-        OrbitLayerUI primaryUI = null;
+        OrbitLayerUI primaryUI;
         public override LayerUI GetPrimaryUI()
         {
             if (primaryUI == null)
@@ -33,7 +33,7 @@ namespace TerraViewer
 
         public override void CleanUp()
         {
-            foreach (ReferenceFrame frame in frames)
+            foreach (var frame in frames)
             {
                 if (frame.Orbit != null)
                 {
@@ -87,7 +87,7 @@ namespace TerraViewer
 
         public override double[] GetParams()
         {
-            double[] paramList = new double[6];
+            var paramList = new double[6];
             paramList[0] = pointOpacity;
             paramList[1] = Color.R / 255;
             paramList[2] = Color.G / 255;
@@ -115,7 +115,7 @@ namespace TerraViewer
             {
                 pointOpacity = paramList[0];
                 Opacity = (float)paramList[5];
-                Color color = Color.FromArgb((int)(paramList[4] * 255), (int)(paramList[1] * 255), (int)(paramList[2] * 255), (int)(paramList[3] * 255));
+                var color = Color.FromArgb((int)(paramList[4] * 255), (int)(paramList[1] * 255), (int)(paramList[2] * 255), (int)(paramList[3] * 255));
                 Color = color;
                 
             }
@@ -132,10 +132,10 @@ namespace TerraViewer
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
-            Matrix3d matSaved = renderContext.World;
+            var matSaved = renderContext.World;
             renderContext.World = renderContext.WorldBaseNonRotating;
 
-            foreach (ReferenceFrame frame in frames)
+            foreach (var frame in frames)
             {
                 if (frame.ShowOrbitPath)
                 {
@@ -154,13 +154,13 @@ namespace TerraViewer
 
         public override void AddFilesToCabinet(FileCabinet fc)
         {
-            string fName = filename;
+            var fName = filename;
 
-            bool copy = true;
+            var copy = true;
 
-            string fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID, this.ID.ToString());
-            string path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
-            string path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID, this.ID.ToString());
+            var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
+            var path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
 
             if (copy)
             {
@@ -188,13 +188,13 @@ namespace TerraViewer
             filename = path;
             if (File.Exists(filename))
             {
-                string[] data = File.ReadAllLines(path);
+                var data = File.ReadAllLines(path);
                 frames.Clear();
-                for (int i = 0; i < data.Length; i += 2)
+                for (var i = 0; i < data.Length; i += 2)
                 {
-                    int line1 = i;
-                    int line2 = i + 1;
-                    ReferenceFrame frame = new ReferenceFrame();
+                    var line1 = i;
+                    var line2 = i + 1;
+                    var frame = new ReferenceFrame();
                     if (data[i].Substring(0, 1) != "1")
                     {
                         line1++;
@@ -230,14 +230,14 @@ namespace TerraViewer
 
     public class OrbitLayerUI : LayerUI
     {
-        OrbitLayer layer = null;
+        readonly OrbitLayer layer;
         bool opened = true;
 
         public OrbitLayerUI(OrbitLayer layer)
         {
             this.layer = layer;
         }
-        IUIServicesCallbacks callbacks = null;
+        IUIServicesCallbacks callbacks;
 
         public override void SetUICallbacks(IUIServicesCallbacks callbacks)
         {
@@ -253,11 +253,11 @@ namespace TerraViewer
 
         public override List<LayerUITreeNode> GetTreeNodes()
         {
-            List<LayerUITreeNode> nodes = new List<LayerUITreeNode>();
-            foreach (ReferenceFrame frame in layer.Frames)
+            var nodes = new List<LayerUITreeNode>();
+            foreach (var frame in layer.Frames)
             {
 
-                LayerUITreeNode node = new LayerUITreeNode();
+                var node = new LayerUITreeNode();
                 node.Name = frame.Name;
 
 
@@ -272,7 +272,7 @@ namespace TerraViewer
 
         void node_NodeChecked(LayerUITreeNode node, bool newState)
         {
-            ReferenceFrame frame = (ReferenceFrame)node.Tag;
+            var frame = (ReferenceFrame)node.Tag;
 
             if (frame != null)
             {
@@ -286,9 +286,9 @@ namespace TerraViewer
         {
             if (callbacks != null)
             {
-                ReferenceFrame frame = (ReferenceFrame)node.Tag;
+                var frame = (ReferenceFrame)node.Tag;
 
-                Dictionary<String, String> rowData = new Dictionary<string, string>();
+                var rowData = new Dictionary<string, string>();
 
                 rowData.Add("Name", frame.Name);
                 rowData.Add("SemiMajor Axis", frame.SemiMajorAxis.ToString());

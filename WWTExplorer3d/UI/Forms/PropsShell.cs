@@ -62,8 +62,8 @@ namespace TerraViewer
 
         private void BuildTabs()
         {
-            int count = Controls.Count;
-            int i = 0;
+            var count = Controls.Count;
+            var i = 0;
             // Remove any old controls
             for (i = 0; i < count; i++)
             {
@@ -74,8 +74,8 @@ namespace TerraViewer
                 }
             }
 
-            int tabCount = 0;
-            foreach (WizPropPageElement page in Target.Pages)
+            var tabCount = 0;
+            foreach (var page in Target.Pages)
             {
                 if (!page.WizardOnly && page.Visible)
                 {
@@ -85,7 +85,7 @@ namespace TerraViewer
 
             tabs = new Tab[tabCount];
             i = 0;
-            foreach (WizPropPageElement page in Target.Pages)
+            foreach (var page in Target.Pages)
             {
                 if (!page.WizardOnly && page.Visible)
                 {
@@ -100,7 +100,7 @@ namespace TerraViewer
             this.Controls.AddRange(tabs);
             tabs[0].Selected = true;
 
-            foreach (Tab tab in tabs)
+            foreach (var tab in tabs)
             {
                 tab.BringToFront();
             }
@@ -108,14 +108,14 @@ namespace TerraViewer
 
         void PropsShell_Click(object sender, EventArgs e)
         {
-            Tab tab = sender as Tab;
+            var tab = sender as Tab;
 
             if (tab == null)
             {
                 return;
             }
 
-            WizPropPageElement page = tab.Tag as WizPropPageElement;
+            var page = tab.Tag as WizPropPageElement;
 
             if (page == null)
             {
@@ -124,7 +124,7 @@ namespace TerraViewer
 
             tab.Selected = true;
 
-            foreach (Tab item in tabs)
+            foreach (var item in tabs)
             {
                 if (item != sender)
                 {
@@ -135,7 +135,7 @@ namespace TerraViewer
             ShowTab(page);
         }
 
-        PropPage currentPage = null;
+        PropPage currentPage;
         private void ShowTab(WizPropPageElement element)
         {
 
@@ -147,7 +147,7 @@ namespace TerraViewer
             }
 
 
-            PropPage page = (PropPage)Activator.CreateInstance(element.Page);
+            var page = (PropPage)Activator.CreateInstance(element.Page);
             page.Top = this.Contents.Top;
             page.Left = this.Contents.Left;
             page.Binding = target;
@@ -175,9 +175,9 @@ namespace TerraViewer
         }
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
-            Pen p = new Pen(Color.FromArgb(71, 84, 108));
+            var p = new Pen(Color.FromArgb(71, 84, 108));
             g.FillRectangle(b, this.ClientRectangle);
             g.DrawRectangle(p, new Rectangle(0, ClientSize.Height - 1, ClientSize.Width - 1, ClientSize.Height - 1));
             p.Dispose();

@@ -171,7 +171,7 @@ namespace TerraViewer
 
         public virtual double[] GetParams()
         {
-            double[] paramList = new double[5];
+            var paramList = new double[5];
             paramList[0] = color.R/255;
             paramList[1] = color.G/255;
             paramList[2] = color.B/255;
@@ -253,12 +253,12 @@ namespace TerraViewer
 
         public bool SetProp(string name, string value)
         {
-            Type thisType = this.GetType();
-            PropertyInfo pi = thisType.GetProperty(name);
-            bool safeToSet = false;
-            Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var thisType = this.GetType();
+            var pi = thisType.GetProperty(name);
+            var safeToSet = false;
+            var layerPropType = typeof(LayerProperty);
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var var in attributes)
             {
                 if (var.GetType() == layerPropType)
                 {
@@ -294,7 +294,7 @@ namespace TerraViewer
 
         public bool SetProps(string xml)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(xml);
 
 
@@ -318,12 +318,12 @@ namespace TerraViewer
 
         public string GetProp(string name)
         {
-            Type thisType = this.GetType();
-            PropertyInfo pi = thisType.GetProperty(name);
-            bool safeToGet = false;
-            Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var thisType = this.GetType();
+            var pi = thisType.GetProperty(name);
+            var safeToGet = false;
+            var layerPropType = typeof(LayerProperty);
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var var in attributes)
             {
                 if (var.GetType() == layerPropType)
                 {
@@ -343,8 +343,8 @@ namespace TerraViewer
 
         public string GetProps()
         {
-            MemoryStream ms = new MemoryStream();
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
+            var ms = new MemoryStream();
+            using (var xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
@@ -354,17 +354,17 @@ namespace TerraViewer
                 xmlWriter.WriteAttributeString("Class", this.GetType().ToString().Replace("TerraViewer.",""));
 
 
-                Type thisType = this.GetType();
-                PropertyInfo[] properties = thisType.GetProperties();
+                var thisType = this.GetType();
+                var properties = thisType.GetProperties();
 
-                Type layerPropType = typeof(LayerProperty);
+                var layerPropType = typeof(LayerProperty);
 
-                foreach (PropertyInfo pi in properties)
+                foreach (var pi in properties)
                 {
-                    bool safeToGet = false;
+                    var safeToGet = false;
 
-                    object[] attributes = pi.GetCustomAttributes(false);
-                    foreach (object var in attributes)
+                    var attributes = pi.GetCustomAttributes(false);
+                    foreach (var var in attributes)
                     {
                         if (var.GetType() == layerPropType)
                         {
@@ -384,7 +384,7 @@ namespace TerraViewer
                 xmlWriter.Close();
 
             }
-            byte[] data = ms.GetBuffer();
+            var data = ms.GetBuffer();
             return Encoding.UTF8.GetString(data);
 
         }
@@ -417,12 +417,12 @@ namespace TerraViewer
         {
             get
             {
-                SavedColor saveCol = new SavedColor(color.ToArgb());
+                var saveCol = new SavedColor(color.ToArgb());
                 return saveCol.Save();
             }
             set
             {
-                Color newVal = SavedColor.Load(value);
+                var newVal = SavedColor.Load(value);
 
                 if (color != newVal)
                 {
@@ -493,11 +493,11 @@ namespace TerraViewer
         
         internal static Layer FromXml(System.Xml.XmlNode layerNode, bool someFlag)
         {
-            string layerClassName = layerNode.Attributes["Type"].Value.ToString();
+            var layerClassName = layerNode.Attributes["Type"].Value.ToString();
 
-            Type overLayType = Type.GetType(layerClassName);
+            var overLayType = Type.GetType(layerClassName);
 
-            Layer newLayer = (Layer)System.Activator.CreateInstance(overLayType);
+            var newLayer = (Layer)System.Activator.CreateInstance(overLayType);
             newLayer.FromXml(layerNode);
             return newLayer;
         }

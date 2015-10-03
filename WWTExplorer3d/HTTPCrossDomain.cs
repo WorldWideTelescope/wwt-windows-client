@@ -30,13 +30,13 @@ namespace TerraViewer
         public override void ProcessRequest(string request, ref Socket socket, bool authenticated, string body)
         {
 
-            QueryString query = new QueryString(request);
+            var query = new QueryString(request);
 
-            String sMimeType = "text/xml";
+            var sMimeType = "text/xml";
 
-            string fileName = request.Substring(request.LastIndexOf("/")+1);
+            var fileName = request.Substring(request.LastIndexOf("/")+1);
 
-            String data = "<?xml version = \"1.0\" encoding=\"utf-8\"?>" +
+            var data = "<?xml version = \"1.0\" encoding=\"utf-8\"?>" +
                             "<access-policy>" +
                             "<cross-domain-access>" +
                             "<policy>" +

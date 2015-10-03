@@ -31,11 +31,11 @@ namespace TerraViewer
 
         public override void ProcessRequest(string request, ref Socket socket, bool authenticated, string body)
         {
-            QueryString query = new QueryString(request);
+            var query = new QueryString(request);
 
-            String sMimeType = "_Text/xml";
+            var sMimeType = "_Text/xml";
 
-            String data = XmlRpcMethod.DispatchRpcCall(body);
+            var data = XmlRpcMethod.DispatchRpcCall(body);
             SendHeaderAndData(data, ref socket, sMimeType);
         }
     }
@@ -43,7 +43,7 @@ namespace TerraViewer
 
     public class SampCoordPointAtSky : SampMessageHandler
     {
-        CoordPointAtSkyDelegate coordPointAtSky;
+        readonly CoordPointAtSkyDelegate coordPointAtSky;
         public SampCoordPointAtSky(CoordPointAtSkyDelegate callback)
         {
             Name = "coord.pointAt.sky";
@@ -68,7 +68,7 @@ namespace TerraViewer
 
     public class SampTableLoadVoTable : SampMessageHandler
     {
-        TableLoadVoTableDelegate tableLoadVoTable;
+        readonly TableLoadVoTableDelegate tableLoadVoTable;
         public SampTableLoadVoTable(TableLoadVoTableDelegate callback)
         {
             Name = "table.load.votable";
@@ -77,15 +77,15 @@ namespace TerraViewer
 
         public override string Dispatch(XmlNode node)
         {
-            string url = node.SelectSingleNode("value/struct/member[name='url']")["value"].InnerText;
-            string id = "";
-            XmlNode idNode = node.SelectSingleNode("value/struct/member[name='table-id']");
+            var url = node.SelectSingleNode("value/struct/member[name='url']")["value"].InnerText;
+            var id = "";
+            var idNode = node.SelectSingleNode("value/struct/member[name='table-id']");
             if (idNode != null)
             {
                 id = idNode["value"].InnerText;
             }
-            XmlNode nameNode = node.SelectSingleNode("value/struct/member[name='name']");
-            string name = "";
+            var nameNode = node.SelectSingleNode("value/struct/member[name='name']");
+            var name = "";
             if (nameNode != null)
             {
                 name = nameNode["value"].InnerText;
@@ -102,7 +102,7 @@ namespace TerraViewer
 
     public class SampTableHighlightRow : SampMessageHandler
     {
-        TableHighlightRowDelegate tableHighlightRow;
+        readonly TableHighlightRowDelegate tableHighlightRow;
         public SampTableHighlightRow(TableHighlightRowDelegate callback)
         {
             Name = "table.highlight.row";
@@ -111,7 +111,7 @@ namespace TerraViewer
 
         public override string Dispatch(XmlNode node)
         {
-            string url = "";
+            var url = "";
             try
             {
                 if (node.SelectSingleNode("value/struct/member[name='url']") != null)
@@ -125,14 +125,14 @@ namespace TerraViewer
             }
 
             string id = null;
-            XmlNode idNode = node.SelectSingleNode("value/struct/member[name='table-id']");
+            var idNode = node.SelectSingleNode("value/struct/member[name='table-id']");
             if (idNode != null)
             {
                 id = idNode["value"].InnerText;
             }
-            XmlNode nameNode = node.SelectSingleNode("value/struct/member[name='row']");
-            int row = 0;
-            bool valid = false;
+            var nameNode = node.SelectSingleNode("value/struct/member[name='row']");
+            var row = 0;
+            var valid = false;
             if (nameNode != null)
             {
                 try
@@ -158,7 +158,7 @@ namespace TerraViewer
     public delegate void ImageLoadFitsDelegate(string url, string id, string name);
     public class SampImageLoadFits : SampMessageHandler
     {
-        ImageLoadFitsDelegate imageLoadFits;
+        readonly ImageLoadFitsDelegate imageLoadFits;
         public SampImageLoadFits(ImageLoadFitsDelegate callback)
         {
             Name = "image.load.fits";
@@ -167,15 +167,15 @@ namespace TerraViewer
 
         public override string Dispatch(XmlNode node)
         {
-            string url = node.SelectSingleNode("value/struct/member[name='url']")["value"].InnerText;
-            string id = "";
-            XmlNode idNode = node.SelectSingleNode("value/struct/member[name='image-id']");
+            var url = node.SelectSingleNode("value/struct/member[name='url']")["value"].InnerText;
+            var id = "";
+            var idNode = node.SelectSingleNode("value/struct/member[name='image-id']");
             if (idNode != null)
             {
                 id = idNode["value"].InnerText;
             }
-            XmlNode nameNode = node.SelectSingleNode("value/struct/member[name='name']");
-            string name = "";
+            var nameNode = node.SelectSingleNode("value/struct/member[name='name']");
+            var name = "";
             if (nameNode != null)
             {
                 name = nameNode["value"].InnerText;
@@ -191,7 +191,7 @@ namespace TerraViewer
     {
         public string Name;
         abstract public string Dispatch(XmlNode node);
-        static Dictionary<String, SampMessageHandler> SampHandlerMap = new Dictionary<string, SampMessageHandler>();
+        static readonly Dictionary<String, SampMessageHandler> SampHandlerMap = new Dictionary<string, SampMessageHandler>();
         public static void RegiseterMessage(SampMessageHandler handler)
         {
             SampHandlerMap.Add(handler.Name, handler);
@@ -199,8 +199,8 @@ namespace TerraViewer
 
         public static string DispatchHandler(XmlNode node)
         {
-            XmlNode messageNode = node.SelectSingleNode("params/param/value/struct/member[name='samp.mtype']");
-            string mType = messageNode["value"].InnerText;
+            var messageNode = node.SelectSingleNode("params/param/value/struct/member[name='samp.mtype']");
+            var mType = messageNode["value"].InnerText;
 
             if (SampHandlerMap.ContainsKey(mType))
             {
@@ -235,7 +235,7 @@ namespace TerraViewer
 
         }
         abstract public string Dispatch(XmlNode node);
-        static Dictionary<string, XmlRpcMethod> RpcDispatchMap = new Dictionary<string, XmlRpcMethod>();
+        static readonly Dictionary<string, XmlRpcMethod> RpcDispatchMap = new Dictionary<string, XmlRpcMethod>();
         public static void RegisterDispatchMap(XmlRpcMethod method)
         {
             RpcDispatchMap.Add(method.Name, method);
@@ -243,16 +243,16 @@ namespace TerraViewer
 
         public static string DispatchRpcCall(string data)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(data);
 
             XmlNode nodeMethod = doc["methodCall"];
 
-            string methodName = nodeMethod["methodName"].InnerText;
+            var methodName = nodeMethod["methodName"].InnerText;
 
             if (RpcDispatchMap.ContainsKey(methodName))
             {
-                XmlRpcMethod method = RpcDispatchMap[methodName];
+                var method = RpcDispatchMap[methodName];
                 return method.Dispatch(nodeMethod);
             }
             return "<?xml version='1.0' encoding='UTF-8'?>\r\n<methodResponse>\r\n<params>\r\n<param>\r\n<value></value>\r\n</param>\r\n</params>\n</methodResponse>\r\n";

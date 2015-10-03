@@ -129,7 +129,7 @@ namespace TerraViewer
 
         private void Classification_Click(object sender, EventArgs e)
         {
-            TaxonomyTree treeEdit = new TaxonomyTree();
+            var treeEdit = new TaxonomyTree();
             treeEdit.Taxonomy = ClassificationText.Text;
 
             if (treeEdit.ShowDialog() == DialogResult.OK)
@@ -141,7 +141,7 @@ namespace TerraViewer
 
         private void ImportAuthorImage_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
+            var openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(486, "Image Files")+"(*.BMP;*.JPG;*.PNG;*.TIF)|*.BMP;*.JPG;*.PNG;*.TIF;*.TIFF|All files (*.*)|*.*";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
@@ -169,7 +169,7 @@ namespace TerraViewer
         public bool authorImageNeeded = false;
         private void ValidateDataComplete()
         {
-            bool okEnabled = true;
+            var okEnabled = true;
 
             if (String.IsNullOrEmpty(tourTitleTextbox.Text) || tourTitleTextbox.Text == Language.GetLocalizedText(485, "Please enter a title for the tour..."))
             {

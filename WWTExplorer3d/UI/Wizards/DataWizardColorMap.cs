@@ -21,7 +21,7 @@ namespace TerraViewer
             this.label1.Text = Language.GetLocalizedText(835, "Color Map Column");
             this.label2.Text = Language.GetLocalizedText(833, "A color map allows you to vary the color of a marker based on the value of a a selected column using colors for discrete domain values, selecting colors to represent ranges, or using gradients to map a range of colors smoothly to a range of values.");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {
@@ -63,7 +63,7 @@ namespace TerraViewer
         {
             if (e.Index > -1)
             {
-                DomainValue value = (DomainValue)domainList.Items[e.Index];
+                var value = (DomainValue)domainList.Items[e.Index];
                 e.DrawBackground();
                 e.Graphics.DrawString(value.Text, UiTools.StandardRegular, UiTools.StadardTextBrush, new PointF(e.Bounds.X + 2, e.Bounds.Y + 8));
                 Brush backGround = new SolidBrush(Color.FromArgb(value.MarkerIndex));
@@ -71,7 +71,7 @@ namespace TerraViewer
                 backGround.Dispose();
                 if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
                 {
-                    Rectangle rect = e.Bounds;
+                    var rect = e.Bounds;
                     rect.Inflate(-1, -1);
                     e.Graphics.DrawRectangle(Pens.Yellow, rect);
                 }
@@ -95,7 +95,7 @@ namespace TerraViewer
                     layer.ColorMapColumn = ColorMapColumn.SelectedIndex - 1;
                     layer.MakeColorDomainValues();
                 }
-                foreach (DomainValue val in layer.ColorDomainValues.Values)
+                foreach (var val in layer.ColorDomainValues.Values)
                 {
                     domainList.Items.Add(val);
                 }
@@ -129,9 +129,9 @@ namespace TerraViewer
 
         private void domainList_DoubleClick(object sender, EventArgs e)
         {
-            DomainValue val = (DomainValue)domainList.SelectedItem;
+            var val = (DomainValue)domainList.SelectedItem;
 
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 

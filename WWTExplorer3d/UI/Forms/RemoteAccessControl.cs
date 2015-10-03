@@ -39,7 +39,7 @@ namespace TerraViewer
             //todo Load accept/Reject lists
 
 
-            string[] parts = ipTarget.Split(new char[] { '.' });
+            var parts = ipTarget.Split(new char[] { '.' });
 
             if (parts.Length == 4)
             {
@@ -57,7 +57,7 @@ namespace TerraViewer
 
         private void Accept_Click(object sender, EventArgs e)
         {
-            string ip = ipPart1.Text + "." + ipPart2.Text + "." + ipPart3.Text + "." + ipPart4.Text;
+            var ip = ipPart1.Text + "." + ipPart2.Text + "." + ipPart3.Text + "." + ipPart4.Text;
 
             if (!AcceptList.Items.Contains(ip))
             {
@@ -90,9 +90,9 @@ namespace TerraViewer
             DialogResult = DialogResult.OK;
 
             //Save the white list
-            StringBuilder sb = new StringBuilder();
-            bool first = true;
-            foreach (object ip in AcceptList.Items)
+            var sb = new StringBuilder();
+            var first = true;
+            foreach (var ip in AcceptList.Items)
             {
                 if (first)
                 {
@@ -120,7 +120,7 @@ namespace TerraViewer
         {
             if (ipPart1.Text.Contains("."))
             {
-                string[] parts = ipPart1.Text.Split(new char[] { '.' });
+                var parts = ipPart1.Text.Split(new char[] { '.' });
                 if (parts.Length == 4)
                 {
                     ipPart1.Text = parts[0].Trim();
@@ -131,8 +131,8 @@ namespace TerraViewer
                 }
             }
             // Filter all but numbers and WildCard
-            string text = "";
-            foreach (char c in ipPart1.Text)
+            var text = "";
+            foreach (var c in ipPart1.Text)
             {
                 if (char.IsNumber(c) || c == '*')
                 {
@@ -156,8 +156,8 @@ namespace TerraViewer
                 ipPart3.Text = "*";
             }
             // Filter all but numbers and WildCard
-            string text = "";
-            foreach (char c in ipPart2.Text)
+            var text = "";
+            foreach (var c in ipPart2.Text)
             {
                 if (char.IsNumber(c) || c == '*')
                 {
@@ -178,8 +178,8 @@ namespace TerraViewer
                 ipPart4.Text = "*";
             }
             // Filter all but numbers and WildCard
-            string text = "";
-            foreach (char c in ipPart3.Text)
+            var text = "";
+            foreach (var c in ipPart3.Text)
             {
                 if (char.IsNumber(c) || c == '*')
                 {
@@ -194,8 +194,8 @@ namespace TerraViewer
 
         private void ipPart4_TextChanged(object sender, EventArgs e)
         {  // Filter all but numbers and WildCard
-            string text = "";
-            foreach (char c in ipPart4.Text)
+            var text = "";
+            foreach (var c in ipPart4.Text)
             {
                 if (char.IsNumber(c) || c == '*')
                 {

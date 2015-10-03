@@ -26,7 +26,7 @@ namespace TerraViewer
             this.SaveFigures.Text = Language.GetLocalizedText(168, "Save");
             this.Text = Language.GetLocalizedText(164, "Constellation Figure Editor");
         }
-        bool initialized = false;
+        bool initialized;
         private void ConstellationFigureEditor_Load(object sender, EventArgs e)
         {
             if (figures != null)
@@ -41,14 +41,14 @@ namespace TerraViewer
 
             if (figures != null)
             {
-                foreach (Lineset ls in figures.lines)
+                foreach (var ls in figures.lines)
                 {
-                    TreeNode parent = figureTree.Nodes.Add(Constellations.FullName(ls.Name));
+                    var parent = figureTree.Nodes.Add(Constellations.FullName(ls.Name));
                     parent.Tag = ls;
 
-                    foreach (Linepoint pnt in ls.Points)
+                    foreach (var pnt in ls.Points)
                     {
-                        TreeNode child = parent.Nodes.Add( pnt.ToString());
+                        var child = parent.Nodes.Add( pnt.ToString());
                         child.Tag = pnt;
                         child.Checked = pnt.PointType != PointType.Move;
                     }
@@ -71,9 +71,9 @@ namespace TerraViewer
             {
                 if (e.Node.Tag is Linepoint)
                 {
-                    Linepoint lp = (Linepoint)e.Node.Tag;
+                    var lp = (Linepoint)e.Node.Tag;
                     //((Convert.ToDouble(line.Substring(0, 10)) / 24.0 * 360) - 180)
-                    TourPlace p = new TourPlace(lp.ToString(), (lp.RA + 180) / 360 * 24, lp.Dec, Classification.Unidentified, "", ImageSetType.Sky, -1);
+                    var p = new TourPlace(lp.ToString(), (lp.RA + 180) / 360 * 24, lp.Dec, Classification.Unidentified, "", ImageSetType.Sky, -1);
                     p.Distance = 1.0;
                     //Earth3d.MainWindow.SetLabelText(lp.ToString(), (lp.RA + 180) / 360 * 24, lp.Dec, 1.0);
                     Constellations.SelectedSegment = lp;
@@ -99,16 +99,16 @@ namespace TerraViewer
 
             if (e.Node.Tag != null && e.Node.Tag is Linepoint)
             {
-                Linepoint lp = (Linepoint)e.Node.Tag;
+                var lp = (Linepoint)e.Node.Tag;
 
                 lp.PointType = e.Node.Checked ? PointType.Line : PointType.Move;
 
                 e.Node.Text = lp.ToString();
                 
-                TreeNode parent = figureTree.SelectedNode.Parent;
+                var parent = figureTree.SelectedNode.Parent;
                 if (parent != null)
                 {
-                    Lineset ls = (Lineset)parent.Tag;
+                    var ls = (Lineset)parent.Tag;
                     Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
                 }
             }
@@ -135,9 +135,9 @@ namespace TerraViewer
         {
             if (figureTree.SelectedNode.Tag != null && figureTree.SelectedNode.Tag is Linepoint)
             {
-                TreeNode parent = figureTree.SelectedNode.Parent;
+                var parent = figureTree.SelectedNode.Parent;
 
-                Lineset ls = (Lineset)parent.Tag;
+                var ls = (Lineset)parent.Tag;
 
                 ls.Points.Remove((Linepoint)figureTree.SelectedNode.Tag);
                 parent.Nodes.Remove(figureTree.SelectedNode);
@@ -147,7 +147,7 @@ namespace TerraViewer
             {
                 if (MessageBox.Show(Language.GetLocalizedText(169, "This will remove all points from the selected constellation.\nAre you sure you want to do this?"), Language.GetLocalizedText(170, "Confirm Delete all Constellation Points"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    Lineset ls = (Lineset)figureTree.SelectedNode.Tag;
+                    var ls = (Lineset)figureTree.SelectedNode.Tag;
                     ls.Points.Clear();
                     figureTree.SelectedNode.Nodes.Clear();
                     Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
@@ -164,9 +164,9 @@ namespace TerraViewer
 
         private void AddFigurePoint()
         {
-            TreeNode parent = figureTree.SelectedNode.Parent;
+            var parent = figureTree.SelectedNode.Parent;
 
-            Lineset ls = (Lineset)parent.Tag;
+            var ls = (Lineset)parent.Tag;
 
             ls.Points.Remove((Linepoint)figureTree.SelectedNode.Tag);
             parent.Nodes.Remove(figureTree.SelectedNode);
@@ -185,7 +185,7 @@ namespace TerraViewer
                 DeletePoint.Enabled = true;
             }
         }
-        ContextMenuStrip contextMenu = null;
+        ContextMenuStrip contextMenu;
 
         private void figureTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -199,14 +199,14 @@ namespace TerraViewer
             if (e.Button == MouseButtons.Right)
             {
                 contextMenu = new ContextMenuStrip();
-                ToolStripMenuItem deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+                var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
                 deleteMenu.Click += new EventHandler(deleteMenu_Click);
                 contextMenu.Items.Add(deleteMenu);
                 contextMenu.Show(Cursor.Position);
             }
             else if (e.Node.Tag is Lineset)
             {
-                Lineset ls = (Lineset)figureTree.SelectedNode.Tag;
+                var ls = (Lineset)figureTree.SelectedNode.Tag;
 
                 Earth3d.MainWindow.GotoTarget(Constellations.ConstellationCentroids[ls.Name], false, false, true);
             }
@@ -229,16 +229,16 @@ namespace TerraViewer
         internal void AddFigurePoint(IPlace place)
         {
             TreeNode parent;
-            Linepoint pnt = new Linepoint(place.RA * 15 - 180, place.Dec, PointType.Line, place.Name != Language.GetLocalizedText(90, "No Object") ? place.Name : null);
+            var pnt = new Linepoint(place.RA * 15 - 180, place.Dec, PointType.Line, place.Name != Language.GetLocalizedText(90, "No Object") ? place.Name : null);
             if (figureTree.SelectedNode.Tag is Linepoint)
             {
                 parent = figureTree.SelectedNode.Parent;
 
-                Lineset ls = (Lineset)parent.Tag;
+                var ls = (Lineset)parent.Tag;
 
-                Linepoint lp = (Linepoint)figureTree.SelectedNode.Tag;
+                var lp = (Linepoint)figureTree.SelectedNode.Tag;
 
-                int index = ls.Points.FindIndex(delegate(Linepoint target) { return target == lp; }) + 1;
+                var index = ls.Points.FindIndex(delegate(Linepoint target) { return target == lp; }) + 1;
 
                 ls.Points.Insert(index, pnt);
 
@@ -259,9 +259,9 @@ namespace TerraViewer
             else
             {
                 parent = figureTree.SelectedNode;
-                Lineset ls = (Lineset)figureTree.SelectedNode.Tag;
+                var ls = (Lineset)figureTree.SelectedNode.Tag;
                 ls.Points.Add( pnt);
-                TreeNode child = parent.Nodes.Add( pnt.ToString());
+                var child = parent.Nodes.Add( pnt.ToString());
                 child.Tag = pnt;
                 child.Checked = pnt.PointType != PointType.Move;
                 figureTree.SelectedNode = child;

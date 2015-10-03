@@ -82,7 +82,7 @@ namespace TerraViewer
 
         public void UpdateMapLinks()
         {
-            foreach (ControlMap map in ControlMaps)
+            foreach (var map in ControlMaps)
             {
                 map.Owner = this;
                 map.BindingA.Parent = map;
@@ -156,7 +156,7 @@ namespace TerraViewer
 
         public void UpdateMapLinks()
         {
-            foreach (ControlMap map in ControlMaps)
+            foreach (var map in ControlMaps)
             {
                 map.Owner = this;
                 map.BindingA.Parent = map;
@@ -242,7 +242,7 @@ namespace TerraViewer
 
         internal bool DispatchMessage(MidiMessage message, int channel, int key, int value)
         {
-            bool currentVal = false;
+            var currentVal = false;
 
             if (ControlType == ControlType.KeyPress && (message == MidiMessage.NoteOff || value == 0))
             {
@@ -316,11 +316,11 @@ namespace TerraViewer
 
         internal bool DispatchMessage(MidiMessage message, int channel, int key, double value)
         {
-            bool currentVal = false;
+            var currentVal = false;
 
-            double normalizedValue = (double)value / 127.0;
-            double scaledValue = Min + (Max - Min) * normalizedValue;
-            int scaledValueInt = (int)scaledValue;
+            var normalizedValue = (double)value / 127.0;
+            var scaledValue = Min + (Max - Min) * normalizedValue;
+            var scaledValueInt = (int)scaledValue;
 
             IScriptable scriptInterface = null;
             switch (TargetType)
@@ -421,7 +421,7 @@ namespace TerraViewer
                             break;
                         case BindingType.Toggle:
                         case BindingType.SyncValue:
-                            string val = scriptInterface.GetProperty(PropertyName);
+                            var val = scriptInterface.GetProperty(PropertyName);
                             if (!string.IsNullOrEmpty(val))
                             {
                                 value = double.Parse(val);
@@ -490,14 +490,14 @@ namespace TerraViewer
 
         public static ButtonGroup FromFile(string filename)
         {
-            ButtonGroup group = new ButtonGroup();
+            var group = new ButtonGroup();
 
             if (File.Exists(filename))
             {
                 try
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(ButtonGroup));
-                    FileStream fs = new FileStream(filename, FileMode.Open);
+                    var serializer = new XmlSerializer(typeof(ButtonGroup));
+                    var fs = new FileStream(filename, FileMode.Open);
 
                     group = (ButtonGroup)serializer.Deserialize(fs);
                    
@@ -521,8 +521,8 @@ namespace TerraViewer
 
         public void Save(string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ButtonGroup));
-            StreamWriter sw = new StreamWriter(filename);
+            var serializer = new XmlSerializer(typeof(ButtonGroup));
+            var sw = new StreamWriter(filename);
 
             serializer.Serialize(sw, this);
 

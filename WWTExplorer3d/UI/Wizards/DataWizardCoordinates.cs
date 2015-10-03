@@ -27,7 +27,7 @@ namespace TerraViewer
             this.raUnitsLabel.Text = Language.GetLocalizedText(817, "Units");
             this.label3.Text = Language.GetLocalizedText(836, "Use the drop-downs to select the columns that specify the coordinates, select the altitude/depth mapping type, and optionally the column that specifies altitude/depth and the units in which the data is specified, Positive depth values offset downward. Positive altitude values offset upward.");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {

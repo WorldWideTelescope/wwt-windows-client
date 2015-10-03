@@ -23,14 +23,14 @@ namespace TerraViewer
             this.EndDateRangeLabel.Text = Language.GetLocalizedText(819, "End Date Range");
             this.beginDateRangeLabel.Text = Language.GetLocalizedText(820, "Begin Date Range");
         }
-        ReferenceFrame frame = null;
+        ReferenceFrame frame;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
         }
         public override bool Save()
         {
-            bool failed = false;
+            var failed = false;
 
            return !failed;
 
@@ -46,17 +46,17 @@ namespace TerraViewer
 
         private void Import_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            var ofd = new OpenFileDialog();
 
             ofd.Filter = Language.GetLocalizedText(821, "Trajectory files") +"  (*.xyz)|*.xyz";
-            bool tryAgain = true;
+            var tryAgain = true;
             while (tryAgain)
             {
                 try
                 {
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        string fileName = ofd.FileName;
+                        var fileName = ofd.FileName;
 
                         frame.ImportTrajectory(fileName);
                         tryAgain = false;

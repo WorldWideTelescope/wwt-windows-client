@@ -191,7 +191,7 @@ namespace ShapefileTools
         public double GetParameter(string name)
         {
             name = name.ToLower();
-            foreach (ProjectionParameter param in Parameters)
+            foreach (var param in Parameters)
             {
                 if (param.Name.ToLower() == name)
                 {

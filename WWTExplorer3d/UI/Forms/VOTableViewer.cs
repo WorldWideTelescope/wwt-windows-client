@@ -15,7 +15,7 @@ namespace TerraViewer
         public VOTableViewer()
         {
             InitializeComponent();
-            String[] typeMarkerValues = Enum.GetNames(typeof(TimeSeriesLayer.PlotTypes));
+            var typeMarkerValues = Enum.GetNames(typeof(TimeSeriesLayer.PlotTypes));
             markerTypeCombo.Items.AddRange(typeMarkerValues);
             markerTypeCombo.SelectedIndex = 0;
 
@@ -68,7 +68,7 @@ namespace TerraViewer
         {
             listView1.Clear();
             listView1.Columns.Clear();
-            foreach (VoColumn col in table.Columns.Values)
+            foreach (var col in table.Columns.Values)
             {
                 listView1.Columns.Add(col.Name);
             }
@@ -85,11 +85,11 @@ namespace TerraViewer
             this.markerTypeCombo.SelectedIndex = (int)layer.PlotType;
 
             // bool star =  plotType.SelectedItem == "Star";
-            VoColumn raColSelect = layer.LngColumn > -1 ? table.Column[layer.LngColumn] : null;
-            VoColumn decColSelect = layer.LatColumn > -1 ? table.Column[layer.LatColumn] : null;
-            VoColumn distColSelect = layer.AltColumn > -1 ? table.Column[layer.AltColumn] : null;
-            VoColumn typeColSelect = layer.MarkerColumn > -1 ? table.Column[layer.MarkerColumn] : null;
-            VoColumn sizeColSelect = layer.SizeColumn > -1 ? table.Column[layer.SizeColumn] : null;
+            var raColSelect = layer.LngColumn > -1 ? table.Column[layer.LngColumn] : null;
+            var decColSelect = layer.LatColumn > -1 ? table.Column[layer.LatColumn] : null;
+            var distColSelect = layer.AltColumn > -1 ? table.Column[layer.AltColumn] : null;
+            var typeColSelect = layer.MarkerColumn > -1 ? table.Column[layer.MarkerColumn] : null;
+            var sizeColSelect = layer.SizeColumn > -1 ? table.Column[layer.SizeColumn] : null;
 
             raSource.Items.Clear();
             decSource.Items.Clear();
@@ -103,8 +103,8 @@ namespace TerraViewer
             typeSource.Items.Add("None");
             sizeSource.Items.Add("None");
 
-            int index = 0;
-            foreach (VoColumn col in table.Columns.Values)
+            var index = 0;
+            foreach (var col in table.Columns.Values)
             {
                 index = raSource.Items.Add(col);
                 if (col == raColSelect)
@@ -146,11 +146,11 @@ namespace TerraViewer
 
         private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            VoRow row = table.Rows[e.ItemIndex];
+            var row = table.Rows[e.ItemIndex];
 
-            string[] data = new string[row.ColumnData.GetLength(0)];
-            int index = 0;
-            foreach (object o in row.ColumnData)
+            var data = new string[row.ColumnData.GetLength(0)];
+            var index = 0;
+            foreach (var o in row.ColumnData)
             {
                 data[index++] = o.ToString();
             }
@@ -174,15 +174,15 @@ namespace TerraViewer
                 listView1.FullRowSelect = true;
                 try
                 {
-                    VoRow row = table.Rows[listView1.SelectedIndices[0]];
+                    var row = table.Rows[listView1.SelectedIndices[0]];
 
                     table.SelectedRow = row;
                     layer.CleanUp();
-                    double ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
-                    double dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
+                    var ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
+                    var dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
                     string id;
 
-                    VoColumn col = table.GetColumnByUcd("meta.id");
+                    var col = table.GetColumnByUcd("meta.id");
                     if (col != null)
                     {
                         id = row[col.Name].ToString();
@@ -192,7 +192,7 @@ namespace TerraViewer
                         id = row[0].ToString();
                     }
 
-                    TourPlace pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
+                    var pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
                     Earth3d.MainWindow.SetLabelText(pl, true);
 
                     if (table.SampId != null)
@@ -211,12 +211,12 @@ namespace TerraViewer
         {
             if (listView1.SelectedIndices.Count > 0)
             {
-                VoRow row = table.Rows[listView1.SelectedIndices[0]];
-                double ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
-                double dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
+                var row = table.Rows[listView1.SelectedIndices[0]];
+                var ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
+                var dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
                 string id;
 
-                VoColumn col = table.GetColumnByUcd("meta.id");
+                var col = table.GetColumnByUcd("meta.id");
                 if (col != null)
                 {
                     id = row[col.Name].ToString();
@@ -226,7 +226,7 @@ namespace TerraViewer
                     id = row[0].ToString();
                 }
 
-                TourPlace pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
+                var pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
                 Earth3d.MainWindow.GotoTarget(pl, false, true, false);
             }
         }
@@ -239,15 +239,15 @@ namespace TerraViewer
                 listView1.FullRowSelect = true;
                 try
                 {
-                    VoRow row = table.Rows[e.Item.Index];
+                    var row = table.Rows[e.Item.Index];
 
                     // double ra = Convert.ToDouble(row[GetRAColumn().Name]) / 15;
                     // double dec = Convert.ToDouble(row[GetDecColumn().Name]);
-                    double ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
-                    double dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
+                    var ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
+                    var dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
                     string id;
 
-                    VoColumn col = table.GetColumnByUcd("meta.id");
+                    var col = table.GetColumnByUcd("meta.id");
                     if (col != null)
                     {
                         id = row[col.Name].ToString();
@@ -257,7 +257,7 @@ namespace TerraViewer
                         id = row[0].ToString();
                     }
 
-                    TourPlace pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
+                    var pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
                     Earth3d.MainWindow.SetLabelText(pl, true);
                 }
                 catch
@@ -273,12 +273,12 @@ namespace TerraViewer
             {
                 try
                 {
-                    VoRow row = table.Rows[listView1.SelectedIndices[0]];
-                    double ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
-                    double dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString().ToString());
+                    var row = table.Rows[listView1.SelectedIndices[0]];
+                    var ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
+                    var dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString().ToString());
                     string id;
 
-                    VoColumn col = table.GetColumnByUcd("meta.id");
+                    var col = table.GetColumnByUcd("meta.id");
                     if (col != null)
                     {
                         id = row[col.Name].ToString();
@@ -288,7 +288,7 @@ namespace TerraViewer
                         id = row[0].ToString();
                     }
 
-                    TourPlace pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
+                    var pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
                     Earth3d.MainWindow.GotoTarget(pl, false, false, false);
                 }
                 catch
@@ -299,7 +299,7 @@ namespace TerraViewer
 
         private void save_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveDialog = new SaveFileDialog();
+            var saveDialog = new SaveFileDialog();
             saveDialog.Filter = "VOTable|*.xml";
             saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             saveDialog.AddExtension = true;
@@ -321,7 +321,7 @@ namespace TerraViewer
         private void sync_Click(object sender, EventArgs e)
         {
 
-            Uri path = new Uri(table.LoadFilename);
+            var path = new Uri(table.LoadFilename);
 
             if (table.SampId == null)
             {
@@ -332,7 +332,7 @@ namespace TerraViewer
 
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            VoColumn col = table.Columns[listView1.Columns[e.Column].Text];
+            var col = table.Columns[listView1.Columns[e.Column].Text];
 
             UiTools.ShowMessageBox("Name = " + col.Name + "; ucd=" + col.Ucd + "; type=" + col.Type.ToString());
         }
@@ -393,8 +393,8 @@ namespace TerraViewer
             {
                 if (table.GetColumnByUcd("VOX:Image.AccessReference") != null)
                 {
-                    string colName = table.GetColumnByUcd("VOX:Image.AccessReference").Name;
-                    string url = table.SelectedRow[colName].ToString();
+                    var colName = table.GetColumnByUcd("VOX:Image.AccessReference").Name;
+                    var url = table.SelectedRow[colName].ToString();
                     Earth3d.MainWindow.DownloadFitsImage(url);
                 }
             }
@@ -402,7 +402,7 @@ namespace TerraViewer
 
         private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            VoRow row = e.Item.Tag as VoRow;
+            var row = e.Item.Tag as VoRow;
 
             row.Selected = e.Item.Checked;
         }

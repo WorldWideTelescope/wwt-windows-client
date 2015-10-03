@@ -46,7 +46,7 @@ namespace TerraViewer
             this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(1044, "Dome Master 8k"), 8192, 8192, 30, true));
             this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(899, "Custom"), 0, 0, 0, false));
             this.OutputFormatCombo.SelectedIndex = Properties.Settings.Default.LastVideoOutFormat;
-            TimeSpan ts = Target.RunTime;
+            var ts = Target.RunTime;
             this.runTimeEdit.Text = String.Format("{0:0}:{1:00}", ts.Minutes, ts.Seconds);
             if (string.IsNullOrEmpty(Properties.Settings.Default.VideoOutputPath))
             {
@@ -64,7 +64,7 @@ namespace TerraViewer
         {
             try
             {
-                string pathPart = Path.GetDirectoryName(PathEdit.Text);
+                var pathPart = Path.GetDirectoryName(PathEdit.Text);
                 if (!Directory.Exists(pathPart))
                 {
                     Directory.CreateDirectory(pathPart);
@@ -86,7 +86,7 @@ namespace TerraViewer
 
         private void OutputFormatCombo_SelectionChanged(object sender, EventArgs e)
         {
-            VideoOutputType vidType = (VideoOutputType)OutputFormatCombo.SelectedItem;
+            var vidType = (VideoOutputType)OutputFormatCombo.SelectedItem;
 
             if (vidType.Name.StartsWith(Language.GetLocalizedText(899, "Custom")))
             {
@@ -116,7 +116,7 @@ namespace TerraViewer
             double val;
             if (double.TryParse(fpsEdit.Text, out val))
             {
-                TimeSpan ts = Target.RunTime;
+                var ts = Target.RunTime;
                 totalFramesEdit.Text = ((int)(ts.TotalSeconds * val + .5)).ToString();
             }
 
@@ -124,7 +124,7 @@ namespace TerraViewer
 
         private void Browse_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
+            var sfd = new SaveFileDialog();
             sfd.Filter = Language.GetLocalizedText(978, "Portable Network Graphics(*.png)|*.png");
             sfd.AddExtension = true;
             sfd.DefaultExt = ".png";

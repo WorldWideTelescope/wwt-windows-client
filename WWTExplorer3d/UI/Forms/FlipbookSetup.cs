@@ -29,20 +29,20 @@ namespace TerraViewer
         {
             try
             {
-                string values = frameSequenceText.Text;
-                List<int> framesList = new List<int>();
+                var values = frameSequenceText.Text;
+                var framesList = new List<int>();
 
                 if (!String.IsNullOrEmpty(values))
                 {
-                    string[] parts = values.Split(new char[] { ',' });
-                    foreach (string part in parts)
+                    var parts = values.Split(new char[] { ',' });
+                    foreach (var part in parts)
                     {
-                        int x = Convert.ToInt32(part.Trim());
+                        var x = Convert.ToInt32(part.Trim());
                         framesList.Add(x);
                     }
-                    StringBuilder sb = new StringBuilder();
-                    string delim = "";
-                    foreach (int frame in framesList)
+                    var sb = new StringBuilder();
+                    var delim = "";
+                    foreach (var frame in framesList)
                     {
                         sb.Append(delim);
                         sb.Append(frame.ToString());
@@ -60,11 +60,11 @@ namespace TerraViewer
 
         private void FlipbookSetup_Load(object sender, EventArgs e)
         {
-            string[] values = Enum.GetNames(typeof(LoopTypes));
-            int index = 0;
-            foreach (string value in values)
+            var values = Enum.GetNames(typeof(LoopTypes));
+            var index = 0;
+            foreach (var value in values)
             {
-                int temp = flipbookStyle.Items.Add(value);
+                var temp = flipbookStyle.Items.Add(value);
                 if (value == LoopType.ToString())
                 {
                     index = temp;

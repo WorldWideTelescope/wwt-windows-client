@@ -57,28 +57,28 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			var b = new byte[4 * sizeof(int)];
 			input.Read(b, 0, b.Length);
 
-			int width = BitConverter.ToInt32(b, 0);
+			var width = BitConverter.ToInt32(b, 0);
 			if (width < 1 || width > 1000)
 				return null;
 
-			int height = BitConverter.ToInt32(b, sizeof(int));
+			var height = BitConverter.ToInt32(b, sizeof(int));
 			if (height < 1 || height > 1000)
 				return null;
 
-			int avg = BitConverter.ToInt32(b, 2 * sizeof(int));
+			var avg = BitConverter.ToInt32(b, 2 * sizeof(int));
 			if (avg < short.MinValue || avg > short.MaxValue)
 				return null;
 
-			int length = BitConverter.ToInt32(b, 3 * sizeof(int));
+			var length = BitConverter.ToInt32(b, 3 * sizeof(int));
 			if (length < 0 || length > 200000)
 				return null;
 
 			// read compressed data
-			byte[] data = new byte[length];
-			int offset = 0;
+			var data = new byte[length];
+			var offset = 0;
 			while (offset < length)
 			{
-				int actual = input.Read(data, offset, length - offset);
+				var actual = input.Read(data, offset, length - offset);
 				if (actual <= 0 || actual > length - offset)
 				{
 					return null;
@@ -86,7 +86,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				offset += actual;
 			}
 
-			short[,] pixels = new HDPhotoDecoder().Decode(data);
+			var pixels = new HDPhotoDecoder().Decode(data);
 
 			if (pixels == null)
 			{
@@ -96,13 +96,13 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
             try
             {
                 // read error-corrections
-                BitReader r = new BitReader(input);
-                for (int row = 0; row < height; row++)
-                    for (int col = 0; col < width; col++)
+                var r = new BitReader(input);
+                for (var row = 0; row < height; row++)
+                    for (var col = 0; col < width; col++)
                         if ((row & 0xF) == 0 || (col & 0xF) == 0)
                         {
                             // offset = row * width + col;
-                            short err = ReadUnaryCorrection(r);
+                            var err = ReadUnaryCorrection(r);
                             pixels[row, col] += err;
                         }
             }
@@ -112,10 +112,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
             }
 
 			// create tile
-			for (int row = 0; row < height; row++)
-				for (int col = 0; col < width; col++)
+			for (var row = 0; row < height; row++)
+				for (var col = 0; col < width; col++)
 					pixels[row, col] += (short)avg;
-			DemTile tile = new DemTile(pixels);
+			var tile = new DemTile(pixels);
 
 			return tile;
 		}

@@ -9,20 +9,20 @@ namespace TerraViewer
     {
         static public DialogResult ShowWizard(TimeSeriesLayer layer)
         {
-            WizardPropsBinding props = GetPropsObject();
+            var props = GetPropsObject();
             props.Data = layer;
 
             props.UpdateTabVisibility += new UpdateTabDelegate(props_UpdateTabVisibility);
 
-            WizardShell shell = new WizardShell(props);
+            var shell = new WizardShell(props);
 
             return shell.ShowDialog();
         }
 
         static void props_UpdateTabVisibility(object sender, object e)
         {
-            WizardPropsBinding props = e as WizardPropsBinding;
-            TimeSeriesLayer layer = props.Data as TimeSeriesLayer;
+            var props = e as WizardPropsBinding;
+            var layer = props.Data as TimeSeriesLayer;
 
             switch (layer.CoordinatesType)
             {
@@ -52,10 +52,10 @@ namespace TerraViewer
         
         static public DialogResult ShowPropertiesSheet(TimeSeriesLayer layer)
         {
-            WizardPropsBinding props = GetPropsObject();
+            var props = GetPropsObject();
             props.Data = layer;
 
-            PropsShell shell = new PropsShell(props);
+            var shell = new PropsShell(props);
             props.UpdateTabVisibility += new UpdateTabDelegate(props_UpdateTabVisibility);
 
             return shell.ShowDialog();

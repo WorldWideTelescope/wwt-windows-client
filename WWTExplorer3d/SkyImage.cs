@@ -177,9 +177,9 @@ namespace TerraViewer
                 {
                     try
                     {
-                        MemoryStream ms = new MemoryStream(ImageData);
+                        var ms = new MemoryStream(ImageData);
 
-                        Texture11 old = this.texture;
+                        var old = this.texture;
 
                         texture = Texture11.FromStream(RenderContext11.PrepDevice, ms);
                         
@@ -338,8 +338,8 @@ namespace TerraViewer
         {
             lng = -lng;
 
-            double fac1 = (this.dataset.BaseTileDegrees*Height) / 2;
-            double factor = Math.Tan(fac1 * RC);
+            var fac1 = (this.dataset.BaseTileDegrees*Height) / 2;
+            var factor = Math.Tan(fac1 * RC);
 
             return Vector3d.TransformCoordinate(new Vector3d(1f, (lat / fac1 * factor), (lng / fac1 * factor)), Matrix);
 
@@ -349,15 +349,15 @@ namespace TerraViewer
 
         public Vector2d GetImagePixel(Coordinates sky)
         {
-            Vector2d result = new Vector2d();
+            var result = new Vector2d();
             //Vector3 tangent = GeoTo3dWithAltitude(sky.Lat, sky.Lng);
-            Vector3d tangent = Coordinates.RADecTo3d(sky.RA + 12, sky.Dec, 1);
-            Matrix3d mat = dataset.Matrix;
+            var tangent = Coordinates.RADecTo3d(sky.RA + 12, sky.Dec, 1);
+            var mat = dataset.Matrix;
             mat.Invert();
 
             tangent = Vector3d.TransformCoordinate(tangent, mat);
 
-            Coordinates imagePoint = Coordinates.CartesianToSpherical(tangent);
+            var imagePoint = Coordinates.CartesianToSpherical(tangent);
          
             result.X = (float)((imagePoint.Lng / ScaleX) + PixelCenterX);
             result.Y = (float)((imagePoint.Lat / -ScaleY) + PixelCenterY);
@@ -386,20 +386,20 @@ namespace TerraViewer
         public override void OnCreateVertexBuffer(VertexBuffer11 vb)
         {
             ComputeMatrix();
-            double latMin = 0 + (ScaleY * (Height - PixelCenterY));
-            double latMax = 0 - (ScaleY * PixelCenterY);
-            double lngMin = 0 + (ScaleX * PixelCenterX);
-            double lngMax = 0 - (ScaleX * (Width - PixelCenterX));
+            var latMin = 0 + (ScaleY * (Height - PixelCenterY));
+            var latMax = 0 - (ScaleY * PixelCenterY);
+            var lngMin = 0 + (ScaleX * PixelCenterX);
+            var lngMax = 0 - (ScaleX * (Width - PixelCenterX));
 
 
-            Vector3d TopLeft = GeoTo3d(latMin, lngMin);
-            Vector3d BottomRight = GeoTo3d(latMax, lngMax);
-            Vector3d TopRight = GeoTo3d(latMin, lngMax);
-            Vector3d BottomLeft = GeoTo3d(latMax, lngMin);
+            var TopLeft = GeoTo3d(latMin, lngMin);
+            var BottomRight = GeoTo3d(latMax, lngMax);
+            var TopRight = GeoTo3d(latMin, lngMax);
+            var BottomLeft = GeoTo3d(latMax, lngMin);
 
            
             // Create a vertex buffer 
-            PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
 
             verts[0].Position = TopLeft;
             verts[0].Normal = TopLeft;
@@ -419,7 +419,7 @@ namespace TerraViewer
             verts[3].Tv = 1;
             vb.Unlock();
 
-            short[] indexArray = (short[])indexBuffer.Lock();
+            var indexArray = (short[])indexBuffer.Lock();
             indexArray[0] = 3;
             indexArray[1] = 1;
             indexArray[2] = 0;

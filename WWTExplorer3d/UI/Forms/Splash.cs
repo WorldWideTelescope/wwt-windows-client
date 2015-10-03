@@ -20,7 +20,7 @@ namespace TerraViewer
         enum SplashState { FadingIn, Showing, FadingOut };
 
         SplashState splashState = SplashState.FadingIn;
-        int progressCount = 0;
+        int progressCount;
         private void timer1_Tick(object sender, EventArgs e)
         {
             switch(splashState)

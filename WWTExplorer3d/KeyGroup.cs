@@ -20,10 +20,10 @@ namespace TerraViewer
         public double Tween(double tweenFactor)
         {
 
-            Key first = Keys[0];
-            Key last = Keys[0];
+            var first = Keys[0];
+            var last = Keys[0];
             //walk list and tween keys
-            foreach (Key key in Keys.Values)
+            foreach (var key in Keys.Values)
             {
                 if (key.Time > first.Time && key.Time < tweenFactor)
                 {
@@ -79,7 +79,7 @@ namespace TerraViewer
         {
             xmlWriter.WriteStartElement("Keys");
             xmlWriter.WriteAttributeString("ParameterName", ParameterName.ToString());
-            foreach (Key key in Keys.Values)
+            foreach (var key in Keys.Values)
             {
                 key.SaveToXml(xmlWriter);
             }
@@ -88,8 +88,8 @@ namespace TerraViewer
 
         public void SaveToXml(System.Xml.XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys, AnimationTarget target, int parameterIndex)
         {
-            bool anythingToWrite = false;
-            foreach (Key key in Keys.Values)
+            var anythingToWrite = false;
+            foreach (var key in Keys.Values)
             {
                 if (selectedKeys.ContainsKey(VisibleKey.GetIndexKey(target, parameterIndex, key.Time)))
                 {
@@ -101,7 +101,7 @@ namespace TerraViewer
             {
                 xmlWriter.WriteStartElement("Keys");
                 xmlWriter.WriteAttributeString("ParameterName", ParameterName.ToString());
-                foreach (Key key in Keys.Values)
+                foreach (var key in Keys.Values)
                 {
                     if (selectedKeys.ContainsKey(VisibleKey.GetIndexKey(target, parameterIndex, key.Time)))
                     {
@@ -117,7 +117,7 @@ namespace TerraViewer
             ParameterName = node.Attributes["ParameterName"].Value;
             foreach (System.Xml.XmlNode child in node.ChildNodes)
             {
-                Key key = new Key(child);
+                var key = new Key(child);
                 Keys.Add(Quant(key.Time), key);
             }
         }
@@ -148,7 +148,7 @@ namespace TerraViewer
 
         public Key GetKey(double time)
         {
-            int k = Quant(time);
+            var k = Quant(time);
             if (Keys.ContainsKey(k))
             {
                 return Keys[k];
@@ -158,11 +158,11 @@ namespace TerraViewer
 
         internal bool MoveKey(double time, double newTime)
         {
-            bool collide = false;
-            Key key = GetKey(time);
+            var collide = false;
+            var key = GetKey(time);
             DeleteKey(time);
             key.Time = newTime;
-            int k = Quant(newTime);
+            var k = Quant(newTime);
 
             if (Keys.ContainsKey(k))
             {
@@ -176,11 +176,11 @@ namespace TerraViewer
 
         internal void ExtendTimeline(TimeSpan oldDuration, TimeSpan newDuration)
         {
-            double factor = oldDuration.TotalSeconds / newDuration.TotalSeconds;
+            var factor = oldDuration.TotalSeconds / newDuration.TotalSeconds;
 
-            SortedList<int, Key> newKeys = new SortedList<int, Key>();
+            var newKeys = new SortedList<int, Key>();
 
-            foreach (Key key in Keys.Values)
+            foreach (var key in Keys.Values)
             {
                 key.Time = key.Time * factor;
                 if (!newKeys.ContainsKey(Quant(key.Time)) && key.Time <= 1)
@@ -193,9 +193,9 @@ namespace TerraViewer
 
         internal bool AddKey(Key newKey)
         {
-            bool collide = false;
+            var collide = false;
 
-            int k = Quant(newKey.Time);
+            var k = Quant(newKey.Time);
 
             if (Keys.ContainsKey(k))
             {

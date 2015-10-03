@@ -20,9 +20,9 @@ namespace TerraViewer
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
-            Pen p = new Pen(Color.FromArgb(71, 84, 108));
+            var p = new Pen(Color.FromArgb(71, 84, 108));
             g.FillRectangle(b, this.ClientRectangle);
             p.Dispose();
             GC.SuppressFinalize(p);
@@ -34,16 +34,16 @@ namespace TerraViewer
 
         private void Plus_Click(object sender, EventArgs e)
         {
-            ControlMap map = new ControlMap();
+            var map = new ControlMap();
 
-            ButtonProperties props = new ButtonProperties();
+            var props = new ButtonProperties();
 
             props.ButtonMap = map;
 
             if (props.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 buttonGroup.Add(map);
-                Point pnt = FindFirstFreeSpot(new Size(140,33));
+                var pnt = FindFirstFreeSpot(new Size(140,33));
                 map.X = pnt.X;
                 map.Y = pnt.Y;
                 AddButton(map);
@@ -54,16 +54,16 @@ namespace TerraViewer
 
         private Point FindFirstFreeSpot(Size size)
         {
-            int yCount = Math.Max((this.Height / size.Height), 1);
-            int xCount = Math.Max((this.Width / size.Width), 1);
-            for (int x = 0; x < xCount; x++)
+            var yCount = Math.Max((this.Height / size.Height), 1);
+            var xCount = Math.Max((this.Width / size.Width), 1);
+            for (var x = 0; x < xCount; x++)
             {
-                for (int y = 0; y < yCount; y++)
+                for (var y = 0; y < yCount; y++)
                 {
-                    Point testPoint = new Point(x * size.Width + 20, y * size.Height);
-                    Rectangle rect = new Rectangle(testPoint, size);
-                    bool conflict = false;
-                    foreach (ControlMap button in buttonGroup.Buttons)
+                    var testPoint = new Point(x * size.Width + 20, y * size.Height);
+                    var rect = new Rectangle(testPoint, size);
+                    var conflict = false;
+                    foreach (var button in buttonGroup.Buttons)
                     {
                         if (rect.IntersectsWith(button.Bounds))
                         {
@@ -88,7 +88,7 @@ namespace TerraViewer
             {
                 case ButtonType.Button:
                     {
-                        WwtButton button = new WwtButton();
+                        var button = new WwtButton();
                         map.Width = 140;
                         map.Height = 33;
                         button.Text = map.Name;
@@ -104,7 +104,7 @@ namespace TerraViewer
                     break;
                 case ButtonType.Checkbox:
                     {
-                        WWTCheckbox button = new WWTCheckbox();
+                        var button = new WWTCheckbox();
                         map.Width = 140;
                         map.Height = 33;
                         //button.Parent = this;
@@ -121,7 +121,7 @@ namespace TerraViewer
                     break;
                 case ButtonType.Slider:
                     {
-                        TrackButton button = new TrackButton();
+                        var button = new TrackButton();
                         map.Width = 140;
                         map.Height = 33;
                         //button.Parent = this;
@@ -160,20 +160,20 @@ namespace TerraViewer
         {
             if (mouseDown && editMode)
             {
-                UserControl button = sender as UserControl;
+                var button = sender as UserControl;
                 if (button != null)
                 {
-                    Point posDelta = Point.Subtract(e.Location, new Size(mouseDownPoint.X, mouseDownPoint.Y));
+                    var posDelta = Point.Subtract(e.Location, new Size(mouseDownPoint.X, mouseDownPoint.Y));
                     button.Location = Point.Add(button.Location, new Size(posDelta.X, posDelta.Y));
 
-                    ControlMap map = button.Tag as ControlMap;
+                    var map = button.Tag as ControlMap;
                     map.X = button.Location.X;
                     map.Y = button.Location.Y;
                     buttonGroup.Dirty = true;
                 }
             }
         }
-        bool mouseDown = false;
+        bool mouseDown;
         Point mouseDownPoint;
         void button_MouseDown(object sender, MouseEventArgs e)
         {
@@ -182,11 +182,11 @@ namespace TerraViewer
             
             if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right)
             {
-                ContextMenuStrip contextMenu = new ContextMenuStrip();
+                var contextMenu = new ContextMenuStrip();
 
-                ToolStripMenuItem properties = new ToolStripMenuItem("Properties");
-                ToolStripMenuItem delete = new ToolStripMenuItem("Delete");
-                ToolStripMenuItem edit = new ToolStripMenuItem("Edit Mode");
+                var properties = new ToolStripMenuItem("Properties");
+                var delete = new ToolStripMenuItem("Delete");
+                var edit = new ToolStripMenuItem("Edit Mode");
                 properties.Click += new EventHandler(properties_Click);
                 delete.Click += new EventHandler(delete_Click);
                 edit.Click += new EventHandler(edit_Click);
@@ -218,22 +218,22 @@ namespace TerraViewer
         {
             if (!editMode)
             {
-                ControlMap map = (ControlMap)((WwtButton)sender).Tag;
+                var map = (ControlMap)((WwtButton)sender).Tag;
 
                 map.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, 127);
             }
         }
 
-        bool ignoreEvent = false;
+        bool ignoreEvent;
         void button_CheckedChanged(object sender, EventArgs e)
         {
             if (!ignoreEvent)
             {
                 ignoreEvent = true;
-                WWTCheckbox checkbox = sender as WWTCheckbox;
+                var checkbox = sender as WWTCheckbox;
                 if (!editMode)
                 {
-                    ControlMap map = (ControlMap)((UserControl)sender).Tag;
+                    var map = (ControlMap)((UserControl)sender).Tag;
 
                     checkbox.Checked = map.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, 127);
                 }
@@ -243,11 +243,11 @@ namespace TerraViewer
 
         void button_ValueChanged(object sender, EventArgs e)
         {
-            TrackButton tb = sender as TrackButton;
+            var tb = sender as TrackButton;
 
             if (!editMode)
             {
-                ControlMap map = (ControlMap)((UserControl)sender).Tag;
+                var map = (ControlMap)((UserControl)sender).Tag;
 
                 map.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, tb.Value);
             }
@@ -255,9 +255,9 @@ namespace TerraViewer
 
         void properties_Click(object sender, EventArgs e)
         {
-            UserControl button = (UserControl)((ToolStripMenuItem)sender).Tag;
-            ControlMap map = (ControlMap)button.Tag;
-            ButtonProperties props = new ButtonProperties();
+            var button = (UserControl)((ToolStripMenuItem)sender).Tag;
+            var map = (ControlMap)button.Tag;
+            var props = new ButtonProperties();
 
             props.ButtonMap = map;
 
@@ -271,8 +271,8 @@ namespace TerraViewer
 
         void delete_Click(object sender, EventArgs e)
         {
-            UserControl button = (UserControl)((ToolStripMenuItem)sender).Tag;
-            ControlMap map = (ControlMap)button.Tag;
+            var button = (UserControl)((ToolStripMenuItem)sender).Tag;
+            var map = (ControlMap)button.Tag;
 
             buttonGroup.Remove(map);
             CleanupButton(button);
@@ -292,7 +292,7 @@ namespace TerraViewer
             button.Dispose();
         }
 
-        bool editMode = false;
+        bool editMode;
         private void EditButtons_Click(object sender, EventArgs e)
         {
             ToggleEditMode();
@@ -312,7 +312,7 @@ namespace TerraViewer
         {
             foreach (Control child in Controls)
             {
-                UserControl ucChild = child as UserControl;
+                var ucChild = child as UserControl;
                 if (ucChild != null)
                 {
                     EnableChildren(ucChild, enabled);
@@ -332,7 +332,7 @@ namespace TerraViewer
         {
             buttonGroup = ButtonGroup.FromFile(filename);
 
-            foreach (ControlMap map in buttonGroup.Buttons)
+            foreach (var map in buttonGroup.Buttons)
             {
                 AddButton(map);
             }
@@ -348,9 +348,9 @@ namespace TerraViewer
         {
             if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right)
             {
-                ContextMenuStrip contextMenu = new ContextMenuStrip();
+                var contextMenu = new ContextMenuStrip();
 
-                ToolStripMenuItem edit = new ToolStripMenuItem("Edit Mode");
+                var edit = new ToolStripMenuItem("Edit Mode");
               
                 edit.Click += new EventHandler(edit_Click);
                 edit.Checked = editMode;

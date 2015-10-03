@@ -20,7 +20,7 @@ namespace TerraViewer
             this.label1.Text = Language.GetLocalizedText(847, "You can select which data column you want shown when hovering over a marker, and optionally add a hyperlink to allow a user to drill into related data thru a web page.");
             this.label2.Text = Language.GetLocalizedText(846, "Hover Text Column");
          }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {

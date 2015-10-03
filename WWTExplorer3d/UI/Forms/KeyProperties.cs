@@ -32,7 +32,7 @@ namespace TerraViewer
             else
             {
                 singleton.Show();
-                bool visible = false;
+                var visible = false;
                 foreach (var screen in Screen.AllScreens)
                 {
                     if (screen.WorkingArea.Contains(singleton.DesktopLocation))
@@ -43,7 +43,7 @@ namespace TerraViewer
                 }
                 if (!visible)
                 {
-                    Point parent = Earth3d.MainWindow.DesktopLocation;
+                    var parent = Earth3d.MainWindow.DesktopLocation;
                     singleton.Location = new Point(parent.X + 100, parent.Y +100);
                 }
 
@@ -60,7 +60,7 @@ namespace TerraViewer
             }
         }
 
-        static KeyProperties singleton = null;
+        static KeyProperties singleton;
         public KeyProperties()
         {
             InitializeComponent();
@@ -74,7 +74,7 @@ namespace TerraViewer
             this.Text = Language.GetLocalizedText(1350, "Key Properties");
         }
 
-        private Dictionary<string, VisibleKey> keys = null;
+        private Dictionary<string, VisibleKey> keys;
 
         public Dictionary<string, VisibleKey> Keys
         {
@@ -89,23 +89,23 @@ namespace TerraViewer
             }
         }
 
-        bool initializing = false;
+        bool initializing;
 
         private void KeyProperties_Load(object sender, EventArgs e)
         {
             LoadTypeCombo();
         }
 
-        bool sameTimes = false;
-        bool sameValues = false;
-        double propValue = 0;
-        double propTime = 0;
+        bool sameTimes;
+        bool sameValues;
+        double propValue;
+        double propTime;
         private void LoadTypeCombo()
         {
             initializing = true;
             keyType.Items.Clear();
 
-            int selectedIndex = 0;
+            var selectedIndex = 0;
 
             VisibleKey vKey = null;
             Key key = null;
@@ -158,7 +158,7 @@ namespace TerraViewer
 
             }
 
-            string selected = "";
+            var selected = "";
 
  
             if (key != null)
@@ -166,9 +166,9 @@ namespace TerraViewer
                 selected = key.InFunction.ToString();
             }
 
-            foreach (string name in Enum.GetNames(typeof(Key.KeyType)))
+            foreach (var name in Enum.GetNames(typeof(Key.KeyType)))
             {
-                int index = keyType.Items.Add(name);
+                var index = keyType.Items.Add(name);
                 if (name == selected)
                 {
                     selectedIndex = index;
@@ -184,11 +184,11 @@ namespace TerraViewer
         {
             if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour != null && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
             {
-                double timeInSeconds = (Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.Duration.TotalSeconds * p) + 1/60.0;
-                int secondsPart = (int)timeInSeconds;
-                int framesPart = (int)((timeInSeconds - secondsPart) * 30 );
+                var timeInSeconds = (Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.Duration.TotalSeconds * p) + 1/60.0;
+                var secondsPart = (int)timeInSeconds;
+                var framesPart = (int)((timeInSeconds - secondsPart) * 30 );
 
-                TimeSpan ts = TimeSpan.FromSeconds(secondsPart);
+                var ts = TimeSpan.FromSeconds(secondsPart);
 
                 return string.Format("{0:0#}:{1:0#}.{2:0#}", ts.Minutes, ts.Seconds, framesPart);
             }
@@ -201,7 +201,7 @@ namespace TerraViewer
 
             if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour != null && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
             {
-                float currentTween = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.TweenPosition;
+                var currentTween = Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.TweenPosition;
                 Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.TweenPosition = 0;
                 Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.TweenPosition = currentTween;
 
@@ -215,19 +215,19 @@ namespace TerraViewer
             {
                 if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour != null && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
                 {
-                    string[] parts = time.Split(new char[] { '.' });
+                    var parts = time.Split(new char[] { '.' });
 
-                    int frame = 0;
+                    var frame = 0;
 
                     if (parts.Length > 1)
                     {
                         frame = int.Parse(parts[1]);
                     }
 
-                    string[] minsec = parts[0].Split(new char[] { ':' });
+                    var minsec = parts[0].Split(new char[] { ':' });
 
-                    int secondsPart = 0;
-                    int minutesPart = 0;
+                    var secondsPart = 0;
+                    var minutesPart = 0;
 
                     if (minsec.Length > 1)
                     {
@@ -239,7 +239,7 @@ namespace TerraViewer
                         secondsPart = int.Parse(minsec[0]);
                     }
 
-                    double totalTime = ((minutesPart * 60 * 30) + (secondsPart * 30) + frame) / (Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.Duration.TotalSeconds * 30);
+                    var totalTime = ((minutesPart * 60 * 30) + (secondsPart * 30) + frame) / (Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop.Duration.TotalSeconds * 30);
 
                     return totalTime;
                 }
@@ -256,11 +256,11 @@ namespace TerraViewer
             if (keys != null)
             {
                 
-                int currentTime = 0;
-                bool first = true;
-                foreach (VisibleKey vk in keys.Values)
+                var currentTime = 0;
+                var first = true;
+                foreach (var vk in keys.Values)
                 {
-                    Key key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
+                    var key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
                     if (first)
                     {
                         currentTime = KeyGroup.Quant(key.Time); 
@@ -285,10 +285,10 @@ namespace TerraViewer
             if (keys != null)
             {
                 double currentValue = 0;
-                bool first = true;
-                foreach (VisibleKey vk in keys.Values)
+                var first = true;
+                foreach (var vk in keys.Values)
                 {
-                    Key key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
+                    var key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
                     if (first)
                     {
                         currentValue = key.Value;
@@ -314,16 +314,16 @@ namespace TerraViewer
             {
                 return;
             }
-            Key.KeyType type = (Key.KeyType)Enum.Parse(typeof(Key.KeyType), keyType.SelectedItem.ToString());
+            var type = (Key.KeyType)Enum.Parse(typeof(Key.KeyType), keyType.SelectedItem.ToString());
 
             curveEditor1.CurveType = type;
 
             if (keys != null)
             {
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1352, "Key Properties Edit"), Earth3d.MainWindow.TourEdit.Tour));
-                foreach (VisibleKey vk in keys.Values)
+                foreach (var vk in keys.Values)
                 {
-                    Key key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
+                    var key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
                     if (key != null)
                     {
                         key.InFunction = type;
@@ -352,9 +352,9 @@ namespace TerraViewer
             if (keys != null)
             {
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1352, "Key Properties Edit"), Earth3d.MainWindow.TourEdit.Tour));
-                foreach (VisibleKey vk in keys.Values)
+                foreach (var vk in keys.Values)
                 {
-                    Key key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
+                    var key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
                     if (key != null)
                     {
                         key.InFunction = (Key.KeyType)Enum.Parse(typeof(Key.KeyType), keyType.SelectedItem.ToString());
@@ -367,25 +367,25 @@ namespace TerraViewer
                 RefreshTween();
             }
         }
-        bool dirtyEdit = false;
+        bool dirtyEdit;
         private void CurrentValue_Validating(object sender, CancelEventArgs e)
         {
             if (initializing || CurrentValue.Text == Language.GetLocalizedText(1351, "Multiple") || dirtyEdit == false)
             {
                 return;
             }
-            bool failed = false;
+            var failed = false;
             
-            double newValue = UiTools.ParseAndValidateDouble(CurrentValue, propValue, ref failed);
+            var newValue = UiTools.ParseAndValidateDouble(CurrentValue, propValue, ref failed);
 
             if (newValue != propValue && !failed)
             {
                 if (keys != null)
                 {
                     Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1352, "Key Properties Edit"), Earth3d.MainWindow.TourEdit.Tour));
-                    foreach (VisibleKey vk in keys.Values)
+                    foreach (var vk in keys.Values)
                     {
-                        Key key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
+                        var key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
                         if (key != null)
                         {
                             key.Value = newValue;
@@ -410,7 +410,7 @@ namespace TerraViewer
             }
 
 
-            double newValue = ParseTime(Time.Text);
+            var newValue = ParseTime(Time.Text);
 
             if (newValue == -1)
             {
@@ -426,9 +426,9 @@ namespace TerraViewer
                 if (keys != null)
                 {
                     Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1352, "Key Properties Edit"), Earth3d.MainWindow.TourEdit.Tour));
-                    foreach (VisibleKey vk in keys.Values)
+                    foreach (var vk in keys.Values)
                     {
-                        Key key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
+                        var key = vk.Target.GetKey(vk.ParameterIndex, vk.Time);
                         if (key != null)
                         {
                             vk.Target.MoveKey(vk.ParameterIndex, vk.Time, newValue);

@@ -84,7 +84,7 @@ namespace TerraViewer
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
+            var openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(1178, "Dome Warp Files") + "|*.data";
             if (openFile.ShowDialog() == DialogResult.OK)
             {

@@ -28,7 +28,7 @@ namespace TerraViewer
         Dictionary<string, FileEntry> FileDirectory;
         public string Filename;
         public string TempDirectory;
-        private int currentOffset = 0;
+        private int currentOffset;
         private string packageID = "";
 
         public string PackageID
@@ -47,7 +47,7 @@ namespace TerraViewer
 
         public void AddFile(string filename)
         {
-            FileInfo fi = new FileInfo(filename);
+            var fi = new FileInfo(filename);
             string filePart;
             if (filename.ToLower().StartsWith(TempDirectory.ToLower()))
             {
@@ -60,7 +60,7 @@ namespace TerraViewer
 
             if (!FileDirectory.ContainsKey(filePart))
             {
-                FileEntry fe = new FileEntry(filePart, (int)fi.Length);
+                var fe = new FileEntry(filePart, (int)fi.Length);
                 fe.Offset = currentOffset;
                 FileList.Add(fe);
                 FileDirectory.Add(filePart, fe);
@@ -85,8 +85,8 @@ namespace TerraViewer
         
         public void Package()
         {
-            StringWriter sw = new StringWriter();
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(sw))
+            var sw = new StringWriter();
+            using (var xmlWriter = new XmlTextWriter(sw))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
@@ -94,7 +94,7 @@ namespace TerraViewer
                 xmlWriter.WriteAttributeString("HeaderSize", "0x0BADFOOD");
 
                 xmlWriter.WriteStartElement("Files");
-                foreach (FileEntry entry in FileList)
+                foreach (var entry in FileList)
                 {
                     xmlWriter.WriteStartElement("File");
                     xmlWriter.WriteAttributeString("Name", entry.Filename);
@@ -109,18 +109,18 @@ namespace TerraViewer
 
             }
 
-            string data = sw.ToString();
+            var data = sw.ToString();
   
-            byte[] header = Encoding.UTF8.GetBytes(data);
+            var header = Encoding.UTF8.GetBytes(data);
 
-            string sizeText = String.Format("0x{0:x8}", header.Length);
+            var sizeText = String.Format("0x{0:x8}", header.Length);
 
             data = data.Replace("0x0BADFOOD", sizeText);
 
             // Yeah this looks redundant, but we needed the data with the replaced size
             header = Encoding.UTF8.GetBytes(data);
 
-            FileStream output = new FileStream(Filename, FileMode.Create);
+            var output = new FileStream(Filename, FileMode.Create);
 
             // Write Header
             output.Write(header, 0, header.Length);
@@ -128,11 +128,11 @@ namespace TerraViewer
 
 
             // Write each file
-            foreach (FileEntry entry in FileList)
+            foreach (var entry in FileList)
             {
-                using (FileStream fs = new FileStream(TempDirectory + "\\" + entry.Filename, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(TempDirectory + "\\" + entry.Filename, FileMode.Open, FileAccess.Read))
                 {
-                    byte[] buffer = new byte[entry.Size];
+                    var buffer = new byte[entry.Size];
                     if (fs.Read(buffer, 0, entry.Size) != entry.Size)
                     {
                         throw new SystemException(Language.GetLocalizedText(214, "One of the files in the collection is missing, corrupt or inaccessable"));
@@ -157,16 +157,16 @@ namespace TerraViewer
             try
             {
                 string data;
-                XmlDocument doc = new XmlDocument();
-                int headerSize = 0;
-                using (FileStream fs = File.OpenRead(Filename))
+                var doc = new XmlDocument();
+                var headerSize = 0;
+                using (var fs = File.OpenRead(Filename))
                 {
 
-                    byte[] buffer = new byte[256];
+                    var buffer = new byte[256];
                     fs.Read(buffer, 0, 255);
                     data = Encoding.UTF8.GetString(buffer);
 
-                    int start = data.IndexOf("0x");
+                    var start = data.IndexOf("0x");
                     if (start == -1)
                     {
                         throw new SystemException(Language.GetLocalizedText(215, "Invalid File Format"));
@@ -184,25 +184,25 @@ namespace TerraViewer
                     XmlNode cab = doc["FileCabinet"];
                     XmlNode files = cab["Files"];
 
-                    int offset = headerSize;
+                    var offset = headerSize;
                     FileList.Clear();
                     foreach (XmlNode child in files.ChildNodes)
                     {
-                        FileEntry fe = new FileEntry(child.Attributes["Name"].Value.ToString(), Convert.ToInt32(child.Attributes["Size"].Value));
+                        var fe = new FileEntry(child.Attributes["Name"].Value.ToString(), Convert.ToInt32(child.Attributes["Size"].Value));
                         fe.Offset = offset;
                         offset += fe.Size;
                         FileList.Add(fe);
                     }
 
-                    foreach (FileEntry entry in FileList)
+                    foreach (var entry in FileList)
                     {
                         while (entry.Filename.StartsWith("\\"))
                         {
                             entry.Filename = entry.Filename.Substring(1);
                         }
-                        string fullPath = TempDirectory + @"\" + entry.Filename;
-                        string dir = fullPath.Substring(0, fullPath.LastIndexOf("\\"));
-                        string file = fullPath.Substring(fullPath.LastIndexOf("\\") + 1);
+                        var fullPath = TempDirectory + @"\" + entry.Filename;
+                        var dir = fullPath.Substring(0, fullPath.LastIndexOf("\\"));
+                        var file = fullPath.Substring(fullPath.LastIndexOf("\\") + 1);
 
                         if (!string.IsNullOrEmpty(targetDirectory) && entry.Filename.Contains("\\"))
                         {
@@ -217,7 +217,7 @@ namespace TerraViewer
 
                         if (overwrite || !File.Exists(fullPath))
                         {
-                            FileStream fileOut = new FileStream(fullPath, FileMode.Create);
+                            var fileOut = new FileStream(fullPath, FileMode.Create);
                             buffer = new byte[entry.Size];
                             fs.Seek(entry.Offset, SeekOrigin.Begin);
                             if (fs.Read(buffer, 0, entry.Size) != entry.Size)
@@ -230,7 +230,7 @@ namespace TerraViewer
                     }
 
 
-                    int x = offset;
+                    var x = offset;
                     fs.Close();
                 }
             }
@@ -257,7 +257,7 @@ namespace TerraViewer
         }
         public void ClearTempFiles()
         {
-            foreach (FileEntry entry in FileList)
+            foreach (var entry in FileList)
             {
                 File.Delete(TempDirectory +"\\" + entry.Filename);
             }

@@ -26,8 +26,8 @@ namespace Solver
             _observedParameters = observedParameters;
             _regressionParameters = regressionParameters;
             _regressionFunction = regressionFunction;
-            int numberOfParameters = _regressionParameters.Length;
-            int numberOfPoints = data.GetLength(1);
+            var numberOfParameters = _regressionParameters.Length;
+            var numberOfPoints = data.GetLength(1);
 
             _derivatives = new Derivatives(numberOfDerivativePoints);
 
@@ -50,9 +50,9 @@ namespace Solver
             AverageError = 0;
 
             var currentResidual = 0.0;
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
-                for (int j = 0; j < _observedParameters.Length; j++)
+                for (var j = 0; j < _observedParameters.Length; j++)
                 {
                     _observedParameters[j].Value = _data[j, i];
                 }
@@ -68,7 +68,7 @@ namespace Solver
             }
             AverageError /= numberOfPoints;
             AverageError /= 100;
-            for (int i = 0; i < numberOfParameters; i++)
+            for (var i = 0; i < numberOfParameters; i++)
             {
                 _regressionParameters0[i, 0] = _regressionParameters[i];
             }
@@ -77,12 +77,12 @@ namespace Solver
             var jacobianTransposeResiduals = jacobianTranspose * _residuals;
             var jacobianTransposeJacobian = jacobianTranspose * _jacobian;
             var jacobianTransposeJacobianDiagnol = new Matrix(jacobianTransposeJacobian.RowCount, jacobianTransposeJacobian.RowCount);
-            for (int i = 0; i < jacobianTransposeJacobian.RowCount; i++)
+            for (var i = 0; i < jacobianTransposeJacobian.RowCount; i++)
             {
                 jacobianTransposeJacobianDiagnol[i, i] = jacobianTransposeJacobian[i, i];
             }
 
-            double newResidual = currentResidual + 1.0;
+            var newResidual = currentResidual + 1.0;
             _l0 /= _v;
             while (newResidual > currentResidual)
             {
@@ -99,7 +99,7 @@ namespace Solver
 
                 for (var i = 0; i < numberOfPoints; i++)
                 {
-                    for (int j = 0; j < _observedParameters.Length; j++)
+                    for (var j = 0; j < _observedParameters.Length; j++)
                     {
                         _observedParameters[j].Value = _data[j, i];
                     }

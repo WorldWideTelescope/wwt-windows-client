@@ -218,7 +218,7 @@ namespace Microsoft.XInput
         // Set the vibration speed of a controller
         public static void SetVibration(int controllerNumber, ushort leftSpeed, ushort rightSpeed)
         {
-            XInputVibration vibe = new XInputVibration(leftSpeed, rightSpeed);
+            var vibe = new XInputVibration(leftSpeed, rightSpeed);
             XInputMethods.ProcessResult(
                 XInputMethods.XInputSetState(controllerNumber, ref vibe)
                 );

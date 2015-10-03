@@ -71,7 +71,7 @@ namespace TerraViewer
 
 
         public static byte[] ScreenImage = null;
-        static Bitmap bmp = null;
+        static Bitmap bmp;
         private void timer1_Tick(object sender, EventArgs e)
         {
 
@@ -110,7 +110,7 @@ namespace TerraViewer
         }
         
         static int msPerFrame = 1000;
-        static bool capturing = false;
+        static bool capturing;
 
         public static bool Capturing
         {
@@ -179,7 +179,7 @@ namespace TerraViewer
         {
             if (Earth3d.MainWindow != null && Earth3d.MainWindow.videoOverlay != null)
             {
-                Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
+                var tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
                 tile.CleanUp(false);
                 Earth3d.MainWindow.videoOverlay = null;
             }
@@ -188,7 +188,7 @@ namespace TerraViewer
         private static bool Dirty = true;
         private static void CaptureThreadFunction()
         {
-            int frameNumber = 0;
+            var frameNumber = 0;
             while (Earth3d.MainWindow != null)
             {
                 
@@ -196,19 +196,19 @@ namespace TerraViewer
                 if (capturing && Earth3d.MainWindow != null)
                 {
                     frameNumber++;
-                    Graphics g = Graphics.FromImage(bmp);
+                    var g = Graphics.FromImage(bmp);
 
                     g.CopyFromScreen(0, 0, 0, 0, new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
                     g.Dispose();
 
-                    MemoryStream ms = new MemoryStream();
+                    var ms = new MemoryStream();
 
                     bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
 
                     ScreenImage = ms.ToArray();
                     ms.Dispose();
                     ms = null;
-                    string url = string.Format(String.Format("http://{0}:5050/images/{1}/screenshot.png",
+                    var url = string.Format(String.Format("http://{0}:5050/images/{1}/screenshot.png",
                                 MyWebServer.IpAddress.ToString(),
                                 frameNumber.ToString()));
 
@@ -236,7 +236,7 @@ namespace TerraViewer
                         Earth3d.MainWindow.videoOverlay.CenterX = Properties.Settings.Default.ScreenOverlayAz;
                         Earth3d.MainWindow.videoOverlay.CenterY = Properties.Settings.Default.ScreenOverlayAlt;
                         Earth3d.MainWindow.videoOverlay.BaseTileDegrees = Properties.Settings.Default.ScreenOverlayScale / 1000;
-                        Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
+                        var tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
                         if (Dirty)
                         {
                             tile.CleanUpGeometryOnly();
@@ -261,7 +261,7 @@ namespace TerraViewer
 
         private void Alt_TextChanged(object sender, EventArgs e)
         {
-            bool valid = false;
+            var valid = false;
 
             Properties.Settings.Default.ScreenOverlayAlt = UiTools.ParseAndValidateDouble(Alt, Properties.Settings.Default.ScreenOverlayAlt, ref valid);
             Dirty = true;
@@ -269,7 +269,7 @@ namespace TerraViewer
 
         private void Az_TextChanged(object sender, EventArgs e)
         {
-            bool valid = false;
+            var valid = false;
 
             Properties.Settings.Default.ScreenOverlayAz = UiTools.ParseAndValidateDouble(Az, Properties.Settings.Default.ScreenOverlayAz, ref valid);
             Dirty = true;
@@ -277,7 +277,7 @@ namespace TerraViewer
 
         private void Scale_TextChanged(object sender, EventArgs e)
         {
-            bool valid = false;
+            var valid = false;
 
             Properties.Settings.Default.ScreenOverlayScale = UiTools.ParseAndValidateDouble(Scale, Properties.Settings.Default.ScreenOverlayScale, ref valid);
             Dirty = true;

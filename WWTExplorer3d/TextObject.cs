@@ -39,7 +39,7 @@ namespace TerraViewer
         {
             get
             {
-                FontStyle style = (Bold ? FontStyle.Bold : FontStyle.Regular) | (Italic ? FontStyle.Italic : FontStyle.Regular );
+                var style = (Bold ? FontStyle.Bold : FontStyle.Regular) | (Italic ? FontStyle.Italic : FontStyle.Regular );
 
                 return new Font(FontName, FontSize, style);
 
@@ -72,7 +72,7 @@ namespace TerraViewer
 
         internal static TextObject FromXml(System.Xml.XmlNode node)
         {
-            TextObject newTextObject = new TextObject();
+            var newTextObject = new TextObject();
             newTextObject.Text = node.InnerText;
             newTextObject.BorderStyle = TextBorderStyle.None;
             newTextObject.Bold = Convert.ToBoolean(node.Attributes["Bold"].Value);

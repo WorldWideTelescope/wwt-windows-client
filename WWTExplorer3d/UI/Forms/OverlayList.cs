@@ -23,7 +23,7 @@ namespace TerraViewer
         }
 
 
-        static OverlayList master = null;
+        static OverlayList master;
         public static void ShowOverlayList()
         {
             if (master != null)
@@ -57,9 +57,9 @@ namespace TerraViewer
                 master.ItemList.Nodes.Clear();
                 if (tourStop != null)
                 {
-                    foreach (Overlay overlay in tourStop.Overlays)
+                    foreach (var overlay in tourStop.Overlays)
                     {
-                        TreeNode item = new TreeNode(overlay.Name);
+                        var item = new TreeNode(overlay.Name);
                         item.Tag = overlay;
                         item.Checked = selection.IsOverlaySelected(overlay);
                         master.ItemList.Nodes.Add(item);
@@ -76,7 +76,7 @@ namespace TerraViewer
             {
                 foreach (TreeNode child in master.ItemList.Nodes)
                 {
-                    Overlay overlay = child.Tag as Overlay;
+                    var overlay = child.Tag as Overlay;
                     child.Checked = selection.IsOverlaySelected(overlay);
                 }
             }
@@ -113,7 +113,7 @@ namespace TerraViewer
 
         private void ItemList_Click(object sender, EventArgs e)
         {
-            MouseEventArgs mea = e as MouseEventArgs;    
+            var mea = e as MouseEventArgs;    
         }
 
         private void ItemList_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)

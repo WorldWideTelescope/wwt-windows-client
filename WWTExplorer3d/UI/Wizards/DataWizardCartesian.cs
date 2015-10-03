@@ -27,7 +27,7 @@ namespace TerraViewer
             this.reverseZCheckbox.Text = Language.GetLocalizedText(831, "Reverse Z");
             this.label2.Text = Language.GetLocalizedText(817, "Units");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {

@@ -27,7 +27,7 @@ namespace TerraViewer
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private readonly System.ComponentModel.Container components = null;
         private WwtButton OK;
         private WwtButton Cancel;
         private WwtCombo DataSetList;
@@ -387,8 +387,8 @@ namespace TerraViewer
 		public static int lastSelectedDatasetIndex = 0;
 		private void GoToLatLong_Load(object sender, System.EventArgs e)
 		{
-            Dictionary<string, DataSet> datasets = DataSetManager.GetDataSets();
-            foreach (DataSet d in datasets.Values)
+            var datasets = DataSetManager.GetDataSets();
+            foreach (var d in datasets.Values)
 			{
                 if (d.Sky == sky)
                 {
@@ -419,7 +419,7 @@ namespace TerraViewer
 
         private void PlacesList_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            TourPlace p = (TourPlace)this.PlacesList.SelectedItem;
+            var p = (TourPlace)this.PlacesList.SelectedItem;
             if (p != null)
             {
                 this.txtName.Text = p.Name;
@@ -466,7 +466,7 @@ namespace TerraViewer
                 Latitude = 1 / (360 * 60 * 60 * .5);
             }
 
-            double alt = Altitude;
+            var alt = Altitude;
             try
             {
                 alt = Convert.ToDouble(txtAltitude.Text);
@@ -485,12 +485,12 @@ namespace TerraViewer
             try
             {
                 lastSelectedDatasetIndex = this.DataSetList.SelectedIndex;
-                DataSet ds = (DataSet)this.DataSetList.SelectedItem;
+                var ds = (DataSet)this.DataSetList.SelectedItem;
                 if (ds != null)
                 {
                     this.Categorys.Items.Clear();
-                    Dictionary<string, Places> placesList = ds.GetPlaces();
-                    foreach (Places places in placesList.Values)
+                    var placesList = ds.GetPlaces();
+                    foreach (var places in placesList.Values)
                     {
                         this.Categorys.Items.Add(places);
                     }
@@ -512,12 +512,12 @@ namespace TerraViewer
             try
             {
                 lastSelectedIndexCatagorys = this.Categorys.SelectedIndex;
-                Places places = (Places)this.Categorys.SelectedItem;
+                var places = (Places)this.Categorys.SelectedItem;
                 placesLastSelected = places;
                 if (places != null)
                 {
                     this.PlacesList.Items.Clear();
-                    ArrayList placeList = places.GetPlaceList();
+                    var placeList = places.GetPlaceList();
                     foreach (TourPlace place in placeList)
                     {
                         this.PlacesList.Items.Add(place);
@@ -554,10 +554,10 @@ namespace TerraViewer
 
         private void txtAltitude_TextChanged(object sender, EventArgs e)
         {
-            string validationText = txtAltitude.Text;
-            string outputString = "";
+            var validationText = txtAltitude.Text;
+            var outputString = "";
 
-            foreach (char c in validationText)
+            foreach (var c in validationText)
             {
                 if (char.IsDigit(c) || c == '.')
                 {

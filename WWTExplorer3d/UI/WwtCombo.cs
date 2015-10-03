@@ -149,9 +149,9 @@ namespace TerraViewer
             }
         }
 
-        static Bitmap[] edit = new Bitmap[4];
+        static readonly Bitmap[] edit = new Bitmap[4];
      
-        static Bitmap[] drop = new Bitmap[4];
+        static readonly Bitmap[] drop = new Bitmap[4];
 
         static WwtCombo()
         {
@@ -189,7 +189,7 @@ namespace TerraViewer
             
         }
 
-        bool filterStyle = false;
+        bool filterStyle;
 
         public bool FilterStyle
         {
@@ -203,7 +203,7 @@ namespace TerraViewer
 
         private void WwtCombo_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
 
             if (Enabled)
             {
@@ -215,7 +215,7 @@ namespace TerraViewer
                 g.DrawImage(edit[(int)State.Disabled], new Rectangle(0, 0, Width - 26, 33), new Rectangle(0, 0, Width - 26, 33), GraphicsUnit.Pixel);
                 g.DrawImage(drop[(int)State.Disabled], Width - 26, 0);
             }
-            RectangleF rectText = new RectangleF(6, 9, Width - 32, Height-19);
+            var rectText = new RectangleF(6, 9, Width - 32, Height-19);
             g.DrawString(this.Text,UiTools.StandardRegular,UiTools.StadardTextBrush,rectText,UiTools.StringFormatThumbnails);
 
 
@@ -231,8 +231,8 @@ namespace TerraViewer
             }
             set
             { 
-                int index = 0;
-                foreach (object ob in Items)
+                var index = 0;
+                foreach (var ob in Items)
                 {
                     if (value is string)
                     {
@@ -329,7 +329,7 @@ namespace TerraViewer
                     {
                         FilterDropDownList.Width = Width;
                     }
-                    Rectangle rect = Screen.GetBounds(this);
+                    var rect = Screen.GetBounds(this);
 
                     if (FilterDropDownList.Bottom > rect.Bottom)
                     {

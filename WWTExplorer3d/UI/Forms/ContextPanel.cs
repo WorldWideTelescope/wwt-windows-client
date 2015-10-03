@@ -21,8 +21,9 @@ namespace TerraViewer
             FilterCombo.Tag = Classification.Unfiltered;
             
         }
-        Bitmap layerButton = global::TerraViewer.Properties.Resources.layersButton;
-        Bitmap layerButtonHover = global::TerraViewer.Properties.Resources.layersButtonHover;
+
+        readonly Bitmap layerButton = global::TerraViewer.Properties.Resources.layersButton;
+        readonly Bitmap layerButtonHover = global::TerraViewer.Properties.Resources.layersButtonHover;
 
         private void SetUiStrings()
         {
@@ -96,7 +97,7 @@ namespace TerraViewer
         }
         string constellation= " ";
 
-        bool contextAreaChanged = false;
+        bool contextAreaChanged;
 
         public string Constellation
         {
@@ -142,7 +143,7 @@ namespace TerraViewer
             }
         }
 
-        bool sandbox = false;
+        bool sandbox;
 
         public bool Sandbox
         {
@@ -151,7 +152,7 @@ namespace TerraViewer
         }
 
         double distance = 1;
-        bool lastSandbox = false;
+        bool lastSandbox;
 
         public double Distance
         {
@@ -173,7 +174,7 @@ namespace TerraViewer
             }
         }    
         
-        Coordinates[] cornersLast = null;
+        Coordinates[] cornersLast;
 
         public void SetViewRect(Coordinates[] corners)
         {
@@ -181,10 +182,10 @@ namespace TerraViewer
             {
                 return;
             }
-            bool change = false;
+            var change = false;
             if (this.cornersLast != null)
             {
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     if (this.cornersLast[i] != corners[i])
                     {
@@ -230,15 +231,15 @@ namespace TerraViewer
             }
         }
         static string lastTracking = "";
-        bool autoRestore = false;
+        bool autoRestore;
         private void searchTimer_Tick(object sender, EventArgs e)
         {
-            bool space = Earth3d.MainWindow.Space;
+            var space = Earth3d.MainWindow.Space;
             studyOpacity.Value = (int)Earth3d.MainWindow.StudyOpacity;
             UpdateVisibility(space);
 
-            Rectangle rect = this.RectangleToScreen(this.ClientRectangle);
-            bool inside = rect.Contains(Cursor.Position) || Earth3d.TouchKiosk || !(TourPlayer.Playing || Earth3d.FullScreen || Properties.Settings.Default.AutoHideContext);
+            var rect = this.RectangleToScreen(this.ClientRectangle);
+            var inside = rect.Contains(Cursor.Position) || Earth3d.TouchKiosk || !(TourPlayer.Playing || Earth3d.FullScreen || Properties.Settings.Default.AutoHideContext);
 
             if (inside != fader.TargetState)
             {
@@ -286,7 +287,7 @@ namespace TerraViewer
         {
             if (contextResults.Items.Count > 0)
             {
-                IImageSet im = contextResults.Items[0] as IImageSet;
+                var im = contextResults.Items[0] as IImageSet;
                 if (im != null)
                 {
                     if (im.DataSetType == ImageSetType.Panorama)
@@ -302,11 +303,11 @@ namespace TerraViewer
             paginator1.TotalPages = 1;
 
 
-            foreach (object o in Earth3d.MainWindow.ExplorerRoot.Children)
+            foreach (var o in Earth3d.MainWindow.ExplorerRoot.Children)
             {
                 if (o is Folder)
                 {
-                    Folder f = (Folder)o;
+                    var f = (Folder)o;
                     if (f.Name == "Panoramas")
                     {
                         AddChildern(f);
@@ -320,7 +321,7 @@ namespace TerraViewer
 
         void AddChildern(Folder folder)
         {
-            foreach (object o1 in folder.Children)
+            foreach (var o1 in folder.Children)
             {
                 if (o1 is Folder)
                 {
@@ -396,7 +397,7 @@ namespace TerraViewer
 
 
 
-                bool solarSystem = Earth3d.MainWindow.SolarSystemMode;
+                var solarSystem = Earth3d.MainWindow.SolarSystemMode;
                 studyOpacity.Visible = (Earth3d.MainWindow.StudyImageset != null);
                 trackingTarget.Visible = (state != WindowsStates.StatusOnly) && solarSystem;
                 contextResults.Visible = state != WindowsStates.StatusOnly;
@@ -482,8 +483,8 @@ namespace TerraViewer
                 contextResults.Clear();
                 paginator1.CurrentPage = 1;
                 paginator1.TotalPages = 1;
-                float searchDistance = (float)Math.Min((0.4617486132350 * ((4.0 * (Earth3d.MainWindow.ZoomFactor / 180)) + 0.000001)), 1.4142135623730950488016887242097);
-                IPlace[] results = ContextSearch.FindConteallationObjectsInCone(planet, Earth3d.MainWindow.ViewLong/15, Earth3d.MainWindow.ViewLat, searchDistance, (Classification)FilterCombo.Tag);
+                var searchDistance = (float)Math.Min((0.4617486132350 * ((4.0 * (Earth3d.MainWindow.ZoomFactor / 180)) + 0.000001)), 1.4142135623730950488016887242097);
+                var results = ContextSearch.FindConteallationObjectsInCone(planet, Earth3d.MainWindow.ViewLong/15, Earth3d.MainWindow.ViewLat, searchDistance, (Classification)FilterCombo.Tag);
                 
                 if (results != null)
                 {
@@ -502,10 +503,10 @@ namespace TerraViewer
 
                 //Place[] results = ContextSearch.FindConteallationObjects(Constellations.Abbreviation(constellation), cornersLast, (Classification)FilterCombo.Tag);
 
-                Vector3d cornerUl = Coordinates.RADecTo3d(cornersLast[0].RA, cornersLast[0].Dec,1);
-                Vector3d cornerLR = Coordinates.RADecTo3d(cornersLast[2].RA, cornersLast[2].Dec,1);
-                Vector3d dist = Vector3d.Subtract(cornerLR, cornerUl);
-                IPlace[] results = ContextSearch.FindConteallationObjectsInCone("SolarSystem", Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
+                var cornerUl = Coordinates.RADecTo3d(cornersLast[0].RA, cornersLast[0].Dec,1);
+                var cornerLR = Coordinates.RADecTo3d(cornersLast[2].RA, cornersLast[2].Dec,1);
+                var dist = Vector3d.Subtract(cornerLR, cornerUl);
+                var results = ContextSearch.FindConteallationObjectsInCone("SolarSystem", Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
                 if (results != null)
                 {
                     contextResults.AddRange(results);
@@ -531,7 +532,7 @@ namespace TerraViewer
         {
             if (contextResults.Items.Count > 0)
             {
-                IPlace pl = contextResults.Items[0] as IPlace;
+                var pl = contextResults.Items[0] as IPlace;
                 if (pl != null)
                 {
                     if (pl.Classification == Classification.SolarSystem)
@@ -545,7 +546,7 @@ namespace TerraViewer
             paginator1.CurrentPage = 1;
             paginator1.TotalPages = 1;
 
-            IPlace[] results = ContextSearch.FindAllObjects("SolarSystem", Classification.SolarSystem);
+            var results = ContextSearch.FindAllObjects("SolarSystem", Classification.SolarSystem);
             if (results != null)
             {
                 contextResults.AddRange(results);
@@ -572,7 +573,7 @@ namespace TerraViewer
 
             viewTarget.Items.AddRange(Enum.GetNames(typeof(ImageSetType)));
 
-            int id = Properties.Settings.Default.StartUpLookAt;
+            var id = Properties.Settings.Default.StartUpLookAt;
 
             // Last is set to a Random type at FormLoad in the Main Form if the Random mode is set
             if (Properties.Settings.Default.StartUpLookAt == 5 || Properties.Settings.Default.StartUpLookAt == 6)
@@ -617,7 +618,7 @@ namespace TerraViewer
 
         private void SetLookAtTargetLocal(ImageSetType lookAt)
         {
-            int index = 0;
+            var index = 0;
             foreach (string name in viewTarget.Items)
             {
                 if (name == lookAt.ToString())
@@ -637,7 +638,7 @@ namespace TerraViewer
                 return;
             }
             deferUpdate = true;
-            int index = 0;
+            var index = 0;
             foreach (string name in viewTarget.Items)
             {
                 if (name == Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString())
@@ -648,11 +649,11 @@ namespace TerraViewer
                 index++;
             }
             index = 0;
-            foreach(object o in ImageDataSetsCombo.Items)
+            foreach(var o in ImageDataSetsCombo.Items)
             {
                 if (o is IImageSet)
                 {
-                    IImageSet imageset = (IImageSet)o;
+                    var imageset = (IImageSet)o;
                     if (imageset == Earth3d.MainWindow.CurrentImageSet)
                     {
                         ImageDataSetsCombo.SelectedIndex = index;
@@ -663,16 +664,16 @@ namespace TerraViewer
             }
             deferUpdate = false;
         }
-        bool deferUpdate = false;
+        bool deferUpdate;
         private void LoadImageSetList()
         {
             if (viewTarget.SelectedItem == null)
             {
                 return;
             }
-            ImageSetType target = (ImageSetType)Enum.Parse(typeof(ImageSetType),viewTarget.SelectedItem.ToString());
+            var target = (ImageSetType)Enum.Parse(typeof(ImageSetType),viewTarget.SelectedItem.ToString());
             ImageDataSetsCombo.Items.Clear();
-            foreach (IImageSet set in Earth3d.ImageSets)
+            foreach (var set in Earth3d.ImageSets)
             {
                 if (set.DataSetType == target)
                 {
@@ -689,11 +690,11 @@ namespace TerraViewer
 
         private void contextResults_ItemClicked(object sender, Object e)
         {
-            IPlace place = e as IPlace;
+            var place = e as IPlace;
 
             if (place != null)
             {
-                Place p = e as Place;
+                var p = e as Place;
                 if (p != null && p.Tour != null)
                 {
                     FolderBrowser.LaunchTour(p.Tour);
@@ -733,7 +734,7 @@ namespace TerraViewer
            
             if (e is IPlace)
             {
-                IPlace p = (IPlace)e;
+                var p = (IPlace)e;
                 Earth3d.MainWindow.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
 
             }
@@ -766,7 +767,7 @@ namespace TerraViewer
                 {
                     if (ImageDataSetsCombo.SelectedItem.GetType() == typeof(String) && (String)ImageDataSetsCombo.SelectedItem == Language.GetLocalizedText(130, "Browse..."))
                     {
-                        OpenFileDialog openFile = new OpenFileDialog();
+                        var openFile = new OpenFileDialog();
                         if (openFile.ShowDialog() == DialogResult.OK)
                         {
                             try
@@ -798,7 +799,7 @@ namespace TerraViewer
                 IImageSet imageset = null;
                 if (e is IPlace)
                 {
-                    IPlace p = (IPlace)e;
+                    var p = (IPlace)e;
                     Earth3d.MainWindow.SetLabelText(p, true);
                     if (p.BackgroundImageSet != null)
                     {
@@ -845,7 +846,7 @@ namespace TerraViewer
 
         private void SetWindowState(WindowsStates newState)
         {
-            int diff=0;
+            var diff=0;
 
             switch (newState)
             {
@@ -907,7 +908,7 @@ namespace TerraViewer
         {
             if (!String.IsNullOrEmpty(constellation))
             {
-                IPlace target = Constellations.ConstellationCentroids[Constellations.Abbreviation(constellation)];
+                var target = Constellations.ConstellationCentroids[Constellations.Abbreviation(constellation)];
                 Earth3d.MainWindow.GotoTarget(target, false, false, true);
             }
 
@@ -939,7 +940,7 @@ namespace TerraViewer
 
         private void ContextPanel_Paint(object sender, PaintEventArgs e)
         {
-            Pen p = new Pen(Color.FromArgb(71, 84, 108));
+            var p = new Pen(Color.FromArgb(71, 84, 108));
             //e.Graphics.Clear(this.BackColor);
           //  e.Graphics.Clear(Color.Red);
             
@@ -1002,7 +1003,7 @@ namespace TerraViewer
         }
 
 
-        BlendState fader = new BlendState(false, 1000.0);
+        readonly BlendState fader = new BlendState(false, 1000.0);
         private void TourEditTab_MouseEnter(object sender, EventArgs e)
         {
             fader.TargetState = true;
@@ -1017,7 +1018,7 @@ namespace TerraViewer
 
         private void contextResults_ItemContextMenu(object sender, object e)
         {
-            Point pntClick = Cursor.Position;
+            var pntClick = Cursor.Position;
             if (e is IPlace)
             {
                 Earth3d.MainWindow.ShowContextMenu((IPlace)e, Earth3d.MainWindow.PointToClient(Cursor.Position), false, true);
@@ -1051,7 +1052,7 @@ namespace TerraViewer
             }
         }
 
-        bool dontClose = false;
+        bool dontClose;
         protected override bool ProcessDialogKey(Keys keyData)
         {
             if (keyData == (Keys.F4 | Keys.Alt))
@@ -1093,7 +1094,7 @@ namespace TerraViewer
             
             if (Earth3d.MainWindow.StudyImageset.WcsImage is FitsImage)
             {
-                Point pnt = scaleButton.Location;
+                var pnt = scaleButton.Location;
 
                 pnt = PointToScreen(pnt);
 

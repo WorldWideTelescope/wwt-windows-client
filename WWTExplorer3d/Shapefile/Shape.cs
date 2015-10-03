@@ -84,7 +84,7 @@ namespace ShapefileTools
     }
 
     public abstract class ComplexShapeM : ComplexShape {
-        private double[] mRange = new double[2];
+        private readonly double[] mRange = new double[2];
 
         public double MMin
         {
@@ -101,7 +101,7 @@ namespace ShapefileTools
 
     public abstract class ComplexShapeZ : ComplexShapeM
     {
-        private double[] zRange = new double[2];
+        private readonly double[] zRange = new double[2];
 
         public double ZMin
         {

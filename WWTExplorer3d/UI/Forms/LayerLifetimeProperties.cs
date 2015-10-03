@@ -35,7 +35,7 @@ namespace TerraViewer
 
         }
 
-        private Layer target = null;
+        private Layer target;
 
         public Layer Target
         {
@@ -45,10 +45,10 @@ namespace TerraViewer
 
         private void OK_Click(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
             target.StartTime = startDate.DateTimeValue;
             target.EndTime = endDate.DateTimeValue;
-            double days = UiTools.ParseAndValidateDouble(fadeTime, target.FadeSpan.Days, ref failed);
+            var days = UiTools.ParseAndValidateDouble(fadeTime, target.FadeSpan.Days, ref failed);
             try
             {
                 target.FadeSpan = TimeSpan.FromDays(Convert.ToDouble(fadeTime.Text));

@@ -36,14 +36,14 @@ namespace MicrosoftInternal.AdvancedCollections
 
     public sealed class TreeDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, System.Collections.IDictionary, System.Collections.ICollection, System.Collections.IEnumerable
     {
-        IComparer<TKey> comparer;
-        bool isAllowedDuplicates;
+        readonly IComparer<TKey> comparer;
+        readonly bool isAllowedDuplicates;
 
         int count;
-        KeyCollection keys;
+        readonly KeyCollection keys;
         internal TreeNode loopbackNode;
-        object syncRoot = new object();
-        ValueCollection values;
+        readonly object syncRoot = new object();
+        readonly ValueCollection values;
 
         public TreeDictionary()
         {
@@ -165,7 +165,7 @@ namespace MicrosoftInternal.AdvancedCollections
         {
             get
             {
-                TreeNode currentNode = loopbackNode.Parent;
+                var currentNode = loopbackNode.Parent;
                 TreeNode nextNode;
                 int comparison;
 
@@ -265,7 +265,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public bool ContainsKey(TKey key)
         {
-            TreeNode currentNode = loopbackNode.Parent;
+            var currentNode = loopbackNode.Parent;
             TreeNode nextNode;
             int comparison;
 
@@ -295,8 +295,8 @@ namespace MicrosoftInternal.AdvancedCollections
                 throw new ArgumentException("array is not large enough to store this collection", "array");
             }
 
-            TreeDictionary<TKey, TValue>.TreeNode localLoopbackNode = loopbackNode;
-            TreeDictionary<TKey, TValue>.TreeNode currentNode = localLoopbackNode.Left;
+            var localLoopbackNode = loopbackNode;
+            var currentNode = localLoopbackNode.Left;
             TreeDictionary<TKey, TValue>.TreeNode nextNode;
 
             if(currentNode == localLoopbackNode)
@@ -355,14 +355,14 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetCumulativeWeight(TKey key)
         {
-            TreeNode localLoopbackNode = loopbackNode;
-            TreeNode currentNode = localLoopbackNode.Parent;
+            var localLoopbackNode = loopbackNode;
+            var currentNode = localLoopbackNode.Parent;
             TreeNode nextNode;
-            int cumulativeWeight = 0;
+            var cumulativeWeight = 0;
             while(currentNode != localLoopbackNode)
             {
                 nextNode = currentNode.Left;
-                int comparison = comparer.Compare(key, currentNode.Key);
+                var comparison = comparer.Compare(key, currentNode.Key);
                 if(comparison >= 0)
                 {
                     if(comparison == 0)
@@ -379,8 +379,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetCumulativeWeight(TreeDictionaryKeyEnumerator<TKey, TValue> enumerator)
         {
-            TreeNode currentNode = enumerator.node;
-            TreeNode localLoopbackNode = enumerator.loopbackNode;
+            var currentNode = enumerator.node;
+            var localLoopbackNode = enumerator.loopbackNode;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -400,11 +400,11 @@ namespace MicrosoftInternal.AdvancedCollections
                 throw new InvalidOperationException("TreeDictionaryKeyEnumerator is not positioned on a valid item");
             }
 
-            int cumulativeWeight = currentNode.Left.Weight;
+            var cumulativeWeight = currentNode.Left.Weight;
 
             while(true)
             {
-                TreeNode nextNode = currentNode.Parent;
+                var nextNode = currentNode.Parent;
 
                 if(nextNode == localLoopbackNode)
                 {
@@ -421,8 +421,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetCumulativeWeight(TreeDictionaryKeyValuePairEnumerator<TKey, TValue> enumerator)
         {
-            TreeNode currentNode = enumerator.node;
-            TreeNode localLoopbackNode = enumerator.loopbackNode;
+            var currentNode = enumerator.node;
+            var localLoopbackNode = enumerator.loopbackNode;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -442,11 +442,11 @@ namespace MicrosoftInternal.AdvancedCollections
                 throw new InvalidOperationException("TreeDictionaryKeyValuePairEnumerator is not positioned on a valid item");
             }
 
-            int cumulativeWeight = currentNode.Left.Weight;
+            var cumulativeWeight = currentNode.Left.Weight;
 
             while(true)
             {
-                TreeNode nextNode = currentNode.Parent;
+                var nextNode = currentNode.Parent;
 
                 if(nextNode == localLoopbackNode)
                 {
@@ -463,8 +463,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetCumulativeWeight(TreeDictionaryValueEnumerator<TKey, TValue> enumerator)
         {
-            TreeNode currentNode = enumerator.node;
-            TreeNode localLoopbackNode = enumerator.loopbackNode;
+            var currentNode = enumerator.node;
+            var localLoopbackNode = enumerator.loopbackNode;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -484,11 +484,11 @@ namespace MicrosoftInternal.AdvancedCollections
                 throw new InvalidOperationException("TreeDictionaryValueEnumerator is not positioned on a valid item");
             }
 
-            int cumulativeWeight = currentNode.Left.Weight;
+            var cumulativeWeight = currentNode.Left.Weight;
 
             while(true)
             {
-                TreeNode nextNode = currentNode.Parent;
+                var nextNode = currentNode.Parent;
 
                 if(nextNode == localLoopbackNode)
                 {
@@ -530,13 +530,13 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetItemWeight(TKey key)
         {
-            TreeNode localLoopbackNode = loopbackNode;
-            TreeNode currentNode = localLoopbackNode.Parent;
+            var localLoopbackNode = loopbackNode;
+            var currentNode = localLoopbackNode.Parent;
             TreeNode nextNode;
             while(currentNode != localLoopbackNode)
             {
                 nextNode = currentNode.Left;
-                int comparison = comparer.Compare(key, currentNode.Key);
+                var comparison = comparer.Compare(key, currentNode.Key);
                 if(comparison >= 0)
                 {
                     if(comparison == 0)
@@ -553,8 +553,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetItemWeight(TreeDictionaryKeyEnumerator<TKey, TValue> enumerator)
         {
-            TreeNode enumeratorLoopbackNode = enumerator.loopbackNode;
-            TreeNode enumeratorNode = enumerator.node;
+            var enumeratorLoopbackNode = enumerator.loopbackNode;
+            var enumeratorNode = enumerator.node;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -579,8 +579,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetItemWeight(TreeDictionaryKeyValuePairEnumerator<TKey, TValue> enumerator)
         {
-            TreeNode enumeratorLoopbackNode = enumerator.loopbackNode;
-            TreeNode enumeratorNode = enumerator.node;
+            var enumeratorLoopbackNode = enumerator.loopbackNode;
+            var enumeratorNode = enumerator.node;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -605,8 +605,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public int GetItemWeight(TreeDictionaryValueEnumerator<TKey, TValue> enumerator)
         {
-            TreeNode enumeratorLoopbackNode = enumerator.loopbackNode;
-            TreeNode enumeratorNode = enumerator.node;
+            var enumeratorLoopbackNode = enumerator.loopbackNode;
+            var enumeratorNode = enumerator.node;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -631,8 +631,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public void SetItemWeight(TKey key, int newWeight)
         {
-            TreeNode localLoopbackNode = loopbackNode;
-            TreeNode currentNode = localLoopbackNode.Parent;
+            var localLoopbackNode = loopbackNode;
+            var currentNode = localLoopbackNode.Parent;
             TreeNode nextNode;
             while(true)
             {
@@ -640,7 +640,7 @@ namespace MicrosoftInternal.AdvancedCollections
                     throw new ArgumentException("key does not exist in the tree", "key");
 
                 nextNode = currentNode.Left;
-                int comparison = comparer.Compare(key, currentNode.Key);
+                var comparison = comparer.Compare(key, currentNode.Key);
                 if(comparison >= 0)
                 {
                     if(comparison == 0)
@@ -666,8 +666,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public void SetItemWeight(TreeDictionaryKeyEnumerator<TKey, TValue> enumerator, int newWeight)
         {
-            TreeNode enumeratorLoopbackNode = enumerator.loopbackNode;
-            TreeNode enumeratorNode = enumerator.node;
+            var enumeratorLoopbackNode = enumerator.loopbackNode;
+            var enumeratorNode = enumerator.node;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -702,8 +702,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public void SetItemWeight(TreeDictionaryKeyValuePairEnumerator<TKey, TValue> enumerator, int newWeight)
         {
-            TreeNode enumeratorLoopbackNode = enumerator.loopbackNode;
-            TreeNode enumeratorNode = enumerator.node;
+            var enumeratorLoopbackNode = enumerator.loopbackNode;
+            var enumeratorNode = enumerator.node;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -737,8 +737,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public void SetItemWeight(TreeDictionaryValueEnumerator<TKey, TValue> enumerator, int newWeight)
         {
-            TreeNode enumeratorLoopbackNode = enumerator.loopbackNode;
-            TreeNode enumeratorNode = enumerator.node;
+            var enumeratorLoopbackNode = enumerator.loopbackNode;
+            var enumeratorNode = enumerator.node;
 
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
@@ -807,7 +807,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public bool Remove(TKey key)
         {
-            TreeNode currentNode = loopbackNode.Parent;
+            var currentNode = loopbackNode.Parent;
             TreeNode nextNode;
             int comparison;
 
@@ -841,8 +841,8 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 throw new InvalidOperationException("enumerator not positioned on a valid item");
             }
-            TreeDictionary<TKey, TValue>.TreeNode deleteNode = enumerator.node;
-            bool result = enumerator.MoveNext();
+            var deleteNode = enumerator.node;
+            var result = enumerator.MoveNext();
             Remove(deleteNode);
             return result;
         }
@@ -857,8 +857,8 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 throw new InvalidOperationException("enumerator not positioned on a valid item");
             }
-            TreeDictionary<TKey, TValue>.TreeNode deleteNode = enumerator.node;
-            bool result = enumerator.MoveNext();
+            var deleteNode = enumerator.node;
+            var result = enumerator.MoveNext();
             Remove(deleteNode);
             return result;
         }
@@ -873,8 +873,8 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 throw new InvalidOperationException("enumerator not positioned on a valid item");
             }
-            TreeDictionary<TKey, TValue>.TreeNode deleteNode = enumerator.node;
-            bool result = enumerator.MoveNext();
+            var deleteNode = enumerator.node;
+            var result = enumerator.MoveNext();
             Remove(deleteNode);
             return result;
         }
@@ -883,7 +883,7 @@ namespace MicrosoftInternal.AdvancedCollections
         public bool TryGetFromKey(TKey key, TraversalStartingPoint startingPoint, out KeyValuePair<TKey, TValue> keyValuePair)
         {
             TreeNode previousValidNode = null;
-            TreeNode currentNode = loopbackNode.Parent;
+            var currentNode = loopbackNode.Parent;
             int comparison;
 
             switch(startingPoint)
@@ -1023,7 +1023,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public bool TryGetFromWeight(int weight, out KeyValuePair<TKey, TValue> keyValuePair)
         {
-            TreeNode localLoopbackNode = loopbackNode;
+            var localLoopbackNode = loopbackNode;
             TreeNode currentNode;
 
             if(weight == 0)
@@ -1066,8 +1066,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
             while(true)
             {
-                TreeNode nextNode = currentNode.Left;
-                int leftWeight = nextNode.Weight;
+                var nextNode = currentNode.Left;
+                var leftWeight = nextNode.Weight;
                 if(weight < leftWeight)
                 {
                     currentNode = nextNode;
@@ -1077,7 +1077,7 @@ namespace MicrosoftInternal.AdvancedCollections
                     weight -= leftWeight;
                     nextNode = currentNode.Right;
 
-                    int weightAtNode = currentNode.Weight - leftWeight - nextNode.Weight;
+                    var weightAtNode = currentNode.Weight - leftWeight - nextNode.Weight;
 
                     if(weight < weightAtNode)
                     {
@@ -1095,7 +1095,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            TreeNode currentNode = loopbackNode.Parent;
+            var currentNode = loopbackNode.Parent;
             int comparison;
             while(currentNode != loopbackNode)
             {
@@ -1310,7 +1310,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 TreeNode newParentNode;
                 newNode = loopbackNode.Parent;
                 int comparison;
-                int cumulativeWeight = 0;
+                var cumulativeWeight = 0;
                 do
                 {
                     newParentNode = newNode;
@@ -1458,7 +1458,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         private void AddDictionary(IDictionary<TKey, TValue> dictionary)
         {
-            foreach(KeyValuePair<TKey, TValue> keyValuePair in dictionary)
+            foreach(var keyValuePair in dictionary)
             {
                 this.Add(keyValuePair.Key, keyValuePair.Value);
             }
@@ -1469,13 +1469,13 @@ namespace MicrosoftInternal.AdvancedCollections
         {
             --count;
 
-            TreeNode firstNode = removeNode.Left;
-            TreeNode secondNode = removeNode.Right;
+            var firstNode = removeNode.Left;
+            var secondNode = removeNode.Right;
 
-            TreeNode parentNode = removeNode.Parent;
+            var parentNode = removeNode.Parent;
             TreeNode tempNode;
 
-            int changeUppwardWeight = removeNode.Weight - firstNode.Weight - secondNode.Weight;
+            var changeUppwardWeight = removeNode.Weight - firstNode.Weight - secondNode.Weight;
             if(changeUppwardWeight != 0)
             {
                 for(tempNode = parentNode; tempNode != loopbackNode; tempNode = tempNode.Parent)
@@ -1730,10 +1730,10 @@ namespace MicrosoftInternal.AdvancedCollections
 
         private void RotateLeft(TreeNode rotateNode)
         {
-            TreeNode rightNode = rotateNode.Right;
-            TreeNode tempNode = rightNode.Left;
+            var rightNode = rotateNode.Right;
+            var tempNode = rightNode.Left;
 
-            int nodeWeight = rightNode.Weight;
+            var nodeWeight = rightNode.Weight;
             rightNode.Weight = rotateNode.Weight;
             rotateNode.Weight += tempNode.Weight - nodeWeight;
 
@@ -1765,10 +1765,10 @@ namespace MicrosoftInternal.AdvancedCollections
 
         private void RotateRight(TreeNode rotateNode)
         {
-            TreeNode leftNode = rotateNode.Left;
-            TreeNode tempNode = leftNode.Right;
+            var leftNode = rotateNode.Left;
+            var tempNode = leftNode.Right;
 
-            int nodeWeight = leftNode.Weight;
+            var nodeWeight = leftNode.Weight;
             leftNode.Weight = rotateNode.Weight;
             rotateNode.Weight += tempNode.Weight - nodeWeight;
 
@@ -1805,7 +1805,7 @@ namespace MicrosoftInternal.AdvancedCollections
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
         public sealed class KeyCollection : ICollection<TKey>, IEnumerable<TKey>, System.Collections.ICollection, System.Collections.IEnumerable
         {
-            private TreeDictionary<TKey, TValue> tree;
+            private readonly TreeDictionary<TKey, TValue> tree;
 
             internal KeyCollection(TreeDictionary<TKey, TValue> tree)
             {
@@ -1828,8 +1828,8 @@ namespace MicrosoftInternal.AdvancedCollections
                     throw new ArgumentException("array is not large enough to store this collection", "array");
                 }
 
-                TreeDictionary<TKey, TValue>.TreeNode localLoopbackNode = tree.loopbackNode;
-                TreeDictionary<TKey, TValue>.TreeNode currentNode = localLoopbackNode.Left;
+                var localLoopbackNode = tree.loopbackNode;
+                var currentNode = localLoopbackNode.Left;
                 TreeDictionary<TKey, TValue>.TreeNode nextNode;
 
                 if(currentNode == localLoopbackNode)
@@ -1949,7 +1949,7 @@ namespace MicrosoftInternal.AdvancedCollections
             public bool TryGetFromKey(TKey key, TraversalStartingPoint startingPoint, out TKey outKey)
             {
                 TreeNode previousValidNode = null;
-                TreeNode currentNode = tree.loopbackNode.Parent;
+                var currentNode = tree.loopbackNode.Parent;
                 int comparison;
 
                 switch(startingPoint)
@@ -2089,7 +2089,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             public bool TryGetFromWeight(int weight, out TKey outKey)
             {
-                TreeNode localLoopbackNode = tree.loopbackNode;
+                var localLoopbackNode = tree.loopbackNode;
                 TreeNode currentNode;
 
                 if(weight == 0)
@@ -2132,8 +2132,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
                 while(true)
                 {
-                    TreeNode nextNode = currentNode.Left;
-                    int leftWeight = nextNode.Weight;
+                    var nextNode = currentNode.Left;
+                    var leftWeight = nextNode.Weight;
                     if(weight < leftWeight)
                     {
                         currentNode = nextNode;
@@ -2143,7 +2143,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         weight -= leftWeight;
                         nextNode = currentNode.Right;
 
-                        int weightAtNode = currentNode.Weight - leftWeight - nextNode.Weight;
+                        var weightAtNode = currentNode.Weight - leftWeight - nextNode.Weight;
 
                         if(weight < weightAtNode)
                         {
@@ -2239,10 +2239,10 @@ namespace MicrosoftInternal.AdvancedCollections
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
             public struct StartFromKeyCollection : IEnumerable<TKey>
             {
-                TreeDictionary<TKey, TValue> tree;
-                TKey key;
-                TraversalStartingPoint startingPoint;
-                TraversalDirection direction;
+                readonly TreeDictionary<TKey, TValue> tree;
+                readonly TKey key;
+                readonly TraversalStartingPoint startingPoint;
+                readonly TraversalDirection direction;
 
                 internal StartFromKeyCollection(TreeDictionary<TKey, TValue> tree, TKey key, TraversalStartingPoint startingPoint, TraversalDirection direction)
                 {
@@ -2308,11 +2308,11 @@ namespace MicrosoftInternal.AdvancedCollections
                         throw new InvalidOperationException("StartFromKeyCollection must be initialized before use");
                     }
 
-                    TreeNode loopbackNode = tree.loopbackNode;
-                    IComparer<TKey> comparer = tree.comparer;
+                    var loopbackNode = tree.loopbackNode;
+                    var comparer = tree.comparer;
 
-                    TreeNode previousValidNode = loopbackNode;
-                    TreeNode currentNode = previousValidNode.Parent;
+                    var previousValidNode = loopbackNode;
+                    var currentNode = previousValidNode.Parent;
                     int comparison;
                     bool isEqualSeen;
 
@@ -2543,9 +2543,9 @@ namespace MicrosoftInternal.AdvancedCollections
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
             public struct StartFromWeightCollection : IEnumerable<TKey>
             {
-                TreeDictionary<TKey, TValue> tree;
+                readonly TreeDictionary<TKey, TValue> tree;
                 int weight;
-                TraversalDirection direction;
+                readonly TraversalDirection direction;
 
                 internal StartFromWeightCollection(TreeDictionary<TKey, TValue> tree, int weight, TraversalDirection direction)
                 {
@@ -2609,10 +2609,10 @@ namespace MicrosoftInternal.AdvancedCollections
                         throw new InvalidOperationException("StartFromWeightCollection must be initialized before use");
                     }
 
-                    TreeNode loopbackNode = tree.loopbackNode;
+                    var loopbackNode = tree.loopbackNode;
 
-                    TreeNode previousValidNode = loopbackNode;
-                    TreeNode currentNode = loopbackNode.Parent;
+                    var previousValidNode = loopbackNode;
+                    var currentNode = loopbackNode.Parent;
                     TreeNode nextNode;
 
                     if(currentNode.Weight < weight)
@@ -2630,7 +2630,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         while(true)
                         {
                             nextNode = currentNode.Left;
-                            int leftNodeWeight = nextNode.Weight;
+                            var leftNodeWeight = nextNode.Weight;
                             if(weight <= leftNodeWeight)
                             {
                                 previousValidNode = currentNode;
@@ -2691,7 +2691,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         while(true)
                         {
                             nextNode = currentNode.Right;
-                            int rightWeight = nextNode.Weight;
+                            var rightWeight = nextNode.Weight;
                             if(weight < rightWeight)
                             {
                                 currentNode = nextNode;
@@ -2700,7 +2700,7 @@ namespace MicrosoftInternal.AdvancedCollections
                             {
                                 weight -= rightWeight;
                                 nextNode = currentNode.Left;
-                                int weightAtNode = currentNode.Weight - rightWeight - nextNode.Weight;
+                                var weightAtNode = currentNode.Weight - rightWeight - nextNode.Weight;
 
                                 if(weight < weightAtNode)
                                 {
@@ -2751,8 +2751,8 @@ namespace MicrosoftInternal.AdvancedCollections
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
             public struct StartFromDirectionCollection : IEnumerable<TKey>
             {
-                TreeDictionary<TKey, TValue> tree;
-                TraversalDirection direction;
+                readonly TreeDictionary<TKey, TValue> tree;
+                readonly TraversalDirection direction;
 
                 internal StartFromDirectionCollection(TreeDictionary<TKey, TValue> tree, TraversalDirection direction)
                 {
@@ -2864,10 +2864,10 @@ namespace MicrosoftInternal.AdvancedCollections
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
         public struct StartFromKeyCollection : IEnumerable<KeyValuePair<TKey, TValue>>
         {
-            TreeDictionary<TKey, TValue> tree;
-            TKey key;
-            TraversalStartingPoint startingPoint;
-            TraversalDirection direction;
+            readonly TreeDictionary<TKey, TValue> tree;
+            readonly TKey key;
+            readonly TraversalStartingPoint startingPoint;
+            readonly TraversalDirection direction;
 
             internal StartFromKeyCollection(TreeDictionary<TKey, TValue> tree, TKey key, TraversalStartingPoint startingPoint, TraversalDirection direction)
             {
@@ -2933,11 +2933,11 @@ namespace MicrosoftInternal.AdvancedCollections
                     throw new InvalidOperationException("StartFromKeyCollection must be initialized before use");
                 }
 
-                TreeNode loopbackNode = tree.loopbackNode;
-                IComparer<TKey> comparer = tree.comparer;
+                var loopbackNode = tree.loopbackNode;
+                var comparer = tree.comparer;
 
-                TreeNode previousValidNode = loopbackNode;
-                TreeNode currentNode = loopbackNode.Parent;
+                var previousValidNode = loopbackNode;
+                var currentNode = loopbackNode.Parent;
                 int comparison;
                 bool isEqualSeen;
 
@@ -3169,9 +3169,9 @@ namespace MicrosoftInternal.AdvancedCollections
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
         public struct StartFromWeightCollection : IEnumerable<KeyValuePair<TKey, TValue>>
         {
-            TreeDictionary<TKey, TValue> tree;
+            readonly TreeDictionary<TKey, TValue> tree;
             int weight;
-            TraversalDirection direction;
+            readonly TraversalDirection direction;
 
             internal StartFromWeightCollection(TreeDictionary<TKey, TValue> tree, int weight, TraversalDirection direction)
             {
@@ -3235,10 +3235,10 @@ namespace MicrosoftInternal.AdvancedCollections
                     throw new InvalidOperationException("StartFromWeightCollection must be initialized before use");
                 }
 
-                TreeNode loopbackNode = tree.loopbackNode;
+                var loopbackNode = tree.loopbackNode;
 
-                TreeNode previousValidNode = loopbackNode;
-                TreeNode currentNode = loopbackNode.Parent;
+                var previousValidNode = loopbackNode;
+                var currentNode = loopbackNode.Parent;
                 TreeNode nextNode;
 
                 if(currentNode.Weight < weight)
@@ -3256,7 +3256,7 @@ namespace MicrosoftInternal.AdvancedCollections
                     while(true)
                     {
                         nextNode = currentNode.Left;
-                        int leftNodeWeight = nextNode.Weight;
+                        var leftNodeWeight = nextNode.Weight;
                         if(weight <= leftNodeWeight)
                         {
                             previousValidNode = currentNode;
@@ -3317,7 +3317,7 @@ namespace MicrosoftInternal.AdvancedCollections
                     while(true)
                     {
                         nextNode = currentNode.Right;
-                        int rightWeight = nextNode.Weight;
+                        var rightWeight = nextNode.Weight;
                         if(weight < rightWeight)
                         {
                             currentNode = nextNode;
@@ -3326,7 +3326,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         {
                             weight -= rightWeight;
                             nextNode = currentNode.Left;
-                            int weightAtNode = currentNode.Weight - rightWeight - nextNode.Weight;
+                            var weightAtNode = currentNode.Weight - rightWeight - nextNode.Weight;
 
                             if(weight < weightAtNode)
                             {
@@ -3378,8 +3378,8 @@ namespace MicrosoftInternal.AdvancedCollections
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
         public struct StartFromDirectionCollection : IEnumerable<KeyValuePair<TKey, TValue>>
         {
-            TreeDictionary<TKey, TValue> tree;
-            TraversalDirection direction;
+            readonly TreeDictionary<TKey, TValue> tree;
+            readonly TraversalDirection direction;
 
             internal StartFromDirectionCollection(TreeDictionary<TKey, TValue> tree, TraversalDirection direction)
             {
@@ -3518,7 +3518,7 @@ namespace MicrosoftInternal.AdvancedCollections
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
         public sealed class ValueCollection : ICollection<TValue>, IEnumerable<TValue>, System.Collections.ICollection, System.Collections.IEnumerable
         {
-            private TreeDictionary<TKey, TValue> tree;
+            private readonly TreeDictionary<TKey, TValue> tree;
 
             internal ValueCollection(TreeDictionary<TKey, TValue> tree)
             {
@@ -3541,8 +3541,8 @@ namespace MicrosoftInternal.AdvancedCollections
                     throw new ArgumentException("array is not large enough to store this collection", "array");
                 }
 
-                TreeDictionary<TKey, TValue>.TreeNode localLoopbackNode = tree.loopbackNode;
-                TreeDictionary<TKey, TValue>.TreeNode currentNode = localLoopbackNode.Left;
+                var localLoopbackNode = tree.loopbackNode;
+                var currentNode = localLoopbackNode.Left;
                 TreeDictionary<TKey, TValue>.TreeNode nextNode;
 
                 if(currentNode == localLoopbackNode)
@@ -3663,7 +3663,7 @@ namespace MicrosoftInternal.AdvancedCollections
             public bool TryGetFromKey(TKey key, TraversalStartingPoint startingPoint, out TValue value)
             {
                 TreeNode previousValidNode = null;
-                TreeNode currentNode = tree.loopbackNode.Parent;
+                var currentNode = tree.loopbackNode.Parent;
                 int comparison;
 
                 switch(startingPoint)
@@ -3803,7 +3803,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             public bool TryGetFromWeight(int weight, out TValue value)
             {
-                TreeNode localLoopbackNode = tree.loopbackNode;
+                var localLoopbackNode = tree.loopbackNode;
                 TreeNode currentNode;
 
                 if(weight == 0)
@@ -3846,8 +3846,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
                 while(true)
                 {
-                    TreeNode nextNode = currentNode.Left;
-                    int leftWeight = nextNode.Weight;
+                    var nextNode = currentNode.Left;
+                    var leftWeight = nextNode.Weight;
                     if(weight < leftWeight)
                     {
                         currentNode = nextNode;
@@ -3857,7 +3857,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         weight -= leftWeight;
                         nextNode = currentNode.Right;
 
-                        int weightAtNode = currentNode.Weight - leftWeight - nextNode.Weight;
+                        var weightAtNode = currentNode.Weight - leftWeight - nextNode.Weight;
 
                         if(weight < weightAtNode)
                         {
@@ -3953,10 +3953,10 @@ namespace MicrosoftInternal.AdvancedCollections
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
             public struct StartFromKeyCollection : IEnumerable<TValue>
             {
-                TreeDictionary<TKey, TValue> tree;
-                TKey key;
-                TraversalStartingPoint startingPoint;
-                TraversalDirection direction;
+                readonly TreeDictionary<TKey, TValue> tree;
+                readonly TKey key;
+                readonly TraversalStartingPoint startingPoint;
+                readonly TraversalDirection direction;
 
                 internal StartFromKeyCollection(TreeDictionary<TKey, TValue> tree, TKey key, TraversalStartingPoint startingPoint, TraversalDirection direction)
                 {
@@ -4022,11 +4022,11 @@ namespace MicrosoftInternal.AdvancedCollections
                         throw new InvalidOperationException("StartFromKeyCollection must be initialized before use");
                     }
 
-                    TreeNode loopbackNode = tree.loopbackNode;
-                    IComparer<TKey> comparer = tree.comparer;
+                    var loopbackNode = tree.loopbackNode;
+                    var comparer = tree.comparer;
 
-                    TreeNode previousValidNode = loopbackNode;
-                    TreeNode currentNode = previousValidNode.Parent;
+                    var previousValidNode = loopbackNode;
+                    var currentNode = previousValidNode.Parent;
                     int comparison;
                     bool isEqualSeen;
 
@@ -4258,9 +4258,9 @@ namespace MicrosoftInternal.AdvancedCollections
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
             public struct StartFromWeightCollection : IEnumerable<TValue>
             {
-                TreeDictionary<TKey, TValue> tree;
+                readonly TreeDictionary<TKey, TValue> tree;
                 int weight;
-                TraversalDirection direction;
+                readonly TraversalDirection direction;
 
                 internal StartFromWeightCollection(TreeDictionary<TKey, TValue> tree, int weight, TraversalDirection direction)
                 {
@@ -4324,10 +4324,10 @@ namespace MicrosoftInternal.AdvancedCollections
                         throw new InvalidOperationException("StartFromWeightCollection must be initialized before use");
                     }
 
-                    TreeNode loopbackNode = tree.loopbackNode;
+                    var loopbackNode = tree.loopbackNode;
 
-                    TreeNode previousValidNode = loopbackNode;
-                    TreeNode currentNode = loopbackNode.Parent;
+                    var previousValidNode = loopbackNode;
+                    var currentNode = loopbackNode.Parent;
                     TreeNode nextNode;
 
                     if(currentNode.Weight < weight)
@@ -4345,7 +4345,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         while(true)
                         {
                             nextNode = currentNode.Left;
-                            int leftNodeWeight = nextNode.Weight;
+                            var leftNodeWeight = nextNode.Weight;
                             if(weight <= leftNodeWeight)
                             {
                                 previousValidNode = currentNode;
@@ -4406,7 +4406,7 @@ namespace MicrosoftInternal.AdvancedCollections
                         while(true)
                         {
                             nextNode = currentNode.Right;
-                            int rightWeight = nextNode.Weight;
+                            var rightWeight = nextNode.Weight;
                             if(weight < rightWeight)
                             {
                                 currentNode = nextNode;
@@ -4415,7 +4415,7 @@ namespace MicrosoftInternal.AdvancedCollections
                             {
                                 weight -= rightWeight;
                                 nextNode = currentNode.Left;
-                                int weightAtNode = currentNode.Weight - rightWeight - nextNode.Weight;
+                                var weightAtNode = currentNode.Weight - rightWeight - nextNode.Weight;
 
                                 if(weight < weightAtNode)
                                 {
@@ -4467,8 +4467,8 @@ namespace MicrosoftInternal.AdvancedCollections
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034", Justification = "This is the standard design for similar collections like the SortedDictionary class")]
             public struct StartFromDirectionCollection : IEnumerable<TValue>
             {
-                TreeDictionary<TKey, TValue> tree;
-                TraversalDirection direction;
+                readonly TreeDictionary<TKey, TValue> tree;
+                readonly TraversalDirection direction;
 
                 internal StartFromDirectionCollection(TreeDictionary<TKey, TValue> tree, TraversalDirection direction)
                 {
@@ -4596,17 +4596,17 @@ namespace MicrosoftInternal.AdvancedCollections
             }
             Debug.Assert(loopbackNode.Right == rightMost);
 
-            int blackDepth = 0;
-            TreeNode node = loopbackNode.Parent;
+            var blackDepth = 0;
+            var node = loopbackNode.Parent;
             while(node != loopbackNode) {
                 if(!node.IsRed)
                     blackDepth++;
                 node = node.Left;
             }
 
-            int minDepth = int.MaxValue;
-            int maxDepth = 0;
-            int verifyCount = 0;
+            var minDepth = int.MaxValue;
+            var maxDepth = 0;
+            var verifyCount = 0;
             VerifyTraverseTree(loopbackNode, loopbackNode.Parent, 1, blackDepth, ref maxDepth, ref minDepth, ref verifyCount, checkWeights);
 
             Debug.Assert(maxDepth <= minDepth * 2);

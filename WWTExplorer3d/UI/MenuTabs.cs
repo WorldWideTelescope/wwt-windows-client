@@ -17,18 +17,18 @@ namespace TerraViewer
 
     public partial class MenuTabs : UserControl
     {
-        Bitmap tabHoverTab = global::TerraViewer.Properties.Resources.tabHoverTab;
-        Bitmap tabHoverMenu = global::TerraViewer.Properties.Resources.tabHoverMenu;
-        Bitmap selectedTab = global::TerraViewer.Properties.Resources.tabSelected;
-        Bitmap selectedHoverTab = global::TerraViewer.Properties.Resources.tabSelectedHover;
+        readonly Bitmap tabHoverTab = global::TerraViewer.Properties.Resources.tabHoverTab;
+        readonly Bitmap tabHoverMenu = global::TerraViewer.Properties.Resources.tabHoverMenu;
+        readonly Bitmap selectedTab = global::TerraViewer.Properties.Resources.tabSelected;
+        readonly Bitmap selectedHoverTab = global::TerraViewer.Properties.Resources.tabSelectedHover;
         Bitmap hoverTab = global::TerraViewer.Properties.Resources.tabHover;
-        Bitmap tourSelectedTab = global::TerraViewer.Properties.Resources.tourSelected;
-        Bitmap tourHoverTab = global::TerraViewer.Properties.Resources.tourHover;
-        Bitmap tourSelectedHoverTab = global::TerraViewer.Properties.Resources.tourSelectedHover;
-        Bitmap closeRest = global::TerraViewer.Properties.Resources.CloseRest;
-        Bitmap closeHover = global::TerraViewer.Properties.Resources.CloseHover;
-        Bitmap closePush = global::TerraViewer.Properties.Resources.ClosePush;
-        Bitmap menuArrow = global::TerraViewer.Properties.Resources.menuArrow;
+        readonly Bitmap tourSelectedTab = global::TerraViewer.Properties.Resources.tourSelected;
+        readonly Bitmap tourHoverTab = global::TerraViewer.Properties.Resources.tourHover;
+        readonly Bitmap tourSelectedHoverTab = global::TerraViewer.Properties.Resources.tourSelectedHover;
+        readonly Bitmap closeRest = global::TerraViewer.Properties.Resources.CloseRest;
+        readonly Bitmap closeHover = global::TerraViewer.Properties.Resources.CloseHover;
+        readonly Bitmap closePush = global::TerraViewer.Properties.Resources.ClosePush;
+        readonly Bitmap menuArrow = global::TerraViewer.Properties.Resources.menuArrow;
 
         public event TabClickedEventHandler TabClicked;
         public event MenuClickedEventHandler MenuClicked;
@@ -48,7 +48,7 @@ namespace TerraViewer
             InitializeComponent();
 
         }
-        int freezeCount = 0;
+        int freezeCount;
 
         public bool Frozen
         {
@@ -109,15 +109,15 @@ namespace TerraViewer
 
             }
         }
-        private List<string> tabs = null;
-        private List<TourDocument> tours = null;
+        private readonly List<string> tabs;
+        private readonly List<TourDocument> tours;
 
         public List<TourDocument> Tours
         {
             get { return tours; }
         }
 
-        TourDocument currentTour = null;
+        TourDocument currentTour;
 
         public TourDocument CurrentTour
         {
@@ -125,7 +125,7 @@ namespace TerraViewer
             set { currentTour = value; }
         }
 
-        int selectedTabIndex = 0;
+        int selectedTabIndex;
 
         public int SelectedTabIndex
         {
@@ -133,16 +133,16 @@ namespace TerraViewer
             set { selectedTabIndex = value; }
         }
         int hoverTabIndex = -1;
-        int startX = 0;
+        int startX;
 
         public int StartX
         {
             get { return startX; }
             set { startX = value; }
         }
-        bool onCloseButton = false;
-        bool onMenuArrow = false;
-        bool onSignOut = false;
+        bool onCloseButton;
+        bool onMenuArrow;
+        bool onSignOut;
         public void AddTour(TourDocument tour)
         {
             tours.Add(tour);
@@ -162,10 +162,10 @@ namespace TerraViewer
 
         public void FocusTour(TourDocument targetTour)
         {
-            int index = 0;
-            int maxIndex = (tabs.Count);
+            var index = 0;
+            var maxIndex = (tabs.Count);
 
-            foreach (TourDocument tour in Tours)
+            foreach (var tour in Tours)
             {
                 if (tour == targetTour)
                 {
@@ -188,19 +188,19 @@ namespace TerraViewer
             {
                 startX = 0;
             }
-            Graphics g = e.Graphics;
-            Font font = new Font("Segoe UI", 10, FontStyle.Regular);
+            var g = e.Graphics;
+            var font = new Font("Segoe UI", 10, FontStyle.Regular);
             Brush brush = new SolidBrush(Color.White);
-            int tabIndex = 0;
-            StringFormat format = new StringFormat();
+            var tabIndex = 0;
+            var format = new StringFormat();
             format.Alignment = StringAlignment.Center;
             format.Trimming = StringTrimming.EllipsisCharacter;
             format.FormatFlags = StringFormatFlags.NoWrap;
 
 
-            foreach (string tab in tabs)
+            foreach (var tab in tabs)
             {
-                bool selectedOrHovered = (tabIndex == selectedTabIndex && (hoverTabIndex == -1)) || tabIndex == hoverTabIndex;
+                var selectedOrHovered = (tabIndex == selectedTabIndex && (hoverTabIndex == -1)) || tabIndex == hoverTabIndex;
                 if (tabIndex == selectedTabIndex)
                 {
                     if (tabIndex == hoverTabIndex)
@@ -234,15 +234,15 @@ namespace TerraViewer
                 }
 
 
-                RectangleF rect = new RectangleF(((tabIndex*100)+startX),6,95,27);
+                var rect = new RectangleF(((tabIndex*100)+startX),6,95,27);
 
                 g.DrawString(tab, font, brush, rect,format);
                 tabIndex++;
             }
-            int j = 0;
-            foreach (TourDocument tour in tours)
+            var j = 0;
+            foreach (var tour in tours)
             {
-                int drawPositionX = (tabIndex * 100) + startX + j * 100;
+                var drawPositionX = (tabIndex * 100) + startX + j * 100;
 
                 if (tabIndex == selectedTabIndex)
                 {
@@ -290,7 +290,7 @@ namespace TerraViewer
                 }
                 j++;
 
-                RectangleF rect = new RectangleF(drawPositionX, 6, 195, 27);
+                var rect = new RectangleF(drawPositionX, 6, 195, 27);
 
                 g.DrawString(tour.Title, font, brush, rect, format);
                 tabIndex++;
@@ -299,7 +299,7 @@ namespace TerraViewer
 
             if (Earth3d.IsLoggedIn)
             {
-                RectangleF rect2 = new RectangleF((Width - 80), 6, 80, 27);
+                var rect2 = new RectangleF((Width - 80), 6, 80, 27);
 
                 g.DrawString(Language.GetLocalizedText(1025, "Sign Out"), font, brush, rect2, format);
 
@@ -307,7 +307,7 @@ namespace TerraViewer
             }
             else
             {
-                RectangleF rect2 = new RectangleF((Width - 80), 6, 80, 27);
+                var rect2 = new RectangleF((Width - 80), 6, 80, 27);
 
                 g.DrawString(Language.GetLocalizedText(962, "Sign In"), font, brush, rect2, format);
 
@@ -343,7 +343,7 @@ namespace TerraViewer
             MouseInTabs = true;
             if (!Frozen)
             {
-                Point mouse = this.PointToClient(Cursor.Position);
+                var mouse = this.PointToClient(Cursor.Position);
 
                 hoverTabIndex = GetTabIndexFromPoint(mouse, out onCloseButton, out onMenuArrow, out onSignOut);
                 this.Refresh();
@@ -352,8 +352,8 @@ namespace TerraViewer
 
         private int GetTabIndexFromPoint(Point pnt, out bool onClose, out bool onMenu, out bool onSignOut)
         {
-            int index = (pnt.X - startX) / 100;
-            int maxIndex = (tabs.Count - 1);
+            var index = (pnt.X - startX) / 100;
+            var maxIndex = (tabs.Count - 1);
 
             onClose = false;
             onMenu = false;
@@ -369,13 +369,13 @@ namespace TerraViewer
             // Adjusts for tours being double wide...
             if (index > maxIndex)
             {
-                int tourIndex = (((index - maxIndex)+1) / 2)-1;
+                var tourIndex = (((index - maxIndex)+1) / 2)-1;
                 index = tourIndex + maxIndex+1;
 
                 if (tourIndex < tours.Count)
                 {
                     currentTour = tours[tourIndex];
-                    int closeStart = startX + (tabs.Count * 100 + tourIndex * 200) + 182;
+                    var closeStart = startX + (tabs.Count * 100 + tourIndex * 200) + 182;
 
                     if (pnt.Y > 4 && pnt.Y < 18 && pnt.X > closeStart && pnt.X < (closeStart + 13))
                     {
@@ -404,7 +404,7 @@ namespace TerraViewer
         {
             if (e.Button == MouseButtons.Left)
             {
-                int tempIndex = GetTabIndexFromPoint(e.Location, out onCloseButton, out onMenuArrow, out onSignOut);
+                var tempIndex = GetTabIndexFromPoint(e.Location, out onCloseButton, out onMenuArrow, out onSignOut);
 
                 if (onCloseButton)
                 {
@@ -464,7 +464,7 @@ namespace TerraViewer
 
         private void MenuTabs_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            int index = ((int)e.X - startX) / 100;
+            var index = ((int)e.X - startX) / 100;
 
             if (ControlEvent == null)
             {
@@ -483,7 +483,7 @@ namespace TerraViewer
             }
 
         }
-        bool mouseDown = false;
+        bool mouseDown;
         private void MenuTabs_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;

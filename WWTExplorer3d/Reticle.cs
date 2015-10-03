@@ -22,7 +22,7 @@ namespace TerraViewer
         public static Dictionary<int, Reticle> Reticles = new Dictionary<int, Reticle>();
         public int Id = 0;
         public Color Color = Color.Red;
-        double alt = 0;
+        double alt;
 
         public double Alt
         {
@@ -41,7 +41,7 @@ namespace TerraViewer
             }
         }
 
-        double az = 0;
+        double az;
 
         public double Az
         {
@@ -106,49 +106,49 @@ namespace TerraViewer
 
         public BlendState Visible = new BlendState(false, 1000, 0);
 
-        static Texture11 reticleImage = null;
+        static Texture11 reticleImage;
 
-        static PositionColoredTextured[] points = new PositionColoredTextured[4];
+        static readonly PositionColoredTextured[] points = new PositionColoredTextured[4];
 
     
         private void ComputePoints()
         {
 
-            Vector3d center = Coordinates.GeoTo3dDouble(alt, az + 90);
-            Vector3d up = Coordinates.GeoTo3dDouble(alt + 90, az + 90);
+            var center = Coordinates.GeoTo3dDouble(alt, az + 90);
+            var up = Coordinates.GeoTo3dDouble(alt + 90, az + 90);
 
-            double width = .03;
-            double height = width;
+            var width = .03;
+            var height = width;
 
-            Vector3d left = Vector3d.Cross(center, up);
-            Vector3d right = Vector3d.Cross(up, center);
+            var left = Vector3d.Cross(center, up);
+            var right = Vector3d.Cross(up, center);
 
             left.Normalize();
             right.Normalize();
             up.Normalize();
 
-            Vector3d upTan = Vector3d.Cross(center, right);
+            var upTan = Vector3d.Cross(center, right);
 
             upTan.Normalize();
 
             left.Multiply(width);
             right.Multiply(width);
-            Vector3d top = upTan;
-            Vector3d bottom = -upTan;
+            var top = upTan;
+            var bottom = -upTan;
             top.Multiply(height);
             bottom.Multiply(height);
-            Vector3d ul = center;
+            var ul = center;
             ul.Add(top);
             ul.Add(left);
-            Vector3d ur = center;
+            var ur = center;
             ur.Add(top);
             ur.Add(right);
 
-            Vector3d ll = center;
+            var ll = center;
             ll.Add(left);
             ll.Add(bottom);
 
-            Vector3d lr = center;
+            var lr = center;
             lr.Add(right);
             lr.Add(bottom);
 
@@ -174,7 +174,7 @@ namespace TerraViewer
 
         internal static void DrawAll(RenderContext11 rendercontext)
         {
-            foreach (Reticle reticle in Reticles.Values)
+            foreach (var reticle in Reticles.Values)
             {
                 if (reticle.Visible.State)
                 {

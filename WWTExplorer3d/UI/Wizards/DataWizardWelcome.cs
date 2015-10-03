@@ -23,7 +23,7 @@ namespace TerraViewer
             dataUrlLabel.Text = Language.GetLocalizedText(1009, "Data Source Url");
             this.autoUpdateCheckbox.Text = Language.GetLocalizedText(1028, "Auto Update");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
         public override void SetData(object data)
         {
             layer = data as TimeSeriesLayer;

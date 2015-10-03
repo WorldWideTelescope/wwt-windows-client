@@ -44,8 +44,8 @@ namespace TerraViewer
         public string DistortionGrid;
         public bool MultiProjector = false;
         public bool MatrixValid = false;
-        private bool MultiChannelDome = false;
-        private bool multiChannelGlobe = false;
+        private bool MultiChannelDome;
+        private bool multiChannelGlobe;
 
         public bool MultiChannelDome1
         {
@@ -136,9 +136,9 @@ namespace TerraViewer
                 doc = new XmlDocument();
                 doc.Load(path);
 
-                XmlNode deviceConfigNode = doc.FirstChild.NextSibling;
-                XmlNode config = deviceConfigNode.FirstChild;
-                XmlNode deviceNode = config.FirstChild;
+                var deviceConfigNode = doc.FirstChild.NextSibling;
+                var config = deviceConfigNode.FirstChild;
+                var deviceNode = config.FirstChild;
 
                 MonitorCountX = Convert.ToInt32(deviceNode.Attributes["MonitorCountX"].Value.ToString());
                 MonitorCountY = Convert.ToInt32(deviceNode.Attributes["MonitorCountY"].Value.ToString());
@@ -267,18 +267,18 @@ namespace TerraViewer
                 return;
             }
 
-            string[] configFileData = File.ReadAllLines(ConfigFile);
-            for (int i=0; i < configFileData.Length; i++)
+            var configFileData = File.ReadAllLines(ConfigFile);
+            for (var i=0; i < configFileData.Length; i++)
             {
                 configFileData[i] = configFileData[i].Trim();
             }
 
             
-            for (int i=0; i < configFileData.Length; i++)
+            for (var i=0; i < configFileData.Length; i++)
             {
                 if (configFileData[i].StartsWith("Frustum"))
                 {
-                    string[] frustParts = configFileData[i].Split( new char[] {' ',';'});
+                    var frustParts = configFileData[i].Split( new char[] {' ',';'});
                     if (frustParts.Length == 8)
                     {
                         Left = Convert.ToSingle(frustParts[1]);
@@ -292,7 +292,7 @@ namespace TerraViewer
 
                 if (configFileData[i].StartsWith("Rotate"))
                 {
-                    string[] frustParts = configFileData[i].Split(new char[] { ' ',';' });
+                    var frustParts = configFileData[i].Split(new char[] { ' ',';' });
                     float angle = 0;
                     float x = 0;
                     float y = 0;
@@ -303,7 +303,7 @@ namespace TerraViewer
                         x = Convert.ToSingle(frustParts[2]);
                         y = Convert.ToSingle(frustParts[3]);
                         z = Convert.ToSingle(frustParts[4]);
-                        Matrix3d mat = new Matrix3d();
+                        var mat = new Matrix3d();
                         mat.Matrix11 = SharpDX.Matrix.RotationAxis(new SharpDX.Vector3(x, y, z), angle);
                         ViewMatrix = mat * ViewMatrix;
                     }
@@ -314,13 +314,13 @@ namespace TerraViewer
 
         }
 
-        string saveFilename = @"c:\wwtconfig\config.xml";
+        readonly string saveFilename = @"c:\wwtconfig\config.xml";
 
         public bool SaveToXml()
         {
             try
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
                 sb.Append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
                 sb.Append("<DeviceConfig>\r\n");
@@ -333,9 +333,9 @@ namespace TerraViewer
                 sb.Append("</DeviceConfig>\r\n");
 
                 // Create the file.
-                using (FileStream fs = File.Create(saveFilename))
+                using (var fs = File.Create(saveFilename))
                 {
-                    Byte[] info =
+                    var info =
                         new UTF8Encoding(true).GetBytes(sb.ToString());
 
                     fs.Write(info, 0, info.Length);

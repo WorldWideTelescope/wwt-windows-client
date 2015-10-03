@@ -56,7 +56,7 @@ namespace TerraViewer
                 if (Scrubbing)
                 {
                     Settings.TourSettings = tour.CurrentTourStop;
-                    TimeSpan slideElapsedTime = SpaceTimeController.MetaNow - ScrubStartTime;
+                    var slideElapsedTime = SpaceTimeController.MetaNow - ScrubStartTime;
 
                     if (ScrubbingBackwards)
                     {
@@ -149,7 +149,7 @@ namespace TerraViewer
                 return;
             }
 
-            foreach (Overlay overlay in tour.CurrentTourStop.Overlays)
+            foreach (var overlay in tour.CurrentTourStop.Overlays)
             {
                 if (overlay.Animate && Tour.CurrentTourStop.KeyFramed)
                 {
@@ -181,25 +181,25 @@ namespace TerraViewer
         
         private void DrawSafeZone(Earth3d window)
         {
-            Rectangle rect = window.RenderWindow.ClientRectangle;
+            var rect = window.RenderWindow.ClientRectangle;
 
-            int x = rect.Width / 2;
-            int y = rect.Height / 2;
+            var x = rect.Width / 2;
+            var y = rect.Height / 2;
 
-            int ratioWidth = rect.Height* 4 /3;
-            int halfWidth = (rect.Width - ratioWidth)/2;
+            var ratioWidth = rect.Height* 4 /3;
+            var halfWidth = (rect.Width - ratioWidth)/2;
             
 
             DrawTranparentBox(window.RenderContext11, new Rectangle(-x, -y, halfWidth, rect.Height));
             DrawTranparentBox(window.RenderContext11, new Rectangle((rect.Width - halfWidth)-x, -y, halfWidth, rect.Height));
         }
 
-        PositionColoredTextured[] boxPoints = new PositionColoredTextured[4];
+        readonly PositionColoredTextured[] boxPoints = new PositionColoredTextured[4];
         private void DrawTranparentBox(RenderContext11 renderContext, Rectangle rect)
         {
 
             
-            Color Color = Color.FromArgb(128, 32, 32, 128);
+            var Color = Color.FromArgb(128, 32, 32, 128);
             boxPoints[0].X = rect.X;
             boxPoints[0].Y = rect.Y;
             boxPoints[0].Z = .9f;
@@ -232,13 +232,13 @@ namespace TerraViewer
             boxPoints[3].Z = .9f;
             boxPoints[3].W = 1;
 
-            SharpDX.Matrix mat = SharpDX.Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
+            var mat = SharpDX.Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
 
             Sprite2d.Draw(renderContext, boxPoints, 4, mat, true);
 
         }
  
-        TourDocument tour = null;
+        TourDocument tour;
 
         public TourDocument Tour
         {
@@ -263,7 +263,7 @@ namespace TerraViewer
             Focus = null;
         }
 
-        bool mouseDown = false;
+        bool mouseDown;
 
         
 
@@ -280,20 +280,20 @@ namespace TerraViewer
         {
             float clientHeight = Earth3d.MainWindow.RenderWindow.ClientRectangle.Height;
             float clientWidth = Earth3d.MainWindow.RenderWindow.ClientRectangle.Width;
-            float viewWidth = ((float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
-            float x = (((float)pnt.X) / ((float)clientWidth) * viewWidth)- ((viewWidth - 1920) / 2);
-            float y = ((float)pnt.Y) / clientHeight * 1116;
+            var viewWidth = ((float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
+            var x = (((float)pnt.X) / ((float)clientWidth) * viewWidth)- ((viewWidth - 1920) / 2);
+            var y = ((float)pnt.Y) / clientHeight * 1116;
 
             return new PointF(x, y);
         }
 
         SelectionAnchor selectionAction = SelectionAnchor.None;
-        bool needUndoFrame = false;
+        bool needUndoFrame;
         public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             brokeThreshold = false;
             needUndoFrame = true;
-            PointF location = PointToView(e.Location);
+            var location = PointToView(e.Location);
 
             if (tour == null || tour.CurrentTourStop == null)
             {
@@ -316,7 +316,7 @@ namespace TerraViewer
                 {
                     if (selection.MultiSelect)
                     {
-                        foreach (Overlay overlay in selection.SelectionSet)
+                        foreach (var overlay in selection.SelectionSet)
                         {
                             if (overlay.HitTest(location))
                             {
@@ -350,7 +350,7 @@ namespace TerraViewer
                         }
                     }
 
-                    SelectionAnchor hit = selection.HitTest(location);
+                    var hit = selection.HitTest(location);
                     if (hit != SelectionAnchor.None)
                     {
                         selectionAction = hit;
@@ -368,7 +368,7 @@ namespace TerraViewer
 
                 }
 
-                for (int i = tour.CurrentTourStop.Overlays.Count - 1; i >= 0; i--)
+                for (var i = tour.CurrentTourStop.Overlays.Count - 1; i >= 0; i--)
                 {
                     if (tour.CurrentTourStop.Overlays[i].HitTest(location))
                     {
@@ -396,7 +396,7 @@ namespace TerraViewer
             return false;
 
         }
-        Point contextPoint = new Point();
+        Point contextPoint;
         public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             brokeThreshold = false;
@@ -433,8 +433,8 @@ namespace TerraViewer
             }  
             return false;
         }
-        bool dragCopying = false;
-        bool brokeThreshold = false;
+        bool dragCopying;
+        bool brokeThreshold;
         public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (CurrentEditor != null)
@@ -446,13 +446,13 @@ namespace TerraViewer
             }
 
 
-            PointF location = PointToView(e.Location);
+            var location = PointToView(e.Location);
 
             if (mouseDown && Focus != null)
             {
                 UndoTourStopChange undoFrame = null;
                 //todo localize
-                string actionText = Language.GetLocalizedText(502, "Edit");
+                var actionText = Language.GetLocalizedText(502, "Edit");
                 if (needUndoFrame)
                 {
                     undoFrame = new UndoTourStopChange(Language.GetLocalizedText(502, "Edit"), tour);
@@ -462,7 +462,7 @@ namespace TerraViewer
                 float moveY;
                 if (selectionAction != SelectionAnchor.Move && selectionAction != SelectionAnchor.Rotate)
                 {
-                    PointF newPoint = selection.PointToSelectionSpace(location);
+                    var newPoint = selection.PointToSelectionSpace(location);
                     moveX = newPoint.X - pointDown.X;
                     moveY = newPoint.Y - pointDown.Y;
                     pointDown = newPoint;
@@ -493,12 +493,12 @@ namespace TerraViewer
 
                     if (selection.MultiSelect)
                     {
-                        Overlay[] set = selection.SelectionSet;
+                        var set = selection.SelectionSet;
 
                         ClearSelection();
-                        foreach (Overlay overlay in set)
+                        foreach (var overlay in set)
                         {
-                            Overlay newOverlay = AddOverlay(overlay);
+                            var newOverlay = AddOverlay(overlay);
                             newOverlay.X = overlay.X;
                             newOverlay.Y = overlay.Y;
                             Focus = newOverlay;
@@ -510,7 +510,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        Overlay newOverlay = AddOverlay(Focus);
+                        var newOverlay = AddOverlay(Focus);
                         newOverlay.X = Focus.X;
                         newOverlay.Y = Focus.Y;
                         Focus = newOverlay;
@@ -520,9 +520,9 @@ namespace TerraViewer
                     }
                 }
 
-                float aspect = Focus.Width / Focus.Height;
+                var aspect = Focus.Width / Focus.Height;
 
-                PointF center = new PointF(Focus.X, Focus.Y);
+                var center = new PointF(Focus.X, Focus.Y);
                 if (Control.ModifierKeys == Keys.Control)
                 {
                     actionText = Language.GetLocalizedText(537, "Resize");
@@ -657,7 +657,7 @@ namespace TerraViewer
                 }
                 if (selection.MultiSelect)
                 {
-                    foreach (Overlay overlay in selection.SelectionSet)
+                    foreach (var overlay in selection.SelectionSet)
                     {
                         overlay.X += moveX;
                         overlay.Y += moveY;
@@ -685,7 +685,7 @@ namespace TerraViewer
                         return false;
                     }
 
-                    SelectionAnchor hit = selection.HitTest(location);
+                    var hit = selection.HitTest(location);
                     if (hit == SelectionAnchor.None)
                     {
                         return false;
@@ -745,8 +745,8 @@ namespace TerraViewer
 
             contextMenu = new ContextMenuStrip();
 
-            ToolStripMenuItem pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
-            IDataObject data = Clipboard.GetDataObject();
+            var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
+            var data = Clipboard.GetDataObject();
 
             pasteMenu.Enabled = Clipboard.ContainsImage() | Clipboard.ContainsText() | Clipboard.ContainsAudio() | data.GetDataPresent(Overlay.ClipboardFormat);
 
@@ -764,7 +764,7 @@ namespace TerraViewer
                 return;
             }
 
-            bool multiSelect = selection.MultiSelect;
+            var multiSelect = selection.MultiSelect;
 
             if (contextMenu != null)
             {
@@ -773,22 +773,22 @@ namespace TerraViewer
 
             contextMenu = new ContextMenuStrip();
 
-            ToolStripMenuItem cutMenu = new ToolStripMenuItem(Language.GetLocalizedText(427, "Cut"));
-            ToolStripMenuItem copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
-            ToolStripMenuItem pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
-            ToolStripMenuItem deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-            ToolStripSeparator sep1 = new ToolStripSeparator();
-            ToolStripSeparator sep2 = new ToolStripSeparator();
-            ToolStripSeparator sep3 = new ToolStripSeparator();
-            ToolStripMenuItem bringToFront = new ToolStripMenuItem(Language.GetLocalizedText(452, "Bring to Front"));
-            ToolStripMenuItem sendToBack = new ToolStripMenuItem(Language.GetLocalizedText(453, "Send to Back"));
-            ToolStripMenuItem bringForward = new ToolStripMenuItem(Language.GetLocalizedText(454, "Bring Forward"));
-            ToolStripMenuItem sendBackward = new ToolStripMenuItem(Language.GetLocalizedText(455, "Send Backward"));
-            ToolStripMenuItem properties = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
-            ToolStripMenuItem editText = new ToolStripMenuItem(Language.GetLocalizedText(502, "Edit"));
-            ToolStripMenuItem fullDome = new ToolStripMenuItem(Language.GetLocalizedText(574, "Full Dome"));
-            ToolStripMenuItem url = new ToolStripMenuItem(Language.GetLocalizedText(587, "Hyperlink"));
-            string linkString = Focus.LinkID;
+            var cutMenu = new ToolStripMenuItem(Language.GetLocalizedText(427, "Cut"));
+            var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
+            var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
+            var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+            var sep1 = new ToolStripSeparator();
+            var sep2 = new ToolStripSeparator();
+            var sep3 = new ToolStripSeparator();
+            var bringToFront = new ToolStripMenuItem(Language.GetLocalizedText(452, "Bring to Front"));
+            var sendToBack = new ToolStripMenuItem(Language.GetLocalizedText(453, "Send to Back"));
+            var bringForward = new ToolStripMenuItem(Language.GetLocalizedText(454, "Bring Forward"));
+            var sendBackward = new ToolStripMenuItem(Language.GetLocalizedText(455, "Send Backward"));
+            var properties = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
+            var editText = new ToolStripMenuItem(Language.GetLocalizedText(502, "Edit"));
+            var fullDome = new ToolStripMenuItem(Language.GetLocalizedText(574, "Full Dome"));
+            var url = new ToolStripMenuItem(Language.GetLocalizedText(587, "Hyperlink"));
+            var linkString = Focus.LinkID;
             switch (Focus.LinkID)
             {
                 case "":
@@ -805,7 +805,7 @@ namespace TerraViewer
                     linkString = " (" + Language.GetLocalizedText(602, "Return to Caller") + ")";
                     break;
                 default:
-                    int index = Tour.GetTourStopIndexByID(Focus.LinkID);
+                    var index = Tour.GetTourStopIndexByID(Focus.LinkID);
                     if (index > -1)
                     {
                         if (String.IsNullOrEmpty(tour.TourStops[index].Description))
@@ -820,30 +820,30 @@ namespace TerraViewer
                     break;
             }
 
-            ToolStripMenuItem animateMenu = new ToolStripMenuItem(Language.GetLocalizedText(588, "Animate"));
-            ToolStripMenuItem addKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
-            ToolStripMenuItem addToTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1290, "Add to Timeline"));
+            var animateMenu = new ToolStripMenuItem(Language.GetLocalizedText(588, "Animate"));
+            var addKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
+            var addToTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1290, "Add to Timeline"));
 
-            ToolStripMenuItem linkID = new ToolStripMenuItem(Language.GetLocalizedText(589, "Link to Slide") + linkString);
-            ToolStripMenuItem pickColor = new ToolStripMenuItem(Language.GetLocalizedText(458, "Color/Opacity"));
-            ToolStripMenuItem flipbookProperties = new ToolStripMenuItem(Language.GetLocalizedText(630, "Flipbook Properties"));
-            ToolStripMenuItem interpolateMenu = new ToolStripMenuItem(Language.GetLocalizedText(1029, "Animation Tween Type"));
+            var linkID = new ToolStripMenuItem(Language.GetLocalizedText(589, "Link to Slide") + linkString);
+            var pickColor = new ToolStripMenuItem(Language.GetLocalizedText(458, "Color/Opacity"));
+            var flipbookProperties = new ToolStripMenuItem(Language.GetLocalizedText(630, "Flipbook Properties"));
+            var interpolateMenu = new ToolStripMenuItem(Language.GetLocalizedText(1029, "Animation Tween Type"));
 
-            ToolStripMenuItem Linear = new ToolStripMenuItem(Language.GetLocalizedText(1030, "Linear"));
-            ToolStripMenuItem Ease = new ToolStripMenuItem(Language.GetLocalizedText(1031, "Ease In/Out"));
-            ToolStripMenuItem EaseIn = new ToolStripMenuItem(Language.GetLocalizedText(1032, "Ease In"));
-            ToolStripMenuItem EaseOut = new ToolStripMenuItem(Language.GetLocalizedText(1033, "Ease Out"));
-            ToolStripMenuItem Exponential = new ToolStripMenuItem(Language.GetLocalizedText(1034, "Exponential"));
-            ToolStripMenuItem Default = new ToolStripMenuItem(Language.GetLocalizedText(1035, "Slide Default"));
+            var Linear = new ToolStripMenuItem(Language.GetLocalizedText(1030, "Linear"));
+            var Ease = new ToolStripMenuItem(Language.GetLocalizedText(1031, "Ease In/Out"));
+            var EaseIn = new ToolStripMenuItem(Language.GetLocalizedText(1032, "Ease In"));
+            var EaseOut = new ToolStripMenuItem(Language.GetLocalizedText(1033, "Ease Out"));
+            var Exponential = new ToolStripMenuItem(Language.GetLocalizedText(1034, "Exponential"));
+            var Default = new ToolStripMenuItem(Language.GetLocalizedText(1035, "Slide Default"));
 
-            ToolStripMenuItem Align = new ToolStripMenuItem(Language.GetLocalizedText(790, "Align"));
-            ToolStripMenuItem AlignTop = new ToolStripMenuItem(Language.GetLocalizedText(1333, "Top"));
-            ToolStripMenuItem AlignBottom = new ToolStripMenuItem(Language.GetLocalizedText(1334, "Bottom"));
-            ToolStripMenuItem AlignLeft = new ToolStripMenuItem(Language.GetLocalizedText(1335, "Left"));
-            ToolStripMenuItem AlignRight = new ToolStripMenuItem(Language.GetLocalizedText(1336, "Right"));
-            ToolStripMenuItem AlignHorizon = new ToolStripMenuItem(Language.GetLocalizedText(1337, "Horizontal"));
-            ToolStripMenuItem AlignVertical = new ToolStripMenuItem(Language.GetLocalizedText(1338, "Vertical"));
-            ToolStripMenuItem AlignCenter = new ToolStripMenuItem(Language.GetLocalizedText(1339, "Centered"));
+            var Align = new ToolStripMenuItem(Language.GetLocalizedText(790, "Align"));
+            var AlignTop = new ToolStripMenuItem(Language.GetLocalizedText(1333, "Top"));
+            var AlignBottom = new ToolStripMenuItem(Language.GetLocalizedText(1334, "Bottom"));
+            var AlignLeft = new ToolStripMenuItem(Language.GetLocalizedText(1335, "Left"));
+            var AlignRight = new ToolStripMenuItem(Language.GetLocalizedText(1336, "Right"));
+            var AlignHorizon = new ToolStripMenuItem(Language.GetLocalizedText(1337, "Horizontal"));
+            var AlignVertical = new ToolStripMenuItem(Language.GetLocalizedText(1338, "Vertical"));
+            var AlignCenter = new ToolStripMenuItem(Language.GetLocalizedText(1339, "Centered"));
 
             Align.DropDownItems.Add(AlignTop);
             Align.DropDownItems.Add(AlignBottom);
@@ -946,7 +946,7 @@ namespace TerraViewer
             contextMenu.Items.Add(Align);
             contextMenu.Items.Add(sep2);
 
-            IDataObject data = Clipboard.GetDataObject();
+            var data = Clipboard.GetDataObject();
 
             pasteMenu.Enabled = Clipboard.ContainsImage() | Clipboard.ContainsText() | Clipboard.ContainsAudio() | data.GetDataPresent(Overlay.ClipboardFormat);
 
@@ -1021,12 +1021,12 @@ namespace TerraViewer
 
                 Tour.CurrentTourStop.KeyFramed = true;
 
-                foreach (Overlay overlay in selection.SelectionSet)
+                foreach (var overlay in selection.SelectionSet)
                 {
 
                     if (overlay.AnimationTarget == null)
                     {
-                        float savedTween = overlay.TweenFactor;
+                        var savedTween = overlay.TweenFactor;
                         overlay.TweenFactor = 0;
                         overlay.AnimationTarget = new AnimationTarget(Tour.CurrentTourStop);
                         overlay.AnimationTarget.Target = overlay;
@@ -1059,9 +1059,9 @@ namespace TerraViewer
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1341, "Anchor Full Dome"), tour));
             if (Focus != null)
             {
-                bool fullDome = Focus.Anchor != OverlayAnchor.Dome;
+                var fullDome = Focus.Anchor != OverlayAnchor.Dome;
 
-                foreach (Overlay overlay in selection.SelectionSet)
+                foreach (var overlay in selection.SelectionSet)
                 {
                     overlay.Anchor = fullDome ? OverlayAnchor.Dome : OverlayAnchor.Screen;
                 }
@@ -1077,9 +1077,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1036, "Vertical Align"), tour));
 
-            float xCenter = Focus.X;
+            var xCenter = Focus.X;
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.X = xCenter;
             }
@@ -1094,9 +1094,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1037, "Horizontal Align"), tour));
 
-            float yCenter = Focus.Y;
+            var yCenter = Focus.Y;
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.Y = yCenter;
             }
@@ -1111,9 +1111,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1038, "Align Centers"), tour));
 
-            float yCenter = Focus.Y;
-            float xCenter = Focus.X;
-            foreach (Overlay overlay in selection.SelectionSet)
+            var yCenter = Focus.Y;
+            var xCenter = Focus.X;
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.Y = yCenter;
                 overlay.X = xCenter;
@@ -1129,9 +1129,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1040, "Align Right"), tour));
 
-            float left = Focus.X + Focus.Width / 2;
+            var left = Focus.X + Focus.Width / 2;
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.X = left - overlay.Width / 2;
             }
@@ -1146,9 +1146,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1041, "Align Left"), tour));
 
-            float right = Focus.X - Focus.Width / 2;
+            var right = Focus.X - Focus.Width / 2;
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.X = right + overlay.Width / 2;
             }
@@ -1165,9 +1165,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1042, "Align Bottoms"), tour));
 
-            float top = Focus.Y + Focus.Height / 2;
+            var top = Focus.Y + Focus.Height / 2;
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.Y = top - overlay.Height / 2;
             }
@@ -1183,9 +1183,9 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1039, "Align Tops"), tour));
 
-            float top = Focus.Y - Focus.Height/2;
+            var top = Focus.Y - Focus.Height/2;
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 overlay.Y = top + overlay.Height/2;
             }
@@ -1193,10 +1193,10 @@ namespace TerraViewer
 
         void Interpolation_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItem)sender;
             if (Focus != null)
             {
-                foreach (Overlay overlay in selection.SelectionSet)
+                foreach (var overlay in selection.SelectionSet)
                 {
                     overlay.InterpolationType = (InterpolationType)item.Tag;
                 }
@@ -1205,7 +1205,7 @@ namespace TerraViewer
 
         void linkID_Click(object sender, EventArgs e)
         {
-            SelectLink selectDialog = new SelectLink();
+            var selectDialog = new SelectLink();
             selectDialog.Owner = Earth3d.MainWindow;
             selectDialog.Tour = tour;
             selectDialog.ID = Focus.LinkID;
@@ -1217,8 +1217,8 @@ namespace TerraViewer
 
         void flipbookProperties_Click(object sender, EventArgs e)
         {
-            FlipbookOverlay flipbook = (FlipbookOverlay)Focus;
-            FlipbookSetup properties = new FlipbookSetup();
+            var flipbook = (FlipbookOverlay)Focus;
+            var properties = new FlipbookSetup();
 
             properties.LoopType = flipbook.LoopType;
             properties.FramesY = flipbook.FramesY;
@@ -1244,9 +1244,9 @@ namespace TerraViewer
             {
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(588, "Animate"), tour));
 
-                bool animate = !Focus.Animate;
+                var animate = !Focus.Animate;
 
-                foreach (Overlay overlay in selection.SelectionSet)
+                foreach (var overlay in selection.SelectionSet)
                 {
                     overlay.Animate = animate;
                 }
@@ -1258,7 +1258,7 @@ namespace TerraViewer
         {
             if (Focus != null)
             {
-                SimpleInput input = new SimpleInput(Language.GetLocalizedText(541, "Edit Hyperlink"), Language.GetLocalizedText(542, "Url"), Focus.Url, 2048);
+                var input = new SimpleInput(Language.GetLocalizedText(541, "Edit Hyperlink"), Language.GetLocalizedText(542, "Url"), Focus.Url, 2048);
                 if (input.ShowDialog() == DialogResult.OK)
                 {
                     Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(541, "Edit Hyperlink"), tour));
@@ -1269,7 +1269,7 @@ namespace TerraViewer
 
         void pickColor_Click(object sender, EventArgs e)
         {
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 
@@ -1279,7 +1279,7 @@ namespace TerraViewer
             {        
                 //todo localize
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(543, "Edit Color"), tour));
-                foreach (Overlay overlay in selection.SelectionSet)
+                foreach (var overlay in selection.SelectionSet)
                 {
                     overlay.Color = picker.Color;
                 }
@@ -1288,7 +1288,7 @@ namespace TerraViewer
 
         void volume_Click(object sender, EventArgs e)
         {
-            PopupVolume vol = new PopupVolume();
+            var vol = new PopupVolume();
             vol.Volume = ((AudioOverlay)Focus).Volume;
             vol.ShowDialog();
             ((AudioOverlay)Focus).Volume = vol.Volume;
@@ -1303,7 +1303,7 @@ namespace TerraViewer
             //todo localize
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(167, "Delete"), tour));
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 tour.CurrentTourStop.RemoveOverlay(overlay);
             }
@@ -1321,7 +1321,7 @@ namespace TerraViewer
             }
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(549, "Properties Edit"), tour));
-            OverlayProperties props = new OverlayProperties();
+            var props = new OverlayProperties();
             props.Overlay = Focus;
 
             props.ShowDialog();
@@ -1336,7 +1336,7 @@ namespace TerraViewer
             }
             //todo localize
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(454, "Bring Forward"), tour));
-            foreach (Overlay overlay in GetSortedSelection(false))
+            foreach (var overlay in GetSortedSelection(false))
             {
                 tour.CurrentTourStop.BringForward(overlay);
             }
@@ -1351,7 +1351,7 @@ namespace TerraViewer
             }
             //todo localize
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(455, "Send Backward"), tour));
-            foreach (Overlay overlay in GetSortedSelection(true))
+            foreach (var overlay in GetSortedSelection(true))
             {
                 tour.CurrentTourStop.SendBackward(overlay);
             }
@@ -1366,7 +1366,7 @@ namespace TerraViewer
             }
             //todo localize
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(453, "Send to Back"), tour));
-            foreach (Overlay overlay in GetSortedSelection(true))
+            foreach (var overlay in GetSortedSelection(true))
             {
                 tour.CurrentTourStop.SendToBack(overlay);
             }
@@ -1381,7 +1381,7 @@ namespace TerraViewer
             }
             //todo localize
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(452, "Bring to Front"), tour));
-            foreach (Overlay overlay in GetSortedSelection(false))
+            foreach (var overlay in GetSortedSelection(false))
             {
                 tour.CurrentTourStop.BringToFront(overlay);
             }
@@ -1390,7 +1390,7 @@ namespace TerraViewer
 
         Overlay[] GetSortedSelection(bool reverse)
         {
-            List<Overlay> sorted = new List<Overlay>();
+            var sorted = new List<Overlay>();
 
             sorted.AddRange(selection.SelectionSet);
 
@@ -1413,14 +1413,14 @@ namespace TerraViewer
             {
                 return;
             }
-            StringBuilder sb = new StringBuilder();
-            using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+            var sb = new StringBuilder();
+            using (var textWriter = new System.IO.StringWriter(sb))
             {
-                using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new System.Xml.XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                     writer.WriteStartElement("Overlays");
-                    foreach (Overlay overlay in selection.SelectionSet)
+                    foreach (var overlay in selection.SelectionSet)
                     {
                         overlay.SaveToXml(writer, true);
                     }
@@ -1428,7 +1428,7 @@ namespace TerraViewer
                     writer.WriteEndElement();
                 }
             }
-            DataFormats.Format format = DataFormats.GetFormat(Overlay.ClipboardFormat);
+            var format = DataFormats.GetFormat(Overlay.ClipboardFormat);
 
             IDataObject dataObject = new DataObject();
             dataObject.SetData(format.Name, false, sb.ToString());
@@ -1446,7 +1446,7 @@ namespace TerraViewer
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(427, "Cut"), tour));
             copyMenu_Click(sender, e);
 
-            foreach (Overlay overlay in selection.SelectionSet)
+            foreach (var overlay in selection.SelectionSet)
             {
                 tour.CurrentTourStop.RemoveOverlay(overlay);
             }
@@ -1460,29 +1460,29 @@ namespace TerraViewer
 
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(544, "Paste Object"), tour));
 
-            IDataObject dataObject = Clipboard.GetDataObject();
+            var dataObject = Clipboard.GetDataObject();
 
             if (dataObject.GetDataPresent(Overlay.ClipboardFormat))
             {
                 // add try catch block
-                string xml = dataObject.GetData(Overlay.ClipboardFormat) as string;
-                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+                var xml = dataObject.GetData(Overlay.ClipboardFormat) as string;
+                var doc = new System.Xml.XmlDocument();
                 doc.LoadXml(xml);
                 ClearSelection();
                 System.Xml.XmlNode parent = doc["Overlays"];
                 foreach (XmlNode child in parent.ChildNodes)
                 {
-                    Overlay copy = Overlay.FromXml(tour.CurrentTourStop, child);
+                    var copy = Overlay.FromXml(tour.CurrentTourStop, child);
                     if (copy.AnimationTarget != null)
                     {
                         copy.Id = Guid.NewGuid().ToString();
                         copy.AnimationTarget.TargetID = copy.Id;
                         tour.CurrentTourStop.AnimationTargets.Add(copy.AnimationTarget);
                     }
-                    bool found = false;
+                    var found = false;
                     float maxX = 0;
                     float maxY = 0;
-                    foreach (Overlay item in tour.CurrentTourStop.Overlays)
+                    foreach (var item in tour.CurrentTourStop.Overlays)
                     {
                         if (item.Id == copy.Id && item.GetType() == copy.GetType())
                         {
@@ -1512,7 +1512,7 @@ namespace TerraViewer
                 Image img = UiTools.GetMetafileFromClipboard();
                 if (img != null)
                 {
-                    BitmapOverlay bmp = new BitmapOverlay( tour.CurrentTourStop, img);
+                    var bmp = new BitmapOverlay( tour.CurrentTourStop, img);
                     tour.CurrentTourStop.AddOverlay(bmp);
                     bmp.X = contextPoint.X;
                     bmp.Y = contextPoint.Y;
@@ -1523,10 +1523,10 @@ namespace TerraViewer
             }
             else if (Clipboard.ContainsText() && Clipboard.GetText().Length > 0)
             {
-                TextObject temp = TextEditor.DefaultTextobject;
+                var temp = TextEditor.DefaultTextobject;
                 temp.Text = Clipboard.GetText();
 
-                TextOverlay text = new TextOverlay( temp);
+                var text = new TextOverlay( temp);
                 //text.X = Earth3d.MainWindow.ClientRectangle.Width / 2;
                 //text.Y = Earth3d.MainWindow.ClientRectangle.Height / 2;
                 text.X = contextPoint.X;
@@ -1538,8 +1538,8 @@ namespace TerraViewer
             }
             else if (Clipboard.ContainsImage())
             {
-                Image img = Clipboard.GetImage();
-                BitmapOverlay bmp = new BitmapOverlay( tour.CurrentTourStop, img);
+                var img = Clipboard.GetImage();
+                var bmp = new BitmapOverlay( tour.CurrentTourStop, img);
                 tour.CurrentTourStop.AddOverlay(bmp);
                 bmp.X = contextPoint.X;
                 bmp.Y = contextPoint.Y;
@@ -1597,7 +1597,7 @@ namespace TerraViewer
 
         private void EditText()
         {
-            TextEditor te = new TextEditor();
+            var te = new TextEditor();
             te.TextObject = ((TextOverlay)Focus).TextObject;
             if (te.ShowDialog() == DialogResult.OK)
             {
@@ -1621,7 +1621,7 @@ namespace TerraViewer
                 }
             }
 
-            int increment = 1;
+            var increment = 1;
             if (e.Control)
             {
                 increment = 10;
@@ -1701,7 +1701,7 @@ namespace TerraViewer
                 case Keys.Left:
                     if (Focus != null)
                     {
-                        foreach (Overlay overlay in selection.SelectionSet)
+                        foreach (var overlay in selection.SelectionSet)
                         {
                             if (e.Shift)
                             {
@@ -1715,7 +1715,7 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    float aspect = overlay.Width / overlay.Height;
+                                    var aspect = overlay.Width / overlay.Height;
                                     if (overlay.Width > increment && overlay.Height > (increment * aspect))
                                     {
                                         Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(537, "Resize"), tour));
@@ -1741,7 +1741,7 @@ namespace TerraViewer
                 case Keys.Right:
                     if (Focus != null)
                     {
-                        foreach (Overlay overlay in selection.SelectionSet)
+                        foreach (var overlay in selection.SelectionSet)
                         {
                             if (e.Shift)
                             {
@@ -1753,7 +1753,7 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    float aspect = overlay.Width / overlay.Height;
+                                    var aspect = overlay.Width / overlay.Height;
                                     overlay.Width += increment;
                                     overlay.Height += increment * aspect;
                                 }
@@ -1775,7 +1775,7 @@ namespace TerraViewer
                 case Keys.Up:
                     if (Focus != null)
                     {
-                        foreach (Overlay overlay in selection.SelectionSet)
+                        foreach (var overlay in selection.SelectionSet)
                         {
                             if (e.Shift)
                             {
@@ -1786,7 +1786,7 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    float aspect = overlay.Width / overlay.Height;
+                                    var aspect = overlay.Width / overlay.Height;
                                     overlay.Width += increment;
                                     overlay.Height += increment * aspect;
                                 }
@@ -1803,7 +1803,7 @@ namespace TerraViewer
                 case Keys.Down:
                     if (Focus != null)
                     {
-                        foreach (Overlay overlay in selection.SelectionSet)
+                        foreach (var overlay in selection.SelectionSet)
                         {
                             if (e.Shift)
                             {
@@ -1817,7 +1817,7 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    float aspect = overlay.Width / overlay.Height;
+                                    var aspect = overlay.Width / overlay.Height;
                                     if (overlay.Width > increment && overlay.Height > (increment * aspect))
                                     {
                                         Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(537, "Resize"), tour));
@@ -1910,7 +1910,7 @@ namespace TerraViewer
             }
 
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(546, "Insert Picture"), tour));
-            BitmapOverlay bmp = new BitmapOverlay(tour.CurrentTourStop, filename);
+            var bmp = new BitmapOverlay(tour.CurrentTourStop, filename);
             bmp.X = 960;
             bmp.Y = 600;
             tour.CurrentTourStop.AddOverlay(bmp);
@@ -1927,13 +1927,13 @@ namespace TerraViewer
 
             //todo localize
 
-            FlipbookSetup flipSetup = new FlipbookSetup();
+            var flipSetup = new FlipbookSetup();
 
             
             if (flipSetup.ShowDialog() == DialogResult.OK)
             {
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1342, "Insert Flipbook"), tour));
-                FlipbookOverlay flipbook = new FlipbookOverlay( tour.CurrentTourStop, filename);
+                var flipbook = new FlipbookOverlay( tour.CurrentTourStop, filename);
                 flipbook.X = 960;
                 flipbook.Y = 600;
                 flipbook.LoopType = flipSetup.LoopType;
@@ -1957,7 +1957,7 @@ namespace TerraViewer
                 return false;
             }
 
-            AudioOverlay audio = new AudioOverlay( tour.CurrentTourStop, filename);
+            var audio = new AudioOverlay( tour.CurrentTourStop, filename);
             audio.X = 900;
             audio.Y = 600;
             tour.CurrentTourStop.AddOverlay(audio);
@@ -1987,7 +1987,7 @@ namespace TerraViewer
                 return false;
             }
 
-            TextOverlay text = new TextOverlay( textObject);
+            var text = new TextOverlay( textObject);
             text.Color = textObject.ForegroundColor;
             text.X = 960;
             text.Y = 600;
@@ -2006,10 +2006,10 @@ namespace TerraViewer
             }
             if(ol.GetType() == typeof(ShapeOverlay))
             {
-                ShapeOverlay srcShapeOverlay = (ShapeOverlay)ol;
+                var srcShapeOverlay = (ShapeOverlay)ol;
                 if (srcShapeOverlay != null)
                 {
-                    ShapeOverlay shape = new ShapeOverlay(tour.CurrentTourStop, srcShapeOverlay.ShapeType);
+                    var shape = new ShapeOverlay(tour.CurrentTourStop, srcShapeOverlay.ShapeType);
                     shape.Width = srcShapeOverlay.Width;
                     shape.Height = srcShapeOverlay.Height;
                     shape.X = contextPoint.X;
@@ -2026,10 +2026,10 @@ namespace TerraViewer
             }
             else if (ol.GetType() == typeof(TextOverlay))
             {
-                TextOverlay srcTxtOverlay = (TextOverlay)ol;
+                var srcTxtOverlay = (TextOverlay)ol;
                 if (srcTxtOverlay != null)
                 {
-                    TextOverlay text = new TextOverlay(srcTxtOverlay.TextObject);
+                    var text = new TextOverlay(srcTxtOverlay.TextObject);
                     text.X = contextPoint.X;
                     text.Y = contextPoint.Y;
                     text.Color = srcTxtOverlay.Color;
@@ -2043,10 +2043,10 @@ namespace TerraViewer
             }
             else if (ol.GetType() == typeof(BitmapOverlay))
             {
-                BitmapOverlay srcBmpOverlay = (BitmapOverlay)ol;
+                var srcBmpOverlay = (BitmapOverlay)ol;
                 if (srcBmpOverlay != null)
                 {
-                    BitmapOverlay bitmap = srcBmpOverlay.Copy(tour.CurrentTourStop);
+                    var bitmap = srcBmpOverlay.Copy(tour.CurrentTourStop);
                     bitmap.X = contextPoint.X;
                     bitmap.Y = contextPoint.Y;
                     if (ol.AnimationTarget != null)
@@ -2059,10 +2059,10 @@ namespace TerraViewer
             }
             else if (ol.GetType() == typeof(FlipbookOverlay))
             {
-                FlipbookOverlay srcFlipbookOverlay = (FlipbookOverlay)ol;
+                var srcFlipbookOverlay = (FlipbookOverlay)ol;
                 if (srcFlipbookOverlay != null)
                 {
-                    FlipbookOverlay bitmap = srcFlipbookOverlay.Copy(tour.CurrentTourStop);
+                    var bitmap = srcFlipbookOverlay.Copy(tour.CurrentTourStop);
                     bitmap.X = contextPoint.X;
                     bitmap.Y = contextPoint.Y;
                     if (ol.AnimationTarget != null)
@@ -2086,7 +2086,7 @@ namespace TerraViewer
             //todo localize
             Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(548, "Insert Shape"), tour));
 
-            ShapeOverlay shape = new ShapeOverlay(tour.CurrentTourStop, shapeType);
+            var shape = new ShapeOverlay(tour.CurrentTourStop, shapeType);
             shape.Width = 200;
             shape.Height = 200;
 

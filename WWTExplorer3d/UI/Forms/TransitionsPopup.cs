@@ -39,9 +39,9 @@ namespace TerraViewer
 
         private void EnableControls()
         {
-            bool aOn = false;
-            bool bOn = false;
-            bool hOn = false;
+            var aOn = false;
+            var bOn = false;
+            var hOn = false;
             switch (target.Transition)
             {
                 case TransitionType.Slew:
@@ -83,7 +83,7 @@ namespace TerraViewer
             }
         }
 
-        private TourStop target = null;
+        private TourStop target;
 
         public TourStop Target
         {
@@ -127,7 +127,7 @@ namespace TerraViewer
 
         private void TransitionsPopup_Paint(object sender, PaintEventArgs e)
         {
-            Pen p = new Pen(Color.FromArgb(62, 73, 92));
+            var p = new Pen(Color.FromArgb(62, 73, 92));
             e.Graphics.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
             p.Dispose();
         }
@@ -139,7 +139,7 @@ namespace TerraViewer
 
         private void TimeA_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Target.TransitionOutTime = UiTools.ParseAndValidateCoordinate(TimeA, Target.TransitionOutTime, ref failed);
             ProcessChange();
@@ -147,7 +147,7 @@ namespace TerraViewer
 
         private void TimeB_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Target.TransitionTime = UiTools.ParseAndValidateCoordinate(TimeB, Target.TransitionTime, ref failed);
             ProcessChange();
@@ -160,7 +160,7 @@ namespace TerraViewer
 
         private void timeHold_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Target.TransitionHoldTime = UiTools.ParseAndValidateCoordinate(TimeHold, Target.TransitionHoldTime, ref failed);
             ProcessChange();

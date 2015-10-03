@@ -354,7 +354,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		    // swap current row and previous row
 			for (var i = 0; i < cmbWidth; i++)
 			{
-				CWMIPredInfo pPredInfo = PredInfo[i];
+				var pPredInfo = PredInfo[i];
 				PredInfo[i] = PredInfoPrevRow[i];
 				PredInfoPrevRow[i] = pPredInfo;
 			}
@@ -543,7 +543,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				case 1:
 			    {
 			        // predict from top
-			        foreach (byte t in Constant.blkIdx)
+			        foreach (var t in Constant.blkIdx)
 			        {
 			            var k = p1MBbuffer.Pointer + (t << 4);
 			            p1MBbuffer.Array[k +  2] += p1MBbuffer.Array[k - 16 +  2];
@@ -608,7 +608,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			var iCBPCY = iCBP;
 
 			/** set scan arrays and other MB level constants **/
-			CCodingContext.CAdaptiveScan[] pScan = iOrientation == 1 ? m_pCodingContext.m_aScanVert : m_pCodingContext.m_aScanHoriz;
+			var pScan = iOrientation == 1 ? m_pCodingContext.m_aScanVert : m_pCodingContext.m_aScanHoriz;
 
 			var iIndex = 0;
 
@@ -809,7 +809,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				cbp ^= 0xffff;
 			}
 
-			int iNOrig = NumOnes(cbp);
+			var iNOrig = NumOnes(cbp);
 
 			pModel.m_iCount0[0] += iNOrig - iNDiff;
 			pModel.m_iCount0[0] = Saturate32(pModel.m_iCount0[0]);
@@ -1026,10 +1026,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 	        if ((cbp & 1) != 0) 
 			{
-	            int iNumNonzero = DecodeBlock(aRLCoeffs);
+	            var iNumNonzero = DecodeBlock(aRLCoeffs);
 
 			    aLaplacianMean[0] += iNumNonzero;
-			    int iIndex = 1;
+			    var iIndex = 1;
 
 			    for (var k = 0; k < iNumNonzero; k++)
 				{

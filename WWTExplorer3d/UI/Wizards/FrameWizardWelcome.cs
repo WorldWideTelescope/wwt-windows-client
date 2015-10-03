@@ -22,7 +22,7 @@ namespace TerraViewer
             this.ReferenceFrameNameLabel.Text = Language.GetLocalizedText(824, "Refrerence Frame Name");
 
         }
-        ReferenceFrame frame = null;
+        ReferenceFrame frame;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
@@ -61,7 +61,7 @@ namespace TerraViewer
 
         private void ReferenceFrameName_TextChanged(object sender, EventArgs e)
         {
-            bool nextEnabled = false;
+            var nextEnabled = false;
 
             nextEnabled = !(LayerManager.AllMaps.ContainsKey(ReferenceFrameName.Text.Trim()) ) && !(string.IsNullOrEmpty(ReferenceFrameName.Text.Trim()));
             ReferenceFrameName.BackColor = nextEnabled ? backGround : Color.Red;

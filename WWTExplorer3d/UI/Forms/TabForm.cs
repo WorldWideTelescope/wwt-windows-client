@@ -19,9 +19,9 @@ namespace TerraViewer
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
-            Pen p = new Pen(Color.FromArgb(71,84,108));           
+            var p = new Pen(Color.FromArgb(71,84,108));           
             g.FillRectangle(b, this.ClientRectangle);
             g.DrawRectangle(p, new Rectangle(0,ClientSize.Height-1,ClientSize.Width-1,ClientSize.Height-1));
             p.Dispose();
@@ -71,13 +71,13 @@ namespace TerraViewer
             if (pinUp.Direction == Direction.Expanding && !forceClosed)
             {
                 pinUp.Direction = Direction.Collapsing;
-                int diff = maximizedHeight - Height;
+                var diff = maximizedHeight - Height;
                 Height += diff;
             }
             else if (pinUp.Direction == Direction.Collapsing) 
             {
                 pinUp.Direction = Direction.Expanding;
-                int diff = maximizedHeight - normalHeight;
+                var diff = maximizedHeight - normalHeight;
                 Height -= diff;
             }
             pinUp.Left = (Width / 2) - pinUp.Width / 2;
@@ -117,12 +117,12 @@ namespace TerraViewer
             {
                 return;
             }
-            Rectangle rect = this.RectangleToScreen(this.ClientRectangle);
+            var rect = this.RectangleToScreen(this.ClientRectangle);
             rect = new Rectangle(rect.X, rect.Y , rect.Width, rect.Height);
 
             InsideTabRect = rect.Contains(Cursor.Position);
 
-            bool inside = MenuTabs.MouseInTabs || LayerManager.InsideLayerManagerRect || Earth3d.TouchKiosk || rect.Contains(Cursor.Position) || !((TourPlayer.Playing && !Settings.DomeView) || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
+            var inside = MenuTabs.MouseInTabs || LayerManager.InsideLayerManagerRect || Earth3d.TouchKiosk || rect.Contains(Cursor.Position) || !((TourPlayer.Playing && !Settings.DomeView) || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
 
             if (inside != fader.TargetState)
             {
@@ -174,7 +174,8 @@ namespace TerraViewer
                 Opacity = 1.0;
             }
         }
-        BlendState fader = new BlendState(false, 1000.0);
+
+        readonly BlendState fader = new BlendState(false, 1000.0);
 
         private void TabForm_MouseEnter(object sender, EventArgs e)
         {
@@ -196,7 +197,7 @@ namespace TerraViewer
                 e.Cancel = true;
             }
         }
-        bool dontClose = false;
+        bool dontClose;
         protected override bool ProcessDialogKey(Keys keyData)
         {
             if (keyData == (Keys.F4 | Keys.Alt))

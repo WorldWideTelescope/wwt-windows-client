@@ -17,10 +17,10 @@ namespace TerraViewer
         {
             InitializeComponent();
         }
-        static Pen lightBluePen = new Pen(Color.LightBlue, 2);
+        static readonly Pen lightBluePen = new Pen(Color.LightBlue, 2);
         private void Overview_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             DrawConstellation(g);
         }
 
@@ -62,7 +62,7 @@ namespace TerraViewer
                 {
                     return;
                 }
-                string newValue = Constellations.Abbreviation(value);
+                var newValue = Constellations.Abbreviation(value);
                 if (newValue != currentConstellation)
                 {
                     currentConstellation = newValue;
@@ -91,10 +91,10 @@ namespace TerraViewer
                 return;
             }
 
-            bool change = false;
+            var change = false;
             if (this.corners != null)
             {
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     if (this.corners[i] != corners[i])
                     {
@@ -115,11 +115,11 @@ namespace TerraViewer
 
             this.corners = corners;
 
-            IPlace target = Constellations.ConstellationCentroids[currentConstellation];
+            var target = Constellations.ConstellationCentroids[currentConstellation];
 
-            Vector3[] points = new Vector3[4];
-            Vector3[] pointsOut = new Vector3[4];
-            for (int i = 0; i < 4; i++)
+            var points = new Vector3[4];
+            var pointsOut = new Vector3[4];
+            for (var i = 0; i < 4; i++)
             {
 
                 points[i] = Coordinates.GeoTo3d(this.corners[i].Dec, ((this.corners[i].RA / 24.0 * 360) - 180));
@@ -127,7 +127,7 @@ namespace TerraViewer
             }
 
 
-            Matrix mat = Matrix.RotationY((float)(-(24 - (target.RA + 6)) / 12 * Math.PI));
+            var mat = Matrix.RotationY((float)(-(24 - (target.RA + 6)) / 12 * Math.PI));
             mat = Matrix.Multiply(mat, Matrix.RotationX((float)(target.Lat / 180f * Math.PI)));
             mat = Matrix.Multiply(mat, Matrix.Scaling(60, -60, 60));
             mat = Matrix.Multiply(mat, Matrix.Translation(58, 33, 0));
@@ -135,8 +135,8 @@ namespace TerraViewer
             Vector3.TransformCoordinate(points, ref mat, pointsOut);
             fov = new PointF[5];
 
-            int index = 0;
-            foreach (Vector3 point in pointsOut)
+            var index = 0;
+            foreach (var point in pointsOut)
             {
                 fov[index++] = new PointF((float)point.X, (float)point.Y);
             }
@@ -145,7 +145,7 @@ namespace TerraViewer
             //Calculate view length
             double a = fov[0].X - fov[1].X;
             double b = fov[0].Y - fov[1].Y;
-            double c = Math.Sqrt(a * a + b * b);
+            var c = Math.Sqrt(a * a + b * b);
 
             RefreshHint();
         }
@@ -172,8 +172,8 @@ namespace TerraViewer
         public Coordinates BottomRight;
 
 
-        PointF[] lines = null;
-        PointF[] fov = null;
+        PointF[] lines;
+        PointF[] fov;
 
         private void ComputeDisplayParameters()
         {
@@ -181,17 +181,17 @@ namespace TerraViewer
             {
                 return;
             }
-            IPlace target = Constellations.ConstellationCentroids[currentConstellation];
-            Lineset boundries = Constellations.boundries[currentConstellation];
+            var target = Constellations.ConstellationCentroids[currentConstellation];
+            var boundries = Constellations.boundries[currentConstellation];
 
-            Vector3[] points = new Vector3[boundries.Points.Count];
-            Vector3[] pointsOut = new Vector3[boundries.Points.Count];
-            for (int i = 0; i< points.Length; i++)
+            var points = new Vector3[boundries.Points.Count];
+            var pointsOut = new Vector3[boundries.Points.Count];
+            for (var i = 0; i< points.Length; i++)
             {
                 points[i] = Coordinates.GeoTo3d(boundries.Points[i].Dec, boundries.Points[i].RA);
             }
 
-            Matrix mat = Matrix.RotationY((float)(-(24-(target.RA+6)) /12 * Math.PI));
+            var mat = Matrix.RotationY((float)(-(24-(target.RA+6)) /12 * Math.PI));
             mat = Matrix.Multiply(mat, Matrix.RotationX((float)(target.Lat / 180f * Math.PI)));
             mat = Matrix.Multiply(mat, Matrix.Scaling(60, -60, 60));
             mat = Matrix.Multiply(mat, Matrix.Translation(58, 33, 0));
@@ -200,8 +200,8 @@ namespace TerraViewer
             Vector3.TransformCoordinate(points, ref mat, pointsOut);
             lines = new PointF[points.Length+1];
             
-            int index = 0;
-            foreach (Vector3 point in pointsOut)
+            var index = 0;
+            foreach (var point in pointsOut)
             {
                 lines[index++] = new PointF((float)point.X, (float)point.Y);
             }
@@ -215,17 +215,17 @@ namespace TerraViewer
             {
                 return;
             }
-            IPlace target = Constellations.ConstellationCentroids[currentConstellation];
-            Lineset boundries = Constellations.boundries[currentConstellation];
+            var target = Constellations.ConstellationCentroids[currentConstellation];
+            var boundries = Constellations.boundries[currentConstellation];
 
-            Vector3[] points = new Vector3[boundries.Points.Count];
-            Vector3[] pointsOut = new Vector3[boundries.Points.Count]; 
-            for (int i = 0; i < points.Length; i++)
+            var points = new Vector3[boundries.Points.Count];
+            var pointsOut = new Vector3[boundries.Points.Count]; 
+            for (var i = 0; i < points.Length; i++)
             {
                 points[i] = Coordinates.GeoTo3d(boundries.Points[i].Dec, boundries.Points[i].RA);
             }
 
-            Matrix mat = Matrix.RotationY((float)(-(24 - (target.RA + 6)) / 12 * Math.PI));
+            var mat = Matrix.RotationY((float)(-(24 - (target.RA + 6)) / 12 * Math.PI));
 
             mat = Matrix.Multiply(mat, Matrix.RotationX((float)(target.Lat / 180f * Math.PI)));
             mat = Matrix.Multiply(mat, Matrix.Scaling(50, -50, 50));
@@ -236,8 +236,8 @@ namespace TerraViewer
 
             lines = new PointF[points.Length + 1];
 
-            int index = 0;
-            foreach (Vector3 point in pointsOut)
+            var index = 0;
+            foreach (var point in pointsOut)
             {
                 lines[index++] = new PointF((float)point.X, (float)point.Y);
             }
@@ -249,12 +249,12 @@ namespace TerraViewer
         public void ThumbnailAllConstellations()
         {
             fov = null;
-            foreach (KeyValuePair<string,string> kv in Constellations.Abbreviations)
+            foreach (var kv in Constellations.Abbreviations)
             {
                 currentConstellation = kv.Value;
                 ComputeDisplayParametersForThumbnail();
-                Bitmap bmp = new Bitmap(96, 45);
-                Graphics g = Graphics.FromImage(bmp);
+                var bmp = new Bitmap(96, 45);
+                var g = Graphics.FromImage(bmp);
                 g.Clear(Color.Black);
                 DrawConstellationThumbnail(g);
                 g.Dispose();

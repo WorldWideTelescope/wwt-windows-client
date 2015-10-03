@@ -24,7 +24,7 @@ namespace TerraViewer
             this.label3.Text = Language.GetLocalizedText(851, "Select the way you want to organize markers and their shapes. You can use one marker type for all the data or select a column to show different markers for ranges of values, or discrete values. ");
             this.ShowFarSide.Text = Language.GetLocalizedText(852, "Show Far Side Markers");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {
@@ -74,7 +74,7 @@ namespace TerraViewer
         private void markerSelect_Click(object sender, EventArgs e)
         {
 
-            PushPinPickerPopup popup = new PushPinPickerPopup();
+            var popup = new PushPinPickerPopup();
 
             popup.Location = PointToScreen(markerSelect.Location);
             popup.Top = popup.Top + 34;
@@ -93,13 +93,13 @@ namespace TerraViewer
 
         private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
         {
-            DomainValue value = (DomainValue)domainList.Items[e.Index];
+            var value = (DomainValue)domainList.Items[e.Index];
             e.DrawBackground();
             e.Graphics.DrawString(value.Text, UiTools.StandardRegular, UiTools.StadardTextBrush, new PointF(e.Bounds.X +2, e.Bounds.Y +8));
             PushPin.DrawAt(e.Graphics, value.MarkerIndex, e.Bounds.X + 220, e.Bounds.Y + 2);
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
             {
-                Rectangle rect = e.Bounds;
+                var rect = e.Bounds;
                 rect.Inflate(-1, -1);
                 e.Graphics.DrawRectangle(Pens.Yellow, rect);
             }
@@ -137,15 +137,15 @@ namespace TerraViewer
                 if (layer.MarkerColumn != markerColumn.SelectedIndex - 1)
                 {
                     layer.MarkerColumn = markerColumn.SelectedIndex - 1;
-                    string[] domainValues = layer.GetDomainValues(layer.MarkerColumn);
+                    var domainValues = layer.GetDomainValues(layer.MarkerColumn);
                     layer.MarkerDomainValues.Clear();
-                    int index = 0;
-                    foreach (string text in domainValues)
+                    var index = 0;
+                    foreach (var text in domainValues)
                     {
                         layer.MarkerDomainValues.Add(text, new DomainValue(text, index++));
                     }
                 }
-                foreach (DomainValue val in layer.MarkerDomainValues.Values)
+                foreach (var val in layer.MarkerDomainValues.Values)
                 {
                     domainList.Items.Add(val);
                 }
@@ -163,8 +163,8 @@ namespace TerraViewer
 
         private void domainList_DoubleClick(object sender, EventArgs e)
         {
-            DomainValue val = (DomainValue)domainList.SelectedItem;
-            PushPinPickerPopup popup = new PushPinPickerPopup();
+            var val = (DomainValue)domainList.SelectedItem;
+            var popup = new PushPinPickerPopup();
 
             popup.Location = Cursor.Position;
 

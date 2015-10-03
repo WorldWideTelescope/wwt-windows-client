@@ -68,7 +68,7 @@ namespace TerraViewer
             //string filename = Properties.Settings.Default.CahceDirectory + @"data\hip.txt";
             
             //DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=hip", filename, false, true);
-            StreamReader sr = new StreamReader(this.FileName);
+            var sr = new StreamReader(this.FileName);
             string line;
             Star star;
             while (sr.Peek() >= 0)
@@ -80,9 +80,9 @@ namespace TerraViewer
             }
             sr.Close();
         }
-        PositionColorSizeVertexBuffer11 starVertexBuffer = null;
-        int starCount = 0;
-        Texture11 starProfile = null;
+        PositionColorSizeVertexBuffer11 starVertexBuffer;
+        int starCount;
+        Texture11 starProfile;
         public override bool IsTileInFrustum(PlaneD[] frustum)
         {
             return true;
@@ -104,19 +104,19 @@ namespace TerraViewer
             {
                 starProfile = Texture11.FromBitmap( Properties.Resources.StarProfile);
   
-                int count = stars.Count;
-                int index = 0;
+                var count = stars.Count;
+                var index = 0;
                 starCount = count;
 
                 starVertexBuffer = new PositionColorSizeVertexBuffer11(count, RenderContext11.PrepDevice);
 
-                PositionColorSize[] points = (PositionColorSize[])starVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-                foreach (Star star in stars)
+                var points = (PositionColorSize[])starVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+                foreach (var star in stars)
                 {
-                    Vector3d pos = Coordinates.RADecTo3d(star.RA + 12, star.Dec, 1f);
+                    var pos = Coordinates.RADecTo3d(star.RA + 12, star.Dec, 1f);
                     points[index].Position = pos.Vector3;
                     points[index].Color = star.Col;
-                    double radDec = (.5) / Math.Pow(1.6, star.Magnitude);
+                    var radDec = (.5) / Math.Pow(1.6, star.Magnitude);
                     points[index].size = (float)radDec;
                     index++;
                 }
@@ -127,12 +127,12 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Additive;
             renderContext.DepthStencilMode = DepthStencilMode.Off;
             renderContext.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mvp.Transpose();
             PointSpriteShader11.WVPMatrix = mvp;
             PointSpriteShader11.Color = SharpDX.Color.White;
 
-            float adjustedScale = (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
+            var adjustedScale = (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
 
             PointSpriteShader11.ViewportScale = new SharpDX.Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
             PointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);

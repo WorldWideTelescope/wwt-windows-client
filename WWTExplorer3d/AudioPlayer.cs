@@ -113,8 +113,8 @@ namespace TerraViewer
             {
                 if (me != null)
                 {
-                    System.Windows.Duration d = me.NaturalDuration;
-                    TimeSpan ts = new TimeSpan();
+                    var d = me.NaturalDuration;
+                    var ts = new TimeSpan();
                     if (d.HasTimeSpan)
                     {
                         ts = d.TimeSpan;

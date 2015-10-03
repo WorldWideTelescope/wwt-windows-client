@@ -22,7 +22,8 @@ namespace TerraViewer
             get { return name; }
             set { name = value; }
         }
-		string url;
+
+	    readonly string url;
 		System.Collections.ArrayList dataList;
         private bool sky;
 
@@ -74,7 +75,7 @@ namespace TerraViewer
 
 
                     TourPlace place;
-                    StreamReader sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".txt");
+                    var sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".txt");
                     string line;
                     while (sr.Peek() >= 0)
                     {
@@ -88,13 +89,13 @@ namespace TerraViewer
                 else if (dataSetType == DataSetType.Imageset)
                 {
 
-                    string filename = Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml";
+                    var filename = Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml";
 
                     DataSetManager.DownloadFile(url, filename, false, true);
 
 
                     
-                    XmlDocument doc = new XmlDocument();
+                    var doc = new XmlDocument();
                     doc.Load(filename);
 
                     if (!Directory.Exists(Properties.Settings.Default.CahceDirectory + @"thumbnails\"))
@@ -110,10 +111,10 @@ namespace TerraViewer
 
                     foreach (XmlNode imageset in imageSets.ChildNodes)
                     {
-                        ImageSetHelper newImageset = ImageSetHelper.FromXMLNode(imageset);
+                        var newImageset = ImageSetHelper.FromXMLNode(imageset);
                         if (newImageset != null)
                         {
-                            TourPlace newPlace = new TourPlace(newImageset.Name, (newImageset.CenterY), (newImageset.CenterX) / 15, Classification.Unidentified, "Err", ImageSetType.Sky, newImageset.BaseTileDegrees*10);
+                            var newPlace = new TourPlace(newImageset.Name, (newImageset.CenterY), (newImageset.CenterX) / 15, Classification.Unidentified, "Err", ImageSetType.Sky, newImageset.BaseTileDegrees*10);
                             newPlace.StudyImageset = newImageset;
 
                             newPlace.ThumbNail = UiTools.LoadThumbnailFromWeb(newImageset.ThumbnailUrl);
@@ -144,7 +145,7 @@ namespace TerraViewer
 
         #region IThumbnail Members
 
-        Bitmap thumbnail = null;
+        Bitmap thumbnail;
 
         public Bitmap ThumbNail
         {
@@ -213,10 +214,10 @@ namespace TerraViewer
         {
             get
             {
-                ArrayList list = GetPlaceList();
+                var list = GetPlaceList();
 
-                object[] array = new object[list.Count];
-                for(int i = 0 ; i< list.Count;i++)
+                var array = new object[list.Count];
+                for(var i = 0 ; i< list.Count;i++)
                 {
                     array[i] = list[i];
                 }

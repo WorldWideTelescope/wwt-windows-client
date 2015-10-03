@@ -12,14 +12,14 @@ namespace TerraViewer
 
     public partial class WWTCheckbox : UserControl
     {
-        Bitmap uncheckedRest = global::TerraViewer.Properties.Resources.checkbox_unchecked_rest;
-        Bitmap checkedRest = global::TerraViewer.Properties.Resources.checkbox_checked_rest;
-        Bitmap uncheckedHover = global::TerraViewer.Properties.Resources.checkbox_unchecked_hover;
-        Bitmap checkedHover = global::TerraViewer.Properties.Resources.checkbox_checked_hover;
-        Bitmap uncheckedPush = global::TerraViewer.Properties.Resources.checkbox_unchecked_press;
-        Bitmap checkedPush = global::TerraViewer.Properties.Resources.checkbox_checked_press;
-        Bitmap uncheckedDisabled = global::TerraViewer.Properties.Resources.checkbox_unchecked_disabled;
-        Bitmap checkedDisabled = global::TerraViewer.Properties.Resources.checkbox_checked_disabled;
+        readonly Bitmap uncheckedRest = global::TerraViewer.Properties.Resources.checkbox_unchecked_rest;
+        readonly Bitmap checkedRest = global::TerraViewer.Properties.Resources.checkbox_checked_rest;
+        readonly Bitmap uncheckedHover = global::TerraViewer.Properties.Resources.checkbox_unchecked_hover;
+        readonly Bitmap checkedHover = global::TerraViewer.Properties.Resources.checkbox_checked_hover;
+        readonly Bitmap uncheckedPush = global::TerraViewer.Properties.Resources.checkbox_unchecked_press;
+        readonly Bitmap checkedPush = global::TerraViewer.Properties.Resources.checkbox_checked_press;
+        readonly Bitmap uncheckedDisabled = global::TerraViewer.Properties.Resources.checkbox_unchecked_disabled;
+        readonly Bitmap checkedDisabled = global::TerraViewer.Properties.Resources.checkbox_checked_disabled;
 
         public WWTCheckbox()
         {
@@ -42,9 +42,9 @@ namespace TerraViewer
             }
         }
 
-        bool pressed = false;
-        bool hover = false;
-        bool isChecked = false;
+        bool pressed;
+        bool hover;
+        bool isChecked;
     
         public event EventHandler CheckedChanged;
 
@@ -69,8 +69,8 @@ namespace TerraViewer
 
         private void WWTCheckbox_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            RectangleF rectf = new RectangleF(25, 0, Width-15, Height);
+            var g = e.Graphics;
+            var rectf = new RectangleF(25, 0, Width-15, Height);
 
 
 

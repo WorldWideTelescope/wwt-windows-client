@@ -97,14 +97,14 @@ namespace TerraViewer
         public static event TessCallback ErrorEvent;
 
         static List<Vector3d> VertexList = new List<Vector3d>();
-        static List<int> TriangleListOut = new List<int>();
+        static readonly List<int> TriangleListOut = new List<int>();
 
 
         public static unsafe List<int> TesselateSimplePolyB(List<Vector3d> inputList)
         {
-            List<int> results = new List<int>();
+            var results = new List<int>();
 
-            Tessellator tess = new Tessellator();
+            var tess = new Tessellator();
 
             tess.Process(inputList, results);
 
@@ -124,7 +124,7 @@ namespace TerraViewer
             //VertexList.Add(new Vector3d(20,20,0));
 
 
-            IntPtr tess = gluNewTess();
+            var tess = gluNewTess();
 
             if (tess == null)
             {
@@ -149,9 +149,9 @@ namespace TerraViewer
             gluTessBeginPolygon(tess, IntPtr.Zero);
 
             gluTessBeginContour(tess);
-            for (int i = 0; i < VertexList.Count; i++)
+            for (var i = 0; i < VertexList.Count; i++)
             {
-                Vector3d v = VertexList[i];
+                var v = VertexList[i];
                 gluTessVertex(tess, new double[] { v.X, v.Y, v.Z }, i);
             }
             gluTessEndContour(tess);
@@ -198,9 +198,9 @@ namespace TerraViewer
     {
         public static List<int> TesselateSimplePolyB(List<Vector3d> inputList)
         {
-            List<int> results = new List<int>();
+            var results = new List<int>();
 
-            Tessellator tess = new Tessellator();
+            var tess = new Tessellator();
 
             tess.Process(inputList, results);
 
@@ -212,7 +212,7 @@ namespace TerraViewer
         double Area(List<Vector2d> poly)
         {
 
-            int n = poly.Count;
+            var n = poly.Count;
 
             double A = 0.0f;
 
@@ -226,9 +226,9 @@ namespace TerraViewer
         {
             pntA.Normalize();
             pntB.Normalize();
-            Vector3d cross = Vector3d.Cross(pntA, pntB);
+            var cross = Vector3d.Cross(pntA, pntB);
 
-            double dot = Vector3d.Dot(cross, pntTest);
+            var dot = Vector3d.Dot(cross, pntTest);
 
             return dot > 0;
         }
@@ -290,9 +290,9 @@ namespace TerraViewer
             //Cy = poly[V[w]].Y;
 
 
-            Vector3d a = poly[V[u]];
-            Vector3d b = poly[V[v]];
-            Vector3d c = poly[V[w]];
+            var a = poly[V[u]];
+            var b = poly[V[v]];
+            var c = poly[V[w]];
             Vector3d P;
 
 
@@ -301,14 +301,14 @@ namespace TerraViewer
             //    return false;
             //}
 
-            Vector3d d = b-a;
+            var d = b-a;
             d.Normalize();
-            Vector3d e = b-c;
+            var e = b-c;
             c.Normalize();
 
-            Vector3d g= Vector3d.Cross(d,e);
+            var g= Vector3d.Cross(d,e);
 
-            Vector3d bn = b;
+            var bn = b;
             bn.Normalize();
 
             if (Vector3d.Dot(g, bn) > 0)
@@ -339,19 +339,19 @@ namespace TerraViewer
         {
             /* allocate and initialize list of Vertices in polygon */
 
-            int n = poly.Count;
+            var n = poly.Count;
             if (n < 3)
             {
                 return false;
             }
 
-            int[] V = new int[n];
+            var V = new int[n];
 
             /* we want a counter-clockwise polygon in V */
 
             //if (0.0f < Area(poly))
             //{
-                for (int v = 0; v < n; v++)
+                for (var v = 0; v < n; v++)
                 {
                     V[v] = v;
                 }
@@ -363,10 +363,10 @@ namespace TerraViewer
             //        V[v] = (n - 1) - v;
             //    }
             //}
-            int nv = n;
+            var nv = n;
 
             /*  remove nv-2 Vertices, creating 1 triangle every time */
-            int count = 2 * nv;   /* error detection */
+            var count = 2 * nv;   /* error detection */
 
             for (int m = 0, v = nv - 1; nv > 2; )
             {
@@ -378,7 +378,7 @@ namespace TerraViewer
                 }
 
                 /* three consecutive vertices in current polygon, <u,v,w> */
-                int u = v;
+                var u = v;
                 if (nv <= u)
                 {
                     u = 0;     /* previous */
@@ -390,7 +390,7 @@ namespace TerraViewer
                     v = 0;     /* new v    */
                 }
 
-                int w = v + 1;
+                var w = v + 1;
                 if (nv <= w)
                 {
                     w = 0;     /* next     */
@@ -430,19 +430,19 @@ namespace TerraViewer
         {
             /* allocate and initialize list of Vertices in polygon */
 
-            int n = poly.Count;
+            var n = poly.Count;
             if (n < 3)
             {
                 return false;
             }
 
-            int[] V = new int[n];
+            var V = new int[n];
 
             /* we want a counter-clockwise polygon in V */
 
             //if (0.0f < Area(poly))
             //{
-            for (int v = 0; v < n; v++)
+            for (var v = 0; v < n; v++)
             {
                 V[v] = v;
             }
@@ -454,10 +454,10 @@ namespace TerraViewer
             //    V[v] = (n - 1) - v;
             //}
             //}
-            int nv = n;
+            var nv = n;
 
             /*  remove nv-2 Vertices, creating 1 triangle every time */
-            int count = 2 * nv;   /* error detection */
+            var count = 2 * nv;   /* error detection */
 
             for (int m = 0, v = nv - 1; nv > 2; )
             {
@@ -469,7 +469,7 @@ namespace TerraViewer
                 }
 
                 /* three consecutive vertices in current polygon, <u,v,w> */
-                int u = v;
+                var u = v;
                 if (nv <= u)
                 {
                     u = 0;     /* previous */
@@ -481,7 +481,7 @@ namespace TerraViewer
                     v = 0;     /* new v    */
                 }
 
-                int w = v + 1;
+                var w = v + 1;
                 if (nv <= w)
                 {
                     w = 0;     /* next     */

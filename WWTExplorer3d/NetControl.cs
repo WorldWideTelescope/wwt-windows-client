@@ -26,7 +26,7 @@ namespace TerraViewer
         private static Thread statusThread;
         private const int listenPort = 0;
 
-        static UdpClient listener = null;
+        static UdpClient listener;
 
         public static void Abort()
         {
@@ -51,7 +51,7 @@ namespace TerraViewer
 
         public static void LoadNodeList()
         {
-            string filename = Properties.Settings.Default.CahceDirectory + "nodelist.xml";
+            var filename = Properties.Settings.Default.CahceDirectory + "nodelist.xml";
             if (File.Exists(filename))
             {
                 NodeList = ClientNodes.Load(filename);
@@ -64,14 +64,14 @@ namespace TerraViewer
         public static int ErrorCount = 0;
 
         static bool running = true;
-        static AutoResetEvent sync = new AutoResetEvent(false);
+        static readonly AutoResetEvent sync = new AutoResetEvent(false);
 
         static bool FrameChanged()
         {
             return lastRederedFrame != currnetSyncFrame;
         }
 
-        static int lastRederedFrame = 0;
+        static int lastRederedFrame;
         public static int currnetSyncFrame = 0;
         public static void Start()
         {
@@ -161,30 +161,30 @@ namespace TerraViewer
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
             statusClient = new UdpClient(8091);
-            IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, 8091);
+            var destinationEP = new IPEndPoint(IPAddress.Any, 8091);
             while (running)
             {
                 try
                 {
-                    byte[] bytes = statusClient.Receive(ref destinationEP);
+                    var bytes = statusClient.Receive(ref destinationEP);
                     if (bytes.Length > 2)
                     {
                         if (bytes[0] == 42 && bytes[1] == 42 && bytes[2] == 13)
                         {
-                            MemoryStream ms = new MemoryStream(bytes);
-                            BinaryReader br = new BinaryReader(ms);
+                            var ms = new MemoryStream(bytes);
+                            var br = new BinaryReader(ms);
                             // Eat the three leading bytes
                             br.ReadBytes(3);
 
                             if (br.ReadInt32() == Earth3d.MainWindow.Config.ClusterID)
                             {
-                                string ip = destinationEP.Address.ToString();
-                                int nodeID = br.ReadInt32();
-                                string name = br.ReadString();
-                                string status = br.ReadString();
-                                string StatusText = br.ReadString();
-                                float FPS = br.ReadSingle();
-                                string error = br.ReadString();
+                                var ip = destinationEP.Address.ToString();
+                                var nodeID = br.ReadInt32();
+                                var name = br.ReadString();
+                                var status = br.ReadString();
+                                var StatusText = br.ReadString();
+                                var FPS = br.ReadSingle();
+                                var error = br.ReadString();
                                
                                 NetControl.LogStatusReport(nodeID, name, ip, (ClientNodeStatus)Enum.Parse(typeof(ClientNodeStatus), status), StatusText, FPS, error);
                             }
@@ -205,12 +205,12 @@ namespace TerraViewer
             while (running)
             {
                 GetClient();
-                IPEndPoint destinationEP = new IPEndPoint(IPAddress.Any, Settings.MasterController ? 8088 : 8087);
+                var destinationEP = new IPEndPoint(IPAddress.Any, Settings.MasterController ? 8088 : 8087);
                 while (running)
                 {
                     try
                     {
-                        byte[] bytes = listener.Receive(ref destinationEP);
+                        var bytes = listener.Receive(ref destinationEP);
 
 
                         if (bytes.Length > 2)
@@ -218,8 +218,8 @@ namespace TerraViewer
                             if (bytes[0] == 42 && bytes[1] == 42 && bytes[2] == 1 && !Settings.MasterController)
                             {
                                 
-                                MemoryStream ms = new MemoryStream(bytes);
-                                BinaryReader br = new BinaryReader(ms);
+                                var ms = new MemoryStream(bytes);
+                                var br = new BinaryReader(ms);
                                 // Eat the three leading bytes
                                 br.ReadBytes(3);
 
@@ -266,13 +266,13 @@ namespace TerraViewer
                                     artFilter = br.ReadBytes(12);
 
                                     int count = br.ReadByte();
-                                    for (int i = 0; i < count; i++)
+                                    for (var i = 0; i < count; i++)
                                     {
-                                        bool enabled = br.ReadBoolean();
+                                        var enabled = br.ReadBoolean();
                                         int id = br.ReadByte();
                                         double alt = br.ReadSingle();
                                         double az = br.ReadSingle();
-                                        System.Drawing.Color color = System.Drawing.Color.FromArgb(br.ReadInt32());
+                                        var color = System.Drawing.Color.FromArgb(br.ReadInt32());
                                         if (enabled)
                                         {
                                             Reticle.Set(id, alt, az, color);
@@ -296,8 +296,8 @@ namespace TerraViewer
                                 continue;
                             }
                             //Convert Byte to String
-                            string sBuffer = Encoding.ASCII.GetString(bytes);
-                            string[] values = sBuffer.Split(new char[] { ',' });
+                            var sBuffer = Encoding.ASCII.GetString(bytes);
+                            var values = sBuffer.Split(new char[] { ',' });
                             if (values.Length > 1 && values[0] == "CAL" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1] && !Earth3d.MainWindow.Config.Master)
                             {
                                 TerraViewer.Callibration.CalibrationScreen.ParseCommandString(values);
@@ -308,7 +308,7 @@ namespace TerraViewer
                                 double alt = Convert.ToSingle(values[2]);
                                 double az = Convert.ToSingle(values[3]);
                                 double scale = Convert.ToSingle(values[4]);
-                                string url = values[5];
+                                var url = values[5];
 
                                 if (!string.IsNullOrEmpty(url))
                                 {
@@ -323,7 +323,7 @@ namespace TerraViewer
                                             ".tif", false, "", az, alt, 0, false, "", false, false, 2,
                                             960, 600, "", "", "", "", 0, "");
                                     }
-                                    bool dirty = false;
+                                    var dirty = false;
                                     if (Earth3d.MainWindow.videoOverlay.CenterX != az)
                                     {
                                         dirty = true;
@@ -340,7 +340,7 @@ namespace TerraViewer
                                     Earth3d.MainWindow.videoOverlay.CenterX = az;
                                     Earth3d.MainWindow.videoOverlay.CenterY = alt;
                                     Earth3d.MainWindow.videoOverlay.BaseTileDegrees = scale / 1000;
-                                    Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
+                                    var tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
                                     tile.ReadyToRender = false;
                                     tile.Volitile = true;
                                     tile.TextureReady = false;
@@ -354,7 +354,7 @@ namespace TerraViewer
                                 {
                                     if (Earth3d.MainWindow.videoOverlay != null)
                                     {
-                                        Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
+                                        var tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
                                         tile.CleanUp(false);
                                         TileCache.RemoveTile(tile);
                                     }
@@ -432,17 +432,17 @@ namespace TerraViewer
                             }
                             else if (values.Length == 3)
                             {
-                                double leftRight = Convert.ToDouble(values[0]);
-                                double upDown = Convert.ToDouble(values[1]);
-                                double zoom = Convert.ToDouble(values[2]);
+                                var leftRight = Convert.ToDouble(values[0]);
+                                var upDown = Convert.ToDouble(values[1]);
+                                var zoom = Convert.ToDouble(values[2]);
                                 Earth3d.MainWindow.MoveAndZoom(leftRight, upDown, zoom);
                             }
                             else if (values.Length == 4)
                             {
-                                double leftRight = Convert.ToDouble(values[0]);
-                                double upDown = Convert.ToDouble(values[1]);
-                                double zoom = Convert.ToDouble(values[2]);
-                                string name = values[3];
+                                var leftRight = Convert.ToDouble(values[0]);
+                                var upDown = Convert.ToDouble(values[1]);
+                                var zoom = Convert.ToDouble(values[2]);
+                                var name = values[3];
                                 Earth3d.MainWindow.MoveAndZoomRate(leftRight, upDown, zoom, "");
                             }
                             else if (values.Length == 5)
@@ -466,14 +466,14 @@ namespace TerraViewer
                             }
                             else if (values.Length == 8)
                             {
-                                double leftRight = Convert.ToDouble(values[0]);
-                                double upDown = Convert.ToDouble(values[1]);
-                                double zoom = Convert.ToDouble(values[2]);
-                                string name = values[3];
-                                bool dome = Convert.ToBoolean(values[4]);
-                                double domeTilt = Convert.ToDouble(values[5]);
-                                double viewTilt = Convert.ToDouble(values[6]);
-                                string mode = values[7];
+                                var leftRight = Convert.ToDouble(values[0]);
+                                var upDown = Convert.ToDouble(values[1]);
+                                var zoom = Convert.ToDouble(values[2]);
+                                var name = values[3];
+                                var dome = Convert.ToBoolean(values[4]);
+                                var domeTilt = Convert.ToDouble(values[5]);
+                                var viewTilt = Convert.ToDouble(values[6]);
+                                var mode = values[7];
                                 Earth3d.MainWindow.CameraAngle = viewTilt;
                                 if (Properties.Settings.Default.DomeView != dome)
                                 {
@@ -495,14 +495,14 @@ namespace TerraViewer
                             }
                             else if ((values.Length == 15 ) && values[0] == "Kinect" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1])
                             {
-                                double leftRight = Convert.ToDouble(values[2]);
-                                double upDown = Convert.ToDouble(values[3]);
-                                double zoom = Convert.ToDouble(values[4]);
-                                string name = values[5];
-                                bool dome = Convert.ToBoolean(values[6]);
-                                double domeTilt = Convert.ToDouble(values[7]);
-                                double viewTilt = Convert.ToDouble(values[8]);
-                                string mode = values[9];
+                                var leftRight = Convert.ToDouble(values[2]);
+                                var upDown = Convert.ToDouble(values[3]);
+                                var zoom = Convert.ToDouble(values[4]);
+                                var name = values[5];
+                                var dome = Convert.ToBoolean(values[6]);
+                                var domeTilt = Convert.ToDouble(values[7]);
+                                var viewTilt = Convert.ToDouble(values[8]);
+                                var mode = values[9];
                                 Earth3d.MainWindow.CameraAngleTarget = viewTilt;
                                 if (Properties.Settings.Default.DomeView != dome)
                                 {
@@ -521,11 +521,11 @@ namespace TerraViewer
                                     Earth3d.MainWindow.SetBackgroundByName(name);
                                 }
 
-                                int retId = int.Parse(values[10]);
-                                bool state = Boolean.Parse(values[11]);
-                                double alt = Convert.ToDouble(values[12]);
-                                double az = Convert.ToDouble(values[13]);
-                                System.Drawing.Color color = System.Drawing.Color.White;
+                                var retId = int.Parse(values[10]);
+                                var state = Boolean.Parse(values[11]);
+                                var alt = Convert.ToDouble(values[12]);
+                                var az = Convert.ToDouble(values[13]);
+                                var color = System.Drawing.Color.White;
                                 try
                                 {
                                     color = System.Drawing.Color.FromArgb(int.Parse(values[14]));
@@ -545,14 +545,14 @@ namespace TerraViewer
                             }
                             else if ((values.Length == 18) && values[0] == "Kinect" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1])
                             {
-                                double leftRight = Convert.ToDouble(values[2]);
-                                double upDown = Convert.ToDouble(values[3]);
-                                double zoom = Convert.ToDouble(values[4]);
-                                string name = values[5];
-                                bool dome = Convert.ToBoolean(values[6]);
-                                double domeTilt = Convert.ToDouble(values[7]);
-                                double viewTilt = Convert.ToDouble(values[8]);
-                                string mode = values[9];
+                                var leftRight = Convert.ToDouble(values[2]);
+                                var upDown = Convert.ToDouble(values[3]);
+                                var zoom = Convert.ToDouble(values[4]);
+                                var name = values[5];
+                                var dome = Convert.ToBoolean(values[6]);
+                                var domeTilt = Convert.ToDouble(values[7]);
+                                var viewTilt = Convert.ToDouble(values[8]);
+                                var mode = values[9];
                                 Earth3d.MainWindow.CameraAngleTarget = viewTilt;
                                 if (Properties.Settings.Default.DomeView != dome)
                                 {
@@ -571,11 +571,11 @@ namespace TerraViewer
                                     Earth3d.MainWindow.SetBackgroundByName(name);
                                 }
 
-                                int retId = int.Parse(values[10]);
-                                bool state = Boolean.Parse(values[11]);
-                                double alt = Convert.ToDouble(values[12]);
-                                double az = Convert.ToDouble(values[13]);
-                                System.Drawing.Color color = System.Drawing.Color.White;
+                                var retId = int.Parse(values[10]);
+                                var state = Boolean.Parse(values[11]);
+                                var alt = Convert.ToDouble(values[12]);
+                                var az = Convert.ToDouble(values[13]);
+                                var color = System.Drawing.Color.White;
                                 try
                                 {
                                     color = System.Drawing.Color.FromArgb(int.Parse(values[14]));
@@ -629,8 +629,8 @@ namespace TerraViewer
             try
             {
                 ReportStatus(ClientNodeStatus.Working, "Loading Layers", "");
-                WebClient layerClient = new WebClient();
-                string url = string.Format("http://{0}:5050/Configuration/images/layermap", NetControl.MasterAddress);
+                var layerClient = new WebClient();
+                var url = string.Format("http://{0}:5050/Configuration/images/layermap", NetControl.MasterAddress);
                 layerClient.DownloadDataCompleted += new DownloadDataCompletedEventHandler(layerClient_DownloadDataCompleted);
                 layerClient.DownloadDataAsync(new Uri(url));
 
@@ -648,11 +648,11 @@ namespace TerraViewer
             {
                 try
                 {
-                    string filename = Properties.Settings.Default.CahceDirectory + "\\serverlayers.layers";
-                    Byte[] data = e.Result;
+                    var filename = Properties.Settings.Default.CahceDirectory + "\\serverlayers.layers";
+                    var data = e.Result;
                     File.WriteAllBytes(filename, data);
                     LayerManager.InitLayers();
-                    LayerContainer layers = LayerContainer.FromFile(filename, false, null, false);
+                    var layers = LayerContainer.FromFile(filename, false, null, false);
                     layers.Dispose();
                     ReportStatus(ClientNodeStatus.Online, "Layers Loaded", "");
                 }
@@ -669,7 +669,7 @@ namespace TerraViewer
 
         public static void SyncTourUiThread()
         {
-            WebClient client = new WebClient();
+            var client = new WebClient();
             // Synce Layers
             try
             {
@@ -677,15 +677,15 @@ namespace TerraViewer
 
                 ReportStatus(ClientNodeStatus.Working, "Loading Tour", "");
 
-                string url = string.Format("http://{0}:5050/Configuration/images/tour.wtt", NetControl.MasterAddress);
+                var url = string.Format("http://{0}:5050/Configuration/images/tour.wtt", NetControl.MasterAddress);
 
 
                 try
                 {
-                    string filename = Properties.Settings.Default.CahceDirectory + "\\servertour.wtt";
+                    var filename = Properties.Settings.Default.CahceDirectory + "\\servertour.wtt";
                
                     client.DownloadFile(new Uri(url), filename);
-                    TourPlayer oldPlayer = Earth3d.MainWindow.UiController as TourPlayer;
+                    var oldPlayer = Earth3d.MainWindow.UiController as TourPlayer;
 
                     if (oldPlayer != null)
                     {
@@ -694,9 +694,9 @@ namespace TerraViewer
                         oldPlayer.Tour.ClearTempFiles();
                     }
 
-                    TourDocument tour = TourDocument.FromFile(filename, false);
+                    var tour = TourDocument.FromFile(filename, false);
                     tour.ProjectorServer = true;
-                    TourPlayer player = new TourPlayer();
+                    var player = new TourPlayer();
                     player.Tour = tour;
                     player.ProjectorServer = true;
                     player.Play();
@@ -721,10 +721,10 @@ namespace TerraViewer
             {
                 try
                 {
-                    Byte[] data = e.Result;
-                    string filename = Properties.Settings.Default.CahceDirectory + "\\servertour.wtt";
+                    var data = e.Result;
+                    var filename = Properties.Settings.Default.CahceDirectory + "\\servertour.wtt";
                     File.WriteAllBytes(filename, data);
-                    TourPlayer oldPlayer = Earth3d.MainWindow.UiController as TourPlayer;
+                    var oldPlayer = Earth3d.MainWindow.UiController as TourPlayer;
 
                     if (oldPlayer != null)
                     {
@@ -733,9 +733,9 @@ namespace TerraViewer
                         oldPlayer.Tour.ClearTempFiles();
                     }
 
-                    TourDocument tour = TourDocument.FromFile(filename, false);
+                    var tour = TourDocument.FromFile(filename, false);
                     tour.ProjectorServer = true;
-                    TourPlayer player = new TourPlayer();
+                    var player = new TourPlayer();
                     player.Tour = tour;
                     player.ProjectorServer = true;
                     player.Play();
@@ -771,7 +771,7 @@ namespace TerraViewer
                 listener = new UdpClient(8089);
             }
         }
-        static Socket sockA = null;
+        static Socket sockA;
         static Socket sockB = null;
         static DateTime lastMessage = DateTime.Now;
 
@@ -780,7 +780,7 @@ namespace TerraViewer
             double timeRate = 0;
 
 
-            TimeSpan ts = DateTime.Now.Subtract(lastMessage);
+            var ts = DateTime.Now.Subtract(lastMessage);
 
             //if (ts.Milliseconds < 50)
             //{
@@ -790,10 +790,10 @@ namespace TerraViewer
 
             timeRate = SpaceTimeController.SyncToClock ? SpaceTimeController.TimeRate : 0;
 
-            int settingsFlags = GetSettingsFlags();
-            int solarSystemFlags = GetSolarSystemSettingsFlags();
+            var settingsFlags = GetSettingsFlags();
+            var solarSystemFlags = GetSolarSystemSettingsFlags();
 
-            string output =
+            var output =
                 "SYNC"
                 + "," + Earth3d.MainWindow.Config.ClusterID.ToString()
                 + "," + lat.ToString()
@@ -828,15 +828,15 @@ namespace TerraViewer
 
         private static void CheckHeartbeat()
         {
-            TimeSpan ts = DateTime.Now - lastHeartBeatCheck;
+            var ts = DateTime.Now - lastHeartBeatCheck;
 
             if (ts.TotalSeconds > 15)
             {
-                foreach (ClientNode node in NodeList.Values)
+                foreach (var node in NodeList.Values)
                 {
                     if (node.Status != ClientNodeStatus.Offline)
                     {
-                        TimeSpan timeSinceContact = DateTime.Now - node.LastReport;
+                        var timeSinceContact = DateTime.Now - node.LastReport;
                         if (timeSinceContact.TotalSeconds > 30)
                         {
                             node.Status = ClientNodeStatus.Offline;
@@ -855,20 +855,20 @@ namespace TerraViewer
         {
             CheckHeartbeat();
 
-            MemoryStream stream = new MemoryStream();
+            var stream = new MemoryStream();
 
-            BinaryWriter bw = new BinaryWriter(stream);
+            var bw = new BinaryWriter(stream);
             double timeRate = 0;
 
 
-            TimeSpan ts = DateTime.Now.Subtract(lastMessage);
+            var ts = DateTime.Now.Subtract(lastMessage);
 
             lastMessage = DateTime.Now;
 
             timeRate = SpaceTimeController.SyncToClock ? SpaceTimeController.TimeRate : 0;
 
-            Byte[] settingsData = GetSettingsBlendStates();
-            Byte[] solarSystemData = GetSolarSystemSettingsBlendStates();
+            var settingsData = GetSettingsBlendStates();
+            var solarSystemData = GetSolarSystemSettingsBlendStates();
             bw.Write((byte)42);
             bw.Write((byte)42);
             bw.Write((byte)1); // "SYNC" packet
@@ -911,10 +911,10 @@ namespace TerraViewer
             bw.Write(Properties.Settings.Default.ConstellationBoundariesFilter.GetBits());
             bw.Write(Properties.Settings.Default.ConstellationArtFilter.GetBits());
 
-            int count = Reticle.Reticles.Count;
+            var count = Reticle.Reticles.Count;
             bw.Write((byte)count);
 
-            foreach (Reticle reticle in Reticle.Reticles.Values)
+            foreach (var reticle in Reticle.Reticles.Values)
             {
                 bw.Write(reticle.Visible.TargetState);
                 bw.Write((byte)reticle.Id);
@@ -930,7 +930,7 @@ namespace TerraViewer
 
         public static int GetSolarSystemSettingsFlags()
         {
-            int flags = 0;
+            var flags = 0;
             flags += Settings.Active.ShowSolarSystem ? 1 : 0;
             flags += Settings.Active.SolarSystemStars ? 2 : 0;
             flags += Settings.Active.SolarSystemMilkyWay ? 4 : 0;
@@ -946,7 +946,7 @@ namespace TerraViewer
 
         public static byte[] GetSolarSystemSettingsBlendStates()
         {
-            byte[] data = new byte[13];
+            var data = new byte[13];
             data[0] = (byte)(Properties.Settings.Default.ShowSolarSystem.Opacity * 255);
             data[1] = (byte)(Properties.Settings.Default.SolarSystemStars.Opacity * 255);
             data[2] = (byte)(Properties.Settings.Default.SolarSystemMilkyWay.Opacity * 255);
@@ -1015,14 +1015,14 @@ namespace TerraViewer
             
         }
 
-        static byte[] currentSolarSystemBlendStates = new byte[13];
+        static readonly byte[] currentSolarSystemBlendStates = new byte[13];
 
         internal static void SetSolarSystemsSettingsBlendStates()
         {
-            byte[] data = solarSystemData;
-            bool changed = false;
+            var data = solarSystemData;
+            var changed = false;
 
-            for (int i = 0; i < 13; i++)
+            for (var i = 0; i < 13; i++)
             {
                 if (data[i] != currentSolarSystemBlendStates[i])
                 {
@@ -1076,7 +1076,7 @@ namespace TerraViewer
 
         public static int GetSettingsFlags()
         {
-            int flags = 0;
+            var flags = 0;
             flags += Settings.Active.ShowElevationModel ? 1 : 0;
             flags += Properties.Settings.Default.LineSmoothing ? 2 : 0;
             flags += Settings.Active.LocalHorizonMode ? 4 : 0;
@@ -1112,7 +1112,7 @@ namespace TerraViewer
 
         public static byte[] GetSettingsBlendStates()
         {
-            byte[] data = new byte[35];
+            var data = new byte[35];
             data[0] = (byte)(Properties.Settings.Default.ShowElevationModel == true ? 1 : 0);
             data[1] = (byte)(Properties.Settings.Default.LineSmoothing == true ? 1 : 0);
             data[2] = (byte)(Properties.Settings.Default.LocalHorizonMode ? 1 : 0);
@@ -1298,14 +1298,14 @@ namespace TerraViewer
             }
         }
 
-        static byte[] currentSettingsBlendStates = new byte[35];
+        static readonly byte[] currentSettingsBlendStates = new byte[35];
         internal static void SetSettingsBelndStates()
         {
-            byte[] data = settingsData;
+            var data = settingsData;
 
-            bool changed = false;
+            var changed = false;
 
-            for (int i = 0; i < 35; i++)
+            for (var i = 0; i < 35; i++)
             {
                 if (data[i] != currentSettingsBlendStates[i])
                 {
@@ -1395,13 +1395,13 @@ namespace TerraViewer
                     sockA = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.IP);
                     sockA.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
                     sockA.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                    IPEndPoint bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8090);
+                    var bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8090);
                     sockA.Bind(bindEPA);
                 }
-                EndPoint destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Broadcast, 8087);
+                var destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Broadcast, 8087);
 
 
-                Byte[] header = Encoding.ASCII.GetBytes(output);
+                var header = Encoding.ASCII.GetBytes(output);
 
                 sockA.SendTo(header, destinationEPA);
             }
@@ -1419,11 +1419,11 @@ namespace TerraViewer
                     sockA = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.IP);
                     sockA.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
                     sockA.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                    IPEndPoint bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8090);
+                    var bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8090);
                     sockA.Bind(bindEPA);
 
                 }
-                EndPoint destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Broadcast, 8087);
+                var destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Broadcast, 8087);
 
 
 
@@ -1436,7 +1436,7 @@ namespace TerraViewer
 
         public static string GetThisHostIP()
         {
-            string hostIp = "127.1.1.1";
+            var hostIp = "127.1.1.1";
 
             if (!String.IsNullOrEmpty(Properties.Settings.Default.MasterHostIPOverride))
             {
@@ -1445,13 +1445,13 @@ namespace TerraViewer
 
             try
             {
-                String strHostName = Dns.GetHostName();
+                var strHostName = Dns.GetHostName();
 
                 // Find host by name
-                IPHostEntry iphostentry = Dns.GetHostByName(strHostName);
+                var iphostentry = Dns.GetHostByName(strHostName);
 
                 // Enumerate IP addresses
-                foreach (IPAddress ipaddress in iphostentry.AddressList)
+                foreach (var ipaddress in iphostentry.AddressList)
                 {
                     if (ipaddress.AddressFamily == AddressFamily.InterNetwork)
                     {
@@ -1472,7 +1472,7 @@ namespace TerraViewer
 
         internal static void GetColorSettings()
         {
-            WebClient client = new WebClient();
+            var client = new WebClient();
             //sync color properties
             try
             {
@@ -1483,15 +1483,15 @@ namespace TerraViewer
 
                 if (Earth3d.Logging) { Earth3d.WriteLogMessage("Get Color Settings from Server"); }
 
-                string url = string.Format("http://{0}:5050/Configuration/images/colorsettings", NetControl.MasterAddress);
-                string data = client.DownloadString(url);
+                var url = string.Format("http://{0}:5050/Configuration/images/colorsettings", NetControl.MasterAddress);
+                var data = client.DownloadString(url);
 
-                string[] lines = data.Split(new char[] { ',' });
+                var lines = data.Split(new char[] { ',' });
                 if (lines.Length == 21)
                 {
-                    int index = 0;
+                    var index = 0;
                     Earth3d.MainWindow.SuspendChanges();
-                    int version = Properties.Settings.Default.ColSettingsVersion = int.Parse(lines[index++]);
+                    var version = Properties.Settings.Default.ColSettingsVersion = int.Parse(lines[index++]);
                     Properties.Settings.Default.GridColor = SavedColor.Load(lines[index++]);
                     Properties.Settings.Default.EquatorialGridTextColor = SavedColor.Load(lines[index++]);
                     Properties.Settings.Default.GalacticGridColor = SavedColor.Load(lines[index++]);
@@ -1565,12 +1565,12 @@ namespace TerraViewer
 
         internal static void ReportStatus(ClientNodeStatus status, string statusText, string error)
         {
-            MemoryStream stream = new MemoryStream();
+            var stream = new MemoryStream();
             if (string.IsNullOrEmpty(error))
             {
                 error = "";
             }
-            BinaryWriter bw = new BinaryWriter(stream);
+            var bw = new BinaryWriter(stream);
             bw.Write((byte)42);
             bw.Write((byte)42);
             bw.Write((byte)13); //Status Packet
@@ -1587,7 +1587,7 @@ namespace TerraViewer
         }
 
 
-        static Socket sockStat = null;
+        static Socket sockStat;
         public static void SendStatus(Byte[] output, int length)
         {
             if (NetControl.MasterAddress == "127.0.0.1")
@@ -1601,10 +1601,10 @@ namespace TerraViewer
                     sockStat = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.IP);
                     //sockA.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
                     sockStat.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                    IPEndPoint bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8091);
+                    var bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8091);
                     sockStat.Bind(bindEPA);
                 }
-                EndPoint destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Parse(NetControl.MasterAddress), 8091);
+                var destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Parse(NetControl.MasterAddress), 8091);
 
                 sockStat.SendTo(output, 0, length, SocketFlags.None, destinationEPA);
             }
@@ -1626,10 +1626,10 @@ namespace TerraViewer
 
                 currentStatus = status;
                 CurrentStatusText = statusText;
-                string url = string.Format("http://{0}:5050/status?NodeID={1}&NodeName={2}&FPS={3}&Error={4}&Status={5}&StatusText={6}"
+                var url = string.Format("http://{0}:5050/status?NodeID={1}&NodeName={2}&FPS={3}&Error={4}&Status={5}&StatusText={6}"
                     , NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeID, Earth3d.MainWindow.Config.NodeDiplayName, Earth3d.LastFPS, error, status, statusText);
 
-                ReportDelegate report = new ReportDelegate(Report);
+                var report = new ReportDelegate(Report);
                 report.BeginInvoke(url, null, null);
                 //WebClient client = new WebClient();
                 //client.DownloadStringAsync(new Uri(url));
@@ -1642,7 +1642,7 @@ namespace TerraViewer
 
         internal static void Report(string uri)
         {
-            WebClient client = new WebClient();
+            var client = new WebClient();
             client.DownloadStringAsync(new Uri(uri));
         }
 
@@ -1664,7 +1664,7 @@ namespace TerraViewer
 
             if (string.IsNullOrEmpty(node.MacAddress))
             {
-                PhysicalAddress mac = NetControl.Arp(IPAddress.Parse(ipAddress));
+                var mac = NetControl.Arp(IPAddress.Parse(ipAddress));
 
                 node.MacAddress = mac.ToString();
             }
@@ -1699,13 +1699,13 @@ namespace TerraViewer
                     return null;
                 }
 
-                Int32 convertedIp = IpToInt32(ipAddress);
-                Int32 src = IpToInt32(IPAddress.Parse(GetThisHostIP()));
+                var convertedIp = IpToInt32(ipAddress);
+                var src = IpToInt32(IPAddress.Parse(GetThisHostIP()));
                 //byte array
-                byte[] data = new byte[6]; // 48 bit
-                int len = data.Length;
+                var data = new byte[6]; // 48 bit
+                var len = data.Length;
 
-                int result = SendArp(convertedIp, src, data, ref len);
+                var result = SendArp(convertedIp, src, data, ref len);
 
                 if (result != 0)
                 {
@@ -1724,7 +1724,7 @@ namespace TerraViewer
 
         private static Int32 IpToInt32(IPAddress ipIn)
         {
-            byte[] data = ipIn.GetAddressBytes();
+            var data = ipIn.GetAddressBytes();
             return BitConverter.ToInt32(data, 0);
         }
 
@@ -1752,15 +1752,15 @@ namespace TerraViewer
         public static Dictionary<int, ClientNode> Load(string filename)
         {
             ClientNodes loader;
-            XmlSerializer serializer = new XmlSerializer(typeof(ClientNodes));
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            var serializer = new XmlSerializer(typeof(ClientNodes));
+            var fs = new FileStream(filename, FileMode.Open);
 
             loader = (ClientNodes)serializer.Deserialize(fs);
 
             fs.Close();
-            Dictionary<int, ClientNode> loaded = new Dictionary<int, ClientNode>();
+            var loaded = new Dictionary<int, ClientNode>();
 
-            foreach (ClientNode node in loader.NodeList)
+            foreach (var node in loader.NodeList)
             {
                 loaded.Add(node.NodeID, node);
             }
@@ -1773,9 +1773,9 @@ namespace TerraViewer
 
         public static void Save(Dictionary<int, ClientNode> nodeList, string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ClientNodes));
-            StreamWriter sw = new StreamWriter(filename);
-            ClientNodes saver = new ClientNodes(nodeList);
+            var serializer = new XmlSerializer(typeof(ClientNodes));
+            var sw = new StreamWriter(filename);
+            var saver = new ClientNodes(nodeList);
             serializer.Serialize(sw, saver);
 
             sw.Close();
@@ -1783,11 +1783,11 @@ namespace TerraViewer
 
         public static string GetXML(Dictionary<int, ClientNode> nodeList)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ClientNodes));
+            var serializer = new XmlSerializer(typeof(ClientNodes));
 
-            StringWriter sw = new StringWriter();
+            var sw = new StringWriter();
 
-            ClientNodes saver = new ClientNodes(nodeList);
+            var saver = new ClientNodes(nodeList);
             serializer.Serialize(sw, saver);
 
             return sw.ToString();

@@ -13,7 +13,7 @@ namespace TerraViewer
         public event EventHandler LaunchTour;
         public event EventHandler ClosedTour;
 
-        static TourPopup endTour = null;
+        static TourPopup endTour;
 
         static public void CloseTourPopups()
         {
@@ -35,7 +35,7 @@ namespace TerraViewer
 
             endTour = new TourPopup();
             endTour.PopupType = TourPopup.PopupTypes.TourOver;
-            Tour tourResult = FolderBrowser.GetRelatedTour(tour.Id);
+            var tourResult = FolderBrowser.GetRelatedTour(tour.Id);
             if (tourResult == null)
             {
                 tourResult = FolderBrowser.GetRelatedTour(tour.TagId);
@@ -69,7 +69,7 @@ namespace TerraViewer
 
             endTour = new TourPopup();
             endTour.PopupType = TourPopup.PopupTypes.TourOver;
-            Tour tourResult = FolderBrowser.GetRelatedTour(tour.Id);
+            var tourResult = FolderBrowser.GetRelatedTour(tour.Id);
             if (tourResult == null)
             {
                 tourResult = FolderBrowser.GetRelatedTour(tour.TagId);
@@ -202,24 +202,24 @@ namespace TerraViewer
             this.ttTourPopup.SetToolTip(TourTitle, tourResult.Title);
 
 
-            Rectangle rect = Screen.GetWorkingArea(this);
+            var rect = Screen.GetWorkingArea(this);
 
             if (this.Left + this.Width > rect.Width)
             {
                 this.Left -= (this.Left + this.Width) - rect.Width;
             }
 
-            TimeSpan ts = new TimeSpan(0,0,(int)tourResult.LengthInSeconds);
+            var ts = new TimeSpan(0,0,(int)tourResult.LengthInSeconds);
             this.runLength.Text = String.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds);
 
             fadein = new BlendState(false, 500);
             fadein.TargetState = true;
             if (!string.IsNullOrEmpty(tourResult.RelatedTours))
             {
-                string[] relatedList = tourResult.RelatedTours.Split(new char[] { ';' });
-                foreach (string id in relatedList)
+                var relatedList = tourResult.RelatedTours.Split(new char[] { ';' });
+                foreach (var id in relatedList)
                 {
-                    Tour relatedItem = FolderBrowser.GetRelatedTour(id);
+                    var relatedItem = FolderBrowser.GetRelatedTour(id);
                     if (relatedItem != null)
                     {
                         relatedTours.Add(relatedItem);
@@ -231,8 +231,8 @@ namespace TerraViewer
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             base.OnPaintBackground(e);
-            Rectangle rect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
-            Pen p = new Pen(Color.FromArgb(58, 69, 91));
+            var rect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+            var p = new Pen(Color.FromArgb(58, 69, 91));
             e.Graphics.DrawRectangle(p, rect);
             p.Dispose();
         }
@@ -354,7 +354,7 @@ namespace TerraViewer
         {
             if (changed)
             {
-                Tour tour = tourResult as Tour;
+                var tour = tourResult as Tour;
                 if (tour != null)
                 {
                     if (tour.MSRComponentId > 0)
@@ -364,7 +364,7 @@ namespace TerraViewer
                     }
                 }
 
-                string userId = Properties.Settings.Default.UserRatingGUID.ToString("D");
+                var userId = Properties.Settings.Default.UserRatingGUID.ToString("D");
                 SaveTourRating();
                 UiTools.SendAsyncWebMessage(String.Format("http://www.worldwidetelescope.org/wwtweb/PostRatingFeedback.aspx?q={0},{1},{2}", tourResult.Id, userId, myStars.ToString()));
             }
@@ -374,7 +374,7 @@ namespace TerraViewer
         {
             try
             {
-                string directory = Properties.Settings.Default.CahceDirectory + "TourRatings\\";
+                var directory = Properties.Settings.Default.CahceDirectory + "TourRatings\\";
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -388,12 +388,12 @@ namespace TerraViewer
         }
         private int GetMyRating(string p)
         {
-            string value = "0";
-            string directory = Properties.Settings.Default.CahceDirectory + "TourRatings\\";
+            var value = "0";
+            var directory = Properties.Settings.Default.CahceDirectory + "TourRatings\\";
 
             try
             {
-                string filename = directory + tourResult.Id.ToString() + ".rating";
+                var filename = directory + tourResult.Id.ToString() + ".rating";
                 if (File.Exists(filename))
                 {
                     value = File.ReadAllText(filename);
@@ -406,7 +406,7 @@ namespace TerraViewer
             }
         }
         int myStars = -1;
-        bool changed = false;
+        bool changed;
         private void MyRating_ValueChanged(object sender, EventArgs e)
         {
             myStars = (int)MyRating.Stars;

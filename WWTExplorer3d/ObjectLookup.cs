@@ -15,9 +15,9 @@ namespace TerraViewer
 
         public AstroObjectResult SkyLookup(string target)
         {
-            SesameService service = new SesameService();
+            var service = new SesameService();
 
-            string resultString = service.sesame(target, "x");
+            var resultString = service.sesame(target, "x");
             return ParseXml(resultString);
         }
 
@@ -26,14 +26,14 @@ namespace TerraViewer
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(data);
 
-                AstroObjectResult[] list = new AstroObjectResult[1];
+                var list = new AstroObjectResult[1];
                 list[0] = new AstroObjectResult();
 
                 XmlNode root = doc["Sesame"];
-                XmlNode resolver = root.SelectSingleNode("Target/Resolver");
+                var resolver = root.SelectSingleNode("Target/Resolver");
                 foreach (XmlNode child in resolver.ChildNodes)
                 {
                     switch (child.Name)

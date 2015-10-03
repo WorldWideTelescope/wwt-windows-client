@@ -29,7 +29,7 @@ namespace TerraViewer
             this.runTimeLabel.Text = Language.GetLocalizedText(424, "Run Time");
             this.Dome.Text = Language.GetLocalizedText(1109, "Dome");
         }
-        TourDocument tour = null;
+        TourDocument tour;
         public TourEditor TourEditorUI = new TourEditor();
         public TourDocument Tour
         {
@@ -224,7 +224,7 @@ namespace TerraViewer
             {
                 return;
             }
-            IDataObject dataObject = Clipboard.GetDataObject();
+            var dataObject = Clipboard.GetDataObject();
 
             tour.CurrentTourstopIndex = tourStopList.SelectedItem;
 
@@ -244,17 +244,17 @@ namespace TerraViewer
                     }
                     // MultiSelection Menu
                     contextMenu = new ContextMenuStrip();
-                    ToolStripMenuItem selectAllMenu = new ToolStripMenuItem(Language.GetLocalizedText(1345, "Select All"));
-                    ToolStripMenuItem cutMenu = new ToolStripMenuItem(Language.GetLocalizedText(427, "Cut"));
-                    ToolStripMenuItem copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
-                    ToolStripMenuItem pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(429, "Paste"));
-                    ToolStripMenuItem deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+                    var selectAllMenu = new ToolStripMenuItem(Language.GetLocalizedText(1345, "Select All"));
+                    var cutMenu = new ToolStripMenuItem(Language.GetLocalizedText(427, "Cut"));
+                    var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
+                    var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(429, "Paste"));
+                    var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
                     cutMenu.Click += new EventHandler(cutMenu_Click);
                     copyMenu.Click += new EventHandler(copyMenu_Click);
                     pasteMenu.Click += new EventHandler(pasteMenu_Click);
                     deleteMenu.Click += new EventHandler(deleteMenu_Click);
                     selectAllMenu.Click += new EventHandler(selectAllMenu_Click);
-                    ToolStripSeparator sep1 = new ToolStripSeparator();
+                    var sep1 = new ToolStripSeparator();
 
                     contextMenu.Items.Add(selectAllMenu);
                     contextMenu.Items.Add(sep1);
@@ -274,11 +274,11 @@ namespace TerraViewer
                     }
 
                     contextMenu = new ContextMenuStrip();
-                    ToolStripMenuItem selectAllMenu = new ToolStripMenuItem(Language.GetLocalizedText(1345, "Select All"));
-                    ToolStripMenuItem pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
-                    ToolStripSeparator sep1 = new ToolStripSeparator();
-                    ToolStripSeparator sep2 = new ToolStripSeparator();
-                    ToolStripMenuItem insertSlide = new ToolStripMenuItem(Language.GetLocalizedText(426, "Add New Slide"));
+                    var selectAllMenu = new ToolStripMenuItem(Language.GetLocalizedText(1345, "Select All"));
+                    var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
+                    var sep1 = new ToolStripSeparator();
+                    var sep2 = new ToolStripSeparator();
+                    var insertSlide = new ToolStripMenuItem(Language.GetLocalizedText(426, "Add New Slide"));
 
                     pasteMenu.Click += new EventHandler(pasteMenu_Click);
                     selectAllMenu.Click += new EventHandler(selectAllMenu_Click);
@@ -303,32 +303,32 @@ namespace TerraViewer
                     }
 
                     contextMenu = new ContextMenuStrip();
-                    ToolStripMenuItem selectAllMenu = new ToolStripMenuItem(Language.GetLocalizedText(1345, "Select All"));
+                    var selectAllMenu = new ToolStripMenuItem(Language.GetLocalizedText(1345, "Select All"));
 
-                    ToolStripMenuItem cutMenu = new ToolStripMenuItem(Language.GetLocalizedText(427, "Cut"));
-                    ToolStripMenuItem copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
-                    ToolStripMenuItem pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(429, "Paste"));
-                    ToolStripMenuItem deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-                    ToolStripSeparator sep1 = new ToolStripSeparator();
-                    ToolStripSeparator sep3 = new ToolStripSeparator();
-                    ToolStripSeparator sep4 = new ToolStripSeparator();
-                    ToolStripSeparator sep5 = new ToolStripSeparator();
-                    ToolStripSeparator sep6 = new ToolStripSeparator();
-                    ToolStripSeparator sep7 = new ToolStripSeparator();
-                    ToolStripMenuItem insertSlide = new ToolStripMenuItem(Language.GetLocalizedText(431, "Insert New Slide"));
-                    ToolStripMenuItem insertDuplicate = new ToolStripMenuItem(Language.GetLocalizedText(627, "Duplicate Slide at End Position"));
-                    ToolStripMenuItem insertSlideshow = new ToolStripMenuItem(Language.GetLocalizedText(628, "Merge Tour after slide..."));
-                    ToolStripMenuItem playFromHere = new ToolStripMenuItem(Language.GetLocalizedText(432, "Preview Tour From Here"));
-                    ToolStripSeparator sep2 = new ToolStripSeparator();
-                    ToolStripMenuItem captureThumbnail = new ToolStripMenuItem(Language.GetLocalizedText(433, "Capture New Thumbnail"));
-                    ToolStripMenuItem setSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(434, "Set Start Camera Position"));
-                    ToolStripMenuItem setEndSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(435, "Set End Camera Position"));
-                    ToolStripMenuItem showSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(436, "Show Start Camera Position"));
-                    ToolStripMenuItem showEndSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(437, "Show End Camera Position"));
-                    ToolStripMenuItem masterSlide = new ToolStripMenuItem(Language.GetLocalizedText(438, "Master Slide"));
-                    ToolStripMenuItem makeTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1346, "Create Timeline"));
-                    ToolStripMenuItem showTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1347, "Show Timeline"));
-                    string linkString = tour.CurrentTourStop.NextSlide;
+                    var cutMenu = new ToolStripMenuItem(Language.GetLocalizedText(427, "Cut"));
+                    var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
+                    var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(429, "Paste"));
+                    var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+                    var sep1 = new ToolStripSeparator();
+                    var sep3 = new ToolStripSeparator();
+                    var sep4 = new ToolStripSeparator();
+                    var sep5 = new ToolStripSeparator();
+                    var sep6 = new ToolStripSeparator();
+                    var sep7 = new ToolStripSeparator();
+                    var insertSlide = new ToolStripMenuItem(Language.GetLocalizedText(431, "Insert New Slide"));
+                    var insertDuplicate = new ToolStripMenuItem(Language.GetLocalizedText(627, "Duplicate Slide at End Position"));
+                    var insertSlideshow = new ToolStripMenuItem(Language.GetLocalizedText(628, "Merge Tour after slide..."));
+                    var playFromHere = new ToolStripMenuItem(Language.GetLocalizedText(432, "Preview Tour From Here"));
+                    var sep2 = new ToolStripSeparator();
+                    var captureThumbnail = new ToolStripMenuItem(Language.GetLocalizedText(433, "Capture New Thumbnail"));
+                    var setSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(434, "Set Start Camera Position"));
+                    var setEndSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(435, "Set End Camera Position"));
+                    var showSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(436, "Show Start Camera Position"));
+                    var showEndSkyPosition = new ToolStripMenuItem(Language.GetLocalizedText(437, "Show End Camera Position"));
+                    var masterSlide = new ToolStripMenuItem(Language.GetLocalizedText(438, "Master Slide"));
+                    var makeTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1346, "Create Timeline"));
+                    var showTimeline = new ToolStripMenuItem(Language.GetLocalizedText(1347, "Show Timeline"));
+                    var linkString = tour.CurrentTourStop.NextSlide;
                     switch (linkString)
                     {
                         case "":
@@ -343,7 +343,7 @@ namespace TerraViewer
                             linkString = " (" + Language.GetLocalizedText(602, "Return to Caller") + ")";
                             break;
                         default:
-                            int index = Tour.GetTourStopIndexByID(linkString);
+                            var index = Tour.GetTourStopIndexByID(linkString);
                             if (index > -1)
                             {
                                 if (String.IsNullOrEmpty(tour.TourStops[index].Description))
@@ -359,17 +359,17 @@ namespace TerraViewer
                     }
 
 
-                    ToolStripMenuItem setNextSlide = new ToolStripMenuItem(Language.GetLocalizedText(590, "Set Next Slide") + linkString);
-                    ToolStripMenuItem trackSpaceTime = new ToolStripMenuItem(Language.GetLocalizedText(439, "Track Date/Time/Location"));
-                    ToolStripMenuItem fadeInOverlays = new ToolStripMenuItem(Language.GetLocalizedText(629, "Fade In Slide Elements"));
-                    ToolStripMenuItem properties = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
-                    ToolStripMenuItem interpolation = new ToolStripMenuItem(Language.GetLocalizedText(1029, "Animation Tween Type"));
+                    var setNextSlide = new ToolStripMenuItem(Language.GetLocalizedText(590, "Set Next Slide") + linkString);
+                    var trackSpaceTime = new ToolStripMenuItem(Language.GetLocalizedText(439, "Track Date/Time/Location"));
+                    var fadeInOverlays = new ToolStripMenuItem(Language.GetLocalizedText(629, "Fade In Slide Elements"));
+                    var properties = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
+                    var interpolation = new ToolStripMenuItem(Language.GetLocalizedText(1029, "Animation Tween Type"));
 
-                    ToolStripMenuItem Linear = new ToolStripMenuItem(Language.GetLocalizedText(1030, "Linear"));
-                    ToolStripMenuItem Ease = new ToolStripMenuItem(Language.GetLocalizedText(1031, "Ease In/Out"));
-                    ToolStripMenuItem EaseIn = new ToolStripMenuItem(Language.GetLocalizedText(1032, "Ease In"));
-                    ToolStripMenuItem EaseOut = new ToolStripMenuItem(Language.GetLocalizedText(1033, "Ease Out"));
-                    ToolStripMenuItem Exponential = new ToolStripMenuItem(Language.GetLocalizedText(1034, "Exponential"));
+                    var Linear = new ToolStripMenuItem(Language.GetLocalizedText(1030, "Linear"));
+                    var Ease = new ToolStripMenuItem(Language.GetLocalizedText(1031, "Ease In/Out"));
+                    var EaseIn = new ToolStripMenuItem(Language.GetLocalizedText(1032, "Ease In"));
+                    var EaseOut = new ToolStripMenuItem(Language.GetLocalizedText(1033, "Ease Out"));
+                    var Exponential = new ToolStripMenuItem(Language.GetLocalizedText(1034, "Exponential"));
 
                     Linear.Tag = InterpolationType.Linear;
                     Ease.Tag = InterpolationType.EaseInOut;
@@ -506,13 +506,13 @@ namespace TerraViewer
 
         void Interpolation_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItem)sender;
             tour.CurrentTourStop.InterpolationType = (InterpolationType)item.Tag;
         }
 
         void setNextSlide_Click(object sender, EventArgs e)
         {
-            SelectLink selectDialog = new SelectLink();
+            var selectDialog = new SelectLink();
             selectDialog.Owner = Earth3d.MainWindow;
             selectDialog.Tour = tour;
             selectDialog.ID = tour.CurrentTourStop.NextSlide;
@@ -526,7 +526,7 @@ namespace TerraViewer
         {
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(530, "Duplicate Slide at End Position"), tour));
 
-            TourStop ts = tour.CurrentTourStop.Copy();
+            var ts = tour.CurrentTourStop.Copy();
 
             if (ts == null)
             {
@@ -541,7 +541,7 @@ namespace TerraViewer
                 ts.EndTarget = null;
             }
 
-            foreach (Overlay overlay in ts.Overlays)
+            foreach (var overlay in ts.Overlays)
             {
                 overlay.TweenFactor = 1f;
                 overlay.Animate = !overlay.Animate;
@@ -563,11 +563,11 @@ namespace TerraViewer
         {
             //todo localize
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(531, "Merge Slide Show"), tour));
-            OpenFileDialog openFile = new OpenFileDialog();
+            var openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(101, "WorldWide Telescope Tours") + "|*.wtt";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                string filename = openFile.FileName;
+                var filename = openFile.FileName;
                 try
                 {
                     tour.MergeTour(filename);
@@ -657,13 +657,13 @@ namespace TerraViewer
                 //todo localize
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(435, "Set End Camera Position"), tour));
 
-                TourPlace newPlace = new TourPlace("End Place", Earth3d.MainWindow.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.SolarSystemTrack);
+                var newPlace = new TourPlace("End Place", Earth3d.MainWindow.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.SolarSystemTrack);
                 tour.CurrentTourStop.EndTarget = newPlace;
                 tour.CurrentTourStop.EndTarget.Constellation = Earth3d.MainWindow.Constellation;
                 tour.CurrentTourStop.EndTime = SpaceTimeController.Now;
                 tour.CurrentTourStop.SetEndKeyFrames();
                 tour.CurrentTourStop.TweenPosition = 1f;
-                foreach (LayerInfo info in tour.CurrentTourStop.Layers.Values)
+                foreach (var info in tour.CurrentTourStop.Layers.Values)
                 {
                     if (LayerManager.LayerList.ContainsKey(info.ID))
                     {
@@ -742,13 +742,13 @@ namespace TerraViewer
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(426, "Add New Slide"), tour));
 
             Cursor.Current = Cursors.WaitCursor;
-            string placeName = "Current Screen";
-            TourPlace newPlace = new TourPlace(placeName, Earth3d.MainWindow.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.SolarSystemTrack);
+            var placeName = "Current Screen";
+            var newPlace = new TourPlace(placeName, Earth3d.MainWindow.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.SolarSystemTrack);
             newPlace.ThumbNail = null;
             newPlace.StudyImageset = Earth3d.MainWindow.StudyImageset;
             newPlace.BackgroundImageSet = Earth3d.MainWindow.CurrentImageSet.StockImageSet;
 
-            TourStop newTourStop = new TourStop(newPlace);
+            var newTourStop = new TourStop(newPlace);
 
 
             if (insert)
@@ -787,7 +787,7 @@ namespace TerraViewer
             //todo localize
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(534, "Delete Slide"), tour));
 
-            foreach (TourStop item in tourStopList.SelectedItems.Values)
+            foreach (var item in tourStopList.SelectedItems.Values)
             {
                 tour.RemoveTourStop(item);
             }
@@ -809,31 +809,31 @@ namespace TerraViewer
         {
             //todo localize
 
-            IDataObject dataObject = Clipboard.GetDataObject();
+            var dataObject = Clipboard.GetDataObject();
 
             if (dataObject.GetDataPresent(TourStop.ClipboardFormat))
             {
                 Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(535, "Paste Slide"), tour));
                 // add try catch block
-                string xml = dataObject.GetData(TourStop.ClipboardFormat) as string;
-                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+                var xml = dataObject.GetData(TourStop.ClipboardFormat) as string;
+                var doc = new System.Xml.XmlDocument();
                 doc.LoadXml(xml);
                 System.Xml.XmlNode node = doc["TourStops"];
 
-                Stack<TourStop> pasteStack = new Stack<TourStop>();
+                var pasteStack = new Stack<TourStop>();
 
                 foreach (System.Xml.XmlNode child in node.ChildNodes)
                 {
-                    TourStop ts = TourStop.FromXml(tour, child);
+                    var ts = TourStop.FromXml(tour, child);
                     ts.Id = Guid.NewGuid().ToString();
                     pasteStack.Push(ts);
                 }
                 tourStopList.SelectedItems.Clear();
-                int curIndex = tourStopList.SelectedItem + pasteStack.Count - 1;
+                var curIndex = tourStopList.SelectedItem + pasteStack.Count - 1;
 
                 while (pasteStack.Count > 0)
                 {
-                    TourStop ts = pasteStack.Pop();
+                    var ts = pasteStack.Pop();
                     tour.InsertTourStop(ts);
                     tourStopList.SelectedItems.Add(curIndex--, ts);
                 }
@@ -844,21 +844,21 @@ namespace TerraViewer
 
         void copyMenu_Click(object sender, EventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
-            using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+            var sb = new StringBuilder();
+            using (var textWriter = new System.IO.StringWriter(sb))
             {
-                using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new System.Xml.XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                     writer.WriteStartElement("TourStops");
-                    foreach (TourStop item in tourStopList.SelectedItems.Values)
+                    foreach (var item in tourStopList.SelectedItems.Values)
                     {
                         item.SaveToXml(writer, true);
                     }
                     writer.WriteEndElement();
                 }
             }
-            DataFormats.Format format = DataFormats.GetFormat(TourStop.ClipboardFormat);
+            var format = DataFormats.GetFormat(TourStop.ClipboardFormat);
 
             IDataObject dataObject = new DataObject();
             dataObject.SetData(format.Name, false, sb.ToString());
@@ -873,7 +873,7 @@ namespace TerraViewer
             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(536, "Cut Slide"), tour));
 
             copyMenu_Click(sender, e);
-            foreach (TourStop item in tourStopList.SelectedItems.Values)
+            foreach (var item in tourStopList.SelectedItems.Values)
             {
                 tour.RemoveTourStop(item);
             }
@@ -902,7 +902,7 @@ namespace TerraViewer
         }
 
 
-        bool playing = false;
+        bool playing;
         private void Preview_Click(object sender, EventArgs e)
         {
             playing = !playing;
@@ -913,7 +913,7 @@ namespace TerraViewer
             SetPlayPauseMode();
         }
 
-        TourPlayer player = null;
+        TourPlayer player;
         private void SetPlayPauseMode()
         {
             if (tour.EditMode)
@@ -1006,7 +1006,7 @@ namespace TerraViewer
                     }
                 }
             }
-            TimeSpan ts = Tour.RunTime;
+            var ts = Tour.RunTime;
             totalTimeText.Text = String.Format("{0:0}:{1:00}", ts.Minutes, ts.Seconds);
 
         }
@@ -1049,12 +1049,12 @@ namespace TerraViewer
 
         private void InsertAudio_Click(object sender, EventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
+            var fileDialog = new OpenFileDialog();
             fileDialog.Filter = Language.GetLocalizedText(442, "Sound/Music") + "(*.MP3;*.WMA)|*.MP3;*.WMA";
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                string filename = fileDialog.FileName;
+                var filename = fileDialog.FileName;
                 TourEditorUI.AddAudio(filename);
             }
         }
@@ -1067,7 +1067,7 @@ namespace TerraViewer
 
         private void ColorPicker_Click(object sender, EventArgs e)
         {
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 
@@ -1095,7 +1095,7 @@ namespace TerraViewer
         private void EditTourProperties_Click(object sender, EventArgs e)
         {
 
-            TourProperties tourProps = new TourProperties();
+            var tourProps = new TourProperties();
             tourProps.EditTour = tour;
             if (tourProps.ShowDialog() == DialogResult.OK)
             {
@@ -1115,7 +1115,7 @@ namespace TerraViewer
         {
             if (string.IsNullOrEmpty(tour.SaveFileName) || saveAs)
             {
-                SaveFileDialog saveDialog = new SaveFileDialog();
+                var saveDialog = new SaveFileDialog();
                 saveDialog.Filter = Language.GetLocalizedText(101, "WorldWide Telescope Tours") + "|*.wtt";
                 saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 saveDialog.AddExtension = true;
@@ -1140,11 +1140,11 @@ namespace TerraViewer
 
         private void AddVideo_Click(object sender, EventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
+            var fileDialog = new OpenFileDialog();
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                string filename = fileDialog.FileName;
+                var filename = fileDialog.FileName;
                 TourEditorUI.AddVideo(filename);
             }
         }
@@ -1157,17 +1157,17 @@ namespace TerraViewer
             }
 
 
-            bool flipBook = false;
+            var flipBook = false;
             if (Control.ModifierKeys == (Keys.Control | Keys.Shift))
             {
                 flipBook = true;
             }
 
-            OpenFileDialog fileDialog = new OpenFileDialog();
+            var fileDialog = new OpenFileDialog();
             fileDialog.Filter = Language.GetLocalizedText(443, "Images") + "(*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT)|*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT";
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                string filename = fileDialog.FileName;
+                var filename = fileDialog.FileName;
                 if (flipBook)
                 {
                     TourEditorUI.AddFlipbook(filename);
@@ -1191,13 +1191,13 @@ namespace TerraViewer
 
                 contextMenu = new ContextMenuStrip();
 
-                ToolStripMenuItem AddCircle = new ToolStripMenuItem(Language.GetLocalizedText(444, "Circle"));
-                ToolStripMenuItem AddRectangle = new ToolStripMenuItem(Language.GetLocalizedText(445, "Rectangle"));
-                ToolStripMenuItem AddOpenRectangle = new ToolStripMenuItem(Language.GetLocalizedText(446, "Open Rectangle"));
-                ToolStripMenuItem AddRing = new ToolStripMenuItem(Language.GetLocalizedText(447, "Ring"));
-                ToolStripMenuItem AddLine = new ToolStripMenuItem(Language.GetLocalizedText(448, "Line"));
-                ToolStripMenuItem AddArrow = new ToolStripMenuItem(Language.GetLocalizedText(449, "Arrow"));
-                ToolStripMenuItem AddStar = new ToolStripMenuItem(Language.GetLocalizedText(450, "Star"));
+                var AddCircle = new ToolStripMenuItem(Language.GetLocalizedText(444, "Circle"));
+                var AddRectangle = new ToolStripMenuItem(Language.GetLocalizedText(445, "Rectangle"));
+                var AddOpenRectangle = new ToolStripMenuItem(Language.GetLocalizedText(446, "Open Rectangle"));
+                var AddRing = new ToolStripMenuItem(Language.GetLocalizedText(447, "Ring"));
+                var AddLine = new ToolStripMenuItem(Language.GetLocalizedText(448, "Line"));
+                var AddArrow = new ToolStripMenuItem(Language.GetLocalizedText(449, "Arrow"));
+                var AddStar = new ToolStripMenuItem(Language.GetLocalizedText(450, "Star"));
 
                 AddCircle.Click += new EventHandler(InsertShapeCircle_Click);
                 AddRectangle.Click += new EventHandler(InsertShapeRectangle_Click);
@@ -1236,7 +1236,7 @@ namespace TerraViewer
             if (tour != null && Tour.CurrentTourStop != null)
             {
 
-                TextEditor textEdit = new TextEditor();
+                var textEdit = new TextEditor();
                 if (textEdit.ShowDialog() == DialogResult.OK)
                 {
                     TourEditorUI.AddText(textEdit.Text, textEdit.TextObject);
@@ -1303,7 +1303,8 @@ namespace TerraViewer
                 Preview.Image = global::TerraViewer.Properties.Resources.button_play_pressed;
             }
         }
-        Bitmap menuArrow = global::TerraViewer.Properties.Resources.menuArrow;
+
+        readonly Bitmap menuArrow = global::TerraViewer.Properties.Resources.menuArrow;
 
         private void AddShape_Paint(object sender, PaintEventArgs e)
         {

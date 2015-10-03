@@ -22,13 +22,13 @@ namespace TerraViewer
 	public class TileCache
 	{
 
-        private static Dictionary<long, Tile> queue = new Dictionary<long, Tile>();
+        private static readonly Dictionary<long, Tile> queue = new Dictionary<long, Tile>();
 
         public static int QueuePercent
         {
             get
             {
-                int count = queue.Count;
+                var count = queue.Count;
                 try
                 {
                     return Math.Max(0, Math.Min(100, (int)(100.0 - (Math.Log(count + 1, 1.05) - 14))));
@@ -41,7 +41,7 @@ namespace TerraViewer
             }
         }
 
-        private static Dictionary<long, Tile> tiles = new Dictionary<long, Tile>();
+        private static readonly Dictionary<long, Tile> tiles = new Dictionary<long, Tile>();
 
 		public static void ClearCache()
 		{
@@ -52,7 +52,7 @@ namespace TerraViewer
             try
             {
                 WaitingTileQueue = new Queue<Tile>();
-                foreach (Tile t in tiles.Values)
+                foreach (var t in tiles.Values)
                 {
                     try
                     {
@@ -101,7 +101,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            var tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -139,7 +139,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            var tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -206,7 +206,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            var tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -261,10 +261,10 @@ namespace TerraViewer
 		{
             queueMutex.WaitOne();
 
-            object[] array = new object[queue.Count];
-            int index = 0;
-			StringBuilder sb = new StringBuilder();
-			foreach (Tile t in queue.Values)
+            var array = new object[queue.Count];
+            var index = 0;
+			var sb = new StringBuilder();
+			foreach (var t in queue.Values)
 			{
                 array[index++] = t;
 			}
@@ -278,9 +278,9 @@ namespace TerraViewer
         static int maxTotalToPurge = 100;
 
         static int purgeFrequesncy = 30;
-        static int purgeCallCount = 0;
-        static SortedList<int, Tile> notReadyCullList = new SortedList<int, Tile>();
-        static SortedList<int, Tile> readyCullList = new SortedList<int, Tile>();
+        static int purgeCallCount;
+        static readonly SortedList<int, Tile> notReadyCullList = new SortedList<int, Tile>();
+        static readonly SortedList<int, Tile> readyCullList = new SortedList<int, Tile>();
         public static void PurgeLRU()
         {
 
@@ -294,7 +294,7 @@ namespace TerraViewer
             tileMutex.WaitOne();
             try
             {
-                foreach (Tile tile in tiles.Values)
+                foreach (var tile in tiles.Values)
                 {
                     if (tile.RenderedGeneration < (Tile.CurrentRenderGeneration - 10))
                     {
@@ -326,7 +326,7 @@ namespace TerraViewer
             {
                 try
                 {
-                    foreach (Tile tile in tiles.Values)
+                    foreach (var tile in tiles.Values)
                     {
                         if (tile.RenderedGeneration < (Tile.CurrentRenderGeneration - 10))
                         {
@@ -352,14 +352,14 @@ namespace TerraViewer
 
                 if (readyCullList.Count > maxReadyToRenderSize)
                 {
-                    int totalToPurge = readyCullList.Count - maxReadyToRenderSize;
+                    var totalToPurge = readyCullList.Count - maxReadyToRenderSize;
                     if (totalToPurge > maxTotalToPurge)
                     {
                         totalToPurge = maxTotalToPurge;
                         
                         // UiTools.Beep();
                     }
-                    foreach (Tile tile in readyCullList.Values)
+                    foreach (var tile in readyCullList.Values)
                     {
                         if (totalToPurge < 1)
                         {
@@ -378,12 +378,12 @@ namespace TerraViewer
 
                 if (notReadyCullList.Count > maxTileCacheSize)
                 {
-                    int totalToPurge = notReadyCullList.Count - maxTileCacheSize;
+                    var totalToPurge = notReadyCullList.Count - maxTileCacheSize;
                     if (totalToPurge > maxTotalToPurge)
                     {
                         totalToPurge = maxTotalToPurge;
                     }           
-                    foreach (Tile tile in notReadyCullList.Values)
+                    foreach (var tile in notReadyCullList.Values)
                     {
                         if (totalToPurge < 1)
                         {
@@ -418,13 +418,13 @@ namespace TerraViewer
             // return;
             tileMutex.WaitOne();
 
-            int count = 0;
+            var count = 0;
 
             try
             {
                 try
                 {
-                    foreach (Tile tile in tiles.Values)
+                    foreach (var tile in tiles.Values)
                     {
 
                         if (tile.ReadyToRender)
@@ -451,8 +451,8 @@ namespace TerraViewer
 
       
 
-        private static Mutex tileMutex = new Mutex();
-        private static Mutex queueMutex = new Mutex();
+        private static readonly Mutex tileMutex = new Mutex();
+        private static readonly Mutex queueMutex = new Mutex();
 
 		public static bool running = false;
 		public static int RequestCount = 0;
@@ -474,7 +474,7 @@ namespace TerraViewer
 		{
             
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
-            bool fileOnly = fileOnlyThreadID == Thread.CurrentThread.ManagedThreadId;
+            var fileOnly = fileOnlyThreadID == Thread.CurrentThread.ManagedThreadId;
 			while (running)
 			{
                 if (queue.Count < 1)
@@ -487,17 +487,17 @@ namespace TerraViewer
                 }
 
                 double minDistance = 1000000000000000000; 
-                bool overlayTile = false;
+                var overlayTile = false;
 				long maxKey = 0;
-                int level = 1000;
+                var level = 1000;
 
                 queueMutex.WaitOne();
-				foreach (Tile t in queue.Values )
+				foreach (var t in queue.Values )
 				{
 					 
                     if (!t.RequestPending ) // && t.InViewFrustum)
 					{
-                        Vector3d vectTemp = new Vector3d(t.SphereCenter);
+                        var vectTemp = new Vector3d(t.SphereCenter);
 
                         vectTemp.TransformCoordinate(Earth3d.WorldMatrix);
 
@@ -510,13 +510,13 @@ namespace TerraViewer
                             vectTemp.Subtract(Earth3d.MainWindow.RenderContext11.CameraPosition);
                         }
 
-                        double distTemp = Math.Max(0,vectTemp.Length()-t.SphereRadius);
+                        var distTemp = Math.Max(0,vectTemp.Length()-t.SphereRadius);
 
-                        bool thisIsOverlay = (t.Dataset.Projection == ProjectionType.Tangent) || (t.Dataset.Projection == ProjectionType.SkyImage);
+                        var thisIsOverlay = (t.Dataset.Projection == ProjectionType.Tangent) || (t.Dataset.Projection == ProjectionType.SkyImage);
                         if (distTemp < minDistance && (!overlayTile || thisIsOverlay))
 						{
 
-                            Tile test = (Tile)queue[t.Key];
+                            var test = (Tile)queue[t.Key];
 
 
 
@@ -545,7 +545,7 @@ namespace TerraViewer
 				}
 				if (maxKey != 0)
 				{
-					Tile workTile = (Tile)queue[maxKey];
+					var workTile = (Tile)queue[maxKey];
 					workTile.RequestPending = true;
 					TileCache.RequestCount++;
                     queueMutex.ReleaseMutex();
@@ -561,7 +561,7 @@ namespace TerraViewer
 			return;
 		}
 
-       static List<long> removeList = new List<long>();
+       static readonly List<long> removeList = new List<long>();
 
 		// Age things in queue. If they are not visible they will go away in time
 		public static void DecimateQueue()
@@ -572,7 +572,7 @@ namespace TerraViewer
             try
             {
 
-                foreach (Tile t in queue.Values)
+                foreach (var t in queue.Values)
                 {
                     if (!t.RequestPending)
                     {
@@ -594,7 +594,7 @@ namespace TerraViewer
                     }
 
                 }
-                foreach (long key in removeList)
+                foreach (var key in removeList)
                 {
                     queue.Remove(key);
                 }
@@ -614,15 +614,15 @@ namespace TerraViewer
 
 
 		public static int THREAD_COUNT = 5;
-		static Thread[] queueThreads = new Thread[THREAD_COUNT];
-        static int fileOnlyThreadID = 0;
+		static readonly Thread[] queueThreads = new Thread[THREAD_COUNT];
+        static int fileOnlyThreadID;
 
 		public static void StartQueue()
 		{
 			if (!TileCache.running)
 			{
 				TileCache.running = true;
-				for (int i = 0; i<THREAD_COUNT; i++)
+				for (var i = 0; i<THREAD_COUNT; i++)
 				{
 					queueThreads[i] = new Thread(new ThreadStart(TileCache.QueueThread));
                     queueThreads[i].Priority = ThreadPriority.BelowNormal;
@@ -644,7 +644,7 @@ namespace TerraViewer
 				TileCache.running = false;
                 WaitingTileQueueEvent.Set();
                 Thread.Sleep(2000);
-				for (int i = 0; i<THREAD_COUNT; i++)
+				for (var i = 0; i<THREAD_COUNT; i++)
 				{
                     WaitingTileQueueEvent.Set();
 					queueThreads[i].Abort();
@@ -657,7 +657,7 @@ namespace TerraViewer
        
         public static void InitializeTile(Tile tile)
         {      
-            bool loaded = false;
+            var loaded = false;
 
             while (!loaded && TileCache.running)
             {
@@ -698,9 +698,9 @@ namespace TerraViewer
             WebClient Client = null;
             if (retTile.Dataset.Projection == ProjectionType.SkyImage && retTile.Dataset.Url.EndsWith("/screenshot.png"))
             {
-                SkyImageTile tile = retTile as SkyImageTile;
+                var tile = retTile as SkyImageTile;
                 Client = new WebClient();
-                string url = tile.URL;
+                var url = tile.URL;
                 tile.ImageData = Client.DownloadData(url);
                 retTile.DemReady = true;
                 retTile.FileExists = true;
@@ -712,7 +712,7 @@ namespace TerraViewer
                 return retTile;
             }
 
-            Tile parent = retTile.Parent;
+            var parent = retTile.Parent;
 
             if (retTile.DemEnabled && (parent == null || (parent != null && parent.DemGeneration == 0)))
             {
@@ -731,18 +731,18 @@ namespace TerraViewer
             }
 
 
-			string directory = retTile.Directory;
+			var directory = retTile.Directory;
 	
 			if (!Directory.Exists(directory))
 			{
 				Directory.CreateDirectory(directory);
 			}
 
-			string filename = retTile.FileName;
+			var filename = retTile.FileName;
 			Client = new WebClient();
 
-            FileInfo fi = new FileInfo(filename);
-            bool exists = fi.Exists;
+            var fi = new FileInfo(filename);
+            var exists = fi.Exists;
 
             if (exists)
 			{
@@ -774,14 +774,14 @@ namespace TerraViewer
                     else
                     {
                         Client.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)");
-                        string url = retTile.URL;
+                        var url = retTile.URL;
                         if (string.IsNullOrEmpty(url))
                         {
                             retTile.errored = true;
                         }
                         else
                         {
-                            string dlFile = string.Format("{0}.tmp{1}",filename,NodeID);
+                            var dlFile = string.Format("{0}.tmp{1}",filename,NodeID);
 
                             
 
@@ -840,22 +840,22 @@ namespace TerraViewer
                 // todo 3d Cities remove support for 3d Cities for now
                 if (retTile.Dataset.Projection == ProjectionType.Mercator && Properties.Settings.Default.Show3dCities)
                 {
-                    string tileID = retTile.GetTileID();
+                    var tileID = retTile.GetTileID();
 
                     //check coverage cache before downloading
-                    int gen = CoverageMap.GetCoverage(tileID);
+                    var gen = CoverageMap.GetCoverage(tileID);
                     if (gen > 0)
                     {
                         //try downloading mesh
                         try
                         {
-                            string meshFilename = retTile.FileName + ".mesh";
+                            var meshFilename = retTile.FileName + ".mesh";
 
                             if (!File.Exists(meshFilename))
                             {
                                 Client.Headers.Add("User-Agent", "Win8Microsoft.BingMaps.3DControl/2.214.2315.0 (;;;;x64 Windows RT)");
 
-                                string dlFile = string.Format("{0}.tmp{1}", meshFilename, NodeID);
+                                var dlFile = string.Format("{0}.tmp{1}", meshFilename, NodeID);
 
 
                                 Client.DownloadFile(string.Format("http://ak.t{1}.tiles.virtualearth.net/tiles/mtx{0}?g={2}", tileID, Tile.GetServerID(retTile.X, retTile.Y), gen.ToString()), dlFile);
@@ -901,10 +901,10 @@ namespace TerraViewer
 
 			return retTile;
 		}
-        static Mutex WaitingTileQueueMutex = new Mutex();
+        static readonly Mutex WaitingTileQueueMutex = new Mutex();
         static Queue<Tile> WaitingTileQueue = new Queue<Tile>();
         static double CountToLoad = 10;
-        static EventWaitHandle WaitingTileQueueEvent = new AutoResetEvent(false);
+        static readonly EventWaitHandle WaitingTileQueueEvent = new AutoResetEvent(false);
         public static void InitNextWaitingTile()
         {
             WaitingTileQueueMutex.WaitOne();
@@ -918,16 +918,16 @@ namespace TerraViewer
 
         public static void GetDemTileFromWeb(Tile retTile)
         {
-            string directory = retTile.DemDirectory;
+            var directory = retTile.DemDirectory;
   
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
 
-            string filename = retTile.DemFilename;
-            FileInfo fi = new FileInfo(filename);
-            bool exists = fi.Exists;
+            var filename = retTile.DemFilename;
+            var fi = new FileInfo(filename);
+            var exists = fi.Exists;
 
             if (exists)
             {
@@ -950,10 +950,10 @@ namespace TerraViewer
             {
                 try
                 {
-                    WebClient Client = new WebClient();
+                    var Client = new WebClient();
                     Client.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)");        
 
-                    string dlFile = string.Format("{0}.tmp{1}", filename, NodeID);
+                    var dlFile = string.Format("{0}.tmp{1}", filename, NodeID);
 
                     Client.DownloadFile(CacheProxy.GetCacheUrl(retTile.DemURL), dlFile);
                     try
@@ -1022,7 +1022,7 @@ namespace TerraViewer
 
             if (url.StartsWith("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name="))
             {
-                string newUrl = url.Replace("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=", BaseUrl + "/thumbnail.aspx?name=");
+                var newUrl = url.Replace("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=", BaseUrl + "/thumbnail.aspx?name=");
                 return newUrl;
             }
             if (url.StartsWith("http://ecn.t1.tiles.virtualearth.net/tiles/"))
@@ -1032,7 +1032,7 @@ namespace TerraViewer
                 {
                     return url;
                 }
-                string newUrl = parts[0].Replace("http://ecn.t1.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
+                var newUrl = parts[0].Replace("http://ecn.t1.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
                 newUrl += "&p=" + parts[1].Replace("&","%26;").Replace("=","%3D");
                 return newUrl;
             }
@@ -1043,7 +1043,7 @@ namespace TerraViewer
                 {
                     return url;
                 }
-                string newUrl = parts[0].Replace("http://ecn.t2.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
+                var newUrl = parts[0].Replace("http://ecn.t2.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
                 newUrl += "&p=" + parts[1].Replace("&","%26;").Replace("=","%3D");
                 return newUrl;
             }
@@ -1054,7 +1054,7 @@ namespace TerraViewer
                 {
                     return url;
                 }
-                string newUrl = parts[0].Replace("http://ecn.t3.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
+                var newUrl = parts[0].Replace("http://ecn.t3.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
                 newUrl += "&p=" + parts[1].Replace("&","%26;").Replace("=","%3D");
                 return newUrl;
             }
@@ -1065,13 +1065,13 @@ namespace TerraViewer
                 {
                     return url;
                 }
-                string newUrl = parts[0].Replace("http://ecn.t0.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
+                var newUrl = parts[0].Replace("http://ecn.t0.tiles.virtualearth.net/tiles/", BaseUrl + "/QuadCache.aspx?k=");
                 newUrl += "&p=" + parts[1].Replace("&","%26;").Replace("=","%3D");
                 return newUrl;
             }
             if (url.StartsWith("http://www.worldwidetelescope.org/wwtweb/tiles.aspx"))
             {
-                string newUrl = url.Replace("http://www.worldwidetelescope.org/wwtweb/tiles.aspx", BaseUrl + "/tilecache.aspx");
+                var newUrl = url.Replace("http://www.worldwidetelescope.org/wwtweb/tiles.aspx", BaseUrl + "/tilecache.aspx");
                 return newUrl;
             }
             return url;

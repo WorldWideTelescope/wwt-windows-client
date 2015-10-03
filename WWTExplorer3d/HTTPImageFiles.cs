@@ -34,26 +34,26 @@ namespace TerraViewer
         public override void ProcessRequest(string request, ref Socket socket, bool authenticated, string body)
         {
 
-            bool cache = true;
-            QueryString query = new QueryString(request);
+            var cache = true;
+            var query = new QueryString(request);
 
-            String sMimeType = "image/JPEG";
+            var sMimeType = "image/JPEG";
 
             if (request.ToLower().IndexOf(".png") > -1)
             {
                 sMimeType = "image/PNG";
             }
 
-            int iTotBytes = 0;
+            var iTotBytes = 0;
 
-            string fileName = request.Substring(request.LastIndexOf("/")+1);
+            var fileName = request.Substring(request.LastIndexOf("/")+1);
 
-            byte[] data = new byte[0];
+            var data = new byte[0];
             if (request.Contains("/tour/"))
             {
                 if (Earth3d.MainWindow.TourEdit != null)
                 {
-                    TourDocument tour = Earth3d.MainWindow.TourEdit.Tour;
+                    var tour = Earth3d.MainWindow.TourEdit.Tour;
                     if (fileName.ToLower() == "slidelist.xml")
                     {
                         sMimeType = "text/xml";
@@ -86,8 +86,8 @@ namespace TerraViewer
             }
             else if (request.Contains("/imageset/"))
             {
-                string[] parts = request.Split(new char[] { '/' });
-                IImageSet imageset = (IImageSet)Earth3d.ImagesetHashTable[Convert.ToInt32(parts[2])];
+                var parts = request.Split(new char[] { '/' });
+                var imageset = (IImageSet)Earth3d.ImagesetHashTable[Convert.ToInt32(parts[2])];
                 if (imageset != null)
                 {
                     data = ReadBinaryWebFileFromDisk(imageset.Url);
@@ -114,7 +114,7 @@ namespace TerraViewer
             }
             else if (fileName.StartsWith("distort") || fileName.StartsWith("blend"))
             {
-                string path = String.Format("{0}\\ProjetorWarpMaps\\", Properties.Settings.Default.CahceDirectory);
+                var path = String.Format("{0}\\ProjetorWarpMaps\\", Properties.Settings.Default.CahceDirectory);
 
                 data = ReadBinaryWebFileFromDisk(path + fileName);
             }

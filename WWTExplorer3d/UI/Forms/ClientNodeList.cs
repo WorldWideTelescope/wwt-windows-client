@@ -35,7 +35,7 @@ namespace TerraViewer
             
         }
 
-        static ClientNodeList master = null;
+        static ClientNodeList master;
         public static void ShowNodeList()
         {
             if (master != null)
@@ -76,7 +76,7 @@ namespace TerraViewer
 
         private void UpdateNodeList()
         {
-            bool details = ShowDetail.Checked;
+            var details = ShowDetail.Checked;
 
             object selectedNode = null;
 
@@ -86,7 +86,7 @@ namespace TerraViewer
             }
 
 
-            TreeNode tn = nodeTree.TopNode;
+            var tn = nodeTree.TopNode;
             ClientNode TopClientNode = null;
             TreeNode TopNode = null;
             if (tn != null)
@@ -98,17 +98,17 @@ namespace TerraViewer
             nodeTree.BeginUpdate();
             nodeTree.Nodes.Clear();
 
-            TreeNode parent = new TreeNode(Language.GetLocalizedText(1132, "Cluster ID : ") + Earth3d.MainWindow.Config.ClusterID.ToString());
+            var parent = new TreeNode(Language.GetLocalizedText(1132, "Cluster ID : ") + Earth3d.MainWindow.Config.ClusterID.ToString());
 
             nodeTree.Nodes.Add(parent);
             parent.Expand();
 
-            int worstStatus = (int)ClientNodeStatus.Online+1;
-            Color parentColor = Color.White;
+            var worstStatus = (int)ClientNodeStatus.Online+1;
+            var parentColor = Color.White;
 
-            foreach (ClientNode node in NetControl.NodeList.Values)
+            foreach (var node in NetControl.NodeList.Values)
             {
-                TreeNode child = new TreeNode(node.Name);
+                var child = new TreeNode(node.Name);
                 child.Tag = node;
 
                 if (node == TopClientNode)
@@ -116,7 +116,7 @@ namespace TerraViewer
                     TopNode = child;
                 }
 
-                Color fgColor = Color.White;
+                var fgColor = Color.White;
                 switch (node.Status)
                 {
                     case ClientNodeStatus.Offline:
@@ -173,7 +173,7 @@ namespace TerraViewer
 
         TreeNode MakeNode(string text, Color color)
         {
-            TreeNode node = new TreeNode(text);
+            var node = new TreeNode(text);
             node.ForeColor = color;
 
             return node;
@@ -202,7 +202,7 @@ namespace TerraViewer
             UpdateNodeList();
         }
         
-        ContextMenuStrip contextMenu = null;
+        ContextMenuStrip contextMenu;
 
         private void nodeTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -219,16 +219,16 @@ namespace TerraViewer
                 {
                     if (nodeTree.SelectedNode.Tag is ClientNode)
                     {
-                        ClientNode client = (ClientNode)nodeTree.SelectedNode.Tag;
+                        var client = (ClientNode)nodeTree.SelectedNode.Tag;
 
                         contextMenu = new ContextMenuStrip();
-                        ToolStripMenuItem PauseRendering = new ToolStripMenuItem(Language.GetLocalizedText(1136, "Pause Rendering"));
-                        ToolStripMenuItem Rename = new ToolStripMenuItem(Language.GetLocalizedText(225, "Rename"));
-                        ToolStripMenuItem Delete = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-                        ToolStripMenuItem Restart = new ToolStripMenuItem(Language.GetLocalizedText(1137, "Restart"));
-                        ToolStripMenuItem Shutdown = new ToolStripMenuItem(Language.GetLocalizedText(1138, "Shutdown"));
-                        ToolStripMenuItem Launch = new ToolStripMenuItem(Language.GetLocalizedText(1139, "Launch"));
-                        ToolStripMenuItem Close = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
+                        var PauseRendering = new ToolStripMenuItem(Language.GetLocalizedText(1136, "Pause Rendering"));
+                        var Rename = new ToolStripMenuItem(Language.GetLocalizedText(225, "Rename"));
+                        var Delete = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
+                        var Restart = new ToolStripMenuItem(Language.GetLocalizedText(1137, "Restart"));
+                        var Shutdown = new ToolStripMenuItem(Language.GetLocalizedText(1138, "Shutdown"));
+                        var Launch = new ToolStripMenuItem(Language.GetLocalizedText(1139, "Launch"));
+                        var Close = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
                         Restart.Click += new EventHandler(Restart_Click);
                         Rename.Click += new EventHandler(Rename_Click);
                         Delete.Click += new EventHandler(Delete_Click);
@@ -236,14 +236,14 @@ namespace TerraViewer
                         Close.Click += new EventHandler(Close_Click);
                         PauseRendering.Click += new EventHandler(PauseRendering_Click);
                         contextMenu.Items.Add(Rename);
-                        ToolStripSeparator sep1 = new ToolStripSeparator();
+                        var sep1 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep1);
                         contextMenu.Items.Add(Delete);
-                        ToolStripSeparator sep2 = new ToolStripSeparator();
+                        var sep2 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep2);
                         contextMenu.Items.Add(Launch);
                         contextMenu.Items.Add(Close);
-                        ToolStripSeparator sep3 = new ToolStripSeparator();
+                        var sep3 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep3);
                         contextMenu.Items.Add(Restart);
                         contextMenu.Items.Add(Shutdown);
@@ -253,25 +253,25 @@ namespace TerraViewer
                     }
                     else
                     {
-                        ClientNode client = (ClientNode)nodeTree.SelectedNode.Tag;
+                        var client = (ClientNode)nodeTree.SelectedNode.Tag;
 
                         contextMenu = new ContextMenuStrip();
-                        ToolStripMenuItem PauseRendering = new ToolStripMenuItem(Language.GetLocalizedText(1136, "Pause Rendering"));
-                        ToolStripMenuItem Restart = new ToolStripMenuItem(Language.GetLocalizedText(1137, "Restart"));
-                        ToolStripMenuItem Shutdown = new ToolStripMenuItem(Language.GetLocalizedText(1138, "Shutdown"));
-                        ToolStripMenuItem Launch = new ToolStripMenuItem(Language.GetLocalizedText(1139, "Launch"));
-                        ToolStripMenuItem Close = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
+                        var PauseRendering = new ToolStripMenuItem(Language.GetLocalizedText(1136, "Pause Rendering"));
+                        var Restart = new ToolStripMenuItem(Language.GetLocalizedText(1137, "Restart"));
+                        var Shutdown = new ToolStripMenuItem(Language.GetLocalizedText(1138, "Shutdown"));
+                        var Launch = new ToolStripMenuItem(Language.GetLocalizedText(1139, "Launch"));
+                        var Close = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
                         Restart.Click += new EventHandler(Restart_Click);
 
                         Launch.Click += new EventHandler(Launch_Click);
                         Close.Click += new EventHandler(Close_Click);
                         PauseRendering.Click += new EventHandler(PauseRendering_Click);
                         contextMenu.Items.Add(PauseRendering);
-                        ToolStripSeparator sep2 = new ToolStripSeparator();
+                        var sep2 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep2);
                         contextMenu.Items.Add(Launch);
                         contextMenu.Items.Add(Close);
-                        ToolStripSeparator sep3 = new ToolStripSeparator();
+                        var sep3 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep3);
                         contextMenu.Items.Add(Restart);
                         contextMenu.Items.Add(Shutdown);
@@ -287,7 +287,7 @@ namespace TerraViewer
         {
             if (nodeTree.SelectedNode != null && nodeTree.SelectedNode.Tag is ClientNode)
             {
-                ClientNode node = nodeTree.SelectedNode.Tag as ClientNode;
+                var node = nodeTree.SelectedNode.Tag as ClientNode;
 
                 SendWWTRemoteCommand(node.IpAddress, "KILL", "");
             }
@@ -302,7 +302,7 @@ namespace TerraViewer
         {
             if (nodeTree.SelectedNode != null && nodeTree.SelectedNode.Tag is ClientNode)
             {
-                ClientNode node = nodeTree.SelectedNode.Tag as ClientNode;
+                var node = nodeTree.SelectedNode.Tag as ClientNode;
 
                 SendWWTRemoteCommand(node.IpAddress, "LAUNCH", "");
             }
@@ -316,7 +316,7 @@ namespace TerraViewer
         {
             if (nodeTree.SelectedNode != null && nodeTree.SelectedNode.Tag is ClientNode)
             {
-                ClientNode node = nodeTree.SelectedNode.Tag as ClientNode;
+                var node = nodeTree.SelectedNode.Tag as ClientNode;
 
                 SendWWTRemoteCommand(node.IpAddress, "RESTART", "");
             }
@@ -346,17 +346,17 @@ namespace TerraViewer
                 target = IPAddress.Parse(targetIP);
             }
 
-            IPEndPoint bindEPA = new IPEndPoint(IPAddress.Parse(NetControl.GetThisHostIP()), 8099);
+            var bindEPA = new IPEndPoint(IPAddress.Parse(NetControl.GetThisHostIP()), 8099);
             sockA.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             sockA.Bind(bindEPA);
 
 
 
-            EndPoint destinationEPA = (EndPoint)new IPEndPoint(target, 8089);
+            var destinationEPA = (EndPoint)new IPEndPoint(target, 8089);
 
-            string output = "WWTCONTROL2" + "," + Earth3d.MainWindow.Config.ClusterID + "," + command + "," + param;
+            var output = "WWTCONTROL2" + "," + Earth3d.MainWindow.Config.ClusterID + "," + command + "," + param;
 
-            Byte[] header = Encoding.ASCII.GetBytes(output);
+            var header = Encoding.ASCII.GetBytes(output);
 
             sockA.SendTo(header, destinationEPA);
             sockA.Close();
@@ -375,8 +375,8 @@ namespace TerraViewer
 
         void Rename_Click(object sender, EventArgs e)
         {
-            ClientNode client = (ClientNode)nodeTree.SelectedNode.Tag;
-            SimpleInput input = new SimpleInput(Language.GetLocalizedText(225, "Rename"), Language.GetLocalizedText(228, "New Name"), client.Name, 32);
+            var client = (ClientNode)nodeTree.SelectedNode.Tag;
+            var input = new SimpleInput(Language.GetLocalizedText(225, "Rename"), Language.GetLocalizedText(228, "New Name"), client.Name, 32);
 
             if (input.ShowDialog() == DialogResult.OK)
             {

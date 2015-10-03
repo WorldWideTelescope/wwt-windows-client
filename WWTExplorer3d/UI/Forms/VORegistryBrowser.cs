@@ -43,7 +43,7 @@ namespace TerraViewer
             this.Text = Language.GetLocalizedText(621, "VO Cone Search / Registry Browser");
         }
 
-        static VoTable registry = null;
+        static VoTable registry;
         static string lastKeyword="";
         static string lastConeSearch="";
         private void VORegistryBrowser_Load(object sender, EventArgs e)
@@ -55,7 +55,7 @@ namespace TerraViewer
             verbosity.Items.Add(Language.GetLocalizedText(626, "High"));
 
             verbosity.SelectedIndex = Properties.Settings.Default.VOTableVerbosityDefault-1;
-            double raVal = Earth3d.MainWindow.RA * 15;
+            var raVal = Earth3d.MainWindow.RA * 15;
             ra.Text = raVal.ToString();
             dec.Text = Earth3d.MainWindow.Dec.ToString();
             searchRadius.Text = Earth3d.MainWindow.FovAngle.ToString();
@@ -77,8 +77,8 @@ namespace TerraViewer
             try
             {
                 lastKeyword = keyword;
-                string filename = string.Format(@"{0}\NVOREG.XML", Path.GetTempPath());
-                string url = String.Format("http://nvo.stsci.edu//vor10/NVORegInt.asmx/VOTCapabilityPredicate?predicate=(title%20like%20'%25{0}%25'%20or%20shortname%20like%20'%25{0}%25')&capability={1}", keyword, coneSearch ? "ConeSearch" : "SIAP");
+                var filename = string.Format(@"{0}\NVOREG.XML", Path.GetTempPath());
+                var url = String.Format("http://nvo.stsci.edu//vor10/NVORegInt.asmx/VOTCapabilityPredicate?predicate=(title%20like%20'%25{0}%25'%20or%20shortname%20like%20'%25{0}%25')&capability={1}", keyword, coneSearch ? "ConeSearch" : "SIAP");
         
                 
                 if (!FileDownload.DownloadFile(url, filename, true))
@@ -92,8 +92,8 @@ namespace TerraViewer
                 }
 
           
-                string data = File.ReadAllText(filename);
-                XmlDocument doc = new XmlDocument();
+                var data = File.ReadAllText(filename);
+                var doc = new XmlDocument();
                 doc.LoadXml(data);
                 registry = new VoTable(doc);
 
@@ -131,9 +131,9 @@ namespace TerraViewer
             ResourceList.Columns[6].Width = 70;
             ResourceList.Columns[7].Width = 70;
 
-            foreach (VoRow row in registry.Rows)
+            foreach (var row in registry.Rows)
             {
-                ListViewItem item = new ListViewItem(row["title"].ToString());
+                var item = new ListViewItem(row["title"].ToString());
                 item.SubItems.Add(row["type"].ToString());
                 item.SubItems.Add("Cone Search");
                 item.SubItems.Add(row["publisher"].ToString());
@@ -155,7 +155,7 @@ namespace TerraViewer
             {
                 if (ResourceList.SelectedIndices.Count > 0)
                 {
-                    VoRow selected = (VoRow)ResourceList.SelectedItems[0].Tag;
+                    var selected = (VoRow)ResourceList.SelectedItems[0].Tag;
                     baseUrl.Text = selected["accessURL"].ToString().Replace("&amp;", "&");
                 }
             }
@@ -164,7 +164,7 @@ namespace TerraViewer
         {
             if (fromRegistry.Checked && ResourceList.SelectedIndices.Count > 0)
             {
-                VoRow selected = (VoRow)ResourceList.SelectedItems[0].Tag;
+                var selected = (VoRow)ResourceList.SelectedItems[0].Tag;
                 baseUrl.Text = selected["accessURL"].ToString().Replace("&amp;", "&");
             }
             baseUrl.ReadOnly = fromRegistry.Checked;
@@ -180,7 +180,7 @@ namespace TerraViewer
 
             if (baseUrl.Text.Length > 0)
             {
-                string adjustedBase = baseUrl.Text;
+                var adjustedBase = baseUrl.Text;
 
                 if (!adjustedBase.EndsWith(@"&") && !adjustedBase.EndsWith(@"?"))
                 {
@@ -194,8 +194,8 @@ namespace TerraViewer
                     }
                 }
 
-                int verb = verbosity.SelectedIndex + 1;
-                string tempURL = "";
+                var verb = verbosity.SelectedIndex + 1;
+                var tempURL = "";
                 if (coneSearch)
                 {
                     tempURL = string.Format("{0}RA={1}&DEC={2}&SR={3}&VERB={4}", adjustedBase, ra.Text, dec.Text, searchRadius.Text, verb);               
@@ -229,7 +229,7 @@ namespace TerraViewer
         {
             if (fromView.Checked)
             {
-                double raVal = Earth3d.MainWindow.RA * 15;
+                var raVal = Earth3d.MainWindow.RA * 15;
                 ra.Text = raVal.ToString();
                 dec.Text = Earth3d.MainWindow.Dec.ToString();
                 searchRadius.Text = Earth3d.MainWindow.FovAngle.ToString();
@@ -277,9 +277,9 @@ namespace TerraViewer
         {
             if (baseUrl.Text.Length > 0)
             {
-                int verb = verbosity.SelectedIndex + 1;
+                var verb = verbosity.SelectedIndex + 1;
 
-                string tempURL = string.Format("{0}RA={1}&DEC={2}&SR={3}&VERB={4}", baseUrl.Text, ra.Text, dec.Text, searchRadius.Text, verb);
+                var tempURL = string.Format("{0}RA={1}&DEC={2}&SR={3}&VERB={4}", baseUrl.Text, ra.Text, dec.Text, searchRadius.Text, verb);
 
                 if (!Uri.IsWellFormedUriString(tempURL, UriKind.Absolute))
                 {

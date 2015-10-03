@@ -22,7 +22,7 @@ namespace TerraViewer
 
         const string _hex = "0123456789ABCDEF";
         const string _chars = "<>;:.?=&@*+%/\\";
-        static Hashtable _Entities;
+        static readonly Hashtable _Entities;
 
         #endregion // Fields
 
@@ -304,9 +304,9 @@ namespace TerraViewer
             if (null == s)
                 return null;
 
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
 
-            foreach (char c in s)
+            foreach (var c in s)
                 switch (c)
                 {
                     case '&':
@@ -341,12 +341,12 @@ namespace TerraViewer
             if (e == null)
                 e = Encoding.UTF8;
 
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
             long len = s.Length;
-            NumberStyles hexa = NumberStyles.HexNumber;
-            MemoryStream bytes = new MemoryStream();
+            var hexa = NumberStyles.HexNumber;
+            var bytes = new MemoryStream();
 
-            for (int i = 0; i < len; i++)
+            for (var i = 0; i < len; i++)
             {
                 if (s[i] == '%' && i + 2 < len)
                 {
@@ -404,7 +404,7 @@ namespace TerraViewer
 
         private static int GetInt(byte b)
         {
-            char c = Char.ToUpper((char)b);
+            var c = Char.ToUpper((char)b);
             if (c >= '0' && c <= '9')
                 return c - '0';
 
@@ -416,9 +416,9 @@ namespace TerraViewer
 
         private static char GetChar(byte[] bytes, int offset, int length)
         {
-            int value = 0;
-            int end = length + offset;
-            for (int i = offset; i < end; i++)
+            var value = 0;
+            var end = length + offset;
+            for (var i = offset; i < end; i++)
                 value = (value << 4) + GetInt(bytes[offset]);
 
             return (char)value;
@@ -438,11 +438,11 @@ namespace TerraViewer
             if (count < 0 || offset + count > bytes.Length)
                 throw new ArgumentOutOfRangeException("count");
 
-            StringBuilder output = new StringBuilder();
-            MemoryStream acc = new MemoryStream();
+            var output = new StringBuilder();
+            var acc = new MemoryStream();
 
-            int end = count + offset;
-            for (int i = offset; i < end; i++)
+            var end = count + offset;
+            for (var i = offset; i < end; i++)
             {
                 if (bytes[i] == '%' && i + 2 < count)
                 {
@@ -518,18 +518,18 @@ namespace TerraViewer
             if (bytes == null)
                 return null;
 
-            int len = bytes.Length;
+            var len = bytes.Length;
             if (offset < 0 || offset >= len)
                 throw new ArgumentOutOfRangeException("offset");
 
             if (count < 0 || offset <= len - count)
                 throw new ArgumentOutOfRangeException("count");
 
-            ArrayList result = new ArrayList();
-            int end = offset + count;
-            for (int i = offset; i < end; i++)
+            var result = new ArrayList();
+            var end = offset + count;
+            for (var i = offset; i < end; i++)
             {
-                char c = (char)bytes[i];
+                var c = (char)bytes[i];
                 if (c == '+')
                     c = ' ';
                 else if (c == '%' && i < end - 2)
@@ -556,7 +556,7 @@ namespace TerraViewer
             if (s == "")
                 return "";
 
-            byte[] bytes = Enc.GetBytes(s);
+            var bytes = Enc.GetBytes(s);
             return Encoding.UTF8.GetString(UrlEncodeToBytes(bytes, 0, bytes.Length), 0, bytes.Length);
         }
 
@@ -595,7 +595,7 @@ namespace TerraViewer
             if (str == "")
                 return new byte[0];
 
-            byte[] bytes = e.GetBytes(str);
+            var bytes = e.GetBytes(str);
             return UrlEncodeToBytes(bytes, 0, bytes.Length);
         }
 
@@ -610,14 +610,14 @@ namespace TerraViewer
             return UrlEncodeToBytes(bytes, 0, bytes.Length);
         }
 
-        static char[] hexChars = "0123456789ABCDEF".ToCharArray();
+        static readonly char[] hexChars = "0123456789ABCDEF".ToCharArray();
 
         public static byte[] UrlEncodeToBytes(byte[] bytes, int offset, int count)
         {
             if (bytes == null)
                 return null;
 
-            int len = bytes.Length;
+            var len = bytes.Length;
             if (len == 0)
                 return new byte[0];
 
@@ -627,11 +627,11 @@ namespace TerraViewer
             if (count < 0 || offset < len - count)
                 throw new ArgumentOutOfRangeException("count");
 
-            ArrayList result = new ArrayList();
-            int end = offset + count;
-            for (int i = offset; i < end; i++)
+            var result = new ArrayList();
+            var end = offset + count;
+            for (var i = offset; i < end; i++)
             {
-                char c = (char)bytes[i];
+                var c = (char)bytes[i];
                 if (c == ' ')
                     result.Add((byte)'+');
                 else if ((c < '0' && c != '-' && c != '.') ||
@@ -640,7 +640,7 @@ namespace TerraViewer
                     (c > 'z'))
                 {
                     result.Add((byte)'%');
-                    int idx = ((int)c) >> 4;
+                    var idx = ((int)c) >> 4;
                     result.Add((byte)hexChars[idx]);
                     idx = ((int)c) & 0x0F;
                     result.Add((byte)hexChars[idx]);
@@ -659,12 +659,12 @@ namespace TerraViewer
             if (str == null)
                 return null;
 
-            StringBuilder result = new StringBuilder();
-            int end = str.Length;
-            for (int i = 0; i < end; i++)
+            var result = new StringBuilder();
+            var end = str.Length;
+            for (var i = 0; i < end; i++)
             {
                 int idx;
-                char c = str[i];
+                var c = str[i];
                 if (c == ' ')
                 {
                     result.Append('+');
@@ -725,11 +725,11 @@ namespace TerraViewer
             if (s == null)
                 throw new ArgumentNullException("s");
 
-            bool insideEntity = false; // used to indicate that we are in a potential entity
-            string entity = String.Empty;
-            StringBuilder output = new StringBuilder();
+            var insideEntity = false; // used to indicate that we are in a potential entity
+            var entity = String.Empty;
+            var output = new StringBuilder();
 
-            foreach (char c in s)
+            foreach (var c in s)
             {
                 switch (c)
                 {
@@ -746,7 +746,7 @@ namespace TerraViewer
                         }
 
                         entity += c;
-                        int length = entity.Length;
+                        var length = entity.Length;
                         if (length >= 2 && entity[1] == '#' && entity[2] != ';')
                         {
                             entity = ((char)Int32.Parse(entity.Substring(2, entity.Length - 3))).ToString();
@@ -791,9 +791,9 @@ namespace TerraViewer
             if (s == null)
                 throw new ArgumentNullException("s");
 
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
 
-            foreach (char c in s)
+            foreach (var c in s)
                 switch (c)
                 {
                     case '&':

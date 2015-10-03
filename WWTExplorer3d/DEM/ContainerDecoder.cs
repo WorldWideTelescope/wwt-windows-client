@@ -160,7 +160,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 		struct PKPixelInfo
 		{
-			internal Guid pGUIDPixFmt;
+			internal readonly Guid pGUIDPixFmt;
 
 			internal uint cChannel;
 			internal COLORFORMAT cfColorFormat;
@@ -192,7 +192,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			}
 		}
 
-		private PKPixelInfo[] pixelInfo =
+		private readonly PKPixelInfo[] pixelInfo =
 		{
 		    // format for DEM
 		    new PKPixelInfo(Constant.GUID_PKPixelFormat16bppGrayFixedPoint, 1, COLORFORMAT.Y_ONLY, BITDEPTH_BITS.BD_16S, 16, (ulong)GluePixelFormat.PK_pixfmtNul,   1, 1, 16, 2)
@@ -228,7 +228,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			}
 
 			// read Image File Directories
-			uint firstIDFOffset = BitConverter.ToUInt32(data, (int)Constant.FirstIFDOffset);
+			var firstIDFOffset = BitConverter.ToUInt32(data, (int)Constant.FirstIFDOffset);
 			if (firstIDFOffset == 0)
 			{
 				throw new ArgumentOutOfRangeException("There must be at least one IFD in a HD Photo file!");
@@ -244,7 +244,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			if (offset != 0)
 			{
 				// read # of IFD entries (p.14)
-				ushort cPFDEntry = BitConverter.ToUInt16(data, (int)offset);
+				var cPFDEntry = BitConverter.ToUInt16(data, (int)offset);
 				offset += 2;
 
 				if (cPFDEntry == 0 || cPFDEntry == ushort.MaxValue)
@@ -252,10 +252,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 					throw new ArgumentOutOfRangeException("offset", "cPFDEntry = " + cPFDEntry);
 				}
 
-				for (int i = 0; i < cPFDEntry; i++)
+				for (var i = 0; i < cPFDEntry; i++)
 				{
-					ushort uTag  = BitConverter.ToUInt16(data, (int)offset);
-					ushort uType = BitConverter.ToUInt16(data, (int)offset + 2);
+					var uTag  = BitConverter.ToUInt16(data, (int)offset);
+					var uType = BitConverter.ToUInt16(data, (int)offset + 2);
 					uint uCount  = BitConverter.ToUInt16(data, (int)offset + 4);
 					uint uValue  = BitConverter.ToUInt16(data, (int)offset + 8);
 
@@ -285,7 +285,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			{
 				case WMPMeta.WMP_tagPixelFormat:
 					var guidBytes = new byte[16];
-					for (int i = 0; i < 16; i++)
+					for (var i = 0; i < 16; i++)
 					{
 						guidBytes[i] = pfdData[uValue + i];
 					}

@@ -23,7 +23,7 @@ namespace TerraViewer
             this.label2.Text = Language.GetLocalizedText(857, "Scale Relative");
             this.label1.Text = Language.GetLocalizedText(853, "Use the scale type to specify how you want the markers displayed. You can have markers display relative to the screen, invariant of your zoom, or have them scale relative to the coordinates system. You can optionally select a column to control the scale.  Use the scale factor to adjust the relative unit values of the  column to the output marker size.");
         }
-        TimeSeriesLayer layer = null;
+        TimeSeriesLayer layer;
 
         public override void SetData(object data)
         {

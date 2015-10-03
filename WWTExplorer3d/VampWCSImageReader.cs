@@ -14,14 +14,14 @@ namespace TerraViewer
         public static string ExtractXMPFromFile(string filename)
         {
             char contents;
-            string xmpStartSigniture = "<rdf:RDF";
-            string xmpEndSigniture = "</rdf:RDF>";
-            string data = string.Empty;
-            bool reading = false;
-            bool grepping = false;
-            int collectionCount = 0;
+            var xmpStartSigniture = "<rdf:RDF";
+            var xmpEndSigniture = "</rdf:RDF>";
+            var data = string.Empty;
+            var reading = false;
+            var grepping = false;
+            var collectionCount = 0;
 
-            using (System.IO.StreamReader sr = new System.IO.StreamReader(filename))
+            using (var sr = new System.IO.StreamReader(filename))
             {
                 while (!sr.EndOfStream)
                 {
@@ -75,7 +75,7 @@ namespace TerraViewer
         public VampWCSImageReader(string filename)
         {
             this.filename = filename;
-            string data = VampWCSImageReader.ExtractXMPFromFile(filename);
+            var data = VampWCSImageReader.ExtractXMPFromFile(filename);
             ValidWcs = ExtractXMPParameters(data);
         }
 
@@ -89,13 +89,13 @@ namespace TerraViewer
 
         public bool ExtractXMPParameters(string xmpXmlDoc)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
 
-            bool hasRotation = false;
-            bool hasSize = false;
-            bool hasScale = false;
-            bool hasLocation = false;
-            bool hasPixel = false;
+            var hasRotation = false;
+            var hasSize = false;
+            var hasScale = false;
+            var hasLocation = false;
+            var hasPixel = false;
             try
             {
                 doc.LoadXml(xmpXmlDoc);
@@ -108,7 +108,7 @@ namespace TerraViewer
             try
             {
 
-                XmlNamespaceManager NamespaceManager = new XmlNamespaceManager(doc.NameTable);
+                var NamespaceManager = new XmlNamespaceManager(doc.NameTable);
                 NamespaceManager.AddNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
                 NamespaceManager.AddNamespace("exif", "http://ns.adobe.com/exif/1.0/");
                 NamespaceManager.AddNamespace("x", "adobe:ns:meta/");
@@ -118,7 +118,7 @@ namespace TerraViewer
                 NamespaceManager.AddNamespace("avm", "http://www.communicatingastronomy.org/avm/1.0/");
                 NamespaceManager.AddNamespace("ps", "http://ns.adobe.com/photoshop/1.0/");
                 // get ratings
-                XmlNode xmlNode = doc.SelectSingleNode("/rdf:RDF/rdf:Description/xap:Rating", NamespaceManager);
+                var xmlNode = doc.SelectSingleNode("/rdf:RDF/rdf:Description/xap:Rating", NamespaceManager);
 
                 // Alternatively, there is a common form of RDF shorthand that writes simple properties as
                 // attributes of the rdf:Description element.

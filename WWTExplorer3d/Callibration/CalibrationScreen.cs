@@ -85,7 +85,7 @@ namespace TerraViewer.Callibration
             // Get Distortion map
             try
             {
-                string url = string.Format("http://{0}:5050/Configuration/images/executable", NetControl.MasterAddress);
+                var url = string.Format("http://{0}:5050/Configuration/images/executable", NetControl.MasterAddress);
                 var data = client.DownloadData(url);
                 File.WriteAllBytes("wwtexplorer.exe", data);
                 System.Diagnostics.Process.Start("wwtexplorer.exe", "restart");
@@ -105,8 +105,8 @@ namespace TerraViewer.Callibration
                 // Get Distortion map
                 try
                 {
-                    string url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.data", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
-                    string filename = "";// Earth3d.MainWindow.Config.DistortionGrid;
+                    var url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.data", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
+                    var filename = "";// Earth3d.MainWindow.Config.DistortionGrid;
                     if (string.IsNullOrEmpty(filename))
                     {
                         if (!Directory.Exists("c:\\wwtconfig"))
@@ -116,7 +116,7 @@ namespace TerraViewer.Callibration
                         filename = string.Format("c:\\wwtconfig\\distort_{0}.data", Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
                         Properties.Settings.Default.CustomWarpFilename = filename;
                         Properties.Settings.Default.DomeTypeIndex = 3;
-                        Byte[] data = client.DownloadData(url);
+                        var data = client.DownloadData(url);
                         File.WriteAllBytes(filename, data);
 
 
@@ -150,8 +150,8 @@ namespace TerraViewer.Callibration
                 // Get Distortion map
                 try
                 {
-                    string url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.png", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
-                    string filename = Earth3d.MainWindow.Config.DistortionGrid;
+                    var url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.png", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
+                    var filename = Earth3d.MainWindow.Config.DistortionGrid;
                     if (string.IsNullOrEmpty(filename))
                     {
                         if (!Directory.Exists("c:\\wwtconfig"))
@@ -269,8 +269,8 @@ namespace TerraViewer.Callibration
                 if (values.Length > 8)
                 {
                     points.Clear();
-                    string[] pointListText = values[8].Split(new[] { ';' });
-                    foreach (string pointText in pointListText)
+                    var pointListText = values[8].Split(new[] { ';' });
+                    foreach (var pointText in pointListText)
                     {
                         var parts = pointText.Split(new[] { ' ' });
                         if (parts.Length > 1)
@@ -297,7 +297,7 @@ namespace TerraViewer.Callibration
 
         private void CalibrationScreen_Paint(object sender, PaintEventArgs e)
         {
-            Rectangle rect = this.ClientRectangle;
+            var rect = this.ClientRectangle;
 
             e.Graphics.Clear(Background);
 

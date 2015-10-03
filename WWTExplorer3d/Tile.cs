@@ -97,9 +97,9 @@ namespace TerraViewer
             if (level < lastDeepestLevel)
             {
                 //interate children
-                foreach (long childKey in childrenId)
+                foreach (var childKey in childrenId)
                 {
-                    Tile child = TileCache.GetCachedTile(childKey);
+                    var child = TileCache.GetCachedTile(childKey);
                     if (child != null)
                     {
                         if (child.IsPointInTile(lat, lng))
@@ -119,23 +119,23 @@ namespace TerraViewer
 
             if (level < targetLevel)
             {
-                int yOffset = 0;
+                var yOffset = 0;
                 if (dataset.Mercator || dataset.BottomsUp)
                 {
                     yOffset = 1;
                 }
-                int xOffset = 0;
+                var xOffset = 0;
 
-                int xMax = 2;
-                int childIndex = 0;
-                for (int y1 = 0; y1 < 2; y1++)
+                var xMax = 2;
+                var childIndex = 0;
+                for (var y1 = 0; y1 < 2; y1++)
                 {
-                    for (int x1 = 0; x1 < xMax; x1++)
+                    for (var x1 = 0; x1 < xMax; x1++)
                     {
 
                         if (level < dataset.Levels && level < (targetLevel+1))
                         {
-                            Tile child = TileCache.GetTileNow(level + 1, x * 2 + ((x1 + xOffset) % 2), y * 2 + ((y1 + yOffset) % 2), dataset, this);
+                            var child = TileCache.GetTileNow(level + 1, x * 2 + ((x1 + xOffset) % 2), y * 2 + ((y1 + yOffset) % 2), dataset, this);
                             childrenId[childIndex++] = child.Key;
                             if (child != null)
                             {
@@ -161,9 +161,9 @@ namespace TerraViewer
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 			
-				Tile t = this;
+				var t = this;
 				sb.Append(t.Level);
 				sb.Append(" - ");
 				sb.Append(t.X);
@@ -213,7 +213,7 @@ namespace TerraViewer
             {
                 return false;
             }
-            int xMax = 2;
+            var xMax = 2;
  
             InViewFrustum = true;
 
@@ -241,43 +241,43 @@ namespace TerraViewer
             
           
 
-            int childIndex = 0;
+            var childIndex = 0;
 
-            int yOffset = 0;
+            var yOffset = 0;
             if (dataset.Mercator || dataset.BottomsUp )
             {
                 yOffset = 1;
             }
-            int xOffset = 0;
+            var xOffset = 0;
 
             if (PurgeRefresh)
             {
                 PurgeTextureAndDemFiles();
             }
-            Matrix3d savedWorld = renderContext.World;
-            Matrix3d savedView = renderContext.View;
-            bool usingLocalCenter = false;
+            var savedWorld = renderContext.World;
+            var savedView = renderContext.View;
+            var usingLocalCenter = false;
             if (localCenter != Vector3d.Empty)
             {
                 usingLocalCenter = true;
-                Vector3d temp = localCenter;
+                var temp = localCenter;
                 renderContext.World = Matrix3d.Translation(temp) * renderContext.WorldBase * Matrix3d.Translation(-renderContext.CameraPosition);
                 renderContext.View = Matrix3d.Translation(renderContext.CameraPosition) * renderContext.ViewBase;
             }
 
             try
             {
-                bool anythingToRender = false;
-                bool childRendered = false;
+                var anythingToRender = false;
+                var childRendered = false;
 
-                for (int y1 = 0; y1 < 2; y1++)
+                for (var y1 = 0; y1 < 2; y1++)
                 {
-                    for (int x1 = 0; x1 < xMax; x1++)
+                    for (var x1 = 0; x1 < xMax; x1++)
                     {
                         //  if (level < (demEnabled ? 12 : dataset.Levels))
                         if (level < dataset.Levels)
                         {
-                            Tile child = TileCache.GetTile(level + 1, x * 2 + ((x1 + xOffset) % 2), y * 2 + ((y1 + yOffset) % 2), dataset, this);
+                            var child = TileCache.GetTile(level + 1, x * 2 + ((x1 + xOffset) % 2), y * 2 + ((y1 + yOffset) % 2), dataset, this);
                             childrenId[childIndex] = child.Key;
 
                             if (child.IsTileInFrustum(renderContext.Frustum))
@@ -353,7 +353,7 @@ namespace TerraViewer
 
                 accomidation = ComputeAccomidation();
 
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     if (blendMode) //|| ShowElevation == false)
                     {
@@ -427,7 +427,7 @@ namespace TerraViewer
         public static bool useAccomidation = true;
         private int ComputeAccomidation()
         {
-            int accVal = 0;
+            var accVal = 0;
 
             if (!useAccomidation)
             {
@@ -438,27 +438,27 @@ namespace TerraViewer
 
 
             //Bottom
-            Tile top = TileCache.GetCachedTile(level, x, y + 1, dataset, this);
+            var top = TileCache.GetCachedTile(level, x, y + 1, dataset, this);
             if (top == null || top.RenderedAtOrBelowGeneration < CurrentRenderGeneration - 2)
             {
                 accVal += 1;
             }
 
             //right
-            Tile right = TileCache.GetCachedTile(level, x + 1, y, dataset, this);
+            var right = TileCache.GetCachedTile(level, x + 1, y, dataset, this);
             if (right == null || right.RenderedAtOrBelowGeneration < CurrentRenderGeneration - 2)
             {
                 accVal += 2;
             }
 
             //top
-            Tile bottom = TileCache.GetCachedTile(level, x, y - 1, dataset, this);
+            var bottom = TileCache.GetCachedTile(level, x, y - 1, dataset, this);
             if (bottom == null || bottom.RenderedAtOrBelowGeneration < CurrentRenderGeneration - 2)
             {
                 accVal += 4;
             }
             //left
-            Tile left = TileCache.GetCachedTile(level, x - 1, y, dataset, this);
+            var left = TileCache.GetCachedTile(level, x - 1, y, dataset, this);
             if (left == null || left.RenderedAtOrBelowGeneration < CurrentRenderGeneration - 2)
             {
                 accVal += 8;
@@ -469,7 +469,7 @@ namespace TerraViewer
 
         public virtual void RenderPart(RenderContext11 renderContext, int part, float opacity, bool combine)
         {
-            int partCount = this.TriangleCount / 4;
+            var partCount = this.TriangleCount / 4;
             TrianglesRendered += partCount;
 
             renderContext.SetIndexBuffer(GetIndexBuffer(part, accomidation));
@@ -507,7 +507,7 @@ namespace TerraViewer
 
             if (this.indexBuffer != null)
             {
-                foreach (IndexBuffer11 buffer in indexBuffer)
+                foreach (var buffer in indexBuffer)
                 {
                     if (buffer != null)
                     {
@@ -530,7 +530,7 @@ namespace TerraViewer
 
             if (this.indexBuffer != null)
             {
-                foreach (IndexBuffer11 buffer in indexBuffer)
+                foreach (var buffer in indexBuffer)
                 {
                     if (buffer != null)
                     {
@@ -543,9 +543,9 @@ namespace TerraViewer
 
         public virtual void CleanUpGeometryRecursive()
         {
-            foreach (long childKey in childrenId)
+            foreach (var childKey in childrenId)
             {
-                Tile child = TileCache.GetCachedTile(childKey);
+                var child = TileCache.GetCachedTile(childKey);
                 if (child != null)
                 {
                     child.CleanUpGeometryRecursive();
@@ -561,7 +561,7 @@ namespace TerraViewer
 
         }
 
-        bool blendMode = false;
+        bool blendMode;
 
         public static int TexturesLoaded = 0;
 
@@ -606,7 +606,7 @@ namespace TerraViewer
                     {
                         iTileBuildCount++;
 
-                        string localFilename = FileName;
+                        var localFilename = FileName;
                         if (GrayscaleStyle)
                         {
                             localFilename = UiTools.MakeGrayScaleImage(localFilename);
@@ -688,7 +688,7 @@ namespace TerraViewer
         }
         protected void CalcSphere()
         {
-            Vector3d[] corners = new Vector3d[4];
+            var corners = new Vector3d[4];
             corners[0] = TopLeft;
             corners[1] = BottomRight;
             corners[2] = TopRight;
@@ -708,8 +708,8 @@ namespace TerraViewer
 
                 return CreateDemFromParent();                
             }
-            bool useFloat = false;
-        	FileInfo fi = new FileInfo(DemFilename);
+            var useFloat = false;
+        	var fi = new FileInfo(DemFilename);
 
             if (dataset.Projection == ProjectionType.Mercator)
             {
@@ -726,13 +726,13 @@ namespace TerraViewer
             {
                 isHdTile = true;
                 DemData = new double[demSize];
-                int yh = 0;
-                for (int yl = 0; yl < 33;  yl++)
+                var yh = 0;
+                for (var yl = 0; yl < 33;  yl++)
                 {
-                    int xh = 0;
-                    for (int xl = 0; xl < 33; xl++)
+                    var xh = 0;
+                    for (var xl = 0; xl < 33; xl++)
                     {
-                        int indexI = xl + (32-yl) * 33;
+                        var indexI = xl + (32-yl) * 33;
                         DemData[indexI] = hdTile.AltitudeInMeters(yh, xh);
                         demAverage += DemData[indexI];
                        
@@ -768,9 +768,9 @@ namespace TerraViewer
                 demAverage = 0;
                 DemData = new double[demSize];
 
-                Byte[] part = new Byte[4];
+                var part = new Byte[4];
 
-                for (int i = 0; i < DemData.Length; i++)
+                for (var i = 0; i < DemData.Length; i++)
                 {
                     if (useFloat)
                     {
@@ -838,9 +838,9 @@ namespace TerraViewer
                 SharpDX.Vector3 topRightScreen;
                 SharpDX.Vector3 bottomLeftScreen;
 
-                SharpDX.Matrix proj = renderContext.Projection.Matrix11;
-                SharpDX.Matrix view = renderContext.ViewBase.Matrix11;
-                SharpDX.Matrix world = renderContext.WorldBase.Matrix11;
+                var proj = renderContext.Projection.Matrix11;
+                var view = renderContext.ViewBase.Matrix11;
+                var world = renderContext.WorldBase.Matrix11;
 
                 // Test for tile scale in view..
                 topLeftScreen = TopLeft.Vector311;
@@ -856,24 +856,24 @@ namespace TerraViewer
                 bottomLeftScreen = BottomLeft.Vector311;
                 bottomLeftScreen = SharpDX.Vector3.Project(bottomLeftScreen, Viewport.TopLeftX, Viewport.TopLeftY, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
 
-                SharpDX.Vector3 top = topLeftScreen;
+                var top = topLeftScreen;
                 top = SharpDX.Vector3.Subtract(top, topRightScreen);
-                float topLength = top.Length();
+                var topLength = top.Length();
 
-                SharpDX.Vector3 bottom = bottomLeftScreen;
+                var bottom = bottomLeftScreen;
                 bottom = SharpDX.Vector3.Subtract(bottom, bottomRightScreen);
-                float bottomLength = bottom.Length();
+                var bottomLength = bottom.Length();
 
-                SharpDX.Vector3 left = bottomLeftScreen;
+                var left = bottomLeftScreen;
                 left = SharpDX.Vector3.Subtract(left, topLeftScreen);
-                float leftLength = left.Length();
+                var leftLength = left.Length();
 
-                SharpDX.Vector3 right = bottomRightScreen;
+                var right = bottomRightScreen;
                 right = SharpDX.Vector3.Subtract(right, topRightScreen);
-                float rightLength = right.Length();
+                var rightLength = right.Length();
                 
 
-                float lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
+                var lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
                 if (lengthMax < (400 - ((Earth3d.MainWindow.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality))) // was 220
                 {
                     return false;
@@ -894,18 +894,18 @@ namespace TerraViewer
         virtual public bool IsTileInFrustum(PlaneD[]frustum)
         {
             InViewFrustum = false;
-            Vector3d center = sphereCenter;
+            var center = sphereCenter;
 
             if (this.Level < 2 && (dataset.Projection == ProjectionType.Mercator || dataset.Projection == ProjectionType.Toast))
             {
                 return true;
             }
 
-            Vector4d centerV4 = new Vector4d(center.X , center.Y , center.Z , 1f);
-            Vector3d length = new Vector3d(sphereRadius, 0, 0);
+            var centerV4 = new Vector4d(center.X , center.Y , center.Z , 1f);
+            var length = new Vector3d(sphereRadius, 0, 0);
 
-            double rad = length.Length();
-            for (int i = 0; i < 6; i++)
+            var rad = length.Length();
+            for (var i = 0; i < 6; i++)
             {
                 if (frustum[i].Dot(centerV4) + rad < 0)
                 {
@@ -953,7 +953,7 @@ namespace TerraViewer
 
             if (dataset.DataSetType == ImageSetType.Panorama)
             {
-                Vector3d retVal = new Vector3d(-(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
+                var retVal = new Vector3d(-(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
                 if (useLocalCenter)
                 {
                     retVal.Subtract(localCenter);
@@ -963,7 +963,7 @@ namespace TerraViewer
             }
             else
             {
-                Vector3d retVal = new Vector3d((Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
+                var retVal = new Vector3d((Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
                 if (useLocalCenter)
                 {
                     retVal.Subtract(localCenter);
@@ -981,16 +981,16 @@ namespace TerraViewer
                 return GeoTo3d(lat, lng, useLocalCenter);
             }
 
-            double altitude = DemData[demIndex];
-            Vector3d retVal = GeoTo3dWithAltitude(lat, lng, altitude, useLocalCenter);
+            var altitude = DemData[demIndex];
+            var retVal = GeoTo3dWithAltitude(lat, lng, altitude, useLocalCenter);
             return retVal;
         }
 
         public Vector3d GeoTo3dWithAltitude(double lat, double lng, double altitude, bool useLocalCenter)
         {
 
-            double radius = 1 + (altitude / DemScaleFactor);
-            Vector3d retVal = (new Vector3d((Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius)));
+            var radius = 1 + (altitude / DemScaleFactor);
+            var retVal = (new Vector3d((Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius)));
             if (useLocalCenter)
             {
                 retVal.Subtract(localCenter);
@@ -1068,7 +1068,7 @@ namespace TerraViewer
         
         internal static string GetDirectory(IImageSet dataset, int level, int x, int y)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
             sb.Append(@"Imagery\");
             sb.Append(dataset.ImageSetID.ToString());
@@ -1108,8 +1108,8 @@ namespace TerraViewer
 
         internal static string GetFilename(IImageSet dataset, int level, int x, int y)
         {
-            string extention = dataset.Extension.StartsWith(".") ? dataset.Extension : "." + dataset.Extension;
-            StringBuilder sb = new StringBuilder();
+            var extention = dataset.Extension.StartsWith(".") ? dataset.Extension : "." + dataset.Extension;
+            var sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
             sb.Append(@"Imagery\");
             sb.Append(dataset.ImageSetID.ToString());
@@ -1166,13 +1166,13 @@ namespace TerraViewer
         internal static string GetWmsURL(IImageSet dataset, int level, int x, int y)
         {
 
-            double tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
-            double latMin = ( (((double)y) * tileDegrees)-90 );
-            double latMax = ( (((double)(y + 1)) * tileDegrees) -90 );
-            double lngMin = (((double)x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(x + 1)) * tileDegrees) - 180.0);
-            string returnUrl = dataset.Url;
+            var latMin = ( (((double)y) * tileDegrees)-90 );
+            var latMax = ( (((double)(y + 1)) * tileDegrees) -90 );
+            var lngMin = (((double)x * tileDegrees) - 180.0);
+            var lngMax = ((((double)(x + 1)) * tileDegrees) - 180.0);
+            var returnUrl = dataset.Url;
 
             returnUrl = returnUrl.Replace("{latMin}", latMin.ToString());
             returnUrl = returnUrl.Replace("{latMax}", latMax.ToString());
@@ -1203,12 +1203,12 @@ namespace TerraViewer
             }
 
 
-            string returnUrl = dataset.Url;
+            var returnUrl = dataset.Url;
 
             returnUrl = returnUrl.Replace("{X}", x.ToString());
             returnUrl = returnUrl.Replace("{Y}", y.ToString());
             returnUrl = returnUrl.Replace("{L}", level.ToString());
-            int hash = 0;
+            var hash = 0;
             if (returnUrl.Contains("{S:0}"))
             {
                 hash = 0;
@@ -1253,8 +1253,8 @@ namespace TerraViewer
                 //}
             }
 
-            string id = GetTileID(dataset, level, x, y);
-            string server = "";
+            var id = GetTileID(dataset, level, x, y);
+            var server = "";
 
             if (id.Length == 0)
             {
@@ -1280,12 +1280,12 @@ namespace TerraViewer
 
         public static int GetServerID(int tileX, int tileY)
         {
-            int server = (tileX & 1) + ((tileY & 1) << 1);
+            var server = (tileX & 1) + ((tileY & 1) << 1);
 
             return (server);
         }
 
-        string tileId = null;
+        string tileId;
         public string GetTileID()
         {
             if (tileId == null)
@@ -1298,25 +1298,25 @@ namespace TerraViewer
 
         public static string GetTileID(IImageSet dataset, int tileLevel, int tileX, int tileY)
         {
-            int netLevel = tileLevel;
-            int netX = tileX;
-            int netY = tileY;
-            string tileId = "";
+            var netLevel = tileLevel;
+            var netX = tileX;
+            var netY = tileY;
+            var tileId = "";
             if (dataset.Projection == ProjectionType.Equirectangular)
             {
                 netLevel++;
             }
 
-            string tileMap = dataset.QuadTreeTileMap;
+            var tileMap = dataset.QuadTreeTileMap;
 
             if (!string.IsNullOrEmpty(tileMap))
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
-                for (int i = netLevel; i > 0; --i)
+                for (var i = netLevel; i > 0; --i)
                 {
-                    int mask = 1 << (i - 1);
-                    int val = 0;
+                    var mask = 1 << (i - 1);
+                    var val = 0;
 
                     if ((netX & mask) != 0)
                         val = 1;
@@ -1351,8 +1351,9 @@ namespace TerraViewer
                 vertexCount = value;
             }
         }
-        BlendState[] renderPart = null;
-        bool demEnabled = false;
+
+        readonly BlendState[] renderPart;
+        bool demEnabled;
         bool demInitialized = false;
         public bool DemEnabled
         {
@@ -1372,7 +1373,7 @@ namespace TerraViewer
         {
             
             renderPart = new BlendState[4];
-            for (int i = 0; i < 4; i++ )
+            for (var i = 0; i < 4; i++ )
             {
                 renderPart[i] = new BlendState(false, 500);
             }
@@ -1393,7 +1394,7 @@ namespace TerraViewer
 
         internal static string GetDemDirectory(IImageSet dataset, int level, int x, int y)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
             sb.Append(@"dem\");
             sb.Append(Math.Abs(dataset.DemUrl.GetHashCode32()).ToString());
@@ -1418,7 +1419,7 @@ namespace TerraViewer
 
         internal static string GetDemFilename(IImageSet dataset, int level, int x, int y)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
             sb.Append(@"dem\");
             sb.Append(Math.Abs(dataset.DemUrl.GetHashCode32()).ToString());
@@ -1446,7 +1447,7 @@ namespace TerraViewer
         {
             if (dataset.Projection == ProjectionType.Mercator)
             {
-                string baseUrl = "http://cdn.worldwidetelescope.org/wwtweb/demtile.aspx?q={0},{1},{2},M";
+                var baseUrl = "http://cdn.worldwidetelescope.org/wwtweb/demtile.aspx?q={0},{1},{2},M";
                 if (!String.IsNullOrEmpty(dataset.DemUrl))
                 {
                     baseUrl = dataset.DemUrl;
@@ -1461,12 +1462,12 @@ namespace TerraViewer
                 return String.Format(dataset.DemUrl + "&new", level, x, y);
             }
 
-            string returnUrl = dataset.DemUrl;
+            var returnUrl = dataset.DemUrl;
 
             returnUrl = returnUrl.Replace("{X}", x.ToString());
             returnUrl = returnUrl.Replace("{Y}", y.ToString());
             returnUrl = returnUrl.Replace("{L}", level.ToString());
-            int hash = 0;
+            var hash = 0;
             if (returnUrl.Contains("{S:0}"))
             {
                 hash = 0;
@@ -1489,8 +1490,8 @@ namespace TerraViewer
             }
 
 
-            string id = GetTileID(dataset, level, x, y);
-            string server = "";
+            var id = GetTileID(dataset, level, x, y);
+            var server = "";
 
             if (id.Length == 0)
             {
@@ -1512,7 +1513,7 @@ namespace TerraViewer
         int MAXITER = 300;
         private int MandPoint(double x, double y)
         {
-            int looper = 0;
+            var looper = 0;
             double x1 = 0;
             double y1 = 0;
             double xx;
@@ -1531,22 +1532,22 @@ namespace TerraViewer
         {
             unsafe
             {
-                string filename = this.FileName;
-                string path = this.Directory;
+                var filename = this.FileName;
+                var path = this.Directory;
                 Bitmap b = null;
                 PixelData pixel;
                 pixel.alpha = 255;
                 MAXITER = 100 + level * 38;
 
 
-                double tileWidth = (4 / (Math.Pow(2, this.level)));
-                double Sy = ((double)this.y * tileWidth) - 2;
-                double Fy = Sy + tileWidth;
-                double Sx = ((double)this.x * tileWidth) - 4;
-                double Fx = Sx + tileWidth;
+                var tileWidth = (4 / (Math.Pow(2, this.level)));
+                var Sy = ((double)this.y * tileWidth) - 2;
+                var Fy = Sy + tileWidth;
+                var Sx = ((double)this.x * tileWidth) - 4;
+                var Fx = Sx + tileWidth;
 
                 b = new Bitmap(mandelWidth, mandelWidth);
-                FastBitmap fb = new FastBitmap(b);
+                var fb = new FastBitmap(b);
                 fb.LockBitmap();
                 double x, y, xmin, xmax, ymin, ymax = 0.0;
                 int looper, s, z = 0;
@@ -1559,7 +1560,7 @@ namespace TerraViewer
                 intigralY = (ymax - ymin) / mandelWidth;
                 x = xmin;
 
-                bool computeAll = true;
+                var computeAll = true;
 
                 if (computeAll)
                 {
@@ -1570,7 +1571,7 @@ namespace TerraViewer
                         {
 
                             looper = MandPoint(x, y);
-                            System.Drawing.Color col = (looper == MAXITER) ? System.Drawing.Color.Black : Tile.ColorTable[looper % 1011];
+                            var col = (looper == MAXITER) ? System.Drawing.Color.Black : Tile.ColorTable[looper % 1011];
                             pixel.red = col.R;
                             pixel.green = col.G;
                             pixel.blue = col.B;
@@ -1596,7 +1597,7 @@ namespace TerraViewer
 
 
         #region
-        static System.Drawing.Color[] ColorTable = {
+        static readonly System.Drawing.Color[] ColorTable = {
 										System.Drawing.Color.FromArgb(255,0,0),
 										System.Drawing.Color.FromArgb(255,4,0),
 										System.Drawing.Color.FromArgb(255,8,0),

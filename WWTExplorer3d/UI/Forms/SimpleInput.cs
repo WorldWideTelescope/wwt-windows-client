@@ -25,10 +25,11 @@ namespace TerraViewer
             this.OK.Text = Language.GetLocalizedText(156, "OK");
             this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
         }
-        string title;
-        string label;
+
+        readonly string title;
+        readonly string label;
         public string ResultText;
-        int limit = 256;
+        readonly int limit = 256;
         public int MinLength = 1;
         private void OK_Click(object sender, EventArgs e)
         {

@@ -31,7 +31,7 @@ namespace TerraViewer
             this.StationKeeping.Text = Language.GetLocalizedText(800, "Station Keeping");
             this.label2.Text = Language.GetLocalizedText(933, "The Mean allows you to specify the primary bounds of the reference frame such as the surface height of a planet, or the bounding sphere of a 3d model of a spacecraft. Rotation period and zero rotation day allow the specification of a rotating frame of reference. Heading Pitch and roll allow for orientation relative to the parent reference frame. Station Keeping automatically orients the reference frame to track the Earth rather than tumble in orbit.");
         }
-        ReferenceFrame frame = null;
+        ReferenceFrame frame;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
@@ -39,7 +39,7 @@ namespace TerraViewer
 
         public override bool Save()
         {
-            bool failed = false;
+            var failed = false;
 
             frame.MeanRadius = ParseAndValidateDouble(MeanRadius, frame.MeanRadius, ref failed);
             frame.Oblateness = ParseAndValidateDouble(Oblateness, frame.Oblateness, ref failed);
@@ -59,7 +59,7 @@ namespace TerraViewer
 
         private void RepresentativeColor_Click(object sender, EventArgs e)
         {
-            PopupColorPicker picker = new PopupColorPicker();
+            var picker = new PopupColorPicker();
 
             picker.Location = Cursor.Position;
 
@@ -74,9 +74,9 @@ namespace TerraViewer
 
         private void RepresentativeColor_Paint(object sender, PaintEventArgs e)
         {
-            PictureBox control = (PictureBox)sender;
+            var control = (PictureBox)sender;
             e.Graphics.Clear(Color.Black);
-            Pen pen = new Pen(frame.RepresentativeColor);
+            var pen = new Pen(frame.RepresentativeColor);
             e.Graphics.DrawLine(pen, new Point(0, control.Bounds.Height / 2),
                 new Point(control.Bounds.Width, control.Bounds.Height / 2));
             pen.Dispose();

@@ -30,8 +30,8 @@ namespace TerraViewer
             set { name = value; }
         }
 		string url;
-		Dictionary<string,Places> dataSets = null;
-		string groupingName;
+	    readonly Dictionary<string,Places> dataSets;
+	    readonly string groupingName;
 
         
         private bool sky;
@@ -59,29 +59,29 @@ namespace TerraViewer
 
 
             DataSetManager.DownloadFile(url, Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml", false, true);
-			XmlDocument doc = new XmlDocument();
+			var doc = new XmlDocument();
             doc.Load(Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml");
 			
 			dataSets = new Dictionary<string, Places>();
 
 
             XmlNode root = doc["root"];
-            XmlNode dataSetsNode = root.SelectSingleNode("dataset");
+            var dataSetsNode = root.SelectSingleNode("dataset");
             this.groupingName = dataSetsNode.Attributes["Groups"].InnerXml;
-            DataSetType dst = DataSetType.Place;
+            var dst = DataSetType.Place;
             if (dataSetsNode.Attributes["type"].Value != "place")
             {
                 dst = DataSetType.Imageset;
             }       
             foreach (XmlNode dataset in dataSetsNode.ChildNodes)
             {
-                bool browsable = false;
+                var browsable = false;
                 if (dataset.Attributes["Browseable"] != null)
                 {
                     browsable = Convert.ToBoolean(dataset.Attributes["Browseable"].Value);
                 }
 
-                string thumbnailUrl = "";
+                var thumbnailUrl = "";
                 if (dataset.Attributes["Thumbnail"] != null)
                 {
                     thumbnailUrl = dataset.Attributes["Thumbnail"].Value;
@@ -89,7 +89,7 @@ namespace TerraViewer
 
 
 
-                Places places = new Places(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, sky, thumbnailUrl, browsable, dst);
+                var places = new Places(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, sky, thumbnailUrl, browsable, dst);
                 dataSets.Add(places.Name, places);
             }
  

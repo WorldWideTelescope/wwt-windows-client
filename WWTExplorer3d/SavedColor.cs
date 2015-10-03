@@ -55,9 +55,9 @@ namespace TerraViewer
         {
             byte a, r, g, b;
 
-            string[] pieces = color.Split(new char[] { ':' });
+            var pieces = color.Split(new char[] { ':' });
 
-            ColorFormat colorType = (ColorFormat)
+            var colorType = (ColorFormat)
                 Enum.Parse(typeof(ColorFormat), pieces[0], true);
 
             switch (colorType)

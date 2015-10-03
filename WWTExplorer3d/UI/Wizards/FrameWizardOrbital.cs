@@ -29,7 +29,7 @@ namespace TerraViewer
             this.SemimajorAxisUnitsLabel.Text = Language.GetLocalizedText(814, "Semimajor Axis Units");
             this.PasteFromTle.Text = Language.GetLocalizedText(815, "Paste TLE");
           }
-        ReferenceFrame frame = null;
+        ReferenceFrame frame;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
@@ -37,7 +37,7 @@ namespace TerraViewer
 
         public override bool Save()
         {
-            bool failed = false;
+            var failed = false;
 
             frame.SemiMajorAxis = ParseAndValidateDouble(SemimajorAxis, frame.SemiMajorAxis, ref failed);
             frame.Eccentricity = ParseAndValidateDouble(Eccintricity, frame.Eccentricity, ref failed);
@@ -82,11 +82,11 @@ namespace TerraViewer
         {
             if (Clipboard.ContainsText() && Clipboard.GetText().Length > 0)
             {
-                string data = Clipboard.GetText(TextDataFormat.UnicodeText);
-                string[] lines = data.Split(new char[] {'\n','\r'});
-                string line1 = "";
-                string line2 = "";
-                for (int i = 0; i < lines.Length; i++)
+                var data = Clipboard.GetText(TextDataFormat.UnicodeText);
+                var lines = data.Split(new char[] {'\n','\r'});
+                var line1 = "";
+                var line2 = "";
+                for (var i = 0; i < lines.Length; i++)
                 {
                     lines[i] = lines[i].Trim();
                     if (lines[i].Length == 69 && ReferenceFrame.IsTLECheckSumGood(lines[i]))

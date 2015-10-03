@@ -171,7 +171,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 return 0;
             }
 
-            int thisHeight = comparer.Compare(this.node.Key, other.node.Key);
+            var thisHeight = comparer.Compare(this.node.Key, other.node.Key);
 
             if(thisHeight != 0)
             {
@@ -179,8 +179,8 @@ namespace MicrosoftInternal.AdvancedCollections
             }
 
             thisHeight = 0;
-            TreeDictionary<TKey, TValue>.TreeNode node1 = this.node.Parent;
-            TreeDictionary<TKey, TValue>.TreeNode node2 = this.loopbackNode;
+            var node1 = this.node.Parent;
+            var node2 = this.loopbackNode;
 
             while(node1 != node2)
             {
@@ -189,7 +189,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 node1 = node1.Parent;
             }
 
-            int otherHeight = 0;
+            var otherHeight = 0;
             node1 = other.node.Parent;
             while(node1 != node2)
             {
@@ -200,7 +200,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             node1 = this.node;
             node2 = other.node;
-            int diff = thisHeight - otherHeight;
+            var diff = thisHeight - otherHeight;
 
             TreeDictionary<TKey, TValue>.TreeNode temp1 = null;
             TreeDictionary<TKey, TValue>.TreeNode temp2 = null;
@@ -317,7 +317,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 return 0;
             }
 
-            int thisHeight = comparer.Compare(this.node.Key, other.node.Key);
+            var thisHeight = comparer.Compare(this.node.Key, other.node.Key);
 
             if(thisHeight != 0)
             {
@@ -325,8 +325,8 @@ namespace MicrosoftInternal.AdvancedCollections
             }
 
             thisHeight = 0;
-            TreeDictionary<TKey, TValue>.TreeNode node1 = this.node.Parent;
-            TreeDictionary<TKey, TValue>.TreeNode node2 = this.loopbackNode;
+            var node1 = this.node.Parent;
+            var node2 = this.loopbackNode;
 
             while(node1 != node2)
             {
@@ -335,7 +335,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 node1 = node1.Parent;
             }
 
-            int otherHeight = 0;
+            var otherHeight = 0;
             node1 = other.node.Parent;
             while(node1 != node2)
             {
@@ -346,7 +346,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             node1 = this.node;
             node2 = other.node;
-            int diff = thisHeight - otherHeight;
+            var diff = thisHeight - otherHeight;
 
             TreeDictionary<TKey, TValue>.TreeNode temp1 = null;
             TreeDictionary<TKey, TValue>.TreeNode temp2 = null;
@@ -463,7 +463,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 return 0;
             }
 
-            int thisHeight = comparer.Compare(this.node.Key, other.node.Key);
+            var thisHeight = comparer.Compare(this.node.Key, other.node.Key);
 
             if(thisHeight != 0)
             {
@@ -471,8 +471,8 @@ namespace MicrosoftInternal.AdvancedCollections
             }
 
             thisHeight = 0;
-            TreeDictionary<TKey, TValue>.TreeNode node1 = this.node.Parent;
-            TreeDictionary<TKey, TValue>.TreeNode node2 = this.loopbackNode;
+            var node1 = this.node.Parent;
+            var node2 = this.loopbackNode;
 
             while(node1 != node2)
             {
@@ -481,7 +481,7 @@ namespace MicrosoftInternal.AdvancedCollections
                 node1 = node1.Parent;
             }
 
-            int otherHeight = 0;
+            var otherHeight = 0;
             node1 = other.node.Parent;
             while(node1 != node2)
             {
@@ -492,7 +492,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             node1 = this.node;
             node2 = other.node;
-            int diff = thisHeight - otherHeight;
+            var diff = thisHeight - otherHeight;
 
             TreeDictionary<TKey, TValue>.TreeNode temp1 = null;
             TreeDictionary<TKey, TValue>.TreeNode temp2 = null;
@@ -560,15 +560,15 @@ namespace MicrosoftInternal.AdvancedCollections
                 return false;
             }
 
-            TreeDictionaryKeyValuePairEnumerator<TKey, TValue> otherKeyValuePair = obj as TreeDictionaryKeyValuePairEnumerator<TKey, TValue>;
+            var otherKeyValuePair = obj as TreeDictionaryKeyValuePairEnumerator<TKey, TValue>;
             if(otherKeyValuePair != null)
                 return this.Equals(otherKeyValuePair);
 
-            TreeDictionaryKeyEnumerator<TKey, TValue> otherKey = obj as TreeDictionaryKeyEnumerator<TKey, TValue>;
+            var otherKey = obj as TreeDictionaryKeyEnumerator<TKey, TValue>;
             if(otherKey != null)
                 return this.Equals(otherKey);
 
-            TreeDictionaryValueEnumerator<TKey, TValue> otherValue = obj as TreeDictionaryValueEnumerator<TKey, TValue>;
+            var otherValue = obj as TreeDictionaryValueEnumerator<TKey, TValue>;
             if(otherValue != null)
                 return this.Equals(otherValue);
 
@@ -754,8 +754,8 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public bool MoveNext()
         {
-            TreeDictionary<TKey, TValue>.TreeNode currentNode = node;
-            TreeDictionary<TKey, TValue>.TreeNode localLoopbackNode = loopbackNode;
+            var currentNode = node;
+            var localLoopbackNode = loopbackNode;
             TreeDictionary<TKey, TValue>.TreeNode nextNode;
 
             // if this node has been set to null, then it has been deleted
@@ -939,7 +939,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         private bool HandleStatus()
         {
-            uint status = statusBits;
+            var status = statusBits;
             TreeDictionary<TKey, TValue>.TreeNode currentNode;
             if(!isGoingDown)
             {

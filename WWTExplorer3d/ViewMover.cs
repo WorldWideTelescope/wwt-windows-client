@@ -62,9 +62,9 @@ namespace TerraViewer
         }
         public string ToToken()
         {
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
-            BinaryWriter bw = new BinaryWriter(ms);
+            var bw = new BinaryWriter(ms);
 
             bw.Write(Lat);
             bw.Write(Lng);
@@ -81,15 +81,15 @@ namespace TerraViewer
             bw.Write((float)DomeAz);
             bw.Close();
 
-            Byte[] data = ms.ToArray();
-            StringBuilder sb = new StringBuilder();
+            var data = ms.ToArray();
+            var sb = new StringBuilder();
 
-            foreach (byte b in data)
+            foreach (var b in data)
             {
                 sb.Append(b.ToString("X2"));
             }
 
-            string token = sb.ToString();
+            var token = sb.ToString();
 
             token = token.Replace("00000000", "G");
             token = token.Replace("0000000", "H");
@@ -105,7 +105,7 @@ namespace TerraViewer
 
         public static CameraParameters FromToken(string token)
         {
-            CameraParameters cam = new CameraParameters();
+            var cam = new CameraParameters();
 
             token = token.Replace("G", "00000000");
             token = token.Replace("H", "0000000");
@@ -117,13 +117,13 @@ namespace TerraViewer
 
             try
             {
-                byte[] data = new byte[token.Length / 2];
-                for (int i = 0; i < token.Length; i += 2)
+                var data = new byte[token.Length / 2];
+                for (var i = 0; i < token.Length; i += 2)
                 {
                     data[i/2] = byte.Parse(token.Substring(i, 2), System.Globalization.NumberStyles.HexNumber);
                 }
-                MemoryStream ms = new MemoryStream(data);
-                BinaryReader br = new BinaryReader(ms);
+                var ms = new MemoryStream(data);
+                var br = new BinaryReader(ms);
                 cam.Lat = br.ReadDouble();
                 cam.Lng = br.ReadDouble();
                 cam.Zoom = br.ReadDouble();
@@ -154,10 +154,10 @@ namespace TerraViewer
 
         public static CameraParameters Interpolate(CameraParameters from, CameraParameters to, double alphaIn, InterpolationType type, bool fastDirectionMove)
         {
-            CameraParameters result = new CameraParameters();
-            double alpha = EaseCurve(alphaIn, type);
-            double alphaBIn = Math.Min(1.0, alphaIn * 2);
-            double alphaB = EaseCurve(alphaBIn, type);
+            var result = new CameraParameters();
+            var alpha = EaseCurve(alphaIn, type);
+            var alphaBIn = Math.Min(1.0, alphaIn * 2);
+            var alphaB = EaseCurve(alphaBIn, type);
             result.Angle = to.Angle * alpha + from.Angle * (1.0 - alpha);
             result.Rotation = to.Rotation * alpha + from.Rotation * (1.0 - alpha);
             if (fastDirectionMove)
@@ -192,19 +192,19 @@ namespace TerraViewer
 
         public static CameraParameters InterpolateGreatCircle(CameraParameters from, CameraParameters to, double alphaIn, InterpolationType type)
         {
-            CameraParameters result = new CameraParameters();
-            double alpha = EaseCurve(alphaIn, type);
-            double alphaBIn = Math.Min(1.0, alphaIn * 2);
-            double alphaB = EaseCurve(alphaBIn, type);
+            var result = new CameraParameters();
+            var alpha = EaseCurve(alphaIn, type);
+            var alphaBIn = Math.Min(1.0, alphaIn * 2);
+            var alphaB = EaseCurve(alphaBIn, type);
             result.Angle = to.Angle * alpha + from.Angle * (1.0 - alpha);
             result.Rotation = to.Rotation * alpha + from.Rotation * (1.0 - alpha);
 
-            Vector3d left = Coordinates.GeoTo3dDouble(from.Lat, from.Lng);
-            Vector3d right = Coordinates.GeoTo3dDouble(to.Lat, to.Lng);
+            var left = Coordinates.GeoTo3dDouble(from.Lat, from.Lng);
+            var right = Coordinates.GeoTo3dDouble(to.Lat, to.Lng);
 
-            Vector3d mid = Vector3d.Slerp(left, right, alpha);
+            var mid = Vector3d.Slerp(left, right, alpha);
 
-            Vector2d midV2 = Coordinates.CartesianToLatLng(mid);
+            var midV2 = Coordinates.CartesianToLatLng(mid);
 
             result.Lat = midV2.Y;
             result.Lng = midV2.X;
@@ -273,7 +273,7 @@ namespace TerraViewer
         {
             if (obj is CameraParameters)
             {
-                CameraParameters cam = (CameraParameters)obj;
+                var cam = (CameraParameters)obj;
 
                 if (Math.Abs(cam.Angle - this.Angle) > .01 || Math.Abs(cam.Lat - this.Lat) > (cam.Zoom /10000) || Math.Abs(cam.Lng -this.Lng) > (cam.Zoom /10000) || Math.Abs(cam.Rotation -this.Rotation) > .1 || Math.Abs(cam.Zoom - this.Zoom) > (Math.Abs(cam.Zoom - this.Zoom)/1000) || cam.TargetReferenceFrame != this.TargetReferenceFrame || cam.DomeAlt != this.DomeAlt || cam.DomeAz != this.DomeAlt )
                 {
@@ -288,7 +288,7 @@ namespace TerraViewer
         }
         public int GetFuzzyHash(double hashinput, int mult)
         {
-                int h = (int)(hashinput * mult);
+                var h = (int)(hashinput * mult);
                 return h.GetHashCode();   
         }  
         
@@ -324,13 +324,13 @@ namespace TerraViewer
         public InterpolationType InterpolationType = InterpolationType.Linear;
         
         public bool FastDirectionMove = false;
-        CameraParameters from;
-        CameraParameters to;
+        readonly CameraParameters from;
+        readonly CameraParameters to;
 
         DateTime fromDateTime;
         DateTime toDateTime;
         Int64 fromTime;
-        double toTargetTime = 0;
+        readonly double toTargetTime;
         TimeSpan dateTimeSpan;
         public ViewMoverKenBurnsStyle(CameraParameters from, CameraParameters to, double time, DateTime fromDateTime, DateTime toDateTime, InterpolationType type)
         {
@@ -358,8 +358,8 @@ namespace TerraViewer
             toTargetTime = time;
 
         }
-        bool complete = false;
-        bool midpointFired = false;
+        bool complete;
+        bool midpointFired;
         public bool Complete
         {
             get
@@ -374,10 +374,10 @@ namespace TerraViewer
         {
             get
             {
-                Int64 elapsed = SpaceTimeController.MetaNowTickCount - fromTime;
-                double elapsedSeconds = ((double)elapsed) / HiResTimer.Frequency;
+                var elapsed = SpaceTimeController.MetaNowTickCount - fromTime;
+                var elapsedSeconds = ((double)elapsed) / HiResTimer.Frequency;
 
-                double alpha = elapsedSeconds / (toTargetTime );
+                var alpha = elapsedSeconds / (toTargetTime );
 
                 if (!midpointFired && alpha >= .5)
                 {
@@ -412,17 +412,17 @@ namespace TerraViewer
         {
             get
             {
-                Int64 elapsed = SpaceTimeController.MetaNowTickCount - fromTime;
+                var elapsed = SpaceTimeController.MetaNowTickCount - fromTime;
                 if (elapsed < 0)
                 {
                     fromTime = SpaceTimeController.MetaNowTickCount;
                     elapsed = 1;
                 }
-                double elapsedSeconds = ((double)elapsed) / HiResTimer.Frequency;
+                var elapsedSeconds = ((double)elapsed) / HiResTimer.Frequency;
 
-                double alpha = elapsedSeconds / (toTargetTime > 0 ? toTargetTime : .00001);
+                var alpha = elapsedSeconds / (toTargetTime > 0 ? toTargetTime : .00001);
 
-                double delta = dateTimeSpan.TotalSeconds * alpha;
+                var delta = dateTimeSpan.TotalSeconds * alpha;
 
                 return fromDateTime.AddSeconds(delta);
             }
@@ -458,11 +458,11 @@ namespace TerraViewer
         CameraParameters to;
         CameraParameters toTop;
         Int64 fromTime;
-        double upTargetTime = 0;
-        double downTargetTime = 0;
-        double toTargetTime = 0;
-        double upTimeFactor = .6;
-        double downTimeFactor = .6;
+        double upTargetTime;
+        double downTargetTime;
+        double toTargetTime;
+        readonly double upTimeFactor = .6;
+        readonly double downTimeFactor = .6;
         double travelTimeFactor = 7.0;
         public ViewMoverSlew(CameraParameters from, CameraParameters to)
         {
@@ -500,12 +500,12 @@ namespace TerraViewer
             this.from = from;
             this.to = to;
             fromTime = SpaceTimeController.MetaNowTickCount;
-            double zoomUpTarget = 360.0;
+            var zoomUpTarget = 360.0;
             double travelTime;
 
-            double lngDist = Math.Abs(from.Lng - to.Lng);
-            double latDist = Math.Abs(from.Lat - to.Lat);
-            double distance = Math.Sqrt(latDist * latDist + lngDist * lngDist);
+            var lngDist = Math.Abs(from.Lng - to.Lng);
+            var latDist = Math.Abs(from.Lat - to.Lat);
+            var distance = Math.Sqrt(latDist * latDist + lngDist * lngDist);
 
             if (Earth3d.MainWindow.Space)
             {
@@ -534,13 +534,13 @@ namespace TerraViewer
             {
                 travelTime = (distance / 180.0) * (75 / zoomUpTarget) * travelTimeFactor;
             }
-            double rotateTime = Math.Max(Math.Abs(from.Angle - to.Angle), Math.Abs(from.Rotation - to.Rotation)) ;
+            var rotateTime = Math.Max(Math.Abs(from.Angle - to.Angle), Math.Abs(from.Rotation - to.Rotation)) ;
 
 
-            double logDistUp = Math.Max(Math.Abs(Math.Log(zoomUpTarget, 2) - Math.Log(from.Zoom, 2)), rotateTime);
+            var logDistUp = Math.Max(Math.Abs(Math.Log(zoomUpTarget, 2) - Math.Log(from.Zoom, 2)), rotateTime);
             upTargetTime = upTimeFactor * logDistUp;
             downTargetTime = upTargetTime + travelTime;
-            double logDistDown = Math.Abs(Math.Log(zoomUpTarget, 2) - Math.Log(to.Zoom, 2));
+            var logDistDown = Math.Abs(Math.Log(zoomUpTarget, 2) - Math.Log(to.Zoom, 2));
             toTargetTime = downTargetTime + Math.Max((downTimeFactor * logDistDown),rotateTime);
 
             fromTop = from;
@@ -558,8 +558,8 @@ namespace TerraViewer
             toTop.DomeAz = fromTop.DomeAz;
         }
 
-        bool midpointFired = false;
-        bool complete = false;
+        bool midpointFired;
+        bool complete;
         public bool Complete
         {
             get
@@ -574,8 +574,8 @@ namespace TerraViewer
         {
             get
             {
-                Int64 elapsed = SpaceTimeController.MetaNowTickCount - fromTime;
-                double elapsedSeconds = ((double)elapsed) / HiResTimer.Frequency;
+                var elapsed = SpaceTimeController.MetaNowTickCount - fromTime;
+                var elapsedSeconds = ((double)elapsed) / HiResTimer.Frequency;
 
                 if (elapsedSeconds < upTargetTime)
                 {
@@ -608,7 +608,7 @@ namespace TerraViewer
                     }
                     elapsedSeconds -= downTargetTime;
                     // Interpolate log from toTop and to
-                    double alpha = elapsedSeconds / (toTargetTime - downTargetTime);
+                    var alpha = elapsedSeconds / (toTargetTime - downTargetTime);
                     if (alpha > 1.0)
                     {
                         alpha = 1.0;
@@ -651,11 +651,11 @@ namespace TerraViewer
 
     public class KeyframeMover : IViewMover, IAnimatable
     {
-        CameraParameters currentCamera = new CameraParameters();
+        CameraParameters currentCamera;
         double jDate = 1;
         double durration = 10;
 
-        bool complete = false;
+        bool complete;
 
         public string ReferenceFrame
         {
@@ -686,20 +686,20 @@ namespace TerraViewer
                 currentCamera = value;
             }
         }
-        static CAADate converter = new CAADate();
+        static readonly CAADate converter = new CAADate();
         public DateTime CurrentDateTime
         {
             get
             {
                 converter.Set(jDate, true);
-                int Year = 0;
-                int Month = 0;
-                int Day = 0;
-                int Hour = 0;
-                int Minute = 0;
+                var Year = 0;
+                var Month = 0;
+                var Day = 0;
+                var Hour = 0;
+                var Minute = 0;
                 double Second = 0;
                 converter.Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
-                int Ms = ((int)(Second * 1000)) % 1000;
+                var Ms = ((int)(Second * 1000)) % 1000;
                 return new DateTime(Year, Month, Day, Hour, Minute, (int)Second, Ms);
             }
             set
@@ -726,7 +726,7 @@ namespace TerraViewer
         {
             currentCamera = Earth3d.MainWindow.viewCamera;
             jDate = SpaceTimeController.JNow;
-            double[] paramList = new double[13];
+            var paramList = new double[13];
             paramList[0] = jDate;     
             paramList[1] = currentCamera.Lat;
             paramList[2] = currentCamera.Lng;

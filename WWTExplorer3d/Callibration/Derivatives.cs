@@ -77,7 +77,7 @@ namespace Solver
         {
             Debug.Assert(points.Length == _coefficients.Length);
             Debug.Assert(order < _coefficients.Length);
-            double result = _coefficients.Select((t, i) => _coefficients[variablePosition][order, i]*points[i]).Sum();
+            var result = _coefficients.Select((t, i) => _coefficients[variablePosition][order, i]*points[i]).Sum();
             result /= Math.Pow(step, order);
             return result;
         }
@@ -120,26 +120,26 @@ namespace Solver
                     points[i] = currentFunctionValue;
                 }
             }
-            double result = ComputeDerivative(points, order, centerPoint, derivativeStepSize);
+            var result = ComputeDerivative(points, order, centerPoint, derivativeStepSize);
             parameter.Value = originalValue;
             return result;
         }
 
         public double[] ComputePartialDerivatives(functionDelegate function, Parameter parameter, int[] derivativeOrders)
         {
-            int numberOfPoints = _coefficients.Length;
+            var numberOfPoints = _coefficients.Length;
             var result = new double[derivativeOrders.Length];
             double originalValue = parameter;
             var points = new double[numberOfPoints];
-            double derivativeStepSize = parameter.DerivativeStepSize;
-            int centerPoint = (numberOfPoints - 1) / 2;
+            var derivativeStepSize = parameter.DerivativeStepSize;
+            var centerPoint = (numberOfPoints - 1) / 2;
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 parameter.Value = originalValue + (i - centerPoint) * derivativeStepSize;
                 points[i] = function();
             }
-            for (int i = 0; i < derivativeOrders.Length; i++)
+            for (var i = 0; i < derivativeOrders.Length; i++)
             {
                 result[i] = ComputeDerivative(points, derivativeOrders[i], centerPoint, derivativeStepSize);
             }
@@ -149,14 +149,14 @@ namespace Solver
 
         public double[] ComputePartialDerivatives(functionDelegate function, Parameter parameter, int[] derivativeOrders, double currentFunctionValue)
         {
-            int numberOfPoints = _coefficients.Length;
+            var numberOfPoints = _coefficients.Length;
             var result = new double[derivativeOrders.Length];
             double originalValue = parameter;
             var points = new double[numberOfPoints];
-            double derivativeStepSize = parameter.DerivativeStepSize;
-            int centerPoint = (numberOfPoints - 1) / 2;
+            var derivativeStepSize = parameter.DerivativeStepSize;
+            var centerPoint = (numberOfPoints - 1) / 2;
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 if (i != centerPoint)
                 {
@@ -168,7 +168,7 @@ namespace Solver
                     points[i] = currentFunctionValue;
                 }
             }
-            for (int i = 0; i < derivativeOrders.Length; i++)
+            for (var i = 0; i < derivativeOrders.Length; i++)
             {
                 result[i] = ComputeDerivative(points, derivativeOrders[i], centerPoint, derivativeStepSize);
             }

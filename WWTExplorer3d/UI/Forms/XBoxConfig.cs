@@ -54,10 +54,10 @@ namespace TerraViewer
             {
 
 
-                for (int i = 0; i < 7; i++)
+                for (var i = 0; i < 7; i++)
                 {
 
-                    XboxMap map = new XboxMap();
+                    var map = new XboxMap();
                     map.ControlMaps = MakeControlGroups();
                     if (i < 5)
                     {
@@ -79,7 +79,7 @@ namespace TerraViewer
         }
 
 
-        static XBoxConfig master = null;
+        static XBoxConfig master;
 
         public static void ShowSetupWindow()
         {
@@ -117,7 +117,7 @@ namespace TerraViewer
 
         public static bool DispatchXboxEvent(XboxButtons id, double value)
         {
-            int mode = (int)Earth3d.MainWindow.CurrentImageSet.DataSetType;
+            var mode = (int)Earth3d.MainWindow.CurrentImageSet.DataSetType;
 
             if (Earth3d.MainWindow.CurrentImageSet.DataSetType == ImageSetType.Sky && Properties.Settings.Default.LocalHorizonMode)
             {
@@ -130,7 +130,7 @@ namespace TerraViewer
                 mode = 6;
             }
 
-            ControlMap map = xboxMaps[mode].ControlMaps[(int)id];
+            var map = xboxMaps[mode].ControlMaps[(int)id];
 
             map.BindingA.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, value * 127);
 
@@ -150,19 +150,19 @@ namespace TerraViewer
 
         private void UpdatePropertyCombo()
         {
-            BindingTargetType tt = (BindingTargetType)TargetTypeCombo.SelectedIndex;
+            var tt = (BindingTargetType)TargetTypeCombo.SelectedIndex;
 
             TargetPropertyCombo.Items.Clear();
             TargetPropertyCombo.ClearText();
             filterLabel.Visible = false;
             filterList.Visible = false;
-            ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+            var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
 
             binding.TargetType = tt;
 
             IScriptable scriptInterface = null;
-            bool comboVisible = true;
+            var comboVisible = true;
             switch (tt)
             {
                 case BindingTargetType.Setting:
@@ -239,7 +239,7 @@ namespace TerraViewer
             {
                 return;
             }
-            ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+            var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
             binding.BindingType = (BindingType)BindTypeCombo.SelectedIndex;
             UpdatePropertyCombo();
@@ -256,8 +256,8 @@ namespace TerraViewer
             filterLabel.Visible = false;
             filterList.Visible = false;
 
-            ScriptableProperty prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
-            ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+            var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
+            var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
             if (prop != null)
             {
@@ -271,9 +271,9 @@ namespace TerraViewer
                     filterLabel.Visible = true;
                     filterList.Visible = true;
                     filterList.Items.Clear();
-                    int index = 0;
-                    int selectedIndex = 0;
-                    foreach (string name in ConstellationFilter.Families.Keys)
+                    var index = 0;
+                    var selectedIndex = 0;
+                    foreach (var name in ConstellationFilter.Families.Keys)
                     {
                         filterList.Items.Add(name);
                         if (name == binding.Value)
@@ -305,7 +305,7 @@ namespace TerraViewer
             {
                 return;
             }
-            ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+            var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
             binding.PropertyName = PropertyNameText.Text;
         }
 
@@ -325,11 +325,11 @@ namespace TerraViewer
 
         static  List<ControlMap> MakeControlGroups()
         {
-            List<ControlMap> maps = new List<ControlMap>();
+            var maps = new List<ControlMap>();
 
             foreach (XboxButtons button in Enum.GetValues(typeof(XboxButtons)))
             {
-                ControlMap map = new ControlMap();
+                var map = new ControlMap();
                 map.Name = Enum.GetName(typeof(XboxButtons), button);
                 map.ID = -1;
 
@@ -373,7 +373,7 @@ namespace TerraViewer
             return maps;
         }
 
-        int selectedMode = 0;
+        int selectedMode;
 
         void SetupMapList()
         {
@@ -394,9 +394,9 @@ namespace TerraViewer
             MapsView.BeginUpdate();
             MapsView.Items.Clear();
             ignoreChanges++;
-            foreach (ControlMap cm in xboxMaps[selectedMode].ControlMaps)
+            foreach (var cm in xboxMaps[selectedMode].ControlMaps)
             {
-                ListViewItem item = new ListViewItem(cm.Name);
+                var item = new ListViewItem(cm.Name);
                 item.Tag = cm.BindingA;
                 cm.BindingA.Parent = cm;
                 item.SubItems.Add(cm.BindingA.ToString());
@@ -422,7 +422,7 @@ namespace TerraViewer
         {
             if (Properties.Settings.Default.XboxCustomMapping && MapsView.SelectedItems.Count > 0)
             {
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
                 MapsView.EndUpdate();
 
@@ -511,9 +511,9 @@ namespace TerraViewer
         }
 
 
-        Point pnt1 = new Point();
-        Point pnt2 = new Point();
-        bool mouseDown = false;
+        Point pnt1;
+        Point pnt2;
+        bool mouseDown;
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             pnt1 = e.Location;
@@ -541,7 +541,7 @@ namespace TerraViewer
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
 
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
@@ -574,7 +574,7 @@ namespace TerraViewer
         {
             if (MapsView.SelectedIndices.Count > 0)
             {
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
                 binding.Parent.AutoRepeat = RepeatCheckbox.Checked;
                 MapsView.SelectedItems[0].SubItems[2].Text = binding.Parent.AutoRepeat ? "Repeat" : "Once";
                 SetDirty();
@@ -602,7 +602,7 @@ namespace TerraViewer
                 Directory.CreateDirectory(XboxMapPath);
             }
 
-            foreach (string filename in Directory.GetFiles(XboxMapPath, "*.wwtxm"))
+            foreach (var filename in Directory.GetFiles(XboxMapPath, "*.wwtxm"))
             {
                 LoadMap(filename, false);
             }
@@ -610,10 +610,10 @@ namespace TerraViewer
 
         public static XboxMap LoadMap(string filename, bool update)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(XboxMap));
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            var serializer = new XmlSerializer(typeof(XboxMap));
+            var fs = new FileStream(filename, FileMode.Open);
 
-            XboxMap map = (XboxMap)serializer.Deserialize(fs);
+            var map = (XboxMap)serializer.Deserialize(fs);
 
             
             map.Dirty = true;
@@ -627,8 +627,8 @@ namespace TerraViewer
 
         public static void SaveMap(XboxMap map, string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(XboxMap));
-            StreamWriter sw = new StreamWriter(filename);
+            var serializer = new XmlSerializer(typeof(XboxMap));
+            var sw = new StreamWriter(filename);
 
             serializer.Serialize(sw, map);
 
@@ -638,7 +638,7 @@ namespace TerraViewer
         private static bool LoadMapPack()
         {
 
-            string filename = XboxMapPath + "XboxMapPack.wwtxmaps";
+            var filename = XboxMapPath + "XboxMapPack.wwtxmaps";
 
             if (!File.Exists(filename))
             {
@@ -661,16 +661,16 @@ namespace TerraViewer
 
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(XboxMapPack));
-                FileStream fs = new FileStream(filename, FileMode.Open);
+                var serializer = new XmlSerializer(typeof(XboxMapPack));
+                var fs = new FileStream(filename, FileMode.Open);
 
-                XboxMapPack maps = (XboxMapPack)serializer.Deserialize(fs);
+                var maps = (XboxMapPack)serializer.Deserialize(fs);
 
                 xboxMaps = maps.Maps;
 
                 fs.Close();
 
-                foreach (XboxMap map in maps.Maps)
+                foreach (var map in maps.Maps)
                 {
                     map.UpdateMapLinks();
                 }
@@ -685,9 +685,9 @@ namespace TerraViewer
 
         public static void SaveMapPack( string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(XboxMapPack));
-            StreamWriter sw = new StreamWriter(filename);
-            XboxMapPack mapPack = new XboxMapPack();
+            var serializer = new XmlSerializer(typeof(XboxMapPack));
+            var sw = new StreamWriter(filename);
+            var mapPack = new XboxMapPack();
 
             mapPack.Maps = xboxMaps;
 
@@ -706,9 +706,9 @@ namespace TerraViewer
                 Directory.CreateDirectory(XboxMapPath);
             }
 
-            bool dirty = false;
+            var dirty = false;
 
-            foreach (XboxMap map in xboxMaps)
+            foreach (var map in xboxMaps)
             {
                 if (map.Dirty)
                 {
@@ -730,7 +730,7 @@ namespace TerraViewer
         {
             if (selectedMode > -1)
             {
-                OpenFileDialog ofd = new OpenFileDialog();
+                var ofd = new OpenFileDialog();
 
                 ofd.Filter = "WWT XBox 360 Controller Map (*.wwtxm)|*.wwtxm";
 
@@ -754,9 +754,9 @@ namespace TerraViewer
         {
             if (selectedMode > -1)
             {
-                string name = xboxMaps[selectedMode].Name;
+                var name = xboxMaps[selectedMode].Name;
 
-                SaveFileDialog sfd = new SaveFileDialog();
+                var sfd = new SaveFileDialog();
 
                 sfd.Filter =  "WWT Xbox 360 Controller Map (*.wwtxm)|*.wwtxm";
 
@@ -770,8 +770,8 @@ namespace TerraViewer
 
         private void filterList_SelectionChanged(object sender, EventArgs e)
         {
-            ScriptableProperty prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
-            ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+            var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
+            var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
             if (prop != null)
             {

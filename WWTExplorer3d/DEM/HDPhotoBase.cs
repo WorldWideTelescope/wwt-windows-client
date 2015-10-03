@@ -217,7 +217,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			[- - - -] <-> [- - - -] */
 		protected static void StrDCT2x2dn(ref int a, ref int b, ref int c, ref int d)
 		{
-			int C = c;
+			var C = c;
 
 			a += d;
 			b -= C;
@@ -230,7 +230,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 		protected static void StrDCT2x2up(ref int a, ref int b, ref int c, ref int d)
 		{
-			int C = c;
+			var C = c;
 
 			a += d;
 			b -= C;

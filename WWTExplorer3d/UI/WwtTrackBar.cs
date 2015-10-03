@@ -12,13 +12,13 @@ namespace TerraViewer
     public partial class WwtTrackBar : UserControl
     {
         public event EventHandler ValueChanged;
-        Bitmap bmpTrackBarGripperNormal = Properties.Resources.trackbar_gripper_normal;
-        Bitmap bmpTrackBarGripperHover = Properties.Resources.trackbar_gripper_hover;
-        Bitmap bmpTrackBarGripperDisabled = Properties.Resources.trackbar_gripper_disabled;
-        Bitmap bmpTrackBarGripperPressed = Properties.Resources.trackbar_gripper_pressed;
-        Bitmap bmpTrackBarTrackNormal = Properties.Resources.trackbar_track_normal;
-        Bitmap bmpTrackBarTrackDisabled = Properties.Resources.trackbar_track_disabled;
-        Bitmap bmpTrackbarSelectionNormal = Properties.Resources.trackbar_selection_normal;
+        readonly Bitmap bmpTrackBarGripperNormal = Properties.Resources.trackbar_gripper_normal;
+        readonly Bitmap bmpTrackBarGripperHover = Properties.Resources.trackbar_gripper_hover;
+        readonly Bitmap bmpTrackBarGripperDisabled = Properties.Resources.trackbar_gripper_disabled;
+        readonly Bitmap bmpTrackBarGripperPressed = Properties.Resources.trackbar_gripper_pressed;
+        readonly Bitmap bmpTrackBarTrackNormal = Properties.Resources.trackbar_track_normal;
+        readonly Bitmap bmpTrackBarTrackDisabled = Properties.Resources.trackbar_track_disabled;
+        readonly Bitmap bmpTrackbarSelectionNormal = Properties.Resources.trackbar_selection_normal;
         public WwtTrackBar()
         {
             InitializeComponent();
@@ -55,7 +55,7 @@ namespace TerraViewer
 
         private void WwtTrackBar_Paint(object sender, PaintEventArgs e)
         {
-            int val = value * 60 / max + 10;
+            var val = value * 60 / max + 10;
 
             if (Enabled)
             {
@@ -87,7 +87,7 @@ namespace TerraViewer
             
 
         }
-        bool mouseDown = false;
+        bool mouseDown;
         private void WwtTrackBar_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
@@ -105,7 +105,7 @@ namespace TerraViewer
 
         private void UpdateTrackbar(MouseEventArgs e)
         {
-            int newVal = Math.Max(0, Math.Min((e.X - 10) * max / 60, max));
+            var newVal = Math.Max(0, Math.Min((e.X - 10) * max / 60, max));
             if (newVal != value)
             {
                 value = newVal;
@@ -125,7 +125,7 @@ namespace TerraViewer
                 ValueChanged.Invoke(this, new ScrollEventArgs(ScrollEventType.EndScroll, value));
             }
         }
-        bool hover = false;
+        bool hover;
         private void WwtTrackBar_MouseEnter(object sender, EventArgs e)
         {
             hover = true;

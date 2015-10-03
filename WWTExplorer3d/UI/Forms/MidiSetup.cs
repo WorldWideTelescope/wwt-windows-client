@@ -83,10 +83,10 @@ namespace TerraViewer
         private void UpdateDeviceListLocal()
         {
             //bool itemFound = false;
-            MidiMap device = DeviceList.SelectedItem as MidiMap;
+            var device = DeviceList.SelectedItem as MidiMap;
             DeviceList.BeginUpdate();
             DeviceList.Items.Clear();
-            foreach (MidiMap map in MidiMapManager.Maps.Values)
+            foreach (var map in MidiMapManager.Maps.Values)
             {
                 DeviceList.Items.Add(map);
             }
@@ -116,9 +116,9 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
                 TargetTypeCombo.Items.Clear();
                 TargetTypeCombo.Items.AddRange(UiTools.GetBindingTargetTypeList());
@@ -159,15 +159,15 @@ namespace TerraViewer
             LoadControlMaps();
             if (DeviceList.SelectedIndex > -1)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
                 SetDeviceImage(midiMap.DeviceImageUrl);
             }
         }
 
         private void SetDeviceImage(string url)
         {
-            string downloadPath = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\";
-            string downloadName = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\" + Math.Abs(url.GetHashCode32()).ToString() + ".png";
+            var downloadPath = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\";
+            var downloadName = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\" + Math.Abs(url.GetHashCode32()).ToString() + ".png";
 
             if (!Directory.Exists(downloadPath))
             {
@@ -186,12 +186,12 @@ namespace TerraViewer
 
         private void LoadControlMaps()
         {
-            MidiMap map = (MidiMap)DeviceList.SelectedItem;
+            var map = (MidiMap)DeviceList.SelectedItem;
             MapsView.BeginUpdate();
             MapsView.Items.Clear();
-            foreach (ControlMap cm in map.ControlMaps)
+            foreach (var cm in map.ControlMaps)
             {
-                ListViewItem item = new ListViewItem(cm.Name);
+                var item = new ListViewItem(cm.Name);
                 item.Tag = cm.BindingA;
                 cm.BindingA.Parent = cm;
                 item.SubItems.Add(cm.Channel.ToString());
@@ -219,13 +219,13 @@ namespace TerraViewer
 
         private void Load_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            var ofd = new OpenFileDialog();
 
             ofd.Filter = Language.GetLocalizedText(1170, "WWT MIDI Controller Map (*.wwtmm)|*.wwtmm");
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                string fileName = ofd.FileName;
+                var fileName = ofd.FileName;
                 try
                 {
                     MidiMapManager.LoadMap(fileName, true);
@@ -247,10 +247,10 @@ namespace TerraViewer
                 return;
             }
 
-            string device = DeviceList.SelectedItem.ToString();
-            MidiMap map = (MidiMap)DeviceList.SelectedItem;
+            var device = DeviceList.SelectedItem.ToString();
+            var map = (MidiMap)DeviceList.SelectedItem;
 
-            SaveFileDialog sfd = new SaveFileDialog();
+            var sfd = new SaveFileDialog();
 
             sfd.Filter = Language.GetLocalizedText(1170, "WWT MIDI Controller Map (*.wwtmm)|*.wwtmm");
 
@@ -273,7 +273,7 @@ namespace TerraViewer
 
         private void MapsView_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            ControlMap cm = ((ControlBinding)MapsView.SelectedItems[0].Tag).Parent;
+            var cm = ((ControlBinding)MapsView.SelectedItems[0].Tag).Parent;
 
             if (!string.IsNullOrEmpty(e.Label))
             {
@@ -291,7 +291,7 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedItem != null)
             {
-                NewBinding nb = new NewBinding();
+                var nb = new NewBinding();
 
                 nb.MidiMap = (MidiMap)DeviceList.SelectedItem;
                 nb.ControlMap = new ControlMap();
@@ -323,7 +323,7 @@ namespace TerraViewer
        
         private void UpdateSelectedControlMap()
         {
-            MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+            var midiMap = (MidiMap)DeviceList.SelectedItem;
             midiMap.Dirty = true;
         }
 
@@ -336,7 +336,7 @@ namespace TerraViewer
 
         private void UpdatePropertyCombo()
         {
-            BindingTargetType tt = (BindingTargetType)TargetTypeCombo.SelectedIndex;
+            var tt = (BindingTargetType)TargetTypeCombo.SelectedIndex;
 
             TargetPropertyCombo.Items.Clear();
             TargetPropertyCombo.ClearText();
@@ -344,14 +344,14 @@ namespace TerraViewer
             filterList.Visible = false;
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
                 binding.TargetType = tt;
 
                 IScriptable scriptInterface = null;
-                bool comboVisible = true;
+                var comboVisible = true;
                 switch (tt)
                 {
                     case BindingTargetType.Setting:
@@ -434,9 +434,9 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
 
                 binding.PropertyName = PropertyNameText.Text;
@@ -450,11 +450,11 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
-                ScriptableProperty prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
+                var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
 
                 filterLabel.Visible = false;
                 filterList.Visible = false;
@@ -471,9 +471,9 @@ namespace TerraViewer
                         filterLabel.Visible = true;
                         filterList.Visible = true;
                         filterList.Items.Clear();
-                        int index = 0;
-                        int selectedIndex = 0;
-                        foreach (string name in ConstellationFilter.Families.Keys)
+                        var index = 0;
+                        var selectedIndex = 0;
+                        foreach (var name in ConstellationFilter.Families.Keys)
                         {
                             filterList.Items.Add(name);
                             if (name == binding.Value)
@@ -500,9 +500,9 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
                 binding.BindingType = (BindingType)BindTypeCombo.SelectedIndex;
                 UpdatePropertyCombo();
@@ -516,9 +516,9 @@ namespace TerraViewer
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(1171, "This will remove this control map. Are you sure you want to do this?"), Language.GetLocalizedText(1172, "Remove Control Map"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
 
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
                 midiMap.ControlMaps.Remove(binding.Parent);
                 LoadControlMaps();
@@ -531,9 +531,9 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
                 binding.Parent.AutoRepeat = RepeatCheckbox.Checked;
             }
         }
@@ -542,8 +542,8 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 )
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
-                ControllerProperties props = new ControllerProperties();
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
+                var props = new ControllerProperties();
                 props.DeviceMap = midiMap;
                 if (props.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -559,23 +559,23 @@ namespace TerraViewer
         }
 
         // These are used for mapping display of button & sliders on the device images.
-        bool ImageLoaded = false;
+        bool ImageLoaded;
 
         float WidthFactor = 1;
         float HeightFactor = 1;
 
-        int OffsetX = 0;
-        int OffsetY = 0;
+        int OffsetX;
+        int OffsetY;
 
         private PointF ControlToImage(Point pntIN)
         {
-            PointF pntOut = new PointF((pntIN.X - OffsetX) * WidthFactor, (pntIN.Y - OffsetY) * HeightFactor);
+            var pntOut = new PointF((pntIN.X - OffsetX) * WidthFactor, (pntIN.Y - OffsetY) * HeightFactor);
             return pntOut;
         }
 
         private Point ImageToControl(PointF pntIn)
         {
-            Point pntOut = new Point((int)(pntIn.X / WidthFactor + OffsetX), (int)(pntIn.Y / HeightFactor + OffsetY));
+            var pntOut = new Point((int)(pntIn.X / WidthFactor + OffsetX), (int)(pntIn.Y / HeightFactor + OffsetY));
             return pntOut;
         }
 
@@ -608,7 +608,7 @@ namespace TerraViewer
                 {
                     WidthFactor = DeviceImage.Width / (float)DeviceImage.Image.Width;
                     HeightFactor = WidthFactor;
-                    float scaledHeight = DeviceImage.Image.Height * HeightFactor;
+                    var scaledHeight = DeviceImage.Image.Height * HeightFactor;
                     OffsetX = 0;
                     OffsetY = (int)(Math.Abs(DeviceImage.Height - scaledHeight) / 2);
                     // Factor down to unit of 1
@@ -619,7 +619,7 @@ namespace TerraViewer
                 {
                     HeightFactor = DeviceImage.Height / (float)DeviceImage.Image.Height;
                     WidthFactor = HeightFactor;
-                    float scaledWidth = DeviceImage.Image.Width * WidthFactor;
+                    var scaledWidth = DeviceImage.Image.Width * WidthFactor;
                     OffsetY = 0;
                     OffsetX = (int)(Math.Abs(DeviceImage.Width - scaledWidth) / 2);
                     // Factor down to units of 1
@@ -636,14 +636,14 @@ namespace TerraViewer
 
         private void DeviceImage_DragDrop(object sender, DragEventArgs e)
         {
-            string data = e.Data.GetData("Text").ToString();
+            var data = e.Data.GetData("Text").ToString();
             if (data == MidiControlDataFormat && DragSource != null)
             {
                 try
                 {
-                    MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                    var midiMap = (MidiMap)DeviceList.SelectedItem;
                     DragSource.Mapped = true;
-                    PointF pnt = ControlToImage(DeviceImage.PointToClient(new Point(e.X, e.Y)));
+                    var pnt = ControlToImage(DeviceImage.PointToClient(new Point(e.X, e.Y)));
                     DragSource.X = pnt.X;
                     DragSource.Y = pnt.Y;
                     DragSource.Width = .1f;
@@ -684,15 +684,15 @@ namespace TerraViewer
 
         }
 
-        private ControlMap DragSource = null;
+        private ControlMap DragSource;
 
         private void MapsView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
                 DragSource = binding.Parent;
                 DoDragDrop(MidiControlDataFormat, DragDropEffects.Copy);
             }
@@ -711,26 +711,26 @@ namespace TerraViewer
             {
                 if (MapsView.SelectedIndices.Count > 0)
                 {
-                    ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                    var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
                     selectedMap = binding.Parent;
                 }
-                SolidBrush BackgroundBrush = new SolidBrush(Color.FromArgb(128, 10, 10, 45));
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var BackgroundBrush = new SolidBrush(Color.FromArgb(128, 10, 10, 45));
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                foreach (ControlMap cm in midiMap.ControlMaps)
+                foreach (var cm in midiMap.ControlMaps)
                 {
                     if (cm.Mapped)
                     {
-                        Brush textBrush = UiTools.StadardTextBrush;
+                        var textBrush = UiTools.StadardTextBrush;
                         if (cm == selectedMap)
                         {
                             textBrush = UiTools.YellowTextBrush;
                         }
-                        SizeF sizeText = e.Graphics.MeasureString(cm.Name, UiTools.StandardLarge);
-                        Point pnt = ImageToControl(new PointF(cm.X, cm.Y));
+                        var sizeText = e.Graphics.MeasureString(cm.Name, UiTools.StandardLarge);
+                        var pnt = ImageToControl(new PointF(cm.X, cm.Y));
                         pnt.Offset(new Point((int)(-sizeText.Width / 2), (int)(-sizeText.Height / 2)));
-                        Point pnt2 = ImageToControl(new PointF(cm.X + cm.Width, cm.Y + cm.Height));
-                        Size size = new Size((int)sizeText.Width, (int)sizeText.Height);
+                        var pnt2 = ImageToControl(new PointF(cm.X + cm.Width, cm.Y + cm.Height));
+                        var size = new Size((int)sizeText.Width, (int)sizeText.Height);
                         e.Graphics.FillRectangle(BackgroundBrush, new Rectangle(pnt, size));
                         e.Graphics.DrawString(cm.Name, UiTools.StandardLarge, textBrush, pnt);
                        
@@ -740,7 +740,7 @@ namespace TerraViewer
             }
         }
 
-        MidiMap monitoringMap = null;
+        MidiMap monitoringMap;
         private void Monitor_CheckedChanged(object sender, EventArgs e)
         {
             if (Monitor.Checked)
@@ -776,7 +776,7 @@ namespace TerraViewer
         {
             if (monitoringMap != null)
             {
-                ControlMap map = monitoringMap.FindMap(channel, key);
+                var map = monitoringMap.FindMap(channel, key);
 
                 if (map != null)
                 {
@@ -784,7 +784,7 @@ namespace TerraViewer
                     {
                         foreach (ListViewItem item in MapsView.Items)
                         {
-                            ControlBinding cb = item.Tag as ControlBinding;
+                            var cb = item.Tag as ControlBinding;
                             if (cb != null)
                             {
                                 if (cb.Parent == map)
@@ -819,11 +819,11 @@ namespace TerraViewer
         {
             if (DeviceList.SelectedIndex > -1 && MapsView.SelectedIndices.Count > 0)
             {
-                MidiMap midiMap = (MidiMap)DeviceList.SelectedItem;
+                var midiMap = (MidiMap)DeviceList.SelectedItem;
 
-                ControlBinding binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
+                var binding = (ControlBinding)MapsView.SelectedItems[0].Tag;
 
-                ScriptableProperty prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
+                var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
 
                 if (prop != null)
                 {
