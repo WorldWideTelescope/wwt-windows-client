@@ -24,18 +24,16 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			/// <summary>
 			/// GDI Signature: "WMPHOTO".
 			/// </summary>
-			internal static readonly byte[] GDISignature = new byte[] { 0x57, 0x4D, 0x50, 0x48, 0x4F, 0x54, 0x4F, 0x00 };
-			internal const uint GDISignatureOffset = 0;
+			internal static readonly byte[] GDISignature = { 0x57, 0x4D, 0x50, 0x48, 0x4F, 0x54, 0x4F, 0x00 };
 
-			/// <summary>
+		    /// <summary>
 			/// Codec version. Only least sgnificant 4 bits are important
 			/// </summary>
 			internal const byte CodecVersion					= 1;
 
 			// Sizes of fields, see page 33
 			internal const byte CodecVersionNumBits			= 4;
-			internal const byte SubVersionNumBits				= 4;
-			internal const byte TilingFlagNumBits				= 1;
+		    internal const byte TilingFlagNumBits				= 1;
 			internal const byte BitStreamFormatNumBits		= 1;
 			internal const byte OriantationNumBits			= 3;
 			internal const byte IndexTablePresentFlagNumBits	= 1;
@@ -85,7 +83,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			O_MAX
 		};
 
-		internal enum OVERLAP
+	    internal enum OVERLAP
 		{
 			OL_NONE = 0,
 			OL_ONE,
@@ -141,7 +139,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		#region Members
 		protected void DecodeBitstream(uint offset)
 		{
-			SimpleBitIO bitIO = new SimpleBitIO(data, offset);
+			var bitIO = new SimpleBitIO(data, offset);
 
 			ReadWMIHeader(bitIO);
 
@@ -242,8 +240,8 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 			//// 12 - Variable length fields
 			//// size
-			cWidth  = bitIO.GetBit32_SB((uint)(bAbbreviatedHeader ? Constant.ShortHeaderNumBits : Constant.LongHeaderNumBits)) + 1;
-			cHeight = bitIO.GetBit32_SB((uint)(bAbbreviatedHeader ? Constant.ShortHeaderNumBits : Constant.LongHeaderNumBits)) + 1;
+			cWidth  = bitIO.GetBit32_SB(bAbbreviatedHeader ? Constant.ShortHeaderNumBits : Constant.LongHeaderNumBits) + 1;
+			cHeight = bitIO.GetBit32_SB(bAbbreviatedHeader ? Constant.ShortHeaderNumBits : Constant.LongHeaderNumBits) + 1;
 			cExtraPixelsTop = cExtraPixelsLeft = cExtraPixelsBottom = cExtraPixelsRight = 0;
 			if (bInscribed == false && ((cWidth & 0xf) != 0))
 				cExtraPixelsRight = 0x10 - (cWidth & 0xF);
@@ -298,7 +296,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			// DC uniform
 			if (bitIO.GetBit32_SB(Constant.DCFrameUniformNumBits) == 1)
 			{
-				uQPMode += (uint)BitstreamDecoder.ReadQuantizerSB(out uiQPIndexDC, bitIO) << 3;
+				uQPMode += (uint)ReadQuantizerSB(out uiQPIndexDC, bitIO) << 3;
 			}
 			else
 			{
@@ -312,7 +310,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 					uQPMode += 0x200;
 					if (bitIO.GetBit32_SB(Constant.LPFrameUniformNumBits) == 1) // LP uniform
 					{
-						uQPMode += (uint)BitstreamDecoder.ReadQuantizerSB(out uiQPIndexLP, bitIO) << 5;
+						uQPMode += (uint)ReadQuantizerSB(out uiQPIndexLP, bitIO) << 5;
 					}
 					else
 					{
@@ -331,7 +329,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 						uQPMode += 0x400;
 						if (bitIO.GetBit32_SB(Constant.HPFrameUniformNumBits) == 1) // HP uniform
 						{
-							uQPMode += (uint)BitstreamDecoder.ReadQuantizerSB(out uiQPIndexHP, bitIO) << 7;
+							uQPMode += (uint)ReadQuantizerSB(out uiQPIndexHP, bitIO) << 7;
 						}
 						else
 						{

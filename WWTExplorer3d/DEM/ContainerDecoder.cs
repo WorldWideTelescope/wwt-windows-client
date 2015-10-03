@@ -13,6 +13,8 @@
 
 using System;
 //using Microsoft.Maps.Core;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
@@ -24,7 +26,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			/// <summary>
 			/// TIFF header and its offset.
 			/// </summary>
-			internal static readonly byte[] TiffHeader = new byte[] { 0x49, 0x49 };
+			internal static readonly byte[] TiffHeader = { 0x49, 0x49 };
 			internal const uint TiffHeaderOffset = 0;
 
 			/// <summary>
@@ -49,16 +51,19 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			/// </summary>
 			internal const uint IFDEntrySize = 12;
 
-			// -------------------------------- from WMPGlue.h ------------------------------------------------
-			internal const uint PK_pixfmtNul = 0x00000000;
-			internal const uint PK_pixfmtHasAlpha = 0x00000010;
-			internal const uint PK_pixfmtPreMul = 0x00000020;
-			internal const uint PK_pixfmtBGR = 0x00000040;
-			internal const uint PK_pixfmtNeedConvert = 0x80000000;
-
 			// Guids of supported Pixel Formats
 			internal static readonly Guid GUID_PKPixelFormat16bppGrayFixedPoint = new Guid(0x6fddc324, 0x4e03, 0x4bfe, 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x13);
 		}
+
+        // -------------------------------- from WMPGlue.h ------------------------------------------------
+	    internal enum GluePixelFormat : ulong
+	    {
+	        PK_pixfmtNul = 0x00000000,
+            PK_pixfmtHasAlpha = 0x00000010,
+			PK_pixfmtPreMul = 0x00000020,
+			PK_pixfmtBGR = 0x00000040,
+			PK_pixfmtNeedConvert = 0x80000000
+	    }
 
 		/// <summary>
 		/// Copy of WMPMeta.h
@@ -187,10 +192,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			}
 		}
 
-		private PKPixelInfo[] pixelInfo = new PKPixelInfo[]
+		private PKPixelInfo[] pixelInfo =
 		{
-			// format for DEM
-		    new PKPixelInfo(Constant.GUID_PKPixelFormat16bppGrayFixedPoint, 1, COLORFORMAT.Y_ONLY, BITDEPTH_BITS.BD_16S, 16, Constant.PK_pixfmtNul,   1, 1, 16, 2)
+		    // format for DEM
+		    new PKPixelInfo(Constant.GUID_PKPixelFormat16bppGrayFixedPoint, 1, COLORFORMAT.Y_ONLY, BITDEPTH_BITS.BD_16S, 16, (ulong)GluePixelFormat.PK_pixfmtNul,   1, 1, 16, 2)
 		};
 		#endregion
 		
@@ -265,29 +270,26 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 		private void PixelFormatLookup(Guid guid)
 		{
-			foreach (PKPixelInfo pi in pixelInfo)
-			{
-				if (guid.Equals(pi.pGUIDPixFmt))
-				{
-					return;
-				}
-			}
+		    if (pixelInfo.Any(pi => guid.Equals(pi.pGUIDPixFmt)))
+		    {
+		        return;
+		    }
 
-			throw new ArgumentOutOfRangeException("guid", "Unknown guid");
+		    throw new ArgumentOutOfRangeException("guid", "Unknown guid");
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		internal void ParsePFDEntry(ushort uTag, ushort uType, uint uCount, uint uValue, byte[] data)
+	    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+		internal void ParsePFDEntry(ushort uTag, ushort uType, uint uCount, uint uValue, byte[] pfdData)
 		{
 			switch (uTag)
 			{
 				case WMPMeta.WMP_tagPixelFormat:
-					byte[] guidBytes = new byte[16];
+					var guidBytes = new byte[16];
 					for (int i = 0; i < 16; i++)
 					{
-						guidBytes[i] = data[uValue + i];
+						guidBytes[i] = pfdData[uValue + i];
 					}
-					Guid guid = new Guid(guidBytes);
+					var guid = new Guid(guidBytes);
 
 					// check if this format is supported
 					PixelFormatLookup(guid);
@@ -361,12 +363,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 				default:
 					// unrecognized WMP_, we hope to continue without problems
-					Exception ex = new ArgumentOutOfRangeException("uTag", "Unrecognized PDF entry");
-                    //ElevationAdjustmentServicePlugin.LogException(
-                    //    new ExceptionInfo(ex),
-                    //    "uTag = " + uTag + ", uType = " + uType + ", uCount = " + uCount
-                    //    + ", uValue = " + uValue,
-                    //    true);
+                    Debug.Assert(false);
 					break;
 			}
 		}

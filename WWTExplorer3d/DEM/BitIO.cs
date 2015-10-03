@@ -6,8 +6,6 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compression
@@ -17,7 +15,7 @@ namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compre
 	/// </summary>
     public class BitWriter
     {
-		Stream stream;
+	    readonly Stream stream;
 
 		/// <summary>
 		/// Constructor.

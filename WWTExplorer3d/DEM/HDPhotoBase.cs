@@ -20,9 +20,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 	{
 		#region Constants
 		// -------------------------------- from windowsmediaphoto.h --------------------------------------
-		internal static readonly uint[] MaskBits = new uint[] { 0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095,
-																	8191, 16383, 32767, 65535, 131071, 262143, 524287, 1048575, 
-																	2097151, 4194303, 8388607, 16777215 };
+		internal static readonly uint[] MaskBits =
+		{ 0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095,
+		    8191, 16383, 32767, 65535, 131071, 262143, 524287, 1048575, 
+		    2097151, 4194303, 8388607, 16777215 };
 		private struct Constant
 		{
 			internal static readonly uint[] g_Count = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
@@ -51,8 +52,8 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 		protected static void StrPost4x4Stage1Split(int[] p0, int i, int[] p1, int j, int iOffset)
 		{
-			int imOff = i - iOffset;
-			int jmOff = j - iOffset;
+			var imOff = i - iOffset;
+			var jmOff = j - iOffset;
 
 			/** buttefly **/
 			StrDCT2x2dn(ref p0[i + 12 + 0], ref p0[imOff + 72 + 0], ref p1[j + 4 + 0], ref p1[jmOff + 64 + 0]);
@@ -124,11 +125,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		protected static void StrHSTdec(ref int pa, ref int pb, ref int pc, ref int pd)
 		{
 			/** different realization : does rescaling as well! **/
-			int a, b, c, d;
-			a = pa;
-			b = pb;
-			c = pc;
-			d = pd;
+		    var a = pa;
+			var b = pb;
+			var c = pc;
+			var d = pd;
 
 			b -= c;
 			a += (d * 3 + 4) >> 3;
@@ -217,11 +217,11 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			[- - - -] <-> [- - - -] */
 		protected static void StrDCT2x2dn(ref int a, ref int b, ref int c, ref int d)
 		{
-			int C = c, t;
+			int C = c;
 
 			a += d;
 			b -= C;
-			t = ((a - b) >> 1);
+			var t = ((a - b) >> 1);
 			c = t - d;
 			d = t - C;
 			a -= d;
@@ -230,11 +230,11 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 		protected static void StrDCT2x2up(ref int a, ref int b, ref int c, ref int d)
 		{
-			int C = c, t;
+			int C = c;
 
 			a += d;
 			b -= C;
-			t = ((a - b + 1) >> 1);
+			var t = ((a - b + 1) >> 1);
 			c = t - d;
 			d = t - C;
 			a -= d;
@@ -317,7 +317,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		*************************************************************************/
 		protected static int NumOnes(int i)
 		{
-			int retval = 0;
+			var retval = 0;
 			i = i & 0xffff;
 			while (i != 0)
 			{

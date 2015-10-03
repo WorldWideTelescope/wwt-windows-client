@@ -12,7 +12,6 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
@@ -35,8 +34,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			internal static readonly int[]  gSecondDisc = { 0,0,0,0, 0,0, 1,0, 0,0, 0,0,1 };
 
 			// Huffman lookup tables
-			internal static readonly short[] g4HuffLookupTable =
-			  new short[] { 19,19,19,19,27,27,27,27,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0 };
+			internal static readonly short[] g4HuffLookupTable = { 19,19,19,19,27,27,27,27,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0 };
 
 			internal static readonly short[][] g5HuffLookupTable = { 
 			  new short[] { 28,28,36,36,19,19,19,19,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0 },
@@ -78,9 +76,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 			internal static readonly int[] g7DeltaTable = { 1,0,-1,-1,-1,-1,-1 };
 
-			internal static readonly int[] g8DeltaTable = { -1,0,1,1,-1,0,1,1 };
-
-			internal static readonly int[] g9DeltaTable = { 2,2,1,1,-1,-2,-2,-2,-3 };
+		    internal static readonly int[] g9DeltaTable = { 2,2,1,1,-1,-2,-2,-2,-3 };
 
 			internal static readonly int[] g12DeltaTable = {
 				1, 1, 1, 1, 1, 0, 0,-1, 2, 1, 0, 0,
@@ -147,7 +143,8 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			{
 				iSymbolHuff = iSymbol;
 				while ((iSymbolHuff = m_pHuffman.m_hufDecTable[iSymbolHuff + Constant.SIGN_BIT[2] + bitIO.GetBit16(1)]) < 0)
-					;
+				{
+				}
 			}
 			return iSymbolHuff;
 		}
@@ -160,7 +157,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			int iSymbol = m_pHuffman.m_hufDecTable[bitIO.PeekBit16(Constant.HUFFMAN_DECODE_ROOT_BITS)];
 			System.Diagnostics.Debug.Assert(iSymbol >= 0);
 
-			bitIO.GetBit16((uint)(iSymbol & ((1 << (byte)Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
+			bitIO.GetBit16((uint)(iSymbol & ((1 << Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
 			return iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
 		}
 

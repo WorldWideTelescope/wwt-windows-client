@@ -6,6 +6,8 @@
 // -----------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
@@ -22,11 +24,11 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/// </summary>
 		internal const int NoData = short.MinValue;
 
-		int width;                  // number of columns
-		int height;                 // number of rows
+        readonly int width;                  // number of columns
+        readonly int height;                 // number of rows
 		int returned;				// 1 == true, and the object is invalid
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
+		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
 		short[,] altitude;          // altitude values in arbitrary linear scale
 
 		/// <summary>
@@ -52,10 +54,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			this.width = width;
 			this.height = height;
 			altitude = new short[height, width];
-			for (int row = 0; row < height; row++)
-				for (int col = 0; col < width; col++)
+			for (var row = 0; row < height; row++)
+				for (var col = 0; col < width; col++)
 				{
-					altitude[row, col] = DemTile.NoData;
+					altitude[row, col] = NoData;
 				}
 		}
 
@@ -68,9 +70,9 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			if (data == null)
 				throw new ArgumentNullException("data");
 
-			this.width = data.GetLength(1);
-			this.height = data.GetLength(0);
-			this.altitude = data;
+			width = data.GetLength(1);
+			height = data.GetLength(0);
+			altitude = data;
 		}
 
 		/// <summary>
@@ -81,7 +83,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			get { return returned == 0; }
 			set
 			{
-				System.Threading.Interlocked.Exchange(ref returned, value ? 1 : 0);
+				Interlocked.Exchange(ref returned, value ? 1 : 0);
 				altitude = null;
 			}
 		}
@@ -96,9 +98,9 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		{
 			if (!IsValid) throw new InvalidOperationException();
 			value = altitude[0, 0];
-			for (int y = 0; y < height; y++)
+			for (var y = 0; y < height; y++)
 			{
-				for (int x = 0; x < width; x++)
+				for (var x = 0; x < width; x++)
 				{
 					if (altitude[y, x] != value)
 					{
@@ -162,43 +164,44 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		}
 
 		// non-linear altitude scale
-		static object[] scale = new object[] {
-			// description,		meters,		resolution,
-			"Marianas Trench",	-11030.0,	10.0,	// 10m per unit
-			"lowest city",		  -280.0,	0.1,	// 10cm per unit
-			"sea level",			 0.0,	0.01,	// 1cm per unit
-			"highest city",	      5099.0,	0.2,	// 20cm per unit
-			"Mount Everest",	  8872.0,
+		static readonly object[] scale =
+		{
+		    // description,		meters,		resolution,
+		    "Marianas Trench",	-11030.0,	10.0,	// 10m per unit
+		    "lowest city",		  -280.0,	0.1,	// 10cm per unit
+		    "sea level",			 0.0,	0.01,	// 1cm per unit
+		    "highest city",	      5099.0,	0.2,	// 20cm per unit
+		    "Mount Everest",	  8872.0
 		};
 		const short scaleMinIndex = -32767;
 		const short scaleMaxIndex = short.MaxValue;
 
-		private static double[] scaleMeters = CalculateScaleMeters();
+		private static readonly double[] scaleMeters = CalculateScaleMeters();
 
 		private static double[] CalculateScaleMeters()
 		{
-			double[] m = new double[scaleMaxIndex - scaleMinIndex + 1];
-			int i = 0;
-			short x0 = scaleMinIndex;
+			var m = new double[scaleMaxIndex - scaleMinIndex + 1];
+			var i = 0;
+			var x0 = scaleMinIndex;
 			while (i < scale.Length - 2)
 			{
-				double y0 = (double) scale[i + 1];
-				double r0 = (double) scale[i + 2];
-				double y1 = (double) scale[i + 4];
+				var y0 = (double) scale[i + 1];
+				var r0 = (double) scale[i + 2];
+				var y1 = (double) scale[i + 4];
 				short x1;
 				if (i + 5 >= scale.Length)
 					x1 = scaleMaxIndex;
 				else
 				{
-					double r1 = (double) scale[i + 5];
+					var r1 = (double) scale[i + 5];
 					x1 = (short) Math.Round(x0 + 2 * (y1 - y0) / (r0 + r1));
 				}
-				int dx = x1 - x0;
-				double dy = y1 - y0;
-				double dr = 2 * (dy / dx - r0) / dx;
-				for (short x = x0; x < x1; x++)
+				var dx = x1 - x0;
+				var dy = y1 - y0;
+				var dr = 2 * (dy / dx - r0) / dx;
+				for (var x = x0; x < x1; x++)
 				{
-					m[x - scaleMinIndex] = (double) ((x - x0) * (r0 + dr * (x - x0) / 2.0) + y0);
+					m[x - scaleMinIndex] = (x - x0) * (r0 + dr * (x - x0) / 2.0) + y0;
 				}
 				i += 3;
 				x0 = x1;
@@ -214,7 +217,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
         /// <returns></returns>
 		internal static double IndexToMeters(short index)
 		{
-			if (index == DemTile.NoData)
+			if (index == NoData)
 				return double.NaN;
 
 			return scaleMeters[index - scaleMinIndex];
@@ -228,7 +231,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		internal static short MetersToIndex(double meters)
 		{
 			if (double.IsNaN(meters))
-				return DemTile.NoData;
+				return NoData;
 
 			if (meters <= scaleMeters[0])
 				return scaleMinIndex;
@@ -236,15 +239,14 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			if (meters >= scaleMeters[scaleMaxIndex - scaleMinIndex])
 				return scaleMaxIndex;
 
-			int index = Array.BinarySearch<double>(scaleMeters, (double) meters);
+			var index = Array.BinarySearch(scaleMeters, meters);
 			if (index >= 0)
 				return (short) (index + scaleMinIndex);
 
-			double mid = (scaleMeters[~index] + scaleMeters[~index - 1]) / 2;
+			var mid = (scaleMeters[~index] + scaleMeters[~index - 1]) / 2;
 			if (meters < mid)
 				return (short) (~index - 1 + scaleMinIndex);
-			else
-				return (short) (~index + scaleMinIndex);
+            return (short) (~index + scaleMinIndex);
 		}
 
 		/// <summary>
@@ -270,7 +272,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
         /// <summary>
         /// Retrieves the elevation from a specific location in the tile.
         /// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
+		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
 		internal short[,] AltitudeBuffer
 		{
 			get { return altitude; }

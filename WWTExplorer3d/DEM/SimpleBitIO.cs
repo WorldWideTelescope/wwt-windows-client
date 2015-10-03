@@ -19,7 +19,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		private uint longAccumulator;		// set to 0 by the runtime
 		private uint cBitLeft;				// set to 0 by the runtime
 		private uint offset;
-		private byte[] data;
+		private readonly byte[] data;
 
 		internal SimpleBitIO(byte[] data, uint offset)
 		{
@@ -97,7 +97,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/** this function returns cBits if zero is read, or a signed value if first cBits are not all zero **/
 		internal int GetBit16s(uint cBits)
 		{
-			int iRet = (int)PeekBit16(cBits + 1);
+			int iRet = PeekBit16(cBits + 1);
 			iRet = ((iRet >> 1) ^ (-(iRet & 1))) + (iRet & 1);
 			GetBit16((uint)(cBits + ((iRet != 0) ? 1 : 0)));
 			
@@ -117,25 +117,22 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		{
 			System.Diagnostics.Debug.Assert(cBits <= 16);
 
-			uint offset = this.offset;
-			uint longAccumulator = this.longAccumulator;
-			int cBitLeft = (int)this.cBitLeft;
+			var currOffset = this.offset;
+			var accumulator = this.longAccumulator;
+			var bitLeft = (int)this.cBitLeft;
 
-			while ((cBitLeft < cBits) && offset<data.Length)
+            while ((bitLeft < cBits) && currOffset < data.Length)
 			{
-				longAccumulator = ((longAccumulator & (ushort)HDPhotoBase.MaskBits[cBitLeft]) << 8) + data[offset++];
-				cBitLeft += 8;
+                accumulator = ((accumulator & (ushort)HDPhotoBase.MaskBits[bitLeft]) << 8) + data[currOffset++];
+				bitLeft += 8;
 			}
 
-			if (cBitLeft < cBits)
+			if (bitLeft < cBits)
 			{	
 				// in case we're trying to reach beyond the bitstream
-				return (ushort)((longAccumulator << (byte)(cBits - cBitLeft)) & (ushort)HDPhotoBase.MaskBits[cBits]);
+				return (ushort)((accumulator << (byte)(cBits - bitLeft)) & (ushort)HDPhotoBase.MaskBits[cBits]);
 			}
-			else
-			{
-				return (ushort)((longAccumulator >> (byte)(cBitLeft - cBits)) & (ushort)HDPhotoBase.MaskBits[cBits]);
-			}
+		    return (ushort)((accumulator >> (byte)(bitLeft - cBits)) & (ushort)HDPhotoBase.MaskBits[cBits]);
 		}
 
 		/// <summary>

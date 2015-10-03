@@ -54,7 +54,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		private static DemTile Decode(Stream input)
 		{
 			// read meta info 
-			byte[] b = new byte[4 * sizeof(int)];
+			var b = new byte[4 * sizeof(int)];
 			input.Read(b, 0, b.Length);
 
 			int width = BitConverter.ToInt32(b, 0);
