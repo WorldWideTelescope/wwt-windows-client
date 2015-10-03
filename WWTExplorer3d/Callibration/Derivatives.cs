@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-//using System.Linq;
-using System.Text;
 using System.Diagnostics;
-using Solver;
+using System.Linq;
 
 namespace Solver
 {
@@ -33,24 +30,24 @@ namespace Solver
         public void SolveCoefs(int numberOfPoints)
         {
             _coefficients = new Matrix[numberOfPoints];
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
-                Matrix deltsMatrix = new Matrix(numberOfPoints, numberOfPoints);
-                for (int j = 0; j < numberOfPoints; j++)
+                var deltsMatrix = new Matrix(numberOfPoints, numberOfPoints);
+                for (var j = 0; j < numberOfPoints; j++)
                 {
-                    double delt = (double)(j - i);
-                    double HTerm = 1.0;
-                    for (int k = 0; k < numberOfPoints; k++)
+                    var delt = (double)(j - i);
+                    var HTerm = 1.0;
+                    for (var k = 0; k < numberOfPoints; k++)
                     {
                         deltsMatrix[j, k] = HTerm / Factorial(k);
                         HTerm *= delt;
                     }
                 }
                 _coefficients[i] = deltsMatrix.Invert();
-                double numPointsFactorial = Factorial(numberOfPoints);
-                for (int j = 0; j < numberOfPoints; j++)
+                var numPointsFactorial = Factorial(numberOfPoints);
+                for (var j = 0; j < numberOfPoints; j++)
                 {
-                    for (int k = 0; k < numberOfPoints; k++)
+                    for (var k = 0; k < numberOfPoints; k++)
                     {
                         _coefficients[i][j, k] = (Math.Round(_coefficients[i][j, k] * numPointsFactorial)) / numPointsFactorial;
                     }
@@ -60,10 +57,10 @@ namespace Solver
 
         private static double Factorial(int value)
         {
-            double result = 1.0;
-            for (int i = 1; i <= value; i++)
+            var result = 1.0;
+            for (var i = 1; i <= value; i++)
             {
-                result *= (double)i;
+                result *= i;
             }
             return result;
         }
@@ -80,48 +77,42 @@ namespace Solver
         {
             Debug.Assert(points.Length == _coefficients.Length);
             Debug.Assert(order < _coefficients.Length);
-            double result = 0.0;
-            for (int i = 0; i < _coefficients.Length; i++)
-            {
-                result += _coefficients[variablePosition][order, i] * points[i];
-            }
+            double result = _coefficients.Select((t, i) => _coefficients[variablePosition][order, i]*points[i]).Sum();
             result /= Math.Pow(step, order);
             return result;
         }
 
         public double ComputePartialDerivative(functionDelegate function, Parameter parameter, int order)
         {
-            int numberOfPoints = _coefficients.Length;
-            double result = 0.0;
+            var numberOfPoints = _coefficients.Length;
             double originalValue = parameter;
-            double[] points = new double[numberOfPoints];
-            double derivativeStepSize = parameter.DerivativeStepSize;
-            int centerPoint = (numberOfPoints - 1) / 2;
+            var points = new double[numberOfPoints];
+            var derivativeStepSize = parameter.DerivativeStepSize;
+            var centerPoint = (numberOfPoints - 1) / 2;
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
-                parameter.Value = originalValue + ((double)(i - centerPoint)) * derivativeStepSize;
+                parameter.Value = originalValue + (i - centerPoint) * derivativeStepSize;
                 points[i] = function();
             }
-            result = ComputeDerivative(points, order, centerPoint, derivativeStepSize);
+            var result = ComputeDerivative(points, order, centerPoint, derivativeStepSize);
             parameter.Value = originalValue;
             return result;
         }
 
         public double ComputePartialDerivative(functionDelegate function, Parameter parameter, int order, double currentFunctionValue)
         {
-            int numberOfPoints = _coefficients.Length;
-            double result = 0.0;
-            double originalValue = parameter;
-            double[] points = new double[numberOfPoints];
-            double derivativeStepSize = parameter.DerivativeStepSize;
-            int centerPoint = (numberOfPoints - 1) / 2;
+            var numberOfPoints = _coefficients.Length;
+            var originalValue = parameter;
+            var points = new double[numberOfPoints];
+            var derivativeStepSize = parameter.DerivativeStepSize;
+            var centerPoint = (numberOfPoints - 1) / 2;
 
-            for (int i = 0; i < numberOfPoints; i++)
+            for (var i = 0; i < numberOfPoints; i++)
             {
                 if (i != centerPoint)
                 {
-                    parameter.Value = originalValue + ((double)(i - centerPoint)) * derivativeStepSize;
+                    parameter.Value = originalValue + (i - centerPoint) * derivativeStepSize;
                     points[i] = function();
                 }
                 else
@@ -129,7 +120,7 @@ namespace Solver
                     points[i] = currentFunctionValue;
                 }
             }
-            result = ComputeDerivative(points, order, centerPoint, derivativeStepSize);
+            double result = ComputeDerivative(points, order, centerPoint, derivativeStepSize);
             parameter.Value = originalValue;
             return result;
         }
@@ -137,15 +128,15 @@ namespace Solver
         public double[] ComputePartialDerivatives(functionDelegate function, Parameter parameter, int[] derivativeOrders)
         {
             int numberOfPoints = _coefficients.Length;
-            double[] result = new double[derivativeOrders.Length];
+            var result = new double[derivativeOrders.Length];
             double originalValue = parameter;
-            double[] points = new double[numberOfPoints];
+            var points = new double[numberOfPoints];
             double derivativeStepSize = parameter.DerivativeStepSize;
             int centerPoint = (numberOfPoints - 1) / 2;
 
             for (int i = 0; i < numberOfPoints; i++)
             {
-                parameter.Value = originalValue + ((double)(i - centerPoint)) * derivativeStepSize;
+                parameter.Value = originalValue + (i - centerPoint) * derivativeStepSize;
                 points[i] = function();
             }
             for (int i = 0; i < derivativeOrders.Length; i++)
@@ -159,9 +150,9 @@ namespace Solver
         public double[] ComputePartialDerivatives(functionDelegate function, Parameter parameter, int[] derivativeOrders, double currentFunctionValue)
         {
             int numberOfPoints = _coefficients.Length;
-            double[] result = new double[derivativeOrders.Length];
+            var result = new double[derivativeOrders.Length];
             double originalValue = parameter;
-            double[] points = new double[numberOfPoints];
+            var points = new double[numberOfPoints];
             double derivativeStepSize = parameter.DerivativeStepSize;
             int centerPoint = (numberOfPoints - 1) / 2;
 
@@ -169,7 +160,7 @@ namespace Solver
             {
                 if (i != centerPoint)
                 {
-                    parameter.Value = originalValue + ((double)(i - centerPoint)) * derivativeStepSize;
+                    parameter.Value = originalValue + (i - centerPoint) * derivativeStepSize;
                     points[i] = function();
                 }
                 else

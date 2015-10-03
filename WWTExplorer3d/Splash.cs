@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
@@ -72,7 +67,7 @@ namespace TerraViewer
         private static void SplashTreadFunction()
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
-            Splash splash = new Splash();
+            var splash = new Splash();
             splash.ShowDialog();
         }
 

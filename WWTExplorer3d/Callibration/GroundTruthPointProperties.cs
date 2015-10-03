@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace TerraViewer.Callibration
@@ -32,9 +28,9 @@ namespace TerraViewer.Callibration
             this.ConstraintTypeCombo.Items.RemoveAt(ConstraintTypeCombo.Items.Count - 1);
             this.ConstraintTypeCombo.SelectedIndex = (int)Target.AxisType;
 
-            AzText.Text = Target.Az.ToString();
-            AltText.Text = Target.Alt.ToString();
-            WeightText.Text = Target.Weight.ToString();
+            AzText.Text = Target.Az.ToString(CultureInfo.InvariantCulture);
+            AltText.Text = Target.Alt.ToString(CultureInfo.InvariantCulture);
+            WeightText.Text = Target.Weight.ToString(CultureInfo.InvariantCulture);
         }
 
         private void OK_Click(object sender, EventArgs e)

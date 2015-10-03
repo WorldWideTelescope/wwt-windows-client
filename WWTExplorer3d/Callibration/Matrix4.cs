@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System;
-//using System.Threading.Tasks;
 
 namespace Solver
 {
@@ -29,15 +28,15 @@ namespace Solver
         #endregion
 
         #region F&P
-        private double[,] _values;
+        private readonly double[,] _values;
 
-        private int _rowCount = 3;
+        private readonly int _rowCount = 3;
         public int RowCount
         {
             get { return _rowCount; }
         }
 
-        private int _columnCount = 3;
+        private readonly int _columnCount = 3;
         public int ColumnCount
         {
             get { return _columnCount; }
@@ -47,23 +46,20 @@ namespace Solver
         #region basic single matrix stuff
         public static Matrix Identity(int size)
         {
-            Matrix resultMatrix = new Matrix(size, size);
-  //          Parallel.For(0, size, (i) =>
-            for(int i = 0; i<size; i++)
+            var resultMatrix = new Matrix(size, size);
+            for(var i = 0; i<size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
                     resultMatrix[i, j] = (i == j) ? 1.0 : 0.0;
                 }
             }
-      //      );
             return resultMatrix;
         }
 
         public Matrix Clone()
         {
-            Matrix resultMatrix = new Matrix(_rowCount, _columnCount);
-  //          Parallel.For(0, _rowCount, (i) =>
+            var resultMatrix = new Matrix(_rowCount, _columnCount);
             for(int i = 0 ; i < _rowCount; i++)
             {
                 for (int j = 0; j < _columnCount; j++)
@@ -71,22 +67,19 @@ namespace Solver
                     resultMatrix[i, j] = this[i, j];
                 }
             }
-  //          );
             return resultMatrix;
         }
 
         public Matrix Transpose()
         {
-            Matrix resultMatrix = new Matrix(_columnCount, _rowCount);
-      //      Parallel.For(0, _rowCount, (i) =>
-            for(int i =0; i < _rowCount; i++)
+            var resultMatrix = new Matrix(_columnCount, _rowCount);
+            for(var i =0; i < _rowCount; i++)
             {
-                for (int j = 0; j < _columnCount; j++)
+                for (var j = 0; j < _columnCount; j++)
                 {
                     resultMatrix[j, i] = this[i, j];
                 }
             }
-  //          );
             return resultMatrix;
         }
 
@@ -98,8 +91,7 @@ namespace Solver
             Debug.Assert(leftMatrix.ColumnCount == rightMatrix.ColumnCount);
             Debug.Assert(leftMatrix.RowCount == rightMatrix.RowCount);
 
-            Matrix resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
-  //          Parallel.For(0, leftMatrix.RowCount, (i) =>
+            var resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
             for(int i=0; i< leftMatrix.RowCount; i++)
             {
                 for (int j = 0; j < leftMatrix.ColumnCount; j++)
@@ -107,21 +99,19 @@ namespace Solver
                     resultMatrix[i, j] = leftMatrix[i, j] + rightMatrix[i, j];
                 }
             }
-     //       );
             return resultMatrix;
         }
 
         public static Matrix operator +(Matrix leftMatrix, Matrix rightMatrix)
         {
-            return Matrix.Add(leftMatrix, rightMatrix);
+            return Add(leftMatrix, rightMatrix);
         }
 
         public static Matrix Subtract(Matrix leftMatrix, Matrix rightMatrix)
         {
             Debug.Assert(leftMatrix.ColumnCount == rightMatrix.ColumnCount);
             Debug.Assert(leftMatrix.RowCount == rightMatrix.RowCount);
-            Matrix resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
-     //      Parallel.For(0, leftMatrix.RowCount, (i) =>
+            var resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
             for(int i=0; i < leftMatrix.RowCount; i++)
             {
                 for (int j = 0; j < leftMatrix.ColumnCount; j++)
@@ -129,108 +119,99 @@ namespace Solver
                     resultMatrix[i, j] = leftMatrix[i, j] - rightMatrix[i, j];
                 }
             }
-    //        );
             return resultMatrix;
         }
 
         public static Matrix operator -(Matrix leftMatrix, Matrix rightMatrix)
         {
-            return Matrix.Subtract(leftMatrix, rightMatrix);
+            return Subtract(leftMatrix, rightMatrix);
         }
 
         public static Matrix Multiply(Matrix leftMatrix, Matrix rightMatrix)
         {
             Debug.Assert(leftMatrix.ColumnCount == rightMatrix.RowCount);
-            Matrix resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
-       //     Parallel.For(0, resultMatrix.ColumnCount, (i) =>
-            for(int i=0; i< resultMatrix.ColumnCount; i++)
+            var resultMatrix = new Matrix(leftMatrix.RowCount, rightMatrix.ColumnCount);
+            for(var i=0; i< resultMatrix.ColumnCount; i++)
             {
-                for (int j = 0; j < leftMatrix.RowCount; j++)
+                for (var j = 0; j < leftMatrix.RowCount; j++)
                 {
-                    double value = 0.0;
-                    for (int k = 0; k < rightMatrix.RowCount; k++)
+                    var value = 0.0;
+                    for (var k = 0; k < rightMatrix.RowCount; k++)
                     {
                         value += leftMatrix[j, k] * rightMatrix[k, i];
                     }
                     resultMatrix[j, i] = value;
                 }
             }
-   //         );
             return resultMatrix;
         }
 
         public static Matrix operator *(Matrix leftMatrix, Matrix rightMatrix)
         {
-            return Matrix.Multiply(leftMatrix, rightMatrix);
+            return Multiply(leftMatrix, rightMatrix);
         }
 
         public static Matrix Multiply(double left, Matrix rightMatrix)
         {
-            Matrix resultMatrix = new Matrix(rightMatrix.RowCount, rightMatrix.ColumnCount);
-    //        Parallel.For(0, resultMatrix.RowCount, (i) =>
-            for(int i=0; i< resultMatrix.RowCount; i++)
+            var resultMatrix = new Matrix(rightMatrix.RowCount, rightMatrix.ColumnCount);
+            for(var i=0; i< resultMatrix.RowCount; i++)
             {
-                for (int j = 0; j < rightMatrix.ColumnCount; j++)
+                for (var j = 0; j < rightMatrix.ColumnCount; j++)
                 {
                     resultMatrix[i, j] = left * rightMatrix[i, j];
                 }
             }
-    //        );
             return resultMatrix;
         }
 
         public static Matrix operator *(double left, Matrix rightMatrix)
         {
-            return Matrix.Multiply(left, rightMatrix);
+            return Multiply(left, rightMatrix);
         }
 
         public static Matrix Multiply(Matrix leftMatrix, double right)
         {
-            Matrix resultMatrix = new Matrix(leftMatrix.RowCount, leftMatrix.ColumnCount);
-      //      Parallel.For(0, leftMatrix.RowCount, (i) =>
-            for(int i=0;i < leftMatrix.RowCount; i++)
+            var resultMatrix = new Matrix(leftMatrix.RowCount, leftMatrix.ColumnCount);
+            for(var i=0;i < leftMatrix.RowCount; i++)
             {
-                for (int j = 0; j < leftMatrix.ColumnCount; j++)
+                for (var j = 0; j < leftMatrix.ColumnCount; j++)
                 {
                     resultMatrix[i, j] = leftMatrix[i, j] * right;
                 }
             }
-      //      );
             return resultMatrix;
         }
 
         public static Matrix operator *(Matrix leftMatrix, double right)
         {
-            return Matrix.Multiply(leftMatrix, right);
+            return Multiply(leftMatrix, right);
         }
 
         public static Matrix Divide(Matrix leftMatrix, double right)
         {
-            Matrix resultMatrix = new Matrix(leftMatrix.RowCount, leftMatrix.ColumnCount);
-   //         Parallel.For(0, leftMatrix.RowCount, (i) =>
-            for(int i=0; i < leftMatrix.RowCount; i++)
+            var resultMatrix = new Matrix(leftMatrix.RowCount, leftMatrix.ColumnCount);
+            for (var i = 0; i < leftMatrix.RowCount; i++)
             {
-                for (int j = 0; j < leftMatrix.ColumnCount; j++)
+                for (var j = 0; j < leftMatrix.ColumnCount; j++)
                 {
-                    resultMatrix[i, j] = leftMatrix[i, j] / right;
+                    resultMatrix[i, j] = leftMatrix[i, j]/right;
                 }
             }
- //           );
             return resultMatrix;
         }
 
         public static Matrix operator /(Matrix leftMatrix, double right)
         {
-            return Matrix.Divide(leftMatrix, right);
+            return Divide(leftMatrix, right);
         }
         #endregion
 
         #region Assorted Casts
         public static Matrix FromArray(double[] left)
         {
-            int length = left.Length;
-            Matrix resultMatrix = new Matrix(length, 1);
-            for (int i = 0; i < length; i++)
+            var length = left.Length;
+            var resultMatrix = new Matrix(length, 1);
+            for (var i = 0; i < length; i++)
             {
                 resultMatrix[i, 0] = left[i];
             }
@@ -246,7 +227,7 @@ namespace Solver
         {
             Debug.Assert((leftMatrix.ColumnCount == 1 && leftMatrix.RowCount >= 1) || (leftMatrix.RowCount == 1 && leftMatrix.ColumnCount >= 1));
 
-            double[] result = null;
+            double[] result;
             if (leftMatrix.ColumnCount > 1)
             {
                 int numElements = leftMatrix.ColumnCount;
@@ -275,12 +256,12 @@ namespace Solver
 
         public static Matrix FromDoubleArray(double[,] left)
         {
-            int length0 = left.GetLength(0);
-            int length1 = left.GetLength(1);
-            Matrix resultMatrix = new Matrix(length0, length1);
-            for (int i = 0; i < length0; i++)
+            var length0 = left.GetLength(0);
+            var length1 = left.GetLength(1);
+            var resultMatrix = new Matrix(length0, length1);
+            for (var i = 0; i < length0; i++)
             {
-                for (int j = 0; j < length1; j++)
+                for (var j = 0; j < length1; j++)
                 {
                     resultMatrix[i, j] = left[i, j];
                 }
@@ -295,10 +276,10 @@ namespace Solver
 
         public static double[,] ToDoubleArray(Matrix leftMatrix)
         {
-            double[,] result = new double[leftMatrix.RowCount, leftMatrix.ColumnCount];
-            for (int i = 0; i < leftMatrix.RowCount; i++)
+            var result = new double[leftMatrix.RowCount, leftMatrix.ColumnCount];
+            for (var i = 0; i < leftMatrix.RowCount; i++)
             {
-                for (int j = 0; j < leftMatrix.ColumnCount; j++)
+                for (var j = 0; j < leftMatrix.ColumnCount; j++)
                 {
                     result[i, j] = leftMatrix[i, j];
                 }
@@ -316,17 +297,16 @@ namespace Solver
             Debug.Assert(rightMatrix.RowCount == _columnCount);
             Debug.Assert(_columnCount == _rowCount);
 
-            Matrix resultMatrix = new Matrix(_columnCount, rightMatrix.ColumnCount);
-            LUDecompositionResults resDecomp = LUDecompose();
+            var resultMatrix = new Matrix(_columnCount, rightMatrix.ColumnCount);
+            var resDecomp = LUDecompose();
             int[] nP = resDecomp.PivotArray;
-            Matrix lMatrix = resDecomp.L;
-            Matrix uMatrix = resDecomp.U;
-   //         Parallel.For(0, rightMatrix.ColumnCount, k =>
-            for(int k=0; k<rightMatrix.ColumnCount; k++)
+            var lMatrix = resDecomp.L;
+            var uMatrix = resDecomp.U;
+            for(var k=0; k<rightMatrix.ColumnCount; k++)
             {
                 //Solve for the corresponding d Matrix from Ld=Pb
-                double sum = 0.0;
-                Matrix dMatrix = new Matrix(_rowCount, 1);
+                double sum;
+                var dMatrix = new Matrix(_rowCount, 1);
                 dMatrix[0, 0] = rightMatrix[nP[0], k] / lMatrix[0, 0];
                 for (int i = 1; i < _rowCount; i++)
                 {
@@ -349,7 +329,7 @@ namespace Solver
                     resultMatrix[i, k] = dMatrix[i, 0] - sum;
                 }
             }
-   //         );
+
             return resultMatrix;
         }
 
@@ -373,43 +353,41 @@ namespace Solver
             // [l21 l22 0 0 ] [0 1 u23 u24] = [a21 a22 a23 a24]
             // [l31 l32 l33 0 ] [0 0 1 u34] [a31 a32 a33 a34]
             // [l41 l42 l43 l44] [0 0 0 1 ] [a41 a42 a43 a44]
-            LUDecompositionResults result = new LUDecompositionResults();
+            var result = new LUDecompositionResults();
             try
             {
-                int[] pivotArray = new int[_rowCount]; //Pivot matrix.
-                Matrix uMatrix = new Matrix(_rowCount, _columnCount);
-                Matrix lMatrix = new Matrix(_rowCount, _columnCount);
-                Matrix workingUMatrix = Clone();
-                Matrix workingLMatrix = new Matrix(_rowCount, _columnCount);
-//               Parallel.For(0, _rowCount, i =>
-                for(int i=0; i< _rowCount; i++)
+                var pivotArray = new int[_rowCount]; //Pivot matrix.
+                var uMatrix = new Matrix(_rowCount, _columnCount);
+                var lMatrix = new Matrix(_rowCount, _columnCount);
+                var workingUMatrix = Clone();
+                var workingLMatrix = new Matrix(_rowCount, _columnCount);
+                for(var i=0; i< _rowCount; i++)
                 {
                     pivotArray[i] = i;
                 }
-  //              );
+
                 //Iterate down the number of rows in the U matrix.
-                for (int i = 0; i < _rowCount; i++)
+                for (var i = 0; i < _rowCount; i++)
                 {
                     //Do pivots first.
                     //I want to make the matrix diagnolaly dominate.
                     //Initialize the variables used to determine the pivot row.
-                    double maxRowRatio = double.NegativeInfinity;
-                    int maxRow = -1;
-                    int maxPosition = -1;
+                    var maxRowRatio = double.NegativeInfinity;
+                    var maxRow = -1;
+                    var maxPosition = -1;
                     //Check all of the rows below and including the current row
                     //to determine which row should be pivoted to the working row position.
                     //The pivot row will be set to the row with the maximum ratio
                     //of the absolute value of the first column element divided by the
                     //sum of the absolute values of the elements in that row.
-            //        Parallel.For(i, _rowCount, j =>
-                    for(int j =i; j < _rowCount; j++)
+                    for (var j = i; j < _rowCount; j++)
                     {
                         //Store the sum of the absolute values of the row elements in
                         //dRowSum. Clear it out now because I am checking a new row.
-                        double rowSum = 0.0;
+                        var rowSum = 0.0;
                         //Go across the columns, add the absolute values of the elements in
                         //that column to dRowSum.
-                        for (int k = i; k < _columnCount; k++)
+                        for (var k = i; k < _columnCount; k++)
                         {
                             rowSum += Math.Abs(workingUMatrix[pivotArray[j], k]);
                         }
@@ -417,11 +395,11 @@ namespace Solver
                         //element over the sum of the absolute values of the elements is larger
                         //that the ratio for preceding rows. If it is, then the current row
                         //becomes the new pivot candidate.
-                        if (rowSum == 0.0)
+                        if (rowSum.Equals(0.0))
                         {
                             throw new SingularMatrixException();
                         }
-                        double dCurrentRatio = Math.Abs(workingUMatrix[pivotArray[j], i]) / rowSum;
+                        var dCurrentRatio = Math.Abs(workingUMatrix[pivotArray[j], i]) / rowSum;
                         lock (this)
                         {
                             if (dCurrentRatio > maxRowRatio)
@@ -444,10 +422,9 @@ namespace Solver
                     }
                     //Store the value of the left most element in the working U
                     //matrix in dRowFirstElementValue.
-                    double rowFirstElementValue = workingUMatrix[pivotArray[i], i];
+                    var rowFirstElementValue = workingUMatrix[pivotArray[i], i];
                     //Update the columns of the working row. j is the column index.
-                //    Parallel.For(0, _columnCount, j =>
-                    for(int j=0; j< _columnCount; j++)
+                    for (var j = 0; j < _columnCount; j++)
                     {
                         if (j < i)
                         {
@@ -471,17 +448,16 @@ namespace Solver
                             workingLMatrix[pivotArray[i], j] = 0.0;
                         }
                     }
-              //      );
+
                     //For the working U matrix, subtract the ratioed active row from the rows below it.
                     //Update the columns of the rows below the working row. k is the row index.
-                    for (int k = i + 1; k < _rowCount; k++)
+                    for (var k = i + 1; k < _rowCount; k++)
                     {
                         //Store the value of the first element in the working row
                         //of the U matrix.
                         rowFirstElementValue = workingUMatrix[pivotArray[k], i];
                         //Go accross the columns of row k.
-              //          Parallel.For(0, _columnCount, j =>
-                        for(int j=0; j< _columnCount; j++)
+                        for (var j = 0; j < _columnCount; j++)
                         {
                             if (j < i)
                             {
@@ -501,19 +477,18 @@ namespace Solver
                                 workingUMatrix[pivotArray[k], j] = workingUMatrix[pivotArray[k], j] - rowFirstElementValue * workingUMatrix[pivotArray[i], j];
                             }
                         }
-               //         );
+
                     }
                 }
-            //    Parallel.For(0, _rowCount, i =>
-                for(int i=0; i<_rowCount; i++)
+
+                for (var i = 0; i < _rowCount; i++)
                 {
-                    for (int j = 0; j < _rowCount; j++)
+                    for (var j = 0; j < _rowCount; j++)
                     {
                         uMatrix[i, j] = workingUMatrix[pivotArray[i], j];
                         lMatrix[i, j] = workingLMatrix[pivotArray[i], j];
                     }
                 }
-           //     );
                 result.U = uMatrix;
                 result.L = lMatrix;
                 result.PivotArray = pivotArray;
@@ -529,47 +504,29 @@ namespace Solver
         public Matrix Invert()
         {
             Debug.Assert(_rowCount == _columnCount);
-            Matrix resultMatrix = SolveFor(Identity(_rowCount));
-            Matrix matIdent = this * resultMatrix;
+            SolveFor(Identity(_rowCount));
 
             return SolveFor(Identity(_rowCount));
         }
     }
     public class LUDecompositionResults
     {
-        private Matrix _lMatrix;
-        private Matrix _uMatrix;
-        private int[] _pivotArray;
-
         public LUDecompositionResults()
         {
         }
 
         public LUDecompositionResults(Matrix matL, Matrix matU, int[] nPivotArray)
         {
-            _lMatrix = matL;
-            _uMatrix = matU;
-            _pivotArray = nPivotArray;
+            L = matL;
+            U = matU;
+            PivotArray = nPivotArray;
         }
 
-        public Matrix L
-        {
-            get { return _lMatrix; }
-            set { _lMatrix = value; }
-        }
+        public Matrix L { get; set; }
 
-        public Matrix U
-        {
-            get { return _uMatrix; }
-            set { _uMatrix = value; }
-        }
+        public Matrix U { get; set; }
 
-        public int[] PivotArray
-        {
-            get { return _pivotArray; }
-            set { _pivotArray = value; }
-        }
-
+        public int[] PivotArray { get; set; }
     }
 
     public class SingularMatrixException : ArithmeticException

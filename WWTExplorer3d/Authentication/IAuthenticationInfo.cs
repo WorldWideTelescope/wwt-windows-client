@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace MSAuth
+namespace TerraViewer.Authentication
 {
     public interface IAuthenticationInfo
     {

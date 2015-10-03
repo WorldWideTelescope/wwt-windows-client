@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace TerraViewer.Callibration
@@ -61,7 +57,7 @@ namespace TerraViewer.Callibration
 
         private void SyncProjectorEntry()
         {
-            projectorID.Text = Projector.ID.ToString();
+            projectorID.Text = Projector.ID.ToString(CultureInfo.InvariantCulture);
             projectorName.Text = Projector.Name;
             if (ViewTab.Selected)
             {

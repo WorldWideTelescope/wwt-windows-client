@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer.Callibration
@@ -27,21 +22,8 @@ namespace TerraViewer.Callibration
        
         private void EdgeProperties_Load(object sender, EventArgs e)
         {
-            int leftSelected = -1;
-            int rightSelected = -1;
             foreach (ProjectorEntry pe in Edge.Owner.Projectors)
             {
-
-                if (Edge.Left == pe.ID)
-                {
-                    leftSelected = leftProjectorCombo.Items.Count;
-                }
-
-                if (Edge.Right == pe.ID)
-                {
-                    rightSelected = rightProjectorCombo.Items.Count;
-                }
-
                 leftProjectorCombo.Items.Add(pe);
                 rightProjectorCombo.Items.Add(pe);
             }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MicrosoftAccount.WindowsForms;
 
-
-namespace MSAuth
+namespace TerraViewer.Authentication
 {
     public static class OAuthAuthenticator
     {
@@ -18,7 +16,7 @@ namespace MSAuth
 
         public static async Task<OAuthTicket> SignInToMicrosoftAccount(System.Windows.Forms.IWin32Window parentWindow)
         {
-            string oldRefreshToken = TerraViewer.Properties.Settings.Default.RefreshToken;
+            string oldRefreshToken = Properties.Settings.Default.RefreshToken;
             AppTokenResult appToken = null;
             if (!string.IsNullOrEmpty(oldRefreshToken))
             {
@@ -47,7 +45,7 @@ namespace MSAuth
         {
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                var settings = TerraViewer.Properties.Settings.Default;
+                var settings = Properties.Settings.Default;
                 settings.RefreshToken = refreshToken;
                 settings.Save();
             }

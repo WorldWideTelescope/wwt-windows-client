@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
-using TerraViewer;
 
 namespace TerraViewer.Callibration
 {
@@ -65,21 +60,21 @@ namespace TerraViewer.Callibration
         {
             if (projTarget != null)
             {
-                FovText.Text = ProjTarget.FOV.ToString();
-                AspectText.Text = ProjTarget.Aspect.ToString();
-                OffAxisXText.Text = ProjTarget.XOffset.ToString();
-                OffAxisYText.Text = ProjTarget.YOffset.ToString();
+                FovText.Text = ProjTarget.FOV.ToString(CultureInfo.InvariantCulture);
+                AspectText.Text = ProjTarget.Aspect.ToString(CultureInfo.InvariantCulture);
+                OffAxisXText.Text = ProjTarget.XOffset.ToString(CultureInfo.InvariantCulture);
+                OffAxisYText.Text = ProjTarget.YOffset.ToString(CultureInfo.InvariantCulture);
             }
 
             if (transTarget != null)
             {
-                PosXText.Text = TransTarget.X.ToString();
-                PosYText.Text = TransTarget.Y.ToString();
-                PosZText.Text = TransTarget.Z.ToString();
+                PosXText.Text = TransTarget.X.ToString(CultureInfo.InvariantCulture);
+                PosYText.Text = TransTarget.Y.ToString(CultureInfo.InvariantCulture);
+                PosZText.Text = TransTarget.Z.ToString(CultureInfo.InvariantCulture);
 
-                PitchText.Text = TransTarget.Pitch.ToString();
-                HeadingText.Text = TransTarget.Heading.ToString();
-                RollText.Text = TransTarget.Roll.ToString();
+                PitchText.Text = TransTarget.Pitch.ToString(CultureInfo.InvariantCulture);
+                HeadingText.Text = TransTarget.Heading.ToString(CultureInfo.InvariantCulture);
+                RollText.Text = TransTarget.Roll.ToString(CultureInfo.InvariantCulture);
             }
         }
 
