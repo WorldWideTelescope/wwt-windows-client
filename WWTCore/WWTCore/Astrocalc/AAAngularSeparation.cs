@@ -42,11 +42,11 @@ public class CAAAngularSeparation
         Alpha1 = CAACoordinateTransformation.HoursToRadians(Alpha1);
         Alpha2 = CAACoordinateTransformation.HoursToRadians(Alpha2);
 
-        double x = Math.Cos(Delta1) * Math.Sin(Delta2) - Math.Sin(Delta1) * Math.Cos(Delta2) * Math.Cos(Alpha2 - Alpha1);
-        double y = Math.Cos(Delta2) * Math.Sin(Alpha2 - Alpha1);
-        double z = Math.Sin(Delta1) * Math.Sin(Delta2) + Math.Cos(Delta1) * Math.Cos(Delta2) * Math.Cos(Alpha2 - Alpha1);
+        var x = Math.Cos(Delta1) * Math.Sin(Delta2) - Math.Sin(Delta1) * Math.Cos(Delta2) * Math.Cos(Alpha2 - Alpha1);
+        var y = Math.Cos(Delta2) * Math.Sin(Alpha2 - Alpha1);
+        var z = Math.Sin(Delta1) * Math.Sin(Delta2) + Math.Cos(Delta1) * Math.Cos(Delta2) * Math.Cos(Alpha2 - Alpha1);
 
-        double @value = Math.Atan2(Math.Sqrt(x * x + y * y), z);
+        var @value = Math.Atan2(Math.Sqrt(x * x + y * y), z);
         @value = CAACoordinateTransformation.RadiansToDegrees(@value);
         if (@value < 0)
             @value += 180;
@@ -55,20 +55,16 @@ public class CAAAngularSeparation
     }
     public static double PositionAngle(double alpha1, double delta1, double alpha2, double delta2)
     {
-        double Alpha1;
-        double Delta1;
-        double Alpha2;
-        double Delta2;
-        Delta1 = CAACoordinateTransformation.DegreesToRadians(delta1);
-        Delta2 = CAACoordinateTransformation.DegreesToRadians(delta2);
+        var Delta1 = CAACoordinateTransformation.DegreesToRadians(delta1);
+        var Delta2 = CAACoordinateTransformation.DegreesToRadians(delta2);
 
-        Alpha1 = CAACoordinateTransformation.HoursToRadians(alpha1);
-        Alpha2 = CAACoordinateTransformation.HoursToRadians(alpha2);
+        var Alpha1 = CAACoordinateTransformation.HoursToRadians(alpha1);
+        var Alpha2 = CAACoordinateTransformation.HoursToRadians(alpha2);
 
-        double DeltaAlpha = Alpha1 - Alpha2;
-        double demoninator = Math.Cos(Delta2) * Math.Tan(Delta1) - Math.Sin(Delta2) * Math.Cos(DeltaAlpha);
-        double numerator = Math.Sin(DeltaAlpha);
-        double @value = Math.Atan2(numerator, demoninator);
+        var DeltaAlpha = Alpha1 - Alpha2;
+        var demoninator = Math.Cos(Delta2) * Math.Tan(Delta1) - Math.Sin(Delta2) * Math.Cos(DeltaAlpha);
+        var numerator = Math.Sin(DeltaAlpha);
+        var @value = Math.Atan2(numerator, demoninator);
         @value = CAACoordinateTransformation.RadiansToDegrees(@value);
 
         return @value;
@@ -83,23 +79,23 @@ public class CAAAngularSeparation
         Alpha2 = CAACoordinateTransformation.HoursToRadians(Alpha2);
         Alpha3 = CAACoordinateTransformation.HoursToRadians(Alpha3);
 
-        double X1 = Math.Cos(Delta1) * Math.Cos(Alpha1);
-        double X2 = Math.Cos(Delta2) * Math.Cos(Alpha2);
+        var X1 = Math.Cos(Delta1) * Math.Cos(Alpha1);
+        var X2 = Math.Cos(Delta2) * Math.Cos(Alpha2);
 
-        double Y1 = Math.Cos(Delta1) * Math.Sin(Alpha1);
-        double Y2 = Math.Cos(Delta2) * Math.Sin(Alpha2);
+        var Y1 = Math.Cos(Delta1) * Math.Sin(Alpha1);
+        var Y2 = Math.Cos(Delta2) * Math.Sin(Alpha2);
 
-        double Z1 = Math.Sin(Delta1);
-        double Z2 = Math.Sin(Delta2);
+        var Z1 = Math.Sin(Delta1);
+        var Z2 = Math.Sin(Delta2);
 
-        double A = Y1 * Z2 - Z1 * Y2;
-        double B = Z1 * X2 - X1 * Z2;
-        double C = X1 * Y2 - Y1 * X2;
+        var A = Y1 * Z2 - Z1 * Y2;
+        var B = Z1 * X2 - X1 * Z2;
+        var C = X1 * Y2 - Y1 * X2;
 
-        double m = Math.Tan(Alpha3);
-        double n = Math.Tan(Delta3) / Math.Cos(Alpha3);
+        var m = Math.Tan(Alpha3);
+        var n = Math.Tan(Delta3) / Math.Cos(Alpha3);
 
-        double @value = Math.Asin((A + B * m + C * n) / (Math.Sqrt(A * A + B * B + C * C) * Math.Sqrt(1 + m * m + n * n)));
+        var @value = Math.Asin((A + B * m + C * n) / (Math.Sqrt(A * A + B * B + C * C) * Math.Sqrt(1 + m * m + n * n)));
         @value = CAACoordinateTransformation.RadiansToDegrees(@value);
         if (@value < 0)
             @value = Math.Abs(@value);
@@ -108,13 +104,13 @@ public class CAAAngularSeparation
     }
     public static double SmallestCircle(double Alpha1, double Delta1, double Alpha2, double Delta2, double Alpha3, double Delta3, ref bool bType1)
     {
-        double d1 = Separation(Alpha1, Delta1, Alpha2, Delta2);
-        double d2 = Separation(Alpha1, Delta1, Alpha3, Delta3);
-        double d3 = Separation(Alpha2, Delta2, Alpha3, Delta3);
+        var d1 = Separation(Alpha1, Delta1, Alpha2, Delta2);
+        var d2 = Separation(Alpha1, Delta1, Alpha3, Delta3);
+        var d3 = Separation(Alpha2, Delta2, Alpha3, Delta3);
 
-        double a = d1;
-        double b = d2;
-        double c = d3;
+        var a = d1;
+        var b = d2;
+        var c = d3;
         if (b > a)
         {
             a = d2;

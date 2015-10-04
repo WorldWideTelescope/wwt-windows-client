@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing.Imaging;
 using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
-using SharpDX;
 using System.Drawing;
 using System.IO;
+using SharpDX.DXGI;
+using Color = System.Drawing.Color;
+using Device = SharpDX.Direct3D11.Device;
 
 namespace TerraViewer
 {
     public class Texture11 : IDisposable
     {
-        private static int nextID = 0;
+        private static int nextID;
         private Texture2D texture;
 
         public Texture2D Texture
@@ -77,40 +76,40 @@ namespace TerraViewer
            
         }
 
-        static SharpDX.DXGI.Format promoteFormatToSRGB(SharpDX.DXGI.Format format)
+        static Format promoteFormatToSRGB(Format format)
         {
             switch (format)
             {
-                case SharpDX.DXGI.Format.R8G8B8A8_UNorm:
-                    return SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb;
-                case SharpDX.DXGI.Format.B8G8R8A8_UNorm:
-                    return SharpDX.DXGI.Format.B8G8R8A8_UNorm_SRgb;
-                case SharpDX.DXGI.Format.B8G8R8X8_UNorm:
-                    return SharpDX.DXGI.Format.B8G8R8X8_UNorm_SRgb;
-                case SharpDX.DXGI.Format.BC1_UNorm:
-                    return SharpDX.DXGI.Format.BC1_UNorm_SRgb;
-                case SharpDX.DXGI.Format.BC2_UNorm:
-                    return SharpDX.DXGI.Format.BC2_UNorm_SRgb;
-                case SharpDX.DXGI.Format.BC3_UNorm:
-                    return SharpDX.DXGI.Format.BC3_UNorm_SRgb;
-                case SharpDX.DXGI.Format.BC7_UNorm:
-                    return SharpDX.DXGI.Format.BC7_UNorm_SRgb;
+                case Format.R8G8B8A8_UNorm:
+                    return Format.R8G8B8A8_UNorm_SRgb;
+                case Format.B8G8R8A8_UNorm:
+                    return Format.B8G8R8A8_UNorm_SRgb;
+                case Format.B8G8R8X8_UNorm:
+                    return Format.B8G8R8X8_UNorm_SRgb;
+                case Format.BC1_UNorm:
+                    return Format.BC1_UNorm_SRgb;
+                case Format.BC2_UNorm:
+                    return Format.BC2_UNorm_SRgb;
+                case Format.BC3_UNorm:
+                    return Format.BC3_UNorm_SRgb;
+                case Format.BC7_UNorm:
+                    return Format.BC7_UNorm_SRgb;
                 default:
                     return format;
             }
         }
 
-        static bool isSRGBFormat(SharpDX.DXGI.Format format)
+        static bool isSRGBFormat(Format format)
         {
             switch (format)
             {
-                case SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb:
-                case SharpDX.DXGI.Format.B8G8R8A8_UNorm_SRgb:
-                case SharpDX.DXGI.Format.B8G8R8X8_UNorm_SRgb:
-                case SharpDX.DXGI.Format.BC1_UNorm_SRgb:
-                case SharpDX.DXGI.Format.BC2_UNorm_SRgb:
-                case SharpDX.DXGI.Format.BC3_UNorm_SRgb:
-                case SharpDX.DXGI.Format.BC7_UNorm_SRgb:
+                case Format.R8G8B8A8_UNorm_SRgb:
+                case Format.B8G8R8A8_UNorm_SRgb:
+                case Format.B8G8R8X8_UNorm_SRgb:
+                case Format.BC1_UNorm_SRgb:
+                case Format.BC2_UNorm_SRgb:
+                case Format.BC3_UNorm_SRgb:
+                case Format.BC7_UNorm_SRgb:
                     return true; ;
                 default:
                     return false;
@@ -128,13 +127,13 @@ namespace TerraViewer
         {
             try
             {
-                ImageLoadInformation loadInfo = new ImageLoadInformation();
+                var loadInfo = new ImageLoadInformation();
                 loadInfo.BindFlags = BindFlags.ShaderResource;
                 loadInfo.CpuAccessFlags = CpuAccessFlags.None;
                 loadInfo.Depth = -1;
                 loadInfo.Filter = FilterFlags.Box;
                 loadInfo.FirstMipLevel = 0;
-                loadInfo.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
+                loadInfo.Format = Format.R8G8B8A8_UNorm;
 
                 loadInfo.Height = -1;
                 loadInfo.MipLevels = -1;
@@ -142,7 +141,7 @@ namespace TerraViewer
                 loadInfo.Usage = ResourceUsage.Default;
                 loadInfo.Width = -1;
 
-                bool shouldPromoteSRgb = RenderContext11.sRGB && (options & LoadOptions.AssumeSRgb) == LoadOptions.AssumeSRgb;
+                var shouldPromoteSRgb = RenderContext11.sRGB && (options & LoadOptions.AssumeSRgb) == LoadOptions.AssumeSRgb;
 
                 if (fileName.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) ||
                     fileName.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) ||
@@ -161,7 +160,7 @@ namespace TerraViewer
                 else
                 {
                     // Promote image format to sRGB
-                    ImageInformation? info = ImageInformation.FromFile(fileName);
+                    var info = ImageInformation.FromFile(fileName);
                     if (info.HasValue && shouldPromoteSRgb)
                     {
                         loadInfo.Format = promoteFormatToSRGB(info.Value.Format);
@@ -172,7 +171,7 @@ namespace TerraViewer
                     }
                 }
 
-                Texture2D texture = Texture2D.FromFile<Texture2D>(device, fileName, loadInfo);
+                var texture = Texture2D.FromFile<Texture2D>(device, fileName, loadInfo);
 
                 return new Texture11(texture);
             }
@@ -180,7 +179,7 @@ namespace TerraViewer
             {
                 try
                 {
-                    ImageLoadInformation ili = new ImageLoadInformation()
+                    var ili = new ImageLoadInformation()
                                 {
                                     BindFlags = BindFlags.ShaderResource,
                                     CpuAccessFlags = CpuAccessFlags.None,
@@ -195,12 +194,12 @@ namespace TerraViewer
                                     Usage = ResourceUsage.Default,
                                     Width = -1
                                 };
-                    if (ili.Format == SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb)
+                    if (ili.Format == Format.R8G8B8A8_UNorm_SRgb)
                     {
                         ili.Filter |= FilterFlags.SRgb;
                     }
 
-                    Texture2D texture = Texture2D.FromFile<Texture2D>(device, fileName, ili);
+                    var texture = Texture2D.FromFile<Texture2D>(device, fileName, ili);
                     return new Texture11(texture);
 
                 }
@@ -219,21 +218,21 @@ namespace TerraViewer
 
         static public Texture11 FromBitmap(Bitmap bmp, uint transparentColor)
         {
-            bmp.MakeTransparent(System.Drawing.Color.FromArgb((int) transparentColor));
+            bmp.MakeTransparent(Color.FromArgb((int) transparentColor));
             return FromBitmap(RenderContext11.PrepDevice, bmp);
         }
 
         static public Texture11 FromBitmap(Device device, Bitmap bmp)
         {
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
-            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            bmp.Save(ms, ImageFormat.Png);
 
             ms.Seek(0, SeekOrigin.Begin);
 
             if (IsPowerOf2((uint)bmp.Width) && IsPowerOf2((uint)bmp.Height))
             {
-                ImageLoadInformation loadInfo = new ImageLoadInformation();
+                var loadInfo = new ImageLoadInformation();
                 loadInfo.BindFlags = BindFlags.ShaderResource;
                 loadInfo.CpuAccessFlags = CpuAccessFlags.None;
                 loadInfo.Depth = -1;
@@ -246,12 +245,12 @@ namespace TerraViewer
                 loadInfo.OptionFlags = ResourceOptionFlags.None;
                 loadInfo.Usage = ResourceUsage.Default;
                 loadInfo.Width = -1;
-                if (loadInfo.Format == SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb)
+                if (loadInfo.Format == Format.R8G8B8A8_UNorm_SRgb)
                 {
                     loadInfo.Filter |= FilterFlags.SRgb;
                 }
 
-                Texture2D texture = Texture2D.FromStream<Texture2D>(device, ms, (int)ms.Length, loadInfo);
+                var texture = Texture2D.FromStream<Texture2D>(device, ms, (int)ms.Length, loadInfo);
 
                 ms.Dispose();
                 return new Texture11(texture);
@@ -259,7 +258,7 @@ namespace TerraViewer
             else
             {
                 ms.Seek(0, SeekOrigin.Begin);
-                ImageLoadInformation ili = new ImageLoadInformation()
+                var ili = new ImageLoadInformation()
                 {
                     BindFlags = BindFlags.ShaderResource,
                     CpuAccessFlags = CpuAccessFlags.None,
@@ -274,12 +273,12 @@ namespace TerraViewer
                     Usage = ResourceUsage.Default,
                     Width = -1
                 };
-                if (ili.Format == SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb)
+                if (ili.Format == Format.R8G8B8A8_UNorm_SRgb)
                 {
                     ili.Filter |= FilterFlags.SRgb;
                 }
 
-                Texture2D texture = Texture2D.FromStream<Texture2D>(device, ms, (int)ms.Length, ili);
+                var texture = Texture2D.FromStream<Texture2D>(device, ms, (int)ms.Length, ili);
                 ms.Dispose();
                 return new Texture11(texture);
             }
@@ -299,7 +298,7 @@ namespace TerraViewer
         {
             try
             {
-                ImageLoadInformation loadInfo = new ImageLoadInformation();
+                var loadInfo = new ImageLoadInformation();
                 loadInfo.BindFlags = BindFlags.ShaderResource;
                 loadInfo.CpuAccessFlags = CpuAccessFlags.None;
                 loadInfo.Depth = -1;
@@ -312,12 +311,12 @@ namespace TerraViewer
                 loadInfo.OptionFlags = ResourceOptionFlags.None;
                 loadInfo.Usage = ResourceUsage.Default;
                 loadInfo.Width = -1;
-                if (loadInfo.Format == SharpDX.DXGI.Format.R8G8B8A8_UNorm_SRgb)
+                if (loadInfo.Format == Format.R8G8B8A8_UNorm_SRgb)
                 {
                     loadInfo.Filter |= FilterFlags.SRgb;
                 }
 
-                Texture2D texture = Texture2D.FromStream<Texture2D>(device, stream, (int)stream.Length, loadInfo);
+                var texture = Texture2D.FromStream<Texture2D>(device, stream, (int)stream.Length, loadInfo);
 
                 return new Texture11(texture);
             }

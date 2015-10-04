@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace TerraViewer
 {
@@ -31,8 +28,8 @@ namespace TerraViewer
         public static ApplicationSettingsBase SettingsBase = null;
     }
 
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    [Serializable()]
+    [XmlType(AnonymousType = true)]
     public enum ImageSetType { Earth, Planet, Sky, Panorama, SolarSystem, Sandbox };
 
 

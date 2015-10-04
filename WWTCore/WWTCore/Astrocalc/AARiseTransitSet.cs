@@ -55,35 +55,34 @@ public class  CAARiseTransitSet
   public static CAARiseTransitSetDetails Rise(double JD, double Alpha1, double Delta1, double Alpha2, double Delta2, double Alpha3, double Delta3, double Longitude, double Latitude, double h0)
   {
 	//What will be the return value
-	CAARiseTransitSetDetails details = new CAARiseTransitSetDetails();
-	details.bValid = false;
-  
-	//Calculate the sidereal time
-	double theta0 = CAASidereal.ApparentGreenwichSiderealTime(JD);
+	var details = new CAARiseTransitSetDetails {bValid = false};
+
+      //Calculate the sidereal time
+	var theta0 = CAASidereal.ApparentGreenwichSiderealTime(JD);
 	theta0 *= 15; //Express it as degrees
   
 	//Calculate deltat
-	double deltaT = CAADynamicalTime.DeltaT(JD);
+	var deltaT = CAADynamicalTime.DeltaT(JD);
   
 	//Convert values to radians
-	double Delta2Rad = CAACoordinateTransformation.DegreesToRadians(Delta2);
-	double LatitudeRad = CAACoordinateTransformation.DegreesToRadians(Latitude);
+	var Delta2Rad = CAACoordinateTransformation.DegreesToRadians(Delta2);
+	var LatitudeRad = CAACoordinateTransformation.DegreesToRadians(Latitude);
   
 	//Convert the standard latitude to radians
-	double h0Rad = CAACoordinateTransformation.DegreesToRadians(h0);
+	var h0Rad = CAACoordinateTransformation.DegreesToRadians(h0);
   
-	double cosH0 = (Math.Sin(h0Rad) - Math.Sin(LatitudeRad)*Math.Sin(Delta2Rad)) / (Math.Cos(LatitudeRad) * Math.Cos(Delta2Rad));
+	var cosH0 = (Math.Sin(h0Rad) - Math.Sin(LatitudeRad)*Math.Sin(Delta2Rad)) / (Math.Cos(LatitudeRad) * Math.Cos(Delta2Rad));
   
 	//Check that the object actually rises
 	if ((cosH0 > 1) || (cosH0 < -1))
 	  return details;
   
-	double H0 = Math.Acos(cosH0);
+	var H0 = Math.Acos(cosH0);
 	H0 = CAACoordinateTransformation.RadiansToDegrees(H0);
   
-	double M0 = (Alpha2 *15 + Longitude - theta0) / 360;
-	double M1 = M0 - H0/360;
-	double M2 = M0 + H0/360;
+	var M0 = (Alpha2 *15 + Longitude - theta0) / 360;
+	var M1 = M0 - H0/360;
+	var M2 = M0 + H0/360;
   
 	if (M0 > 1)
 	  M0 -= 1;
@@ -100,22 +99,22 @@ public class  CAARiseTransitSet
 	else if (M2 < 0)
 	  M2 += 1;
   
-	for (int i =0; i<2; i++)
+	for (var i =0; i<2; i++)
 	{
 	  //Calculate the details of rising
   
-	  double theta1 = theta0 + 360.985647 *M1;
+	  var theta1 = theta0 + 360.985647 *M1;
 	  theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
   
-	  double n = M1 + deltaT/86400;
+	  var n = M1 + deltaT/86400;
   
-	  double Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
-	  double Delta = CAAInterpolate.Interpolate(n, Delta1, Delta2, Delta3);
+	  var Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
+	  var Delta = CAAInterpolate.Interpolate(n, Delta1, Delta2, Delta3);
   
-	  double H = theta1 - Longitude - Alpha *15;
-	  CAA2DCoordinate Horizontal = CAACoordinateTransformation.Equatorial2Horizontal(H/15, Delta, Latitude);
+	  var H = theta1 - Longitude - Alpha *15;
+	  var Horizontal = CAACoordinateTransformation.Equatorial2Horizontal(H/15, Delta, Latitude);
   
-	  double DeltaM = (Horizontal.Y - h0) / (360 *Math.Cos(CAACoordinateTransformation.DegreesToRadians(Delta))*Math.Cos(LatitudeRad)*Math.Sin(CAACoordinateTransformation.DegreesToRadians(H)));
+	  var DeltaM = (Horizontal.Y - h0) / (360 *Math.Cos(CAACoordinateTransformation.DegreesToRadians(Delta))*Math.Cos(LatitudeRad)*Math.Sin(CAACoordinateTransformation.DegreesToRadians(H)));
 	  M1 += DeltaM;
   
   

@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
+using System.IO;
 using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
 using SharpDX;
 using SharpDX.DXGI;
-using SharpDX.Windows;
-using System.Diagnostics;
-
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Device = SharpDX.Direct3D11.Device;
-using MapFlags = SharpDX.Direct3D11.MapFlags;
-using SharpDX.D3DCompiler;
 using System.Runtime.InteropServices;
 
 namespace TerraViewer
@@ -26,16 +16,17 @@ namespace TerraViewer
     public class VertexBuffer11 : IDisposable, IVertexBuffer11
     {
     
-        int vertCount = 0;
+        int vertCount;
 
         public int Count
         {
             get { return vertCount; }
             set { vertCount = value; }
         }
-        Device device = null;
 
-        Buffer vertices = null;
+        readonly Device device;
+
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -55,7 +46,7 @@ namespace TerraViewer
             
         }
 
-        PositionNormalTexturedX2[] vertexArray = null;
+        PositionNormalTexturedX2[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = BufferPool11.GetLockX2Buffer(vertCount);
@@ -67,18 +58,18 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionNormalTexturedX2[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((PositionNormalTexturedX2[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionNormalTexturedX2[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
             // Compute the sphere is asked
             if (ComputeSphereOnUnlock)
             {
-                int index = 0;
+                var index = 0;
                 //Vector3d[] points = new Vector3d[vertCount];
-                Vector3d[] points = BufferPool11.GetVector3dBuffer(vertCount);
+                var points = BufferPool11.GetVector3dBuffer(vertCount);
 
 
-                foreach (PositionNormalTexturedX2 vert in vertexArray)
+                foreach (var vert in vertexArray)
                 {
                     points[index++] = vert.Position;
                 }
@@ -115,10 +106,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -144,12 +135,12 @@ namespace TerraViewer
             vertCount = vertexArray.Length;
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as T[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((T[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as T[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
         }
 
-        T[] vertexArray = null;
+        T[] vertexArray;
         public T[] Lock(int x, int y)
         {
             vertexArray = new T[vertCount];
@@ -161,8 +152,8 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as T[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((T[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as T[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
 
             // Compute the sphere is asked
@@ -218,10 +209,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -241,7 +232,7 @@ namespace TerraViewer
 
         }
 
-        PositionTextured[] vertexArray = null;
+        PositionTextured[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new PositionTextured[vertCount];
@@ -253,15 +244,15 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionTextured[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((PositionTextured[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionTextured[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
             // Compute the sphere is asked
             if (ComputeSphereOnUnlock)
             {
-                int index = 0;
-                Vector3d[] points = new Vector3d[vertCount];
-                foreach (PositionTextured vert in vertexArray)
+                var index = 0;
+                var points = new Vector3d[vertCount];
+                foreach (var vert in vertexArray)
                 {
                     points[index++] = vert.Position;
                 }
@@ -296,10 +287,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -318,7 +309,7 @@ namespace TerraViewer
             this.device = device;
         }
 
-        PositionColorSize[] vertexArray = null;
+        PositionColorSize[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new PositionColorSize[vertCount];
@@ -329,16 +320,16 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionColorSize[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((PositionColorSize[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionColorSize[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
 
             // Compute the sphere is asked
             if (ComputeSphereOnUnlock)
             {
-                int index = 0;
-                Vector3d[] points = new Vector3d[vertCount];
-                foreach (PositionColorSize vert in vertexArray)
+                var index = 0;
+                var points = new Vector3d[vertCount];
+                foreach (var vert in vertexArray)
                 {
                     points[index++] = new Vector3d(vert.X, vert.Y, vert.Z);
                 }
@@ -371,10 +362,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -393,7 +384,7 @@ namespace TerraViewer
             this.device = device;
         }
 
-        TimeSeriesLineVertex[] vertexArray = null;
+        TimeSeriesLineVertex[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new TimeSeriesLineVertex[vertCount];
@@ -404,16 +395,16 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as TimeSeriesLineVertex[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((TimeSeriesLineVertex[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as TimeSeriesLineVertex[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
 
             // Compute the sphere is asked
             if (ComputeSphereOnUnlock)
             {
-                int index = 0;
-                Vector3d[] points = new Vector3d[vertCount];
-                foreach (TimeSeriesLineVertex vert in vertexArray)
+                var index = 0;
+                var points = new Vector3d[vertCount];
+                foreach (var vert in vertexArray)
                 {
                     points[index++] = new Vector3d(vert.Position);
                 }
@@ -447,10 +438,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -469,7 +460,7 @@ namespace TerraViewer
             this.device = device;
         }
 
-        TimeSeriesPointVertex[] vertexArray = null;
+        TimeSeriesPointVertex[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new TimeSeriesPointVertex[vertCount];
@@ -480,16 +471,16 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as TimeSeriesPointVertex[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((TimeSeriesPointVertex[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as TimeSeriesPointVertex[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
 
             // Compute the sphere is asked
             if (ComputeSphereOnUnlock)
             {
-                int index = 0;
-                Vector3d[] points = new Vector3d[vertCount];
-                foreach (TimeSeriesPointVertex vert in vertexArray)
+                var index = 0;
+                var points = new Vector3d[vertCount];
+                foreach (var vert in vertexArray)
                 {
                     points[index++] = new Vector3d(vert.Position);
                 }
@@ -523,10 +514,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+         readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -545,7 +536,7 @@ namespace TerraViewer
             this.device = device;
         }
 
-        KeplerVertex[] vertexArray = null;
+        KeplerVertex[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new KeplerVertex[vertCount];
@@ -556,8 +547,8 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as KeplerVertex[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((KeplerVertex[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as KeplerVertex[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
 
             
@@ -592,10 +583,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -615,7 +606,7 @@ namespace TerraViewer
 
         }
 
-        TansformedPositionTextured[] vertexArray = null;
+        TansformedPositionTextured[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new TansformedPositionTextured[vertCount];
@@ -627,8 +618,8 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as TansformedPositionTextured[],0,ResourceUsage.Dynamic,CpuAccessFlags.Write,ResourceOptionFlags.None);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((TansformedPositionTextured[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as TansformedPositionTextured[],0,ResourceUsage.Dynamic,CpuAccessFlags.Write,ResourceOptionFlags.None);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
             vertexArray = null;
         }
@@ -657,10 +648,10 @@ namespace TerraViewer
             set { vertCount = value; }
         }
 
-        int vertCount = 0;
-        Device device = null;
+        int vertCount;
+        readonly Device device;
 
-        Buffer vertices = null;
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -682,7 +673,7 @@ namespace TerraViewer
 
         }
 
-        PositionColoredTextured[] vertexArray = null;
+        PositionColoredTextured[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new PositionColoredTextured[vertCount];
@@ -694,8 +685,8 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionColoredTextured[]);
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(((PositionColoredTextured[])vertexArray)[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray as PositionColoredTextured[]);
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
             vertexArray = null;
         }
@@ -728,16 +719,17 @@ namespace TerraViewer
 
     public class PositionVertexBuffer11 : IDisposable, IVertexBuffer11
     {
-        int vertCount = 0;
+        int vertCount;
 
         public int Count
         {
             get { return vertCount; }
             set { vertCount = value; }
         }
-        Device device = null;
 
-        Buffer vertices = null;
+        readonly Device device;
+
+        Buffer vertices;
 
         private VertexBufferBinding vertexBufferBinding;
 
@@ -757,7 +749,7 @@ namespace TerraViewer
 
         }
 
-        Vector3[] vertexArray = null;
+        Vector3[] vertexArray;
         public object Lock(int x, int y)
         {
             vertexArray = new Vector3[vertCount];
@@ -769,15 +761,15 @@ namespace TerraViewer
         {
             if (vertCount > 0 && vertexArray != null)
             {
-                vertices = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertexArray );
-                VertexBufferBinding = new VertexBufferBinding(vertices, System.Runtime.InteropServices.Marshal.SizeOf(vertexArray[0]), 0);
+                vertices = Buffer.Create(device, BindFlags.VertexBuffer, vertexArray );
+                VertexBufferBinding = new VertexBufferBinding(vertices, Marshal.SizeOf(vertexArray[0]), 0);
             }
             // Compute the sphere is asked
             if (ComputeSphereOnUnlock)
             {
-                int index = 0;
-                Vector3d[] points = new Vector3d[vertCount];
-                foreach (Vector3 vert in vertexArray)
+                var index = 0;
+                var points = new Vector3d[vertCount];
+                foreach (var vert in vertexArray)
                 {
                     points[index++] = new Vector3d(vert);
                 }
@@ -809,7 +801,7 @@ namespace TerraViewer
 
         public IndexBuffer11 (Device device, uint[] indexes)
         {
-            IndexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.IndexBuffer, indexes);
+            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, indexes);
             indexCount = indexes.Length;
             format = Format.R32_UInt;
             this.device = device;
@@ -817,7 +809,7 @@ namespace TerraViewer
 
         public IndexBuffer11 (Device device, short[] indexes)
         {
-            IndexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.IndexBuffer, indexes);
+            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, indexes);
             indexCount = indexes.Length;
             format = Format.R16_UInt;
             this.device = device;
@@ -830,8 +822,8 @@ namespace TerraViewer
         }
 
         public Format format = Format.R32_UInt;
-        int indexCount = 0;
-        Device device = null;
+        readonly int indexCount;
+        readonly Device device;
         public IndexBuffer11(Type typeIndexType, int numberIndices, Device device)
         {
             if (typeIndexType == typeof(short))
@@ -866,12 +858,12 @@ namespace TerraViewer
         {
             if (format == Format.R32_UInt)
             {
-                IndexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.IndexBuffer, indexArray as uint[]);
+                IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, indexArray as uint[]);
                 BufferPool11.ReturnUInt32Buffer(indexArray as UInt32[]);
             }
             else
             {
-                IndexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.IndexBuffer, indexArray as ushort[]);
+                IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, indexArray as ushort[]);
                 BufferPool11.ReturnUInt16Buffer(indexArray as UInt16[]);
             } 
             indexArray = null;
@@ -1048,7 +1040,7 @@ namespace TerraViewer
         //   pos:
         //     A Microsoft.DirectX.Vector3 object that contains the vertex position.
         //
-        public PositionColorSize(Vector3d pos, SharpDX.Color color, float size)
+        public PositionColorSize(Vector3d pos, Color color, float size)
         {
             X = (float)pos.X;
             Y = (float)pos.Y;
@@ -1067,7 +1059,7 @@ namespace TerraViewer
             Color = color;  
         }
 
-        public void Save(System.IO.BinaryWriter bw)
+        public void Save(BinaryWriter bw)
         {
             bw.Write(X);
             bw.Write(Y);
@@ -1076,9 +1068,9 @@ namespace TerraViewer
             bw.Write(size);
         }
 
-        public static PositionColorSize Load(System.IO.BinaryReader br)
+        public static PositionColorSize Load(BinaryReader br)
         {
-            PositionColorSize point = new PositionColorSize();
+            var point = new PositionColorSize();
 
             point.X =  br.ReadSingle();
             point.Y =  br.ReadSingle();
@@ -1111,7 +1103,7 @@ namespace TerraViewer
             }
             set
             {
-                color = (uint)(((uint)value.A) << 24) | (((uint)value.B) << 16) | (((uint)value.G) << 8) | (((uint)value.R));
+                color = ((uint)value.A) << 24 | (((uint)value.B) << 16) | (((uint)value.G) << 8) | value.R;
             }
         }
 
@@ -1147,7 +1139,7 @@ namespace TerraViewer
             }
             set
             {
-                color = (uint) (((uint)value.A) << 24) | (((uint)value.B) << 16) |  (((uint)value.G) <<8) |  (((uint)value.R) );
+                color = ((uint)value.A) << 24 | (((uint)value.B) << 16) |  (((uint)value.G) <<8) |  value.R;
             }
         }   
         
@@ -1443,8 +1435,8 @@ namespace TerraViewer
         public int Height;
         public RenderTargetTexture(int width, int height)
         {
-            this.Width = width;
-            this.Height = height;
+            Width = width;
+            Height = height;
             RenderTexture = new Texture11(new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
                 Format = RenderContext11.DefaultColorFormat,
@@ -1464,8 +1456,8 @@ namespace TerraViewer
 
         public RenderTargetTexture(int width, int height, int sampleCount)
         {
-            this.Width = width;
-            this.Height = height;
+            Width = width;
+            Height = height;
             RenderTexture = new Texture11(new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
                 Format = RenderContext11.DefaultColorFormat,
@@ -1510,8 +1502,8 @@ namespace TerraViewer
         public int Height;
         public DepthBuffer(int width, int height)
         {
-            this.Width = width;
-            this.Height = height;
+            Width = width;
+            Height = height;
             DepthTexture = new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
                 Format = RenderContext11.DefaultDepthStencilFormat,
@@ -1687,9 +1679,9 @@ namespace TerraViewer
             }
             set
             {
-                Nx = (float)value.X;
-                Ny = (float)value.Y;
-                Nz = (float)value.Z;
+                Nx = value.X;
+                Ny = value.Y;
+                Nz = value.Z;
             }
         }
         //
@@ -1703,9 +1695,9 @@ namespace TerraViewer
             }
             set
             {
-                X = (float)value.X;
-                Y = (float)value.Y;
-                Z = (float)value.Z;
+                X = value.X;
+                Y = value.Y;
+                Z = value.Z;
             }
         }
 
@@ -1717,9 +1709,9 @@ namespace TerraViewer
             }
             set
             {
-                X = (float)value.X;
-                Y = (float)value.Y;
-                Z = (float)value.Z;
+                X = value.X;
+                Y = value.Y;
+                Z = value.Z;
             }
         }
 
@@ -1768,25 +1760,25 @@ namespace TerraViewer
             }
             set
             {
-                color = (uint)(((uint)value.A) << 24) | (((uint)value.B) << 16) | (((uint)value.G) << 8) | (((uint)value.R));
+                color = ((uint)value.A) << 24 | (((uint)value.B) << 16) | (((uint)value.G) << 8) | value.R;
             }
         }
 
         public static int baseDate = (int)SpaceTimeController.UtcToJulian(DateTime.Now);
         public void Fill(CAAEllipticalObjectElements ee)
         {
-            double F = Math.Cos(ee.omega * degrad);
-            double sinOmega = Math.Sin(ee.omega * degrad);
-            double cosi = Math.Cos(ee.i * degrad);
-            double sini = Math.Sin(ee.i * degrad);
-            double G = sinOmega * cose;
-            double H = sinOmega * sine;
-            double P = -sinOmega * cosi;
-            double Q = (F * cosi * cose) - (sini * sine);
-            double R = (F * cosi * sine) + (sini * cose);
+            var F = Math.Cos(ee.omega * degrad);
+            var sinOmega = Math.Sin(ee.omega * degrad);
+            var cosi = Math.Cos(ee.i * degrad);
+            var sini = Math.Sin(ee.i * degrad);
+            var G = sinOmega * cose;
+            var H = sinOmega * sine;
+            var P = -sinOmega * cosi;
+            var Q = (F * cosi * cose) - (sini * sine);
+            var R = (F * cosi * sine) + (sini * cose);
 
-            double checkA = (F * F) + (G * G) + (H * H);// Should be 1.0
-            double checkB = (P * P) + (Q * Q) + (R * R); // should be 1.0 as well
+            var checkA = (F * F) + (G * G) + (H * H);// Should be 1.0
+            var checkB = (P * P) + (Q * Q) + (R * R); // should be 1.0 as well
 
             ABC.X = (float)Math.Atan2(F, P);
             ABC.Y = (float)Math.Atan2(G, Q);

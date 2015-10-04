@@ -45,7 +45,7 @@ public class  CAARefraction
 //ORIGINAL LINE: static double RefractionFromApparent(double Altitude, double Pressure = 1010, double Temperature = 10)
   public static double RefractionFromApparent(double Altitude, double Pressure, double Temperature)
   {
-	double @value = 1 / (Math.Tan(CAACoordinateTransformation.DegreesToRadians(Altitude + 7.31/(Altitude + 4.4)))) + 0.0013515;
+	var @value = 1 / (Math.Tan(CAACoordinateTransformation.DegreesToRadians(Altitude + 7.31/(Altitude + 4.4)))) + 0.0013515;
 	@value *= (Pressure/1010 * 283/(273+Temperature));
 	@value /= 60;
 	return @value;
@@ -62,7 +62,7 @@ public class  CAARefraction
 //ORIGINAL LINE: static double RefractionFromTrue(double Altitude, double Pressure = 1010, double Temperature = 10)
   public static double RefractionFromTrue(double Altitude, double Pressure, double Temperature)
   {
-	double @value = 1.02 / (Math.Tan(CAACoordinateTransformation.DegreesToRadians(Altitude + 10.3/(Altitude + 5.11)))) + 0.0019279;
+	var @value = 1.02 / (Math.Tan(CAACoordinateTransformation.DegreesToRadians(Altitude + 10.3/(Altitude + 5.11)))) + 0.0019279;
 	@value *= (Pressure/1010 * 283/(273+Temperature));
 	@value /= 60;
 	return @value;

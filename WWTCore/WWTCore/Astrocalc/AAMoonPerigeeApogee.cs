@@ -53,10 +53,10 @@ public class  CAAMoonPerigeeApogee
   public static double MeanPerigee(double k)
   {
 	//convert from K to T
-	double T = k/1325.55;
-	double Tsquared = T *T;
-	double Tcubed = Tsquared *T;
-	double T4 = Tcubed *T;
+	var T = k/1325.55;
+	var Tsquared = T *T;
+	var Tcubed = Tsquared *T;
+	var T4 = Tcubed *T;
   
 	return 2451534.6698 + 27.55454989 *k - 0.0006691 *Tsquared - 0.000001098 *Tcubed + 0.0000000052 *T4;
   }
@@ -67,24 +67,24 @@ public class  CAAMoonPerigeeApogee
   }
   public static double TruePerigee(double k)
   {
-	double MeanJD = MeanPerigee(k);
+	var MeanJD = MeanPerigee(k);
   
 	//convert from K to T
-	double T = k/1325.55;
-	double Tsquared = T *T;
-	double Tcubed = Tsquared *T;
-	double T4 = Tcubed *T;
+	var T = k/1325.55;
+	var Tsquared = T *T;
+	var Tcubed = Tsquared *T;
+	var T4 = Tcubed *T;
   
-	double D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
+	var D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
 	D = CAACoordinateTransformation.DegreesToRadians(D);
-	double M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
+	var M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
 	M = CAACoordinateTransformation.DegreesToRadians(M);
-	double F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
+	var F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
 	F = CAACoordinateTransformation.DegreesToRadians(F);
 
-    int nPerigeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1.Length;
+    var nPerigeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1.Length;
 	double Sigma = 0;
-	for (int i =0; i<nPerigeeCoefficients; i++)
+	for (var i =0; i<nPerigeeCoefficients; i++)
 	{
 	  Sigma += GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1[i].C * Math.Sin(D *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1[i].D + M *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1[i].M + F *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1[i].F + T *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients1[i].T);
 	}
@@ -93,24 +93,24 @@ public class  CAAMoonPerigeeApogee
   }
   public static double TrueApogee(double k)
   {
-	double MeanJD = MeanApogee(k);
+	var MeanJD = MeanApogee(k);
   
 	//convert from K to T
-	double T = k/1325.55;
-	double Tsquared = T *T;
-	double Tcubed = Tsquared *T;
-	double T4 = Tcubed *T;
+	var T = k/1325.55;
+	var Tsquared = T *T;
+	var Tcubed = Tsquared *T;
+	var T4 = Tcubed *T;
   
-	double D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
+	var D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
 	D = CAACoordinateTransformation.DegreesToRadians(D);
-	double M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
+	var M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
 	M = CAACoordinateTransformation.DegreesToRadians(M);
-	double F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
+	var F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
 	F = CAACoordinateTransformation.DegreesToRadians(F);
 
-    int nApogeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2.Length;
+    var nApogeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2.Length;
 	double Sigma = 0;
-	for (int i =0; i<nApogeeCoefficients; i++)
+	for (var i =0; i<nApogeeCoefficients; i++)
 	{
 	  Sigma += (GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2[i].C + T *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2[i].T) * Math.Sin(D *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2[i].D + M *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2[i].M + F *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients2[i].F);
 	}
@@ -120,21 +120,21 @@ public class  CAAMoonPerigeeApogee
   public static double PerigeeParallax(double k)
   {
 	//convert from K to T
-	double T = k/1325.55;
-	double Tsquared = T *T;
-	double Tcubed = Tsquared *T;
-	double T4 = Tcubed *T;
+	var T = k/1325.55;
+	var Tsquared = T *T;
+	var Tcubed = Tsquared *T;
+	var T4 = Tcubed *T;
   
-	double D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
+	var D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
 	D = CAACoordinateTransformation.DegreesToRadians(D);
-	double M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
+	var M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
 	M = CAACoordinateTransformation.DegreesToRadians(M);
-	double F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
+	var F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
 	F = CAACoordinateTransformation.DegreesToRadians(F);
 
-    int nPerigeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3.Length;
-	double Parallax = 3629.215;
-	for (int i =0; i<nPerigeeCoefficients; i++)
+    var nPerigeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3.Length;
+	var Parallax = 3629.215;
+	for (var i =0; i<nPerigeeCoefficients; i++)
 	{
 	  Parallax += (GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3[i].C + T *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3[i].T) * Math.Cos(D *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3[i].D + M *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3[i].M + F *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients3[i].F);
 	}
@@ -144,21 +144,21 @@ public class  CAAMoonPerigeeApogee
   public static double ApogeeParallax(double k)
   {
 	//convert from K to T
-	double T = k/1325.55;
-	double Tsquared = T *T;
-	double Tcubed = Tsquared *T;
-	double T4 = Tcubed *T;
+	var T = k/1325.55;
+	var Tsquared = T *T;
+	var Tcubed = Tsquared *T;
+	var T4 = Tcubed *T;
   
-	double D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
+	var D = CAACoordinateTransformation.MapTo0To360Range(171.9179 + 335.9106046 *k - 0.0100383 *Tsquared - 0.00001156 *Tcubed + 0.000000055 *T4);
 	D = CAACoordinateTransformation.DegreesToRadians(D);
-	double M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
+	var M = CAACoordinateTransformation.MapTo0To360Range(347.3477 + 27.1577721 *k - 0.0008130 *Tsquared - 0.0000010 *Tcubed);
 	M = CAACoordinateTransformation.DegreesToRadians(M);
-	double F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
+	var F = CAACoordinateTransformation.MapTo0To360Range(316.6109 + 364.5287911 *k - 0.0125053 *Tsquared - 0.0000148 *Tcubed);
 	F = CAACoordinateTransformation.DegreesToRadians(F);
 
-    int nApogeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4.Length;
-	double Parallax = 3245.251;
-	for (int i =0; i<nApogeeCoefficients; i++)
+    var nApogeeCoefficients = GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4.Length;
+	var Parallax = 3245.251;
+	for (var i =0; i<nApogeeCoefficients; i++)
 	{
 	  Parallax += (GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4[i].C + T *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4[i].T) * Math.Cos(D *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4[i].D + M *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4[i].M + F *GlobalMembersStdafx.g_MoonPerigeeApogeeCoefficients4[i].F);
 	}

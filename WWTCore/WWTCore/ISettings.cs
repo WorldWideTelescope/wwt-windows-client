@@ -1,5 +1,4 @@
-﻿using System;
-namespace TerraViewer
+﻿namespace TerraViewer
 {
     public interface ISettings
     {

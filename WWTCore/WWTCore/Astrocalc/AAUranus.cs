@@ -70,44 +70,44 @@ public class  CAAUranus
   
   public static double EclipticLongitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
   
 	//Calculate L0
-	int nL0Coefficients = GlobalMembersStdafx.g_L0UranusCoefficients.Length;
+	var nL0Coefficients = GlobalMembersStdafx.g_L0UranusCoefficients.Length;
 	double L0 = 0;
 	int i;
 	for (i =0; i<nL0Coefficients; i++)
 	  L0 += GlobalMembersStdafx.g_L0UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L0UranusCoefficients[i].B + GlobalMembersStdafx.g_L0UranusCoefficients[i].C *rho);
   
 	//Calculate L1
-	int nL1Coefficients = GlobalMembersStdafx.g_L1UranusCoefficients.Length;
+	var nL1Coefficients = GlobalMembersStdafx.g_L1UranusCoefficients.Length;
 	double L1 = 0;
 	for (i =0; i<nL1Coefficients; i++)
 	  L1 += GlobalMembersStdafx.g_L1UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L1UranusCoefficients[i].B + GlobalMembersStdafx.g_L1UranusCoefficients[i].C *rho);
   
 	//Calculate L2
-	int nL2Coefficients = GlobalMembersStdafx.g_L2UranusCoefficients.Length;
+	var nL2Coefficients = GlobalMembersStdafx.g_L2UranusCoefficients.Length;
 	double L2 = 0;
 	for (i =0; i<nL2Coefficients; i++)
 	  L2 += GlobalMembersStdafx.g_L2UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L2UranusCoefficients[i].B + GlobalMembersStdafx.g_L2UranusCoefficients[i].C *rho);
   
 	//Calculate L3
-	int nL3Coefficients = GlobalMembersStdafx.g_L3UranusCoefficients.Length;
+	var nL3Coefficients = GlobalMembersStdafx.g_L3UranusCoefficients.Length;
 	double L3 = 0;
 	for (i =0; i<nL3Coefficients; i++)
 	  L3 += GlobalMembersStdafx.g_L3UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L3UranusCoefficients[i].B + GlobalMembersStdafx.g_L3UranusCoefficients[i].C *rho);
   
 	//Calculate L4
-	int nL4Coefficients = GlobalMembersStdafx.g_L4UranusCoefficients.Length;
+	var nL4Coefficients = GlobalMembersStdafx.g_L4UranusCoefficients.Length;
 	double L4 = 0;
 	for (i =0; i<nL4Coefficients; i++)
 	  L4 += GlobalMembersStdafx.g_L4UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L4UranusCoefficients[i].B + GlobalMembersStdafx.g_L4UranusCoefficients[i].C *rho);
   
   
-	double @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4) / 100000000;
+	var @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(@value));
@@ -115,43 +115,43 @@ public class  CAAUranus
   }
   public static double EclipticLatitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
   
 	//Calculate B0
-	int nB0Coefficients = GlobalMembersStdafx.g_B0UranusCoefficients.Length;
+	var nB0Coefficients = GlobalMembersStdafx.g_B0UranusCoefficients.Length;
 	double B0 = 0;
 	int i;
 	for (i =0; i<nB0Coefficients; i++)
 	  B0 += GlobalMembersStdafx.g_B0UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B0UranusCoefficients[i].B + GlobalMembersStdafx.g_B0UranusCoefficients[i].C *rho);
   
 	//Calculate B1
-	int nB1Coefficients = GlobalMembersStdafx.g_B1UranusCoefficients.Length;
+	var nB1Coefficients = GlobalMembersStdafx.g_B1UranusCoefficients.Length;
 	double B1 = 0;
 	for (i =0; i<nB1Coefficients; i++)
 	  B1 += GlobalMembersStdafx.g_B1UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B1UranusCoefficients[i].B + GlobalMembersStdafx.g_B1UranusCoefficients[i].C *rho);
   
 	//Calculate B2
-	int nB2Coefficients = GlobalMembersStdafx.g_B2UranusCoefficients.Length;
+	var nB2Coefficients = GlobalMembersStdafx.g_B2UranusCoefficients.Length;
 	double B2 = 0;
 	for (i =0; i<nB2Coefficients; i++)
 	  B2 += GlobalMembersStdafx.g_B2UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B2UranusCoefficients[i].B + GlobalMembersStdafx.g_B2UranusCoefficients[i].C *rho);
   
 	//Calculate B3
-	int nB3Coefficients = GlobalMembersStdafx.g_B3UranusCoefficients.Length;
+	var nB3Coefficients = GlobalMembersStdafx.g_B3UranusCoefficients.Length;
 	double B3 = 0;
 	for (i =0; i<nB3Coefficients; i++)
 	  B3 += GlobalMembersStdafx.g_B3UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B3UranusCoefficients[i].B + GlobalMembersStdafx.g_B3UranusCoefficients[i].C *rho);
   
 	//Calculate B4
-    int nB4Coefficients = GlobalMembersStdafx.g_B4UranusCoefficients.Length;
+    var nB4Coefficients = GlobalMembersStdafx.g_B4UranusCoefficients.Length;
 	double B4 = 0;
 	for (i =0; i<nB4Coefficients; i++)
 	  B4 += GlobalMembersStdafx.g_B4UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B4UranusCoefficients[i].B + GlobalMembersStdafx.g_B4UranusCoefficients[i].C *rho);
   
-	double @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4) / 100000000;
+	var @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.RadiansToDegrees(@value);
@@ -159,38 +159,38 @@ public class  CAAUranus
   }
   public static double RadiusVector(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
   
 	//Calculate R0
-	int nR0Coefficients = GlobalMembersStdafx.g_R0UranusCoefficients.Length;
+	var nR0Coefficients = GlobalMembersStdafx.g_R0UranusCoefficients.Length;
 	double R0 = 0;
 	int i;
 	for (i =0; i<nR0Coefficients; i++)
 	  R0 += GlobalMembersStdafx.g_R0UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R0UranusCoefficients[i].B + GlobalMembersStdafx.g_R0UranusCoefficients[i].C *rho);
   
 	//Calculate R1
-	int nR1Coefficients = GlobalMembersStdafx.g_R1UranusCoefficients.Length;
+	var nR1Coefficients = GlobalMembersStdafx.g_R1UranusCoefficients.Length;
 	double R1 = 0;
 	for (i =0; i<nR1Coefficients; i++)
 	  R1 += GlobalMembersStdafx.g_R1UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R1UranusCoefficients[i].B + GlobalMembersStdafx.g_R1UranusCoefficients[i].C *rho);
   
 	//Calculate R2
-	int nR2Coefficients = GlobalMembersStdafx.g_R2UranusCoefficients.Length;
+	var nR2Coefficients = GlobalMembersStdafx.g_R2UranusCoefficients.Length;
 	double R2 = 0;
 	for (i =0; i<nR2Coefficients; i++)
 	  R2 += GlobalMembersStdafx.g_R2UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R2UranusCoefficients[i].B + GlobalMembersStdafx.g_R2UranusCoefficients[i].C *rho);
   
 	//Calculate R3
-	int nR3Coefficients = GlobalMembersStdafx.g_R3UranusCoefficients.Length;
+	var nR3Coefficients = GlobalMembersStdafx.g_R3UranusCoefficients.Length;
 	double R3 = 0;
 	for (i =0; i<nR3Coefficients; i++)
 	  R3 += GlobalMembersStdafx.g_R3UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R3UranusCoefficients[i].B + GlobalMembersStdafx.g_R3UranusCoefficients[i].C *rho);
   
   //Calculate R4
-    int nR4Coefficients = GlobalMembersStdafx.g_R4UranusCoefficients.Length;
+    var nR4Coefficients = GlobalMembersStdafx.g_R4UranusCoefficients.Length;
 	double R4 = 0;
 	for (i =0; i<nR4Coefficients; i++)
 	  R4 += GlobalMembersStdafx.g_R4UranusCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R4UranusCoefficients[i].B + GlobalMembersStdafx.g_R4UranusCoefficients[i].C *rho);

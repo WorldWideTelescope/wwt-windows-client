@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
-using System.Linq;
+using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TerraViewer
 {
@@ -19,7 +18,7 @@ namespace TerraViewer
         public bool Internal = false;
         private void SaveBits()
         {
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 OldBits[i] = Bits[i];
             }
@@ -27,7 +26,7 @@ namespace TerraViewer
 
         private bool IsChanged()
         {
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 if (OldBits[i] != Bits[i])
                 {
@@ -47,9 +46,9 @@ namespace TerraViewer
 
         public bool IsEnabled(string abbrev)
         {
-            Int32 bitID = BitIDs[abbrev];
+            var bitID = BitIDs[abbrev];
 
-            int index = bitID / 32;
+            var index = bitID / 32;
             bitID = bitID % 32;
 
             return BlendState.State && ((1 << (bitID)) & Bits[index]) != 0;
@@ -59,9 +58,9 @@ namespace TerraViewer
         {
             SaveBits();
 
-            Int32 bitID = BitIDs[abbrev];
+            var bitID = BitIDs[abbrev];
 
-            int index = bitID / 32;
+            var index = bitID / 32;
             bitID = bitID % 32;
 
             return ((1 << (bitID)) & Bits[index]) != 0;
@@ -70,9 +69,9 @@ namespace TerraViewer
         public void Set(string abbrev, bool state)
         {
             SaveBits();
-            int bitID = BitIDs[abbrev];
+            var bitID = BitIDs[abbrev];
 
-            int index = bitID / 32;
+            var index = bitID / 32;
             bitID = bitID % 32;
 
             if (state)
@@ -90,11 +89,11 @@ namespace TerraViewer
         public void SetAll(bool state)
         {
             SaveBits();
-            for (int bitID = 0; bitID < 89; bitID++)
+            for (var bitID = 0; bitID < 89; bitID++)
             {
 
-                int index = bitID / 32;
-                int bit = bitID % 32;
+                var index = bitID / 32;
+                var bit = bitID % 32;
 
                 if (state)
                 {
@@ -111,19 +110,19 @@ namespace TerraViewer
         public void SetBits(byte[] bits)
         {
             SaveBits();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                Bits[i] = ((int)bits[i * 4]) + (((int)bits[i * 4 + 1]) << 8) + (((int)bits[i * 4 + 2]) << 16) + (((int)bits[i * 4 + 3]) << 24);
+                Bits[i] = bits[i * 4] + (bits[i * 4 + 1] << 8) + (bits[i * 4 + 2] << 16) + (bits[i * 4 + 3] << 24);
             }
             CheckChanged();
         }
 
         public byte[] GetBits()
         {
-            byte[] bits = new byte[12];
+            var bits = new byte[12];
 
-            int index = 0;
-            for (int i = 0; i < 3; i++)
+            var index = 0;
+            for (var i = 0; i < 3; i++)
             {
                 bits[index++] = (byte)(Bits[i]);
                 bits[index++] = (byte)(Bits[i] >> 8);
@@ -138,7 +137,7 @@ namespace TerraViewer
         public void Clone(ConstellationFilter filter)
         {
             SaveBits();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Bits[i] = filter.Bits[i];
             }
@@ -147,7 +146,7 @@ namespace TerraViewer
 
         public ConstellationFilter Clone()
         {
-            ConstellationFilter newFilter = new ConstellationFilter();
+            var newFilter = new ConstellationFilter();
             newFilter.Clone(this);
             return newFilter;
         }
@@ -155,7 +154,7 @@ namespace TerraViewer
         public void Combine(ConstellationFilter filter)
         {
             SaveBits();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Bits[i] = Bits[i] | filter.Bits[i];
             }
@@ -165,7 +164,7 @@ namespace TerraViewer
         public void Remove(ConstellationFilter filter)
         {
             SaveBits();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Bits[i] = Bits[i] & ~filter.Bits[i];
             }
@@ -182,7 +181,7 @@ namespace TerraViewer
 
         public static void InitSets()
         {
-            ConstellationFilter all = AllConstellation;
+            var all = AllConstellation;
             all.Internal = true;
             Families.Add("AllConstellation", all);
             Families.Add("Zodiacal", Zodiacal);
@@ -198,9 +197,9 @@ namespace TerraViewer
 
         public static void SaveCustomFilters()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            foreach (KeyValuePair<string, ConstellationFilter> kv in Families)
+            foreach (var kv in Families)
             {
                 if (!kv.Value.Internal)
                 {
@@ -216,16 +215,16 @@ namespace TerraViewer
 
         public static void LoadCustomFilters()
         {
-            string savedFilders = AppSettings.SettingsBase["SavedFilters"].ToString();
-            string[] lines = savedFilders.Split(new char[] { '\n' });
-            foreach (string line in lines)
+            var savedFilders = AppSettings.SettingsBase["SavedFilters"].ToString();
+            var lines = savedFilders.Split(new[] { '\n' });
+            foreach (var line in lines)
             {
                 try
                 {
-                    string[] parts = line.Split(new char[] { ';' });
+                    var parts = line.Split(new[] { ';' });
                     if (parts.Length > 1)
                     {
-                        ConstellationFilter filter = ConstellationFilter.Parse(parts[1]);
+                        var filter = Parse(parts[1]);
                         Families.Add(parts[0], filter);
                     }
                 }
@@ -239,7 +238,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter all = new ConstellationFilter();
+                var all = new ConstellationFilter();
 
                 all.SetAll(true);
 
@@ -252,7 +251,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter zodiacal = new ConstellationFilter();
+                var zodiacal = new ConstellationFilter();
                 zodiacal.Set("ARI", true);
                 zodiacal.Set("TAU", true);
                 zodiacal.Set("GEM", true);
@@ -275,7 +274,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter uma = new ConstellationFilter();
+                var uma = new ConstellationFilter();
                 uma.Set("UMA", true);
                 uma.Set("UMI", true);
                 uma.Set("DRA", true);
@@ -295,7 +294,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter Perseus = new ConstellationFilter();
+                var Perseus = new ConstellationFilter();
                 Perseus.Set("CAS", true);
                 Perseus.Set("CEP", true);
                 Perseus.Set("AND", true);
@@ -316,7 +315,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter hercules = new ConstellationFilter();
+                var hercules = new ConstellationFilter();
                 hercules.Set("HER", true);
                 hercules.Set("SGE", true);
                 hercules.Set("AQL", true);
@@ -347,7 +346,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter orion = new ConstellationFilter();
+                var orion = new ConstellationFilter();
                 orion.Set("ORI", true);
                 orion.Set("CMA", true);
                 orion.Set("CMI", true);
@@ -363,7 +362,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter waters = new ConstellationFilter();
+                var waters = new ConstellationFilter();
                 waters.Set("DEL", true);
                 waters.Set("EQU", true);
                 waters.Set("ERI", true);
@@ -381,7 +380,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter bayer = new ConstellationFilter();
+                var bayer = new ConstellationFilter();
                 bayer.Set("HYA", true);
                 bayer.Set("DOR", true);
                 bayer.Set("VOL", true);
@@ -402,7 +401,7 @@ namespace TerraViewer
         {
             get
             {
-                ConstellationFilter LaCaile = new ConstellationFilter();
+                var LaCaile = new ConstellationFilter();
                 LaCaile.Set("NOR", true);
                 LaCaile.Set("CIR", true);
                 LaCaile.Set("TEL", true);
@@ -438,12 +437,12 @@ namespace TerraViewer
 
         public static ConstellationFilter Parse(string val)
         {
-            string[] parts = ((string)val).Split(new char[] { ',' });
+            var parts = val.Split(new[] { ',' });
 
-            ConstellationFilter cf = new ConstellationFilter();
+            var cf = new ConstellationFilter();
             try
             {
-                for (int i = 0; i < 3; i++)
+                for (var i = 0; i < 3; i++)
                 {
                     cf.Bits[i] = Int32.Parse(parts[i]);
                 }
@@ -462,11 +461,11 @@ namespace TerraViewer
         {
             return sourceType == typeof(string);
         }
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value is string)
             {
-                ConstellationFilter cf = ConstellationFilter.Parse(value as string);
+                var cf = ConstellationFilter.Parse(value as string);
                 cf.SettingsOwned = true;
                 return cf;
             }
@@ -474,7 +473,7 @@ namespace TerraViewer
             return base.ConvertFrom(context, culture, value);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(string))
             {

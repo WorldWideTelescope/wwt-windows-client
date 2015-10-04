@@ -42,22 +42,22 @@ public class  CAAMoslemCalendar
   public static CAACalendarDate MoslemToJulian(int Year, int Month, int Day)
   {
 	//What will be the return value
-	CAACalendarDate JulianDate = new CAACalendarDate();
+	var JulianDate = new CAACalendarDate();
   
-	int N = Day + CAADate.INT(29.5001*(Month - 1) + 0.99);
-	int Q = CAADate.INT(Year/30.0);
-	int R = Year % 30;
-	int A = CAADate.INT((11 *R + 3)/30.0);
-	int W = 404 *Q + 354 *R + 208 + A;
-	int Q1 = CAADate.INT(W/1461.0);
-	int Q2 = W % 1461;
-	int G = 621 + 4 *CAADate.INT(7 *Q + Q1);
-	int K = CAADate.INT(Q2/365.2422);
-	int E = CAADate.INT(365.2422 *K);
-	int J = Q2 - E + N - 1;
-	int X = G + K;
+	var N = Day + CAADate.INT(29.5001*(Month - 1) + 0.99);
+	var Q = CAADate.INT(Year/30.0);
+	var R = Year % 30;
+	var A = CAADate.INT((11 *R + 3)/30.0);
+	var W = 404 *Q + 354 *R + 208 + A;
+	var Q1 = CAADate.INT(W/1461.0);
+	var Q2 = W % 1461;
+	var G = 621 + 4 *CAADate.INT(7 *Q + Q1);
+	var K = CAADate.INT(Q2/365.2422);
+	var E = CAADate.INT(365.2422 *K);
+	var J = Q2 - E + N - 1;
+	var X = G + K;
   
-	int XMod4 = X % 4;
+	var XMod4 = X % 4;
 	if ((J > 366) && (XMod4 == 0))
 	{
 	  J -= 366;
@@ -77,31 +77,31 @@ public class  CAAMoslemCalendar
   public static CAACalendarDate JulianToMoslem(int Year, int Month, int Day)
   {
 	//What will be the return value
-	CAACalendarDate MoslemDate = new CAACalendarDate();
+	var MoslemDate = new CAACalendarDate();
   
-	int W = (Year % 4) == 0 ? 2 : 1;
-	int N = CAADate.INT((275 * Month)/9.0) - (W *CAADate.INT((Month + 9)/12.0)) + Day - 30;
-	int A = Year - 623;
-	int B = CAADate.INT(A / 4.0);
-	int C = A % 4;
-	double C1 = 365.2501 *C;
-	int C2 = CAADate.INT(C1);
+	var W = (Year % 4) == 0 ? 2 : 1;
+	var N = CAADate.INT((275 * Month)/9.0) - (W *CAADate.INT((Month + 9)/12.0)) + Day - 30;
+	var A = Year - 623;
+	var B = CAADate.INT(A / 4.0);
+	var C = A % 4;
+	var C1 = 365.2501 *C;
+	var C2 = CAADate.INT(C1);
 	if ((C1 - C2) > 0.5)
 	  C2++;
   
-	int Ddash = 1461 *B + 170 + C2;
-	int Q = CAADate.INT(Ddash / 10631.0);
-	int R = Ddash % 10631;
-	int J = CAADate.INT(R / 354.0);
-	int K = R % 354;
-	int O = CAADate.INT((11 *J + 14) / 30);
-	int H = 30 *Q + J + 1;
-	int JJ = K - O + N - 1;
+	var Ddash = 1461 *B + 170 + C2;
+	var Q = CAADate.INT(Ddash / 10631.0);
+	var R = Ddash % 10631;
+	var J = CAADate.INT(R / 354.0);
+	var K = R % 354;
+	var O = CAADate.INT((11 *J + 14.0) / 30.0);
+	var H = 30 *Q + J + 1;
+	var JJ = K - O + N - 1;
   
 	if (JJ > 354)
 	{
-	  int CL = H % 30;
-	  int DL = (11 *CL + 3) % 30;
+	  var CL = H % 30;
+	  var DL = (11 *CL + 3) % 30;
 	  if (DL < 19)
 	  {
 		JJ -= 354;
@@ -119,7 +119,7 @@ public class  CAAMoslemCalendar
 	  }
 	}
   
-	int S = CAADate.INT((JJ - 1) / 29.5);
+	var S = CAADate.INT((JJ - 1) / 29.5);
 	MoslemDate.Month = 1 + S;
 	MoslemDate.Day = CAADate.INT(JJ - 29.5 *S);
 	MoslemDate.Year = H;
@@ -134,7 +134,7 @@ public class  CAAMoslemCalendar
   }
   public static bool IsLeap(int Year)
   {
-	int R = Year % 30;
+	var R = Year % 30;
 	return ((11 *R + 3) % 30) > 18;
   }
 }

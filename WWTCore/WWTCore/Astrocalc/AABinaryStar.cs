@@ -53,25 +53,23 @@ public class  CAABinaryStar
   
   public static CAABinaryStarDetails Calculate(double t, double P, double T, double e, double a, double i, double omega, double w)
   {
-	double n = 360 / P;
-	double M = CAACoordinateTransformation.MapTo0To360Range(n*(t - T));
-	double E = CAAKepler.Calculate(M, e);
+	var n = 360 / P;
+	var M = CAACoordinateTransformation.MapTo0To360Range(n*(t - T));
+	var E = CAAKepler.Calculate(M, e);
 	E = CAACoordinateTransformation.DegreesToRadians(E);
 	i = CAACoordinateTransformation.DegreesToRadians(i);
 	w = CAACoordinateTransformation.DegreesToRadians(w);
 	omega = CAACoordinateTransformation.DegreesToRadians(omega);
   
-	CAABinaryStarDetails details = new CAABinaryStarDetails();
-  
-	details.r = a*(1 - e *Math.Cos(E));
-  
-	double v = Math.Atan(Math.Sqrt((1 + e) / (1 - e)) * Math.Tan(E/2)) * 2;
+	var details = new CAABinaryStarDetails {r = a*(1 - e*Math.Cos(E))};
+
+      var v = Math.Atan(Math.Sqrt((1 + e) / (1 - e)) * Math.Tan(E/2)) * 2;
 	details.Theta = Math.Atan2(Math.Sin(v + w) * Math.Cos(i), Math.Cos(v + w)) + omega;
 	details.Theta = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(details.Theta));
   
-	double sinvw = Math.Sin(v + w);
-	double cosvw = Math.Cos(v + w);
-	double cosi = Math.Cos(i);
+	var sinvw = Math.Sin(v + w);
+	var cosvw = Math.Cos(v + w);
+	var cosi = Math.Cos(i);
 	details.Rho = details.r * Math.Sqrt((sinvw *sinvw *cosi *cosi) + (cosvw *cosvw));
   
 	return details;
@@ -81,16 +79,16 @@ public class  CAABinaryStar
 	i = CAACoordinateTransformation.DegreesToRadians(i);
 	w = CAACoordinateTransformation.DegreesToRadians(w);
   
-	double cosi = Math.Cos(i);
-	double cosw = Math.Cos(w);
-	double sinw = Math.Sin(w);
-	double esquared = e *e;
-	double A = (1 - esquared *cosw *cosw)*cosi *cosi;
-	double B = esquared *sinw *cosw *cosi;
-	double C = 1 - esquared *sinw *sinw;
-	double D = (A - C)*(A - C) + 4 *B *B;
+	var cosi = Math.Cos(i);
+	var cosw = Math.Cos(w);
+	var sinw = Math.Sin(w);
+	var esquared = e *e;
+	var A = (1 - esquared *cosw *cosw)*cosi *cosi;
+	var B = esquared *sinw *cosw *cosi;
+	var C = 1 - esquared *sinw *sinw;
+	var D = (A - C)*(A - C) + 4 *B *B;
   
-	double sqrtD = Math.Sqrt(D);
+	var sqrtD = Math.Sqrt(D);
 	return Math.Sqrt(2 *sqrtD / (A + C + sqrtD));
   }
 }

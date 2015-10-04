@@ -49,25 +49,25 @@ public class  CAAAberration
   
   public static CAA3DCoordinate EarthVelocity(double JD)
   {
-	double T = (JD - 2451545) / 36525;
-	double L2 = 3.1761467 + 1021.3285546 * T;
-	double L3 = 1.7534703 + 628.3075849 * T;
-	double L4 = 6.2034809 + 334.0612431 * T;
-	double L5 = 0.5995465 + 52.9690965 * T;
-	double L6 = 0.8740168 + 21.3299095 * T;
-	double L7 = 5.4812939 + 7.4781599 * T;
-	double L8 = 5.3118863 + 3.8133036 * T;
-	double Ldash = 3.8103444 + 8399.6847337 * T;
-	double D = 5.1984667 + 7771.3771486 * T;
-	double Mdash = 2.3555559 + 8328.6914289 * T;
-	double F = 1.6279052 + 8433.4661601 * T;
+	var T = (JD - 2451545) / 36525;
+	var L2 = 3.1761467 + 1021.3285546 * T;
+	var L3 = 1.7534703 + 628.3075849 * T;
+	var L4 = 6.2034809 + 334.0612431 * T;
+	var L5 = 0.5995465 + 52.9690965 * T;
+	var L6 = 0.8740168 + 21.3299095 * T;
+	var L7 = 5.4812939 + 7.4781599 * T;
+	var L8 = 5.3118863 + 3.8133036 * T;
+	var Ldash = 3.8103444 + 8399.6847337 * T;
+	var D = 5.1984667 + 7771.3771486 * T;
+	var Mdash = 2.3555559 + 8328.6914289 * T;
+	var F = 1.6279052 + 8433.4661601 * T;
   
-	CAA3DCoordinate velocity = new CAA3DCoordinate();
+	var velocity = new CAA3DCoordinate();
 
-    int nAberrationCoefficients = GlobalMembersStdafx.g_AberrationCoefficients.Length;
-	for (int i =0; i<nAberrationCoefficients; i++)
+    var nAberrationCoefficients = GlobalMembersStdafx.g_AberrationCoefficients.Length;
+	for (var i =0; i<nAberrationCoefficients; i++)
 	{
-	  double Argument = GlobalMembersStdafx.g_AberrationCoefficients[i].L2 *L2 + GlobalMembersStdafx.g_AberrationCoefficients[i].L3 *L3 + GlobalMembersStdafx.g_AberrationCoefficients[i].L4 *L4 + GlobalMembersStdafx.g_AberrationCoefficients[i].L5 *L5 + GlobalMembersStdafx.g_AberrationCoefficients[i].L6 *L6 + GlobalMembersStdafx.g_AberrationCoefficients[i].L7 *L7 + GlobalMembersStdafx.g_AberrationCoefficients[i].L8 *L8 + GlobalMembersStdafx.g_AberrationCoefficients[i].Ldash *Ldash + GlobalMembersStdafx.g_AberrationCoefficients[i].D *D + GlobalMembersStdafx.g_AberrationCoefficients[i].Mdash *Mdash + GlobalMembersStdafx.g_AberrationCoefficients[i].F *F;
+	  var Argument = GlobalMembersStdafx.g_AberrationCoefficients[i].L2 *L2 + GlobalMembersStdafx.g_AberrationCoefficients[i].L3 *L3 + GlobalMembersStdafx.g_AberrationCoefficients[i].L4 *L4 + GlobalMembersStdafx.g_AberrationCoefficients[i].L5 *L5 + GlobalMembersStdafx.g_AberrationCoefficients[i].L6 *L6 + GlobalMembersStdafx.g_AberrationCoefficients[i].L7 *L7 + GlobalMembersStdafx.g_AberrationCoefficients[i].L8 *L8 + GlobalMembersStdafx.g_AberrationCoefficients[i].Ldash *Ldash + GlobalMembersStdafx.g_AberrationCoefficients[i].D *D + GlobalMembersStdafx.g_AberrationCoefficients[i].Mdash *Mdash + GlobalMembersStdafx.g_AberrationCoefficients[i].F *F;
 	  velocity.X += (GlobalMembersStdafx.g_AberrationCoefficients[i].xsin + GlobalMembersStdafx.g_AberrationCoefficients[i].xsint * T) * Math.Sin(Argument);
 	  velocity.X += (GlobalMembersStdafx.g_AberrationCoefficients[i].xcos + GlobalMembersStdafx.g_AberrationCoefficients[i].xcost * T) * Math.Cos(Argument);
   
@@ -83,14 +83,14 @@ public class  CAAAberration
   public static CAA2DCoordinate EclipticAberration(double Lambda, double Beta, double JD)
   {
 	//What is the return value
-	CAA2DCoordinate aberration = new CAA2DCoordinate();
+	var aberration = new CAA2DCoordinate();
   
-	double T = (JD - 2451545) / 36525;
-	double Tsquared = T *T;
-	double e = 0.016708634 - 0.000042037 *T - 0.0000001267 *Tsquared;
-	double pi = 102.93735 + 1.71946 *T + 0.00046 *Tsquared;
-	double k = 20.49552;
-	double SunLongitude = CAASun.GeometricEclipticLongitude(JD);
+	var T = (JD - 2451545) / 36525;
+	var Tsquared = T *T;
+	var e = 0.016708634 - 0.000042037 *T - 0.0000001267 *Tsquared;
+	var pi = 102.93735 + 1.71946 *T + 0.00046 *Tsquared;
+	const double k = 20.49552;
+	var SunLongitude = CAASun.GeometricEclipticLongitude(JD);
   
 	//Convert to radians
 	pi = CAACoordinateTransformation.DegreesToRadians(pi);
@@ -109,20 +109,21 @@ public class  CAAAberration
 	Alpha = CAACoordinateTransformation.DegreesToRadians(Alpha *15);
 	Delta = CAACoordinateTransformation.DegreesToRadians(Delta);
   
-	double cosAlpha = Math.Cos(Alpha);
-	double sinAlpha = Math.Sin(Alpha);
-	double cosDelta = Math.Cos(Delta);
-	double sinDelta = Math.Sin(Delta);
+	var cosAlpha = Math.Cos(Alpha);
+	var sinAlpha = Math.Sin(Alpha);
+	var cosDelta = Math.Cos(Delta);
+	var sinDelta = Math.Sin(Delta);
   
-	CAA3DCoordinate velocity = EarthVelocity(JD);
+	var velocity = EarthVelocity(JD);
   
 	//What is the return value
-	CAA2DCoordinate aberration = new CAA2DCoordinate();
-  
-	aberration.X = CAACoordinateTransformation.RadiansToHours((velocity.Y * cosAlpha - velocity.X * sinAlpha) / (17314463350.0 * cosDelta));
-	aberration.Y = CAACoordinateTransformation.RadiansToDegrees(- (((velocity.X * cosAlpha + velocity.Y * sinAlpha) * sinDelta - velocity.Z * cosDelta) / 17314463350.0));
-  
-	return aberration;
+	var aberration = new CAA2DCoordinate
+	{
+	    X = CAACoordinateTransformation.RadiansToHours((velocity.Y*cosAlpha - velocity.X*sinAlpha)/(17314463350.0*cosDelta)),
+	    Y = CAACoordinateTransformation.RadiansToDegrees(- (((velocity.X*cosAlpha + velocity.Y*sinAlpha)*sinDelta - velocity.Z*cosDelta)/17314463350.0))
+	};
+
+      return aberration;
   }
 }
 

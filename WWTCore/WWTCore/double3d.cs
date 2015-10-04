@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using SharpDX;
 using Quaternion = SharpDX.Quaternion;
 
@@ -93,7 +92,7 @@ namespace TerraViewer
         {
 
 
-            Coordinates latLng = Coordinates.CartesianToSpherical2(this.Position);
+            var latLng = Coordinates.CartesianToSpherical2(Position);
             //      latLng.Lng += 90;
             if (latLng.Lng < -180)
             {
@@ -111,16 +110,18 @@ namespace TerraViewer
             {
                 latLng.Lng = -180;
             }
-            PositionNormalTexturedX2 pnt = new PositionNormalTexturedX2();
+            var pnt = new PositionNormalTexturedX2
+            {
+                X = (float) (X - center.X),
+                Y = (float) (Y - center.Y),
+                Z = (float) (Z - center.Z),
+                Tu = (float) Tu,
+                Tv = (float) Tv,
+                Lng = latLng.Lng,
+                Lat = latLng.Lat,
+                Normal = Position
+            };
 
-            pnt.X = (float)(X - center.X);
-            pnt.Y = (float)(Y - center.Y);
-            pnt.Z = (float)(Z - center.Z);
-            pnt.Tu = (float)Tu;
-            pnt.Tv = (float)Tv;
-            pnt.Lng = latLng.Lng;
-            pnt.Lat = latLng.Lat;
-            pnt.Normal = Position;
             return pnt;
 
         }
@@ -181,7 +182,7 @@ namespace TerraViewer
             Z = value.Z;
         }
 
-        public Vector3d(SharpDX.Vector3 value)
+        public Vector3d(Vector3 value)
         {
             X = value.X;
             Y = value.Y;
@@ -343,13 +344,13 @@ namespace TerraViewer
   
         public static Vector3d MidPoint(Vector3d left, Vector3d right)
         {
-            Vector3d result = new Vector3d((left.X + right.X) / 2, (left.Y + right.Y) / 2, (left.Z + right.Z) / 2);
+            var result = new Vector3d((left.X + right.X) / 2, (left.Y + right.Y) / 2, (left.Z + right.Z) / 2);
             result.Normalize();
             return result;
         }
         public static Vector3d MidPointByLength(Vector3d left, Vector3d right)
         {
-            Vector3d result = new Vector3d((left.X + right.X) / 2, (left.Y + right.Y) / 2, (left.Z + right.Z) / 2);
+            var result = new Vector3d((left.X + right.X) / 2, (left.Y + right.Y) / 2, (left.Z + right.Z) / 2);
             result.Normalize();
 
             result.Multiply(left.Length());
@@ -368,9 +369,9 @@ namespace TerraViewer
         // rounds to factor
         public void Round()
         {
-            X = (double)((int)(X*65536))/65536.0;
-            Y = (double)((int)(Y*65536))/65536.0;
-            Z = (double)((int)(Z*65536))/65536.0;
+            X = (int)(X*65536)/65536.0;
+            Y = (int)(Y*65536)/65536.0;
+            Z = (int)(Z*65536)/65536.0;
         }
         // Summary:
         //     Adds two 3-D vectors.
@@ -504,8 +505,8 @@ namespace TerraViewer
         //     or false if it is not.
         public override bool Equals(object compare)
         {
-            Vector3d comp = (Vector3d)compare;
-            return this.X == comp.X && this.Y == comp.Y && this.Z == comp.Z;
+            var comp = (Vector3d)compare;
+            return X == comp.X && Y == comp.Y && Z == comp.Z;
         }
         //
         // Summary:
@@ -549,7 +550,7 @@ namespace TerraViewer
         //     A System.Single value that contains the vector's length.
         public double Length()
         {
-            return System.Math.Sqrt(X * X + Y * Y + Z * Z);
+            return Math.Sqrt(X * X + Y * Y + Z * Z);
         }
         //
         // Summary:
@@ -563,7 +564,7 @@ namespace TerraViewer
         //     A System.Single value that contains the vector's length.
         public static double Length(Vector3d source)
         {
-            return System.Math.Sqrt(source.X * source.X + source.Y * source.Y + source.Z * source.Z);
+            return Math.Sqrt(source.X * source.X + source.Y * source.Y + source.Z * source.Z);
 
         }
         //
@@ -618,7 +619,7 @@ namespace TerraViewer
 
         public static Vector3d Midpoint(Vector3d left, Vector3d right)
         {
-            Vector3d tmp = new Vector3d(
+            var tmp = new Vector3d(
                 left.X * (.5) + right.X * .5,
                 left.Y * (.5) + right.Y * .5,
                 left.Z * (.5) + right.Z * .5);
@@ -629,10 +630,10 @@ namespace TerraViewer
 
         public static Vector3d Slerp(Vector3d left, Vector3d right, double interpolater)
         {
-            double dot = Dot(left, right);
+            var dot = Dot(left, right);
             while (dot < .98)
             {
-                Vector3d middle = Midpoint(left, right);
+                var middle = Midpoint(left, right);
                 if (interpolater > .5)
                 {
                     left = middle;
@@ -647,7 +648,7 @@ namespace TerraViewer
                 dot = Dot(left, right);
             }
 
-            Vector3d tmp = Lerp(left, right, interpolater);
+            var tmp = Lerp(left, right, interpolater);
             tmp.Normalize();
             return tmp;
         }
@@ -733,7 +734,7 @@ namespace TerraViewer
         //     value.
         public static Vector3d Multiply(Vector3d source, double f)
         {
-            Vector3d result = new Vector3d(source);
+            var result = new Vector3d(source);
             result.Multiply(f);
             return result;
         }
@@ -743,7 +744,7 @@ namespace TerraViewer
         public void Normalize()
         {
             // Vector3.Length property is under length section
-            double length = this.Length();
+            var length = Length();
             if (length != 0)
             {
                 X /= length;
@@ -767,40 +768,34 @@ namespace TerraViewer
         //     A Vector3d structure that is the scaled vector.
         public static Vector3d Scale(Vector3d source, double scalingFactor)
         {
-            Vector3d result = source;
+            var result = source;
             result.Multiply(scalingFactor);
             return result;
         }
 
         public void RotateX(double radians)
         {
-            double zTemp;
-            double yTemp;
             //radians = -radians;
-            yTemp = Y * Math.Cos(radians) - Z * Math.Sin(radians);
-            zTemp = Y * Math.Sin(radians) + Z * Math.Cos(radians);
+            double yTemp = Y * Math.Cos(radians) - Z * Math.Sin(radians);
+            double zTemp = Y * Math.Sin(radians) + Z * Math.Cos(radians);
             Z = zTemp;
             Y = yTemp;
         }
 
         public void RotateZ(double radians)
         {
-            double xTemp;
-            double yTemp;
             //radians = -radians;
-            xTemp = X * Math.Cos(radians) - Y * Math.Sin(radians);
-            yTemp = X * Math.Sin(radians) + Y * Math.Cos(radians);
+            double xTemp = X * Math.Cos(radians) - Y * Math.Sin(radians);
+            double yTemp = X * Math.Sin(radians) + Y * Math.Cos(radians);
             Y = yTemp;
             X = xTemp;
         }
 
         public void RotateY(double radians)
         {
-            double zTemp;
-            double xTemp;
             //radians = -radians;
-            zTemp = Z * Math.Cos(radians) - X * Math.Sin(radians);
-            xTemp = Z * Math.Sin(radians) + X * Math.Cos(radians);
+            double zTemp = Z * Math.Cos(radians) - X * Math.Sin(radians);
+            double xTemp = Z * Math.Sin(radians) + X * Math.Cos(radians);
             X = xTemp;
             Z = zTemp;
         }   
@@ -813,9 +808,9 @@ namespace TerraViewer
         //     Source Vector3d structure to subtract from the current instance.
         public void Subtract(Vector3d source)
         {
-            this.X -= source.X;
-            this.Y -= source.Y;
-            this.Z -= source.Z;
+            X -= source.X;
+            Y -= source.Y;
+            Z -= source.Z;
 
         }
         //
@@ -835,7 +830,7 @@ namespace TerraViewer
         //     A Vector3d structure that is the result of the operation.
         public static Vector3d Subtract(Vector3d left, Vector3d right)
         {
-            Vector3d result = left;
+            var result = left;
             result.Subtract(right);
             return result;
         }
@@ -852,9 +847,9 @@ namespace TerraViewer
 
         public static Vector3d Parse(string data)
         {
-            Vector3d newVector = new Vector3d();
+            var newVector = new Vector3d();
 
-            string[] list = data.Split(new char[]{','});
+            var list = data.Split(new[]{','});
             if (list.Length == 3)
             {
                 newVector.X = double.Parse(list[0]);
@@ -870,8 +865,8 @@ namespace TerraViewer
             double ascention;
             double declination;
 
-            double radius = Math.Sqrt(X * X + Y * Y + Z * Z);
-            double XZ = Math.Sqrt(X * X + Z * Z);
+            var radius = Math.Sqrt(X * X + Y * Y + Z * Z);
+            var XZ = Math.Sqrt(X * X + Z * Z);
             declination = Math.Asin(Y / radius);
             if (XZ == 0)
             {
@@ -896,11 +891,11 @@ namespace TerraViewer
         }
         public Vector2d ToRaDec()
         {
-            Vector2d point = ToSpherical();
+            var point = ToSpherical();
             point.X = point.X / Math.PI * 12;
             point.Y = (point.Y / Math.PI * 180) - 90;
 
-            if (point.X == double.NaN || point.Y == double.NaN)
+            if (double.IsNaN(point.X) || double.IsNaN(point.Y))
             {
                 point.X = point.Y = 0;
             }
@@ -911,12 +906,12 @@ namespace TerraViewer
 
         public double DistanceToLine(Vector3d x1, Vector3d x2)
         {
-            Vector3d t1 = x2 - x1;
-            Vector3d t2 = x1 - this;
-            Vector3d t3 = Vector3d.Cross(t1, t2);
-            double d1 = t3.Length();
-            Vector3d t4 = x2 - x1;
-            double d2 = t4.Length();
+            var t1 = x2 - x1;
+            var t2 = x1 - this;
+            var t3 = Cross(t1, t2);
+            var d1 = t3.Length();
+            var t4 = x2 - x1;
+            var d2 = t4.Length();
             return d1 / d2;
 
         }
@@ -927,18 +922,18 @@ namespace TerraViewer
                 return new Vector3((float)X, (float)Y, (float)Z);
             }
         }
-        public SharpDX.Vector4 Vector4
+        public Vector4 Vector4
         {
             get
             {
-                return new SharpDX.Vector4((float)X, (float)Y, (float)Z, 1f);
+                return new Vector4((float)X, (float)Y, (float)Z, 1f);
             }
         }
-        public SharpDX.Vector3 Vector311
+        public Vector3 Vector311
         {
             get
             {
-                return new SharpDX.Vector3((float)X, (float)Y, (float)Z);
+                return new Vector3((float)X, (float)Y, (float)Z);
             }
         }
 
@@ -955,9 +950,9 @@ namespace TerraViewer
 
         public static Vector3d GetMinCoordinate(IEnumerable<Vector3d> points)
         {
-            Vector3d min = new Vector3d(double.MaxValue, double.MaxValue, double.MaxValue);
+            var min = new Vector3d(double.MaxValue, double.MaxValue, double.MaxValue);
 
-            foreach (Vector3d point in points)
+            foreach (var point in points)
             {
                 min.X = Math.Min(min.X, point.X);
                 min.Y = Math.Min(min.Y, point.Y);
@@ -974,9 +969,9 @@ namespace TerraViewer
         /// <returns>Returns double min value if no data is provided</returns>
         public static Vector3d GetMaxCoordinate(IEnumerable<Vector3d> points)
         {
-            Vector3d max = new Vector3d(double.MinValue, double.MinValue, double.MinValue);
+            var max = new Vector3d(double.MinValue, double.MinValue, double.MinValue);
 
-            foreach (Vector3d point in points)
+            foreach (var point in points)
             {
                 max.X = Math.Max(max.X, point.X);
                 max.Y = Math.Max(max.Y, point.Y);
@@ -1014,9 +1009,9 @@ namespace TerraViewer
 
         static public Vector2d CartesianToSpherical2(Vector3d vector)
         {
-            double rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-            double longitude = Math.Atan2(vector.Z, vector.X);
-            double latitude = Math.Asin(vector.Y / rho);
+            var rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            var longitude = Math.Atan2(vector.Z, vector.X);
+            var latitude = Math.Asin(vector.Y / rho);
 
             return new Vector2d(longitude / Math.PI * 180.0, latitude / Math.PI * 180.0);
 
@@ -1024,20 +1019,20 @@ namespace TerraViewer
 
         public double Distance3d(Vector2d pointB)
         {
-            Vector3d pnt1 = Coordinates.GeoTo3dDouble(pointB.Y, pointB.X);
-            Vector3d pnt2 = Coordinates.GeoTo3dDouble(this.Y, this.X);
+            var pnt1 = Coordinates.GeoTo3dDouble(pointB.Y, pointB.X);
+            var pnt2 = Coordinates.GeoTo3dDouble(Y, X);
 
-            Vector3d pntDiff = pnt1 - pnt2;
+            var pntDiff = pnt1 - pnt2;
 
             return pntDiff.Length() /Math.PI * 180;
         }
 
         public static Vector2d Average3d(Vector2d left, Vector2d right)
         {
-            Vector3d pntLeft = Coordinates.GeoTo3dDouble(left.Y, left.X);
-            Vector3d pntRight = Coordinates.GeoTo3dDouble(right.Y, right.X);
+            var pntLeft = Coordinates.GeoTo3dDouble(left.Y, left.X);
+            var pntRight = Coordinates.GeoTo3dDouble(right.Y, right.X);
 
-            Vector3d pntOut = Vector3d.Add(pntLeft, pntRight);
+            var pntOut = Vector3d.Add(pntLeft, pntRight);
             pntOut.Multiply(.5);
             pntOut.Normalize();
 
@@ -1083,7 +1078,7 @@ namespace TerraViewer
         {
  
             // Vector3.Length property is under length section
-            double length = this.Length;
+            var length = Length;
             if (length != 0)
             {
                 X /= length;
@@ -1121,52 +1116,54 @@ namespace TerraViewer
 
         public Matrix3d(double m11, double m12, double m13, double m14, double m21, double m22, double m23, double m24, double m31, double m32, double m33, double m34, double offsetX, double offsetY, double offsetZ, double m44)
         {
-            this._m11 = m11;
-            this._m12 = m12;
-            this._m13 = m13;
-            this._m14 = m14;
-            this._m21 = m21;
-            this._m22 = m22;
-            this._m23 = m23;
-            this._m24 = m24;
-            this._m31 = m31;
-            this._m32 = m32;
-            this._m33 = m33;
-            this._m34 = m34;
-            this._offsetX = offsetX;
-            this._offsetY = offsetY;
-            this._offsetZ = offsetZ;
-            this._m44 = m44;
-            this._isNotKnownToBeIdentity = true;
+            _m11 = m11;
+            _m12 = m12;
+            _m13 = m13;
+            _m14 = m14;
+            _m21 = m21;
+            _m22 = m22;
+            _m23 = m23;
+            _m24 = m24;
+            _m31 = m31;
+            _m32 = m32;
+            _m33 = m33;
+            _m34 = m34;
+            _offsetX = offsetX;
+            _offsetY = offsetY;
+            _offsetZ = offsetZ;
+            _m44 = m44;
+            _isNotKnownToBeIdentity = true;
         }
 
         public Matrix Matrix 
         {
             get
             {
-                Matrix mat = new Matrix();
-                mat.M11 = (float)_m11;
-                mat.M12 = (float)_m12;
-                mat.M13 = (float)_m13;
-                mat.M14 = (float)_m14;
-                mat.M21 = (float)_m21;
-                mat.M22 = (float)_m22;
-                mat.M23 = (float)_m23;
-                mat.M24 = (float)_m24;
-                mat.M31 = (float)_m31;
-                mat.M32 = (float)_m32;
-                mat.M33 = (float)_m33;
-                mat.M34 = (float)_m34;
-                mat.M41 = (float)_offsetX;
-                mat.M42 = (float)_offsetY;
-                mat.M43 = (float)_offsetZ;
-                mat.M44 = (float)_m44;
+                var mat = new Matrix
+                {
+                    M11 = (float) _m11,
+                    M12 = (float) _m12,
+                    M13 = (float) _m13,
+                    M14 = (float) _m14,
+                    M21 = (float) _m21,
+                    M22 = (float) _m22,
+                    M23 = (float) _m23,
+                    M24 = (float) _m24,
+                    M31 = (float) _m31,
+                    M32 = (float) _m32,
+                    M33 = (float) _m33,
+                    M34 = (float) _m34,
+                    M41 = (float) _offsetX,
+                    M42 = (float) _offsetY,
+                    M43 = (float) _offsetZ,
+                    M44 = (float) _m44
+                };
                 return mat;
             }
             set
             {
                 this = s_identity;
-                this.IsDistinguishedIdentity = false;
+                IsDistinguishedIdentity = false;
                 _m11 = value.M11;
                 _m12 = value.M12;
                 _m13 = value.M13;
@@ -1186,33 +1183,35 @@ namespace TerraViewer
             }
         }
 
-        public SharpDX.Matrix Matrix11
+        public Matrix Matrix11
         {
             get
             {
-                SharpDX.Matrix mat = new SharpDX.Matrix();
-                mat.M11 = (float)_m11;
-                mat.M12 = (float)_m12;
-                mat.M13 = (float)_m13;
-                mat.M14 = (float)_m14;
-                mat.M21 = (float)_m21;
-                mat.M22 = (float)_m22;
-                mat.M23 = (float)_m23;
-                mat.M24 = (float)_m24;
-                mat.M31 = (float)_m31;
-                mat.M32 = (float)_m32;
-                mat.M33 = (float)_m33;
-                mat.M34 = (float)_m34;
-                mat.M41 = (float)_offsetX;
-                mat.M42 = (float)_offsetY;
-                mat.M43 = (float)_offsetZ;
-                mat.M44 = (float)_m44;
+                var mat = new Matrix
+                {
+                    M11 = (float) _m11,
+                    M12 = (float) _m12,
+                    M13 = (float) _m13,
+                    M14 = (float) _m14,
+                    M21 = (float) _m21,
+                    M22 = (float) _m22,
+                    M23 = (float) _m23,
+                    M24 = (float) _m24,
+                    M31 = (float) _m31,
+                    M32 = (float) _m32,
+                    M33 = (float) _m33,
+                    M34 = (float) _m34,
+                    M41 = (float) _offsetX,
+                    M42 = (float) _offsetY,
+                    M43 = (float) _offsetZ,
+                    M44 = (float) _m44
+                };
                 return mat;
             }
             set
             {
                 this = s_identity;
-                this.IsDistinguishedIdentity = false;
+                IsDistinguishedIdentity = false;
                 _m11 = value.M11;
                 _m12 = value.M12;
                 _m13 = value.M13;
@@ -1249,13 +1248,13 @@ namespace TerraViewer
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return true;
                 }
-                if (((((this._m11 == 1) && (this._m12 == 0)) && ((this._m13 == 0) && (this._m14 == 0))) && (((this._m21 == 0) && (this._m22 == 1)) && ((this._m23 == 0) && (this._m24 == 0)))) && ((((this._m31 == 0) && (this._m32 == 0)) && ((this._m33 == 1) && (this._m34 == 0))) && (((this._offsetX == 0) && (this._offsetY == 0)) && ((this._offsetZ == 0) && (this._m44 == 1)))))
+                if (((((_m11 == 1) && (_m12 == 0)) && ((_m13 == 0) && (_m14 == 0))) && (((_m21 == 0) && (_m22 == 1)) && ((_m23 == 0) && (_m24 == 0)))) && ((((_m31 == 0) && (_m32 == 0)) && ((_m33 == 1) && (_m34 == 0))) && (((_offsetX == 0) && (_offsetY == 0)) && ((_offsetZ == 0) && (_m44 == 1)))))
                 {
-                    this.IsDistinguishedIdentity = true;
+                    IsDistinguishedIdentity = true;
                     return true;
                 }
                 return false;
@@ -1272,15 +1271,15 @@ namespace TerraViewer
             this *= matrix;
         }
 
-        public void Rotate(SharpDX.Quaternion quaternion)
+        public void Rotate(Quaternion quaternion)
         {
-            Vector3d center = new Vector3d();
+            var center = new Vector3d();
             this *= CreateRotationMatrix(ref quaternion, ref center);
         }
 
         public void RotatePrepend(Quaternion quaternion)
         {
-            Vector3d center = new Vector3d();
+            var center = new Vector3d();
             this = CreateRotationMatrix(ref quaternion, ref center) * this;
         }
 
@@ -1296,150 +1295,150 @@ namespace TerraViewer
 
         public void Scale(Vector3d scale)
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
-                this.SetScaleMatrix(ref scale);
+                SetScaleMatrix(ref scale);
             }
             else
             {
-                this._m11 *= scale.X;
-                this._m12 *= scale.Y;
-                this._m13 *= scale.Z;
-                this._m21 *= scale.X;
-                this._m22 *= scale.Y;
-                this._m23 *= scale.Z;
-                this._m31 *= scale.X;
-                this._m32 *= scale.Y;
-                this._m33 *= scale.Z;
-                this._offsetX *= scale.X;
-                this._offsetY *= scale.Y;
-                this._offsetZ *= scale.Z;
+                _m11 *= scale.X;
+                _m12 *= scale.Y;
+                _m13 *= scale.Z;
+                _m21 *= scale.X;
+                _m22 *= scale.Y;
+                _m23 *= scale.Z;
+                _m31 *= scale.X;
+                _m32 *= scale.Y;
+                _m33 *= scale.Z;
+                _offsetX *= scale.X;
+                _offsetY *= scale.Y;
+                _offsetZ *= scale.Z;
             }
         }
 
         public void ScalePrepend(Vector3d scale)
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
-                this.SetScaleMatrix(ref scale);
+                SetScaleMatrix(ref scale);
             }
             else
             {
-                this._m11 *= scale.X;
-                this._m12 *= scale.X;
-                this._m13 *= scale.X;
-                this._m14 *= scale.X;
-                this._m21 *= scale.Y;
-                this._m22 *= scale.Y;
-                this._m23 *= scale.Y;
-                this._m24 *= scale.Y;
-                this._m31 *= scale.Z;
-                this._m32 *= scale.Z;
-                this._m33 *= scale.Z;
-                this._m34 *= scale.Z;
+                _m11 *= scale.X;
+                _m12 *= scale.X;
+                _m13 *= scale.X;
+                _m14 *= scale.X;
+                _m21 *= scale.Y;
+                _m22 *= scale.Y;
+                _m23 *= scale.Y;
+                _m24 *= scale.Y;
+                _m31 *= scale.Z;
+                _m32 *= scale.Z;
+                _m33 *= scale.Z;
+                _m34 *= scale.Z;
             }
         }
 
         public void ScaleAt(Vector3d scale, Vector3d center)
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
-                this.SetScaleMatrix(ref scale, ref center);
+                SetScaleMatrix(ref scale, ref center);
             }
             else
             {
-                double num = this._m14 * center.X;
-                this._m11 = num + (scale.X * (this._m11 - num));
-                num = this._m14 * center.Y;
-                this._m12 = num + (scale.Y * (this._m12 - num));
-                num = this._m14 * center.Z;
-                this._m13 = num + (scale.Z * (this._m13 - num));
-                num = this._m24 * center.X;
-                this._m21 = num + (scale.X * (this._m21 - num));
-                num = this._m24 * center.Y;
-                this._m22 = num + (scale.Y * (this._m22 - num));
-                num = this._m24 * center.Z;
-                this._m23 = num + (scale.Z * (this._m23 - num));
-                num = this._m34 * center.X;
-                this._m31 = num + (scale.X * (this._m31 - num));
-                num = this._m34 * center.Y;
-                this._m32 = num + (scale.Y * (this._m32 - num));
-                num = this._m34 * center.Z;
-                this._m33 = num + (scale.Z * (this._m33 - num));
-                num = this._m44 * center.X;
-                this._offsetX = num + (scale.X * (this._offsetX - num));
-                num = this._m44 * center.Y;
-                this._offsetY = num + (scale.Y * (this._offsetY - num));
-                num = this._m44 * center.Z;
-                this._offsetZ = num + (scale.Z * (this._offsetZ - num));
+                var num = _m14 * center.X;
+                _m11 = num + (scale.X * (_m11 - num));
+                num = _m14 * center.Y;
+                _m12 = num + (scale.Y * (_m12 - num));
+                num = _m14 * center.Z;
+                _m13 = num + (scale.Z * (_m13 - num));
+                num = _m24 * center.X;
+                _m21 = num + (scale.X * (_m21 - num));
+                num = _m24 * center.Y;
+                _m22 = num + (scale.Y * (_m22 - num));
+                num = _m24 * center.Z;
+                _m23 = num + (scale.Z * (_m23 - num));
+                num = _m34 * center.X;
+                _m31 = num + (scale.X * (_m31 - num));
+                num = _m34 * center.Y;
+                _m32 = num + (scale.Y * (_m32 - num));
+                num = _m34 * center.Z;
+                _m33 = num + (scale.Z * (_m33 - num));
+                num = _m44 * center.X;
+                _offsetX = num + (scale.X * (_offsetX - num));
+                num = _m44 * center.Y;
+                _offsetY = num + (scale.Y * (_offsetY - num));
+                num = _m44 * center.Z;
+                _offsetZ = num + (scale.Z * (_offsetZ - num));
             }
         }
 
         public void ScaleAtPrepend(Vector3d scale, Vector3d center)
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
-                this.SetScaleMatrix(ref scale, ref center);
+                SetScaleMatrix(ref scale, ref center);
             }
             else
             {
-                double num3 = center.X - (center.X * scale.X);
-                double num2 = center.Y - (center.Y * scale.Y);
-                double num = center.Z - (center.Z * scale.Z);
-                this._offsetX += ((this._m11 * num3) + (this._m21 * num2)) + (this._m31 * num);
-                this._offsetY += ((this._m12 * num3) + (this._m22 * num2)) + (this._m32 * num);
-                this._offsetZ += ((this._m13 * num3) + (this._m23 * num2)) + (this._m33 * num);
-                this._m44 += ((this._m14 * num3) + (this._m24 * num2)) + (this._m34 * num);
-                this._m11 *= scale.X;
-                this._m12 *= scale.X;
-                this._m13 *= scale.X;
-                this._m14 *= scale.X;
-                this._m21 *= scale.Y;
-                this._m22 *= scale.Y;
-                this._m23 *= scale.Y;
-                this._m24 *= scale.Y;
-                this._m31 *= scale.Z;
-                this._m32 *= scale.Z;
-                this._m33 *= scale.Z;
-                this._m34 *= scale.Z;
+                var num3 = center.X - (center.X * scale.X);
+                var num2 = center.Y - (center.Y * scale.Y);
+                var num = center.Z - (center.Z * scale.Z);
+                _offsetX += ((_m11 * num3) + (_m21 * num2)) + (_m31 * num);
+                _offsetY += ((_m12 * num3) + (_m22 * num2)) + (_m32 * num);
+                _offsetZ += ((_m13 * num3) + (_m23 * num2)) + (_m33 * num);
+                _m44 += ((_m14 * num3) + (_m24 * num2)) + (_m34 * num);
+                _m11 *= scale.X;
+                _m12 *= scale.X;
+                _m13 *= scale.X;
+                _m14 *= scale.X;
+                _m21 *= scale.Y;
+                _m22 *= scale.Y;
+                _m23 *= scale.Y;
+                _m24 *= scale.Y;
+                _m31 *= scale.Z;
+                _m32 *= scale.Z;
+                _m33 *= scale.Z;
+                _m34 *= scale.Z;
             }
         }
 
         public void Translate(Vector3d offset)
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
-                this.SetTranslationMatrix(ref offset);
+                SetTranslationMatrix(ref offset);
             }
             else
             {
-                this._m11 += this._m14 * offset.X;
-                this._m12 += this._m14 * offset.Y;
-                this._m13 += this._m14 * offset.Z;
-                this._m21 += this._m24 * offset.X;
-                this._m22 += this._m24 * offset.Y;
-                this._m23 += this._m24 * offset.Z;
-                this._m31 += this._m34 * offset.X;
-                this._m32 += this._m34 * offset.Y;
-                this._m33 += this._m34 * offset.Z;
-                this._offsetX += this._m44 * offset.X;
-                this._offsetY += this._m44 * offset.Y;
-                this._offsetZ += this._m44 * offset.Z;
+                _m11 += _m14 * offset.X;
+                _m12 += _m14 * offset.Y;
+                _m13 += _m14 * offset.Z;
+                _m21 += _m24 * offset.X;
+                _m22 += _m24 * offset.Y;
+                _m23 += _m24 * offset.Z;
+                _m31 += _m34 * offset.X;
+                _m32 += _m34 * offset.Y;
+                _m33 += _m34 * offset.Z;
+                _offsetX += _m44 * offset.X;
+                _offsetY += _m44 * offset.Y;
+                _offsetZ += _m44 * offset.Z;
             }
         }
 
         public void TranslatePrepend(Vector3d offset)
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
-                this.SetTranslationMatrix(ref offset);
+                SetTranslationMatrix(ref offset);
             }
             else
             {
-                this._offsetX += ((this._m11 * offset.X) + (this._m21 * offset.Y)) + (this._m31 * offset.Z);
-                this._offsetY += ((this._m12 * offset.X) + (this._m22 * offset.Y)) + (this._m32 * offset.Z);
-                this._offsetZ += ((this._m13 * offset.X) + (this._m23 * offset.Y)) + (this._m33 * offset.Z);
-                this._m44 += ((this._m14 * offset.X) + (this._m24 * offset.Y)) + (this._m34 * offset.Z);
+                _offsetX += ((_m11 * offset.X) + (_m21 * offset.Y)) + (_m31 * offset.Z);
+                _offsetY += ((_m12 * offset.X) + (_m22 * offset.Y)) + (_m32 * offset.Z);
+                _offsetZ += ((_m13 * offset.X) + (_m23 * offset.Y)) + (_m33 * offset.Z);
+                _m44 += ((_m14 * offset.X) + (_m24 * offset.Y)) + (_m34 * offset.Z);
             }
         }
 
@@ -1463,7 +1462,7 @@ namespace TerraViewer
 
         public Vector3d Transform(Vector3d point)
         {
-            this.MultiplyPoint(ref point);
+            MultiplyPoint(ref point);
             return point;
         }
 
@@ -1471,9 +1470,9 @@ namespace TerraViewer
         {
             if (points != null)
             {
-                for (int i = 0; i < points.Length; i++)
+                for (var i = 0; i < points.Length; i++)
                 {
-                    this.MultiplyPoint(ref points[i]);
+                    MultiplyPoint(ref points[i]);
                 }
             }
         }
@@ -1499,13 +1498,13 @@ namespace TerraViewer
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return true;
                 }
-                if (((this._m14 == 0) && (this._m24 == 0)) && (this._m34 == 0))
+                if (((_m14 == 0) && (_m24 == 0)) && (_m34 == 0))
                 {
-                    return (this._m44 == 1);
+                    return (_m44 == 1);
                 }
                 return false;
             }
@@ -1515,25 +1514,25 @@ namespace TerraViewer
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return 1;
                 }
-                if (this.IsAffine)
+                if (IsAffine)
                 {
-                    return this.GetNormalizedAffineDeterminant();
+                    return GetNormalizedAffineDeterminant();
                 }
-                double num6 = (this._m13 * this._m24) - (this._m23 * this._m14);
-                double num5 = (this._m13 * this._m34) - (this._m33 * this._m14);
-                double num4 = (this._m13 * this._m44) - (this._offsetZ * this._m14);
-                double num3 = (this._m23 * this._m34) - (this._m33 * this._m24);
-                double num2 = (this._m23 * this._m44) - (this._offsetZ * this._m24);
-                double num = (this._m33 * this._m44) - (this._offsetZ * this._m34);
-                double num10 = ((this._m22 * num5) - (this._m32 * num6)) - (this._m12 * num3);
-                double num9 = ((this._m12 * num2) - (this._m22 * num4)) + (this._offsetY * num6);
-                double num8 = ((this._m32 * num4) - (this._offsetY * num5)) - (this._m12 * num);
-                double num7 = ((this._m22 * num) - (this._m32 * num2)) + (this._offsetY * num3);
-                return ((((this._offsetX * num10) + (this._m31 * num9)) + (this._m21 * num8)) + (this._m11 * num7));
+                var num6 = (_m13 * _m24) - (_m23 * _m14);
+                var num5 = (_m13 * _m34) - (_m33 * _m14);
+                var num4 = (_m13 * _m44) - (_offsetZ * _m14);
+                var num3 = (_m23 * _m34) - (_m33 * _m24);
+                var num2 = (_m23 * _m44) - (_offsetZ * _m24);
+                var num = (_m33 * _m44) - (_offsetZ * _m34);
+                var num10 = ((_m22 * num5) - (_m32 * num6)) - (_m12 * num3);
+                var num9 = ((_m12 * num2) - (_m22 * num4)) + (_offsetY * num6);
+                var num8 = ((_m32 * num4) - (_offsetY * num5)) - (_m12 * num);
+                var num7 = ((_m22 * num) - (_m32 * num2)) + (_offsetY * num3);
+                return ((((_offsetX * num10) + (_m31 * num9)) + (_m21 * num8)) + (_m11 * num7));
             }
         }
 
@@ -1541,12 +1540,12 @@ namespace TerraViewer
         {
             get
             {
-                return !DoubleUtilities.IsZero(this.Determinant);
+                return !DoubleUtilities.IsZero(Determinant);
             }
         }
         public void Invert()
         {
-            if (!this.InvertCore())
+            if (!InvertCore())
             {
                 throw new InvalidOperationException();
             }
@@ -1554,17 +1553,17 @@ namespace TerraViewer
 
         public void Transpose()
         {
-            Swap(ref this._m12, ref this._m21);
-            Swap(ref this._m13, ref this._m31);
-            Swap(ref this._m14, ref this._offsetX);
-            Swap(ref this._m23, ref this._m32);
-            Swap(ref this._m24, ref this._offsetY);
-            Swap(ref this._m34, ref this._offsetZ);
+            Swap(ref _m12, ref _m21);
+            Swap(ref _m13, ref _m31);
+            Swap(ref _m14, ref _offsetX);
+            Swap(ref _m23, ref _m32);
+            Swap(ref _m24, ref _offsetY);
+            Swap(ref _m34, ref _offsetZ);
         }
 
         private static void Swap(ref double a, ref double b)
         {
-            double temp = a;
+            var temp = a;
             a = b;
             b = temp;
         }
@@ -1573,20 +1572,20 @@ namespace TerraViewer
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return 1;
                 }
-                return this._m11;
+                return _m11;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m11 = value;
+                _m11 = value;
             }
         }
 
@@ -1594,16 +1593,16 @@ namespace TerraViewer
         {
             get
             {
-                return this._m12;
+                return _m12;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m12 = value;
+                _m12 = value;
             }
         }
 
@@ -1611,16 +1610,16 @@ namespace TerraViewer
         {
             get
             {
-                return this._m13;
+                return _m13;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m13 = value;
+                _m13 = value;
             }
         }
 
@@ -1628,16 +1627,16 @@ namespace TerraViewer
         {
             get
             {
-                return this._m14;
+                return _m14;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m14 = value;
+                _m14 = value;
             }
         }
 
@@ -1645,136 +1644,136 @@ namespace TerraViewer
         {
             get
             {
-                return this._m21;
+                return _m21;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m21 = value;
+                _m21 = value;
             }
         }
         public double M22
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return 1;
                 }
-                return this._m22;
+                return _m22;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m22 = value;
+                _m22 = value;
             }
         }
         public double M23
         {
             get
             {
-                return this._m23;
+                return _m23;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m23 = value;
+                _m23 = value;
             }
         }
         public double M24
         {
             get
             {
-                return this._m24;
+                return _m24;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m24 = value;
+                _m24 = value;
             }
         }
         public double M31
         {
             get
             {
-                return this._m31;
+                return _m31;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m31 = value;
+                _m31 = value;
             }
         }
         public double M32
         {
             get
             {
-                return this._m32;
+                return _m32;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m32 = value;
+                _m32 = value;
             }
         }
         public double M33
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return 1;
                 }
-                return this._m33;
+                return _m33;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m33 = value;
+                _m33 = value;
             }
         }
         public double M34
         {
             get
             {
-                return this._m34;
+                return _m34;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m34 = value;
+                _m34 = value;
             }
         }
 
@@ -1818,116 +1817,116 @@ namespace TerraViewer
         {
             get
             {
-                return this._offsetX;
+                return _offsetX;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._offsetX = value;
+                _offsetX = value;
             }
         }
         public double OffsetY
         {
             get
             {
-                return this._offsetY;
+                return _offsetY;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._offsetY = value;
+                _offsetY = value;
             }
         }
         public double OffsetZ
         {
             get
             {
-                return this._offsetZ;
+                return _offsetZ;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._offsetZ = value;
+                _offsetZ = value;
             }
         }
         public double M44
         {
             get
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     return 1;
                 }
-                return this._m44;
+                return _m44;
             }
             set
             {
-                if (this.IsDistinguishedIdentity)
+                if (IsDistinguishedIdentity)
                 {
                     this = s_identity;
-                    this.IsDistinguishedIdentity = false;
+                    IsDistinguishedIdentity = false;
                 }
-                this._m44 = value;
+                _m44 = value;
             }
         }
         private void SetScaleMatrix(ref Vector3d scale)
         {
-            this._m11 = scale.X;
-            this._m22 = scale.Y;
-            this._m33 = scale.Z;
-            this._m44 = 1;
-            this.IsDistinguishedIdentity = false;
+            _m11 = scale.X;
+            _m22 = scale.Y;
+            _m33 = scale.Z;
+            _m44 = 1;
+            IsDistinguishedIdentity = false;
         }
 
         private void SetScaleMatrix(ref Vector3d scale, ref Vector3d center)
         {
-            this._m11 = scale.X;
-            this._m22 = scale.Y;
-            this._m33 = scale.Z;
-            this._m44 = 1;
-            this._offsetX = center.X - (center.X * scale.X);
-            this._offsetY = center.Y - (center.Y * scale.Y);
-            this._offsetZ = center.Z - (center.Z * scale.Z);
-            this.IsDistinguishedIdentity = false;
+            _m11 = scale.X;
+            _m22 = scale.Y;
+            _m33 = scale.Z;
+            _m44 = 1;
+            _offsetX = center.X - (center.X * scale.X);
+            _offsetY = center.Y - (center.Y * scale.Y);
+            _offsetZ = center.Z - (center.Z * scale.Z);
+            IsDistinguishedIdentity = false;
         }
 
         private void SetTranslationMatrix(ref Vector3d offset)
         {
-            this._m11 = this._m22 = this._m33 = this._m44 = 1;
-            this._offsetX = offset.X;
-            this._offsetY = offset.Y;
-            this._offsetZ = offset.Z;
-            this.IsDistinguishedIdentity = false;
+            _m11 = _m22 = _m33 = _m44 = 1;
+            _offsetX = offset.X;
+            _offsetY = offset.Y;
+            _offsetZ = offset.Z;
+            IsDistinguishedIdentity = false;
         }
 
         public static Matrix3d CreateRotationMatrix(ref Quaternion quaternion, ref Vector3d center)
         {
-            Matrix3d matrixd = s_identity;
+            var matrixd = s_identity;
             matrixd.IsDistinguishedIdentity = false;
             double num12 = quaternion.X + quaternion.X;
             double num2 = quaternion.Y + quaternion.Y;
             double num = quaternion.Z + quaternion.Z;
-            double num11 = quaternion.X * num12;
-            double num10 = quaternion.X * num2;
-            double num9 = quaternion.X * num;
-            double num8 = quaternion.Y * num2;
-            double num7 = quaternion.Y * num;
-            double num6 = quaternion.Z * num;
-            double num5 = quaternion.W * num12;
-            double num4 = quaternion.W * num2;
-            double num3 = quaternion.W * num;
+            var num11 = quaternion.X * num12;
+            var num10 = quaternion.X * num2;
+            var num9 = quaternion.X * num;
+            var num8 = quaternion.Y * num2;
+            var num7 = quaternion.Y * num;
+            var num6 = quaternion.Z * num;
+            var num5 = quaternion.W * num12;
+            var num4 = quaternion.W * num2;
+            var num3 = quaternion.W * num;
             matrixd._m11 = 1 - (num8 + num6);
             matrixd._m12 = num10 + num3;
             matrixd._m13 = num9 - num4;
@@ -1948,17 +1947,17 @@ namespace TerraViewer
 
         private void MultiplyPoint(ref Vector3d point)
         {
-            if (!this.IsDistinguishedIdentity)
+            if (!IsDistinguishedIdentity)
             {
-                double x = point.X;
-                double y = point.Y;
-                double z = point.Z;
-                point.X = (((x * this._m11) + (y * this._m21)) + (z * this._m31)) + this._offsetX;
-                point.Y = (((x * this._m12) + (y * this._m22)) + (z * this._m32)) + this._offsetY;
-                point.Z = (((x * this._m13) + (y * this._m23)) + (z * this._m33)) + this._offsetZ;
-                if (!this.IsAffine)
+                var x = point.X;
+                var y = point.Y;
+                var z = point.Z;
+                point.X = (((x * _m11) + (y * _m21)) + (z * _m31)) + _offsetX;
+                point.Y = (((x * _m12) + (y * _m22)) + (z * _m32)) + _offsetY;
+                point.Z = (((x * _m13) + (y * _m23)) + (z * _m33)) + _offsetZ;
+                if (!IsAffine)
                 {
-                    double num4 = (((x * this._m14) + (y * this._m24)) + (z * this._m34)) + this._m44;
+                    var num4 = (((x * _m14) + (y * _m24)) + (z * _m34)) + _m44;
                     point.X /= num4;
                     point.Y /= num4;
                     point.Z /= num4;
@@ -1968,125 +1967,125 @@ namespace TerraViewer
 
         public void MultiplyVector(ref Vector3d vector)
         {
-            if (!this.IsDistinguishedIdentity)
+            if (!IsDistinguishedIdentity)
             {
-                double x = vector.X;
-                double y = vector.Y;
-                double z = vector.Z;
-                vector.X = ((x * this._m11) + (y * this._m21)) + (z * this._m31);
-                vector.Y = ((x * this._m12) + (y * this._m22)) + (z * this._m32);
-                vector.Z = ((x * this._m13) + (y * this._m23)) + (z * this._m33);
+                var x = vector.X;
+                var y = vector.Y;
+                var z = vector.Z;
+                vector.X = ((x * _m11) + (y * _m21)) + (z * _m31);
+                vector.Y = ((x * _m12) + (y * _m22)) + (z * _m32);
+                vector.Z = ((x * _m13) + (y * _m23)) + (z * _m33);
             }
         }
 
         private double GetNormalizedAffineDeterminant()
         {
-            double num3 = (this._m12 * this._m23) - (this._m22 * this._m13);
-            double num2 = (this._m32 * this._m13) - (this._m12 * this._m33);
-            double num = (this._m22 * this._m33) - (this._m32 * this._m23);
-            return (((this._m31 * num3) + (this._m21 * num2)) + (this._m11 * num));
+            var num3 = (_m12 * _m23) - (_m22 * _m13);
+            var num2 = (_m32 * _m13) - (_m12 * _m33);
+            var num = (_m22 * _m33) - (_m32 * _m23);
+            return (((_m31 * num3) + (_m21 * num2)) + (_m11 * num));
         }
 
         private bool NormalizedAffineInvert()
         {
-            double num11 = (this._m12 * this._m23) - (this._m22 * this._m13);
-            double num10 = (this._m32 * this._m13) - (this._m12 * this._m33);
-            double num9 = (this._m22 * this._m33) - (this._m32 * this._m23);
-            double num8 = ((this._m31 * num11) + (this._m21 * num10)) + (this._m11 * num9);
+            var num11 = (_m12 * _m23) - (_m22 * _m13);
+            var num10 = (_m32 * _m13) - (_m12 * _m33);
+            var num9 = (_m22 * _m33) - (_m32 * _m23);
+            var num8 = ((_m31 * num11) + (_m21 * num10)) + (_m11 * num9);
             if (DoubleUtilities.IsZero(num8))
             {
                 return false;
             }
-            double num20 = (this._m21 * this._m13) - (this._m11 * this._m23);
-            double num19 = (this._m11 * this._m33) - (this._m31 * this._m13);
-            double num18 = (this._m31 * this._m23) - (this._m21 * this._m33);
-            double num7 = (this._m11 * this._m22) - (this._m21 * this._m12);
-            double num6 = (this._m11 * this._m32) - (this._m31 * this._m12);
-            double num5 = (this._m11 * this._offsetY) - (this._offsetX * this._m12);
-            double num4 = (this._m21 * this._m32) - (this._m31 * this._m22);
-            double num3 = (this._m21 * this._offsetY) - (this._offsetX * this._m22);
-            double num2 = (this._m31 * this._offsetY) - (this._offsetX * this._m32);
-            double num17 = ((this._m23 * num5) - (this._offsetZ * num7)) - (this._m13 * num3);
-            double num16 = ((this._m13 * num2) - (this._m33 * num5)) + (this._offsetZ * num6);
-            double num15 = ((this._m33 * num3) - (this._offsetZ * num4)) - (this._m23 * num2);
-            double num14 = num7;
-            double num13 = -num6;
-            double num12 = num4;
-            double num = 1 / num8;
-            this._m11 = num9 * num;
-            this._m12 = num10 * num;
-            this._m13 = num11 * num;
-            this._m21 = num18 * num;
-            this._m22 = num19 * num;
-            this._m23 = num20 * num;
-            this._m31 = num12 * num;
-            this._m32 = num13 * num;
-            this._m33 = num14 * num;
-            this._offsetX = num15 * num;
-            this._offsetY = num16 * num;
-            this._offsetZ = num17 * num;
+            var num20 = (_m21 * _m13) - (_m11 * _m23);
+            var num19 = (_m11 * _m33) - (_m31 * _m13);
+            var num18 = (_m31 * _m23) - (_m21 * _m33);
+            var num7 = (_m11 * _m22) - (_m21 * _m12);
+            var num6 = (_m11 * _m32) - (_m31 * _m12);
+            var num5 = (_m11 * _offsetY) - (_offsetX * _m12);
+            var num4 = (_m21 * _m32) - (_m31 * _m22);
+            var num3 = (_m21 * _offsetY) - (_offsetX * _m22);
+            var num2 = (_m31 * _offsetY) - (_offsetX * _m32);
+            var num17 = ((_m23 * num5) - (_offsetZ * num7)) - (_m13 * num3);
+            var num16 = ((_m13 * num2) - (_m33 * num5)) + (_offsetZ * num6);
+            var num15 = ((_m33 * num3) - (_offsetZ * num4)) - (_m23 * num2);
+            var num14 = num7;
+            var num13 = -num6;
+            var num12 = num4;
+            var num = 1 / num8;
+            _m11 = num9 * num;
+            _m12 = num10 * num;
+            _m13 = num11 * num;
+            _m21 = num18 * num;
+            _m22 = num19 * num;
+            _m23 = num20 * num;
+            _m31 = num12 * num;
+            _m32 = num13 * num;
+            _m33 = num14 * num;
+            _offsetX = num15 * num;
+            _offsetY = num16 * num;
+            _offsetZ = num17 * num;
             return true;
         }
 
 
         private bool InvertCore()
         {
-            if (!this.IsDistinguishedIdentity)
+            if (!IsDistinguishedIdentity)
             {
-                if (this.IsAffine)
+                if (IsAffine)
                 {
-                    return this.NormalizedAffineInvert();
+                    return NormalizedAffineInvert();
                 }
-                double num7 = (this._m13 * this._m24) - (this._m23 * this._m14);
-                double num6 = (this._m13 * this._m34) - (this._m33 * this._m14);
-                double num5 = (this._m13 * this._m44) - (this._offsetZ * this._m14);
-                double num4 = (this._m23 * this._m34) - (this._m33 * this._m24);
-                double num3 = (this._m23 * this._m44) - (this._offsetZ * this._m24);
-                double num2 = (this._m33 * this._m44) - (this._offsetZ * this._m34);
-                double num12 = ((this._m22 * num6) - (this._m32 * num7)) - (this._m12 * num4);
-                double num11 = ((this._m12 * num3) - (this._m22 * num5)) + (this._offsetY * num7);
-                double num10 = ((this._m32 * num5) - (this._offsetY * num6)) - (this._m12 * num2);
-                double num9 = ((this._m22 * num2) - (this._m32 * num3)) + (this._offsetY * num4);
-                double num8 = (((this._offsetX * num12) + (this._m31 * num11)) + (this._m21 * num10)) + (this._m11 * num9);
+                var num7 = (_m13 * _m24) - (_m23 * _m14);
+                var num6 = (_m13 * _m34) - (_m33 * _m14);
+                var num5 = (_m13 * _m44) - (_offsetZ * _m14);
+                var num4 = (_m23 * _m34) - (_m33 * _m24);
+                var num3 = (_m23 * _m44) - (_offsetZ * _m24);
+                var num2 = (_m33 * _m44) - (_offsetZ * _m34);
+                var num12 = ((_m22 * num6) - (_m32 * num7)) - (_m12 * num4);
+                var num11 = ((_m12 * num3) - (_m22 * num5)) + (_offsetY * num7);
+                var num10 = ((_m32 * num5) - (_offsetY * num6)) - (_m12 * num2);
+                var num9 = ((_m22 * num2) - (_m32 * num3)) + (_offsetY * num4);
+                var num8 = (((_offsetX * num12) + (_m31 * num11)) + (_m21 * num10)) + (_m11 * num9);
                 if (DoubleUtilities.IsZero(num8))
                 {
                     return false;
                 }
-                double num24 = ((this._m11 * num4) - (this._m21 * num6)) + (this._m31 * num7);
-                double num23 = ((this._m21 * num5) - (this._offsetX * num7)) - (this._m11 * num3);
-                double num22 = ((this._m11 * num2) - (this._m31 * num5)) + (this._offsetX * num6);
-                double num21 = ((this._m31 * num3) - (this._offsetX * num4)) - (this._m21 * num2);
-                num7 = (this._m11 * this._m22) - (this._m21 * this._m12);
-                num6 = (this._m11 * this._m32) - (this._m31 * this._m12);
-                num5 = (this._m11 * this._offsetY) - (this._offsetX * this._m12);
-                num4 = (this._m21 * this._m32) - (this._m31 * this._m22);
-                num3 = (this._m21 * this._offsetY) - (this._offsetX * this._m22);
-                num2 = (this._m31 * this._offsetY) - (this._offsetX * this._m32);
-                double num20 = ((this._m13 * num4) - (this._m23 * num6)) + (this._m33 * num7);
-                double num19 = ((this._m23 * num5) - (this._offsetZ * num7)) - (this._m13 * num3);
-                double num18 = ((this._m13 * num2) - (this._m33 * num5)) + (this._offsetZ * num6);
-                double num17 = ((this._m33 * num3) - (this._offsetZ * num4)) - (this._m23 * num2);
-                double num16 = ((this._m24 * num6) - (this._m34 * num7)) - (this._m14 * num4);
-                double num15 = ((this._m14 * num3) - (this._m24 * num5)) + (this._m44 * num7);
-                double num14 = ((this._m34 * num5) - (this._m44 * num6)) - (this._m14 * num2);
-                double num13 = ((this._m24 * num2) - (this._m34 * num3)) + (this._m44 * num4);
-                double num = 1 / num8;
-                this._m11 = num9 * num;
-                this._m12 = num10 * num;
-                this._m13 = num11 * num;
-                this._m14 = num12 * num;
-                this._m21 = num21 * num;
-                this._m22 = num22 * num;
-                this._m23 = num23 * num;
-                this._m24 = num24 * num;
-                this._m31 = num13 * num;
-                this._m32 = num14 * num;
-                this._m33 = num15 * num;
-                this._m34 = num16 * num;
-                this._offsetX = num17 * num;
-                this._offsetY = num18 * num;
-                this._offsetZ = num19 * num;
-                this._m44 = num20 * num;
+                var num24 = ((_m11 * num4) - (_m21 * num6)) + (_m31 * num7);
+                var num23 = ((_m21 * num5) - (_offsetX * num7)) - (_m11 * num3);
+                var num22 = ((_m11 * num2) - (_m31 * num5)) + (_offsetX * num6);
+                var num21 = ((_m31 * num3) - (_offsetX * num4)) - (_m21 * num2);
+                num7 = (_m11 * _m22) - (_m21 * _m12);
+                num6 = (_m11 * _m32) - (_m31 * _m12);
+                num5 = (_m11 * _offsetY) - (_offsetX * _m12);
+                num4 = (_m21 * _m32) - (_m31 * _m22);
+                num3 = (_m21 * _offsetY) - (_offsetX * _m22);
+                num2 = (_m31 * _offsetY) - (_offsetX * _m32);
+                var num20 = ((_m13 * num4) - (_m23 * num6)) + (_m33 * num7);
+                var num19 = ((_m23 * num5) - (_offsetZ * num7)) - (_m13 * num3);
+                var num18 = ((_m13 * num2) - (_m33 * num5)) + (_offsetZ * num6);
+                var num17 = ((_m33 * num3) - (_offsetZ * num4)) - (_m23 * num2);
+                var num16 = ((_m24 * num6) - (_m34 * num7)) - (_m14 * num4);
+                var num15 = ((_m14 * num3) - (_m24 * num5)) + (_m44 * num7);
+                var num14 = ((_m34 * num5) - (_m44 * num6)) - (_m14 * num2);
+                var num13 = ((_m24 * num2) - (_m34 * num3)) + (_m44 * num4);
+                var num = 1 / num8;
+                _m11 = num9 * num;
+                _m12 = num10 * num;
+                _m13 = num11 * num;
+                _m14 = num12 * num;
+                _m21 = num21 * num;
+                _m22 = num22 * num;
+                _m23 = num23 * num;
+                _m24 = num24 * num;
+                _m31 = num13 * num;
+                _m32 = num14 * num;
+                _m33 = num15 * num;
+                _m34 = num16 * num;
+                _offsetX = num17 * num;
+                _offsetY = num18 * num;
+                _offsetZ = num19 * num;
+                _m44 = num20 * num;
             }
             return true;
         }
@@ -2094,20 +2093,19 @@ namespace TerraViewer
         public static Matrix3d LookAtLH(Vector3d cameraPosition, Vector3d cameraTarget, Vector3d cameraUpVector)
         {
 
-            Vector3d zaxis = cameraTarget - cameraPosition;
+            var zaxis = cameraTarget - cameraPosition;
             zaxis.Normalize();
-            Vector3d xaxis = Vector3d.Cross(cameraUpVector, zaxis);
+            var xaxis = Vector3d.Cross(cameraUpVector, zaxis);
             xaxis.Normalize();
-            Vector3d yaxis = Vector3d.Cross(zaxis, xaxis);
+            var yaxis = Vector3d.Cross(zaxis, xaxis);
 
-            Matrix3d mat = new Matrix3d(xaxis.X, yaxis.X, zaxis.X, 0, xaxis.Y, yaxis.Y, zaxis.Y, 0, xaxis.Z, yaxis.Z, zaxis.Z, 0, -Vector3d.Dot(xaxis, cameraPosition), -Vector3d.Dot(yaxis, cameraPosition), -Vector3d.Dot(zaxis, cameraPosition), 1);
+            var mat = new Matrix3d(xaxis.X, yaxis.X, zaxis.X, 0, xaxis.Y, yaxis.Y, zaxis.Y, 0, xaxis.Z, yaxis.Z, zaxis.Z, 0, -Vector3d.Dot(xaxis, cameraPosition), -Vector3d.Dot(yaxis, cameraPosition), -Vector3d.Dot(zaxis, cameraPosition), 1);
             return mat;
         }
 
         private static Matrix3d CreateIdentity()
         {
-            Matrix3d matrixd = new Matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-            matrixd.IsDistinguishedIdentity = true;
+            var matrixd = new Matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) {IsDistinguishedIdentity = true};
             return matrixd;
         }
 
@@ -2115,11 +2113,11 @@ namespace TerraViewer
         {
             get
             {
-                return !this._isNotKnownToBeIdentity;
+                return !_isNotKnownToBeIdentity;
             }
             set
             {
-                this._isNotKnownToBeIdentity = !value;
+                _isNotKnownToBeIdentity = !value;
             }
         }
         public static bool operator ==(Matrix3d matrix1, Matrix3d matrix2)
@@ -2159,7 +2157,7 @@ namespace TerraViewer
             {
                 return false;
             }
-            Matrix3d matrixd = (Matrix3d)o;
+            var matrixd = (Matrix3d)o;
             return Equals(this, matrixd);
         }
 
@@ -2170,39 +2168,39 @@ namespace TerraViewer
 
         public override int GetHashCode()
         {
-            if (this.IsDistinguishedIdentity)
+            if (IsDistinguishedIdentity)
             {
                 return 0;
             }
-            return (((((((((((((((this.M11.GetHashCode() ^ this.M12.GetHashCode()) ^ this.M13.GetHashCode()) ^ this.M14.GetHashCode()) ^ this.M21.GetHashCode()) ^ this.M22.GetHashCode()) ^ this.M23.GetHashCode()) ^ this.M24.GetHashCode()) ^ this.M31.GetHashCode()) ^ this.M32.GetHashCode()) ^ this.M33.GetHashCode()) ^ this.M34.GetHashCode()) ^ this.OffsetX.GetHashCode()) ^ this.OffsetY.GetHashCode()) ^ this.OffsetZ.GetHashCode()) ^ this.M44.GetHashCode());
+            return (((((((((((((((M11.GetHashCode() ^ M12.GetHashCode()) ^ M13.GetHashCode()) ^ M14.GetHashCode()) ^ M21.GetHashCode()) ^ M22.GetHashCode()) ^ M23.GetHashCode()) ^ M24.GetHashCode()) ^ M31.GetHashCode()) ^ M32.GetHashCode()) ^ M33.GetHashCode()) ^ M34.GetHashCode()) ^ OffsetX.GetHashCode()) ^ OffsetY.GetHashCode()) ^ OffsetZ.GetHashCode()) ^ M44.GetHashCode());
         }
 
         public override string ToString()
         {
-            return this.ConvertToString(null, null);
+            return ConvertToString(null, null);
         }
 
         string IFormattable.ToString(string format, IFormatProvider provider)
         {
-            return this.ConvertToString(format, provider);
+            return ConvertToString(format, provider);
         }
 
         private string ConvertToString(string format, IFormatProvider provider)
         {
-            if (this.IsIdentity)
+            if (IsIdentity)
             {
                 return "Identity";
             }
-            char numericListSeparator = ',';
+            const char numericListSeparator = ',';
             return string.Format(provider, "{1:" + format + "}{0}{2:" + format + "}{0}{3:" + format + "}{0}{4:" + format + "}{0}{5:" + format + "}{0}{6:" + format + "}{0}{7:" + format + "}{0}{8:" + format + "}{0}{9:" + format + "}{0}{10:" + format + "}{0}{11:" + format + "}{0}{12:" + format + "}{0}{13:" + format + "}{0}{14:" + format + "}{0}{15:" + format + "}{0}{16:" + format + "}", new object[] { 
-            numericListSeparator, this._m11, this._m12, this._m13, this._m14, this._m21, this._m22, this._m23, this._m24, this._m31, this._m32, this._m33, this._m34, this._offsetX, this._offsetY, this._offsetZ, 
-            this._m44
+            numericListSeparator, _m11, _m12, _m13, _m14, _m21, _m22, _m23, _m24, _m31, _m32, _m33, _m34, _offsetX, _offsetY, _offsetZ, 
+            _m44
          });
         }
 
         public static Matrix3d FromMatrix2d(Matrix2d mat)
         {
-            Matrix3d mat3d = Matrix3d.CreateIdentity();
+            var mat3d = CreateIdentity();
 
             mat3d.M11 = mat.M11;
             mat3d.M12 = mat.M12;
@@ -2365,9 +2363,9 @@ namespace TerraViewer
 
         public static Matrix3d RotationY(double p)
         {
-            double v = p;
+            var v = p;
 
-            Matrix3d matNew = Matrix3d.Identity;
+            var matNew = Identity;
             matNew._m11 = Math.Cos(v);
             matNew._m22 = 1;
             matNew._m31 = Math.Sin(v);
@@ -2379,9 +2377,9 @@ namespace TerraViewer
 
         public static Matrix3d RotationX(double p)
         {
-            double v = p;
+            var v = p;
 
-            Matrix3d matNew = Matrix3d.Identity;
+            var matNew = Identity;
             matNew._m11 = 1;
             matNew._m22 = Math.Cos(v);
             matNew._m32 = -Math.Sin(v);
@@ -2392,9 +2390,9 @@ namespace TerraViewer
         }
         public static Matrix3d RotationZ(double p)
         {
-            double v = p;
+            var v = p;
 
-            Matrix3d matNew = Matrix3d.Identity;
+            var matNew = Identity;
             matNew._m11 = Math.Cos(v);
             matNew._m21 = -Math.Sin(v);
             matNew._m12 = Math.Sin(v);
@@ -2405,7 +2403,7 @@ namespace TerraViewer
         }
         public static Matrix3d Scaling(double x, double y, double z)
         {
-            Matrix3d matNew = Matrix3d.Identity;
+            var matNew = Identity;
             matNew._m11 = x;
             matNew._m22 = y;
             matNew._m33 = z;
@@ -2415,7 +2413,7 @@ namespace TerraViewer
 
         public static Matrix3d Translation(double x, double y, double z)
         {
-            Matrix3d matNew = Matrix3d.Identity;
+            var matNew = Identity;
             matNew.OffsetX = x;
             matNew.OffsetY = y;
             matNew.OffsetZ = z;
@@ -2425,13 +2423,13 @@ namespace TerraViewer
 
         public void Multiply(Matrix3d mat)
         {
-            this = Matrix3d.Multiply(this, mat);
+            this = Multiply(this, mat);
         }
 
         public static Matrix3d PerspectiveFovLH(double fieldOfViewY, double aspectRatio, double znearPlane, double zfarPlane)
         {
-            double h = 1 / Math.Tan(fieldOfViewY/2);
-            double w = h / aspectRatio;
+            var h = 1 / Math.Tan(fieldOfViewY/2);
+            var w = h / aspectRatio;
 
             return new Matrix3d(w, 0, 0, 0, 0, h, 0, 0, 0, 0, zfarPlane / (zfarPlane - znearPlane), 1, 0, 0, -znearPlane * zfarPlane / (zfarPlane - znearPlane), 0);
         }
@@ -2459,14 +2457,14 @@ namespace TerraViewer
 
         public static Matrix3d Invert(Matrix3d matrix3d)
         {
-            Matrix3d mat = matrix3d;
+            var mat = matrix3d;
             mat.Invert();
             return mat;
         }
 
         public static Matrix3d Translation(Vector3d vector3d)
         {
-            return Matrix3d.Translation(vector3d.X, vector3d.Y, vector3d.Z);
+            return Translation(vector3d.X, vector3d.Y, vector3d.Z);
         }
 
         static public Matrix3d GetMapMatrix(Coordinates center, double fieldWidth, double fieldHeight, double rotation)
@@ -2477,7 +2475,7 @@ namespace TerraViewer
             offsetX = -(((center.Lng + 180 - (fieldWidth / 2)) / 360));
             offsetY = -((1 - ((center.Lat + 90 + (fieldHeight / 2)) / 180)));
 
-            Matrix2d mat = new Matrix2d();
+            var mat = new Matrix2d();
 
             double scaleX = 0;
             double scaleY = 0;
@@ -2495,7 +2493,7 @@ namespace TerraViewer
 
 
 
-            return Matrix3d.FromMatrix2d(mat);
+            return FromMatrix2d(mat);
         }
     }
 
@@ -2529,27 +2527,25 @@ namespace TerraViewer
 
         public static Matrix2d Rotation(double angle)
         {
-            Matrix2d mat = new Matrix2d();
-            mat.M11 = Math.Cos(angle);
-            mat.M21 = -Math.Sin(angle);
-            mat.M12 = Math.Sin(angle);
-            mat.M22 = Math.Cos(angle);
+            var mat = new Matrix2d
+            {
+                M11 = Math.Cos(angle),
+                M21 = -Math.Sin(angle),
+                M12 = Math.Sin(angle),
+                M22 = Math.Cos(angle)
+            };
             return mat;
         }
         public static Matrix2d Translation(double x, double y)
         {
-            Matrix2d mat = new Matrix2d();
-            mat.M31 = x;
-            mat.M32 = y;
-           
+            var mat = new Matrix2d {M31 = x, M32 = y};
+
             return mat;
         }
 
         public static Matrix2d Scaling(double x, double y)
         {
-            Matrix2d mat = new Matrix2d();
-            mat.M11 = x;
-            mat.M22 = y;
+            var mat = new Matrix2d {M11 = x, M22 = y};
             return mat;
         }
         public static Matrix2d operator *(Matrix2d matrix1, Matrix2d matrix2)
@@ -2572,17 +2568,14 @@ namespace TerraViewer
 
     public static class DoubleUtilities
     {
-        private const double Epsilon = 2.2204460492503131E-50;
-
         public static bool IsZero(double value)
         {
-            return false;
-            return (Math.Abs(value) < Epsilon);
+            return Math.Abs(value) < double.Epsilon;
         }
 
         public static bool IsOne(double value)
         {
-            return (Math.Abs(value - 1) < Epsilon);
+            return (Math.Abs(value - 1) < double.Epsilon);
         }
 
         public static double RadiansToDegrees(double radians)
@@ -2609,10 +2602,10 @@ namespace TerraViewer
 
         public PlaneD(double valuePointA, double valuePointB, double valuePointC, double valuePointD)
         {
-            this.A = valuePointA;
-            this.B = valuePointB;
-            this.C = valuePointC;
-            this.D = valuePointD;
+            A = valuePointA;
+            B = valuePointB;
+            C = valuePointC;
+            D = valuePointD;
         }
 
         //public override bool Equals(object compare);
@@ -2625,7 +2618,7 @@ namespace TerraViewer
         //  public static float DotNormal(Plane p, Vector3 v);
         public void Normalize()
         {
-            double length = Math.Sqrt(A * A + B * B + C * C);
+            var length = Math.Sqrt(A * A + B * B + C * C);
 
             A /= length;
             B /= length;
@@ -2661,10 +2654,10 @@ namespace TerraViewer
     {
         public Vector4d(double valueX, double valueY, double valueZ, double valueW)
         {
-            this.X = valueX;
-            this.Y = valueY;
-            this.Z = valueZ;
-            this.W = valueW;
+            X = valueX;
+            Y = valueY;
+            Z = valueZ;
+            W = valueW;
         }
         public double X;
         public double Y;
@@ -2675,27 +2668,16 @@ namespace TerraViewer
     {
         public static void FindEnclosingSphere(Vector3d[] list, out Vector3d cen, out double rad)
         {
-            int count = list.Length;
+            var count = list.Length;
             int i;
-            double dx;
-            double dy;
-            double dz;
-            double rad_sq;
-            double xspan;
-            double yspan;
-            double zspan;
-            double maxspan;
-            double old_to_p;
-            double old_to_p_sq;
-            double old_to_new;
-            Vector3d xmin = new Vector3d();
-            Vector3d xmax = new Vector3d();
-            Vector3d ymin = new Vector3d();
-            Vector3d ymax = new Vector3d();
-            Vector3d zmin = new Vector3d();
-            Vector3d zmax = new Vector3d();
-            Vector3d dia1 = new Vector3d();
-            Vector3d dia2 = new Vector3d();
+            var xmin = new Vector3d();
+            var xmax = new Vector3d();
+            var ymin = new Vector3d();
+            var ymax = new Vector3d();
+            var zmin = new Vector3d();
+            var zmax = new Vector3d();
+            var dia1 = new Vector3d();
+            var dia2 = new Vector3d();
 
 
             // FIRST PASS: find 6 minima/maxima points 
@@ -2703,7 +2685,7 @@ namespace TerraViewer
             xmax.X = ymax.Y = zmax.Z = -1000000000;
             for (i = 0; i < count; i++)
             {
-                Vector3d current = list[i];
+                var current = list[i];
                 // his ith point. 
                 if (current.X < xmin.X)
                     xmin = current; // New xminimum point 
@@ -2719,25 +2701,25 @@ namespace TerraViewer
                     zmax = current;
             }
             // Set xspan = distance between the 2 points xmin & xmax (squared) 
-            dx = xmax.X - xmin.X;
-            dy = xmax.Y - xmin.Y;
-            dz = xmax.Z - xmin.Z;
-            xspan = dx * dx + dy * dy + dz * dz;
+            double dx = xmax.X - xmin.X;
+            double dy = xmax.Y - xmin.Y;
+            double dz = xmax.Z - xmin.Z;
+            double xspan = dx * dx + dy * dy + dz * dz;
 
             // Same for y & z spans 
             dx = ymax.X - ymin.X;
             dy = ymax.Y - ymin.Y;
             dz = ymax.Z - ymin.Z;
-            yspan = dx * dx + dy * dy + dz * dz;
+            double yspan = dx * dx + dy * dy + dz * dz;
 
             dx = zmax.X - zmin.X;
             dy = zmax.Y - zmin.Y;
             dz = zmax.Z - zmin.Z;
-            zspan = dx * dx + dy * dy + dz * dz;
+            double zspan = dx * dx + dy * dy + dz * dz;
 
             dia1 = xmin; // assume xspan biggest 
             dia2 = xmax;
-            maxspan = xspan;
+            double maxspan = xspan;
             if (yspan > maxspan)
             {
                 maxspan = yspan;
@@ -2760,26 +2742,26 @@ namespace TerraViewer
             dx = dia2.X - cen.X; // x component of radius vector 
             dy = dia2.Y - cen.Y; // y component of radius vector 
             dz = dia2.Z - cen.Z; // z component of radius vector 
-            rad_sq = dx * dx + dy * dy + dz * dz;
+            double rad_sq = dx * dx + dy * dy + dz * dz;
             rad = Math.Sqrt(rad_sq);
 
             // SECOND PASS: increment current sphere 
 
             for (i = 0; i < count; i++)
             {
-                Vector3d current = list[i]; // load global struct caller_p 
+                var current = list[i]; // load global struct caller_p 
                 // with his ith point. 
                 dx = current.X - cen.X;
                 dy = current.Y - cen.Y;
                 dz = current.Z - cen.Z;
-                old_to_p_sq = dx * dx + dy * dy + dz * dz;
+                double old_to_p_sq = dx * dx + dy * dy + dz * dz;
                 if (old_to_p_sq > rad_sq) // do r**2 test first 
                 { // this point is outside of current sphere 
-                    old_to_p = Math.Sqrt(old_to_p_sq);
+                    double old_to_p = Math.Sqrt(old_to_p_sq);
                     // calc radius of new sphere 
                     rad = (rad + old_to_p) / 2.0;
                     rad_sq = rad * rad; // for next r**2 compare 
-                    old_to_new = old_to_p - rad;
+                    double old_to_new = old_to_p - rad;
                     // calc center of new sphere 
                     cen.X = (rad * cen.X + old_to_new * current.X) / old_to_p;
                     cen.Y = (rad * cen.Y + old_to_new * current.Y) / old_to_p;
@@ -2793,23 +2775,14 @@ namespace TerraViewer
         public static void FindEnclosingCircle(Vector2d[] list, out Vector2d cen, out double rad)
         {
             cen = new Vector2d();
-            int count = list.Length;
+            var count = list.Length;
             int i;
-            double dx;
-            double dy;
-            double rad_sq;
-            double xspan;
-            double yspan;
-            double maxspan;
-            double old_to_p;
-            double old_to_p_sq;
-            double old_to_new;
-            Vector2d xmin = new Vector2d();
-            Vector2d xmax = new Vector2d();
-            Vector2d ymin = new Vector2d();
-            Vector2d ymax = new Vector2d();
-            Vector2d dia1 = new Vector2d();
-            Vector2d dia2 = new Vector2d();
+            var xmin = new Vector2d();
+            var xmax = new Vector2d();
+            var ymin = new Vector2d();
+            var ymax = new Vector2d();
+            var dia1 = new Vector2d();
+            var dia2 = new Vector2d();
 
 
             // FIRST PASS: find 6 minima/maxima points 
@@ -2817,7 +2790,7 @@ namespace TerraViewer
             xmax.X = ymax.Y = -1000000000;
             for (i = 0; i < count; i++)
             {
-                Vector2d current = list[i];
+                var current = list[i];
                 // his ith point. 
                 if (current.X < xmin.X)
                     xmin = current; // New xminimum point 
@@ -2830,18 +2803,18 @@ namespace TerraViewer
 
             }
             // Set xspan = distance between the 2 points xmin & xmax (squared) 
-            dx = xmax.X - xmin.X;
-            dy = xmax.Y - xmin.Y;
-            xspan = dx * dx + dy * dy;
+            double dx = xmax.X - xmin.X;
+            double dy = xmax.Y - xmin.Y;
+            double xspan = dx * dx + dy * dy;
 
             // Same for y & z spans 
             dx = ymax.X - ymin.X;
             dy = ymax.Y - ymin.Y;
-            yspan = dx * dx + dy * dy;
+            double yspan = dx * dx + dy * dy;
 
             dia1 = xmin; // assume xspan biggest 
             dia2 = xmax;
-            maxspan = xspan;
+            double maxspan = xspan;
             if (yspan > maxspan)
             {
                 maxspan = yspan;
@@ -2857,25 +2830,25 @@ namespace TerraViewer
             // calculate initial radius**2 and radius 
             dx = dia2.X - cen.X; // x component of radius vector 
             dy = dia2.Y - cen.Y; // y component of radius vector 
-            rad_sq = dx * dx + dy * dy;
+            double rad_sq = dx * dx + dy * dy;
             rad = Math.Sqrt(rad_sq);
 
             // SECOND PASS: increment current sphere 
 
             for (i = 0; i < count; i++)
             {
-                Vector2d current = list[i]; // load global struct caller_p 
+                var current = list[i]; // load global struct caller_p 
                 // with his ith point. 
                 dx = current.X - cen.X;
                 dy = current.Y - cen.Y;
-                old_to_p_sq = dx * dx + dy * dy;
+                double old_to_p_sq = dx * dx + dy * dy;
                 if (old_to_p_sq > rad_sq) // do r**2 test first 
                 { // this point is outside of current sphere 
-                    old_to_p = Math.Sqrt(old_to_p_sq);
+                    double old_to_p = Math.Sqrt(old_to_p_sq);
                     // calc radius of new sphere 
                     rad = (rad + old_to_p) / 2.0;
                     rad_sq = rad * rad; // for next r**2 compare 
-                    old_to_new = old_to_p - rad;
+                    double old_to_new = old_to_p - rad;
                     // calc center of new sphere 
                     cen.X = (rad * cen.X + old_to_new * current.X) / old_to_p;
                     cen.Y = (rad * cen.Y + old_to_new * current.Y) / old_to_p;
@@ -2976,7 +2949,7 @@ namespace TerraViewer
             Nz = (float)nor.Z;
             Tu = u;
             Tv = v;
-            Coordinates result = Coordinates.CartesianToSpherical2(nor);
+            var result = Coordinates.CartesianToSpherical2(nor);
             Tu1 = (float)((result.Lng + 180.0) / 360.0);
             Tv1 = (float)(1 - ((result.Lat + 90.0) / 180.0));
         }
@@ -3049,7 +3022,7 @@ namespace TerraViewer
             Nz = nzvalue;
             Tu = u;
             Tv = v;
-            Coordinates result = Coordinates.CartesianToSpherical2(new Vector3d(Nx, Ny, Nz));
+            var result = Coordinates.CartesianToSpherical2(new Vector3d(Nx, Ny, Nz));
             Tu1 = (float)((result.Lng + 180.0) / 360.0);
             Tv1 = (float)(1 - ((result.Lat + 90.0) / 180.0));
         }
@@ -3093,9 +3066,9 @@ namespace TerraViewer
             }
             set
             {
-                X = (float)value.X;
-                Y = (float)value.Y;
-                Z = (float)value.Z;
+                X = value.X;
+                Y = value.Y;
+                Z = value.Z;
             }
         }
 

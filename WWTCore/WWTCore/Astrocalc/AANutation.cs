@@ -41,31 +41,31 @@ public class  CAANutation
   
   public static double NutationInLongitude(double JD)
   {
-	double T = (JD - 2451545) / 36525;
-	double Tsquared = T *T;
-	double Tcubed = Tsquared *T;
+	var T = (JD - 2451545) / 36525;
+	var Tsquared = T *T;
+	var Tcubed = Tsquared *T;
   
-	double D = 297.85036 + 445267.111480 *T - 0.0019142 *Tsquared + Tcubed / 189474;
+	var D = 297.85036 + 445267.111480 *T - 0.0019142 *Tsquared + Tcubed / 189474;
 	D = CAACoordinateTransformation.MapTo0To360Range(D);
   
-	double M = 357.52772 + 35999.050340 *T - 0.0001603 *Tsquared - Tcubed / 300000;
+	var M = 357.52772 + 35999.050340 *T - 0.0001603 *Tsquared - Tcubed / 300000;
 	M = CAACoordinateTransformation.MapTo0To360Range(M);
   
-	double Mprime = 134.96298 + 477198.867398 *T + 0.0086972 *Tsquared + Tcubed / 56250;
+	var Mprime = 134.96298 + 477198.867398 *T + 0.0086972 *Tsquared + Tcubed / 56250;
 	Mprime = CAACoordinateTransformation.MapTo0To360Range(Mprime);
   
-	double F = 93.27191 + 483202.017538 *T - 0.0036825 *Tsquared + Tcubed / 327270;
+	var F = 93.27191 + 483202.017538 *T - 0.0036825 *Tsquared + Tcubed / 327270;
 	F = CAACoordinateTransformation.MapTo0To360Range(F);
   
-	double omega = 125.04452 - 1934.136261 *T + 0.0020708 *Tsquared + Tcubed / 450000;
+	var omega = 125.04452 - 1934.136261 *T + 0.0020708 *Tsquared + Tcubed / 450000;
 	omega = CAACoordinateTransformation.MapTo0To360Range(omega);
 
-    int nCoefficients = GlobalMembersStdafx.g_NutationCoefficients.Length;
+    var nCoefficients = GlobalMembersStdafx.g_NutationCoefficients.Length;
 	double @value = 0;
-	for (int i =0; i<nCoefficients; i++)
+	for (var i =0; i<nCoefficients; i++)
 	{
-	  double argument = GlobalMembersStdafx.g_NutationCoefficients[i].D * D + GlobalMembersStdafx.g_NutationCoefficients[i].M * M + GlobalMembersStdafx.g_NutationCoefficients[i].Mprime * Mprime + GlobalMembersStdafx.g_NutationCoefficients[i].F * F + GlobalMembersStdafx.g_NutationCoefficients[i].omega * omega;
-	  double radargument = CAACoordinateTransformation.DegreesToRadians(argument);
+	  var argument = GlobalMembersStdafx.g_NutationCoefficients[i].D * D + GlobalMembersStdafx.g_NutationCoefficients[i].M * M + GlobalMembersStdafx.g_NutationCoefficients[i].Mprime * Mprime + GlobalMembersStdafx.g_NutationCoefficients[i].F * F + GlobalMembersStdafx.g_NutationCoefficients[i].omega * omega;
+	  var radargument = CAACoordinateTransformation.DegreesToRadians(argument);
 	  @value += (GlobalMembersStdafx.g_NutationCoefficients[i].sincoeff1 + GlobalMembersStdafx.g_NutationCoefficients[i].sincoeff2 * T) * Math.Sin(radargument) * 0.0001;
 	}
   
@@ -73,31 +73,31 @@ public class  CAANutation
   }
 	public static double NutationInObliquity(double JD)
 	{
-	  double T = (JD - 2451545) / 36525;
-	  double Tsquared = T *T;
-	  double Tcubed = Tsquared *T;
+	  var T = (JD - 2451545) / 36525;
+	  var Tsquared = T *T;
+	  var Tcubed = Tsquared *T;
 	
-	  double D = 297.85036 + 445267.111480 *T - 0.0019142 *Tsquared + Tcubed / 189474;
+	  var D = 297.85036 + 445267.111480 *T - 0.0019142 *Tsquared + Tcubed / 189474;
 	  D = CAACoordinateTransformation.MapTo0To360Range(D);
 	
-	  double M = 357.52772 + 35999.050340 *T - 0.0001603 *Tsquared - Tcubed / 300000;
+	  var M = 357.52772 + 35999.050340 *T - 0.0001603 *Tsquared - Tcubed / 300000;
 	  M = CAACoordinateTransformation.MapTo0To360Range(M);
 	
-	  double Mprime = 134.96298 + 477198.867398 *T + 0.0086972 *Tsquared + Tcubed / 56250;
+	  var Mprime = 134.96298 + 477198.867398 *T + 0.0086972 *Tsquared + Tcubed / 56250;
 	  Mprime = CAACoordinateTransformation.MapTo0To360Range(Mprime);
 	
-	  double F = 93.27191 + 483202.017538 *T - 0.0036825 *Tsquared + Tcubed / 327270;
+	  var F = 93.27191 + 483202.017538 *T - 0.0036825 *Tsquared + Tcubed / 327270;
 	  F = CAACoordinateTransformation.MapTo0To360Range(F);
 	
-	  double omega = 125.04452 - 1934.136261 *T + 0.0020708 *Tsquared + Tcubed / 450000;
+	  var omega = 125.04452 - 1934.136261 *T + 0.0020708 *Tsquared + Tcubed / 450000;
 	  omega = CAACoordinateTransformation.MapTo0To360Range(omega);
 
-      int nCoefficients = GlobalMembersStdafx.g_NutationCoefficients.Length;
+      var nCoefficients = GlobalMembersStdafx.g_NutationCoefficients.Length;
 	  double @value = 0;
-	  for (int i =0; i<nCoefficients; i++)
+	  for (var i =0; i<nCoefficients; i++)
 	  {
-		double argument = GlobalMembersStdafx.g_NutationCoefficients[i].D * D + GlobalMembersStdafx.g_NutationCoefficients[i].M * M + GlobalMembersStdafx.g_NutationCoefficients[i].Mprime * Mprime + GlobalMembersStdafx.g_NutationCoefficients[i].F * F + GlobalMembersStdafx.g_NutationCoefficients[i].omega * omega;
-		double radargument = CAACoordinateTransformation.DegreesToRadians(argument);
+		var argument = GlobalMembersStdafx.g_NutationCoefficients[i].D * D + GlobalMembersStdafx.g_NutationCoefficients[i].M * M + GlobalMembersStdafx.g_NutationCoefficients[i].Mprime * Mprime + GlobalMembersStdafx.g_NutationCoefficients[i].F * F + GlobalMembersStdafx.g_NutationCoefficients[i].omega * omega;
+		var radargument = CAACoordinateTransformation.DegreesToRadians(argument);
 		@value += (GlobalMembersStdafx.g_NutationCoefficients[i].coscoeff1 + GlobalMembersStdafx.g_NutationCoefficients[i].coscoeff2 * T) * Math.Cos(radargument) * 0.0001;
 	  }
 	
@@ -123,16 +123,16 @@ public class  CAANutation
   }
   public static double MeanObliquityOfEcliptic(double JD)
   {
-	double U = (JD - 2451545) / 3652500;
-	double Usquared = U *U;
-	double Ucubed = Usquared *U;
-	double U4 = Ucubed *U;
-	double U5 = U4 *U;
-	double U6 = U5 *U;
-	double U7 = U6 *U;
-	double U8 = U7 *U;
-	double U9 = U8 *U;
-	double U10 = U9 *U;
+	var U = (JD - 2451545) / 3652500;
+	var Usquared = U *U;
+	var Ucubed = Usquared *U;
+	var U4 = Ucubed *U;
+	var U5 = U4 *U;
+	var U6 = U5 *U;
+	var U7 = U6 *U;
+	var U8 = U7 *U;
+	var U9 = U8 *U;
+	var U10 = U9 *U;
   
   
 	return CAACoordinateTransformation.DMSToDegrees(23, 26, 21.448) - CAACoordinateTransformation.DMSToDegrees(0, 0, 4680.93) * U - CAACoordinateTransformation.DMSToDegrees(0, 0, 1.55) * Usquared + CAACoordinateTransformation.DMSToDegrees(0, 0, 1999.25) * Ucubed - CAACoordinateTransformation.DMSToDegrees(0, 0, 51.38) * U4 - CAACoordinateTransformation.DMSToDegrees(0, 0, 249.67) * U5 - CAACoordinateTransformation.DMSToDegrees(0, 0, 39.05) * U6 + CAACoordinateTransformation.DMSToDegrees(0, 0, 7.12) * U7 + CAACoordinateTransformation.DMSToDegrees(0, 0, 27.87) * U8 + CAACoordinateTransformation.DMSToDegrees(0, 0, 5.79) * U9 + CAACoordinateTransformation.DMSToDegrees(0, 0, 2.45) * U10;

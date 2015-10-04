@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+using SharpDX;
+using SharpDX.Direct3D;
+using Color = System.Drawing.Color;
 using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
@@ -39,10 +40,10 @@ namespace TerraViewer
         public bool Sky = false;
         public double Decay = 0;
         public bool UseNonRotatingFrame = false;
-   
-        List<Vector3d> linePoints = new List<Vector3d>();
-        List<Color> lineColors = new List<Color>();
-        List<Dates> lineDates = new List<Dates>();
+
+        readonly List<Vector3d> linePoints = new List<Vector3d>();
+        readonly List<Color> lineColors = new List<Color>();
+        readonly List<Dates> lineDates = new List<Dates>();
         public void AddLine(Vector3d v1, Vector3d v2, Color color, Dates date)
         {
 
@@ -80,12 +81,12 @@ namespace TerraViewer
                 return;
             }
             InitLineBuffer();
-            Matrix3d savedWorld = renderContext.World;
-            Matrix3d savedView = renderContext.View;
+            var savedWorld = renderContext.World;
+            var savedView = renderContext.View;
             if (localCenter != Vector3d.Empty)
             {
                 usingLocalCenter = true;
-                Vector3d temp = localCenter;
+                var temp = localCenter;
                 if (UseNonRotatingFrame)
                 {
                     renderContext.World = Matrix3d.Translation(temp) * renderContext.WorldBaseNonRotating * Matrix3d.Translation(-renderContext.CameraPosition);
@@ -97,9 +98,9 @@ namespace TerraViewer
                 renderContext.View = Matrix3d.Translation(renderContext.CameraPosition) * renderContext.ViewBase;
             }
 
-            DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
+            var baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
 
             LineShaderNormalDates11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
@@ -115,8 +116,8 @@ namespace TerraViewer
             }
 
             LineShaderNormalDates11.Constants.Opacity = opacity;
-            LineShaderNormalDates11.Constants.CameraPosition = new SharpDX.Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            LineShaderNormalDates11.Constants.CameraPosition = new Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             LineShaderNormalDates11.Constants.WorldViewProjection = mat;
@@ -125,8 +126,8 @@ namespace TerraViewer
 
             renderContext.DepthStencilMode = DepthBuffered ? DepthStencilMode.ZReadWrite : DepthStencilMode.Off;
 
-            int index = 0;
-            foreach (TimeSeriesLineVertexBuffer11 lineBuffer in lineBuffers)
+            var index = 0;
+            foreach (var lineBuffer in lineBuffers)
             {
                 renderContext.SetVertexBuffer(lineBuffer);
                 renderContext.devContext.Draw(lineBuffer.Count, 0);
@@ -142,14 +143,14 @@ namespace TerraViewer
 
         }
 
-        List<TimeSeriesLineVertexBuffer11> lineBuffers = new List<TimeSeriesLineVertexBuffer11>();
-        List<int> lineBufferCounts = new List<int>();
+        readonly List<TimeSeriesLineVertexBuffer11> lineBuffers = new List<TimeSeriesLineVertexBuffer11>();
+        readonly List<int> lineBufferCounts = new List<int>();
 
         void InitLineBuffer()
         {
             if (lineBuffers.Count == 0)
             {
-                int count = linePoints.Count;
+                var count = linePoints.Count;
 
                 TimeSeriesLineVertexBuffer11 lineBuffer = null;
 
@@ -159,7 +160,7 @@ namespace TerraViewer
                 if (DepthBuffered)
                 {
                     // compute the local center..
-                    foreach (Vector3d point in linePoints)
+                    foreach (var point in linePoints)
                     {
                         localCenter.Add(point);
 
@@ -169,12 +170,12 @@ namespace TerraViewer
                     localCenter.Z /= count;
                 }
 
-                int countLeft = count;
-                int index = 0;
-                int counter = 0;
+                var countLeft = count;
+                var index = 0;
+                var counter = 0;
                 Vector3d temp;
 
-                foreach (Vector3d point in linePoints)
+                foreach (var point in linePoints)
                 {
                     if (counter >= 100000 || linePointList == null)
                     {
@@ -182,7 +183,7 @@ namespace TerraViewer
                         {
                             lineBuffer.Unlock();
                         }
-                        int thisCount = Math.Min(100000, countLeft);
+                        var thisCount = Math.Min(100000, countLeft);
 
                         countLeft -= thisCount;
                         lineBuffer = new TimeSeriesLineVertexBuffer11(thisCount, RenderContext11.PrepDevice);
@@ -214,7 +215,7 @@ namespace TerraViewer
         {
             if (lineBuffers != null)
             {
-                foreach (TimeSeriesLineVertexBuffer11 lineBuffer in lineBuffers)
+                foreach (var lineBuffer in lineBuffers)
                 {
                     lineBuffer.Dispose();
                     GC.SuppressFinalize(lineBuffer);
@@ -241,7 +242,7 @@ namespace TerraViewer
             set { zBuffer = value; }
         }
 
-        List<Vector3d> linePoints = new List<Vector3d>();
+        readonly List<Vector3d> linePoints = new List<Vector3d>();
 
         public void AddLine(Vector3d v1, Vector3d v2)
         {
@@ -267,7 +268,7 @@ namespace TerraViewer
             EmptyLineBuffer();
         }
 
-        bool usingLocalCenter = false;
+        bool usingLocalCenter;
         Vector3d localCenter;
         public bool Sky = true;
         public bool aaFix = true;
@@ -282,12 +283,12 @@ namespace TerraViewer
 
           
 
-            Matrix3d savedWorld = renderContext.World;
-            Matrix3d savedView = renderContext.View;
+            var savedWorld = renderContext.World;
+            var savedView = renderContext.View;
             if (localCenter != Vector3d.Empty)
             {
                 usingLocalCenter = true;
-                Vector3d temp = localCenter;
+                var temp = localCenter;
                 if (UseNonRotatingFrame)
                 {
                     renderContext.World = Matrix3d.Translation(temp) * renderContext.WorldBaseNonRotating * Matrix3d.Translation(-renderContext.CameraPosition);
@@ -299,14 +300,14 @@ namespace TerraViewer
                 renderContext.View = Matrix3d.Translation(renderContext.CameraPosition) * renderContext.ViewBase;
             }
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
-            Color col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
+            var col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
 
 
             SimpleLineShader11.Color = col;
             
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             SimpleLineShader11.WVPMatrix = mat;
@@ -331,7 +332,7 @@ namespace TerraViewer
                 renderContext.setRasterizerState(TriangleCullMode.Off, false);
             }
 
-            foreach (PositionVertexBuffer11 lineBuffer in lineBuffers)
+            foreach (var lineBuffer in lineBuffers)
             {
                 renderContext.SetVertexBuffer(lineBuffer);
                 renderContext.SetIndexBuffer(null);
@@ -350,24 +351,24 @@ namespace TerraViewer
             }
         }
 
-        List<PositionVertexBuffer11> lineBuffers = new List<PositionVertexBuffer11>();
-        List<int> lineBufferCounts = new List<int>();
+        readonly List<PositionVertexBuffer11> lineBuffers = new List<PositionVertexBuffer11>();
+        readonly List<int> lineBufferCounts = new List<int>();
 
         void InitLineBuffer()
         {
             if (lineBuffers.Count == 0)
             {
-                int count = linePoints.Count;
+                var count = linePoints.Count;
 
                 PositionVertexBuffer11 lineBuffer = null;
 
 
-                SharpDX.Vector3[] linePointList = null;
+                Vector3[] linePointList = null;
                 localCenter = new Vector3d();
                 if (DepthBuffered)
                 {
                     // compute the local center..
-                    foreach (Vector3d point in linePoints)
+                    foreach (var point in linePoints)
                     {
                         localCenter.Add(point);
 
@@ -377,12 +378,12 @@ namespace TerraViewer
                     localCenter.Z /= count;
                 }
 
-                int countLeft = count;
-                int index = 0;
-                int counter = 0;
+                var countLeft = count;
+                var index = 0;
+                var counter = 0;
                 Vector3d temp;
 
-                foreach (Vector3d point in linePoints)
+                foreach (var point in linePoints)
                 {
                     if (counter >= 100000 || linePointList == null)
                     {
@@ -390,12 +391,12 @@ namespace TerraViewer
                         {
                             lineBuffer.Unlock();
                         }
-                        int thisCount = Math.Min(100000, countLeft);
+                        var thisCount = Math.Min(100000, countLeft);
 
                         countLeft -= thisCount;
                         lineBuffer = new PositionVertexBuffer11(thisCount, RenderContext11.PrepDevice);
 
-                        linePointList = (SharpDX.Vector3[])lineBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+                        linePointList = (Vector3[])lineBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
 
                         lineBuffers.Add(lineBuffer);
                         lineBufferCounts.Add(thisCount);
@@ -418,7 +419,7 @@ namespace TerraViewer
         {
             if (lineBuffers != null)
             {
-                foreach (PositionVertexBuffer11 lineBuffer in lineBuffers)
+                foreach (var lineBuffer in lineBuffers)
                 {
                     lineBuffer.Dispose();
                     GC.SuppressFinalize(lineBuffer);
@@ -442,9 +443,9 @@ namespace TerraViewer
             
         }
 
-        List<Vector3> trianglePoints = new List<Vector3>();
-        List<Color> triangleColors = new List<Color>();
-        List<Dates> triangleDates = new List<Dates>();
+        readonly List<Vector3> trianglePoints = new List<Vector3>();
+        readonly List<Color> triangleColors = new List<Color>();
+        readonly List<Dates> triangleDates = new List<Dates>();
 
         public bool TimeSeries = false;
         public bool ShowFarSide = false;
@@ -455,7 +456,7 @@ namespace TerraViewer
 
         public bool AutoTime = true;
         public double JNow = 0;
-        bool dataToDraw = false;
+        bool dataToDraw;
         public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color color, Dates date)
         {
             trianglePoints.Add(v1);
@@ -547,7 +548,7 @@ namespace TerraViewer
         {
             if (triangleBuffers != null)
             {
-                foreach (TimeSeriesLineVertexBuffer11 buf in triangleBuffers)
+                foreach (var buf in triangleBuffers)
                 {
                     buf.Dispose();
                     GC.SuppressFinalize(buf);
@@ -559,22 +560,22 @@ namespace TerraViewer
             
         }
 
-        List<TimeSeriesLineVertexBuffer11> triangleBuffers = new List<TimeSeriesLineVertexBuffer11>();
-        List<int> triangleBufferCounts = new List<int>();
+        readonly List<TimeSeriesLineVertexBuffer11> triangleBuffers = new List<TimeSeriesLineVertexBuffer11>();
+        readonly List<int> triangleBufferCounts = new List<int>();
 
         void InitTriangleBuffer()
         {
             if (triangleBuffers.Count == 0)
             {
-                int count = trianglePoints.Count;
+                var count = trianglePoints.Count;
 
                 TimeSeriesLineVertexBuffer11 triangleBuffer = null;
 
                 TimeSeriesLineVertex[] triPointList = null;
-                int countLeft = count;
-                int index = 0;
-                int counter = 0;
-                foreach (Vector3 point in trianglePoints)
+                var countLeft = count;
+                var index = 0;
+                var counter = 0;
+                foreach (var point in trianglePoints)
                 {
                     if (counter >= 90000 || triangleBuffer == null)
                     {
@@ -582,7 +583,7 @@ namespace TerraViewer
                         {
                             triangleBuffer.Unlock();
                         }
-                        int thisCount = Math.Min(90000, countLeft);
+                        var thisCount = Math.Min(90000, countLeft);
 
                         countLeft -= thisCount;
                         triangleBuffer = new TimeSeriesLineVertexBuffer11(thisCount, RenderContext11.PrepDevice);
@@ -630,7 +631,7 @@ namespace TerraViewer
 
             renderContext.DepthStencilMode = DepthBuffered ? (WriteZbuffer  ? DepthStencilMode.ZReadWrite : DepthStencilMode.ZReadOnly) : DepthStencilMode.Off;
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             switch (cull)
             {
@@ -650,7 +651,7 @@ namespace TerraViewer
 
             if (AutoTime)
             {
-                DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
+                var baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
                 LineShaderNormalDates11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
             }
             else
@@ -669,16 +670,16 @@ namespace TerraViewer
                 LineShaderNormalDates11.Constants.Decay = 0;
             }
             LineShaderNormalDates11.Constants.Opacity = opacity;
-            LineShaderNormalDates11.Constants.CameraPosition = new SharpDX.Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
+            LineShaderNormalDates11.Constants.CameraPosition = new Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
 
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             LineShaderNormalDates11.Constants.WorldViewProjection = mat;
 
             LineShaderNormalDates11.Use(renderContext.devContext);
 
-            foreach (TimeSeriesLineVertexBuffer11 vertBuffer in triangleBuffers)
+            foreach (var vertBuffer in triangleBuffers)
             {
                 renderContext.SetVertexBuffer(vertBuffer);
                 renderContext.devContext.Draw(vertBuffer.Count, 0);
@@ -691,15 +692,15 @@ namespace TerraViewer
         public Vector3 Position;
         public Vector3 Normal;
         public uint color;
-        public System.Drawing.Color Color
+        public Color Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {
-                color = (uint)(((uint)value.A) << 24) | (((uint)value.B) << 16) | (((uint)value.G) << 8) | (((uint)value.R));
+                color = ((uint)value.A) << 24 | (((uint)value.B) << 16) | (((uint)value.G) << 8) | value.R;
             }
         }   
         public float Tu;
@@ -720,15 +721,15 @@ namespace TerraViewer
         public Vector3 Position;
         public float PointSize;
         public uint color;
-        public System.Drawing.Color Color
+        public Color Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {
-                color = (uint)(((uint)value.A) << 24) | (((uint)value.B) << 16) | (((uint)value.G) << 8) | (((uint)value.R));
+                color = ((uint)value.A) << 24 | (((uint)value.B) << 16) | (((uint)value.G) << 8) | value.R;
             }
         }   
         public float Tu;
