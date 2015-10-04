@@ -197,20 +197,20 @@ namespace TerraViewer
         {
 
             
-            var Color = Color.FromArgb(128, 32, 32, 128);
+            var color = Color.FromArgb(128, 32, 32, 128);
             boxPoints[0].X = rect.X;
             boxPoints[0].Y = rect.Y;
             boxPoints[0].Z = .9f;
             boxPoints[0].W = 1;
             boxPoints[0].Tu = 0;
             boxPoints[0].Tv = 0;
-            boxPoints[0].Color = Color;
+            boxPoints[0].Color = color;
 
             boxPoints[1].X = rect.X + (rect.Width);
             boxPoints[1].Y = rect.Y;
             boxPoints[1].Tu = 1;
             boxPoints[1].Tv = 0;
-            boxPoints[1].Color = Color;
+            boxPoints[1].Color = color;
             boxPoints[1].Z = .9f;
             boxPoints[1].W = 1;
 
@@ -218,7 +218,7 @@ namespace TerraViewer
             boxPoints[2].Y = rect.Y + (rect.Height );
             boxPoints[2].Tu = 0;
             boxPoints[2].Tv = 1;
-            boxPoints[2].Color = Color;
+            boxPoints[2].Color = color;
             boxPoints[2].Z = .9f;
             boxPoints[2].W = 1;
 
@@ -226,7 +226,7 @@ namespace TerraViewer
             boxPoints[3].Y = rect.Y + (rect.Height );
             boxPoints[3].Tu = 1;
             boxPoints[3].Tv = 1;
-            boxPoints[3].Color = Color;
+            boxPoints[3].Color = color;
             boxPoints[3].Z = .9f;
             boxPoints[3].W = 1;
 

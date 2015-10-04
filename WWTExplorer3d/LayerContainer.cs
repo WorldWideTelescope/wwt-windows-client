@@ -246,11 +246,11 @@ namespace TerraViewer
 
 
                 xmlWriter.WriteStartElement("Layers");
-                foreach (var id in masterList)
+                foreach (var t in masterList)
                 {
-                    if (LayerManager.LayerList.ContainsKey(id))
+                    if (LayerManager.LayerList.ContainsKey(t))
                     {
-                        LayerManager.LayerList[id].SaveToXml(xmlWriter);
+                        LayerManager.LayerList[t].SaveToXml(xmlWriter);
                     }
                 }
                 xmlWriter.WriteEndElement();
