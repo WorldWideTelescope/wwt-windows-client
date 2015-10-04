@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -17,9 +12,9 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label2.Text = Language.GetLocalizedText(822, "This wizard will guide you through the process of creating a new reference frame. A reference frame allows you to have local coordinates, scale and time realztive to the rest of the universe. The referernce can be based on fixed offsets, spherical coordinates, Keplarian orbits or a interpolated values from a list of date/time and position offsets.");
-            this.OffsetTypeLabel.Text = Language.GetLocalizedText(823, "Offset Type");
-            this.ReferenceFrameNameLabel.Text = Language.GetLocalizedText(824, "Refrerence Frame Name");
+            label2.Text = Language.GetLocalizedText(822, "This wizard will guide you through the process of creating a new reference frame. A reference frame allows you to have local coordinates, scale and time realztive to the rest of the universe. The referernce can be based on fixed offsets, spherical coordinates, Keplarian orbits or a interpolated values from a list of date/time and position offsets.");
+            OffsetTypeLabel.Text = Language.GetLocalizedText(823, "Offset Type");
+            ReferenceFrameNameLabel.Text = Language.GetLocalizedText(824, "Refrerence Frame Name");
 
         }
         ReferenceFrame frame;
@@ -36,12 +31,9 @@ namespace TerraViewer
                 ReferenceFrameName.BackColor = UiTools.TextBackground;
                 return true;
             }
-            else
-            {
-                ReferenceFrameName.BackColor = Color.Red;
+            ReferenceFrameName.BackColor = Color.Red;
 
-                return false;
-            }
+            return false;
         }
         Color backGround = Color.White;
         private void FrameWizardWelcome_Load(object sender, EventArgs e)

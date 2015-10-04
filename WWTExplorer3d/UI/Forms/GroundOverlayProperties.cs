@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,13 +13,13 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(241, "North");
-            this.label2.Text = Language.GetLocalizedText(246, "South");
-            this.label3.Text = Language.GetLocalizedText(248, "West");
-            this.label4.Text = Language.GetLocalizedText(243, "East");
-            this.label5.Text = Language.GetLocalizedText(861, "Rotation");
-            this.ok.Text = Language.GetLocalizedText(759, "Ok");
-            this.Text = Language.GetLocalizedText(862, "Ground Overlay Properties");
+            label1.Text = Language.GetLocalizedText(241, "North");
+            label2.Text = Language.GetLocalizedText(246, "South");
+            label3.Text = Language.GetLocalizedText(248, "West");
+            label4.Text = Language.GetLocalizedText(243, "East");
+            label5.Text = Language.GetLocalizedText(861, "Rotation");
+            ok.Text = Language.GetLocalizedText(759, "Ok");
+            Text = Language.GetLocalizedText(862, "Ground Overlay Properties");
         }
 
         public KmlGroundOverlay Overlay;

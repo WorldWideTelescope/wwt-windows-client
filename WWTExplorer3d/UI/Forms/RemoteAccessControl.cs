@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
@@ -18,16 +14,16 @@ namespace TerraViewer
         public static string ipTarget = "0.0.0.0";
         private void SetUiStrings()
         {
-            this.Cancel.Text = "Cancel";
-            this.Ok.Text = "Ok";
-            this.label2.Text = "Using the accept list you can manage what client host are allowed remote application control of WorldWide Telescope.";
-            this.ClearAccept.Text = "Clear";
-            this.DeleteAccept.Text = "Delete";
-            this.AcceptLocal.Text = "Accept Local Connections";
-            this.AcceptRemote.Text = "Accept All Remote Connections";
-            this.label7.Text = "IP Address (Use * for wildcard)";
-            this.Add.Text = "Add";
-            this.Text = "Remote Access Control";
+            Cancel.Text = "Cancel";
+            Ok.Text = "Ok";
+            label2.Text = "Using the accept list you can manage what client host are allowed remote application control of WorldWide Telescope.";
+            ClearAccept.Text = "Clear";
+            DeleteAccept.Text = "Delete";
+            AcceptLocal.Text = "Accept Local Connections";
+            AcceptRemote.Text = "Accept All Remote Connections";
+            label7.Text = "IP Address (Use * for wildcard)";
+            Add.Text = "Add";
+            Text = "Remote Access Control";
 
         }
 
@@ -39,7 +35,7 @@ namespace TerraViewer
             //todo Load accept/Reject lists
 
 
-            var parts = ipTarget.Split(new char[] { '.' });
+            var parts = ipTarget.Split(new[] { '.' });
 
             if (parts.Length == 4)
             {
@@ -50,7 +46,7 @@ namespace TerraViewer
             }
             if (!string.IsNullOrEmpty(Properties.Settings.Default.HTTPWhiteList))
             {
-                AcceptList.Items.AddRange(Properties.Settings.Default.HTTPWhiteList.Split(new char[] { ';' }));
+                AcceptList.Items.AddRange(Properties.Settings.Default.HTTPWhiteList.Split(new[] { ';' }));
             }
 
         }
@@ -120,7 +116,7 @@ namespace TerraViewer
         {
             if (ipPart1.Text.Contains("."))
             {
-                var parts = ipPart1.Text.Split(new char[] { '.' });
+                var parts = ipPart1.Text.Split(new[] { '.' });
                 if (parts.Length == 4)
                 {
                     ipPart1.Text = parts[0].Trim();

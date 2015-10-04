@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.Win32;
 
 // Drawn heavily from Emma Burrows codeproject sample
 // which closely follows the C++ MS WM_INPUT sample.
@@ -247,7 +246,7 @@ namespace SpaceNavigator
         {
             public ButtonMask(byte b1, byte b2, byte b3, byte b4)
             {
-                this.mask = (System.UInt32)(b1 + (b2 << 8) + (b3 << 16) + (b4 << 24));
+                mask = (UInt32)(b1 + (b2 << 8) + (b3 << 16) + (b4 << 24));
             }
 
             public UInt32 Mask
@@ -261,7 +260,7 @@ namespace SpaceNavigator
                 get { return mask; }
             }
 
-            private System.UInt32 mask;
+            private UInt32 mask;
         }
 
         /// <summary>
@@ -277,9 +276,9 @@ namespace SpaceNavigator
             }
             public TranslationVector(byte xl, byte xh, byte yl, byte yh, byte zl, byte zh)
             {
-                this.x = (int)(xl + (System.Int16)((System.Int16)xh << 8));
-                this.y = (int)(yl + (System.Int16)((System.Int16)yh << 8));
-                this.z = (int)(zl + (System.Int16)((System.Int16)zh << 8));
+                x = xl + (Int16)(xh << 8);
+                y = yl + (Int16)(yh << 8);
+                z = zl + (Int16)(zh << 8);
             }
 
             public int X
@@ -316,9 +315,9 @@ namespace SpaceNavigator
             }
             public RotationVector(byte xl, byte xh, byte yl, byte yh, byte zl, byte zh)
             {
-                this.x = (int)(xl + (System.Int16)((System.Int16)xh << 8));
-                this.y = (int)(yl + (System.Int16)((System.Int16)yh << 8));
-                this.z = (int)(zl + (System.Int16)((System.Int16)zh << 8));
+                x = xl + (Int16)(xh << 8);
+                y = yl + (Int16)(yh << 8);
+                z = zl + (Int16)(zh << 8);
             }
 
             public int X
@@ -562,10 +561,7 @@ namespace SpaceNavigator
                 Marshal.FreeHGlobal(pRawInputDeviceList);
                 return NumberOfDevices;
             }
-            else
-            {
-                throw new ApplicationException("Error!");
-            }
+            throw new ApplicationException("Error!");
         }
 
         private bool Is3DxDevice(RID_DEVICE_INFO_HID hidInfo)

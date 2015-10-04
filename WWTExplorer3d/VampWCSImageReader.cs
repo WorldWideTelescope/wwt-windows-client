@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Xml;
-using System.Xml.Schema;
-using System.Diagnostics;
 using System.Drawing;
 
 
 namespace TerraViewer
 {
-    class VampWCSImageReader : TerraViewer.WcsImage
+    class VampWCSImageReader : WcsImage
     {
         public static string ExtractXMPFromFile(string filename)
         {
@@ -21,7 +18,7 @@ namespace TerraViewer
             var grepping = false;
             var collectionCount = 0;
 
-            using (var sr = new System.IO.StreamReader(filename))
+            using (var sr = new StreamReader(filename))
             {
                 while (!sr.EndOfStream)
                 {
@@ -75,7 +72,7 @@ namespace TerraViewer
         public VampWCSImageReader(string filename)
         {
             this.filename = filename;
-            var data = VampWCSImageReader.ExtractXMPFromFile(filename);
+            var data = ExtractXMPFromFile(filename);
             ValidWcs = ExtractXMPParameters(data);
         }
 
@@ -130,7 +127,7 @@ namespace TerraViewer
                 
                 if (xmlNode != null)
                 {
-                    this.Rating = Convert.ToInt32(xmlNode.InnerText);
+                    Rating = Convert.ToInt32(xmlNode.InnerText);
                 }
 
                 // get keywords
@@ -150,7 +147,7 @@ namespace TerraViewer
 
                 if (xmlNode != null)
                 {
-                    this.description = xmlNode.ChildNodes[0].InnerText;
+                    description = xmlNode.ChildNodes[0].InnerText;
                 }
 
                 // get Credits
@@ -158,7 +155,7 @@ namespace TerraViewer
 
                 if (xmlNode != null)
                 {
-                    this.copyright = xmlNode.ChildNodes[0].InnerText;
+                    copyright = xmlNode.ChildNodes[0].InnerText;
                 }
 
                 // get credut url
@@ -166,7 +163,7 @@ namespace TerraViewer
 
                 if (xmlNode != null)
                 {
-                    this.creditsUrl = xmlNode.ChildNodes[0].InnerText;
+                    creditsUrl = xmlNode.ChildNodes[0].InnerText;
                 }
 
 

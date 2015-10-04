@@ -1,12 +1,9 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 #endregion
@@ -15,8 +12,8 @@ namespace TerraViewer
 {
 	public class Queue_List : Form
 	{
-        private System.Windows.Forms.Timer timer1;
-        private System.ComponentModel.IContainer components;
+        private Timer timer1;
+        private IContainer components;
         private ListBox listBox;
         private WwtButton wwtButton1;
         private WwtButton ClearCache;
@@ -30,116 +27,116 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.checkTilesInView.Text = Language.GetLocalizedText(306, "Tile in View Frustum");
-            this.wwtButton1.Text = Language.GetLocalizedText(307, "Flush Queue");
-            this.ClearCache.Text = Language.GetLocalizedText(937, "Clear Cache");
-            this.Text = Language.GetLocalizedText(938, "Download Queue");
+            checkTilesInView.Text = Language.GetLocalizedText(306, "Tile in View Frustum");
+            wwtButton1.Text = Language.GetLocalizedText(307, "Flush Queue");
+            ClearCache.Text = Language.GetLocalizedText(937, "Clear Cache");
+            Text = Language.GetLocalizedText(938, "Download Queue");
         }
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.checkTilesInView = new System.Windows.Forms.CheckBox();
-            this.listBox = new System.Windows.Forms.ListBox();
-            this.wwtButton1 = new TerraViewer.WwtButton();
-            this.ClearCache = new TerraViewer.WwtButton();
-            this.SuspendLayout();
+            components = new Container();
+            timer1 = new Timer(components);
+            checkTilesInView = new CheckBox();
+            listBox = new ListBox();
+            wwtButton1 = new WwtButton();
+            ClearCache = new WwtButton();
+            SuspendLayout();
             // 
             // timer1
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            timer1.Enabled = true;
+            timer1.Interval = 1000;
+            timer1.Tick += timer1_Tick;
             // 
             // checkTilesInView
             // 
-            this.checkTilesInView.AutoSize = true;
-            this.checkTilesInView.Location = new System.Drawing.Point(12, 716);
-            this.checkTilesInView.Name = "checkTilesInView";
-            this.checkTilesInView.Size = new System.Drawing.Size(123, 17);
-            this.checkTilesInView.TabIndex = 3;
-            this.checkTilesInView.Text = "Tile in View Frustrum";
-            this.checkTilesInView.UseVisualStyleBackColor = true;
-            this.checkTilesInView.Visible = false;
-            this.checkTilesInView.CheckedChanged += new System.EventHandler(this.FrustromTileView_CheckedChanged);
+            checkTilesInView.AutoSize = true;
+            checkTilesInView.Location = new Point(12, 716);
+            checkTilesInView.Name = "checkTilesInView";
+            checkTilesInView.Size = new Size(123, 17);
+            checkTilesInView.TabIndex = 3;
+            checkTilesInView.Text = "Tile in View Frustrum";
+            checkTilesInView.UseVisualStyleBackColor = true;
+            checkTilesInView.Visible = false;
+            checkTilesInView.CheckedChanged += FrustromTileView_CheckedChanged;
             // 
             // listBox
             // 
-            this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(82)))), ((int)(((byte)(105)))));
-            this.listBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listBox.ForeColor = System.Drawing.Color.White;
-            this.listBox.FormattingEnabled = true;
-            this.listBox.Location = new System.Drawing.Point(8, 12);
-            this.listBox.Name = "listBox";
-            this.listBox.Size = new System.Drawing.Size(272, 715);
-            this.listBox.TabIndex = 4;
-            this.listBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox_MouseDoubleClick);
-            this.listBox.SelectedIndexChanged += new System.EventHandler(this.listBox_SelectedIndexChanged);
+            listBox.Anchor = ((AnchorStyles.Top | AnchorStyles.Bottom)
+                                   | AnchorStyles.Left)
+                                  | AnchorStyles.Right;
+            listBox.BackColor = Color.FromArgb(68, 82, 105);
+            listBox.BorderStyle = BorderStyle.None;
+            listBox.ForeColor = Color.White;
+            listBox.FormattingEnabled = true;
+            listBox.Location = new Point(8, 12);
+            listBox.Name = "listBox";
+            listBox.Size = new Size(272, 715);
+            listBox.TabIndex = 4;
+            listBox.MouseDoubleClick += listBox_MouseDoubleClick;
+            listBox.SelectedIndexChanged += listBox_SelectedIndexChanged;
             // 
             // wwtButton1
             // 
-            this.wwtButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.wwtButton1.BackColor = System.Drawing.Color.Transparent;
-            this.wwtButton1.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.wwtButton1.ImageDisabled = null;
-            this.wwtButton1.ImageEnabled = null;
-            this.wwtButton1.Location = new System.Drawing.Point(3, 737);
-            this.wwtButton1.MaximumSize = new System.Drawing.Size(140, 33);
-            this.wwtButton1.Name = "wwtButton1";
-            this.wwtButton1.Selected = false;
-            this.wwtButton1.Size = new System.Drawing.Size(115, 33);
-            this.wwtButton1.TabIndex = 5;
-            this.wwtButton1.Text = "Flush Queue";
-            this.wwtButton1.Click += new System.EventHandler(this.PurgeQueue_Click);
+            wwtButton1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            wwtButton1.BackColor = Color.Transparent;
+            wwtButton1.DialogResult = DialogResult.None;
+            wwtButton1.ImageDisabled = null;
+            wwtButton1.ImageEnabled = null;
+            wwtButton1.Location = new Point(3, 737);
+            wwtButton1.MaximumSize = new Size(140, 33);
+            wwtButton1.Name = "wwtButton1";
+            wwtButton1.Selected = false;
+            wwtButton1.Size = new Size(115, 33);
+            wwtButton1.TabIndex = 5;
+            wwtButton1.Text = "Flush Queue";
+            wwtButton1.Click += PurgeQueue_Click;
             // 
             // ClearCache
             // 
-            this.ClearCache.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ClearCache.BackColor = System.Drawing.Color.Transparent;
-            this.ClearCache.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.ClearCache.ImageDisabled = null;
-            this.ClearCache.ImageEnabled = null;
-            this.ClearCache.Location = new System.Drawing.Point(173, 737);
-            this.ClearCache.MaximumSize = new System.Drawing.Size(140, 33);
-            this.ClearCache.Name = "ClearCache";
-            this.ClearCache.Selected = false;
-            this.ClearCache.Size = new System.Drawing.Size(112, 33);
-            this.ClearCache.TabIndex = 6;
-            this.ClearCache.Text = "Clear Cache";
-            this.ClearCache.Click += new System.EventHandler(this.ClearCache_Click);
+            ClearCache.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            ClearCache.BackColor = Color.Transparent;
+            ClearCache.DialogResult = DialogResult.None;
+            ClearCache.ImageDisabled = null;
+            ClearCache.ImageEnabled = null;
+            ClearCache.Location = new Point(173, 737);
+            ClearCache.MaximumSize = new Size(140, 33);
+            ClearCache.Name = "ClearCache";
+            ClearCache.Selected = false;
+            ClearCache.Size = new Size(112, 33);
+            ClearCache.TabIndex = 6;
+            ClearCache.Text = "Clear Cache";
+            ClearCache.Click += ClearCache_Click;
             // 
             // Queue_List
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(23)))), ((int)(((byte)(31)))));
-            this.ClientSize = new System.Drawing.Size(292, 774);
-            this.Controls.Add(this.ClearCache);
-            this.Controls.Add(this.wwtButton1);
-            this.Controls.Add(this.listBox);
-            this.Controls.Add(this.checkTilesInView);
-            this.DoubleBuffered = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Name = "Queue_List";
-            this.Opacity = 0.7;
-            this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.Text = "Download Queue";
-            this.TopMost = true;
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleBaseSize = new Size(5, 13);
+            BackColor = Color.FromArgb(20, 23, 31);
+            ClientSize = new Size(292, 774);
+            Controls.Add(ClearCache);
+            Controls.Add(wwtButton1);
+            Controls.Add(listBox);
+            Controls.Add(checkTilesInView);
+            DoubleBuffered = true;
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            Name = "Queue_List";
+            Opacity = 0.7;
+            ShowIcon = false;
+            ShowInTaskbar = false;
+            Text = "Download Queue";
+            TopMost = true;
+            ResumeLayout(false);
+            PerformLayout();
 
 		}
 
 
-        private void timer1_Tick(object sender, System.EventArgs e)
+        private void timer1_Tick(object sender, EventArgs e)
         {
             var tiles = TileCache.GetQueueList();
-            this.listBox.Items.Clear();
-            this.listBox.Items.AddRange(tiles);
+            listBox.Items.Clear();
+            listBox.Items.AddRange(tiles);
         }
 
 		private void PurgeQueue_Click(object sender, EventArgs e)
@@ -169,7 +166,7 @@ namespace TerraViewer
             {
                 var tile = (Tile)listBox.SelectedItem;
 
-                System.Diagnostics.Process.Start(tile.URL);
+                Process.Start(tile.URL);
             }
         }
 	}

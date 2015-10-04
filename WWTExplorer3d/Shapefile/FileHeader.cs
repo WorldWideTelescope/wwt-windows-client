@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ShapefileTools
 {    
@@ -32,19 +29,14 @@ namespace ShapefileTools
         public GeographicCoordinateSystem CoordinateReferenceSystem;
 
 
-
-        public FileHeader()
-        {
-        }
-
         /// <summary>
         /// The value for file length is the total length of the file in 16-bit words (including the fifty
         /// 16-bit words that make up the header).
         /// </summary>
         public int FileLength
         {
-            get { return this.fileLength; }
-            set { this.fileLength = value; }
+            get { return fileLength; }
+            set { fileLength = value; }
         }
 
         /// <summary>
@@ -52,8 +44,8 @@ namespace ShapefileTools
         /// </summary>
         public int Version
         {
-            get { return this.fileVersion; }
-            set { this.fileVersion = value; }
+            get { return fileVersion; }
+            set { fileVersion = value; }
         }
 
         /// <summary>
@@ -62,8 +54,8 @@ namespace ShapefileTools
         /// </summary>
         public int ShapeType
         {
-            get { return this.shapeType; }
-            set { this.shapeType = value; }
+            get { return shapeType; }
+            set { shapeType = value; }
         }
 
         /// <summary>
@@ -72,8 +64,8 @@ namespace ShapefileTools
         /// </summary>
         public double XMin
         {
-            get { return this.xMin; }
-            set { this.xMin = value; }
+            get { return xMin; }
+            set { xMin = value; }
         }
 
         /// <summary>
@@ -81,8 +73,8 @@ namespace ShapefileTools
         /// </summary>
         public double ZMin
         {
-            get { return this.zMin; }
-            set { this.zMin = value; }
+            get { return zMin; }
+            set { zMin = value; }
         }
 
         /// <summary>
@@ -90,8 +82,8 @@ namespace ShapefileTools
         /// </summary>
         public double MMin
         {
-            get { return this.mMin; }
-            set { this.mMin = value; }
+            get { return mMin; }
+            set { mMin = value; }
         }
 
 
@@ -100,8 +92,8 @@ namespace ShapefileTools
         /// </summary>
         public double ZMax
         {
-            get { return this.zMax; }
-            set { this.zMax = value; }
+            get { return zMax; }
+            set { zMax = value; }
         }
 
         /// <summary>
@@ -109,8 +101,8 @@ namespace ShapefileTools
         /// </summary>
         public double MMax
         {
-            get { return this.mMax; }
-            set { this.mMax = value; }
+            get { return mMax; }
+            set { mMax = value; }
         }
 
         /// <summary>
@@ -119,8 +111,8 @@ namespace ShapefileTools
         /// </summary>
         public double YMin
         {
-            get { return this.yMin; }
-            set { this.yMin = value; }
+            get { return yMin; }
+            set { yMin = value; }
         }
 
         /// <summary>
@@ -129,8 +121,8 @@ namespace ShapefileTools
         /// </summary>      
         public double XMax
         {
-            get { return this.xMax; }
-            set { this.xMax = value; }
+            get { return xMax; }
+            set { xMax = value; }
         }
 
         /// <summary>
@@ -139,14 +131,14 @@ namespace ShapefileTools
         /// </summary>
         public double YMax
         {
-            get { return this.yMax; }
-            set { this.yMax = value; }
+            get { return yMax; }
+            set { yMax = value; }
         }
 
         public int FileCode
         {
-            get { return this.fileCode; }
-            set { this.fileCode = value; }
+            get { return fileCode; }
+            set { fileCode = value; }
         }
 
     }
@@ -209,8 +201,8 @@ namespace ShapefileTools
         public ProjectionParameter() { }
 
         public ProjectionParameter(string name, double val) {
-            this.Name = name;
-            this.Value = val;
+            Name = name;
+            Value = val;
         
         }
     

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 using Vector3 = SharpDX.Vector3;
@@ -26,7 +24,7 @@ namespace TerraViewer
 
         private void DrawConstellation(Graphics g)
         {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
 
             g.DrawRectangle(Pens.White, new Rectangle(0, 0, Width - 1, Height - 1));
             if (lines != null)
@@ -40,7 +38,7 @@ namespace TerraViewer
         }
         private void DrawConstellationThumbnail(Graphics g)
         {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
 
             if (lines != null)
             {
@@ -74,7 +72,7 @@ namespace TerraViewer
 
         public void RefreshHint()
         {
-            this.Invalidate();
+            Invalidate();
         }
 
         Coordinates[] corners;
@@ -138,7 +136,7 @@ namespace TerraViewer
             var index = 0;
             foreach (var point in pointsOut)
             {
-                fov[index++] = new PointF((float)point.X, (float)point.Y);
+                fov[index++] = new PointF(point.X, point.Y);
             }
             fov[4] = fov[0];
 
@@ -203,7 +201,7 @@ namespace TerraViewer
             var index = 0;
             foreach (var point in pointsOut)
             {
-                lines[index++] = new PointF((float)point.X, (float)point.Y);
+                lines[index++] = new PointF(point.X, point.Y);
             }
             lines[index] = lines[0];
             
@@ -239,7 +237,7 @@ namespace TerraViewer
             var index = 0;
             foreach (var point in pointsOut)
             {
-                lines[index++] = new PointF((float)point.X, (float)point.Y);
+                lines[index++] = new PointF(point.X, point.Y);
             }
             lines[index] = lines[0];
 

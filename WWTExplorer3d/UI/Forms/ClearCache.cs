@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
@@ -19,15 +15,15 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.progressText.Text = Language.GetLocalizedText(152, "Calculating Cache Use");
-            this.catalogs.Text = Language.GetLocalizedText(153, "Catalogs");
-            this.tours.Text = Language.GetLocalizedText(154, "Cached Tours");
-            this.imagery.Text = Language.GetLocalizedText(155, "Imagery");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.Purge.Text = Language.GetLocalizedText(158, "Purge");
-            this.label1.Text = Language.GetLocalizedText(159, "Select Data to Purge");
-            this.Text = Language.GetLocalizedText(160, "Manage Data Cache");
-            this.warningText.Text = Language.GetLocalizedText(146, "WorldWide Telescope keeps copies of the imagery, tours, and catalogs that you view. Keeping this data enables you to view tours and imagery again quickly even if your computer is not connected to the Internet. Selecting options and clicking Purge frees up disk space but the data is not available until it is downloaded again.");
+            progressText.Text = Language.GetLocalizedText(152, "Calculating Cache Use");
+            catalogs.Text = Language.GetLocalizedText(153, "Catalogs");
+            tours.Text = Language.GetLocalizedText(154, "Cached Tours");
+            imagery.Text = Language.GetLocalizedText(155, "Imagery");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            Purge.Text = Language.GetLocalizedText(158, "Purge");
+            label1.Text = Language.GetLocalizedText(159, "Select Data to Purge");
+            Text = Language.GetLocalizedText(160, "Manage Data Cache");
+            warningText.Text = Language.GetLocalizedText(146, "WorldWide Telescope keeps copies of the imagery, tours, and catalogs that you view. Keeping this data enables you to view tours and imagery again quickly even if your computer is not connected to the Internet. Selecting options and clicking Purge frees up disk space but the data is not available until it is downloaded again.");
         }
 
 
@@ -83,11 +79,11 @@ namespace TerraViewer
 
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            imagerySize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalImagery / 1024.0 / 1024.0).ToString("f") + "MB";
-            tourSize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalTours / 1024.0 / 1024.0).ToString("f") + "MB";
-            catalogSize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalCatalog / 1024.0 / 1024.0).ToString("f") + "MB";
+            imagerySize.Text = Language.GetLocalizedText(147, "Size : ") + (totalImagery / 1024.0 / 1024.0).ToString("f") + "MB";
+            tourSize.Text = Language.GetLocalizedText(147, "Size : ") + (totalTours / 1024.0 / 1024.0).ToString("f") + "MB";
+            catalogSize.Text = Language.GetLocalizedText(147, "Size : ") + (totalCatalog / 1024.0 / 1024.0).ToString("f") + "MB";
             progressBar.Value = Math.Min(100,e.ProgressPercentage);
-            this.Refresh();
+            Refresh();
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -95,11 +91,11 @@ namespace TerraViewer
             if (purgeMode)
             {
                 DialogResult = DialogResult.OK;
-                this.Close();
+                Close();
             }
-            imagerySize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalImagery / 1024.0 / 1024.0).ToString("f") + "MB";
-            tourSize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalTours / 1024.0 / 1024.0).ToString("f") + "MB";
-            catalogSize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalCatalog / 1024.0 / 1024.0).ToString("f") + "MB";
+            imagerySize.Text = Language.GetLocalizedText(147, "Size : ") + (totalImagery / 1024.0 / 1024.0).ToString("f") + "MB";
+            tourSize.Text = Language.GetLocalizedText(147, "Size : ") + (totalTours / 1024.0 / 1024.0).ToString("f") + "MB";
+            catalogSize.Text = Language.GetLocalizedText(147, "Size : ") + (totalCatalog / 1024.0 / 1024.0).ToString("f") + "MB";
             progressText.Text = Language.GetLocalizedText(491, "Scan complete");
             progressBar.Value = 100;
             scanCompleted = true;
@@ -216,9 +212,9 @@ namespace TerraViewer
             }
             scanStarted = true;
 
-            imagerySize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalImagery / 1024.0 / 1024.0).ToString("f") + "MB";
-            tourSize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalTours / 1024.0 / 1024.0).ToString("f") + "MB";
-            catalogSize.Text = Language.GetLocalizedText(147, "Size : ") + ((double)totalCatalog / 1024.0 / 1024.0).ToString("f") + "MB";
+            imagerySize.Text = Language.GetLocalizedText(147, "Size : ") + (totalImagery / 1024.0 / 1024.0).ToString("f") + "MB";
+            tourSize.Text = Language.GetLocalizedText(147, "Size : ") + (totalTours / 1024.0 / 1024.0).ToString("f") + "MB";
+            catalogSize.Text = Language.GetLocalizedText(147, "Size : ") + (totalCatalog / 1024.0 / 1024.0).ToString("f") + "MB";
 
             purgeImagery = imagery.Checked;
             purgeCatalogs = catalogs.Checked;
@@ -272,7 +268,7 @@ namespace TerraViewer
             {
                 backgroundWorker.CancelAsync();
             }
-            this.Close();
+            Close();
         }
     }
 }

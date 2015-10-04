@@ -23,13 +23,13 @@ namespace TerraViewer.Callibration
             Right = right;
         }
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public int selectedPoint = -1;
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public CalibrationInfo Owner = null;
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public int SelectedPoint
         {
             get

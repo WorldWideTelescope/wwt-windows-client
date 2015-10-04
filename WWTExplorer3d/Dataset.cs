@@ -1,13 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;	
-using System.Threading;
-using System.Text;
 using System.Xml;
 
 namespace TerraViewer
@@ -29,19 +21,14 @@ namespace TerraViewer
             get { return name; }
             set { name = value; }
         }
-		string url;
+
 	    readonly Dictionary<string,Places> dataSets;
 	    readonly string groupingName;
 
-        
-        private bool sky;
 
-        public bool Sky
-        {
-            get { return sky; }
-            set { sky = value; }
-        }
-        DataSetType dataSetType = DataSetType.Place;
+	    public bool Sky { get; set; }
+
+	    DataSetType dataSetType = DataSetType.Place;
 
         public DataSetType DataSetType
         {
@@ -51,14 +38,13 @@ namespace TerraViewer
 
 		public DataSet(string name, string url, bool sky, DataSetType type)
         {
-            this.dataSetType = type;
+            dataSetType = type;
 
-            this.Sky = sky;
+            Sky = sky;
             this.name = name;
-			this.url = url;
 
 
-            DataSetManager.DownloadFile(url, Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml", false, true);
+		    DataSetManager.DownloadFile(url, Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml", false, true);
 			var doc = new XmlDocument();
             doc.Load(Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".xml");
 			
@@ -67,7 +53,7 @@ namespace TerraViewer
 
             XmlNode root = doc["root"];
             var dataSetsNode = root.SelectSingleNode("dataset");
-            this.groupingName = dataSetsNode.Attributes["Groups"].InnerXml;
+            groupingName = dataSetsNode.Attributes["Groups"].InnerXml;
             var dst = DataSetType.Place;
             if (dataSetsNode.Attributes["type"].Value != "place")
             {

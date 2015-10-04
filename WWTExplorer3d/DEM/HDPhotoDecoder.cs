@@ -12,6 +12,8 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
@@ -224,7 +226,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		CWMIQuantizer pQuantizerLP;
 		CWMIQuantizer pQuantizerHP;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
+		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
 		private short[,] decompressedBits;	// set to null by the runtime
 		#endregion
 
@@ -234,7 +236,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/// </summary>
 		protected override void PKImageDecode_Copy_WMP(SimpleBitIO simplebitIO)
 		{
-			this.bitIO = simplebitIO;
+			bitIO = simplebitIO;
 
 			ImageStrDecInit();
 			ImageStrDecDecode();
@@ -246,12 +248,12 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/// Decodes DEM information contained in a HD Photo image.
 		/// </summary>
 		/// <param name="data2">Bytestream of HD Photo image.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Return")]
+		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Return")]
 		internal short[,] Decode(byte[] data2)
 		{
 		    if (data2 != null)
 			{
-				this.data = data2;
+				data = data2;
 				try
 				{
 					DecodeBitstream(ReadContainer());
@@ -405,7 +407,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/*************************************************************************
 		  Top-level function to inverse tranform possible part of a macroblock
 		*************************************************************************/
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		private void Transform()
 		{
 			bool left = cColumn == 0, right = cColumn == cmbWidth;
@@ -600,7 +602,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/*************************************************************************
 			GetCoeffs
 		*************************************************************************/
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		private void DecodeCoeffs()
 		{
 		    int[] aLaplacianMean = { 0, 0};
@@ -653,8 +655,8 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			{
 				if (pQuantizerHP.iQP + m_pCodingContext.m_iTrimFlexBits == 1)
 				{ // only iTrim = 0, pQuantizerHP.iQP = 1 is legal
-					System.Diagnostics.Debug.Assert(m_pCodingContext.m_iTrimFlexBits == 0);
-					System.Diagnostics.Debug.Assert(pQuantizerHP.iQP == 1);
+					Debug.Assert(m_pCodingContext.m_iTrimFlexBits == 0);
+					Debug.Assert(pQuantizerHP.iQP == 1);
 
 					for (var k = 1; k < 16; k++)
 					{
@@ -747,7 +749,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				DecodeIndex(out iIndex, out iSign, (int)(iLoc + 1), m_pCodingContext.m_pAHexpt[Constant.CTDC + Constant.CONTEXTX + iCont + 1]);
 				iSRn = iIndex >> 1;
 
-				System.Diagnostics.Debug.Assert(iSRn >= 0 && iSRn < 3);
+				Debug.Assert(iSRn >= 0 && iSRn < 3);
 				iCont &= iSRn;  /** huge difference! **/
 				iLevel = (iQP ^ iSign) - iSign;
 				if ((iIndex & 1) != 0 /* iSL */)
@@ -776,7 +778,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/*  2  3  6  7 */
 		/*  8  9 12 13 */
 		/* 10 11 14 15 */
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "cbp", Justification = "To simplify comparizons with the original code")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "cbp", Justification = "To simplify comparizons with the original code")]
 		private int PredCBPCDec(int cbp, CCodingContext.CCBPModel pModel)
 		{
 		    const int iNDiff = Constant.AVG_NDIFF;
@@ -878,7 +880,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 					if (val >= 6)
 					{ // chroma present
-						System.Diagnostics.Debug.Assert(false); // just checking if this is ever called
+						Debug.Assert(false); // just checking if this is ever called
 					}
 					var iCode1 = Constant.gOff0[val];
 					if (Constant.gFLC0[val] != 0)
@@ -998,7 +1000,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/*************************************************************************
 			DecodeSecondStageCoeff
 		*************************************************************************/
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "cbp", Justification = "To simplify comparizons with the original code")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "cbp", Justification = "To simplify comparizons with the original code")]
 		private void DecodeMacroblockLowpass()
 		{
 			var pScan = m_pCodingContext.m_aScanLowpass;
@@ -1167,7 +1169,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				DecodeIndex(out iIndex, out iSign, iLocation, m_pCodingContext.m_pAHexpt[Constant.CTDC + iCont + 1]);
 				iSRn = iIndex >> 1;
 
-				System.Diagnostics.Debug.Assert(iSRn >= 0 && iSRn < 3);
+				Debug.Assert(iSRn >= 0 && iSRn < 3);
 				iCont &= iSRn;  /** huge difference! **/
 				if ((iIndex & 1) != 0 /* iSL */)
 				{
@@ -1402,7 +1404,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			int iFixed, iLevel;
 
 			var iIndex = (uint)pAHexpt.GetHuff(bitIO);
-			System.Diagnostics.Debug.Assert( iIndex <= 6 );
+			Debug.Assert( iIndex <= 6 );
 
 			pAHexpt.m_iDiscriminant += pAHexpt.m_pDelta[iIndex];
 			if (iIndex < 2)
@@ -1508,28 +1510,28 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		private void ReadPacketHeader()
 		{
 			var b = bitIO.NextByte();
-			System.Diagnostics.Debug.Assert(b == 0x0);
+			Debug.Assert(b == 0x0);
 			if (b != 0x0)
 			{
 				throw new ArgumentOutOfRangeException("ReadPacketHeader error " + b);
 			}
 
 			b = bitIO.NextByte();
-			System.Diagnostics.Debug.Assert(b == 0x0);
+			Debug.Assert(b == 0x0);
 			if (b != 0x0)
 			{
 				throw new ArgumentOutOfRangeException("ReadPacketHeader error " + b);
 			}
 
 			b = bitIO.NextByte();
-			System.Diagnostics.Debug.Assert(b == 0x1);
+			Debug.Assert(b == 0x1);
 			if (b != 0x1)
 			{
 				throw new ArgumentOutOfRangeException("ReadPacketHeader error " + b);
 			}
 
 			b = bitIO.NextByte();
-			System.Diagnostics.Debug.Assert(b == 0x0);
+			Debug.Assert(b == 0x0);
 			if (b != 0x0)
 			{
 				throw new ArgumentOutOfRangeException("ReadPacketHeader error " + b);
@@ -1576,7 +1578,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			p1MBbuffer = new PointerArray(a1MBbuffer, 0);
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
+		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		private void ImageStrDecInit()
 		{
 			InitializeStrDec();
@@ -1596,7 +1598,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			cmbHeight = ((int)cHeight + 15) / 16;
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		private void StrIODecInit()
 		{
 			if (bitIO.NextByte() != 0xff)
@@ -1605,7 +1607,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			}
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		private void StrDecInit()
 		{
 			AllocatePredInfo();

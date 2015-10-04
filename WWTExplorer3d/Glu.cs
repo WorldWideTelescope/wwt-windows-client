@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 namespace TerraViewer
 {
@@ -62,25 +61,25 @@ namespace TerraViewer
         [DllImport(GLU_DLL)]
         public unsafe static extern byte* gluGetString(uint name);
         [DllImport(GLU_DLL)]
-        public unsafe static extern IntPtr gluNewTess();
+        public static extern IntPtr gluNewTess();
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluDeleteTess(IntPtr tess);
+        public static extern void gluDeleteTess(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessBeginPolygon(IntPtr tess, IntPtr polygon_data);
+        public static extern void gluTessBeginPolygon(IntPtr tess, IntPtr polygon_data);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessBeginContour(IntPtr tess);
+        public static extern void gluTessBeginContour(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessVertex(IntPtr tess, double[] coords, int data);
+        public static extern void gluTessVertex(IntPtr tess, double[] coords, int data);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessEndContour(IntPtr tess);
+        public static extern void gluTessEndContour(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessEndPolygon(IntPtr tess);
+        public static extern void gluTessEndPolygon(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessProperty(IntPtr tess, uint which, double valuex);
+        public static extern void gluTessProperty(IntPtr tess, uint which, double valuex);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessNormal(IntPtr tess, double x, double y, double z);
+        public static extern void gluTessNormal(IntPtr tess, double x, double y, double z);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessCallback(IntPtr tess, uint which, Delegate fn);
+        public static extern void gluTessCallback(IntPtr tess, uint which, Delegate fn);
         [DllImport(GLU_DLL)]
         public unsafe static extern void gluGetTessProperty(IntPtr tess, uint which, double* valuex);
 
@@ -100,7 +99,7 @@ namespace TerraViewer
         static readonly List<int> TriangleListOut = new List<int>();
 
 
-        public static unsafe List<int> TesselateSimplePolyB(List<Vector3d> inputList)
+        public static List<int> TesselateSimplePolyB(List<Vector3d> inputList)
         {
             var results = new List<int>();
 
@@ -132,12 +131,12 @@ namespace TerraViewer
             }
             // register the callbacks
 
-            BeginDataEvent = new TessCallback(BeginData);
-            EdgeFlagEvent = new TessCallback(EdgeFlag);
-            VertexEvent = new TessCallback(Vertex);
-            EndDataEvent = new TessEndData(EndData);
-            CombineEvent = new TessCombine(Combine);
-            ErrorEvent = new TessCallback(GLU_ErrorEvent);
+            BeginDataEvent = BeginData;
+            EdgeFlagEvent = EdgeFlag;
+            VertexEvent = Vertex;
+            EndDataEvent = EndData;
+            CombineEvent = Combine;
+            ErrorEvent = GLU_ErrorEvent;
 
             gluTessCallback(tess, GLU_TESS_BEGIN_DATA, BeginDataEvent);
             gluTessCallback(tess, GLU_TESS_EDGE_FLAG_DATA, EdgeFlagEvent);
@@ -152,7 +151,7 @@ namespace TerraViewer
             for (var i = 0; i < VertexList.Count; i++)
             {
                 var v = VertexList[i];
-                gluTessVertex(tess, new double[] { v.X, v.Y, v.Z }, i);
+                gluTessVertex(tess, new[] { v.X, v.Y, v.Z }, i);
             }
             gluTessEndContour(tess);
             gluTessEndPolygon(tess);
@@ -206,8 +205,6 @@ namespace TerraViewer
 
             return results;
         }
-
-        const float EPSILON = 0.0000000001f;
 
         double Area(List<Vector2d> poly)
         {

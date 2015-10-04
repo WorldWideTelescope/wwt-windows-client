@@ -11,6 +11,8 @@
 //
 //------------------------------------------------------------------------------
 
+using System.Diagnostics;
+
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
 	/// <summary>
@@ -40,7 +42,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		#region Members
 		protected static uint RotL(uint value, int shift)
 		{
-			System.Diagnostics.Debug.Assert(shift >= 0 && shift <32);
+			Debug.Assert(shift >= 0 && shift <32);
 
 			return (value << shift) | ((value >> (32 - shift)) & MaskBits[shift]);
 		}

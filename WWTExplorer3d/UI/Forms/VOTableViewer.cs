@@ -1,11 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.IO;
 
 namespace TerraViewer
 {
@@ -61,7 +55,7 @@ namespace TerraViewer
             loadImage.Visible = layer.IsSiapResultSet();
 
 
-            this.Owner = Earth3d.MainWindow;
+            Owner = Earth3d.MainWindow;
         }
 
         public void UpdateTable()
@@ -76,13 +70,13 @@ namespace TerraViewer
             listView1.VirtualListSize = table.Rows.Count;
             LoadColumnsForCombos();
 
-            this.Text = WindowText + " : " + table.Rows.Count + " Rows";
+            Text = WindowText + " : " + table.Rows.Count + " Rows";
 
 
         }
         private void LoadColumnsForCombos()
         {
-            this.markerTypeCombo.SelectedIndex = (int)layer.PlotType;
+            markerTypeCombo.SelectedIndex = (int)layer.PlotType;
 
             // bool star =  plotType.SelectedItem == "Star";
             var raColSelect = layer.LngColumn > -1 ? table.Column[layer.LngColumn] : null;
@@ -275,7 +269,7 @@ namespace TerraViewer
                 {
                     var row = table.Rows[listView1.SelectedIndices[0]];
                     var ra = Coordinates.ParseRA(row[raSource.SelectedIndex - 1].ToString(), true);
-                    var dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString().ToString());
+                    var dec = Coordinates.ParseDec(row[decSource.SelectedIndex - 1].ToString());
                     string id;
 
                     var col = table.GetColumnByUcd("meta.id");
@@ -325,7 +319,7 @@ namespace TerraViewer
 
             if (table.SampId == null)
             {
-                table.SampId = "WWT:" + Math.Abs(path.ToString().GetHashCode32()).ToString();
+                table.SampId = "WWT:" + Math.Abs(path.ToString().GetHashCode32());
             }
             Earth3d.MainWindow.sampConnection.LoadTable(path.ToString(), table.SampId, path.ToString());
         }
@@ -334,7 +328,7 @@ namespace TerraViewer
         {
             var col = table.Columns[listView1.Columns[e.Column].Text];
 
-            UiTools.ShowMessageBox("Name = " + col.Name + "; ucd=" + col.Ucd + "; type=" + col.Type.ToString());
+            UiTools.ShowMessageBox("Name = " + col.Name + "; ucd=" + col.Ucd + "; type=" + col.Type);
         }
 
 

@@ -188,8 +188,8 @@ namespace TerraViewer.Callibration
         readonly ProjectionType projectionType = ProjectionType.View;
         public SolveProjector(ProjectorEntry pe, double radius, ProjectionType type, ScreenTypes tranformType, SolveParameters solveParameters)
         {
-            this.projectionType = type;
-            this.screenType = tranformType;
+            projectionType = type;
+            screenType = tranformType;
             this.solveParameters = solveParameters;
 
             switch (type)
@@ -475,7 +475,7 @@ namespace TerraViewer.Callibration
                 TransformPickPointToWorldSpaceFishEye(pt, width, height, out PickRayOrig, out PickRayDir);
 
 
-                SphereIntersectRay(PickRayOrig, PickRayDir, this.sphereRadius, out result);
+                SphereIntersectRay(PickRayOrig, PickRayDir, sphereRadius, out result);
 
 
                 return result;
@@ -497,11 +497,11 @@ namespace TerraViewer.Callibration
 
                 if (screenType == ScreenTypes.Cylindrical)
                 {
-                    CylinderIntersectRay(PickRayOrig, PickRayDir, this.sphereRadius, out result);
+                    CylinderIntersectRay(PickRayOrig, PickRayDir, sphereRadius, out result);
                 }
                 else
                 {
-                    SphereIntersectRay(PickRayOrig, PickRayDir, this.sphereRadius, out result);
+                    SphereIntersectRay(PickRayOrig, PickRayDir, sphereRadius, out result);
                 }
 
                 return result;

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -32,29 +30,29 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label9.Text = Language.GetLocalizedText(196, "");
-            this.label7.Text = Language.GetLocalizedText(197, "Focal Ratio");
-            this.label8.Text = Language.GetLocalizedText(198, "Mount Type");
-            this.label6.Text = Language.GetLocalizedText(199, "Aperture");
-            this.label5.Text = Language.GetLocalizedText(200, "Focal Length");
-            this.cameraRadioButton.Text = Language.GetLocalizedText(201, "Camera");
-            this.eyePieceRadioButton.Text = Language.GetLocalizedText(202, "Eyepiece");
-            this.label2.Text = Language.GetLocalizedText(139, "Telescope");
-            this.label1.Text = Language.GetLocalizedText(203, "Organization");
-            this.label14.Text = Language.GetLocalizedText(204, "Camera Rotation");
-            this.label13.Text = Language.GetLocalizedText(205, "Vert Pixels");
-            this.label11.Text = Language.GetLocalizedText(206, "Imaging Surfaces");
-            this.label12.Text = Language.GetLocalizedText(207, "Horiz Pixels");
-            this.label10.Text = Language.GetLocalizedText(208, "Height");
-            this.widthLabel.Text = Language.GetLocalizedText(209, "Width");
-            this.label4.Text = Language.GetLocalizedText(201, "Camera");
-            this.label3.Text = Language.GetLocalizedText(210, "Manufacturer");
-            this.Telescope.Text = Language.GetLocalizedText(139, "Telescope");
-            this.CameraGroup.Text = Language.GetLocalizedText(201, "Camera");
-            this.label15.Text = Language.GetLocalizedText(211, "For More information:");
-            this.label16.Text = Language.GetLocalizedText(211, "For More information:");
-            this.OK.Text = Language.GetLocalizedText(212, "Close");
-            this.Text = Language.GetLocalizedText(213, "Field of View Indicator");
+            label9.Text = Language.GetLocalizedText(196, "");
+            label7.Text = Language.GetLocalizedText(197, "Focal Ratio");
+            label8.Text = Language.GetLocalizedText(198, "Mount Type");
+            label6.Text = Language.GetLocalizedText(199, "Aperture");
+            label5.Text = Language.GetLocalizedText(200, "Focal Length");
+            cameraRadioButton.Text = Language.GetLocalizedText(201, "Camera");
+            eyePieceRadioButton.Text = Language.GetLocalizedText(202, "Eyepiece");
+            label2.Text = Language.GetLocalizedText(139, "Telescope");
+            label1.Text = Language.GetLocalizedText(203, "Organization");
+            label14.Text = Language.GetLocalizedText(204, "Camera Rotation");
+            label13.Text = Language.GetLocalizedText(205, "Vert Pixels");
+            label11.Text = Language.GetLocalizedText(206, "Imaging Surfaces");
+            label12.Text = Language.GetLocalizedText(207, "Horiz Pixels");
+            label10.Text = Language.GetLocalizedText(208, "Height");
+            widthLabel.Text = Language.GetLocalizedText(209, "Width");
+            label4.Text = Language.GetLocalizedText(201, "Camera");
+            label3.Text = Language.GetLocalizedText(210, "Manufacturer");
+            Telescope.Text = Language.GetLocalizedText(139, "Telescope");
+            CameraGroup.Text = Language.GetLocalizedText(201, "Camera");
+            label15.Text = Language.GetLocalizedText(211, "For More information:");
+            label16.Text = Language.GetLocalizedText(211, "For More information:");
+            OK.Text = Language.GetLocalizedText(212, "Close");
+            Text = Language.GetLocalizedText(213, "Field of View Indicator");
             
         }
 
@@ -169,14 +167,14 @@ namespace TerraViewer
             opticalDesignText.Text = scope.OpticalDesign;
             manufacturerUrlLink.Text = scope.Url;
             Fov.Telescope = (Telescope)telescopeCombo.SelectedItem;
-            Properties.Settings.Default.FovTelescope = ((string)Fov.Telescope.Manufacturer + Fov.Telescope.Name).GetHashCode32();
+            Properties.Settings.Default.FovTelescope = (Fov.Telescope.Manufacturer + Fov.Telescope.Name).GetHashCode32();
 
 
         }
 
-        void manufacturerUrlLink_Click(object sender, System.EventArgs e)
+        void manufacturerUrlLink_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(manufacturerUrlLink.Text);
+            Process.Start(manufacturerUrlLink.Text);
         }
         private void cameraMakerUrlLink_MouseEnter(object sender, EventArgs e)
         {
@@ -205,9 +203,9 @@ namespace TerraViewer
 
         }
 
-        void cameraMakerUrlLink_Click(object sender, System.EventArgs e)
+        void cameraMakerUrlLink_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(cameraMakerUrlLink.Text);
+            Process.Start(cameraMakerUrlLink.Text);
         }
 
         private void manufactuerCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -254,7 +252,7 @@ namespace TerraViewer
 
             cameraMakerUrlLink.Text = camera.Url;
             Fov.Camera = (Camera)cameraCombo.SelectedItem;
-            Properties.Settings.Default.FovCamera = ((string)Fov.Camera.Manufacturer + Fov.Camera.Name).GetHashCode32();
+            Properties.Settings.Default.FovCamera = (Fov.Camera.Manufacturer + Fov.Camera.Name).GetHashCode32();
 
         }
 
@@ -272,12 +270,12 @@ namespace TerraViewer
         {
             Fov.Telescope = (Telescope)telescopeCombo.SelectedItem;
             Fov.Camera = (Camera)cameraCombo.SelectedItem;
-            this.Close();
+            Close();
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void FieldOfViewSetup_FormClosed(object sender, FormClosedEventArgs e)

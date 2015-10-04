@@ -1,15 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System.IO;
 using System.Net;
-using System.IO;	
-using System.Threading;
-using System.Text;
 using System.Xml;
-using System.Windows.Forms;
+
 namespace TerraViewer
 {
 	/// <summary>
@@ -22,7 +16,7 @@ namespace TerraViewer
 		{
             var trys = 3;
             var citiesLoaded = false;
-            XmlDocument doc = null;
+            XmlDocument doc;
             while (trys-- > 0 && !citiesLoaded)
             {
                 try
@@ -102,13 +96,12 @@ namespace TerraViewer
  
             var didDownload = false;
 
-            System.Net.WebRequest request = null;
-            System.Net.WebResponse response = null;
+            WebResponse response = null;
 
 
             try
             {
-                request = System.Net.WebRequest.Create(url);
+                WebRequest request = WebRequest.Create(url);
                 request.Timeout = 30000;
                 request.Headers.Add("LiveUserToken", Properties.Settings.Default.LiveIdToken);
                 string etag;
@@ -182,9 +175,9 @@ namespace TerraViewer
                 }
                 didDownload = true;
             }
-            catch (System.Net.WebException e)
+            catch (WebException e)
             {
-                if (e.ToString().IndexOf("304") == -1)
+                if (e.ToString().IndexOf("304", StringComparison.Ordinal) == -1)
                 {
                     return false;
                 }
@@ -206,18 +199,14 @@ namespace TerraViewer
 		}
         public static IThumbnail GetDataSetsAsFolder()
         {
-            var parent = new ThumbMenuNode();
+            var parent = new ThumbMenuNode {Name = Language.GetLocalizedText(646, "Collections")};
 
-            parent.Name = Language.GetLocalizedText(646, "Collections");
-
-            var dataSets = DataSetManager.GetDataSets();
-            foreach (var d in dataSets.Values)
+            var ds = GetDataSets();
+            foreach (var d in ds.Values)
             {
                 // Todo Change this to exploere earth, moon etc.
                 if (d.Sky == true)
                 {
-                    if (d != null)
-                    {
                         var placesList = d.GetPlaces();
                         foreach (var places in placesList.Values)
                         {
@@ -226,7 +215,6 @@ namespace TerraViewer
                                 parent.AddChild(places);
                             }
                         }
-                    }
                 }
             }
             return parent; 

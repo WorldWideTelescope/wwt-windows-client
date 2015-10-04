@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -70,14 +66,14 @@ namespace TerraViewer
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void OK_Click(object sender, EventArgs e)
         {
             try
             {
-                editTarget.Names = names.Text.Split(new char[] { ';' }); ;
+                editTarget.Names = names.Text.Split(new[] { ';' }); ;
                 editTarget.RA = Coordinates.Parse(ra.Text);
                 editTarget.Dec = Coordinates.Parse(dec.Text);
                 editTarget.Magnitude = Convert.ToDouble(mag.Text);
@@ -94,7 +90,7 @@ namespace TerraViewer
                     editTarget.Constellation = "NA";
                 }
                 FolderBrowser.AllDirty = true;
-                this.Close();
+                Close();
             }
             catch
             {

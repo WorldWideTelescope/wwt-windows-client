@@ -42,7 +42,7 @@ namespace TerraViewer.Callibration
         public List<Edge> Edges = new List<Edge>();
 
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public Dictionary<int, ProjectorEntry> ProjLookup = new Dictionary<int, ProjectorEntry>();
 
         public void SyncLookupsAndOwners()

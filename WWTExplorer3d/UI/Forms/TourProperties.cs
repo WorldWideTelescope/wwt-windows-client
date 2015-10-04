@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,13 +14,13 @@ namespace TerraViewer
             set
             {
                 editTour = value;
-                this.tourTitleTextbox.Text = editTour.Title;
-                this.authorNameTextbox.Text = editTour.Author;
-                this.authorEmailText.Text = editTour.AuthorEmail;
-                this.tourDescriptionTextbox.Text = editTour.Description;
-                this.authorImagePicturebox.Image = editTour.AuthorImage;
-                this.orgUrl.Text = editTour.OrganizationUrl;
-                this.OrganizationName.Text = editTour.OrgName;
+                tourTitleTextbox.Text = editTour.Title;
+                authorNameTextbox.Text = editTour.Author;
+                authorEmailText.Text = editTour.AuthorEmail;
+                tourDescriptionTextbox.Text = editTour.Description;
+                authorImagePicturebox.Image = editTour.AuthorImage;
+                orgUrl.Text = editTour.OrganizationUrl;
+                OrganizationName.Text = editTour.OrgName;
                 keywords.Text = editTour.Keywords;
                 ClassificationText.Text = editTour.Taxonomy;
                 SetLevel(editTour.Level);
@@ -37,15 +33,15 @@ namespace TerraViewer
             switch (userLevel)
             {
                 case UserLevel.Beginner:
-                    this.BeginnerOption.Checked = true;
+                    BeginnerOption.Checked = true;
                     break;
                 case UserLevel.Intermediate:
-                    this.IntermediateOption.Checked = true;
+                    IntermediateOption.Checked = true;
                     break;
                 case UserLevel.Advanced:
                 case UserLevel.Professional:
                 case UserLevel.Educator:
-                    this.AdvancedOption.Checked = true;
+                    AdvancedOption.Checked = true;
                     break;
             }
         }
@@ -58,25 +54,25 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(468, "Author Name");
-            this.label2.Text = Language.GetLocalizedText(469, "Tour Description");
-            this.label3.Text = Language.GetLocalizedText(470, "Import or Replace Author Image");
-            this.groupBox1.Text = Language.GetLocalizedText(471, "Select the level for the tour");
-            this.AdvancedOption.Text = Language.GetLocalizedText(472, "Advanced");
-            this.IntermediateOption.Text = Language.GetLocalizedText(473, "Intermediate");
-            this.BeginnerOption.Text = Language.GetLocalizedText(474, "Beginner");
-            this.label4.Text = Language.GetLocalizedText(475, "Tour Title *");
-            this.label5.Text = Language.GetLocalizedText(476, "Organization URL");
-            this.ClassificationTaxonomyLabel.Text = Language.GetLocalizedText(477, "Classification Taxonomy");
-            this.label6.Text = Language.GetLocalizedText(478, "* Required Field");
-            this.label7.Text = Language.GetLocalizedText(479, "Author Contact Email");
-            this.label8.Text = Language.GetLocalizedText(480, "Catalog Objects and Keywords (semicolon separated)");
-            this.ShowTaxTree.Text = Language.GetLocalizedText(481, "Classification");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.ImportAuthorImage.Text = Language.GetLocalizedText(482, "Import Image");
-            this.label9.Text = Language.GetLocalizedText(483, "Organization Name");
-            this.Text = Language.GetLocalizedText(418, "Tour Properties");
+            label1.Text = Language.GetLocalizedText(468, "Author Name");
+            label2.Text = Language.GetLocalizedText(469, "Tour Description");
+            label3.Text = Language.GetLocalizedText(470, "Import or Replace Author Image");
+            groupBox1.Text = Language.GetLocalizedText(471, "Select the level for the tour");
+            AdvancedOption.Text = Language.GetLocalizedText(472, "Advanced");
+            IntermediateOption.Text = Language.GetLocalizedText(473, "Intermediate");
+            BeginnerOption.Text = Language.GetLocalizedText(474, "Beginner");
+            label4.Text = Language.GetLocalizedText(475, "Tour Title *");
+            label5.Text = Language.GetLocalizedText(476, "Organization URL");
+            ClassificationTaxonomyLabel.Text = Language.GetLocalizedText(477, "Classification Taxonomy");
+            label6.Text = Language.GetLocalizedText(478, "* Required Field");
+            label7.Text = Language.GetLocalizedText(479, "Author Contact Email");
+            label8.Text = Language.GetLocalizedText(480, "Catalog Objects and Keywords (semicolon separated)");
+            ShowTaxTree.Text = Language.GetLocalizedText(481, "Classification");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            ImportAuthorImage.Text = Language.GetLocalizedText(482, "Import Image");
+            label9.Text = Language.GetLocalizedText(483, "Organization Name");
+            Text = Language.GetLocalizedText(418, "Tour Properties");
         }
 
         private void OK_Click(object sender, EventArgs e)
@@ -84,27 +80,27 @@ namespace TerraViewer
             //todo localize
             Undo.Push(new UndoTourPropertiesChange(Language.GetLocalizedText(549, "Properties Edit"), editTour));    
 
-            editTour.Author = this.authorNameTextbox.Text;
-            editTour.AuthorEmail = this.authorEmailText.Text;
-            editTour.Description = this.tourDescriptionTextbox.Text;
-            editTour.AuthorImage = (Bitmap)this.authorImagePicturebox.Image;
-            editTour.OrganizationUrl = this.orgUrl.Text;
-            editTour.OrgName = this.OrganizationName.Text;
-            editTour.Title = this.tourTitleTextbox.Text;
+            editTour.Author = authorNameTextbox.Text;
+            editTour.AuthorEmail = authorEmailText.Text;
+            editTour.Description = tourDescriptionTextbox.Text;
+            editTour.AuthorImage = (Bitmap)authorImagePicturebox.Image;
+            editTour.OrganizationUrl = orgUrl.Text;
+            editTour.OrgName = OrganizationName.Text;
+            editTour.Title = tourTitleTextbox.Text;
             editTour.Taxonomy = ClassificationText.Text;
             editTour.Keywords = keywords.Text;
             editTour.Level = GetLevel();
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
 
         private UserLevel GetLevel()
         {
-            if (this.AdvancedOption.Checked)
+            if (AdvancedOption.Checked)
             {
                 return UserLevel.Advanced;
             }    
-            if (this.IntermediateOption.Checked)
+            if (IntermediateOption.Checked)
             {
                 return UserLevel.Intermediate;
             }        
@@ -115,7 +111,7 @@ namespace TerraViewer
         private void Cancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
-            this.Close();
+            Close();
         }
 
         private void TourProperties_Load(object sender, EventArgs e)
@@ -158,7 +154,7 @@ namespace TerraViewer
 
                 if (bmpTemp != null)
                 {
-                    this.authorImagePicturebox.Image = bmpTemp;
+                    authorImagePicturebox.Image = bmpTemp;
                     ValidateDataComplete();
                 }
             }
@@ -194,24 +190,24 @@ namespace TerraViewer
 
             //todo validate URLS's
 
-            if (Strict && string.IsNullOrEmpty(this.authorNameTextbox.Text))
+            if (Strict && string.IsNullOrEmpty(authorNameTextbox.Text))
             {
                 okEnabled = false;
-                this.authorNameTextbox.BackColor = highlightNeeded ? Color.Red : OrganizationName.BackColor;
+                authorNameTextbox.BackColor = highlightNeeded ? Color.Red : OrganizationName.BackColor;
             }
             else
             {
-                this.authorNameTextbox.BackColor = OrganizationName.BackColor;
+                authorNameTextbox.BackColor = OrganizationName.BackColor;
             }
 
-            if (Strict && string.IsNullOrEmpty(this.tourDescriptionTextbox.Text))
+            if (Strict && string.IsNullOrEmpty(tourDescriptionTextbox.Text))
             {
                 okEnabled = false;
-                this.tourDescriptionTextbox.BackColor = highlightNeeded ? Color.Red : OrganizationName.BackColor;
+                tourDescriptionTextbox.BackColor = highlightNeeded ? Color.Red : OrganizationName.BackColor;
             }
             else
             {
-                this.tourDescriptionTextbox.BackColor = OrganizationName.BackColor;
+                tourDescriptionTextbox.BackColor = OrganizationName.BackColor;
             }
 
             if (authorImageNeeded && authorImagePicturebox.Image == null)
@@ -269,7 +265,7 @@ namespace TerraViewer
             if (e.KeyCode == Keys.Escape)
             {
                 DialogResult = DialogResult.Cancel;
-                this.Close();
+                Close();
             }
         }
 

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Xml;
 using SharpDX;
-using SharpDX.Direct3D11;
 using System.Windows.Forms;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using Color = System.Drawing.Color;
+
 namespace TerraViewer
 {
     public class Object3dLayer : Layer , IUiController
@@ -183,10 +186,6 @@ namespace TerraViewer
         }
 
 
-        public Object3dLayer()
-        {
-        }
-
         int lightID;
 
          [LayerProperty]
@@ -221,7 +220,7 @@ namespace TerraViewer
 
         public bool ObjType = false;
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("FlipV", FlipV.ToString());
             xmlWriter.WriteAttributeString("FlipHandedness", FlipHandedness.ToString());
@@ -260,12 +259,12 @@ namespace TerraViewer
 
         public override string[] GetParamNames()
         {
-            return new string[] { "Heading", "Pitch", "Roll", "Scale.X", "Scale.Y", "Scale.Z", "Translate.X", "Translate.Y", "Translate.Z", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
+            return new[] { "Heading", "Pitch", "Roll", "Scale.X", "Scale.Y", "Scale.Z", "Translate.X", "Translate.Y", "Translate.Z", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
         }
 
         public override BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
         }
 
         public override void SetParams(double[] paramList)
@@ -283,7 +282,7 @@ namespace TerraViewer
                 translate.Z = paramList[8];
 
                 Opacity = (float)paramList[13];
-                var color = System.Drawing.Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[9] * 255), (int)(paramList[10] * 255), (int)(paramList[11] * 255));
+                var color = Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[9] * 255), (int)(paramList[10] * 255), (int)(paramList[11] * 255));
                 Color = color;
 
             }
@@ -305,7 +304,7 @@ namespace TerraViewer
             return this as IUiController;
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             FlipV = Boolean.Parse(node.Attributes["FlipV"].Value);
 
@@ -386,17 +385,17 @@ namespace TerraViewer
                 var pnt1 = new Vector3d(1 - rad * 4, 0, 0);
                 var pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
                 var pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Red, new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Red, new Dates());
             }
             for (double a = 0; a < twoPi; a += step)
             {
                 var pnt1 = new Vector3d(1, 0, 0);
                 var pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
                 var pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), System.Drawing.Color.Red);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), Color.Red);
 
             // Y
             for (double a = 0; a < twoPi; a += step)
@@ -404,7 +403,7 @@ namespace TerraViewer
                 var pnt1 = new Vector3d(0, 1 - rad * 4, 0);
                 var pnt3 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
                 var pnt2 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Green, new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Green, new Dates());
             }
 
             for (double a = 0; a < twoPi; a += step)
@@ -412,10 +411,10 @@ namespace TerraViewer
                 var pnt1 = new Vector3d(0, 1, 0);
                 var pnt2 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
                 var pnt3 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), 255, Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), 255, Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), System.Drawing.Color.Green);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), Color.Green);
 
             // Z
             for (double a = 0; a < twoPi; a += step)
@@ -423,7 +422,7 @@ namespace TerraViewer
                 var pnt1 = new Vector3d(0, 0, 1 - rad * 4);
                 var pnt2 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
                 var pnt3 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Blue, new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Blue, new Dates());
             }
 
             for (double a = 0; a < twoPi; a += step)
@@ -431,10 +430,10 @@ namespace TerraViewer
                 var pnt1 = new Vector3d(0, 0, 1);
                 var pnt3 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
                 var pnt2 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128)), 255), new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128)), 255), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), System.Drawing.Color.Blue);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), Color.Blue);
             InitRotateUI();
             InitScaleUI();
         }
@@ -452,17 +451,17 @@ namespace TerraViewer
 
             // X
 
-            MakeCube(ScaleUI, new Vector3d(1 - rad * 2, 0, 0), rad * 2, System.Drawing.Color.Red);
-            MakeCube(ScaleUI, new Vector3d(0, 1 - rad * 2, 0), rad * 2, System.Drawing.Color.Green);
-            MakeCube(ScaleUI, new Vector3d(0, 0, 1 - rad * 2), rad * 2, System.Drawing.Color.Blue);
+            MakeCube(ScaleUI, new Vector3d(1 - rad * 2, 0, 0), rad * 2, Color.Red);
+            MakeCube(ScaleUI, new Vector3d(0, 1 - rad * 2, 0), rad * 2, Color.Green);
+            MakeCube(ScaleUI, new Vector3d(0, 0, 1 - rad * 2), rad * 2, Color.Blue);
 
         }
 
-        static void MakeCube(TriangleList tl, Vector3d center, double size, System.Drawing.Color color)
+        static void MakeCube(TriangleList tl, Vector3d center, double size, Color color)
         {
 
-            var dark = System.Drawing.Color.FromArgb((int)(color.R * .6), (color.G), (int)(color.B * .6));
-            var med = System.Drawing.Color.FromArgb((int)(color.R * .8), (int)(color.G * .8), (int)(color.B * .8));
+            var dark = Color.FromArgb((int)(color.R * .6), (color.G), (int)(color.B * .6));
+            var med = Color.FromArgb((int)(color.R * .8), (int)(color.G * .8), (int)(color.B * .8));
 
 
             tl.AddQuad(
@@ -532,7 +531,7 @@ namespace TerraViewer
                 var pnt2 = new Vector3d(-rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
                 var pnt3 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
                 var pnt4 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkRed), new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.FromArgb(192, Color.DarkRed), new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -546,7 +545,7 @@ namespace TerraViewer
                 var pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), -rad * (start ? 0 : (end ? 1.5 : 1)));
                 var pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
                 var pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkBlue), new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.FromArgb(192, Color.DarkBlue), new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -560,7 +559,7 @@ namespace TerraViewer
                 var pnt2 = new Vector3d(Math.Cos(a), -rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
                 var pnt3 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
                 var pnt4 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkGreen), new Dates());
+                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(192, Color.DarkGreen), new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -575,7 +574,7 @@ namespace TerraViewer
                 var pnt2 = new Vector3d(rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
                 var pnt3 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
                 var pnt4 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.Red, new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.Red, new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -592,7 +591,7 @@ namespace TerraViewer
                 var pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), rad * (start ? 0 : (end ? 1.5 : 1)));
                 var pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
                 var pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.Blue, new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.Blue, new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -609,7 +608,7 @@ namespace TerraViewer
                 var pnt2 = new Vector3d(Math.Cos(a), rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
                 var pnt3 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
                 var pnt4 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.Green, new Dates());
+                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.Green, new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -787,7 +786,7 @@ namespace TerraViewer
                 var copy = true;
                 //bool copy = !fName.Contains(ID.ToString());
                 var ext = ObjType ? "obj" : "3ds";
-                var fileName = fc.TempDirectory + string.Format("{0}\\{1}.{2}", fc.PackageID, this.ID.ToString(), ext);
+                var fileName = fc.TempDirectory + string.Format("{0}\\{1}.{2}", fc.PackageID, ID, ext);
                 var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
                 var path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
 
@@ -885,7 +884,7 @@ namespace TerraViewer
 
         double hitDist = 20;
 
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             pntDown = e.Location;
 
@@ -896,21 +895,21 @@ namespace TerraViewer
                 if ((pnt - xHandle).Length < hitDist)
                 {
                     dragMode = Draging.Scale;
-                    valueOnDown = this.scale.X;
+                    valueOnDown = scale.X;
                     return true;
                 }
 
                 if ((pnt - yHandle).Length < hitDist)
                 {
                     dragMode = Draging.Scale;
-                    valueOnDown = this.scale.Y;
+                    valueOnDown = scale.Y;
                     return true;
                 }
 
                 if ((pnt - zHandle).Length < hitDist)
                 {
                     dragMode = Draging.Scale;
-                    valueOnDown = this.scale.Z;
+                    valueOnDown = scale.Z;
                     return true;
                 }
             }
@@ -919,21 +918,21 @@ namespace TerraViewer
                 if ((pnt - xHandle).Length < hitDist)
                 {
                     dragMode = Draging.X;
-                    valueOnDown = this.translate.X;
+                    valueOnDown = translate.X;
                     return true;
                 }
 
                 if ((pnt - yHandle).Length < hitDist)
                 {
                     dragMode = Draging.Y;
-                    valueOnDown = this.translate.Y;
+                    valueOnDown = translate.Y;
                     return true;
                 }
 
                 if ((pnt - zHandle).Length < hitDist)
                 {
                     dragMode = Draging.Z;
-                    valueOnDown = this.translate.Z;
+                    valueOnDown = translate.Z;
                     return true;
                 }
             }
@@ -946,33 +945,33 @@ namespace TerraViewer
                     {
                         case 0:
                             dragMode = Draging.HP;
-                            valueOnDown = this.heading;
-                            valueOnDown2 = this.pitch;
+                            valueOnDown = heading;
+                            valueOnDown2 = pitch;
                             return true;
                         case 1:
                             dragMode = Draging.HP1;
-                            valueOnDown = this.heading;
-                            valueOnDown2 = this.pitch;
+                            valueOnDown = heading;
+                            valueOnDown2 = pitch;
                             return true;
                         case 2:
                             dragMode = Draging.PR;
-                            valueOnDown = this.pitch;
-                            valueOnDown2 = this.roll;
+                            valueOnDown = pitch;
+                            valueOnDown2 = roll;
                             return true;
                         case 3:
                             dragMode = Draging.PR1;
-                            valueOnDown = this.pitch;
-                            valueOnDown2 = this.roll;
+                            valueOnDown = pitch;
+                            valueOnDown2 = roll;
                             return true;
                         case 4: 
                             dragMode = Draging.RH;
-                            valueOnDown = this.roll;
-                            valueOnDown2 = this.heading;
+                            valueOnDown = roll;
+                            valueOnDown2 = heading;
                             return true;
                         case 5:
                             dragMode = Draging.RH1;
-                            valueOnDown = this.roll;
-                            valueOnDown2 = this.heading;
+                            valueOnDown = roll;
+                            valueOnDown2 = heading;
                             return true;
                         default:
                             break;
@@ -983,7 +982,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             if (dragMode != Draging.None)
             {
@@ -997,7 +996,7 @@ namespace TerraViewer
         bool lockPreferedAxis;
         bool preferY;
 
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
 
             //pntDown = e.Location;
@@ -1046,40 +1045,40 @@ namespace TerraViewer
                     case Draging.None:
                         break;
                     case Draging.X:
-                        this.translate.X = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        translate.X = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.Y:
-                        this.translate.Y = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        translate.Y = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.Z:
-                        this.translate.Z = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        translate.Z = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.HP:
-                        this.heading = valueOnDown - distX / 4;
-                        this.pitch = valueOnDown2 + distY / 4;
+                        heading = valueOnDown - distX / 4;
+                        pitch = valueOnDown2 + distY / 4;
                         break;
                     case Draging.PR:
-                        this.pitch = valueOnDown + distY / 4;
-                        this.roll = valueOnDown2 - distX / 4;
+                        pitch = valueOnDown + distY / 4;
+                        roll = valueOnDown2 - distX / 4;
                         break;
                     case Draging.RH:
-                        this.roll = valueOnDown + distY / 4;
-                        this.heading = valueOnDown2 - distX / 4;
+                        roll = valueOnDown + distY / 4;
+                        heading = valueOnDown2 - distX / 4;
                         break;
                     case Draging.HP1:
-                        this.heading = valueOnDown - distX / 4;
-                        this.pitch = valueOnDown2 - distY / 4;
+                        heading = valueOnDown - distX / 4;
+                        pitch = valueOnDown2 - distY / 4;
                         break;
                     case Draging.PR1:
-                        this.pitch = valueOnDown + distY / 4;
-                        this.roll = valueOnDown2 + distX / 4;
+                        pitch = valueOnDown + distY / 4;
+                        roll = valueOnDown2 + distX / 4;
                         break;
                     case Draging.RH1:
-                        this.roll = valueOnDown - distY / 4;
-                        this.heading = valueOnDown2 - distX / 4;
+                        roll = valueOnDown - distY / 4;
+                        heading = valueOnDown2 - distX / 4;
                         break;
                     case Draging.Scale:
-                        this.scale.X = this.scale.Y = this.scale.Z = valueOnDown * Math.Pow(2, (dist / 100));
+                        scale.X = scale.Y = scale.Z = valueOnDown * Math.Pow(2, (dist / 100));
                         break;
                     default:
                         break;
@@ -1087,43 +1086,40 @@ namespace TerraViewer
                 FireChanged();
                 return true;
             }
-            else
+            var pnt = new Vector2d(e.X, e.Y);
+
+
+            if ((pnt - xHandle).Length < hitDist)
             {
-                var pnt = new Vector2d(e.X, e.Y);
+                Cursor.Current = Cursors.SizeAll;
+                return true;
+            }
 
+            if ((pnt - yHandle).Length < hitDist)
+            {
+                Cursor.Current = Cursors.SizeAll;
+                return true;
+            }
 
-                if ((pnt - xHandle).Length < hitDist)
+            if ((pnt - zHandle).Length < hitDist)
+            {
+                Cursor.Current = Cursors.SizeAll;
+                return true;
+            }
+
+            for (var i = 0; i < hprHandles.Length; i++)
+            {
+                if ((pnt - hprHandles[i]).Length < hitDist)
                 {
                     Cursor.Current = Cursors.SizeAll;
                     return true;
-                }
-
-                if ((pnt - yHandle).Length < hitDist)
-                {
-                    Cursor.Current = Cursors.SizeAll;
-                    return true;
-                }
-
-                if ((pnt - zHandle).Length < hitDist)
-                {
-                    Cursor.Current = Cursors.SizeAll;
-                    return true;
-                }
-
-                for (var i = 0; i < hprHandles.Length; i++)
-                {
-                    if ((pnt - hprHandles[i]).Length < hitDist)
-                    {
-                        Cursor.Current = Cursors.SizeAll;
-                        return true;
-                    }
                 }
             }
 
             return false;
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
 
 
@@ -1135,17 +1131,17 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
             return false;
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             return false;
         }
@@ -1197,7 +1193,7 @@ namespace TerraViewer
             var points = new Vector3[vertices.Length];
             for (var i = 0; i < vertices.Length; ++i)
                 points[i] = vertices[i].Position;
-            boundingSphere = SharpDX.BoundingSphere.FromPoints(points);
+            boundingSphere = BoundingSphere.FromPoints(points);
         }
 
         public Mesh(PositionNormalTextured[] vertices, int[] indices)
@@ -1213,7 +1209,7 @@ namespace TerraViewer
             var points = new Vector3[vertices.Length];
             for (var i = 0; i < vertices.Length; ++i)
                 points[i] = vertices[i].Position;
-            boundingSphere = SharpDX.BoundingSphere.FromPoints(points);
+            boundingSphere = BoundingSphere.FromPoints(points);
         }
 
         // Create a mesh from vertices with tangents, for use with a normal map
@@ -1225,7 +1221,7 @@ namespace TerraViewer
             var points = new Vector3[tangentVertices.Length];
             for (var i = 0; i < tangentVertices.Length; ++i)
                 points[i] = tangentVertices[i].Position;
-            boundingSphere = SharpDX.BoundingSphere.FromPoints(points);
+            boundingSphere = BoundingSphere.FromPoints(points);
         }
 
         //public void setMaterialGroups(Group[] groups)
@@ -1239,7 +1235,7 @@ namespace TerraViewer
         }
 
         // Convert the vertex data to a GPU vertex buffer
-        public void commitToDevice(SharpDX.Direct3D11.Device device)
+        public void commitToDevice(Device device)
         {
             if (vertices != null)
             {
@@ -1270,7 +1266,7 @@ namespace TerraViewer
             }
 
             var devContext = renderContext.Device.ImmediateContext;
-            devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
         }
 
         public void drawSubset(RenderContext11 renderContext, int materialIndex)
@@ -1293,7 +1289,7 @@ namespace TerraViewer
             DrawHierarchy(objects, materialIndex, devContext, 0);
         }
 
-        private void DrawHierarchy(List<ObjectNode> nodes, int materialIndex, SharpDX.Direct3D11.DeviceContext devContext, int depth)
+        private void DrawHierarchy(List<ObjectNode> nodes, int materialIndex, DeviceContext devContext, int depth)
         {
             if (depth > 1212)
             {
@@ -1522,9 +1518,9 @@ namespace TerraViewer
         readonly List<Texture11> meshNormalMaps = new List<Texture11>(); // Normal maps for our mesh
         public List<String> meshFilenames = new List<string>(); // filenames for meshes
 
-        public System.Drawing.Color Color = System.Drawing.Color.White;
+        public Color Color = Color.White;
 
-        public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, System.Drawing.Color color)
+        public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, Color color)
         {
             Color = color;
             Smooth = smooth;
@@ -1572,30 +1568,27 @@ namespace TerraViewer
             {
                 return -1;
             }
-            else if (v0.X > v1.X)
+            if (v0.X > v1.X)
             {
                 return 1;
             }
-            else if (v0.Y < v1.Y)
+            if (v0.Y < v1.Y)
             {
                 return -1;
             }
-            else if (v0.Y > v1.Y)
+            if (v0.Y > v1.Y)
             {
                 return 1;
             }
-            else if (v0.Z < v1.Z)
+            if (v0.Z < v1.Z)
             {
                 return -1;
             }
-            else if (v0.Z > v1.Z)
+            if (v0.Z > v1.Z)
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
         private static int CompareVector(Vector2 v0, Vector2 v1)
@@ -1604,22 +1597,19 @@ namespace TerraViewer
             {
                 return -1;
             }
-            else if (v0.X > v1.X)
+            if (v0.X > v1.X)
             {
                 return 1;
             }
-            else if (v0.Y < v1.Y)
+            if (v0.Y < v1.Y)
             {
                 return -1;
             }
-            else if (v0.Y > v1.Y)
+            if (v0.Y > v1.Y)
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
 
@@ -1983,11 +1973,11 @@ namespace TerraViewer
 
         // Load a color chunk from a 3ds file
         // Colors may be stored in a 3ds file either as 3 floats or 3 bytes
-        private System.Drawing.Color LoadColorChunk(BinaryReader br)
+        private Color LoadColorChunk(BinaryReader br)
         {
             var chunkID = br.ReadUInt16();
             var chunkLength = br.ReadUInt32();
-            var color = System.Drawing.Color.Black;
+            var color = Color.Black;
 
             if ((chunkID == 0x0010 || chunkID == 0x0013) && chunkLength == 18)
             {
@@ -1996,11 +1986,11 @@ namespace TerraViewer
                 var r = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
                 var g = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
                 var b = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
-                color = System.Drawing.Color.FromArgb(255, (int)(255.0f * r), (int)(255.0f * g), (int)(255.0f * b));
+                color = Color.FromArgb(255, (int)(255.0f * r), (int)(255.0f * g), (int)(255.0f * b));
             }
             else if ((chunkID == 0x0011 || chunkID == 0x0012) && chunkLength == 9)
             {
-                color = System.Drawing.Color.FromArgb(255, br.ReadByte(), br.ReadByte(), br.ReadByte());
+                color = Color.FromArgb(255, br.ReadByte(), br.ReadByte(), br.ReadByte());
             }
             else
             {
@@ -2084,7 +2074,7 @@ namespace TerraViewer
             currentMaterial = new Material();
             currentMaterial.Diffuse = Color;
             currentMaterial.Ambient = Color;
-            currentMaterial.Specular = System.Drawing.Color.White;
+            currentMaterial.Specular = Color.White;
             currentMaterial.SpecularSharpness = 30.0f;
             currentMaterial.Opacity = 1.0f;
             currentMaterial.Default = true;
@@ -2102,7 +2092,7 @@ namespace TerraViewer
                 {
                     var line = sr.ReadLine().Replace("  ", " ");
 
-                    var parts = line.Trim().Split(new char[] { ' ' });
+                    var parts = line.Trim().Split(new[] { ' ' });
 
                     if (parts.Length > 0)
                     {
@@ -2473,7 +2463,7 @@ namespace TerraViewer
                     {
                         var line = sr.ReadLine();
 
-                        var parts = line.Trim().Split(new char[] { ' ' });
+                        var parts = line.Trim().Split(new[] { ' ' });
 
                         if (parts.Length > 0)
                         {
@@ -2486,19 +2476,19 @@ namespace TerraViewer
                                     }
 
                                     currentMaterial = new Material();
-                                    currentMaterial.Diffuse = System.Drawing.Color.White;
-                                    currentMaterial.Ambient = System.Drawing.Color.White;
-                                    currentMaterial.Specular = System.Drawing.Color.Black;
+                                    currentMaterial.Diffuse = Color.White;
+                                    currentMaterial.Ambient = Color.White;
+                                    currentMaterial.Specular = Color.Black;
                                     currentMaterial.SpecularSharpness = 30.0f;
                                     currentMaterial.Opacity = 1.0f;
                                     materialName = parts[1];
                                     break;
                                 case "Ka":
-                                    currentMaterial.Ambient = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
+                                    currentMaterial.Ambient = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
                                     break;
                                 case "map_Kd":
                                     //ENDURE TEXTURES ARE NOT BLACK!    
-                                    currentMaterial.Diffuse = System.Drawing.Color.White;
+                                    currentMaterial.Diffuse = Color.White;
 
                                     var textureFilename = parts[1];
                                     for (var i = 2; i < parts.Length; i++)
@@ -2520,10 +2510,10 @@ namespace TerraViewer
                                     }
                                     break;
                                 case "Kd":
-                                    currentMaterial.Diffuse = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
+                                    currentMaterial.Diffuse = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
                                     break;
                                 case "Ks":
-                                    currentMaterial.Specular = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255,255)), (int)(Math.Min(float.Parse(parts[2]) * 255,255)), (int)(Math.Min(float.Parse(parts[3]) * 255,255)));
+                                    currentMaterial.Specular = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255,255)), (int)(Math.Min(float.Parse(parts[2]) * 255,255)), (int)(Math.Min(float.Parse(parts[3]) * 255,255)));
                                     break;
                                 case "d":
                                     // Where does this map?
@@ -2563,7 +2553,7 @@ namespace TerraViewer
 
         int[] GetIndexies(string data)
         {
-            var parts = data.Trim().Split(new char[] { '/' });
+            var parts = data.Trim().Split(new[] { '/' });
             var indecies = new int[3];
 
             if (string.IsNullOrEmpty(data))
@@ -2827,9 +2817,9 @@ namespace TerraViewer
                                 currentMaterialIndex++;
 
                                 currentMaterial = new Material();
-                                currentMaterial.Diffuse = System.Drawing.Color.White;
-                                currentMaterial.Ambient = System.Drawing.Color.White;
-                                currentMaterial.Specular = System.Drawing.Color.Black;
+                                currentMaterial.Diffuse = Color.White;
+                                currentMaterial.Ambient = Color.White;
+                                currentMaterial.Specular = Color.Black;
                                 currentMaterial.SpecularSharpness = 30.0f;
                                 currentMaterial.Opacity = 1.0f;
                             }
@@ -2895,7 +2885,7 @@ namespace TerraViewer
                                         // The ISS model has black for the diffuse color; to work around this
                                         // we'll set the diffuse color to white when there's a texture present.
                                         // The correct fix is to modify the 3ds model of ISS.
-                                        currentMaterial.Diffuse = System.Drawing.Color.White;
+                                        currentMaterial.Diffuse = Color.White;
                                     }
                                     else
                                     {
@@ -2990,7 +2980,7 @@ namespace TerraViewer
 
                                         // Set the current specular color from the specular texture strength
                                         var gray = (int)(255.99f * strength / 100.0f);
-                                        currentMaterial.Specular = System.Drawing.Color.FromArgb(255, gray, gray, gray);
+                                        currentMaterial.Specular = Color.FromArgb(255, gray, gray, gray);
                                     }
                                     else
                                     {
@@ -3376,7 +3366,7 @@ namespace TerraViewer
                         sunlightFactor = Math.Max(minimumShadow, (d - u) / (penumbraRadius - u));
 
                         var gray = (int)(255.99f * sunlightFactor);
-                        renderContext.SunlightColor = System.Drawing.Color.FromArgb(gray, gray, gray);
+                        renderContext.SunlightColor = Color.FromArgb(gray, gray, gray);
 
                         // Reduce sky-scattered light as well
                         hemiLightFactor *= (float)sunlightFactor;
@@ -3384,10 +3374,10 @@ namespace TerraViewer
                 }
             }
 
-            renderContext.ReflectedLightColor = System.Drawing.Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
+            renderContext.ReflectedLightColor = Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
                                                                                (int)(renderContext.ReflectedLightColor.G * reflectedLightFactor),
                                                                                (int)(renderContext.ReflectedLightColor.B * reflectedLightFactor));
-            renderContext.HemisphereLightColor = System.Drawing.Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
+            renderContext.HemisphereLightColor = Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
                                                                                (int)(renderContext.HemisphereLightColor.G * hemiLightFactor),
                                                                                (int)(renderContext.HemisphereLightColor.B * hemiLightFactor));
         }
@@ -3447,15 +3437,15 @@ namespace TerraViewer
             if (Properties.Settings.Default.SolarSystemLighting)
             {
                 SetupLighting(renderContext);
-                renderContext.AmbientLightColor = System.Drawing.Color.FromArgb(11, 11, 11);
+                renderContext.AmbientLightColor = Color.FromArgb(11, 11, 11);
             }
             else
             {
                 // No lighting: set ambient light to white and turn off all other light sources
-                renderContext.SunlightColor = System.Drawing.Color.Black;
-                renderContext.ReflectedLightColor = System.Drawing.Color.Black;
-                renderContext.HemisphereLightColor = System.Drawing.Color.Black;
-                renderContext.AmbientLightColor = System.Drawing.Color.White;
+                renderContext.SunlightColor = Color.Black;
+                renderContext.ReflectedLightColor = Color.Black;
+                renderContext.HemisphereLightColor = Color.Black;
+                renderContext.AmbientLightColor = Color.White;
             }
 
             var device = renderContext.Device;
@@ -3523,7 +3513,7 @@ namespace TerraViewer
             renderContext.SunlightColor = savedSunlightColor;
             renderContext.ReflectedLightColor = savedReflectedColor;
             renderContext.HemisphereLightColor = savedHemiColor;
-            renderContext.AmbientLightColor = System.Drawing.Color.Black;
+            renderContext.AmbientLightColor = Color.Black;
 
 
 
@@ -3589,10 +3579,6 @@ namespace TerraViewer
         public List<Mesh.Group> DrawGroup = new List<Mesh.Group>();
         public List<int[]> ApplyLists = new List<int[]>();
         public List<int> ApplyListsIndex = new List<int>();
-        public ObjectNode()
-        {
-        }
-
     }
 
 
@@ -3637,8 +3623,8 @@ namespace TerraViewer
                 node.Name = child.Name;
                 node.Tag = child;
                 node.Checked = child.Enabled;
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
-                node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
+                node.NodeSelected += node_NodeSelected;
+                node.NodeChecked += node_NodeChecked;
                 nodes.Add(node);
                 LoadTree(node.Nodes, child.Children);
             }

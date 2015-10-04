@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -68,12 +63,12 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.Text = Language.GetLocalizedText(1313, "Timeline Editor");
+            Text = Language.GetLocalizedText(1313, "Timeline Editor");
         }
 
         private void KeyFramer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            TimeLine.RemoveInstance(this.TimeLine);
+            TimeLine.RemoveInstance(TimeLine);
             singleton = null;
         }
 
@@ -90,8 +85,8 @@ namespace TerraViewer
         private void PushPin_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.FloatTimeline = false;
-            KeyFramer.ShowTimeline();
-            this.Close();
+            ShowTimeline();
+            Close();
         }
 
     }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -68,10 +66,10 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.KeyTypeLabel.Text = Language.GetLocalizedText(1348, "Transition Function");
-            this.TimeLabel.Text = Language.GetLocalizedText(1349, "Time");
-            this.ValueLabel.Text = Language.GetLocalizedText(668, "Value");
-            this.Text = Language.GetLocalizedText(1350, "Key Properties");
+            KeyTypeLabel.Text = Language.GetLocalizedText(1348, "Transition Function");
+            TimeLabel.Text = Language.GetLocalizedText(1349, "Time");
+            ValueLabel.Text = Language.GetLocalizedText(668, "Value");
+            Text = Language.GetLocalizedText(1350, "Key Properties");
         }
 
         private Dictionary<string, VisibleKey> keys;
@@ -118,7 +116,7 @@ namespace TerraViewer
             Time.ReadOnly = !sameTimes;
             CurrentValue.ReadOnly = !sameValues;
 
-            if (this.propTime == 0)
+            if (propTime == 0)
             {
                 Time.ReadOnly = true;
             }
@@ -215,7 +213,7 @@ namespace TerraViewer
             {
                 if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour != null && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
                 {
-                    var parts = time.Split(new char[] { '.' });
+                    var parts = time.Split(new[] { '.' });
 
                     var frame = 0;
 
@@ -224,7 +222,7 @@ namespace TerraViewer
                         frame = int.Parse(parts[1]);
                     }
 
-                    var minsec = parts[0].Split(new char[] { ':' });
+                    var minsec = parts[0].Split(new[] { ':' });
 
                     var secondsPart = 0;
                     var minutesPart = 0;
@@ -444,7 +442,7 @@ namespace TerraViewer
         {
             if (e.KeyCode == System.Windows.Forms.Keys.Enter)
             {
-                this.keyType.Focus();
+                keyType.Focus();
             }
         }
 

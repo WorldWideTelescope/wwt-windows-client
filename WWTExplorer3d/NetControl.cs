@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
@@ -8,6 +10,7 @@ using System.Threading;
 using System.Xml.Serialization;
 using System.Runtime.InteropServices;
 using System.Net.NetworkInformation;
+using TerraViewer.Callibration;
 
 namespace TerraViewer
 {
@@ -77,7 +80,7 @@ namespace TerraViewer
         {
             if (listener == null)
             {
-                listenThread = new Thread(new ThreadStart(listenerThreadFunc));
+                listenThread = new Thread(listenerThreadFunc);
                 listenThread.Start();
             }
 
@@ -90,7 +93,7 @@ namespace TerraViewer
             {
                 if (statusClient == null)
                 {
-                    statusThread = new Thread(new ThreadStart(statusThreadFunc));
+                    statusThread = new Thread(statusThreadFunc);
                     statusThread.Start();
                 }
             }
@@ -159,7 +162,7 @@ namespace TerraViewer
         static UdpClient statusClient;
         public static void statusThreadFunc()
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false);
             statusClient = new UdpClient(8091);
             var destinationEP = new IPEndPoint(IPAddress.Any, 8091);
             while (running)
@@ -186,7 +189,7 @@ namespace TerraViewer
                                 var FPS = br.ReadSingle();
                                 var error = br.ReadString();
                                
-                                NetControl.LogStatusReport(nodeID, name, ip, (ClientNodeStatus)Enum.Parse(typeof(ClientNodeStatus), status), StatusText, FPS, error);
+                                LogStatusReport(nodeID, name, ip, (ClientNodeStatus)Enum.Parse(typeof(ClientNodeStatus), status), StatusText, FPS, error);
                             }
                         }
                     }
@@ -201,7 +204,7 @@ namespace TerraViewer
         public static void listenerThreadFunc()
         {
 
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false);
             while (running)
             {
                 GetClient();
@@ -272,7 +275,7 @@ namespace TerraViewer
                                         int id = br.ReadByte();
                                         double alt = br.ReadSingle();
                                         double az = br.ReadSingle();
-                                        var color = System.Drawing.Color.FromArgb(br.ReadInt32());
+                                        var color = Color.FromArgb(br.ReadInt32());
                                         if (enabled)
                                         {
                                             Reticle.Set(id, alt, az, color);
@@ -297,10 +300,10 @@ namespace TerraViewer
                             }
                             //Convert Byte to String
                             var sBuffer = Encoding.ASCII.GetString(bytes);
-                            var values = sBuffer.Split(new char[] { ',' });
+                            var values = sBuffer.Split(new[] { ',' });
                             if (values.Length > 1 && values[0] == "CAL" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1] && !Earth3d.MainWindow.Config.Master)
                             {
-                                TerraViewer.Callibration.CalibrationScreen.ParseCommandString(values);
+                                CalibrationScreen.ParseCommandString(values);
                                 continue;
                             }
                             if (values.Length > 1 && values[0] == "SCREEN" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1] && !Earth3d.MainWindow.Config.Master)
@@ -525,10 +528,10 @@ namespace TerraViewer
                                 var state = Boolean.Parse(values[11]);
                                 var alt = Convert.ToDouble(values[12]);
                                 var az = Convert.ToDouble(values[13]);
-                                var color = System.Drawing.Color.White;
+                                var color = Color.White;
                                 try
                                 {
-                                    color = System.Drawing.Color.FromArgb(int.Parse(values[14]));
+                                    color = Color.FromArgb(int.Parse(values[14]));
                                 }
                                 catch
                                 {
@@ -575,10 +578,10 @@ namespace TerraViewer
                                 var state = Boolean.Parse(values[11]);
                                 var alt = Convert.ToDouble(values[12]);
                                 var az = Convert.ToDouble(values[13]);
-                                var color = System.Drawing.Color.White;
+                                var color = Color.White;
                                 try
                                 {
-                                    color = System.Drawing.Color.FromArgb(int.Parse(values[14]));
+                                    color = Color.FromArgb(int.Parse(values[14]));
                                 }
                                 catch
                                 {
@@ -630,8 +633,8 @@ namespace TerraViewer
             {
                 ReportStatus(ClientNodeStatus.Working, "Loading Layers", "");
                 var layerClient = new WebClient();
-                var url = string.Format("http://{0}:5050/Configuration/images/layermap", NetControl.MasterAddress);
-                layerClient.DownloadDataCompleted += new DownloadDataCompletedEventHandler(layerClient_DownloadDataCompleted);
+                var url = string.Format("http://{0}:5050/Configuration/images/layermap", MasterAddress);
+                layerClient.DownloadDataCompleted += layerClient_DownloadDataCompleted;
                 layerClient.DownloadDataAsync(new Uri(url));
 
             }
@@ -677,7 +680,7 @@ namespace TerraViewer
 
                 ReportStatus(ClientNodeStatus.Working, "Loading Tour", "");
 
-                var url = string.Format("http://{0}:5050/Configuration/images/tour.wtt", NetControl.MasterAddress);
+                var url = string.Format("http://{0}:5050/Configuration/images/tour.wtt", MasterAddress);
 
 
                 try
@@ -795,32 +798,32 @@ namespace TerraViewer
 
             var output =
                 "SYNC"
-                + "," + Earth3d.MainWindow.Config.ClusterID.ToString()
-                + "," + lat.ToString()
-                + "," + lng.ToString()
-                + "," + zoom.ToString()
-                + "," + cameraRotate.ToString()
-                + "," + cameraAngle.ToString()
-                + "," + fgImageHash.ToString()
-                + "," + bkImageHash.ToString()
-                + "," + blendOpacity.ToString()
-                + "," + settingsFlags.ToString()
-                + "," + autoFlush.ToString()
+                + "," + Earth3d.MainWindow.Config.ClusterID
+                + "," + lat
+                + "," + lng
+                + "," + zoom
+                + "," + cameraRotate
+                + "," + cameraAngle
+                + "," + fgImageHash
+                + "," + bkImageHash
+                + "," + blendOpacity
+                + "," + settingsFlags
+                + "," + autoFlush
                 + "," + SpaceTimeController.Now.ToString("MM/dd/yyyy hh:mm:ss.FFFFF tt")
-                + "," + SpaceTimeController.Altitude.ToString()
-                + "," + SpaceTimeController.Location.Lat.ToString()
-                + "," + SpaceTimeController.Location.Lng.ToString()
-                + "," + solarSystemFlags.ToString()
-                + "," + target.ToString()
-                + "," + targetPoint.X.ToString()
-                + "," + targetPoint.Y.ToString()
-                + "," + targetPoint.Z.ToString()
-                + "," + SolarSystemScale.ToString()
-                + "," + focusAltitude.ToString()
-                + "," + timeRate.ToString()
-                + "," + Earth3d.MainWindow.Config.DomeTilt.ToString()
+                + "," + SpaceTimeController.Altitude
+                + "," + SpaceTimeController.Location.Lat
+                + "," + SpaceTimeController.Location.Lng
+                + "," + solarSystemFlags
+                + "," + target
+                + "," + targetPoint.X
+                + "," + targetPoint.Y
+                + "," + targetPoint.Z
+                + "," + SolarSystemScale
+                + "," + focusAltitude
+                + "," + timeRate
+                + "," + Earth3d.MainWindow.Config.DomeTilt
                 + "," + trackingFrame
-                + "," + Properties.Settings.Default.ColSettingsVersion.ToString();
+                + "," + Properties.Settings.Default.ColSettingsVersion;
             SendCommand(output);
         }
 
@@ -842,7 +845,7 @@ namespace TerraViewer
                             node.Status = ClientNodeStatus.Offline;
                             node.LastFPS = 0;
                             node.StatusText = "Lost Contact";
-                            NetControl.NodeListDirty = true;
+                            NodeListDirty = true;
                         }
                     }
                 }
@@ -1035,12 +1038,12 @@ namespace TerraViewer
             {
                 return;
             }
-            Properties.Settings.Default.ShowSolarSystem.Opacity = (float)data[0] / 255.0f;
-            Properties.Settings.Default.SolarSystemStars.Opacity = (float)data[1] / 255.0f;
-            Properties.Settings.Default.SolarSystemMilkyWay.Opacity = (float)data[2] / 255.0f;
-            Properties.Settings.Default.SolarSystemCosmos.Opacity = (float)data[3] / 255.0f;
-            Properties.Settings.Default.SolarSystemMinorPlanets.Opacity = (float)data[4] / 255.0f;
-            Properties.Settings.Default.SolarSystemOrbits.Opacity = (float)data[5] / 255.0f;
+            Properties.Settings.Default.ShowSolarSystem.Opacity = data[0] / 255.0f;
+            Properties.Settings.Default.SolarSystemStars.Opacity = data[1] / 255.0f;
+            Properties.Settings.Default.SolarSystemMilkyWay.Opacity = data[2] / 255.0f;
+            Properties.Settings.Default.SolarSystemCosmos.Opacity = data[3] / 255.0f;
+            Properties.Settings.Default.SolarSystemMinorPlanets.Opacity = data[4] / 255.0f;
+            Properties.Settings.Default.SolarSystemOrbits.Opacity = data[5] / 255.0f;
 
             if (Properties.Settings.Default.SolarSystemLighting != (data[6] == 0 ? false : true))
             {
@@ -1053,8 +1056,8 @@ namespace TerraViewer
                 Properties.Settings.Default.SolarSystemMultiRes = (data[7] == 0 ? false : true);
             }
 
-            Properties.Settings.Default.SolarSystemPlanets.Opacity = (float)data[8] / 255.0f;
-            Properties.Settings.Default.SolarSystemMinorOrbits.Opacity = (float)data[9] / 255.0f;
+            Properties.Settings.Default.SolarSystemPlanets.Opacity = data[8] / 255.0f;
+            Properties.Settings.Default.SolarSystemMinorOrbits.Opacity = data[9] / 255.0f;
             
  
             if (Properties.Settings.Default.ShowISSModel != (data[10] == 0 ? false : true))
@@ -1062,7 +1065,7 @@ namespace TerraViewer
                 Properties.Settings.Default.ShowISSModel = (data[10] == 0 ? false : true);
             }
 
-            Properties.Settings.Default.SolarSystemCMB.Opacity = (float)data[11] / 255.0f;
+            Properties.Settings.Default.SolarSystemCMB.Opacity = data[11] / 255.0f;
  
             if (Properties.Settings.Default.Show3dCities != (data[12] == 0 ? false : true))
             {
@@ -1339,36 +1342,36 @@ namespace TerraViewer
                 Properties.Settings.Default.LocalHorizonMode = (data[2] != 0);
             }
 
-            Properties.Settings.Default.ShowClouds.Opacity = (float)data[3] / 255.0f;
-            Properties.Settings.Default.ShowConstellationBoundries.Opacity = (float)data[4] / 255.0f;
-            Properties.Settings.Default.ShowConstellationFigures.Opacity = (float)data[5] / 255.0f;
-            Properties.Settings.Default.ShowConstellationSelection.Opacity = (float)data[6] / 255.0f;
-            Properties.Settings.Default.ShowFieldOfView.Opacity = (float)data[7] / 255.0f;
-            Properties.Settings.Default.ShowGrid.Opacity = (float)data[8] / 255.0f;
+            Properties.Settings.Default.ShowClouds.Opacity = data[3] / 255.0f;
+            Properties.Settings.Default.ShowConstellationBoundries.Opacity = data[4] / 255.0f;
+            Properties.Settings.Default.ShowConstellationFigures.Opacity = data[5] / 255.0f;
+            Properties.Settings.Default.ShowConstellationSelection.Opacity = data[6] / 255.0f;
+            Properties.Settings.Default.ShowFieldOfView.Opacity = data[7] / 255.0f;
+            Properties.Settings.Default.ShowGrid.Opacity = data[8] / 255.0f;
 
             if (Properties.Settings.Default.ShowHorizon != (data[9] != 0))
             {
                 Properties.Settings.Default.ShowHorizon = (data[9] != 0);
             }
 
-            Properties.Settings.Default.ShowEcliptic.Opacity = (float)data[10] / 255.0f;
-            Properties.Settings.Default.ShowGalacticGrid.Opacity = (float)data[11] / 255.0f;
-            Properties.Settings.Default.ShowGalacticGridText.Opacity = (float)data[12] / 255.0f;
-            Properties.Settings.Default.ShowEclipticGrid.Opacity = (float)data[13] / 255.0f;
-            Properties.Settings.Default.ShowEclipticGridText.Opacity = (float)data[14] / 255.0f;
-            Properties.Settings.Default.ShowEclipticOverviewText.Opacity = (float)data[15] / 255.0f;
-            Properties.Settings.Default.ShowAltAzGrid.Opacity = (float)data[16] / 255.0f;
-            Properties.Settings.Default.ShowAltAzGridText.Opacity = (float)data[17] / 255.0f;
-            Properties.Settings.Default.ShowPrecessionChart.Opacity = (float)data[18] / 255.0f;
-            Properties.Settings.Default.ShowConstellationPictures.Opacity = (float)data[19] / 255.0f;
-            Properties.Settings.Default.ShowConstellationLabels.Opacity = (float)data[20] / 255.0f;
-            Earth3d.MainWindow.Fader.Opacity = (float)data[21] / 255.0f;
-            Properties.Settings.Default.ShowEquatorialGridText.Opacity = (float)data[22] / 255.0f;
-            Properties.Settings.Default.ShowSkyOverlays.Opacity = (float)data[23] / 255.0f;
-            Properties.Settings.Default.Constellations.Opacity = (float)data[24] / 255.0f;
-            Properties.Settings.Default.ShowSkyNode.Opacity = (float)data[25] / 255.0f;
-            Properties.Settings.Default.ShowSkyGrids.Opacity = (float)data[26] / 255.0f;
-            Properties.Settings.Default.ShowSkyOverlaysIn3d.Opacity = (float)data[27] / 255.0f;
+            Properties.Settings.Default.ShowEcliptic.Opacity = data[10] / 255.0f;
+            Properties.Settings.Default.ShowGalacticGrid.Opacity = data[11] / 255.0f;
+            Properties.Settings.Default.ShowGalacticGridText.Opacity = data[12] / 255.0f;
+            Properties.Settings.Default.ShowEclipticGrid.Opacity = data[13] / 255.0f;
+            Properties.Settings.Default.ShowEclipticGridText.Opacity = data[14] / 255.0f;
+            Properties.Settings.Default.ShowEclipticOverviewText.Opacity = data[15] / 255.0f;
+            Properties.Settings.Default.ShowAltAzGrid.Opacity = data[16] / 255.0f;
+            Properties.Settings.Default.ShowAltAzGridText.Opacity = data[17] / 255.0f;
+            Properties.Settings.Default.ShowPrecessionChart.Opacity = data[18] / 255.0f;
+            Properties.Settings.Default.ShowConstellationPictures.Opacity = data[19] / 255.0f;
+            Properties.Settings.Default.ShowConstellationLabels.Opacity = data[20] / 255.0f;
+            Earth3d.MainWindow.Fader.Opacity = data[21] / 255.0f;
+            Properties.Settings.Default.ShowEquatorialGridText.Opacity = data[22] / 255.0f;
+            Properties.Settings.Default.ShowSkyOverlays.Opacity = data[23] / 255.0f;
+            Properties.Settings.Default.Constellations.Opacity = data[24] / 255.0f;
+            Properties.Settings.Default.ShowSkyNode.Opacity = data[25] / 255.0f;
+            Properties.Settings.Default.ShowSkyGrids.Opacity = data[26] / 255.0f;
+            Properties.Settings.Default.ShowSkyOverlaysIn3d.Opacity = data[27] / 255.0f;
 
             if (Properties.Settings.Default.MultiSampling != data[28])
             {
@@ -1476,17 +1479,17 @@ namespace TerraViewer
             //sync color properties
             try
             {
-                if (NetControl.MasterAddress == "127.0.0.1")
+                if (MasterAddress == "127.0.0.1")
                 {
                     return;
                 }
 
                 if (Earth3d.Logging) { Earth3d.WriteLogMessage("Get Color Settings from Server"); }
 
-                var url = string.Format("http://{0}:5050/Configuration/images/colorsettings", NetControl.MasterAddress);
+                var url = string.Format("http://{0}:5050/Configuration/images/colorsettings", MasterAddress);
                 var data = client.DownloadString(url);
 
-                var lines = data.Split(new char[] { ',' });
+                var lines = data.Split(new[] { ',' });
                 if (lines.Length == 21)
                 {
                     var index = 0;
@@ -1528,7 +1531,7 @@ namespace TerraViewer
         {
             string data;
 
-            data = Properties.Settings.Default.ColSettingsVersion.ToString() + "," +
+            data = Properties.Settings.Default.ColSettingsVersion + "," +
                        SavedColor.Save(Properties.Settings.Default.GridColor) + "," +
                        SavedColor.Save(Properties.Settings.Default.EquatorialGridTextColor) + "," +
                        SavedColor.Save(Properties.Settings.Default.GalacticGridColor) + "," +
@@ -1545,10 +1548,10 @@ namespace TerraViewer
                        SavedColor.Save(Properties.Settings.Default.ConstellationSelectionColor) + "," +
                        SavedColor.Save(Properties.Settings.Default.ConstellationnamesColor) + "," +
                        SavedColor.Save(Properties.Settings.Default.ConstellationArtColor) + "," +
-                       Properties.Settings.Default.ShowEarthSky.TargetState.ToString() + "," +
-                       Properties.Settings.Default.CloudMap8k.ToString() + "," +
-                       Earth3d.MainWindow.StereoMode.ToString() + "," +
-                       Properties.Settings.Default.FaceNorth.ToString();
+                       Properties.Settings.Default.ShowEarthSky.TargetState + "," +
+                       Properties.Settings.Default.CloudMap8k + "," +
+                       Earth3d.MainWindow.StereoMode + "," +
+                       Properties.Settings.Default.FaceNorth;
 
             return Encoding.UTF8.GetBytes(data);
         }
@@ -1590,7 +1593,7 @@ namespace TerraViewer
         static Socket sockStat;
         public static void SendStatus(Byte[] output, int length)
         {
-            if (NetControl.MasterAddress == "127.0.0.1")
+            if (MasterAddress == "127.0.0.1")
             {
                 return;
             }
@@ -1604,7 +1607,7 @@ namespace TerraViewer
                     var bindEPA = new IPEndPoint(IPAddress.Parse(GetThisHostIP()), 8091);
                     sockStat.Bind(bindEPA);
                 }
-                var destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Parse(NetControl.MasterAddress), 8091);
+                var destinationEPA = (EndPoint)new IPEndPoint(IPAddress.Parse(MasterAddress), 8091);
 
                 sockStat.SendTo(output, 0, length, SocketFlags.None, destinationEPA);
             }
@@ -1617,7 +1620,7 @@ namespace TerraViewer
         {
             try
             {
-                if (NetControl.MasterAddress == "127.0.0.1" || Settings.MasterController)
+                if (MasterAddress == "127.0.0.1" || Settings.MasterController)
                 {
                     return;
                 }
@@ -1627,7 +1630,7 @@ namespace TerraViewer
                 currentStatus = status;
                 CurrentStatusText = statusText;
                 var url = string.Format("http://{0}:5050/status?NodeID={1}&NodeName={2}&FPS={3}&Error={4}&Status={5}&StatusText={6}"
-                    , NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeID, Earth3d.MainWindow.Config.NodeDiplayName, Earth3d.LastFPS, error, status, statusText);
+                    , MasterAddress, Earth3d.MainWindow.Config.NodeID, Earth3d.MainWindow.Config.NodeDiplayName, Earth3d.LastFPS, error, status, statusText);
 
                 var report = new ReportDelegate(Report);
                 report.BeginInvoke(url, null, null);
@@ -1664,7 +1667,7 @@ namespace TerraViewer
 
             if (string.IsNullOrEmpty(node.MacAddress))
             {
-                var mac = NetControl.Arp(IPAddress.Parse(ipAddress));
+                var mac = Arp(IPAddress.Parse(ipAddress));
 
                 node.MacAddress = mac.ToString();
             }
@@ -1803,11 +1806,11 @@ namespace TerraViewer
         public string MacAddress;
         public DateTime LastReport = new DateTime();
         public ClientNodeStatus Status = ClientNodeStatus.Offline;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public string StatusText;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public float LastFPS;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public List<string> ErrorLog = new List<string>();
 
         public ClientNode()
@@ -1825,7 +1828,7 @@ namespace TerraViewer
 
         public void ReportError(string errorText)
         {
-            ErrorLog.Add(string.Format("{0} : {1}", DateTime.Now.ToString(), errorText));
+            ErrorLog.Add(string.Format("{0} : {1}", DateTime.Now, errorText));
         }
     }
 }

@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -12,14 +10,14 @@ namespace TerraViewer
 
     public partial class WWTCheckbox : UserControl
     {
-        readonly Bitmap uncheckedRest = global::TerraViewer.Properties.Resources.checkbox_unchecked_rest;
-        readonly Bitmap checkedRest = global::TerraViewer.Properties.Resources.checkbox_checked_rest;
-        readonly Bitmap uncheckedHover = global::TerraViewer.Properties.Resources.checkbox_unchecked_hover;
-        readonly Bitmap checkedHover = global::TerraViewer.Properties.Resources.checkbox_checked_hover;
-        readonly Bitmap uncheckedPush = global::TerraViewer.Properties.Resources.checkbox_unchecked_press;
-        readonly Bitmap checkedPush = global::TerraViewer.Properties.Resources.checkbox_checked_press;
-        readonly Bitmap uncheckedDisabled = global::TerraViewer.Properties.Resources.checkbox_unchecked_disabled;
-        readonly Bitmap checkedDisabled = global::TerraViewer.Properties.Resources.checkbox_checked_disabled;
+        readonly Bitmap uncheckedRest = Resources.checkbox_unchecked_rest;
+        readonly Bitmap checkedRest = Resources.checkbox_checked_rest;
+        readonly Bitmap uncheckedHover = Resources.checkbox_unchecked_hover;
+        readonly Bitmap checkedHover = Resources.checkbox_checked_hover;
+        readonly Bitmap uncheckedPush = Resources.checkbox_unchecked_press;
+        readonly Bitmap checkedPush = Resources.checkbox_checked_press;
+        readonly Bitmap uncheckedDisabled = Resources.checkbox_unchecked_disabled;
+        readonly Bitmap checkedDisabled = Resources.checkbox_checked_disabled;
 
         public WWTCheckbox()
         {
@@ -37,7 +35,7 @@ namespace TerraViewer
             }
             set
             {
-                this.Invalidate();
+                Invalidate();
                 base.Text = value;
             }
         }
@@ -107,7 +105,7 @@ namespace TerraViewer
                     }
                 }
 
-                g.DrawString(this.Text, UiTools.StandardRegular, UiTools.StadardTextBrush, rectf, UiTools.StringFormatCenterLeft);
+                g.DrawString(Text, UiTools.StandardRegular, UiTools.StadardTextBrush, rectf, UiTools.StringFormatCenterLeft);
             }
             else
             {
@@ -119,7 +117,7 @@ namespace TerraViewer
                 {
                     g.DrawImage(uncheckedDisabled, new Rectangle(0, 0, 25, 25), new Rectangle(0, 0, 25, 25), GraphicsUnit.Pixel);
                 }
-                g.DrawString(this.Text, UiTools.StandardRegular, UiTools.DisabledTextBrush, rectf, UiTools.StringFormatCenterLeft);
+                g.DrawString(Text, UiTools.StandardRegular, UiTools.DisabledTextBrush, rectf, UiTools.StringFormatCenterLeft);
             }
         }
 

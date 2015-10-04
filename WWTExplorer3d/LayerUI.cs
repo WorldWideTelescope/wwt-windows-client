@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TerraViewer
@@ -270,7 +269,7 @@ namespace TerraViewer
             var node = new LayerUITreeNode();
             node.Name = name;
             node.Parent = this;
-            node.Level = this.Level + 1;
+            node.Level = Level + 1;
             Nodes.Add(node);
             return node;
         }

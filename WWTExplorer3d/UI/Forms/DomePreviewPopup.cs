@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,7 +14,7 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.Text = Language.GetLocalizedText(1360, "Dome Preview");
+            Text = Language.GetLocalizedText(1360, "Dome Preview");
         }
 
         private void DomePreviewPopup_Load(object sender, EventArgs e)
@@ -85,7 +81,7 @@ namespace TerraViewer
            //cornersAltAz = new Coordinates[4];
             var g = e.Graphics;
             g.Clear(BackColor);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
             var radius = 66;
             centerf = new PointF(96, 88);
             var center = new Point(96, 88);

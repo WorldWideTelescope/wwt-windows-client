@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Text;
 
 
@@ -8,9 +7,6 @@ namespace TerraViewer
 {
     class ContextSearch
     {
-        public ContextSearch()
-        {
-        }
         public static Dictionary<string, List<IPlace>> constellationObjects;
         public static void InitializeDatabase(bool sky)
         {
@@ -36,7 +32,6 @@ namespace TerraViewer
             {
                 if (d.Sky == sky)
                 {
-                    if (d != null)
                     {
                         var placesList = d.GetPlaces();
                         foreach (var places in placesList.Values)
@@ -66,7 +61,7 @@ namespace TerraViewer
             {
                 if (child is IImageSet)
                 {
-                    var childImageset = (IImageSet)child;
+                    var childImageset = child as IImageSet;
                     if (Earth3d.ProjectorServer)
                     {
                         Earth3d.AddImageSetToTable(childImageset.GetHash(), childImageset);
@@ -74,7 +69,7 @@ namespace TerraViewer
                 }
                 if (child is IPlace)
                 {
-                    var place = (IPlace)child;
+                    var place = child as IPlace;
                     if (place.StudyImageset != null)
                     {
                         if (Earth3d.ProjectorServer)
@@ -98,7 +93,7 @@ namespace TerraViewer
                 }
                 if (child is Folder)
                 {
-                    AddFolderToSearch((Folder)child, sky);
+                    AddFolderToSearch(child as Folder, sky);
                 }
             }
         }
@@ -124,25 +119,18 @@ namespace TerraViewer
             {
                 var constellationID = Constellations.Containment.FindConstellationForPoint(place.RA, place.Dec);
                 place.Constellation = constellationID;
-                if (constellationObjects["SolarSystem"].Find(delegate(IPlace target) { return place.Name == target.Name; }) == null)
+                if (constellationObjects["SolarSystem"].Find(target => place.Name == target.Name) == null)
                 {
                     constellationObjects["SolarSystem"].Add(place);
                 }
             }
             else
             {
-                var constellationID = "Error";
+                string constellationID;
 
                 if (place.Type == ImageSetType.Planet)
                 {
-                    if (place.Target == SolarSystemObjects.Undefined)
-                    {
-                        constellationID = "Mars";
-                    }
-                    else
-                    {
-                        constellationID = place.Target.ToString();
-                    }
+                    constellationID = place.Target == SolarSystemObjects.Undefined ? "Mars" : place.Target.ToString();
                 }
                 else if (place.Type == ImageSetType.Earth)
                 {
@@ -171,18 +159,11 @@ namespace TerraViewer
                 return null;
             }
 
-            var tryIt = false;
-
-            if (tryIt)
-            {
-                var data = DumpJSON();
-            }
-
             var minDistance = 360.0 * 360.0;
             IPlace closestPlace = null;
             foreach (var place in constellationObjects[constellationID])
             {
-                var test = ToJSON(place);
+                ToJSON(place);
 
 
                 var distanceRa = (ra - place.RA) * Math.Cos(dec / 180 * Math.PI) * 15;
@@ -211,11 +192,7 @@ namespace TerraViewer
             {
                 return closestPlace;
             }
-            else
-            {
-                return null;
-            }
-
+            return null;
         }
 
         public static string DumpJSON()
@@ -354,11 +331,7 @@ namespace TerraViewer
                 var minDec = Math.Min(corners[0].Dec, Math.Min(corners[1].Dec, Math.Min(corners[2].Dec, corners[3].Dec)));
                 var maxDec = Math.Max(corners[0].Dec, Math.Max(corners[1].Dec, Math.Max(corners[2].Dec, corners[3].Dec)));
 
-                var wrap = false;
-                if (Math.Abs(maxRa - minRa) > 12)
-                {
-                    wrap = true;
-                }
+                bool wrap = Math.Abs(maxRa - minRa) > 12;
 
                 var results = new List<IPlace>();
 

@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 using System.Drawing.Drawing2D;
+using MIDI;
 
 namespace TerraViewer
 {
@@ -23,7 +18,7 @@ namespace TerraViewer
             var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
             var p = new Pen(Color.FromArgb(71, 84, 108));
-            g.FillRectangle(b, this.ClientRectangle);
+            g.FillRectangle(b, ClientRectangle);
             p.Dispose();
             GC.SuppressFinalize(p);
             b.Dispose();
@@ -40,7 +35,7 @@ namespace TerraViewer
 
             props.ButtonMap = map;
 
-            if (props.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (props.ShowDialog() == DialogResult.OK)
             {
                 buttonGroup.Add(map);
                 var pnt = FindFirstFreeSpot(new Size(140,33));
@@ -54,8 +49,8 @@ namespace TerraViewer
 
         private Point FindFirstFreeSpot(Size size)
         {
-            var yCount = Math.Max((this.Height / size.Height), 1);
-            var xCount = Math.Max((this.Width / size.Width), 1);
+            var yCount = Math.Max((Height / size.Height), 1);
+            var xCount = Math.Max((Width / size.Width), 1);
             for (var x = 0; x < xCount; x++)
             {
                 for (var y = 0; y < yCount; y++)
@@ -93,10 +88,10 @@ namespace TerraViewer
                         map.Height = 33;
                         button.Text = map.Name;
                         button.Location = new Point((int)map.X, (int)map.Y);
-                        button.Click += new EventHandler(button_Click);
-                        button.MouseDown += new MouseEventHandler(button_MouseDown);
-                        button.MouseMove += new MouseEventHandler(button_MouseMove);
-                        button.MouseUp += new MouseEventHandler(button_MouseUp);
+                        button.Click += button_Click;
+                        button.MouseDown += button_MouseDown;
+                        button.MouseMove += button_MouseMove;
+                        button.MouseUp += button_MouseUp;
                         button.Tag = map;
 
                         Controls.Add(button);
@@ -110,10 +105,10 @@ namespace TerraViewer
                         //button.Parent = this;
                         button.Text = map.Name;
                         button.Location = new Point((int)map.X, (int)map.Y);
-                        button.CheckedChanged += new EventHandler(button_CheckedChanged);
-                        button.MouseDown += new MouseEventHandler(button_MouseDown);
-                        button.MouseMove += new MouseEventHandler(button_MouseMove);
-                        button.MouseUp += new MouseEventHandler(button_MouseUp);
+                        button.CheckedChanged += button_CheckedChanged;
+                        button.MouseDown += button_MouseDown;
+                        button.MouseMove += button_MouseMove;
+                        button.MouseUp += button_MouseUp;
                         button.Tag = map;
 
                         Controls.Add(button);
@@ -127,12 +122,12 @@ namespace TerraViewer
                         //button.Parent = this;
                         button.LabelText = map.Name;
                         button.Location = new Point((int)map.X, (int)map.Y);
-                        button.ValueChanged += new EventHandler(button_ValueChanged);
-                        button.MouseDown += new MouseEventHandler(button_MouseDown);
-                        button.MouseMove += new MouseEventHandler(button_MouseMove);
-                        button.MouseUp += new MouseEventHandler(button_MouseUp);
+                        button.ValueChanged += button_ValueChanged;
+                        button.MouseDown += button_MouseDown;
+                        button.MouseMove += button_MouseMove;
+                        button.MouseUp += button_MouseUp;
                         button.Tag = map;
-                        button.Value = (int)map.GetValue(MIDI.MidiMessage.NoteOn, -1, 0);
+                        button.Value = (int)map.GetValue(MidiMessage.NoteOn, -1, 0);
                         Controls.Add(button);
                     }
                     break;
@@ -180,16 +175,16 @@ namespace TerraViewer
             mouseDownPoint = e.Location;
             mouseDown = false;
             
-            if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right)
+            if (MouseButtons == MouseButtons.Right)
             {
                 var contextMenu = new ContextMenuStrip();
 
                 var properties = new ToolStripMenuItem("Properties");
                 var delete = new ToolStripMenuItem("Delete");
                 var edit = new ToolStripMenuItem("Edit Mode");
-                properties.Click += new EventHandler(properties_Click);
-                delete.Click += new EventHandler(delete_Click);
-                edit.Click += new EventHandler(edit_Click);
+                properties.Click += properties_Click;
+                delete.Click += delete_Click;
+                edit.Click += edit_Click;
                 edit.Checked = editMode;
                 properties.Tag = sender as UserControl;
                 delete.Tag = sender as UserControl;
@@ -220,7 +215,7 @@ namespace TerraViewer
             {
                 var map = (ControlMap)((WwtButton)sender).Tag;
 
-                map.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, 127);
+                map.DispatchMessage(MidiMessage.NoteOn, -1, 0, 127);
             }
         }
 
@@ -235,7 +230,7 @@ namespace TerraViewer
                 {
                     var map = (ControlMap)((UserControl)sender).Tag;
 
-                    checkbox.Checked = map.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, 127);
+                    checkbox.Checked = map.DispatchMessage(MidiMessage.NoteOn, -1, 0, 127);
                 }
                 ignoreEvent = false;
             }
@@ -249,7 +244,7 @@ namespace TerraViewer
             {
                 var map = (ControlMap)((UserControl)sender).Tag;
 
-                map.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, tb.Value);
+                map.DispatchMessage(MidiMessage.NoteOn, -1, 0, tb.Value);
             }
         }
 
@@ -261,7 +256,7 @@ namespace TerraViewer
 
             props.ButtonMap = map;
 
-            if (props.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (props.ShowDialog() == DialogResult.OK)
             {
                 CleanupButton(button);
                 AddButton(map);
@@ -285,9 +280,9 @@ namespace TerraViewer
         {
             button.Parent = null;
 
-            button.MouseDown -= new MouseEventHandler(button_MouseDown);
-            button.MouseMove -= new MouseEventHandler(button_MouseMove);
-            button.MouseUp -= new MouseEventHandler(button_MouseUp);
+            button.MouseDown -= button_MouseDown;
+            button.MouseMove -= button_MouseMove;
+            button.MouseUp -= button_MouseUp;
             Controls.Remove(button);
             button.Dispose();
         }
@@ -346,13 +341,13 @@ namespace TerraViewer
 
         private void ButtonGroupControl_MouseDown(object sender, MouseEventArgs e)
         {
-            if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right)
+            if (MouseButtons == MouseButtons.Right)
             {
                 var contextMenu = new ContextMenuStrip();
 
                 var edit = new ToolStripMenuItem("Edit Mode");
               
-                edit.Click += new EventHandler(edit_Click);
+                edit.Click += edit_Click;
                 edit.Checked = editMode;
                 contextMenu.Items.Add(edit);
 

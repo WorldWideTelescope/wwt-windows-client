@@ -1,6 +1,5 @@
 ﻿using System;using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace MIDI
@@ -16,7 +15,7 @@ namespace MIDI
         
         public MidiInput()
         {
-            midiInProc = new NativeMethods.MidiInProc(MidiProc);
+            midiInProc = MidiProc;
             handle = IntPtr.Zero;
         }
 
@@ -115,7 +114,7 @@ namespace MIDI
                 var data = (byte)((dwParam1 >> 16) & 255);
 
 
-                System.Diagnostics.Debug.WriteLine(string.Format("Status:{0}, Key:{1}, Value:{2}", status, key, data));
+                Debug.WriteLine(string.Format("Status:{0}, Key:{1}, Value:{2}", status, key, data));
                 var channel = status & 15;
                 var message = MidiMessage.None;
                 switch (status >> 4)

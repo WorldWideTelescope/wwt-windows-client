@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -53,9 +51,9 @@ namespace TerraViewer
         double startScale;
         double startLength;
         double startAngle;
-        const double RC = (double)(3.1415927 / 180);
+        const double RC = 3.1415927 / 180;
 
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             if (Earth3d.MainWindow.StudyImageset == null)
             {
@@ -95,7 +93,7 @@ namespace TerraViewer
                 mouseDown = true;
                 return true;
             }
-            else if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 dragging = true;
                 pntDown = e.Location;
@@ -122,14 +120,11 @@ namespace TerraViewer
                 mouseDown = true;
                 return true;
             }
-            else
-            {
-                mouseDown = false;
-                return false;
-            }
+            mouseDown = false;
+            return false;
         }
 
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
@@ -139,7 +134,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
             if (Earth3d.MainWindow.StudyImageset == null)
             {
@@ -234,7 +229,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
             return false;
         }
@@ -244,12 +239,12 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
             return false;
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -275,12 +270,12 @@ namespace TerraViewer
             return false;
         }
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool Hover(System.Drawing.Point pnt)
+        public bool Hover(Point pnt)
         {
             return false;
         }

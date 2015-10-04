@@ -21,53 +21,53 @@ namespace TerraViewer.Callibration
 
         private void SetUiStrings()
         {
-            this.AddProjector.Text = Language.GetLocalizedText(166, "Add");
-            this.EditProjector.Text = Language.GetLocalizedText(502, "Edit");
-            this.DeleteProjector.Text = Language.GetLocalizedText(167, "Delete");
-            this.label1.Text = Language.GetLocalizedText(701, "Projectors");
-            this.label2.Text = Language.GetLocalizedText(702, "Points");
-            this.PointWeightLabel.Text = Language.GetLocalizedText(703, "Point Weight");
-            this.addToolStripMenuItem.Text = Language.GetLocalizedText(166, "Add");
-            this.deleteToolStripMenuItem.Text = Language.GetLocalizedText(167, "Delete");
-            this.transferFromEdgesToolStripMenuItem.Text = Language.GetLocalizedText(700, "Transfer from Edges");
-            this.moveUpToolStripMenuItem.Text = Language.GetLocalizedText(685, "Move Up");
-            this.moveDownToolStripMenuItem.Text = Language.GetLocalizedText(686, "Move Down");
-            this.blendPointToolStripMenuItem.Text = Language.GetLocalizedText(704, "Blend Point");
-            this.propertiesToolStripMenuItem.Text = Language.GetLocalizedText(20, "Properties");
-            this.label6.Text = Language.GetLocalizedText(705, "Iterations");
-            this.label4.Text = Language.GetLocalizedText(706, "Blur Size");
-            this.MakeBlendMap.Text = Language.GetLocalizedText(707, "Make Blend Maps");
-            this.solveZ.Text = Language.GetLocalizedText(708, "Solve Z");
-            this.solveY.Text = Language.GetLocalizedText(709, "Solve Y");
-            this.solveX.Text = Language.GetLocalizedText(710, "Solve X");
-            this.solveRoll.Text = Language.GetLocalizedText(711, "Solve Roll");
-            this.solveHeading.Text = Language.GetLocalizedText(712, "Solve Heading");
-            this.solvePitch.Text = Language.GetLocalizedText(713, "Solve Pitch");
-            this.solveAspect.Text = Language.GetLocalizedText(714, "Solve Aspect");
-            this.solveFOV.Text = Language.GetLocalizedText(715, "Solve Fov");
-            this.UseRadial.Text = Language.GetLocalizedText(716, "Solve Radial Distortion");
-            this.MakeWarpMaps.Text = Language.GetLocalizedText(717, "Make Warp Maps");
-            this.useConstraints.Text = Language.GetLocalizedText(718, "Use Constraints");
-            this.errorLabel.Text = Language.GetLocalizedText(719, "Average Error");
-            this.SolveDistortion.Text = Language.GetLocalizedText(720, "Solve Alignment");
-            this.label7.Text = Language.GetLocalizedText(721, "Screen Type");
-            this.wwtButton1.Text = Language.GetLocalizedText(722, "Software Update");
-            this.SendNewMaps.Text = Language.GetLocalizedText(723, "Send New Maps");
-            this.label5.Text = Language.GetLocalizedText(724, "Tilt");
-            this.label3.Text = Language.GetLocalizedText(725, "Screen Radius");
-            this.ShowOutlines.Text = Language.GetLocalizedText(726, "Outlines");
-            this.blackBackground.Text = Language.GetLocalizedText(727, "Black Background");
-            this.showGrid.Text = Language.GetLocalizedText(728, "Dome Grid");
-            this.showProjectorUI.Text = Language.GetLocalizedText(729, "Calibratis");
-            this.Save.Text = Language.GetLocalizedText(168, "Save");
-            this.LoadConfig.Text = Language.GetLocalizedText(730, "Load");
-            this.label8.Text = Language.GetLocalizedText(731, "Color Correction");
-            this.label9.Text = Language.GetLocalizedText(732, "Red");
-            this.label10.Text = Language.GetLocalizedText(733, "Green");
-            this.label11.Text = Language.GetLocalizedText(734, "Blue");
-            this.Text = Language.GetLocalizedText(669, "Multi-Channel Calibration");
-            this.Align.Title = Language.GetLocalizedText(790, "Align");
-            this.Blend.Title = Language.GetLocalizedText(791, "Blend");
+            AddProjector.Text = Language.GetLocalizedText(166, "Add");
+            EditProjector.Text = Language.GetLocalizedText(502, "Edit");
+            DeleteProjector.Text = Language.GetLocalizedText(167, "Delete");
+            label1.Text = Language.GetLocalizedText(701, "Projectors");
+            label2.Text = Language.GetLocalizedText(702, "Points");
+            PointWeightLabel.Text = Language.GetLocalizedText(703, "Point Weight");
+            addToolStripMenuItem.Text = Language.GetLocalizedText(166, "Add");
+            deleteToolStripMenuItem.Text = Language.GetLocalizedText(167, "Delete");
+            transferFromEdgesToolStripMenuItem.Text = Language.GetLocalizedText(700, "Transfer from Edges");
+            moveUpToolStripMenuItem.Text = Language.GetLocalizedText(685, "Move Up");
+            moveDownToolStripMenuItem.Text = Language.GetLocalizedText(686, "Move Down");
+            blendPointToolStripMenuItem.Text = Language.GetLocalizedText(704, "Blend Point");
+            propertiesToolStripMenuItem.Text = Language.GetLocalizedText(20, "Properties");
+            label6.Text = Language.GetLocalizedText(705, "Iterations");
+            label4.Text = Language.GetLocalizedText(706, "Blur Size");
+            MakeBlendMap.Text = Language.GetLocalizedText(707, "Make Blend Maps");
+            solveZ.Text = Language.GetLocalizedText(708, "Solve Z");
+            solveY.Text = Language.GetLocalizedText(709, "Solve Y");
+            solveX.Text = Language.GetLocalizedText(710, "Solve X");
+            solveRoll.Text = Language.GetLocalizedText(711, "Solve Roll");
+            solveHeading.Text = Language.GetLocalizedText(712, "Solve Heading");
+            solvePitch.Text = Language.GetLocalizedText(713, "Solve Pitch");
+            solveAspect.Text = Language.GetLocalizedText(714, "Solve Aspect");
+            solveFOV.Text = Language.GetLocalizedText(715, "Solve Fov");
+            UseRadial.Text = Language.GetLocalizedText(716, "Solve Radial Distortion");
+            MakeWarpMaps.Text = Language.GetLocalizedText(717, "Make Warp Maps");
+            useConstraints.Text = Language.GetLocalizedText(718, "Use Constraints");
+            errorLabel.Text = Language.GetLocalizedText(719, "Average Error");
+            SolveDistortion.Text = Language.GetLocalizedText(720, "Solve Alignment");
+            label7.Text = Language.GetLocalizedText(721, "Screen Type");
+            wwtButton1.Text = Language.GetLocalizedText(722, "Software Update");
+            SendNewMaps.Text = Language.GetLocalizedText(723, "Send New Maps");
+            label5.Text = Language.GetLocalizedText(724, "Tilt");
+            label3.Text = Language.GetLocalizedText(725, "Screen Radius");
+            ShowOutlines.Text = Language.GetLocalizedText(726, "Outlines");
+            blackBackground.Text = Language.GetLocalizedText(727, "Black Background");
+            showGrid.Text = Language.GetLocalizedText(728, "Dome Grid");
+            showProjectorUI.Text = Language.GetLocalizedText(729, "Calibratis");
+            Save.Text = Language.GetLocalizedText(168, "Save");
+            LoadConfig.Text = Language.GetLocalizedText(730, "Load");
+            label8.Text = Language.GetLocalizedText(731, "Color Correction");
+            label9.Text = Language.GetLocalizedText(732, "Red");
+            label10.Text = Language.GetLocalizedText(733, "Green");
+            label11.Text = Language.GetLocalizedText(734, "Blue");
+            Text = Language.GetLocalizedText(669, "Multi-Channel Calibration");
+            Align.Title = Language.GetLocalizedText(790, "Align");
+            Blend.Title = Language.GetLocalizedText(791, "Blend");
 
 
 
@@ -1325,7 +1325,7 @@ namespace TerraViewer.Callibration
             var pointColor = Color.Red;
 
 
-            var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Points.ToString() + "," + pe.SelectedGroundTruth + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(pointColor) + "," + sb;
+            var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Points + "," + pe.SelectedGroundTruth + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(pointColor) + "," + sb;
             NetControl.SendCommand(command);
 
         }
@@ -1800,7 +1800,7 @@ namespace TerraViewer.Callibration
 
         private void MakeWarpMaps_Click(object sender, EventArgs e)
         {
-            this.Enabled = false;
+            Enabled = false;
             if (CalibrationInfo.ScreenType == ScreenTypes.FishEye)
             {
                 GenerateFisheyeWarpMaps();
@@ -1809,8 +1809,8 @@ namespace TerraViewer.Callibration
             {
                 GenerateWarpMaps();
             }
-            this.Enabled = true;
-            this.Activate();
+            Enabled = true;
+            Activate();
 
         }
 
@@ -1925,8 +1925,8 @@ namespace TerraViewer.Callibration
         {
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(750, "Would you like to build new maps with the current parameters? Answering 'No' will send the exsiting maps"), Language.GetLocalizedText(751, "Build new Maps"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                this.Enabled = false;
-                this.Cursor = Cursors.WaitCursor;
+                Enabled = false;
+                Cursor = Cursors.WaitCursor;
                 ProgressPopup.Show(this, Language.GetLocalizedText(747, "Building Maps"), Language.GetLocalizedText(748, "Building Warp Maps"));
                 if (CalibrationInfo.ScreenType == ScreenTypes.FishEye)
                 {
@@ -1940,8 +1940,8 @@ namespace TerraViewer.Callibration
                 }
                
                 ProgressPopup.Done();
-                this.Cursor = Cursors.Default;
-                this.Enabled = true;
+                Cursor = Cursors.Default;
+                Enabled = true;
             }
 
             if (CalibrationInfo.ScreenType != ScreenTypes.FishEye)
@@ -1954,16 +1954,16 @@ namespace TerraViewer.Callibration
             
             var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + ",-1,RELOADWARPS";
             NetControl.SendCommand(command);
-            this.Activate();
+            Activate();
 
         }
 
         private void MakeBlendMap_Click(object sender, EventArgs e)
         {
-            this.Enabled = false;
+            Enabled = false;
             MakeBlendMaps();
-            this.Enabled = true;
-            this.Activate();
+            Enabled = true;
+            Activate();
         }
 
         private void MakeBlendMaps()

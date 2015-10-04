@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TerraViewer
@@ -20,7 +19,7 @@ namespace TerraViewer
             get { return name; }
         }
         Bitmap thumbnail;
-        public System.Drawing.Bitmap ThumbNail
+        public Bitmap ThumbNail
         {
             get
             {
@@ -32,7 +31,7 @@ namespace TerraViewer
             }
         }
         Rectangle rect;
-        public System.Drawing.Rectangle Bounds
+        public Rectangle Bounds
         {
             get
             {

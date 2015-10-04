@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
 using System.IO;
-using SharpDX;
 
 
 namespace TerraViewer
@@ -135,7 +132,7 @@ namespace TerraViewer
             filename = path + "mdl.3ds";
             if (File.Exists(filename))
             {
-                var o3d = new Object3d(filename, true, false, true, System.Drawing.Color.White);
+                var o3d = new Object3d(filename, true, false, true, Color.White);
                 if (o3d != null)
                 {
                     o3d.ISSLayer = true;

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
@@ -62,7 +57,7 @@ namespace TerraViewer
                         fileCount++;
 
                         statusText = string.Format(Language.GetLocalizedText(1045, "Downloading ({0} of {1})"), fileCount, maxFileCount);
-                        backgroundWorker.ReportProgress((int)(100 * fileCount / maxFileCount));
+                        backgroundWorker.ReportProgress(100 * fileCount / maxFileCount);
                         if (backgroundWorker.CancellationPending)
                         {
                             statusText = Language.GetLocalizedText(1046, "Download Canceled");
@@ -109,7 +104,7 @@ namespace TerraViewer
         {
             progressBar.Value = Math.Min(100, e.ProgressPercentage);
             progressText.Text = statusText;
-            this.Invalidate();
+            Invalidate();
         }
 
     
@@ -136,7 +131,7 @@ namespace TerraViewer
             }
             else
             {
-                DialogResult = System.Windows.Forms.DialogResult.Cancel;
+                DialogResult = DialogResult.Cancel;
                 Close();
             }
         }

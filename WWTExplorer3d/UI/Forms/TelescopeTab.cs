@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -33,26 +28,26 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.toolTip1.SetToolTip(this.pictureBox1, "Click to install ASCOM platform to allow telescope control.");
-            this.Setup.Text = Language.GetLocalizedText(379, "Setup");
-            this.ra.Text = Language.GetLocalizedText(271, "RA : ");
-            this.telescopeGroup.Text = Language.GetLocalizedText(380, "Telescope Control - Not Connected");
-            this.TrackScope.Text = Language.GetLocalizedText(381, "Track Telescope");
-            this.Park.Text = Language.GetLocalizedText(50, "Park");
-            this.SyncScope.Text = Language.GetLocalizedText(382, "Sync");
-            this.ScopeWest.Text = Language.GetLocalizedText(248, "West");
-            this.ScopeEast.Text = Language.GetLocalizedText(243, "East");
-            this.ScopeSouth.Text = Language.GetLocalizedText(246, "South");
-            this.ScopeNorth.Text = Language.GetLocalizedText(241, "North");
-            this.SlewScope.Text = Language.GetLocalizedText(383, "Slew");
-            this.CenterScope.Text = Language.GetLocalizedText(384, "Center");
-            this.label4.Text = Language.GetLocalizedText(268, "Az :");
-            this.label2.Text = Language.GetLocalizedText(269, "Alt : ");
-            this.label1.Text = Language.GetLocalizedText(270, "Dec : ");
-            this.Choose.Text = Language.GetLocalizedText(385, "Choose");
-            this.ConnectScope.Text = Language.GetLocalizedText(386, "Connect");
-            this.PlatformStatus.Text = Language.GetLocalizedText(387, "Not Installed");
-            this.ScopeStatus.Text = Language.GetLocalizedText(388, "Telescope Status");
+            toolTip1.SetToolTip(pictureBox1, "Click to install ASCOM platform to allow telescope control.");
+            Setup.Text = Language.GetLocalizedText(379, "Setup");
+            ra.Text = Language.GetLocalizedText(271, "RA : ");
+            telescopeGroup.Text = Language.GetLocalizedText(380, "Telescope Control - Not Connected");
+            TrackScope.Text = Language.GetLocalizedText(381, "Track Telescope");
+            Park.Text = Language.GetLocalizedText(50, "Park");
+            SyncScope.Text = Language.GetLocalizedText(382, "Sync");
+            ScopeWest.Text = Language.GetLocalizedText(248, "West");
+            ScopeEast.Text = Language.GetLocalizedText(243, "East");
+            ScopeSouth.Text = Language.GetLocalizedText(246, "South");
+            ScopeNorth.Text = Language.GetLocalizedText(241, "North");
+            SlewScope.Text = Language.GetLocalizedText(383, "Slew");
+            CenterScope.Text = Language.GetLocalizedText(384, "Center");
+            label4.Text = Language.GetLocalizedText(268, "Az :");
+            label2.Text = Language.GetLocalizedText(269, "Alt : ");
+            label1.Text = Language.GetLocalizedText(270, "Dec : ");
+            Choose.Text = Language.GetLocalizedText(385, "Choose");
+            ConnectScope.Text = Language.GetLocalizedText(386, "Connect");
+            PlatformStatus.Text = Language.GetLocalizedText(387, "Not Installed");
+            ScopeStatus.Text = Language.GetLocalizedText(388, "Telescope Status");
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

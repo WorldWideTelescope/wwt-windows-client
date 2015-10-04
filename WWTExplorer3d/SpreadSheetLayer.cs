@@ -2,14 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ShapefileTools;
 using System.Drawing;
-using System.Data;
 using System.IO;
 using System.Globalization;
 using System.Windows.Forms;
-using Microsoft.SqlServer.Types;
-using System.Data.SqlTypes;
 using System.Xml;
 using System.Net;
 
@@ -201,7 +197,7 @@ namespace TerraViewer
         {
             //if (string.IsNullOrEmpty(fileName))
             {
-                fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID,this.ID.ToString());
+                fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID,ID);
             }
             var dir = fileName.Substring(0, fileName.LastIndexOf("\\"));
             if (!Directory.Exists(dir))
@@ -1164,7 +1160,7 @@ namespace TerraViewer
                 lineList = new LineList();
             }
 
-            lineList.TimeSeries = this.timeSeries;
+            lineList.TimeSeries = timeSeries;
 
             if (lineList2d == null)
             {
@@ -1173,7 +1169,7 @@ namespace TerraViewer
 
             }
 
-            lineList.TimeSeries = this.timeSeries;
+            lineList.TimeSeries = timeSeries;
 
 
 
@@ -1194,7 +1190,7 @@ namespace TerraViewer
             positions.Clear();
             UInt32 currentIndex = 0;
 
-            var color = Color.FromArgb((int)((float)Color.A ), Color); 
+            var color = Color.FromArgb((int)Color.A, Color); 
       
             // for space 3d
             ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
@@ -1254,7 +1250,7 @@ namespace TerraViewer
                         }
                     }
 
-                    if (geometryColumn > -1 || (this.CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((this.CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
+                    if (geometryColumn > -1 || (CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
                     {
                         double Xcoord = 0;
                         double Ycoord = 0;
@@ -1336,7 +1332,7 @@ namespace TerraViewer
                             positions.Add(lastItem.Position);
 
                         }
-                        else if (this.CoordinatesType == CoordinatesTypes.Rectangular)
+                        else if (CoordinatesType == CoordinatesTypes.Rectangular)
                         {
                             var xyzScale = GetScaleFactor(CartesianScale, CartesianCustomScale) / meanRadius;
 
@@ -1460,11 +1456,11 @@ namespace TerraViewer
                         }
                         else
                         {
-                            lastItem.PointSize = (float)1;
+                            lastItem.PointSize = 1;
                         }
                         if (PlotType == PlotTypes.Point)
                         {
-                            lastItem.PointSize = (float)1;
+                            lastItem.PointSize = 1;
                         }
 
 
@@ -1485,7 +1481,7 @@ namespace TerraViewer
                             }
                         }
 
-                        if ((this.CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((this.CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
+                        if ((CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
                         {
                             vertList.Add(lastItem);
                             if (barChartBitmask != 0)
@@ -1543,7 +1539,7 @@ namespace TerraViewer
 
             var parens = gs.Substring(index);
 
-            var parts = commandPart.Split(new char[] { ' ' });
+            var parts = commandPart.Split(new[] { ' ' });
 
             string command = null;
             string mods = null;
@@ -1631,7 +1627,7 @@ namespace TerraViewer
                 //double textAngle = 2 * Math.Tan(((rawSize/180)*Math.PI) /2);
 
 
-                var lla = parts[2].Trim().Split(new char[] { ' ' });
+                var lla = parts[2].Trim().Split(new[] { ' ' });
 
                 var lat = double.Parse(lla[1]);
                 var lng = double.Parse(lla[0]);
@@ -1671,7 +1667,7 @@ namespace TerraViewer
 
                 if (parts.Length > 3)
                 {
-                    var rtb = parts[3].Trim().Split(new char[] { ' ' });
+                    var rtb = parts[3].Trim().Split(new[] { ' ' });
                     rotation = double.Parse(rtb[0]);
                     if (rtb.Length > 1)
                     {
@@ -1796,7 +1792,7 @@ namespace TerraViewer
             {
                 if (sky)
                 {
-                    this.lineList2d.AddLine
+                    lineList2d.AddLine
                         (Coordinates.RADecTo3d(-(180.0 - geo.PointList[i].Lng) / 15 , geo.PointList[i].Lat,1), Coordinates.RADecTo3d(-(180.0 - geo.PointList[i + 1].Lng) / 15 , geo.PointList[i + 1].Lat,1), lineColor, date);
                 }
                 else
@@ -1804,24 +1800,24 @@ namespace TerraViewer
                     if (extrude)
                     {
 
-                        this.triangleList.AddQuad(vertexList[i], vertexList[i + 1], vertexListGround[i], vertexListGround[i + 1], polyColor, date);
+                        triangleList.AddQuad(vertexList[i], vertexList[i + 1], vertexListGround[i], vertexListGround[i + 1], polyColor, date);
 
                     }
                     if (lineWidth > 0)
                     {
                         if (extrude)
                         {
-                            this.lineList.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
+                            lineList.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
                         }
                         else
                         {
-                            this.lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
+                            lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
                         }
                         if (extrude)
                         {
-                            this.lineList.AddLine(vertexListGround[i], vertexListGround[i + 1], lineColor, date);
-                            this.lineList.AddLine(vertexList[i], vertexListGround[i], lineColor, date);
-                            this.lineList.AddLine(vertexList[i + 1], vertexListGround[i + 1], lineColor, date);
+                            lineList.AddLine(vertexListGround[i], vertexListGround[i + 1], lineColor, date);
+                            lineList.AddLine(vertexList[i], vertexListGround[i], lineColor, date);
+                            lineList.AddLine(vertexList[i + 1], vertexListGround[i + 1], lineColor, date);
                         }
                     }
                 }
@@ -1832,7 +1828,7 @@ namespace TerraViewer
 
                 for (var i = 0; i < indexes.Count; i += 3)
                 {
-                    this.triangleList.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date);
+                    triangleList.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date);
                 }
             }
         }
@@ -1853,14 +1849,14 @@ namespace TerraViewer
             {
                 if (sky)
                 {
-                    this.lineList2d.AddLine
+                    lineList2d.AddLine
                         (Coordinates.RADecTo3d(-(180.0 - geo.PointList[i].Lng) / 15, geo.PointList[i].Lat, 1), Coordinates.RADecTo3d(-(180.0 - geo.PointList[i + 1].Lng) / 15, geo.PointList[i + 1].Lat, 1), lineColor, date);
                 }
                 else
                 {
                     if (lineWidth > 0)
                     {
-                        this.lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
+                        lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
                     }
                 }
             }
@@ -1870,7 +1866,7 @@ namespace TerraViewer
 
                 for (var i = 0; i < indexes.Count; i += 3)
                 {
-                    this.triangleList2d.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date, 2);
+                    triangleList2d.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date, 2);
                 }
             }
         }
@@ -1882,7 +1878,7 @@ namespace TerraViewer
             {
                 var val = 0;
 
-                var match = int.TryParse(colorText, System.Globalization.NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out val);
+                var match = int.TryParse(colorText, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out val);
 
 
                 if (match)
@@ -2063,9 +2059,9 @@ namespace TerraViewer
             var name = "";
             try
             {
-                if (this.nameColumn > -1)
+                if (nameColumn > -1)
                 {
-                    name = table.Rows[closestItem][this.nameColumn];
+                    name = table.Rows[closestItem][nameColumn];
                     if (nameColumn == startDateColumn || nameColumn == endDateColumn)
                     {
                         name = ParseDate(name).ToString("u");
@@ -2105,7 +2101,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    rowData.Add("Column" + i.ToString(), colValue);
+                    rowData.Add("Column" + i, colValue);
                 }
             }
             place.Tag = rowData;
@@ -2268,7 +2264,7 @@ namespace TerraViewer
                 return true;
             }
 
-            var bucket = Math.Min(this.Buckets - 1,(int)((value - this.Min) / this.BucketWidth));
+            var bucket = Math.Min(Buckets - 1,(int)((value - Min) / BucketWidth));
 
             return Selected[bucket];
  
@@ -2289,12 +2285,9 @@ namespace TerraViewer
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                else if (DateFilter != DateFilter.None)
+                if (DateFilter != DateFilter.None)
                 {
                     var date = SpreadSheetLayer.ParseDate(row[TargetColumn]);
                     var bucket = 0;
@@ -2343,9 +2336,9 @@ namespace TerraViewer
                         return false;
                     }
 
-                    if (this.DomainStatType == StatTypes.Ratio)
+                    if (DomainStatType == StatTypes.Ratio)
                     {
-                        sucsess = double.TryParse(row[this.DemoninatorColumn], out denominator);
+                        sucsess = double.TryParse(row[DemoninatorColumn], out denominator);
                         if (!sucsess)
                         {
                             return false;
@@ -2353,11 +2346,10 @@ namespace TerraViewer
                         val = val / denominator;
                     }
 
-                    var bucket = Math.Max(0, Math.Min(this.Buckets - 1, (int)((val - this.Min) / this.BucketWidth)));
+                    var bucket = Math.Max(0, Math.Min(Buckets - 1, (int)((val - Min) / BucketWidth)));
 
                     return Selected[bucket];
                 }
-                
             }
             catch
             {
@@ -2450,9 +2442,9 @@ namespace TerraViewer
                         node.Name = fgt.Title;
                         node.Tag = fgt;
                         node.Checked = fgt == Earth3d.MainWindow.UiController;
-                        node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
-                        node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
-                        node.NodeActivated += new LayerUITreeNodeActivatedDelegate(node_NodeActivated);
+                        node.NodeSelected += node_NodeSelected;
+                        node.NodeChecked += node_NodeChecked;
+                        node.NodeActivated += node_NodeActivated;
                         nodes.Add(node);
                     }
                 }

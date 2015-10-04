@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.IO;
-using System.Reflection;
+using System.Drawing.Imaging;
 using System.Xml;
-
+using SharpDX;
+using TerraViewer.Properties;
+using Color = System.Drawing.Color;
 using Vector3 = SharpDX.Vector3;
-using Matrix = SharpDX.Matrix;
+
 namespace TerraViewer
 {
     public class TimeSeriesLayer : Layer , ITimeSeriesDescription
@@ -116,7 +116,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("TimeSeries", TimeSeries.ToString());
             xmlWriter.WriteAttributeString("BeginRange", BeginRange.ToString());
@@ -139,7 +139,7 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("StartDateColumn", StartDateColumn.ToString());
             xmlWriter.WriteAttributeString("EndDateColumn", EndDateColumn.ToString());
             xmlWriter.WriteAttributeString("SizeColumn", SizeColumn.ToString());
-            xmlWriter.WriteAttributeString("HyperlinkFormat", HyperlinkFormat.ToString());
+            xmlWriter.WriteAttributeString("HyperlinkFormat", HyperlinkFormat);
             xmlWriter.WriteAttributeString("HyperlinkColumn", HyperlinkColumn.ToString());
             xmlWriter.WriteAttributeString("ScaleFactor", ScaleFactor.ToString());
             xmlWriter.WriteAttributeString("PointScaleType", PointScaleType.ToString());
@@ -156,11 +156,11 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("CartesianCustomScale", CartesianCustomScale.ToString());
             xmlWriter.WriteAttributeString("DynamicData", DynamicData.ToString());
             xmlWriter.WriteAttributeString("AutoUpdate", AutoUpdate.ToString());
-            xmlWriter.WriteAttributeString("DataSourceUrl", DataSourceUrl.ToString());
+            xmlWriter.WriteAttributeString("DataSourceUrl", DataSourceUrl);
 
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             TimeSeries = Convert.ToBoolean(node.Attributes["TimeSeries"].Value);
             BeginRange = Convert.ToDateTime(node.Attributes["BeginRange"].Value);
@@ -803,7 +803,7 @@ namespace TerraViewer
             {
                 if (circleTexture == null)
                 {
-                    circleTexture = Texture11.FromBitmap(Properties.Resources.circle);
+                    circleTexture = Texture11.FromBitmap(Resources.circle);
                 }
 
                 return circleTexture;
@@ -815,7 +815,7 @@ namespace TerraViewer
             {
                 if (pointTexture == null)
                 {
-                    pointTexture = Texture11.FromBitmap(Properties.Resources.point);
+                    pointTexture = Texture11.FromBitmap(Resources.point);
                 }
 
                 return pointTexture;
@@ -827,7 +827,7 @@ namespace TerraViewer
             {
                 if (target1Texture == null)
                 {
-                    target1Texture = Texture11.FromBitmap(Properties.Resources.target1);
+                    target1Texture = Texture11.FromBitmap(Resources.target1);
                 }
 
                 return target1Texture;
@@ -839,7 +839,7 @@ namespace TerraViewer
             {
                 if (target2Texture == null)
                 {
-                    target2Texture = Texture11.FromBitmap(Properties.Resources.target2);
+                    target2Texture = Texture11.FromBitmap(Resources.target2);
                 }
 
                 return target2Texture;
@@ -852,7 +852,7 @@ namespace TerraViewer
             {
                 if (squareTexture == null)
                 {
-                    var onePixel = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    var onePixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
                     onePixel.SetPixel(0, 0, Color.White);
                     squareTexture = Texture11.FromBitmap(onePixel);
                 }
@@ -887,23 +887,23 @@ namespace TerraViewer
             if (triangleList2d != null)
             {
                 triangleList2d.Decay = decay;
-                triangleList2d.Sky = this.Astronomical;
+                triangleList2d.Sky = Astronomical;
                 triangleList2d.TimeSeries = timeSeries;
-                triangleList2d.Draw(renderContext, opacity * Opacity, TerraViewer.TriangleList.CullMode.CounterClockwise);
+                triangleList2d.Draw(renderContext, opacity * Opacity, TriangleList.CullMode.CounterClockwise);
             }
 
             if (triangleList != null)
             {
 
                 triangleList.Decay = decay;
-                triangleList.Sky = this.Astronomical;
+                triangleList.Sky = Astronomical;
                 triangleList.TimeSeries = timeSeries;
-                triangleList.Draw(renderContext, opacity * Opacity, TerraViewer.TriangleList.CullMode.CounterClockwise);
+                triangleList.Draw(renderContext, opacity * Opacity, TriangleList.CullMode.CounterClockwise);
             }
 
             if (lineList != null)
             {
-                lineList.Sky = this.Astronomical;
+                lineList.Sky = Astronomical;
                 lineList.Decay = decay;
                 lineList.TimeSeries = timeSeries;
 
@@ -912,7 +912,7 @@ namespace TerraViewer
 
             if (lineList2d != null)
             {
-                lineList2d.Sky = !this.Astronomical;
+                lineList2d.Sky = !Astronomical;
                 lineList2d.Decay = decay;
                 lineList2d.TimeSeries = timeSeries;
                 lineList2d.ShowFarSide = ShowFarSide;
@@ -997,16 +997,16 @@ namespace TerraViewer
                     renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
                     renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, null);
                     renderContext.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                    TimeSeriesColumnChartShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                    TimeSeriesColumnChartShader11.Constants.CameraPosition = new Vector4(cam, 1);
                     TimeSeriesColumnChartShader11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
                     TimeSeriesColumnChartShader11.Constants.Decay = timeSeries ? decay : 0f;
-                    TimeSeriesColumnChartShader11.Constants.Scale = (float)(adjustedScale);
+                    TimeSeriesColumnChartShader11.Constants.Scale = adjustedScale;
                     TimeSeriesColumnChartShader11.Constants.Sky = astronomical ? -1 : 1;
-                    TimeSeriesColumnChartShader11.Constants.Opacity = opacity * this.Opacity;
+                    TimeSeriesColumnChartShader11.Constants.Opacity = opacity * Opacity;
                     TimeSeriesColumnChartShader11.Constants.ShowFarSide = ShowFarSide ? 1f : 0f;
-                    TimeSeriesColumnChartShader11.Color = new SharpDX.Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
+                    TimeSeriesColumnChartShader11.Color = new Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
                     TimeSeriesColumnChartShader11.Constants.WorldViewProjection = matrixWVP;
-                    TimeSeriesColumnChartShader11.ViewportScale = new SharpDX.Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
+                    TimeSeriesColumnChartShader11.ViewportScale = new Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
                     TimeSeriesColumnChartShader11.Use(renderContext.devContext);
                 }
                 else if (plotType == PlotTypes.Cylinder && !RenderContext11.Downlevel)
@@ -1015,32 +1015,32 @@ namespace TerraViewer
                     renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
                     renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, null);
                     renderContext.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                    TimeSeriesColumnChartShaderNGon11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                    TimeSeriesColumnChartShaderNGon11.Constants.CameraPosition = new Vector4(cam, 1);
                     TimeSeriesColumnChartShaderNGon11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
                     TimeSeriesColumnChartShaderNGon11.Constants.Decay = timeSeries ? decay : 0f;
-                    TimeSeriesColumnChartShaderNGon11.Constants.Scale = (float)(adjustedScale);
+                    TimeSeriesColumnChartShaderNGon11.Constants.Scale = adjustedScale;
                     TimeSeriesColumnChartShaderNGon11.Constants.Sky = astronomical ? -1 : 1;
-                    TimeSeriesColumnChartShaderNGon11.Constants.Opacity = opacity * this.Opacity;
+                    TimeSeriesColumnChartShaderNGon11.Constants.Opacity = opacity * Opacity;
                     TimeSeriesColumnChartShaderNGon11.Constants.ShowFarSide = ShowFarSide ? 1f : 0f;
-                    TimeSeriesColumnChartShaderNGon11.Color = new SharpDX.Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
+                    TimeSeriesColumnChartShaderNGon11.Color = new Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
                     TimeSeriesColumnChartShaderNGon11.Constants.WorldViewProjection = matrixWVP;
-                    TimeSeriesColumnChartShaderNGon11.ViewportScale = new SharpDX.Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
+                    TimeSeriesColumnChartShaderNGon11.ViewportScale = new Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
                     TimeSeriesColumnChartShaderNGon11.Use(renderContext.devContext);
                 }
                 else
                 {
-                    TimeSeriesPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                    TimeSeriesPointSpriteShader11.Constants.CameraPosition = new Vector4(cam, 1);
                     var jBase = SpaceTimeController.UtcToJulian(baseDate);
                     TimeSeriesPointSpriteShader11.Constants.JNow = (float)(SpaceTimeController.JNow - jBase);
                     TimeSeriesPointSpriteShader11.Constants.Decay = timeSeries ? decay : 0f;
-                    TimeSeriesPointSpriteShader11.Constants.Scale = ((markerScale == MarkerScales.World) ? ((float)adjustedScale) : (-(float)adjustedScale));
+                    TimeSeriesPointSpriteShader11.Constants.Scale = ((markerScale == MarkerScales.World) ? adjustedScale : (-adjustedScale));
                     TimeSeriesPointSpriteShader11.Constants.Sky = astronomical ? -1 : 1;
-                    TimeSeriesPointSpriteShader11.Constants.Opacity = opacity * this.Opacity;
+                    TimeSeriesPointSpriteShader11.Constants.Opacity = opacity * Opacity;
                     TimeSeriesPointSpriteShader11.Constants.ShowFarSide = ShowFarSide ? 1f : 0f;
-                    TimeSeriesPointSpriteShader11.Color = new SharpDX.Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
+                    TimeSeriesPointSpriteShader11.Color = new Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
                     TimeSeriesPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
-                    TimeSeriesPointSpriteShader11.ViewportScale = new SharpDX.Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
-                    TimeSeriesPointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10.0f);
+                    TimeSeriesPointSpriteShader11.ViewportScale = new Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
+                    TimeSeriesPointSpriteShader11.PointScaleFactors = new Vector3(0.0f, 0.0f, 10.0f);
                     if (shapeFileVertex.Downlevel)
                     {
                         DownlevelTimeSeriesPointSpriteShader.Use(renderContext.devContext, shapeFileVertex.Instanced);
@@ -1123,12 +1123,12 @@ namespace TerraViewer
 
         DateTime ITimeSeriesDescription.SeriesEndTime
         {
-            get { return this.EndRange; }
+            get { return EndRange; }
         }
 
         DateTime ITimeSeriesDescription.SeriesStartTime
         {
-            get { return this.BeginRange; }
+            get { return BeginRange; }
         }
 
         TimeSpan ITimeSeriesDescription.TimeStep

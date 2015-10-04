@@ -14,6 +14,7 @@
 using System;
 //using Microsoft.Maps.Core;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
@@ -205,7 +206,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			wmiDEMisc = new WMPMeta.WmpDEMisc();
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		protected uint ReadContainer()
 		{
 			// check TIFF header
@@ -278,7 +279,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		    throw new ArgumentOutOfRangeException("guid", "Unknown guid");
 		}
 
-	    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+	    [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		internal void ParsePFDEntry(ushort uTag, ushort uType, uint uCount, uint uValue, byte[] pfdData)
 		{
 			switch (uTag)

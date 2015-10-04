@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,7 +13,7 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.ok.Text = Language.GetLocalizedText(156, "OK");
+            ok.Text = Language.GetLocalizedText(156, "OK");
         }
 
         public int Volume = 100;

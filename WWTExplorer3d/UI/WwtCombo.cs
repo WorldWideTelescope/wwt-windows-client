@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -58,10 +56,7 @@ namespace TerraViewer
                 {
                     return filterDropDown.FilterValue;
                 }
-                else
-                {
-                    return Classification.Unfiltered;
-                }
+                return Classification.Unfiltered;
             }
             set
             {
@@ -155,15 +150,15 @@ namespace TerraViewer
 
         static WwtCombo()
         {
-            edit[0] = global::TerraViewer.Properties.Resources.EditRest;
-            edit[1] = global::TerraViewer.Properties.Resources.EditHover;
-            edit[2] = global::TerraViewer.Properties.Resources.EditPressed;
-            edit[3] = global::TerraViewer.Properties.Resources.EditDisabled;
+            edit[0] = Resources.EditRest;
+            edit[1] = Resources.EditHover;
+            edit[2] = Resources.EditPressed;
+            edit[3] = Resources.EditDisabled;
 
-            drop[0] = global::TerraViewer.Properties.Resources.DropRest;
-            drop[1] = global::TerraViewer.Properties.Resources.DropHover;
-            drop[2] = global::TerraViewer.Properties.Resources.DropPressed;
-            drop[3] = global::TerraViewer.Properties.Resources.DropDisabled;    
+            drop[0] = Resources.DropRest;
+            drop[1] = Resources.DropHover;
+            drop[2] = Resources.DropPressed;
+            drop[3] = Resources.DropDisabled;    
         }
 
         FilterDropDown filterDropDown;
@@ -177,12 +172,12 @@ namespace TerraViewer
                 if (filterDropDown == null)
                 {
                     filterDropDown = new FilterDropDown();
-                    if (this.Parent is Form)
+                    if (Parent is Form)
                     {
-                        filterDropDown.Owner = (Form)this.Parent;
+                        filterDropDown.Owner = (Form)Parent;
                     }
    
-                    filterDropDown.SelectionChanged += new SelectionChangedEventHandler(filterDropDown_SelectionChanged);
+                    filterDropDown.SelectionChanged += filterDropDown_SelectionChanged;
                 }
                 return filterDropDown;
             }
@@ -216,7 +211,7 @@ namespace TerraViewer
                 g.DrawImage(drop[(int)State.Disabled], Width - 26, 0);
             }
             var rectText = new RectangleF(6, 9, Width - 32, Height-19);
-            g.DrawString(this.Text,UiTools.StandardRegular,UiTools.StadardTextBrush,rectText,UiTools.StringFormatThumbnails);
+            g.DrawString(Text,UiTools.StandardRegular,UiTools.StadardTextBrush,rectText,UiTools.StringFormatThumbnails);
 
 
         }
@@ -306,12 +301,12 @@ namespace TerraViewer
                         DatePopup.Current = new DatePopup();
                         DatePopup.Current.MasterClock = MasterTime;
                         DatePopup.Current.Show();
-                        DatePopup.Current.Location = Parent.PointToScreen(this.Location);
+                        DatePopup.Current.Location = Parent.PointToScreen(Location);
                         DatePopup.Current.Top += 30;
-                        DatePopup.Current.DateChanged += new EventHandler(Current_DateChanged);
+                        DatePopup.Current.DateChanged += Current_DateChanged;
                         if (!MasterTime)
                         {
-                            DatePopup.Current.ScratchTime = this.DateTimeValue;
+                            DatePopup.Current.ScratchTime = DateTimeValue;
                         }
                     }
                 }
@@ -323,7 +318,7 @@ namespace TerraViewer
                     }
                     FilterDropDownList.FilterType = filterStyle;
                     FilterDropDownList.Show();
-                    FilterDropDownList.Location = Parent.PointToScreen(this.Location);
+                    FilterDropDownList.Location = Parent.PointToScreen(Location);
                     FilterDropDownList.Top += 30;
                     if (FilterDropDownList.Width < Width)
                     {

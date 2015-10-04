@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -19,11 +14,11 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.Text = Language.GetLocalizedText(1, "Select Your Language");
-            this.selectLangLabel.Text = Language.GetLocalizedText(1, "Select Your Language");
+            Text = Language.GetLocalizedText(1, "Select Your Language");
+            selectLangLabel.Text = Language.GetLocalizedText(1, "Select Your Language");
 
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(156, "OK");
         }
 
         private void LanguageSelect_Load(object sender, EventArgs e)
@@ -46,13 +41,13 @@ namespace TerraViewer
 
             Language = (Language)langCombo.SelectedItem;
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
-            this.Close();
+            Close();
         }
     }
 }

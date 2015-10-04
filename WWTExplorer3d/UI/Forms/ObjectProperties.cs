@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using AstroCalc;
+using TerraViewer.Properties;
 
 
 namespace TerraViewer
@@ -19,24 +17,24 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label4.Text = Language.GetLocalizedText(264, "Names:");
-            this.magnitudeLabel.Text = Language.GetLocalizedText(265, "Magnitude:");
+            label4.Text = Language.GetLocalizedText(264, "Names:");
+            magnitudeLabel.Text = Language.GetLocalizedText(265, "Magnitude:");
 
-            this.distanceLabel.Text = Language.GetLocalizedText(633, "Distance:");
-            this.label7.Text = Language.GetLocalizedText(267, "Classification:");
-            this.azLabel.Text = Language.GetLocalizedText(268, "Az :");
-            this.altLabel.Text = Language.GetLocalizedText(269, "Alt : ");
-            this.decLabel.Text = Language.GetLocalizedText(270, "Dec : ");
-            this.raLabel.Text = Language.GetLocalizedText(271, "RA : ");
-            this.nameValues.Text = Language.GetLocalizedText(264, "Names:");
-            this.riseLabel.Text = Language.GetLocalizedText(273, "Rise:");
-            this.setLabel.Text = Language.GetLocalizedText(274, "Set:");
-            this.transitLabel.Text = Language.GetLocalizedText(275, "Transit:");
-            this.imageCreditsText.Text = Language.GetLocalizedText(276, "Image Credits:");
-            this.TileBarText.Text = Language.GetLocalizedText(277, "Finder Scope");
-            this.ShowObject.Text = Language.GetLocalizedText(278, "Show object");
-            this.CloseButton.Text = Language.GetLocalizedText(212, "Close");
-            this.research.Text = Language.GetLocalizedText(279, "Research");
+            distanceLabel.Text = Language.GetLocalizedText(633, "Distance:");
+            label7.Text = Language.GetLocalizedText(267, "Classification:");
+            azLabel.Text = Language.GetLocalizedText(268, "Az :");
+            altLabel.Text = Language.GetLocalizedText(269, "Alt : ");
+            decLabel.Text = Language.GetLocalizedText(270, "Dec : ");
+            raLabel.Text = Language.GetLocalizedText(271, "RA : ");
+            nameValues.Text = Language.GetLocalizedText(264, "Names:");
+            riseLabel.Text = Language.GetLocalizedText(273, "Rise:");
+            setLabel.Text = Language.GetLocalizedText(274, "Set:");
+            transitLabel.Text = Language.GetLocalizedText(275, "Transit:");
+            imageCreditsText.Text = Language.GetLocalizedText(276, "Image Credits:");
+            TileBarText.Text = Language.GetLocalizedText(277, "Finder Scope");
+            ShowObject.Text = Language.GetLocalizedText(278, "Show object");
+            CloseButton.Text = Language.GetLocalizedText(212, "Close");
+            research.Text = Language.GetLocalizedText(279, "Research");
         }
         bool mouseDown;
         Point pntDown;
@@ -76,8 +74,8 @@ namespace TerraViewer
 
         public static ObjectProperties Props
         {
-            get { return ObjectProperties.props; }
-            set { ObjectProperties.props = value; }
+            get { return props; }
+            set { props = value; }
         }
         public static void ShowAt(IPlace place, Point pnt)
         {
@@ -138,7 +136,7 @@ namespace TerraViewer
             props.closeBox.Left = 270;
             props.Width = 292;
             props.Height = 315;
-            props.BackgroundImage = Properties.Resources.PropertiesBackgroundNoFinder;
+            props.BackgroundImage = Resources.PropertiesBackgroundNoFinder;
             props.Show();
             props.Location = pnt;
             props.EnsureVisble();
@@ -149,14 +147,14 @@ namespace TerraViewer
         {
             var rect = Screen.GetWorkingArea(this);
 
-            if (this.Left + this.Width > rect.Width)
+            if (Left + Width > rect.Width)
             {
-                this.Left -= (this.Left + this.Width) - rect.Width;
+                Left -= (Left + Width) - rect.Width;
             }
 
-            if (this.Top + this.Height > (rect.Height-120))
+            if (Top + Height > (rect.Height-120))
             {
-                this.Top -= (this.Top + this.Height) - (rect.Height-120);
+                Top -= (Top + Height) - (rect.Height-120);
             }
         }
 
@@ -164,77 +162,77 @@ namespace TerraViewer
         {
             if (target != null)
             {
-                this.constellationName.Text = Language.GetLocalizedText(280, "in ") + Constellations.FullName(target.Constellation);
+                constellationName.Text = Language.GetLocalizedText(280, "in ") + Constellations.FullName(target.Constellation);
 
                 if (target.Magnitude != 0)
                 {
-                    this.magnitudeValue.Text = target.Magnitude.ToString();
+                    magnitudeValue.Text = target.Magnitude.ToString();
                 }
                 else
                 {
-                    this.magnitudeValue.Text = Language.GetLocalizedText(281, "n/a");
+                    magnitudeValue.Text = Language.GetLocalizedText(281, "n/a");
                 }
 
 
-                this.thumbnail.Image = target.ThumbNail;
-                this.classificationText.Text = FriendlyName( target.Classification.ToString());
+                thumbnail.Image = target.ThumbNail;
+                classificationText.Text = FriendlyName( target.Classification.ToString());
 
                 if (target.Classification == Classification.Unidentified && target.StudyImageset != null)
                 {
                     if (target.StudyImageset.Projection == ProjectionType.Toast || target.StudyImageset.Projection == ProjectionType.Equirectangular || target.StudyImageset.Projection == ProjectionType.Mercator)
                     {
-                        this.thumbnail.Image = UiTools.LoadThumbnailFromWeb(target.StudyImageset.ThumbnailUrl);
+                        thumbnail.Image = UiTools.LoadThumbnailFromWeb(target.StudyImageset.ThumbnailUrl);
 
                         switch (target.StudyImageset.DataSetType)
                         {
                             case ImageSetType.Earth:
-                                this.classificationText.Text = Language.GetLocalizedText(282, "Survey Imagery");
-                                this.constellationName.Text = Language.GetLocalizedText(283, "of Earth");
+                                classificationText.Text = Language.GetLocalizedText(282, "Survey Imagery");
+                                constellationName.Text = Language.GetLocalizedText(283, "of Earth");
                                 break;
                             case ImageSetType.Planet:
-                                this.classificationText.Text = Language.GetLocalizedText(282, "Survey Imagery");
-                                this.constellationName.Text = Language.GetLocalizedText(284, "of Planet/Moon");
+                                classificationText.Text = Language.GetLocalizedText(282, "Survey Imagery");
+                                constellationName.Text = Language.GetLocalizedText(284, "of Planet/Moon");
                                 break;
                             case ImageSetType.Sky:
-                                this.classificationText.Text = Language.GetLocalizedText(282, "Survey Imagery");
-                                this.constellationName.Text = Language.GetLocalizedText(285, "for Full Sky");
+                                classificationText.Text = Language.GetLocalizedText(282, "Survey Imagery");
+                                constellationName.Text = Language.GetLocalizedText(285, "for Full Sky");
                                 break;
                             case ImageSetType.Panorama:
-                                this.classificationText.Text = Language.GetLocalizedText(286, "Panorama");
-                                this.constellationName.Text = "";
+                                classificationText.Text = Language.GetLocalizedText(286, "Panorama");
+                                constellationName.Text = "";
                                 break;
                             default:
                                 break;
                         }
 
-                        this.raLabel.Visible = false;
-                        this.raText.Visible = false;
-                        this.decText.Visible = false;
-                        this.decLabel.Visible = false;
-                        this.distanceLabel.Visible = false;
-                        this.altText.Visible = false;
-                        this.azText.Visible = false;
-                        this.magnitudeLabel.Visible = false;
-                        this.magnitudeValue.Visible = false;
-                        this.distanceValue.Visible = false;
-                        this.altLabel.Visible = false;
-                        this.azLabel.Visible = false;
-                        this.riseText.Visible = false;
-                        this.riseLabel.Visible = false;
-                        this.setLabel.Visible = false;
-                        this.setText.Visible = false;
-                        this.transitLabel.Visible = false;
-                        this.transitText.Visible = false;
-                        this.creditsText.Top = altText.Top+4;
-                        this.creditsText.Height = 106;
-                        this.creditsLink.Top = decText.Top+2;
-                        this.imageCreditsText.Top = raText.Top;
-                        this.research.Visible = false;
-                        this.ShowObject.Visible = false;
+                        raLabel.Visible = false;
+                        raText.Visible = false;
+                        decText.Visible = false;
+                        decLabel.Visible = false;
+                        distanceLabel.Visible = false;
+                        altText.Visible = false;
+                        azText.Visible = false;
+                        magnitudeLabel.Visible = false;
+                        magnitudeValue.Visible = false;
+                        distanceValue.Visible = false;
+                        altLabel.Visible = false;
+                        azLabel.Visible = false;
+                        riseText.Visible = false;
+                        riseLabel.Visible = false;
+                        setLabel.Visible = false;
+                        setText.Visible = false;
+                        transitLabel.Visible = false;
+                        transitText.Visible = false;
+                        creditsText.Top = altText.Top+4;
+                        creditsText.Height = 106;
+                        creditsLink.Top = decText.Top+2;
+                        imageCreditsText.Top = raText.Top;
+                        research.Visible = false;
+                        ShowObject.Visible = false;
                     }
                     else
                     {
-                        this.classificationText.Text = Language.GetLocalizedText(287, "Study Imagery");
+                        classificationText.Text = Language.GetLocalizedText(287, "Study Imagery");
                     }
                 }
 
@@ -279,25 +277,25 @@ namespace TerraViewer
             {
                 if (!string.IsNullOrEmpty(imageSet.CreditsText))
                 {
-                    this.creditsText.Text = imageSet.CreditsText;
+                    creditsText.Text = imageSet.CreditsText;
                 }
                 else
                 {
-                    this.creditsText.Text = Language.GetLocalizedText(288, "No information available");
+                    creditsText.Text = Language.GetLocalizedText(288, "No information available");
                 }
                 if (!string.IsNullOrEmpty(imageSet.CreditsUrl))
                 {
-                    this.creditsLink.Text = imageSet.CreditsUrl;
+                    creditsLink.Text = imageSet.CreditsUrl;
                 }
                 else
                 {
-                    this.creditsLink.Text = Language.GetLocalizedText(288, "No information available");
+                    creditsLink.Text = Language.GetLocalizedText(288, "No information available");
                 }
             }
             else
             {
-                this.creditsText.Text = Language.GetLocalizedText(288, "No information available");
-                this.creditsLink.Text = Language.GetLocalizedText(288, "No information available");
+                creditsText.Text = Language.GetLocalizedText(288, "No information available");
+                creditsLink.Text = Language.GetLocalizedText(288, "No information available");
             }
         }
 
@@ -330,13 +328,13 @@ namespace TerraViewer
                 altText.Text = Coordinates.FormatDMSWide(altAz.Alt);
                 azText.Text = Coordinates.FormatDMSWide(altAz.Az);
 
-                AstroCalc.RiseSetDetails details;
+                RiseSetDetails details;
                // try
                 {
                     if (target.Classification == Classification.SolarSystem)
                     {
 
-                        var jNow = ((int)((int)SpaceTimeController.JNow) + .5);
+                        var jNow = ((int)SpaceTimeController.JNow + .5);
                         var p1 = Planets.GetPlanetLocation(target.Name, jNow - 1);
                         var p2 = Planets.GetPlanetLocation(target.Name, jNow);
                         var p3 = Planets.GetPlanetLocation(target.Name, jNow + 1);
@@ -381,11 +379,11 @@ namespace TerraViewer
                     }
                     if (target.Distance != 0)
                     {
-                        this.distanceValue.Text = UiTools.FormatDistance(target.Distance);
+                        distanceValue.Text = UiTools.FormatDistance(target.Distance);
                     }
                     else
                     {
-                        this.distanceValue.Text = Language.GetLocalizedText(281, "n/a");
+                        distanceValue.Text = Language.GetLocalizedText(281, "n/a");
 
                     }
                 }
@@ -424,7 +422,7 @@ namespace TerraViewer
         private void ObjectProperties_MouseDown(object sender, MouseEventArgs e)
         {
             mouseDown = true;
-            pntDown = this.PointToScreen(e.Location);
+            pntDown = PointToScreen(e.Location);
         }
 
         bool moved;
@@ -433,11 +431,11 @@ namespace TerraViewer
         {
             if (mouseDown)
             {
-                var loc = this.PointToScreen(e.Location);
+                var loc = PointToScreen(e.Location);
                 var move = new Point(loc.X - pntDown.X, loc.Y - pntDown.Y);
 
-                this.Top += move.Y;
-                this.Left += move.X;
+                Top += move.Y;
+                Left += move.X;
                 pntDown = loc;
                 moved = true;
             }
@@ -554,7 +552,7 @@ namespace TerraViewer
         IPlace noPlaceDefault;
         private void FindCurrentObject()
         {
-            var loc = Earth3d.MainWindow.RenderWindow.PointToClient(this.PointToScreen(new Point(300, 88)));
+            var loc = Earth3d.MainWindow.RenderWindow.PointToClient(PointToScreen(new Point(300, 88)));
             IPlace closetPlace = null;
             var result = new Coordinates(0,0);
 
@@ -590,10 +588,7 @@ namespace TerraViewer
                     //Earth3d.MainWindow.SetLabelText(null, false);
                     return;
                 }
-                else
-                {
-                    Earth3d.MainWindow.SetLabelText(closetPlace, false);
-                }
+                Earth3d.MainWindow.SetLabelText(closetPlace, false);
                 Target = closetPlace;
             }
 
@@ -605,10 +600,10 @@ namespace TerraViewer
         {
             if (invokeFindClosestMatch == null)
             {
-                invokeFindClosestMatch = new FindClosestMatchDelegate(Grids.FindClosestMatch);
+                invokeFindClosestMatch = Grids.FindClosestMatch;
             }
 
-            invokeFindClosestMatch.BeginInvoke(constellationID, ra, dec, maxRadius, this.CallBack2, null);
+            invokeFindClosestMatch.BeginInvoke(constellationID, ra, dec, maxRadius, CallBack2, null);
         }
 
         private FindClosestObjectDelegate invokeFindClosestObject;
@@ -623,10 +618,10 @@ namespace TerraViewer
         {
             if (invokeFindClosestObject == null)
             {
-                invokeFindClosestObject = new FindClosestObjectDelegate(Grids.FindClosestObject);
+                invokeFindClosestObject = Grids.FindClosestObject;
             }
 
-            invokeFindClosestObject.BeginInvoke(orig, ray, this.CallBack, null);
+            invokeFindClosestObject.BeginInvoke(orig, ray, CallBack, null);
         }
 
         private void CallBack(IAsyncResult ar)
@@ -644,11 +639,11 @@ namespace TerraViewer
                 Earth3d.MainWindow.SetLabelText(place, false);
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(updatePlace);
+                    Invoke(updatePlace);
                 }
                 catch
                 {
@@ -677,11 +672,11 @@ namespace TerraViewer
                 Earth3d.MainWindow.SetLabelText(place, false);
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(updatePlace);
+                    Invoke(updatePlace);
                 }
                 catch
                 {
@@ -695,25 +690,25 @@ namespace TerraViewer
 
         private void closeBox_MouseEnter(object sender, EventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseHover;
+            closeBox.Image = Resources.CloseHover;
         }
 
         private void closeBox_MouseLeave(object sender, EventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseRest;
+            closeBox.Image = Resources.CloseRest;
 
         }
 
         private void closeBox_MouseDown(object sender, MouseEventArgs e)
         {
-            closeBox.Image = Properties.Resources.ClosePush;
+            closeBox.Image = Resources.ClosePush;
 
         }
 
         private void closeBox_MouseUp(object sender, MouseEventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseHover;
-            this.Close();
+            closeBox.Image = Resources.CloseHover;
+            Close();
 
         }
 
@@ -721,7 +716,7 @@ namespace TerraViewer
         {
             if (e.KeyCode == Keys.Escape)
             {
-                this.Close();
+                Close();
             }
         }
 
@@ -755,12 +750,12 @@ namespace TerraViewer
 
         private void Close_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void research_Click(object sender, EventArgs e)
         {
-            var pntShow = this.PointToScreen(research.Location);
+            var pntShow = PointToScreen(research.Location);
             pntShow.Offset(5, research.Height);
             Earth3d.MainWindow.ShowContextMenu(target, Earth3d.MainWindow.PointToClient(pntShow), false, true);
         }

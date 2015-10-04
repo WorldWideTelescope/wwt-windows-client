@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -17,12 +11,12 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.decaySliderLabel.Text = Language.GetLocalizedText(844, "Time Decay");
-            this.EndDateRangeLabel.Text = Language.GetLocalizedText(819, "End Date Range");
-            this.beginDateRangeLabel.Text = Language.GetLocalizedText(820, "Begin Date Range");
-            this.label5.Text = Language.GetLocalizedText(843, "Start Date/Time");
-            this.label1.Text = Language.GetLocalizedText(842, "End Date/Time");
-            this.label3.Text = Language.GetLocalizedText(841, "The Start and End Dates used with a Time decay allow you to visualize time series data as animation using the Time controls. The time decay controls how long it takes to fade out an event after it triggers. Select the optional start and end data columns to enable this feature and get a preview of the date range for the column.");
+            decaySliderLabel.Text = Language.GetLocalizedText(844, "Time Decay");
+            EndDateRangeLabel.Text = Language.GetLocalizedText(819, "End Date Range");
+            beginDateRangeLabel.Text = Language.GetLocalizedText(820, "Begin Date Range");
+            label5.Text = Language.GetLocalizedText(843, "Start Date/Time");
+            label1.Text = Language.GetLocalizedText(842, "End Date/Time");
+            label3.Text = Language.GetLocalizedText(841, "The Start and End Dates used with a Time decay allow you to visualize time series data as animation using the Time controls. The time decay controls how long it takes to fade out an event after it triggers. Select the optional start and end data columns to enable this feature and get a preview of the date range for the column.");
         }
         TimeSeriesLayer layer;
 

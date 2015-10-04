@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -17,18 +15,18 @@ namespace TerraViewer
 
     public partial class MenuTabs : UserControl
     {
-        readonly Bitmap tabHoverTab = global::TerraViewer.Properties.Resources.tabHoverTab;
-        readonly Bitmap tabHoverMenu = global::TerraViewer.Properties.Resources.tabHoverMenu;
-        readonly Bitmap selectedTab = global::TerraViewer.Properties.Resources.tabSelected;
-        readonly Bitmap selectedHoverTab = global::TerraViewer.Properties.Resources.tabSelectedHover;
-        Bitmap hoverTab = global::TerraViewer.Properties.Resources.tabHover;
-        readonly Bitmap tourSelectedTab = global::TerraViewer.Properties.Resources.tourSelected;
-        readonly Bitmap tourHoverTab = global::TerraViewer.Properties.Resources.tourHover;
-        readonly Bitmap tourSelectedHoverTab = global::TerraViewer.Properties.Resources.tourSelectedHover;
-        readonly Bitmap closeRest = global::TerraViewer.Properties.Resources.CloseRest;
-        readonly Bitmap closeHover = global::TerraViewer.Properties.Resources.CloseHover;
-        readonly Bitmap closePush = global::TerraViewer.Properties.Resources.ClosePush;
-        readonly Bitmap menuArrow = global::TerraViewer.Properties.Resources.menuArrow;
+        readonly Bitmap tabHoverTab = Resources.tabHoverTab;
+        readonly Bitmap tabHoverMenu = Resources.tabHoverMenu;
+        readonly Bitmap selectedTab = Resources.tabSelected;
+        readonly Bitmap selectedHoverTab = Resources.tabSelectedHover;
+        Bitmap hoverTab = Resources.tabHover;
+        readonly Bitmap tourSelectedTab = Resources.tourSelected;
+        readonly Bitmap tourHoverTab = Resources.tourHover;
+        readonly Bitmap tourSelectedHoverTab = Resources.tourSelectedHover;
+        readonly Bitmap closeRest = Resources.CloseRest;
+        readonly Bitmap closeHover = Resources.CloseHover;
+        readonly Bitmap closePush = Resources.ClosePush;
+        readonly Bitmap menuArrow = Resources.menuArrow;
 
         public event TabClickedEventHandler TabClicked;
         public event MenuClickedEventHandler MenuClicked;
@@ -146,7 +144,7 @@ namespace TerraViewer
         public void AddTour(TourDocument tour)
         {
             tours.Add(tour);
-            this.Refresh();
+            Refresh();
         }
 
         public void RemoveTour(TourDocument targetTour)
@@ -171,7 +169,7 @@ namespace TerraViewer
                 {
                     CurrentTour = targetTour;
                     SetSelectedIndex(maxIndex + index, false);
-                    this.Refresh();
+                    Refresh();
                     return;
                 }
                 index++;
@@ -180,7 +178,7 @@ namespace TerraViewer
 
         private void MenuTabs_Paint(object sender, PaintEventArgs e)
         {
-            if (this.Width > 1124)
+            if (Width > 1124)
             {
                 startX = 140;
             }
@@ -319,11 +317,11 @@ namespace TerraViewer
         {
             get
             {
-                return this.Visible;
+                return Visible;
             }
             set
             {
-                this.Visible = value;
+                Visible = value;
             }
         }
 
@@ -334,7 +332,7 @@ namespace TerraViewer
             if (!Frozen)
             {
                 hoverTabIndex = -1;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -343,10 +341,10 @@ namespace TerraViewer
             MouseInTabs = true;
             if (!Frozen)
             {
-                var mouse = this.PointToClient(Cursor.Position);
+                var mouse = PointToClient(Cursor.Position);
 
                 hoverTabIndex = GetTabIndexFromPoint(mouse, out onCloseButton, out onMenuArrow, out onSignOut);
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -396,7 +394,7 @@ namespace TerraViewer
             if (!Frozen)
             {
                 hoverTabIndex = GetTabIndexFromPoint(e.Location, out onCloseButton, out onMenuArrow, out onSignOut);
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -456,7 +454,7 @@ namespace TerraViewer
                 if (TabClicked != null)
                 {
                     TabClicked.Invoke(this, (ApplicationMode)selectedTabIndex);
-                    this.Refresh();
+                    Refresh();
                 }
             }
         }
@@ -464,7 +462,7 @@ namespace TerraViewer
 
         private void MenuTabs_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            var index = ((int)e.X - startX) / 100;
+            var index = (e.X - startX) / 100;
 
             if (ControlEvent == null)
             {

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.IO;
 
@@ -120,7 +120,7 @@ namespace TerraViewer
                 var data = new byte[token.Length / 2];
                 for (var i = 0; i < token.Length; i += 2)
                 {
-                    data[i/2] = byte.Parse(token.Substring(i, 2), System.Globalization.NumberStyles.HexNumber);
+                    data[i/2] = byte.Parse(token.Substring(i, 2), NumberStyles.HexNumber);
                 }
                 var ms = new MemoryStream(data);
                 var br = new BinaryReader(ms);
@@ -249,10 +249,7 @@ namespace TerraViewer
                     {
                         return Math.Sinh(alpha / factor) / 100.0;
                     }
-                    else
-                    {
-                        return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
-                    }
+                    return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
                 default:
                     return alpha;
             }
@@ -275,17 +272,15 @@ namespace TerraViewer
             {
                 var cam = (CameraParameters)obj;
 
-                if (Math.Abs(cam.Angle - this.Angle) > .01 || Math.Abs(cam.Lat - this.Lat) > (cam.Zoom /10000) || Math.Abs(cam.Lng -this.Lng) > (cam.Zoom /10000) || Math.Abs(cam.Rotation -this.Rotation) > .1 || Math.Abs(cam.Zoom - this.Zoom) > (Math.Abs(cam.Zoom - this.Zoom)/1000) || cam.TargetReferenceFrame != this.TargetReferenceFrame || cam.DomeAlt != this.DomeAlt || cam.DomeAz != this.DomeAlt )
+                if (Math.Abs(cam.Angle - Angle) > .01 || Math.Abs(cam.Lat - Lat) > (cam.Zoom /10000) || Math.Abs(cam.Lng -Lng) > (cam.Zoom /10000) || Math.Abs(cam.Rotation -Rotation) > .1 || Math.Abs(cam.Zoom - Zoom) > (Math.Abs(cam.Zoom - Zoom)/1000) || cam.TargetReferenceFrame != TargetReferenceFrame || cam.DomeAlt != DomeAlt || cam.DomeAz != DomeAlt )
                 {
                     return false;
                 }
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
+
         public int GetFuzzyHash(double hashinput, int mult)
         {
                 var h = (int)(hashinput * mult);
@@ -400,11 +395,7 @@ namespace TerraViewer
 
                     return CameraParameters.InterpolateGreatCircle(from, to, alpha, InterpolationType);
                 }
-                else
-                {
-
-                    return CameraParameters.Interpolate(from, to, alpha, InterpolationType, FastDirectionMove);
-                }
+                return CameraParameters.Interpolate(@from, to, alpha, InterpolationType, FastDirectionMove);
             }
         }
 
@@ -582,7 +573,7 @@ namespace TerraViewer
                     // Log interpolate from from to fromTop
                     return CameraParameters.Interpolate(from, fromTop, elapsedSeconds / upTargetTime, InterpolationType.EaseInOut, false);
                 }
-                else if (elapsedSeconds < downTargetTime)
+                if (elapsedSeconds < downTargetTime)
                 {
                     elapsedSeconds -= upTargetTime;
                     // interpolate linear fromTop and toTop
@@ -594,29 +585,26 @@ namespace TerraViewer
                     
                     return CameraParameters.Interpolate(fromTop, toTop, elapsedSeconds / (downTargetTime - upTargetTime), InterpolationType.EaseInOut, false);
                 }
-                else
+                if (!midpointFired )
                 {
-                    if (!midpointFired )
-                    {
-                        midpointFired = true;
+                    midpointFired = true;
 
-                        if (midpoint != null)
-                        {
-                            midpoint.Invoke(this, new EventArgs());
-                        }
-                  
-                    }
-                    elapsedSeconds -= downTargetTime;
-                    // Interpolate log from toTop and to
-                    var alpha = elapsedSeconds / (toTargetTime - downTargetTime);
-                    if (alpha > 1.0)
+                    if (midpoint != null)
                     {
-                        alpha = 1.0;
-                        complete = true;
-                        return to;
+                        midpoint.Invoke(this, new EventArgs());
                     }
-                    return CameraParameters.Interpolate(toTop, to, alpha, InterpolationType.EaseInOut, false);
+                  
                 }
+                elapsedSeconds -= downTargetTime;
+                // Interpolate log from toTop and to
+                var alpha = elapsedSeconds / (toTargetTime - downTargetTime);
+                if (alpha > 1.0)
+                {
+                    alpha = 1.0;
+                    complete = true;
+                    return to;
+                }
+                return CameraParameters.Interpolate(toTop, to, alpha, InterpolationType.EaseInOut, false);
             }
         }
 
@@ -746,12 +734,12 @@ namespace TerraViewer
 
         public string[] GetParamNames()
         {
-            return new string[] { "DateTime", "Lat", "Lng", "Zoom", "Rotation", "Angle", "Opacity", "ViewTarget.X", "ViewTarget.Y", "ViewTarget.Z", "SolarSystemTarget", "Dome.Alt", "Dome.Az" };
+            return new[] { "DateTime", "Lat", "Lng", "Zoom", "Rotation", "Angle", "Opacity", "ViewTarget.X", "ViewTarget.Y", "ViewTarget.Z", "SolarSystemTarget", "Dome.Alt", "Dome.Az" };
         }
 
         public BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.PlanetID, BaseTweenType.Linear, BaseTweenType.Linear };
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.PlanetID, BaseTweenType.Linear, BaseTweenType.Linear };
         }
 
         public void SetParams(double[] paramList)

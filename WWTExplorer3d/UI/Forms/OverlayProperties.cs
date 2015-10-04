@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,13 +13,13 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.label2.Text = Language.GetLocalizedText(209, "Width");
-            this.label3.Text = "Height";
-            this.Text = "Overlay Properties";
-            this.posXLabel.Text = "X";
-            this.label1.Text = "Y";
-            this.NameLabel.Text = Language.GetLocalizedText(238, "Name");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            label2.Text = Language.GetLocalizedText(209, "Width");
+            label3.Text = "Height";
+            Text = "Overlay Properties";
+            posXLabel.Text = "X";
+            label1.Text = "Y";
+            NameLabel.Text = Language.GetLocalizedText(238, "Name");
         }
 
         public Overlay Overlay = null;
@@ -39,13 +34,13 @@ namespace TerraViewer
                 sizeX.Text = Overlay.Width.ToString();
                 sizeY.Text = Overlay.Height.ToString();
                 Rotation.Text = Overlay.RotationAngle.ToString();
-                this.OverlayName.Text = Overlay.Name;
+                OverlayName.Text = Overlay.Name;
             }
         }
 
         private void OK_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.OK;
+            DialogResult = DialogResult.OK;
         }
 
         private void positionX_TextChanged(object sender, EventArgs e)

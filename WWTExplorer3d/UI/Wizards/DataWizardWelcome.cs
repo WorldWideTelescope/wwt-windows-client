@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -17,11 +11,11 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.spreadsheetNameLabel.Text = Language.GetLocalizedText(939, "Layer Name");
-            this.label3.Text = Language.GetLocalizedText(940, "CoordinatesType");
-            this.label2.Text = Language.GetLocalizedText(858, "This wizard will guide you through the process of importing your data for visualization. On this first step enter a friendly name for your layer, this is how it will appear in the Layer Manager. Select a reference frame for the coordinates in your data. This determines how WWT will plot your data and where.");
+            spreadsheetNameLabel.Text = Language.GetLocalizedText(939, "Layer Name");
+            label3.Text = Language.GetLocalizedText(940, "CoordinatesType");
+            label2.Text = Language.GetLocalizedText(858, "This wizard will guide you through the process of importing your data for visualization. On this first step enter a friendly name for your layer, this is how it will appear in the Layer Manager. Select a reference frame for the coordinates in your data. This determines how WWT will plot your data and where.");
             dataUrlLabel.Text = Language.GetLocalizedText(1009, "Data Source Url");
-            this.autoUpdateCheckbox.Text = Language.GetLocalizedText(1028, "Auto Update");
+            autoUpdateCheckbox.Text = Language.GetLocalizedText(1028, "Auto Update");
         }
         TimeSeriesLayer layer;
         public override void SetData(object data)
@@ -31,9 +25,9 @@ namespace TerraViewer
 
         public override bool Save()
         {
-            if (this.spreadsheetNameEdit.Text.Length > 0)
+            if (spreadsheetNameEdit.Text.Length > 0)
             {
-                layer.Name = this.spreadsheetNameEdit.Text;
+                layer.Name = spreadsheetNameEdit.Text;
 
 
                 if (layer.DynamicData && downloadUrl.Text.Length > 0)
@@ -53,9 +47,9 @@ namespace TerraViewer
 
         private void DataWizardWelcome_Load(object sender, EventArgs e)
         {
-            this.spreadsheetNameEdit.Text = layer.Name;
-            this.coordinatesType.Items.AddRange(Enum.GetNames(typeof(TimeSeriesLayer.CoordinatesTypes)));
-            this.coordinatesType.Items.RemoveAt(2);
+            spreadsheetNameEdit.Text = layer.Name;
+            coordinatesType.Items.AddRange(Enum.GetNames(typeof(TimeSeriesLayer.CoordinatesTypes)));
+            coordinatesType.Items.RemoveAt(2);
             coordinatesType.SelectedIndex = (int)layer.CoordinatesType;
             
 

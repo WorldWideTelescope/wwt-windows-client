@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,9 +13,9 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.ColorMapTypeLabel.Text = Language.GetLocalizedText(834, "Color Map Type");
-            this.label1.Text = Language.GetLocalizedText(835, "Color Map Column");
-            this.label2.Text = Language.GetLocalizedText(833, "A color map allows you to vary the color of a marker based on the value of a a selected column using colors for discrete domain values, selecting colors to represent ranges, or using gradients to map a range of colors smoothly to a range of values.");
+            ColorMapTypeLabel.Text = Language.GetLocalizedText(834, "Color Map Type");
+            label1.Text = Language.GetLocalizedText(835, "Color Map Column");
+            label2.Text = Language.GetLocalizedText(833, "A color map allows you to vary the color of a marker based on the value of a a selected column using colors for discrete domain values, selecting colors to represent ranges, or using gradients to map a range of colors smoothly to a range of values.");
         }
         TimeSeriesLayer layer;
 
@@ -124,7 +120,7 @@ namespace TerraViewer
         private void domainList_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            this.Refresh();
+            Refresh();
         }
 
         private void domainList_DoubleClick(object sender, EventArgs e)

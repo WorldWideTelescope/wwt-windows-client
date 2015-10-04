@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -147,11 +144,8 @@ namespace TerraViewer
                             layer.Opacity = 100;
                             return true;
                         }
-                        else
-                        {
-                            layer.Opacity = 0;
-                            return false;
-                        }
+                        layer.Opacity = 0;
+                        return false;
                     }
                 }
             }

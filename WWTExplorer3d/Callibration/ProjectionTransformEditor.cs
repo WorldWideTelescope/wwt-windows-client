@@ -13,20 +13,20 @@ namespace TerraViewer.Callibration
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(768, "Off-Axis X");
-            this.label2.Text = Language.GetLocalizedText(769, "Off-Axis Y");
-            this.label3.Text = Language.GetLocalizedText(770, "FOV");
-            this.label4.Text = Language.GetLocalizedText(771, "Aspect");
-            this.label5.Text = Language.GetLocalizedText(772, "Projection");
-            this.label6.Text = Language.GetLocalizedText(773, "X");
-            this.label7.Text = Language.GetLocalizedText(774, "Y");
-            this.label8.Text = Language.GetLocalizedText(775, "Z");
-            this.label9.Text = Language.GetLocalizedText(776, "Pos");
-            this.label10.Text = Language.GetLocalizedText(777, "Rot");
-            this.label11.Text = Language.GetLocalizedText(778, "Transform");
-            this.label12.Text = Language.GetLocalizedText(779, "Pitch");
-            this.label13.Text = Language.GetLocalizedText(780, "Heading");
-            this.label14.Text = Language.GetLocalizedText(781, "Roll");
+            label1.Text = Language.GetLocalizedText(768, "Off-Axis X");
+            label2.Text = Language.GetLocalizedText(769, "Off-Axis Y");
+            label3.Text = Language.GetLocalizedText(770, "FOV");
+            label4.Text = Language.GetLocalizedText(771, "Aspect");
+            label5.Text = Language.GetLocalizedText(772, "Projection");
+            label6.Text = Language.GetLocalizedText(773, "X");
+            label7.Text = Language.GetLocalizedText(774, "Y");
+            label8.Text = Language.GetLocalizedText(775, "Z");
+            label9.Text = Language.GetLocalizedText(776, "Pos");
+            label10.Text = Language.GetLocalizedText(777, "Rot");
+            label11.Text = Language.GetLocalizedText(778, "Transform");
+            label12.Text = Language.GetLocalizedText(779, "Pitch");
+            label13.Text = Language.GetLocalizedText(780, "Heading");
+            label14.Text = Language.GetLocalizedText(781, "Roll");
         }
         private Projection projTarget = new Projection();
 

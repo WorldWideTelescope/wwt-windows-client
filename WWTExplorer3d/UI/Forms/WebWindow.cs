@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.Net;
 
@@ -20,7 +16,7 @@ namespace TerraViewer
         private DateTime startTime;
         private void WebWindow_Load(object sender, EventArgs e)
         {
-            this.Owner = Earth3d.MainWindow;
+            Owner = Earth3d.MainWindow;
             startTime = DateTime.Now;
             if (!string.IsNullOrEmpty(Url))
             {
@@ -30,7 +26,7 @@ namespace TerraViewer
             {
                 webBrowser.DocumentText = HtmlContent;
             }
-            this.Activate();
+            Activate();
 
         }
 
@@ -44,7 +40,7 @@ namespace TerraViewer
             if (url.ToLower().Contains("layerapi.aspx"))
             {
                 var layerClient = new WebClient();
-                layerClient.DownloadStringCompleted += new DownloadStringCompletedEventHandler(layerClient_DownloadStringCompleted);
+                layerClient.DownloadStringCompleted += layerClient_DownloadStringCompleted;
                 layerClient.DownloadStringAsync(new Uri(url));
                 return;
             }
@@ -75,7 +71,7 @@ namespace TerraViewer
             {
                 try
                 {
-                    System.Diagnostics.Process.Start(url);
+                    Process.Start(url);
                 }
                 catch
                 {
@@ -152,25 +148,25 @@ namespace TerraViewer
         {
             if ( WebAutoSize && webBrowser.Document != null)
             {
-                this.Height = webBrowser.Document.Body.ScrollRectangle.Height + (this.Height - webBrowser.Height)+15;
-                this.Width = webBrowser.Document.Body.ScrollRectangle.Width + (this.Width - webBrowser.Width)+20;
+                Height = webBrowser.Document.Body.ScrollRectangle.Height + (Height - webBrowser.Height)+15;
+                Width = webBrowser.Document.Body.ScrollRectangle.Width + (Width - webBrowser.Width)+20;
 
                 
 
-                if (this.Height > Screen.PrimaryScreen.Bounds.Height)
+                if (Height > Screen.PrimaryScreen.Bounds.Height)
                 {
-                    this.Height = Screen.PrimaryScreen.Bounds.Height - ((this.Height - this.ClientRectangle.Height) + 20);
+                    Height = Screen.PrimaryScreen.Bounds.Height - ((Height - ClientRectangle.Height) + 20);
                 }
 
-                if ((this.Height + this.Top) > (Screen.PrimaryScreen.Bounds.Height))
+                if ((Height + Top) > (Screen.PrimaryScreen.Bounds.Height))
                 {
-                    this.Top = Screen.PrimaryScreen.Bounds.Height - this.Height;
+                    Top = Screen.PrimaryScreen.Bounds.Height - Height;
                 }
             }
 
             if (allowFullBrowser)
             {
-                this.Text = "Web Window - Maximize window for full browser";
+                Text = "Web Window - Maximize window for full browser";
             }
         }
         public bool AutoClose = false;
@@ -178,7 +174,7 @@ namespace TerraViewer
         {
             if (AutoClose && DateTime.Now.Subtract(startTime).TotalSeconds > 1)
             {
-                this.Close();
+                Close();
             }
         }
 
@@ -198,15 +194,15 @@ namespace TerraViewer
         {
             if (WindowState == FormWindowState.Maximized)
             {
-                this.Hide();
+                Hide();
                 try
                 {
-                    System.Diagnostics.Process.Start(Url);
+                    Process.Start(Url);
                 }
                 catch
                 {
                 }
-                this.Close();
+                Close();
             }
 
         }

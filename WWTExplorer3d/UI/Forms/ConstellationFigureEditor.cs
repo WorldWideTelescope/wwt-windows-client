@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.IO;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -19,12 +14,12 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(164, "Constellation Figure Editor");
-            this.label2.Text = Language.GetLocalizedText(165, "Right-click on star to add point");
-            this.AddPoint.Text = Language.GetLocalizedText(166, "Add");
-            this.DeletePoint.Text = Language.GetLocalizedText(167, "Delete");
-            this.SaveFigures.Text = Language.GetLocalizedText(168, "Save");
-            this.Text = Language.GetLocalizedText(164, "Constellation Figure Editor");
+            label1.Text = Language.GetLocalizedText(164, "Constellation Figure Editor");
+            label2.Text = Language.GetLocalizedText(165, "Right-click on star to add point");
+            AddPoint.Text = Language.GetLocalizedText(166, "Add");
+            DeletePoint.Text = Language.GetLocalizedText(167, "Delete");
+            SaveFigures.Text = Language.GetLocalizedText(168, "Save");
+            Text = Language.GetLocalizedText(164, "Constellation Figure Editor");
         }
         bool initialized;
         private void ConstellationFigureEditor_Load(object sender, EventArgs e)
@@ -200,7 +195,7 @@ namespace TerraViewer
             {
                 contextMenu = new ContextMenuStrip();
                 var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-                deleteMenu.Click += new EventHandler(deleteMenu_Click);
+                deleteMenu.Click += deleteMenu_Click;
                 contextMenu.Items.Add(deleteMenu);
                 contextMenu.Show(Cursor.Position);
             }
@@ -276,32 +271,32 @@ namespace TerraViewer
         }
         private void closeBox_MouseEnter(object sender, EventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseHover;
+            closeBox.Image = Resources.CloseHover;
         }
 
         private void closeBox_MouseLeave(object sender, EventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseRest;
+            closeBox.Image = Resources.CloseRest;
 
         }
 
         private void closeBox_MouseDown(object sender, MouseEventArgs e)
         {
-            closeBox.Image = Properties.Resources.ClosePush;
+            closeBox.Image = Resources.ClosePush;
 
         }
 
         private void closeBox_MouseUp(object sender, MouseEventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseHover;
-            this.Close();
+            closeBox.Image = Resources.CloseHover;
+            Close();
 
         }
         internal DialogResult SaveAndClose()
         {
             figures.Save(figures.Name);
 
-            this.Close();
+            Close();
 
             return DialogResult.OK;
         }

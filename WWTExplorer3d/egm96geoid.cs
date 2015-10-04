@@ -28,13 +28,15 @@ namespace TerraViewer
 
         static byte[] ReadData()
         {
-            var name = "TerraViewer.WW15MGH.DAC";
+            const string name = "TerraViewer.WW15MGH.DAC";
             var fs = Earth3d.MainWindow.GetType().Assembly.GetManifestResourceStream(name);
 
-            var len = fs.Length;
-            var br = new BinaryReader(fs);
-            return br.ReadBytes((int)fs.Length);
-            
+            if (fs != null)
+            {
+                var br = new BinaryReader(fs);
+                return br.ReadBytes((int)fs.Length);
+            }
+            return new byte[] {};
         }
         /// <summary>
         /// Returns the EGM96Geoid height for the specified latitude, longitude.

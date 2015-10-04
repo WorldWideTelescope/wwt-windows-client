@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
@@ -19,42 +16,42 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.groupBox2.Text = Language.GetLocalizedText(333, "Experience");
-            this.toolTips.SetToolTip(this.zoomSpeed, Language.GetLocalizedText(334, "Select how rapidly the view changes zoom levels"));
-            this.toolTips.SetToolTip(this.imageQuality, Language.GetLocalizedText(335, "Allows tradeoff of update performance against display quality for slower or faster computers"));
-            this.label9.Text = Language.GetLocalizedText(336, "Slow");
-            this.label8.Text = Language.GetLocalizedText(337, "Fast");
-            this.label7.Text = Language.GetLocalizedText(338, "Zoom Speed");
-            this.label1.Text = Language.GetLocalizedText(339, "Image Quality");
-            this.label3.Text = Language.GetLocalizedText(340, "Sharper");
-            this.label2.Text = Language.GetLocalizedText(341, "Faster");
-            this.transparentTabs.Text = Language.GetLocalizedText(342, "Transparent Tabs");
-            this.toolTips.SetToolTip(this.transparentTabs, Language.GetLocalizedText(343, "Show tabs and context panel with partial transparency."));
-            this.autoHideContext.Text = Language.GetLocalizedText(344, "Auto Hide Context");
-            this.toolTips.SetToolTip(this.autoHideContext, Language.GetLocalizedText(345, "Fades out the context panel when the mouse is over the main view area"));
-            this.useFullBrowser.Text = Language.GetLocalizedText(346, "Full Web Browser");
-            this.toolTips.SetToolTip(this.useFullBrowser, "Launches a full browser for web links rather than the web window");
-            this.autoHideTabs.Text = Language.GetLocalizedText(348, "Auto Hide Tabs");
-            this.toolTips.SetToolTip(this.autoHideTabs, Language.GetLocalizedText(349, "Fades out tab pane when the mouse is in the Field of View"));
-            this.zoomToCursor.Text = Language.GetLocalizedText(350, "Zoom on Mouse");
-            this.toolTips.SetToolTip(this.zoomToCursor, Language.GetLocalizedText(351, "Follows the mouse cursor when using the mouse wheel to zoom"));
-            this.smoothPan.Text = Language.GetLocalizedText(352, "Smooth Panning");
-            this.toolTips.SetToolTip(this.smoothPan, Language.GetLocalizedText(353, "Selects smooth panning rather than snapping to mouse movement"));
-            this.groupBox3.Text = Language.GetLocalizedText(354, "Network and Cache");
-            this.toolTips.SetToolTip(this.proxyName, "Enter your proxy server name here.");
-            this.proxyText.Text = Language.GetLocalizedText(356, "Proxy Server");
-            this.label5.Text = Language.GetLocalizedText(357, "Port");
-            this.ClearCache.Text = Language.GetLocalizedText(359, "Manage Data Cache");
+            groupBox2.Text = Language.GetLocalizedText(333, "Experience");
+            toolTips.SetToolTip(zoomSpeed, Language.GetLocalizedText(334, "Select how rapidly the view changes zoom levels"));
+            toolTips.SetToolTip(imageQuality, Language.GetLocalizedText(335, "Allows tradeoff of update performance against display quality for slower or faster computers"));
+            label9.Text = Language.GetLocalizedText(336, "Slow");
+            label8.Text = Language.GetLocalizedText(337, "Fast");
+            label7.Text = Language.GetLocalizedText(338, "Zoom Speed");
+            label1.Text = Language.GetLocalizedText(339, "Image Quality");
+            label3.Text = Language.GetLocalizedText(340, "Sharper");
+            label2.Text = Language.GetLocalizedText(341, "Faster");
+            transparentTabs.Text = Language.GetLocalizedText(342, "Transparent Tabs");
+            toolTips.SetToolTip(transparentTabs, Language.GetLocalizedText(343, "Show tabs and context panel with partial transparency."));
+            autoHideContext.Text = Language.GetLocalizedText(344, "Auto Hide Context");
+            toolTips.SetToolTip(autoHideContext, Language.GetLocalizedText(345, "Fades out the context panel when the mouse is over the main view area"));
+            useFullBrowser.Text = Language.GetLocalizedText(346, "Full Web Browser");
+            toolTips.SetToolTip(useFullBrowser, "Launches a full browser for web links rather than the web window");
+            autoHideTabs.Text = Language.GetLocalizedText(348, "Auto Hide Tabs");
+            toolTips.SetToolTip(autoHideTabs, Language.GetLocalizedText(349, "Fades out tab pane when the mouse is in the Field of View"));
+            zoomToCursor.Text = Language.GetLocalizedText(350, "Zoom on Mouse");
+            toolTips.SetToolTip(zoomToCursor, Language.GetLocalizedText(351, "Follows the mouse cursor when using the mouse wheel to zoom"));
+            smoothPan.Text = Language.GetLocalizedText(352, "Smooth Panning");
+            toolTips.SetToolTip(smoothPan, Language.GetLocalizedText(353, "Selects smooth panning rather than snapping to mouse movement"));
+            groupBox3.Text = Language.GetLocalizedText(354, "Network and Cache");
+            toolTips.SetToolTip(proxyName, "Enter your proxy server name here.");
+            proxyText.Text = Language.GetLocalizedText(356, "Proxy Server");
+            label5.Text = Language.GetLocalizedText(357, "Port");
+            ClearCache.Text = Language.GetLocalizedText(359, "Manage Data Cache");
 
-            this.Delete.Text = Language.GetLocalizedText(167, "Delete");
-            this.EditFigure.Text = Language.GetLocalizedText(502, "Edit");
-            this.newFigures.Text = Language.GetLocalizedText(52, "New");
-            this.label6.Text = Language.GetLocalizedText(503, "Figure Library");
-            this.ConstellationGroup.Text = Language.GetLocalizedText(498, "Constellation Lines");
+            Delete.Text = Language.GetLocalizedText(167, "Delete");
+            EditFigure.Text = Language.GetLocalizedText(502, "Edit");
+            newFigures.Text = Language.GetLocalizedText(52, "New");
+            label6.Text = Language.GetLocalizedText(503, "Figure Library");
+            ConstellationGroup.Text = Language.GetLocalizedText(498, "Constellation Lines");
   
 
-            this.FullScreenTours.Text = Language.GetLocalizedText(659, "Full Screen Tours");
-            this.showCrosshairs.Text = Language.GetLocalizedText(506, "Reticle/Crosshairs");
+            FullScreenTours.Text = Language.GetLocalizedText(659, "Full Screen Tours");
+            showCrosshairs.Text = Language.GetLocalizedText(506, "Reticle/Crosshairs");
         }
 
         protected override void SetFocusedChild()
@@ -65,7 +62,7 @@ namespace TerraViewer
         private void SettingsTab_Load(object sender, EventArgs e)
         {
             UpdateProperties();
-            Properties.Settings.Default.PropertyChanged += new PropertyChangedEventHandler(Default_PropertyChanged);
+            Properties.Settings.Default.PropertyChanged += Default_PropertyChanged;
 
 
             ignoreChanges = true;
@@ -341,7 +338,7 @@ namespace TerraViewer
         {
             FullScreenTours.Checked = Properties.Settings.Default.FullScreenTours;
             smoothPan.Checked = Properties.Settings.Default.SmoothPan;
-            zoomSpeed.Value = (int)(Properties.Settings.Default.ZoomSpeed * 50);
+            zoomSpeed.Value = Properties.Settings.Default.ZoomSpeed * 50;
             imageQuality.Value = Properties.Settings.Default.ImageQuality;
             zoomToCursor.Checked = Properties.Settings.Default.FollowMouseOnZoom;
             autoHideContext.Checked = Properties.Settings.Default.AutoHideContext;
@@ -372,7 +369,7 @@ namespace TerraViewer
                 return;
             }
             var speed = (int)((double)(zoomSpeed.Value) / 50);
-            zoomSpeed.Value = (int)(speed * 50);
+            zoomSpeed.Value = speed * 50;
             Properties.Settings.Default.ZoomSpeed = speed;
         }
 
@@ -497,7 +494,7 @@ namespace TerraViewer
         {
             if (e.KeyCode == Keys.Enter)
             {
-                this.smoothPan.Focus();
+                smoothPan.Focus();
             }
         }
 
@@ -556,11 +553,11 @@ namespace TerraViewer
         {
             if (proxyName.Focused)
             {
-                this.smoothPan.Focus();
+                smoothPan.Focus();
             }
             if (ProxyPort.Focused)
             {
-                this.smoothPan.Focus();
+                smoothPan.Focus();
             }
 
 

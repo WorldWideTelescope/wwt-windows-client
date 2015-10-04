@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,11 +13,11 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
-            this.label1.Text = Language.GetLocalizedText(362, "Object Name");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.Text = Language.GetLocalizedText(363, "SIMBAD Search");
+            txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
+            label1.Text = Language.GetLocalizedText(362, "Object Name");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            Text = Language.GetLocalizedText(363, "SIMBAD Search");
         }
         string objectName = "";
 

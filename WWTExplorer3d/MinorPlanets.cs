@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Threading;
-using System.Drawing;
 using System.Windows.Forms;
-
+using SharpDX;
 using Vector3 = SharpDX.Vector3;
 using Matrix = SharpDX.Matrix;
 
@@ -110,11 +108,9 @@ namespace TerraViewer
             {
                 return (packed - '1') + 1;
             }
-            else
-            {
-                return (packed - 'A') + 10;
-            }
+            return (packed - 'A') + 10;
         }
+
         static bool initBegun;
 
         static readonly BlendState[] mpcBlendStates = new BlendState[7];
@@ -185,9 +181,9 @@ namespace TerraViewer
                             DownlevelKeplerPointSpriteShader11.Constants.Opacity = opacity * mpcBlendStates[i].Opacity;
                             DownlevelKeplerPointSpriteShader11.Constants.MM = 0;
                             DownlevelKeplerPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
-                            DownlevelKeplerPointSpriteShader11.Constants.Scale = new SharpDX.Vector2(100f, 100f);
-                            DownlevelKeplerPointSpriteShader11.Constants.ViewportScale = new SharpDX.Vector2(2f / renderContext.ViewPort.Width, 2f / renderContext.ViewPort.Height);
-                            DownlevelKeplerPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                            DownlevelKeplerPointSpriteShader11.Constants.Scale = new Vector2(100f, 100f);
+                            DownlevelKeplerPointSpriteShader11.Constants.ViewportScale = new Vector2(2f / renderContext.ViewPort.Width, 2f / renderContext.ViewPort.Height);
+                            DownlevelKeplerPointSpriteShader11.Constants.CameraPosition = new Vector4(cam, 1);
                             DownlevelKeplerPointSpriteShader11.Use(renderContext.devContext, mpcVertexBuffer[i].Instanced);
                         }
                         else
@@ -197,9 +193,9 @@ namespace TerraViewer
                             KeplerPointSpriteShader11.Constants.Opacity = opacity * mpcBlendStates[i].Opacity;
                             KeplerPointSpriteShader11.Constants.MM = 0;
                             KeplerPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
-                            KeplerPointSpriteShader11.Constants.Scale = new SharpDX.Vector2(100f, 100f);
-                            KeplerPointSpriteShader11.Constants.ViewportScale = new SharpDX.Vector2(2f / renderContext.ViewPort.Width, 2 / renderContext.ViewPort.Height);
-                            KeplerPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                            KeplerPointSpriteShader11.Constants.Scale = new Vector2(100f, 100f);
+                            KeplerPointSpriteShader11.Constants.ViewportScale = new Vector2(2f / renderContext.ViewPort.Width, 2 / renderContext.ViewPort.Height);
+                            KeplerPointSpriteShader11.Constants.CameraPosition = new Vector4(cam, 1);
                             KeplerPointSpriteShader11.Use(renderContext.devContext);
                         }
 
@@ -227,9 +223,9 @@ namespace TerraViewer
                 if (mpcVertexBuffer == null)
                 {
                     var mpcVertexBufferTemp = new KeplerPointSpriteSet[7];
-                    MinorPlanets.ReadMPSCoreFile(@"c:\mpc\MPCORB.DAT");
+                    ReadMPSCoreFile(@"c:\mpc\MPCORB.DAT");
 
-                    mpcCount = MinorPlanets.MPCList.Count;
+                    mpcCount = MPCList.Count;
                     //KeplerVertexBuffer11 temp = new KeplerVertexBuffer11(mpcCount, RenderContext11.PrepDevice);
 
                     var lists = new List<KeplerVertex>[7];
@@ -238,7 +234,7 @@ namespace TerraViewer
                         lists[i] = new List<KeplerVertex>();
                     }
 
-                    foreach (var ee in MinorPlanets.MPCList)
+                    foreach (var ee in MPCList)
                     {
                         var listID = 0;
                         if (ee.a < 2.5)

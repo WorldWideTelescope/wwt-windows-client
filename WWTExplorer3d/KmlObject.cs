@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.Drawing;
-using System.Net;
 using System.IO;
 using System.Threading;
 
@@ -265,7 +263,7 @@ namespace TerraViewer
 
                 if (newChild != null)
                 {
-                    newChild.sky = this.sky;
+                    newChild.sky = sky;
                     newChild.LoadDetails(child, this);
                     
                     children.Add(newChild);
@@ -288,11 +286,11 @@ namespace TerraViewer
                 {
                     return UiTools.GetMemoryStreamFromUrl(href);
                 }
-                else if (File.Exists(href))
+                if (File.Exists(href))
                 {
                     return File.Open(href, FileMode.Open);
                 }
-                else if (BaseUri != null)
+                if (BaseUri != null)
                 {
                     var newUri = new Uri(BaseUri, href);
                     return UiTools.GetMemoryStreamFromUrl(newUri.ToString());
@@ -307,9 +305,9 @@ namespace TerraViewer
             if (CheckArchiveStream(href))
             {
                 // This comes from the internal Zip file
-                if (this.BaseUri != null)
+                if (BaseUri != null)
                 {
-                    result = this.BaseUri.ToString() + ":" + href;
+                    result = BaseUri + ":" + href;
                 }
                 else
                 {
@@ -323,11 +321,11 @@ namespace TerraViewer
                 {
                     return href;
                 }
-                else if (File.Exists(href))
+                if (File.Exists(href))
                 {
                     return href;
                 }
-                else if (BaseUri != null)
+                if (BaseUri != null)
                 {
                     var newUri = new Uri(BaseUri, href);
                     return newUri.ToString();
@@ -881,7 +879,7 @@ namespace TerraViewer
                     {
                         if (owner.Document != null)
                         {
-                            this.Style = owner.Styles[url.Remove(0, 1)];
+                            Style = owner.Styles[url.Remove(0, 1)];
                         }
                     }
                 }
@@ -989,7 +987,7 @@ namespace TerraViewer
             {
                 if (parameterList == null)
                 {
-                    parameterList = new string[]
+                    parameterList = new[]
                                 {
                                     "[bboxWest]",
                                     "[bboxSouth]",
@@ -1025,7 +1023,7 @@ namespace TerraViewer
             // converts string from KML place holders to c# compatible ones.
             for (var i = 0; i < list.Length; i++)
             {
-                inputLink = inputLink.Replace(list[i], "{" + i.ToString() + "}");
+                inputLink = inputLink.Replace(list[i], "{" + i + "}");
             }
 
             return String.Format(inputLink, bboxWest, bboxSouth, bboxEast, bboxNorth, lookatLon, lookatLat, lookatRange, lookatTilt, lookatHeading, lookatTerrainLon,
@@ -1346,7 +1344,7 @@ namespace TerraViewer
 
             if (node["coordinates"] != null)
             {
-                var split = node["coordinates"].InnerText.Split(new char[] { ',' });
+                var split = node["coordinates"].InnerText.Split(new[] { ',' });
 
                 if (split.Length > 0)
                 {
@@ -1383,9 +1381,9 @@ namespace TerraViewer
         public override KmlCoordinate GetCenterPoint()
         {
             var point = new KmlCoordinate();
-            point.Lat = this.latitude;
-            point.Lng = this.longitude;
-            point.Alt = this.altitude;
+            point.Lat = latitude;
+            point.Lng = longitude;
+            point.Alt = altitude;
 
             return point;
         }
@@ -1412,10 +1410,10 @@ namespace TerraViewer
         public void ParseWkt(string geoText, string option, double alt, Dates date)
         {
 
-            var parts = geoText.Split(new char[] { '(', ',', ')' });
+            var parts = geoText.Split(new[] { '(', ',', ')' });
             foreach (var part in parts)
             {
-                var coordinates = part.Trim().Split(new char[] { ' ' });
+                var coordinates = part.Trim().Split(new[] { ' ' });
                 if (coordinates.Length > 1)
                 {
                     var pnt = new KmlCoordinate();
@@ -1447,10 +1445,10 @@ namespace TerraViewer
             {
                 var data = node["coordinates"].InnerText;
                 data = data.Replace(", ", ",").Replace(" ,", ",").Replace(" , ", ",").Replace("(", "").Replace(")", "");
-                var lines = data.Split(new char[] { '\n', '\r', ' ' });
+                var lines = data.Split(new[] { '\n', '\r', ' ' });
                 foreach (var line in lines)
                 {
-                    var parts = line.Split(new char[] { ',' });
+                    var parts = line.Split(new[] { ',' });
                     if (parts.Length > 1)
                     {
                         var pnt = new KmlCoordinate();
@@ -1682,7 +1680,7 @@ namespace TerraViewer
 
                 if (newChild != null)
                 {
-                    newChild.sky = this.sky;
+                    newChild.sky = sky;
                     newChild.LoadDetails(child, owner);
                     if (children == null)
                     {
@@ -1793,10 +1791,7 @@ namespace TerraViewer
                 {
                     return entry.Texture;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             set
             {
@@ -1839,7 +1834,7 @@ namespace TerraViewer
                 {
                     Requested = true;
                     // Do a background load on this
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(LoadTexture), this);
+                    ThreadPool.QueueUserWorkItem(LoadTexture, this);
 
                 }
                 LastRequestFrame = CurrentFrame;
@@ -1865,7 +1860,7 @@ namespace TerraViewer
                 var Client = new MyWebClient();
                 
 
-                var filename = dir + ((uint)entry.Href.GetHashCode32()).ToString() + ".png";
+                var filename = dir + ((uint)entry.Href.GetHashCode32()) + ".png";
 
                 //if (File.Exists(filename))
                 //{
@@ -2535,10 +2530,7 @@ namespace TerraViewer
             {
                 return (KmlStyle)Owner.Styles[highlight.Remove(0,1)];
             }
-            else
-            {
-                return (KmlStyle)Owner.Styles[normal.Remove(0,1)];
-            }
+            return (KmlStyle)Owner.Styles[normal.Remove(0,1)];
         }
     }
 }

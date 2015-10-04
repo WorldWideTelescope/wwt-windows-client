@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,8 +12,8 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.Text = Language.GetLocalizedText(901, "RenderProgress");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            Text = Language.GetLocalizedText(901, "RenderProgress");
         }
 
         private void timer1_Tick(object sender, EventArgs e)

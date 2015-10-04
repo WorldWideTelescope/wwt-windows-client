@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -37,8 +35,8 @@ namespace TerraViewer
             set
             {
                 starSize = value;
-                this.SetStarSize();
-                this.Refresh();
+                SetStarSize();
+                Refresh();
             }
         }
 
@@ -50,24 +48,24 @@ namespace TerraViewer
             set
             {
                 stars = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
         private void UserRating_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.Clear(this.BackColor);
+            e.Graphics.Clear(BackColor);
             if (starSize == StarSizes.Big)
             {
                 var rect = new Rectangle(0, 0, (int)(stars * 25.4), 24);
-                e.Graphics.DrawImageUnscaled(Properties.Resources.StarRatingBackground, 0, 0);
-                e.Graphics.DrawImage(Properties.Resources.StarRatingForeground, rect, rect, GraphicsUnit.Pixel);
+                e.Graphics.DrawImageUnscaled(Resources.StarRatingBackground, 0, 0);
+                e.Graphics.DrawImage(Resources.StarRatingForeground, rect, rect, GraphicsUnit.Pixel);
             }
             else
             {
                 var rect = new Rectangle(0, 0, (int)(stars * 14), 24);
-                e.Graphics.DrawImageUnscaled(Properties.Resources.StarRatingBackgroundSmall, 0, 0);
-                e.Graphics.DrawImage(Properties.Resources.StarRatingForegroundSmall, rect, rect, GraphicsUnit.Pixel);
+                e.Graphics.DrawImageUnscaled(Resources.StarRatingBackgroundSmall, 0, 0);
+                e.Graphics.DrawImage(Resources.StarRatingForegroundSmall, rect, rect, GraphicsUnit.Pixel);
             }
         }
 
@@ -80,13 +78,13 @@ namespace TerraViewer
         {
             if (starSize == StarSizes.Big)
             {
-                this.Height = 24;
-                this.Width = 128;
+                Height = 24;
+                Width = 128;
             }
             else
             {
-                this.Width = 72;
-                this.Height = 16;
+                Width = 72;
+                Height = 16;
             }
             Invalidate();
         }

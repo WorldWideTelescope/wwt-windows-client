@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -12,17 +10,17 @@ namespace TerraViewer
 
     public partial class WwtButton : UserControl, IButtonControl
     {
-        readonly Bitmap btnStartRest = global::TerraViewer.Properties.Resources.BtnStartRest;
-        readonly Bitmap btnStartHover = global::TerraViewer.Properties.Resources.BtnStartHover;
-        readonly Bitmap btnStartPressed = global::TerraViewer.Properties.Resources.BtnStartPushed;
-        readonly Bitmap btnStartDisabled = global::TerraViewer.Properties.Resources.BtnStartDisabled;
-        Bitmap btnStartSelected = global::TerraViewer.Properties.Resources.BtnStartSelected;
+        readonly Bitmap btnStartRest = Resources.BtnStartRest;
+        readonly Bitmap btnStartHover = Resources.BtnStartHover;
+        readonly Bitmap btnStartPressed = Resources.BtnStartPushed;
+        readonly Bitmap btnStartDisabled = Resources.BtnStartDisabled;
+        Bitmap btnStartSelected = Resources.BtnStartSelected;
 
-        readonly Bitmap btnEndRest = global::TerraViewer.Properties.Resources.BtnEndRest;
-        readonly Bitmap btnEndHover = global::TerraViewer.Properties.Resources.BtnEndHover;
-        readonly Bitmap btnEndPressed = global::TerraViewer.Properties.Resources.BtnEndPushed;
-        readonly Bitmap btnEndDisabled = global::TerraViewer.Properties.Resources.BtnEndDisabled;
-        Bitmap btnEndSelected = global::TerraViewer.Properties.Resources.BtnEndSelected;
+        readonly Bitmap btnEndRest = Resources.BtnEndRest;
+        readonly Bitmap btnEndHover = Resources.BtnEndHover;
+        readonly Bitmap btnEndPressed = Resources.BtnEndPushed;
+        readonly Bitmap btnEndDisabled = Resources.BtnEndDisabled;
+        Bitmap btnEndSelected = Resources.BtnEndSelected;
 
         public WwtButton()
         {
@@ -40,7 +38,7 @@ namespace TerraViewer
             }
             set
             {
-                this.Invalidate();
+                Invalidate();
                 base.Text = value;
             }
         }
@@ -125,7 +123,7 @@ namespace TerraViewer
                 {
                     g.DrawImage(imageEnabled, new Rectangle((Width / 2)-(imageEnabled.Width/2), (Height/2)-(imageEnabled.Height/2), imageEnabled.Width,imageEnabled.Height), new Rectangle(0,0,imageEnabled.Width,ImageEnabled.Height), GraphicsUnit.Pixel);
                 }
-                g.DrawString(this.Text, UiTools.StandardRegular, UiTools.StadardTextBrush, rectf,UiTools.StringFormatCenterCenter);
+                g.DrawString(Text, UiTools.StandardRegular, UiTools.StadardTextBrush, rectf,UiTools.StringFormatCenterCenter);
             }
             else
             {
@@ -139,7 +137,7 @@ namespace TerraViewer
                 {
                     g.DrawImage(imageEnabled, new Rectangle((Width / 2)-(imageEnabled.Width/2), (Height/2)-(imageEnabled.Height/2), imageEnabled.Width,imageEnabled.Height), new Rectangle(0,0,imageEnabled.Width,ImageEnabled.Height), GraphicsUnit.Pixel);
                 }
-                g.DrawString(this.Text, UiTools.StandardRegular, UiTools.DisabledTextBrush, rectf,UiTools.StringFormatCenterCenter);
+                g.DrawString(Text, UiTools.StandardRegular, UiTools.DisabledTextBrush, rectf,UiTools.StringFormatCenterCenter);
             }
 
 

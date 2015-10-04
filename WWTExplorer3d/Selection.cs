@@ -1,13 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
+using SharpDX.Direct3D;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -16,9 +11,6 @@ namespace TerraViewer
         Texture11 SingleSelectHandles;
         Texture11 MultiSelectHandles;
         Texture11 FocusHandles;
-        public Selection()
-        {
-        }
 
         readonly List<Overlay> selectionSet = new List<Overlay>();
 
@@ -89,21 +81,21 @@ namespace TerraViewer
         float ratio = 1.0f;
         public void Draw3D(RenderContext11 renderContext, float transparancy)
         {
-            ratio = 1116f / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height;
+            ratio = 1116f / Earth3d.MainWindow.RenderWindow.ClientRectangle.Height;
 
             if (SingleSelectHandles == null)
             {
-                SingleSelectHandles = Texture11.FromBitmap(RenderContext11.PrepDevice, (Bitmap)global::TerraViewer.Properties.Resources.Selhand);
+                SingleSelectHandles = Texture11.FromBitmap(RenderContext11.PrepDevice, Resources.Selhand);
             }
 
             if (MultiSelectHandles == null)
             {
-                MultiSelectHandles = Texture11.FromBitmap(RenderContext11.PrepDevice, (Bitmap)global::TerraViewer.Properties.Resources.MultiSelhand);
+                MultiSelectHandles = Texture11.FromBitmap(RenderContext11.PrepDevice, Resources.MultiSelhand);
             }
 
             if (FocusHandles == null)
             {
-                FocusHandles = Texture11.FromBitmap(RenderContext11.PrepDevice, (Bitmap)global::TerraViewer.Properties.Resources.FocusHandles);
+                FocusHandles = Texture11.FromBitmap(RenderContext11.PrepDevice, Resources.FocusHandles);
             }
 
             if (selectionSet.Count > 1)
@@ -180,34 +172,34 @@ namespace TerraViewer
 
             if (MultiSelect)
             {
-                Sprite2d.Draw(renderContext, points, points.Length - 6, handleTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleList);
+                Sprite2d.Draw(renderContext, points, points.Length - 6, handleTexture, PrimitiveTopology.TriangleList);
             }
             else
             {
-                Sprite2d.Draw(renderContext, points, points.Length, handleTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleList);
+                Sprite2d.Draw(renderContext, points, points.Length, handleTexture, PrimitiveTopology.TriangleList);
             }
         }
 
         public PointF PointToSelectionSpace(PointF pntIn)
         {
-            var mat = new System.Drawing.Drawing2D.Matrix();
+            var mat = new Matrix();
 
             var tempPoints = new PointF[1];
             tempPoints[0] = new PointF(pntIn.X, pntIn.Y);
 
-            mat.RotateAt(-selectionSet[0].RotationAngle, new PointF((float)(selectionSet[0].X ), (float)(selectionSet[0].Y )));
+            mat.RotateAt(-selectionSet[0].RotationAngle, new PointF(selectionSet[0].X, selectionSet[0].Y));
             mat.TransformPoints(tempPoints);
             return tempPoints[0];
         }
 
         public PointF PointToScreenSpace(PointF pntIn)
         {
-            var mat = new System.Drawing.Drawing2D.Matrix();
+            var mat = new Matrix();
 
             var tempPoints = new PointF[1];
             tempPoints[0] = new PointF(pntIn.X, pntIn.Y);
 
-            mat.RotateAt(selectionSet[0].RotationAngle, new PointF((float)(selectionSet[0].X ), (float)(selectionSet[0].Y )));
+            mat.RotateAt(selectionSet[0].RotationAngle, new PointF(selectionSet[0].X, selectionSet[0].Y));
             mat.TransformPoints(tempPoints);
             return tempPoints[0];
         }    
@@ -241,7 +233,7 @@ namespace TerraViewer
         float centerY;
         public RectangleF[] MakeHandles(Overlay overlay)
         {
-            var x = (float)((int)(overlay.X-(overlay.Width/2)))+.5f;
+            var x = (int)(overlay.X-(overlay.Width/2))+.5f;
             var y = ((int)overlay.Y-(overlay.Height/2))+.5f;
 
             centerX = overlay.X;

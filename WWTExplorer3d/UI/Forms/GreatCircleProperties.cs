@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,15 +12,15 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label5.Text = Language.GetLocalizedText(1005, "Percentage");
-            this.label4.Text = Language.GetLocalizedText(950, "Lng");
-            this.label3.Text = Language.GetLocalizedText(951, "Lat");
-            this.label1.Text = Language.GetLocalizedText(951, "Lat");
-            this.ok.Text = Language.GetLocalizedText(759, "Ok");
-            this.label6.Text = Language.GetLocalizedText(1006, "Line Width");
-            this.StartFromView.Text = Language.GetLocalizedText(1007, "<< Get From View");
-            this.EndFromView.Text = Language.GetLocalizedText(1007, "<< Get From View");
-            this.Text = Language.GetLocalizedText(1008, "GreatCircleProperties");
+            label5.Text = Language.GetLocalizedText(1005, "Percentage");
+            label4.Text = Language.GetLocalizedText(950, "Lng");
+            label3.Text = Language.GetLocalizedText(951, "Lat");
+            label1.Text = Language.GetLocalizedText(951, "Lat");
+            ok.Text = Language.GetLocalizedText(759, "Ok");
+            label6.Text = Language.GetLocalizedText(1006, "Line Width");
+            StartFromView.Text = Language.GetLocalizedText(1007, "<< Get From View");
+            EndFromView.Text = Language.GetLocalizedText(1007, "<< Get From View");
+            Text = Language.GetLocalizedText(1008, "GreatCircleProperties");
 
         }
         public GreatCirlceRouteLayer Layer = null;

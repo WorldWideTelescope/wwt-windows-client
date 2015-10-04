@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -26,47 +23,47 @@ namespace TerraViewer
             stackList.Clear();
             if (Earth3d.MainWindow.CurrentImageSet != null)
             {
-                stackList.Add((IThumbnail)ImageSet.FromIImage(Earth3d.MainWindow.CurrentImageSet));
+                stackList.Add(ImageSet.FromIImage(Earth3d.MainWindow.CurrentImageSet));
             }
             foreach (ImageSet set in Earth3d.MainWindow.ImageStackList)
             {
-                stackList.Add((IThumbnail)ImageSet.FromIImage(set));
+                stackList.Add(ImageSet.FromIImage(set));
             }
             if (Earth3d.MainWindow.StudyImageset != null)
             {
-                stackList.Add((IThumbnail)ImageSet.FromIImage(Earth3d.MainWindow.StudyImageset));
+                stackList.Add(ImageSet.FromIImage(Earth3d.MainWindow.StudyImageset));
             }
 
         }
 
         private void closeBox_MouseEnter(object sender, EventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseHover;
+            closeBox.Image = Resources.CloseHover;
         }
 
         private void closeBox_MouseLeave(object sender, EventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseRest;
+            closeBox.Image = Resources.CloseRest;
 
         }
 
         private void closeBox_MouseDown(object sender, MouseEventArgs e)
         {
-            closeBox.Image = Properties.Resources.ClosePush;
+            closeBox.Image = Resources.ClosePush;
 
         }
 
         private void closeBox_MouseUp(object sender, MouseEventArgs e)
         {
-            closeBox.Image = Properties.Resources.CloseHover;
-            this.Close();
+            closeBox.Image = Resources.CloseHover;
+            Close();
             Earth3d.MainWindow.ImageStackVisible = false;
             Earth3d.MainWindow.ImageStackList.Clear();
             Earth3d.MainWindow.Stack = null;
         }
         private void fadeTimer_Tick(object sender, EventArgs e)
         {
-            var rect = this.RectangleToScreen(this.ClientRectangle);
+            var rect = RectangleToScreen(ClientRectangle);
             rect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
             var inside = MenuTabs.MouseInTabs || rect.Contains(Cursor.Position) || !(TourPlayer.Playing || Earth3d.FullScreen || Properties.Settings.Default.AutoHideTabs);
 
@@ -85,11 +82,11 @@ namespace TerraViewer
                     if (Properties.Settings.Default.TranparentWindows)
                     {
 
-                        this.Visible = true;
+                        Visible = true;
                     }
                     else
                     {
-                        this.Visible = fader.TargetState;
+                        Visible = fader.TargetState;
                     }
 
                 

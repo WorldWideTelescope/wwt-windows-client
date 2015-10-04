@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -18,14 +12,14 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label3.Text = Language.GetLocalizedText(825, "Select the Columns for cartesian coordinates for X, Y and optionally Z. The reverse checkbox may be used to match the sign vector for each axis. ");
-            this.zAxisLabel.Text = Language.GetLocalizedText(826, "Z Axis Column (optional)");
-            this.yAxisLabel.Text = Language.GetLocalizedText(827, "Y Axis Column");
-            this.xAxisLabel.Text = Language.GetLocalizedText(828, "X Axis Column");
-            this.reverseXCheckbox.Text = Language.GetLocalizedText(829, "Reverse X");
-            this.reverseYCheckbox.Text = Language.GetLocalizedText(830, "Reverse Y");
-            this.reverseZCheckbox.Text = Language.GetLocalizedText(831, "Reverse Z");
-            this.label2.Text = Language.GetLocalizedText(817, "Units");
+            label3.Text = Language.GetLocalizedText(825, "Select the Columns for cartesian coordinates for X, Y and optionally Z. The reverse checkbox may be used to match the sign vector for each axis. ");
+            zAxisLabel.Text = Language.GetLocalizedText(826, "Z Axis Column (optional)");
+            yAxisLabel.Text = Language.GetLocalizedText(827, "Y Axis Column");
+            xAxisLabel.Text = Language.GetLocalizedText(828, "X Axis Column");
+            reverseXCheckbox.Text = Language.GetLocalizedText(829, "Reverse X");
+            reverseYCheckbox.Text = Language.GetLocalizedText(830, "Reverse Y");
+            reverseZCheckbox.Text = Language.GetLocalizedText(831, "Reverse Z");
+            label2.Text = Language.GetLocalizedText(817, "Units");
         }
         TimeSeriesLayer layer;
 

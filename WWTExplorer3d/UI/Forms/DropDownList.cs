@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -77,7 +72,7 @@ namespace TerraViewer
             get
             {
                 Classification filter = 0;
-                foreach (TreeNode node in this.DropList.Nodes)
+                foreach (TreeNode node in DropList.Nodes)
                 {
                     if (node.Checked)
                     {
@@ -99,7 +94,7 @@ namespace TerraViewer
             set
             {
                 var filter = value;
-                foreach (TreeNode node in this.DropList.Nodes)
+                foreach (TreeNode node in DropList.Nodes)
                 {
                     var type = (Classification)Enum.Parse(typeof(Classification), node.Name.Replace(" ", ""));
                     node.Checked = (filter & type) == type;
@@ -144,7 +139,7 @@ namespace TerraViewer
 
         private void FilterDropDown_Deactivate(object sender, EventArgs e)
         {
-            this.Hide();
+            Hide();
 
         }
 
@@ -158,14 +153,14 @@ namespace TerraViewer
 
         private void listBox_MouseClick(object sender, MouseEventArgs e)
         {
-                this.Hide();
+                Hide();
         }
 
         private void listBox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
             {
-                this.Hide();
+                Hide();
             }
         }
 
@@ -184,7 +179,7 @@ namespace TerraViewer
                  var height = rect.Height *10/9;
 
                 var count = Items.Count;
-                this.Height = Math.Min(height, listBox.ItemHeight * Math.Max(3, count + 1));
+                Height = Math.Min(height, listBox.ItemHeight * Math.Max(3, count + 1));
             }
         }
 

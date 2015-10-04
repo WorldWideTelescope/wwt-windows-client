@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,17 +12,17 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.SemiMajorAxisLable.Text = Language.GetLocalizedText(805, "Semimajor Axis (a)");
-            this.EccintricityLabel.Text = Language.GetLocalizedText(806, "Eccentricity (e)");
-            this.InclinationLabel.Text = Language.GetLocalizedText(807, "Inclination");
-            this.ArgumentOfPeriapsisLabel.Text = Language.GetLocalizedText(808, "Argument of periapsis");
-            this.LongitudeOfAscendingNodeLabel.Text = Language.GetLocalizedText(809, "Longitude of the Ascending Node");
-            this.MeanAnomolyAtEpochLabel.Text = Language.GetLocalizedText(810, "Mean anomaly at epoch");
-            this.EpocLabel.Text = Language.GetLocalizedText(811, "Epoch (Julian Date)");
-            this.MeanDailyMotionLabel.Text = Language.GetLocalizedText(812, "Mean Daily Motion");
-            this.label2.Text = Language.GetLocalizedText(813, "A Keplarian orbit is an elliptical orbit defined by at least 6 parameters.  There are some variations in how those parameters are described, but most orbits can be translated into the terms below.");
-            this.SemimajorAxisUnitsLabel.Text = Language.GetLocalizedText(814, "Semimajor Axis Units");
-            this.PasteFromTle.Text = Language.GetLocalizedText(815, "Paste TLE");
+            SemiMajorAxisLable.Text = Language.GetLocalizedText(805, "Semimajor Axis (a)");
+            EccintricityLabel.Text = Language.GetLocalizedText(806, "Eccentricity (e)");
+            InclinationLabel.Text = Language.GetLocalizedText(807, "Inclination");
+            ArgumentOfPeriapsisLabel.Text = Language.GetLocalizedText(808, "Argument of periapsis");
+            LongitudeOfAscendingNodeLabel.Text = Language.GetLocalizedText(809, "Longitude of the Ascending Node");
+            MeanAnomolyAtEpochLabel.Text = Language.GetLocalizedText(810, "Mean anomaly at epoch");
+            EpocLabel.Text = Language.GetLocalizedText(811, "Epoch (Julian Date)");
+            MeanDailyMotionLabel.Text = Language.GetLocalizedText(812, "Mean Daily Motion");
+            label2.Text = Language.GetLocalizedText(813, "A Keplarian orbit is an elliptical orbit defined by at least 6 parameters.  There are some variations in how those parameters are described, but most orbits can be translated into the terms below.");
+            SemimajorAxisUnitsLabel.Text = Language.GetLocalizedText(814, "Semimajor Axis Units");
+            PasteFromTle.Text = Language.GetLocalizedText(815, "Paste TLE");
           }
         ReferenceFrame frame;
         public override void SetData(object data)
@@ -83,7 +78,7 @@ namespace TerraViewer
             if (Clipboard.ContainsText() && Clipboard.GetText().Length > 0)
             {
                 var data = Clipboard.GetText(TextDataFormat.UnicodeText);
-                var lines = data.Split(new char[] {'\n','\r'});
+                var lines = data.Split(new[] {'\n','\r'});
                 var line1 = "";
                 var line2 = "";
                 for (var i = 0; i < lines.Length; i++)

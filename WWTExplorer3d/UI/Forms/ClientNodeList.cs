@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Net.Sockets;
@@ -16,15 +12,15 @@ namespace TerraViewer
         public ClientNodeList()
         {
             InitializeComponent();
-            this.Height = Properties.Settings.Default.ClientNodeListSize.Height;
+            Height = Properties.Settings.Default.ClientNodeListSize.Height;
             SetUiStrings();
         }
 
         private void SetUiStrings()
         {
-            this.label2.Text = Language.GetLocalizedText(1079, "Projector Server List");
-            this.ShowDetail.Text = Language.GetLocalizedText(1133, "Show Details");     
-            this.Text = Language.GetLocalizedText(1134, "Projector Servers");
+            label2.Text = Language.GetLocalizedText(1079, "Projector Server List");
+            ShowDetail.Text = Language.GetLocalizedText(1133, "Show Details");     
+            Text = Language.GetLocalizedText(1134, "Projector Servers");
         }  
 
         private void ClientNodeList_Load(object sender, EventArgs e)
@@ -98,7 +94,7 @@ namespace TerraViewer
             nodeTree.BeginUpdate();
             nodeTree.Nodes.Clear();
 
-            var parent = new TreeNode(Language.GetLocalizedText(1132, "Cluster ID : ") + Earth3d.MainWindow.Config.ClusterID.ToString());
+            var parent = new TreeNode(Language.GetLocalizedText(1132, "Cluster ID : ") + Earth3d.MainWindow.Config.ClusterID);
 
             nodeTree.Nodes.Add(parent);
             parent.Expand();
@@ -154,7 +150,7 @@ namespace TerraViewer
                     child.Nodes.Add(MakeNode(node.StatusText, fgColor));
                     child.Nodes.Add(MakeNode(node.IpAddress, fgColor));
                     child.Nodes.Add(MakeNode(Language.GetLocalizedText(1135, "Node ID: ") + node.NodeID, fgColor));
-                    child.Nodes.Add(MakeNode(node.LastFPS.ToString() + Language.GetLocalizedText(886, "FPS"), fgColor));
+                    child.Nodes.Add(MakeNode(node.LastFPS + Language.GetLocalizedText(886, "FPS"), fgColor));
                     child.Expand();
                 }
             }
@@ -193,7 +189,7 @@ namespace TerraViewer
         private void ClientNodeList_FormClosing(object sender, FormClosingEventArgs e)
         {
            
-            Properties.Settings.Default.ClientNodeListSize = new Size(this.Width, this.Height);
+            Properties.Settings.Default.ClientNodeListSize = new Size(Width, Height);
         }
 
         private void ShowDetail_CheckedChanged(object sender, EventArgs e)
@@ -229,12 +225,12 @@ namespace TerraViewer
                         var Shutdown = new ToolStripMenuItem(Language.GetLocalizedText(1138, "Shutdown"));
                         var Launch = new ToolStripMenuItem(Language.GetLocalizedText(1139, "Launch"));
                         var Close = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
-                        Restart.Click += new EventHandler(Restart_Click);
-                        Rename.Click += new EventHandler(Rename_Click);
-                        Delete.Click += new EventHandler(Delete_Click);
-                        Launch.Click += new EventHandler(Launch_Click);
-                        Close.Click += new EventHandler(Close_Click);
-                        PauseRendering.Click += new EventHandler(PauseRendering_Click);
+                        Restart.Click += Restart_Click;
+                        Rename.Click += Rename_Click;
+                        Delete.Click += Delete_Click;
+                        Launch.Click += Launch_Click;
+                        Close.Click += Close_Click;
+                        PauseRendering.Click += PauseRendering_Click;
                         contextMenu.Items.Add(Rename);
                         var sep1 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep1);
@@ -261,11 +257,11 @@ namespace TerraViewer
                         var Shutdown = new ToolStripMenuItem(Language.GetLocalizedText(1138, "Shutdown"));
                         var Launch = new ToolStripMenuItem(Language.GetLocalizedText(1139, "Launch"));
                         var Close = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
-                        Restart.Click += new EventHandler(Restart_Click);
+                        Restart.Click += Restart_Click;
 
-                        Launch.Click += new EventHandler(Launch_Click);
-                        Close.Click += new EventHandler(Close_Click);
-                        PauseRendering.Click += new EventHandler(PauseRendering_Click);
+                        Launch.Click += Launch_Click;
+                        Close.Click += Close_Click;
+                        PauseRendering.Click += PauseRendering_Click;
                         contextMenu.Items.Add(PauseRendering);
                         var sep2 = new ToolStripSeparator();
                         contextMenu.Items.Add(sep2);

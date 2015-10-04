@@ -11,6 +11,9 @@
 //
 //------------------------------------------------------------------------------
 
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
 	internal class SimpleBitIO
@@ -82,7 +85,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/// <returns></returns>
 		internal ushort GetBit16(uint cBits)
 		{
-			System.Diagnostics.Debug.Assert(cBits <= 16);
+			Debug.Assert(cBits <= 16);
 
 			while (cBitLeft < cBits)
 			{
@@ -110,16 +113,16 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/// </summary>
 		/// <param name="cBits"></param>
 		/// <returns></returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "offset", Justification = "To simplify comparizons with the original code"),]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "longAccumulator", Justification = "To simplify comparizons with the original code")] 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "cBitLeft", Justification = "To simplify comparizons with the original code")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "offset", Justification = "To simplify comparizons with the original code"),]
+		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "longAccumulator", Justification = "To simplify comparizons with the original code")] 
+		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "cBitLeft", Justification = "To simplify comparizons with the original code")]
 		internal ushort PeekBit16(uint cBits)
 		{
-			System.Diagnostics.Debug.Assert(cBits <= 16);
+			Debug.Assert(cBits <= 16);
 
-			var currOffset = this.offset;
-			var accumulator = this.longAccumulator;
-			var bitLeft = (int)this.cBitLeft;
+			var currOffset = offset;
+			var accumulator = longAccumulator;
+			var bitLeft = (int)cBitLeft;
 
             while ((bitLeft < cBits) && currOffset < data.Length)
 			{
@@ -142,7 +145,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/// <returns></returns>
 		internal uint GetBit32(uint cBits)
 		{
-			System.Diagnostics.Debug.Assert(cBits <= 32);
+			Debug.Assert(cBits <= 32);
 
 			uint res = 0;
 

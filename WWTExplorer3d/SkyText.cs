@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using SharpDX;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;
 using System.Xml;
@@ -70,7 +72,7 @@ namespace TerraViewer
             // Debug to get Glyhph textures and caches
             //SharpDX.Direct3D11.Texture2D.ToFile(renderContext.devContext, glyphCache.Texture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, "c:\\temp\\texture2.png");
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
  
             renderContext.SetVertexBuffer(vertexBuffer);
 
@@ -109,7 +111,7 @@ namespace TerraViewer
             // Calculate Metrics
 
             TextObject.Text = "";
-            TextObject.FontSize = (float)Height*.50f;
+            TextObject.FontSize = Height*.50f;
 
             var font = TextObject.Font;
             var sf = new StringFormat();
@@ -253,7 +255,7 @@ namespace TerraViewer
         }
         int glyphVersion = -1;
 
-        private static SharpDX.Direct3D11.InputLayout layout;
+        private static InputLayout layout;
 
         public void Draw(RenderContext11 renderContext, float Opacity, Color drawColor)
         {
@@ -267,17 +269,17 @@ namespace TerraViewer
 
             renderContext.SetupBasicEffect(BasicEffect.TextureColorOpacity, Opacity, drawColor);
             renderContext.MainTexture = glyphCache.Texture;
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             renderContext.PreDraw();
 
 
             if (layout == null)
             {
-                layout = new SharpDX.Direct3D11.InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
+                layout = new InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       12, 0),
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("TEXCOORD", 0, Format.R32G32_Float,       12, 0),
                            });
             }
             renderContext.Device.ImmediateContext.InputAssembler.InputLayout = layout;
@@ -312,7 +314,7 @@ namespace TerraViewer
             // Calculate Metrics
 
             TextObject.Text = "";
-            TextObject.FontSize = (float)Height * .50f;
+            TextObject.FontSize = Height * .50f;
 
             var font = TextObject.Font;
             var sf = new StringFormat();
@@ -440,7 +442,7 @@ namespace TerraViewer
         {
 
             xmlWriter.WriteStartElement("GlyphItem");
-            xmlWriter.WriteAttributeString("Glyph", new String(new char[] {Glyph}));
+            xmlWriter.WriteAttributeString("Glyph", new String(new[] {Glyph}));
             xmlWriter.WriteAttributeString("UVTop", UVRect.Top.ToString());
             xmlWriter.WriteAttributeString("UVLeft", UVRect.Left.ToString());
             xmlWriter.WriteAttributeString("UVWidth", UVRect.Width.ToString());
@@ -570,7 +572,7 @@ namespace TerraViewer
             var textureSize = cellHeight * gridSize;
 
             TextObject.Text = "";
-            TextObject.FontSize = (float)cellHeight * .50f;
+            TextObject.FontSize = cellHeight * .50f;
 
 
             var font = TextObject.Font;
@@ -591,9 +593,9 @@ namespace TerraViewer
 
             var count = 0;
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
 
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
 
             var ranges = new CharacterRange[1];
@@ -605,8 +607,8 @@ namespace TerraViewer
 
             foreach (var item in GlyphItems.Values)
             {
-                var x = (int)(count % gridSize) * cellHeight;
-                var y = (int)(count / gridSize) * cellHeight;
+                var x = count % gridSize * cellHeight;
+                var y = count / gridSize * cellHeight;
                 var text = new string(item.Glyph, 1);
                 item.Size = g.MeasureString(text, font);
                 var reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), item.Size), sf);
@@ -911,9 +913,9 @@ namespace TerraViewer
 
         }
 
-        System.Drawing.Rectangle rect;
+        Rectangle rect;
 
-        public Text2d(System.Drawing.Rectangle drawRect, string text, float fontsize)
+        public Text2d(Rectangle drawRect, string text, float fontsize)
         {
             Text = text;
             rect = drawRect;

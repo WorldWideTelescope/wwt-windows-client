@@ -34,7 +34,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 		internal PointerArray(PointerArray pa, int ptr)
 		{
-			this.array = pa.array;
+			array = pa.array;
 			this.ptr = pa.ptr + (uint)ptr;
 		}
 

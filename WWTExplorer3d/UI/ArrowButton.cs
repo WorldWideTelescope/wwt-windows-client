@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -34,36 +32,36 @@ namespace TerraViewer
             {
                 if (buttonType == ButtonTypes.Up)
                 {
-                    bmpNormal = Properties.Resources.button_arrow_up_normal;
-                    bmpHover = Properties.Resources.button_arrow_up_hover;
-                    bmpPressed = Properties.Resources.button_arrow_up_pressed;
-                    bmpDisabled = Properties.Resources.button_arrow_up_disabled;
+                    bmpNormal = Resources.button_arrow_up_normal;
+                    bmpHover = Resources.button_arrow_up_hover;
+                    bmpPressed = Resources.button_arrow_up_pressed;
+                    bmpDisabled = Resources.button_arrow_up_disabled;
                 }
                 else
                 {
-                    bmpNormal = Properties.Resources.button_arrow_down_normal;
-                    bmpHover = Properties.Resources.button_arrow_down_hover;
-                    bmpPressed = Properties.Resources.button_arrow_down_pressed;
-                    bmpDisabled = Properties.Resources.button_arrow_down_disabled;
+                    bmpNormal = Resources.button_arrow_down_normal;
+                    bmpHover = Resources.button_arrow_down_hover;
+                    bmpPressed = Resources.button_arrow_down_pressed;
+                    bmpDisabled = Resources.button_arrow_down_disabled;
                 }
             }
             else
             {
-                this.Width = 33;
-                this.Height = 15;
+                Width = 33;
+                Height = 15;
                 if (buttonType == ButtonTypes.Up)
                 {
-                    bmpNormal = Properties.Resources.PinT_C_R;
-                    bmpHover = Properties.Resources.PinT_C_H;
-                    bmpPressed = Properties.Resources.PinT_C_P;
-                    bmpDisabled = Properties.Resources.PinT_C_D;
+                    bmpNormal = Resources.PinT_C_R;
+                    bmpHover = Resources.PinT_C_H;
+                    bmpPressed = Resources.PinT_C_P;
+                    bmpDisabled = Resources.PinT_C_D;
                 }
                 else
                 {
-                    bmpNormal = Properties.Resources.PinB_C_R;
-                    bmpHover = Properties.Resources.PinB_C_H;
-                    bmpPressed = Properties.Resources.PinB_C_P;
-                    bmpDisabled = Properties.Resources.PinB_C_D;
+                    bmpNormal = Resources.PinB_C_R;
+                    bmpHover = Resources.PinB_C_H;
+                    bmpPressed = Resources.PinB_C_P;
+                    bmpDisabled = Resources.PinB_C_D;
                 }
             }
         }

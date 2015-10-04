@@ -1,7 +1,6 @@
 using System;
-using System.Drawing;
-using System.Collections;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -9,7 +8,7 @@ namespace TerraViewer
 	/// <summary>
 	/// Summary description for Form1.
 	/// </summary>
-	public class About : System.Windows.Forms.Form
+	public class About : Form
     {
         private Label aboutText;
         private Timer timer1;
@@ -23,7 +22,7 @@ namespace TerraViewer
 			//
 			InitializeComponent();
 
-            this.aboutText.Visible = true;
+            aboutText.Visible = true;
 		}
 
 		/// <summary>
@@ -115,9 +114,9 @@ namespace TerraViewer
 		}
 		#endregion
 
-		private void Form1_Load(object sender, System.EventArgs e)
+		private void Form1_Load(object sender, EventArgs e)
 		{
-            aboutText.Text = "Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()+ "\r\n"+aboutText.Text;
+            aboutText.Text = "Version " + Assembly.GetExecutingAssembly().GetName().Version+ "\r\n"+aboutText.Text;
  		}
 
 	
@@ -141,8 +140,8 @@ namespace TerraViewer
             switch (aboutState)
             {
                 case AboutState.FadingIn:
-                    this.Opacity += .20;
-                    if (this.Opacity == 1.0)
+                    Opacity += .20;
+                    if (Opacity == 1.0)
                     {
                         aboutState = AboutState.Running;
                         timer1.Interval = 50;
@@ -153,10 +152,10 @@ namespace TerraViewer
                     timer1.Interval = 50;
                     break;
                 case AboutState.FadingOut:
-                    this.Opacity -= .10;
-                    if (this.Opacity == 0.0)
+                    Opacity -= .10;
+                    if (Opacity == 0.0)
                     {
-                        this.Close();
+                        Close();
                     }
                     break;
             }

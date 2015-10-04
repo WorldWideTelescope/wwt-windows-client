@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -61,11 +58,11 @@ namespace TerraViewer
         }
         void SetTaxonomy()
         {
-            var idSplit = Taxonomy.Split(new char[] {';'});
+            var idSplit = Taxonomy.Split(new[] {';'});
             var idList = new List<string>();
             if (idSplit.Length > 0 && !String.IsNullOrEmpty(idSplit[0]) )
             {
-                Scope.SelectedIndex = (int)(idSplit[0].ToUpper()[0]-'A');
+                Scope.SelectedIndex = idSplit[0].ToUpper()[0]-'A';
 
                 for (var i = 0; i < idSplit.Length; i++)
 		        {
@@ -85,7 +82,7 @@ namespace TerraViewer
                 node.Checked = false;
                 for (var i = 0; i < idList.Count; i++)
 		        {
-                    if ((string)idList[i] == (string)node.Tag)
+                    if (idList[i] == (string)node.Tag)
                     {
                         idList.RemoveAt(i);
                         node.Checked = true;
@@ -99,7 +96,7 @@ namespace TerraViewer
                     child.Checked = false;
                     for (var i = 0; i < idList.Count; i++)
 		            {
-                        if ((string)idList[i] == (string)child.Tag)
+                        if (idList[i] == (string)child.Tag)
                         {
                             idList.RemoveAt(i);
                             child.Checked = true;
@@ -114,7 +111,7 @@ namespace TerraViewer
                         grandChild.Checked = false;
                         for (var i = 0; i < idList.Count; i++)
 		                {
-    			            if ((string)idList[i] == (string)grandChild.Tag)
+    			            if (idList[i] == (string)grandChild.Tag)
                             {
                                 idList.RemoveAt(i);
                                 grandChild.Checked = true;
@@ -129,7 +126,7 @@ namespace TerraViewer
                             greatGrandChild.Checked = false;
                             for (var i = 0; i < idList.Count; i++)
                             {
-                                if ((string)idList[i] == (string)greatGrandChild.Tag)
+                                if (idList[i] == (string)greatGrandChild.Tag)
                                 {
                                     idList.RemoveAt(i);
                                     greatGrandChild.Checked = true;
@@ -172,7 +169,7 @@ namespace TerraViewer
                     break;
                 }           
                 
-                var fields = line.Split(new char[]{'\t'});
+                var fields = line.Split(new[]{'\t'});
                 if (fields.Length != 2)
                 {
                     continue;
@@ -217,14 +214,14 @@ namespace TerraViewer
                         else
                         {
                             Parents.Push(node);
-                            this.treeView1.Nodes.Add(node);
+                            treeView1.Nodes.Add(node);
                         }
                     }
                 }
                 else
                 {
                     Parents.Push(node);
-                    this.treeView1.Nodes.Add(node);
+                    treeView1.Nodes.Add(node);
                 }
             }
             SetTaxonomy();
@@ -239,13 +236,13 @@ namespace TerraViewer
 
             GetTaxonomy();
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
-            this.Close();
+            Close();
         }
 
         private void Scope_Load(object sender, EventArgs e)

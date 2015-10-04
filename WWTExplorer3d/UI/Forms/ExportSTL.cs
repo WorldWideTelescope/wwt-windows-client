@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
@@ -19,12 +14,12 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(241, "North");
-            this.label2.Text = Language.GetLocalizedText(246, "South");
-            this.label3.Text = Language.GetLocalizedText(248, "West");
-            this.label4.Text = Language.GetLocalizedText(243, "East");
-            this.label5.Text = "Density";
-            this.Text = "Export STL File for 3D Printing";
+            label1.Text = Language.GetLocalizedText(241, "North");
+            label2.Text = Language.GetLocalizedText(246, "South");
+            label3.Text = Language.GetLocalizedText(248, "West");
+            label4.Text = Language.GetLocalizedText(243, "East");
+            label5.Text = "Density";
+            Text = "Export STL File for 3D Printing";
         }
 
        

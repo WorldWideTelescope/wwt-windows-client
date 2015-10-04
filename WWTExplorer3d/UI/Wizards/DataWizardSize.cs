@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -17,11 +11,11 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.scaleFactorSlider.Text = Language.GetLocalizedText(854, "Scale Factor");
-            this.scaleTypeLabel.Text = Language.GetLocalizedText(855, "Scale Type");
-            this.label4.Text = Language.GetLocalizedText(856, "Size/Magnitude Column");
-            this.label2.Text = Language.GetLocalizedText(857, "Scale Relative");
-            this.label1.Text = Language.GetLocalizedText(853, "Use the scale type to specify how you want the markers displayed. You can have markers display relative to the screen, invariant of your zoom, or have them scale relative to the coordinates system. You can optionally select a column to control the scale.  Use the scale factor to adjust the relative unit values of the  column to the output marker size.");
+            scaleFactorSlider.Text = Language.GetLocalizedText(854, "Scale Factor");
+            scaleTypeLabel.Text = Language.GetLocalizedText(855, "Scale Type");
+            label4.Text = Language.GetLocalizedText(856, "Size/Magnitude Column");
+            label2.Text = Language.GetLocalizedText(857, "Scale Relative");
+            label1.Text = Language.GetLocalizedText(853, "Use the scale type to specify how you want the markers displayed. You can have markers display relative to the screen, invariant of your zoom, or have them scale relative to the coordinates system. You can optionally select a column to control the scale.  Use the scale factor to adjust the relative unit values of the  column to the output marker size.");
         }
         TimeSeriesLayer layer;
 

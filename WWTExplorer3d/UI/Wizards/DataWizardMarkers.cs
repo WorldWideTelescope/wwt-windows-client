@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,12 +13,12 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.selectMarkerLabel.Text = Language.GetLocalizedText(848, "Select a Marker");
-            this.label5.Text = Language.GetLocalizedText(641, "Marker Type");
-            this.label1.Text = Language.GetLocalizedText(849, "Marker Mix");
-            this.label2.Text = Language.GetLocalizedText(850, "Marker Column");
-            this.label3.Text = Language.GetLocalizedText(851, "Select the way you want to organize markers and their shapes. You can use one marker type for all the data or select a column to show different markers for ranges of values, or discrete values. ");
-            this.ShowFarSide.Text = Language.GetLocalizedText(852, "Show Far Side Markers");
+            selectMarkerLabel.Text = Language.GetLocalizedText(848, "Select a Marker");
+            label5.Text = Language.GetLocalizedText(641, "Marker Type");
+            label1.Text = Language.GetLocalizedText(849, "Marker Mix");
+            label2.Text = Language.GetLocalizedText(850, "Marker Column");
+            label3.Text = Language.GetLocalizedText(851, "Select the way you want to organize markers and their shapes. You can use one marker type for all the data or select a column to show different markers for ranges of values, or discrete values. ");
+            ShowFarSide.Text = Language.GetLocalizedText(852, "Show Far Side Markers");
         }
         TimeSeriesLayer layer;
 

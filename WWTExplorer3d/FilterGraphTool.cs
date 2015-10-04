@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -92,22 +89,13 @@ namespace TerraViewer
             //todo11 reanble this
             if (texture == null)
             {
-                Bitmap bmp = null;
-                bmp = GetChartImageBitmap(window);
+                Bitmap bmp = GetChartImageBitmap(window);
                 bmp.Dispose();
             }
 
 
             Sprite2d.Draw2D(window.RenderContext11, texture, new SizeF(texture.Width, texture.Height), new PointF(0, 0), 0, new PointF(Left + texture.Width / 2, Top + texture.Height / 2), Color.White);
 
- 
-            if (!String.IsNullOrEmpty(HoverText))
-            {
-                var recttext = new Rectangle((int)(hoverPoint.X + 15), (int)(hoverPoint.Y - 8), 0, 0);
-             }
-
-            
-            return;
         }
 
         private Bitmap GetChartImageBitmap(Earth3d window)
@@ -185,7 +173,6 @@ namespace TerraViewer
             }
         }
 
-        Point hoverPoint;
         String hoverText = "";
 
         public String HoverText
@@ -220,7 +207,7 @@ namespace TerraViewer
                     }
 
 
-                    g.DrawLine(Pens.White, new System.Drawing.Point(i, 150), new System.Drawing.Point(i, (int)(150 - (height * 150))));
+                    g.DrawLine(Pens.White, new Point(i, 150), new Point(i, (int)(150 - (height * 150))));
                 }
             }
             pen.Dispose();
@@ -232,28 +219,25 @@ namespace TerraViewer
         Rectangle[] barHitTest;
 
         int ScrollPosition;
-        int MaxUnits = 50;
-       // int TotalUnits = 50;
-        bool ScrollBarVisible;
+        private const int MaxUnits = 50;
+        // int TotalUnits = 50;
 
         int sortType; // 0 = A-Z, 1 = Z-A, 2= 0-9, 3 = 9-0 
 
-        string title = "";
-
         public string Title
         {
-            get { return (stats.DomainColumn > -1 ? layer.Table.Header[stats.DomainColumn] + " : " : "") + layer.Table.Header[stats.TargetColumn] + " " + stats.DomainStatType.ToString() + ((stats.DomainStatType == StatTypes.Ratio) ? (" to " + layer.Table.Header[stats.DemoninatorColumn]) : ""); }
-            set { title = value; }
+            get { return (stats.DomainColumn > -1 ? layer.Table.Header[stats.DomainColumn] + " : " : "") + layer.Table.Header[stats.TargetColumn] + " " + stats.DomainStatType + ((stats.DomainStatType == StatTypes.Ratio) ? (" to " + layer.Table.Header[stats.DemoninatorColumn]) : ""); }
+            set { }
         }
 
         public Bitmap GetBarChartBitmap(ColumnStats stats)
         {
-            var Chrome = 25;
+            const int Chrome = 25;
             
-            var height = 150;
+            const int height = 150;
             var count = Math.Min(MaxUnits, stats.Buckets);
-            var border = 10;
-            var colWidth = Math.Min(30, (int)(1000 / count));
+            const int border = 10;
+            var colWidth = Math.Min(30, 1000 / count);
             var width = count * colWidth;
             Width = width + 2 * border;
             var bmp = new Bitmap(Width, height + border * 2 + 20 + Chrome);
@@ -279,9 +263,7 @@ namespace TerraViewer
 
 
             // Draw title
-            var text = (stats.DomainColumn > -1 ? layer.Table.Header[stats.DomainColumn] + " : " : "" )+ layer.Table.Header[stats.TargetColumn] + " " + stats.DomainStatType.ToString() + ((stats.DomainStatType == StatTypes.Ratio) ? (" to " + layer.Table.Header[stats.DemoninatorColumn]) : "");
-
-            title = text;
+            var text = (stats.DomainColumn > -1 ? layer.Table.Header[stats.DomainColumn] + " : " : "" )+ layer.Table.Header[stats.TargetColumn] + " " + stats.DomainStatType + ((stats.DomainStatType == StatTypes.Ratio) ? (" to " + layer.Table.Header[stats.DemoninatorColumn]) : "");
 
             if (anythingSelected && stats.DomainStatType != StatTypes.Ratio)
             {
@@ -312,16 +294,17 @@ namespace TerraViewer
                 g.DrawString(sort, UiTools.StandardLarge, Brushes.White, new PointF(Width - 25, 0));
             }
             
-            var drawFormat = new System.Drawing.StringFormat();
-            drawFormat.FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.DirectionVertical;
-            drawFormat.Alignment = StringAlignment.Near;
-            drawFormat.LineAlignment = StringAlignment.Center;
-            
+            var drawFormat = new StringFormat
+            {
+                FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.DirectionVertical,
+                Alignment = StringAlignment.Near,
+                LineAlignment = StringAlignment.Center
+            };
+
             var brush = new SolidBrush(Color.FromArgb(20, 128, 255));
             var selectedBrush = Brushes.Yellow;
             //Brushes.White;
             var pen = new Pen(Color.FromArgb(20, 128, 255));
-            var logMax = Math.Log(stats.HistogramMax);
 
 
             var end = Math.Min(stats.Buckets, ScrollPosition + MaxUnits);
@@ -339,8 +322,8 @@ namespace TerraViewer
                         val = 0;
                     }
 
-                    barHitTest[i] = new Rectangle((int)(pos * colWidth) + border, border + Chrome, colWidth, (int)(height));
-                    var rect = new Rectangle((int)(pos * colWidth) + border, (int)(height - (val * height)) + border + Chrome, colWidth, (int)(val * height));
+                    barHitTest[i] = new Rectangle(pos * colWidth + border, border + Chrome, colWidth, height);
+                    var rect = new Rectangle(pos * colWidth + border, (int)(height - (val * height)) + border + Chrome, colWidth, (int)(val * height));
                     if (stats.Selected[i])
                     {
                         g.FillRectangle(selectedBrush,rect);
@@ -356,18 +339,16 @@ namespace TerraViewer
                     }
                 }
 
-                ScrollBarVisible = false;
                 if (MaxUnits < stats.Buckets)
                 {
                     var ScrollAreaWidth = Width - (2 * border);
                     // Scroll bars are needed
-                    ScrollBarVisible = true;
 
-                    var scrollWidth = (int)((double)MaxUnits / (double)stats.Buckets * ScrollAreaWidth) +2;
+                    var scrollWidth = (int)(MaxUnits / (double)stats.Buckets * ScrollAreaWidth) +2;
 
-                    var scrollStart = (int)((double)ScrollPosition/ (double)stats.Buckets * ScrollAreaWidth);
+                    var scrollStart = (int)(ScrollPosition/ (double)stats.Buckets * ScrollAreaWidth);
 
-                    scrollUnitPixelRatio = (double)ScrollAreaWidth / (double)stats.Buckets;
+                    scrollUnitPixelRatio = ScrollAreaWidth / (double)stats.Buckets;
 
                     g.DrawLine(Pens.White, new Point(border, height + 22 + Chrome), new Point(border + ScrollAreaWidth, height + 22 + Chrome));
 
@@ -395,7 +376,7 @@ namespace TerraViewer
         double scrollUnitPixelRatio = 1;
         bool capture;
         int lastClick = -1;
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             if (e.X > Left && (e.X - Left) < Width)
             {
@@ -419,10 +400,10 @@ namespace TerraViewer
                         var sortOrder09 = new ToolStripMenuItem(Language.GetLocalizedText(1275, "Numeric Increasing"));
                         var sortOrder90 = new ToolStripMenuItem(Language.GetLocalizedText(1276, "Numeric Decreasing"));
 
-                        sortOrderAZ.Click += new EventHandler(sortOrderAZ_Click);
-                        sortOrderZA.Click += new EventHandler(sortOrderZA_Click);
-                        sortOrder09.Click += new EventHandler(sortOrder09_Click);
-                        sortOrder90.Click += new EventHandler(sortOrder90_Click);
+                        sortOrderAZ.Click += sortOrderAZ_Click;
+                        sortOrderZA.Click += sortOrderZA_Click;
+                        sortOrder09.Click += sortOrder09_Click;
+                        sortOrder90.Click += sortOrder90_Click;
 
                         sortOrder.DropDownItems.Add(sortOrderAZ);
                         sortOrder.DropDownItems.Add(sortOrderZA);
@@ -430,9 +411,9 @@ namespace TerraViewer
                         sortOrder.DropDownItems.Add(sortOrder90);
 
 
-                        closeMenu.Click += new EventHandler(closeMenu_Click);
-                        copyMenu.Click += new EventHandler(copyMenu_Click);
-                        domainColumn.DropDownOpening += new EventHandler(domainColumn_DropDownOpening);
+                        closeMenu.Click += closeMenu_Click;
+                        copyMenu.Click += copyMenu_Click;
+                        domainColumn.DropDownOpening += domainColumn_DropDownOpening;
 
                         contextMenu.Items.Add(closeMenu);
                         contextMenu.Items.Add(copyMenu);
@@ -460,10 +441,6 @@ namespace TerraViewer
                                                 Stats.Selected[j] = false;
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-
                                     }
 
                                     if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
@@ -499,16 +476,15 @@ namespace TerraViewer
 
                     if (MaxUnits < Stats.Buckets)
                     {
-                        var Chrome = 25;
-                        var border = 10;
-                        var height = 150;
+                        const int Chrome = 25;
+                        const int border = 10;
+                        const int height = 150;
                         var ScrollAreaWidth = Width - (2 * border);
                         // Scroll bars are needed
-                        ScrollBarVisible = true;
 
-                        var scrollWidth = (int)((double)MaxUnits / (double)Stats.Buckets * ScrollAreaWidth);
+                        var scrollWidth = (int)(MaxUnits / (double)Stats.Buckets * ScrollAreaWidth);
 
-                        var scrollStart = (int)((double)ScrollPosition / (double)Stats.Buckets * ScrollAreaWidth);
+                        var scrollStart = (int)(ScrollPosition / (double)Stats.Buckets * ScrollAreaWidth);
 
                         var rect = new Rectangle(border + scrollStart, height + 15 + Chrome, scrollWidth, 15);
 
@@ -574,7 +550,7 @@ namespace TerraViewer
                 foreach (var col in layer.Header)
                 {
                     var domainColumn = new ToolStripMenuItem(col);
-                    domainColumn.Click += new EventHandler(domainColumn_Click);
+                    domainColumn.Click += domainColumn_Click;
                     item.DropDownItems.Add(domainColumn);
                     domainColumn.Checked = Stats.DomainColumn == index;
                     domainColumn.Tag = index;
@@ -606,7 +582,7 @@ namespace TerraViewer
             ((SpreadSheetLayerUI)layer.GetPrimaryUI()).UpdateNodes();
         }
 
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             if (capture)
             {
@@ -617,7 +593,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
             if (capture)
             {
@@ -633,7 +609,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
             if (e.X > Left && (e.X - Left) < Width)
             {
@@ -652,7 +628,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (e.X > Left && (e.X - Left) < Width)
             {
@@ -667,17 +643,17 @@ namespace TerraViewer
             return false;
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool Hover(System.Drawing.Point pnt)
+        public bool Hover(Point pnt)
         {
             if (pnt.X > Left && (pnt.X - Left) < Width)
             {
@@ -693,26 +669,13 @@ namespace TerraViewer
                         {
                             if (rect.Contains(x, y))
                             {
-                                hoverPoint = new Point(x, y);
                                 var bucketSize = ((Stats.Max - Stats.Min) / Stats.Buckets);
                                 var start = Stats.Min + bucketSize * i;
                                 var end = start + bucketSize;
-                                if (chartType == ChartTypes.Histogram)
-                                {
-                                    HoverText = String.Format("{0}-{1} : Count : {2}", start, end, Stats.Histogram[i]);
-                                }
-                                else
-                                {
-                                    if (Stats.DomainStatType == StatTypes.Ratio)
-                                    {
-                                        HoverText = String.Format("{0:p1}", Stats.Histogram[i]);
-                                    }
-                                    else
-                                    {
-                                        HoverText = String.Format("{2}", start, end, Stats.Histogram[i]);
-                                    }
-
-                                }
+                                HoverText = chartType == ChartTypes.Histogram
+                                    ? String.Format("{0}-{1} : Count : {2}", start, end, Stats.Histogram[i])
+                                    : String.Format(Stats.DomainStatType == StatTypes.Ratio ? "{0:p1}" : "{0}",
+                                        Stats.Histogram[i]);
                                 break;
                             }
                             i++;

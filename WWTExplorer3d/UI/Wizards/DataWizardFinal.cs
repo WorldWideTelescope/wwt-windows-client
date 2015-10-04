@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -17,7 +11,7 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(845, "Your data is now ready for viewing. If you need to change any options just right-click on the layer and select the Properties option on the context menu.");
+            label1.Text = Language.GetLocalizedText(845, "Your data is now ready for viewing. If you need to change any options just right-click on the layer and select the Properties option on the context menu.");
         }
         TimeSeriesLayer layer;
 

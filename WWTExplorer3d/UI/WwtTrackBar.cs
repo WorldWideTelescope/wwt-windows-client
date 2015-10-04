@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -12,13 +10,13 @@ namespace TerraViewer
     public partial class WwtTrackBar : UserControl
     {
         public event EventHandler ValueChanged;
-        readonly Bitmap bmpTrackBarGripperNormal = Properties.Resources.trackbar_gripper_normal;
-        readonly Bitmap bmpTrackBarGripperHover = Properties.Resources.trackbar_gripper_hover;
-        readonly Bitmap bmpTrackBarGripperDisabled = Properties.Resources.trackbar_gripper_disabled;
-        readonly Bitmap bmpTrackBarGripperPressed = Properties.Resources.trackbar_gripper_pressed;
-        readonly Bitmap bmpTrackBarTrackNormal = Properties.Resources.trackbar_track_normal;
-        readonly Bitmap bmpTrackBarTrackDisabled = Properties.Resources.trackbar_track_disabled;
-        readonly Bitmap bmpTrackbarSelectionNormal = Properties.Resources.trackbar_selection_normal;
+        readonly Bitmap bmpTrackBarGripperNormal = Resources.trackbar_gripper_normal;
+        readonly Bitmap bmpTrackBarGripperHover = Resources.trackbar_gripper_hover;
+        readonly Bitmap bmpTrackBarGripperDisabled = Resources.trackbar_gripper_disabled;
+        readonly Bitmap bmpTrackBarGripperPressed = Resources.trackbar_gripper_pressed;
+        readonly Bitmap bmpTrackBarTrackNormal = Resources.trackbar_track_normal;
+        readonly Bitmap bmpTrackBarTrackDisabled = Resources.trackbar_track_disabled;
+        readonly Bitmap bmpTrackbarSelectionNormal = Resources.trackbar_selection_normal;
         public WwtTrackBar()
         {
             InitializeComponent();
@@ -27,10 +25,10 @@ namespace TerraViewer
 
         public int Value
         {
-            get { return this.value; }
+            get { return value; }
             set
             {
-                if (this.Value != value)
+                if (Value != value)
                 {
                     this.value = value;
                     Refresh();

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Xml;
 using System.Windows.Forms;
 
 
@@ -46,9 +42,9 @@ namespace TerraViewer
 
         void InitForSky()
         {
-            this.Name = Language.GetLocalizedText(504, "Overlays");
-            this.Opened = true;
-            this.ReferenceFrame = "Sky";
+            Name = Language.GetLocalizedText(504, "Overlays");
+            Opened = true;
+            ReferenceFrame = "Sky";
 
             var grids = new StockSkyOverlay(Language.GetLocalizedText(1080, "Grids"), StockSkyOverlayTypes.SkyGrids);
             var temp = new StockSkyOverlay(Language.GetLocalizedText(496, "Equatorial Grid"), StockSkyOverlayTypes.EquatorialGrid);
@@ -81,9 +77,9 @@ namespace TerraViewer
 
         void InitForSolarSystem()
         {
-            this.Name = Language.GetLocalizedText(559, "3d Solar System");
-            this.Opened = true;
-            this.ReferenceFrame = "Sky";
+            Name = Language.GetLocalizedText(559, "3d Solar System");
+            Opened = true;
+            ReferenceFrame = "Sky";
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1375, "Cosmic Microwave Background (Planck)"), StockSkyOverlayTypes.SolarSystemCMB));
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1093, "Cosmos (SDSS Galaxies)"), StockSkyOverlayTypes.SolarSystemCosmos));
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1094, "Milky Way (Dr. R. Hurt)"), StockSkyOverlayTypes.SolarSystemMilkyWay));
@@ -115,18 +111,18 @@ namespace TerraViewer
 
         void InitFor2dSky()
         {
-            this.Name = Language.GetLocalizedText(1101, "2D Sky");
-            this.Opened = true;
-            this.ReferenceFrame = "Sky";
+            Name = Language.GetLocalizedText(1101, "2D Sky");
+            Opened = true;
+            ReferenceFrame = "Sky";
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1102, "Show Solar System"), StockSkyOverlayTypes.ShowSolarSystem));
             Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1103, "Field of View Indicators"), StockSkyOverlayTypes.FiledOfView));  
         }
 
         void InitForEarth()
         {
-            this.Name = Language.GetLocalizedText(504, "Overlays");
-            this.Opened = true;
-            this.ReferenceFrame = "Earth";
+            Name = Language.GetLocalizedText(504, "Overlays");
+            Opened = true;
+            ReferenceFrame = "Earth";
             var clouds = new StockSkyOverlay(Language.GetLocalizedText(1104, "Cloud Layer"), StockSkyOverlayTypes.ShowEarthCloudLayer);
             clouds.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1105, "Use 8k Cloud Texture"), StockSkyOverlayTypes.Clouds8k));
             Children.Add(clouds);
@@ -139,9 +135,9 @@ namespace TerraViewer
 
         void InitForDome()
         {
-            this.Name = Language.GetLocalizedText(504, "Overlays");
-            this.Opened = true;
-            this.ReferenceFrame = Language.GetLocalizedText(1109, "Dome");
+            Name = Language.GetLocalizedText(504, "Overlays");
+            Opened = true;
+            ReferenceFrame = Language.GetLocalizedText(1109, "Dome");
             var fade = new StockSkyOverlay(Language.GetLocalizedText(1110, "Fade to black"), StockSkyOverlayTypes.FadeToBlack);
             fade.Children.Add(new StockSkyOverlay(Language.GetLocalizedText(1111, "Fade Dome Only"),StockSkyOverlayTypes.FadeRemoteOnly));
             Children.Add(fade);
@@ -230,8 +226,8 @@ namespace TerraViewer
             node.Name = overlay.Name;
             node.Tag = overlay;
             node.Checked = overlay.Enabled;
-            node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
-            node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
+            node.NodeSelected += node_NodeSelected;
+            node.NodeChecked += node_NodeChecked;
             nodes.Add(node);
             foreach (var child in overlay.Children)
             {
@@ -264,8 +260,8 @@ namespace TerraViewer
                 filterNode.Name = Language.GetLocalizedText(1115, "Filter");
                 filterNode.Tag = filter;
                 filterNode.Checked = true;
-                filterNode.NodeSelected += new LayerUITreeNodeSelectedDelegate(filterNode_NodeSelected);
-                filterNode.NodeChecked += new LayerUITreeNodeCheckedDelegate(filterNode_NodeChecked);
+                filterNode.NodeSelected += filterNode_NodeSelected;
+                filterNode.NodeChecked += filterNode_NodeChecked;
                 nodes.Add(filterNode);
                 AddConstellationParts(filterNode, ConstellationFilter.AllConstellation);
 
@@ -295,9 +291,9 @@ namespace TerraViewer
                     var constellationNodes = filterNode.Add(Constellations.FullName(kv.Key));
                     constellationNodes.Tag = filterNode.Tag;
                     constellationNodes.Checked = true;
-                    constellationNodes.NodeSelected += new LayerUITreeNodeSelectedDelegate(constellationNodes_NodeSelected);
-                    constellationNodes.NodeChecked += new LayerUITreeNodeCheckedDelegate(constellationNodes_NodeChecked);
-                    constellationNodes.IsChecked += new LayerUITreeNodeIsCheckedDelegate(constellationNodes_IsChecked);
+                    constellationNodes.NodeSelected += constellationNodes_NodeSelected;
+                    constellationNodes.NodeChecked += constellationNodes_NodeChecked;
+                    constellationNodes.IsChecked += constellationNodes_IsChecked;
                 }
             }
         }
@@ -351,7 +347,7 @@ namespace TerraViewer
 
             var colorMenu = new LayerUIMenuItem();
             colorMenu.Name = Language.GetLocalizedText(1116, "Color");
-            colorMenu.MenuItemSelected += new MenuItemSelectedDelegate(ColorMenu_MenuItemSelected);
+            colorMenu.MenuItemSelected += ColorMenu_MenuItemSelected;
             colorMenu.Tag = node.Tag;
             var so = node.Tag as StockSkyOverlay;
             if (so != null && so.HasColor)
@@ -363,7 +359,7 @@ namespace TerraViewer
             {
                 var setupMenu = new LayerUIMenuItem();
                 setupMenu.Name = Language.GetLocalizedText(379, "Setup");
-                setupMenu.MenuItemSelected += new MenuItemSelectedDelegate(setupMenu_MenuItemSelected);
+                setupMenu.MenuItemSelected += setupMenu_MenuItemSelected;
                 setupMenu.Tag = node.Tag;
                 items.Add(setupMenu);
             }
@@ -372,7 +368,7 @@ namespace TerraViewer
             {
                 var setupMenuB = new LayerUIMenuItem();
                 setupMenuB.Name = Language.GetLocalizedText(379, "Setup");
-                setupMenuB.MenuItemSelected += new MenuItemSelectedDelegate(setupMenuB_MenuItemSelected);
+                setupMenuB.MenuItemSelected += setupMenuB_MenuItemSelected;
                 setupMenuB.Tag = node.Tag;
                 items.Add(setupMenuB);
             }
@@ -381,7 +377,7 @@ namespace TerraViewer
             {
                 var Import = new LayerUIMenuItem();
                 Import.Name = Language.GetLocalizedText(1117, "Import...");
-                Import.MenuItemSelected += new MenuItemSelectedDelegate(Import_MenuItemSelected);
+                Import.MenuItemSelected += Import_MenuItemSelected;
                 Import.Tag = node.Tag;
                 items.Add(Import);
             }
@@ -410,7 +406,7 @@ namespace TerraViewer
 
                 var newFilterMenu = new LayerUIMenuItem();
                 newFilterMenu.Name = Language.GetLocalizedText(1120, "New Filter...");
-                newFilterMenu.MenuItemSelected += new MenuItemSelectedDelegate(newFilterMenu_MenuItemSelected); ;
+                newFilterMenu.MenuItemSelected += newFilterMenu_MenuItemSelected; ;
                 newFilterMenu.Tag = node.Tag;
                 items.Add(newFilterMenu);
 
@@ -431,7 +427,7 @@ namespace TerraViewer
                     {
                         var setupMenuL = new LayerUIMenuItem();
                         setupMenuL.Name = Language.GetLocalizedText(1280, "Add Keyframe");
-                        setupMenuL.MenuItemSelected += new MenuItemSelectedDelegate(setupMenuL_MenuItemSelected);
+                        setupMenuL.MenuItemSelected += setupMenuL_MenuItemSelected;
                         setupMenuL.Tag = node.Tag;
                         items.Add(setupMenuL);
                     }
@@ -439,7 +435,7 @@ namespace TerraViewer
                     {
                         var setupMenuK = new LayerUIMenuItem();
                         setupMenuK.Name = Language.GetLocalizedText(1290, "Add to Timeline");
-                        setupMenuK.MenuItemSelected += new MenuItemSelectedDelegate(setupMenuK_MenuItemSelected);
+                        setupMenuK.MenuItemSelected += setupMenuK_MenuItemSelected;
                         setupMenuK.Tag = node.Tag;
                         items.Add(setupMenuK);
                     }
@@ -539,7 +535,7 @@ namespace TerraViewer
 
                 filterMenuItem.Name = id;
                 filterMenuItem.Tag = applyMenu.Tag;
-                filterMenuItem.MenuItemSelected += new MenuItemSelectedDelegate(filterMenuItem_ApplyMenuItemSelected);
+                filterMenuItem.MenuItemSelected += filterMenuItem_ApplyMenuItemSelected;
                 applyMenu.SubMenus.Add(filterMenuItem);
             }
         }
@@ -558,7 +554,7 @@ namespace TerraViewer
 
                 filterMenuItem.Name = id;
                 filterMenuItem.Tag = includeMenu.Tag;
-                filterMenuItem.MenuItemSelected += new MenuItemSelectedDelegate(filterMenuItem_IncludeMenuItemSelected);
+                filterMenuItem.MenuItemSelected += filterMenuItem_IncludeMenuItemSelected;
                 includeMenu.SubMenus.Add(filterMenuItem);
             }
         }
@@ -578,7 +574,7 @@ namespace TerraViewer
 
                 filterMenuItem.Name = id;
                 filterMenuItem.Tag = excludeMenu.Tag;
-                filterMenuItem.MenuItemSelected += new MenuItemSelectedDelegate(filterMenuItem_ExcludeMenuItemSelected);
+                filterMenuItem.MenuItemSelected += filterMenuItem_ExcludeMenuItemSelected;
                 excludeMenu.SubMenus.Add(filterMenuItem);
             }
         }
@@ -601,7 +597,7 @@ namespace TerraViewer
 
                     DeleteFilterMenuItem.Name = id;
                     DeleteFilterMenuItem.Tag = excludeMenu.Tag;
-                    DeleteFilterMenuItem.MenuItemSelected += new MenuItemSelectedDelegate(DeleteFilterMenuItem_MenuItemSelected);
+                    DeleteFilterMenuItem.MenuItemSelected += DeleteFilterMenuItem_MenuItemSelected;
                     excludeMenu.SubMenus.Add(DeleteFilterMenuItem);
                     anyCustomFilters = true;
                 }

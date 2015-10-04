@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TerraViewer
@@ -27,12 +25,12 @@ namespace TerraViewer
 
         public string Save()
         {
-            return SavedColor.Save(this);
+            return Save(this);
         }
 
         public void LoadInstance(string val)
         {
-            this.Color = SavedColor.Load(val);
+            Color = Load(val);
         }
 
         public static implicit operator Color(SavedColor saved)
@@ -45,17 +43,16 @@ namespace TerraViewer
             if (color.IsNamedColor)
                 return string.Format("{0}:{1}",
                     ColorFormat.NamedColor, color.Name);
-            else
-                return string.Format("{0}:{1}:{2}:{3}:{4}",
-                    ColorFormat.ARGBColor,
-                    color.A, color.R, color.G, color.B);
+            return string.Format("{0}:{1}:{2}:{3}:{4}",
+                ColorFormat.ARGBColor,
+                color.A, color.R, color.G, color.B);
         }
 
         public static Color Load(string color)
         {
             byte a, r, g, b;
 
-            var pieces = color.Split(new char[] { ':' });
+            var pieces = color.Split(new[] { ':' });
 
             var colorType = (ColorFormat)
                 Enum.Parse(typeof(ColorFormat), pieces[0], true);

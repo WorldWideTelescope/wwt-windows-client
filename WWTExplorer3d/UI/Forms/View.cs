@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Xml.Serialization;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -21,22 +18,22 @@ namespace TerraViewer
         private void SetUiStrings()
         {
            
-            this.groupBox2.Text = Language.GetLocalizedText(507, "Observing Location");
-            this.localHorizon.Text = Language.GetLocalizedText(508, "View from this location");
-            this.ChooseLocation.Text = Language.GetLocalizedText(379, "Setup");
-            this.locationName.Text = Language.GetLocalizedText(509, "Please choose a location");
-            this.label2.Text = Language.GetLocalizedText(7, "Name:");
-            this.label3.Text = Language.GetLocalizedText(365, "Lng:   ");
-            this.label5.Text = Language.GetLocalizedText(510, "Altitude:");
-            this.label1.Text = Language.GetLocalizedText(367, "Lat :  ");
-            this.groupBox3.Text = Language.GetLocalizedText(511, "Observing Time");
-            this.showUtcTime.Text = Language.GetLocalizedText(194, "UTC");
-            this.TimeNow.Text = Language.GetLocalizedText(512, "Now");
-            this.TimeMode.Text = Language.GetLocalizedText(513, "Real Time");
+            groupBox2.Text = Language.GetLocalizedText(507, "Observing Location");
+            localHorizon.Text = Language.GetLocalizedText(508, "View from this location");
+            ChooseLocation.Text = Language.GetLocalizedText(379, "Setup");
+            locationName.Text = Language.GetLocalizedText(509, "Please choose a location");
+            label2.Text = Language.GetLocalizedText(7, "Name:");
+            label3.Text = Language.GetLocalizedText(365, "Lng:   ");
+            label5.Text = Language.GetLocalizedText(510, "Altitude:");
+            label1.Text = Language.GetLocalizedText(367, "Lat :  ");
+            groupBox3.Text = Language.GetLocalizedText(511, "Observing Time");
+            showUtcTime.Text = Language.GetLocalizedText(194, "UTC");
+            TimeNow.Text = Language.GetLocalizedText(512, "Now");
+            TimeMode.Text = Language.GetLocalizedText(513, "Real Time");
 
-            this.Text = Language.GetLocalizedText(140, "View");
+            Text = Language.GetLocalizedText(140, "View");
 
-            this.showMinorPlanets.Text = Language.GetLocalizedText(653, "Asteroids");
+            showMinorPlanets.Text = Language.GetLocalizedText(653, "Asteroids");
 
         }
 
@@ -63,7 +60,7 @@ namespace TerraViewer
         {
             pinUp.Hide();
             UpdateProperties();
-            Properties.Settings.Default.PropertyChanged += new PropertyChangedEventHandler(Default_PropertyChanged);
+            Properties.Settings.Default.PropertyChanged += Default_PropertyChanged;
 
             CustomButtons.LoadButtons(Properties.Settings.Default.CahceDirectory + "buttons\\CustomView.wwtb");
         }
@@ -76,11 +73,11 @@ namespace TerraViewer
                 UpdateProperties();
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(doIt);
+                    Invoke(doIt);
                 }
                 catch
                 {
@@ -97,10 +94,10 @@ namespace TerraViewer
         private void UpdateProperties()
         {
             ignoreChanges = true;
-            this.latText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLat);
-            this.lngText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLng);
-            this.locationName.Text = Properties.Settings.Default.LocationName;
-            this.Altitude.Text = Properties.Settings.Default.LocationAltitude.ToString() + "m";
+            latText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLat);
+            lngText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLng);
+            locationName.Text = Properties.Settings.Default.LocationName;
+            Altitude.Text = Properties.Settings.Default.LocationAltitude + "m";
             localHorizon.Checked = Properties.Settings.Default.LocalHorizonMode;
             
             showUtcTime.Checked = Properties.Settings.Default.ShowUTCTime;
@@ -120,18 +117,18 @@ namespace TerraViewer
 
             dialog.Sky = false;
 
-            dialog.Latitude = Coordinates.Parse(this.latText.Text);
-            dialog.Longitude = Coordinates.Parse(this.lngText.Text);
-            dialog.LocationName = this.locationName.Text;
-            dialog.Altitude = Convert.ToDouble(this.Altitude.Text.Replace("m","").Replace("'",""));
+            dialog.Latitude = Coordinates.Parse(latText.Text);
+            dialog.Longitude = Coordinates.Parse(lngText.Text);
+            dialog.LocationName = locationName.Text;
+            dialog.Altitude = Convert.ToDouble(Altitude.Text.Replace("m","").Replace("'",""));
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
 
-                this.latText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLat = dialog.Latitude);
-                this.lngText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLng = dialog.Longitude);
-                this.locationName.Text = Properties.Settings.Default.LocationName = dialog.LocationName;
-                this.Altitude.Text = (Properties.Settings.Default.LocationAltitude = dialog.Altitude).ToString() + "m";
+                latText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLat = dialog.Latitude);
+                lngText.Text = Coordinates.FormatDMS(Properties.Settings.Default.LocationLng = dialog.Longitude);
+                locationName.Text = Properties.Settings.Default.LocationName = dialog.LocationName;
+                Altitude.Text = (Properties.Settings.Default.LocationAltitude = dialog.Altitude) + "m";
                 SpaceTimeController.Altitude = Properties.Settings.Default.LocationAltitude;
                 SpaceTimeController.Location = Coordinates.FromLatLng(Properties.Settings.Default.LocationLat, Properties.Settings.Default.LocationLng);
             }
@@ -240,7 +237,7 @@ namespace TerraViewer
             }
             else
             {
-                TimeMode.Text = Language.GetLocalizedText(523, "X ") + SpaceTimeController.TimeRate.ToString();
+                TimeMode.Text = Language.GetLocalizedText(523, "X ") + SpaceTimeController.TimeRate;
             }
             if (!SpaceTimeController.SyncToClock)
             {
@@ -281,29 +278,29 @@ namespace TerraViewer
             {
                 return;
             }
-            if (this.showMinorPlanets.Checked && !File.Exists(Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin"))
+            if (showMinorPlanets.Checked && !File.Exists(Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin"))
             {
                 if (UiTools.ShowMessageBox("WorldWide Telescope needs to download the latest Minor Planet Center data file (about 12MB). Do you want to proceed?", "Minor Planet Center Data Download", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
-                    this.showMinorPlanets.Checked = false;
+                    showMinorPlanets.Checked = false;
                     return;
                 }
                 var filename = Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin";
 
                 if (!FileDownload.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=mpcbin", filename, true))
                 {
-                    this.showMinorPlanets.Checked = false;
+                    showMinorPlanets.Checked = false;
                     return;
                 }
             }
 
-            Properties.Settings.Default.SolarSystemMinorPlanets.TargetState = this.showMinorPlanets.Checked;
+            Properties.Settings.Default.SolarSystemMinorPlanets.TargetState = showMinorPlanets.Checked;
 
         }
 
 
-        readonly Bitmap layerButton = global::TerraViewer.Properties.Resources.layersButton;
-        readonly Bitmap layerButtonHover = global::TerraViewer.Properties.Resources.layersButtonHover;
+        readonly Bitmap layerButton = Resources.layersButton;
+        readonly Bitmap layerButtonHover = Resources.layersButtonHover;
 
         private void layerToggle_Click(object sender, EventArgs e)
         {

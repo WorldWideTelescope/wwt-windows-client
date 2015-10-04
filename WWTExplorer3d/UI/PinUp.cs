@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-
-using System.Drawing.Imaging;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -36,22 +31,22 @@ namespace TerraViewer
       
         static PinUp()
         {
-            bitmaps[TopPin,Expanding,Rest] = global::TerraViewer.Properties.Resources.PinT_E_R;
-            bitmaps[TopPin,Expanding,Hover] = global::TerraViewer.Properties.Resources.PinT_E_H;
-            bitmaps[TopPin,Expanding,Push] = global::TerraViewer.Properties.Resources.PinT_E_P;
-            bitmaps[TopPin,Expanding,Push] = global::TerraViewer.Properties.Resources.PinT_E_D;
-            bitmaps[TopPin, Collapsing, Rest] = global::TerraViewer.Properties.Resources.PinT_C_R;
-            bitmaps[TopPin, Collapsing, Hover] = global::TerraViewer.Properties.Resources.PinT_C_H;
-            bitmaps[TopPin, Collapsing, Push] = global::TerraViewer.Properties.Resources.PinT_C_P;
-            bitmaps[TopPin, Collapsing, Push] = global::TerraViewer.Properties.Resources.PinT_C_D;
-            bitmaps[BottomPin, Expanding, Rest] = global::TerraViewer.Properties.Resources.PinB_E_R;
-            bitmaps[BottomPin, Expanding, Hover] = global::TerraViewer.Properties.Resources.PinB_E_H;
-            bitmaps[BottomPin, Expanding, Push] = global::TerraViewer.Properties.Resources.PinB_E_P;
-            bitmaps[BottomPin, Expanding, Push] = global::TerraViewer.Properties.Resources.PinB_E_D;
-            bitmaps[BottomPin, Collapsing, Rest] = global::TerraViewer.Properties.Resources.PinB_C_R;
-            bitmaps[BottomPin, Collapsing, Hover] = global::TerraViewer.Properties.Resources.PinB_C_H;
-            bitmaps[BottomPin, Collapsing, Push] = global::TerraViewer.Properties.Resources.PinB_C_P;
-            bitmaps[BottomPin, Collapsing, Push] = global::TerraViewer.Properties.Resources.PinB_C_D;
+            bitmaps[TopPin,Expanding,Rest] = Resources.PinT_E_R;
+            bitmaps[TopPin,Expanding,Hover] = Resources.PinT_E_H;
+            bitmaps[TopPin,Expanding,Push] = Resources.PinT_E_P;
+            bitmaps[TopPin,Expanding,Push] = Resources.PinT_E_D;
+            bitmaps[TopPin, Collapsing, Rest] = Resources.PinT_C_R;
+            bitmaps[TopPin, Collapsing, Hover] = Resources.PinT_C_H;
+            bitmaps[TopPin, Collapsing, Push] = Resources.PinT_C_P;
+            bitmaps[TopPin, Collapsing, Push] = Resources.PinT_C_D;
+            bitmaps[BottomPin, Expanding, Rest] = Resources.PinB_E_R;
+            bitmaps[BottomPin, Expanding, Hover] = Resources.PinB_E_H;
+            bitmaps[BottomPin, Expanding, Push] = Resources.PinB_E_P;
+            bitmaps[BottomPin, Expanding, Push] = Resources.PinB_E_D;
+            bitmaps[BottomPin, Collapsing, Rest] = Resources.PinB_C_R;
+            bitmaps[BottomPin, Collapsing, Hover] = Resources.PinB_C_H;
+            bitmaps[BottomPin, Collapsing, Push] = Resources.PinB_C_P;
+            bitmaps[BottomPin, Collapsing, Push] = Resources.PinB_C_D;
         }
 
         private Placement placement = Placement.Top;

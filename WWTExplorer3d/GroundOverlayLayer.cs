@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -17,7 +16,7 @@ namespace TerraViewer
 
             var copy = !fName.Contains(ID.ToString());
 
-            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, this.ID.ToString());
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, ID);
             var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
 
             if (copy)
@@ -52,7 +51,7 @@ namespace TerraViewer
 
         public override bool PreDraw(RenderContext11 renderContext, float opacity)
         {
-            Overlay.color = Color.FromArgb((int)(this.Opacity * opacity * Color.A), Color);
+            Overlay.color = Color.FromArgb((int)(Opacity * opacity * Color.A), Color);
             Earth3d.MainWindow.KmlMarkers.AddGroundOverlay(Overlay);
             
             return true;
@@ -160,7 +159,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("North", North.ToString());
             xmlWriter.WriteAttributeString("South", South.ToString());
@@ -173,7 +172,7 @@ namespace TerraViewer
 
 
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             North = Double.Parse(node.Attributes["North"].Value);
 

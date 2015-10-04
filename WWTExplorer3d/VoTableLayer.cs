@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 using System.IO;
-using System.Reflection;
-using System.Xml;
-
-using Vector3 = SharpDX.Vector3;
+using System.Windows;
 
 namespace TerraViewer
 {
@@ -16,15 +12,15 @@ namespace TerraViewer
         public VOTableViewer Viewer = null;
         public VoTableLayer()
         {
-            this.table = null;
-            this.filename = "";
+            table = null;
+            filename = "";
 
             PlotType = PlotTypes.Circle;
         }
         public VoTableLayer(VoTable table)
         {
             this.table = table;
-            this.filename = table.LoadFilename;
+            filename = table.LoadFilename;
             LngColumn = table.GetRAColumn().Index;
             LatColumn = table.GetDecColumn().Index;
             PlotType = PlotTypes.Circle;
@@ -35,7 +31,7 @@ namespace TerraViewer
 
             var copy = true;
 
-            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID, this.ID.ToString());
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID, ID);
             var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
             var path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
 
@@ -74,7 +70,7 @@ namespace TerraViewer
 
         public override void CopyToClipboard()
         {
-            System.Windows.Clipboard.SetText(table.ToString());
+            Clipboard.SetText(table.ToString());
         }
 
         public override IPlace FindClosest(Coordinates target, float distance, IPlace defaultPlace, bool astronomical)
@@ -111,7 +107,7 @@ namespace TerraViewer
 
             var pnt = Coordinates.CartesianToSpherical2(positions[closestItem]);
 
-            var name = table.Rows[closestItem].ColumnData[this.nameColumn].ToString();
+            var name = table.Rows[closestItem].ColumnData[nameColumn].ToString();
             if (nameColumn == startDateColumn || nameColumn == endDateColumn)
             {
                 name = SpreadSheetLayer.ParseDate(name).ToString("u");
@@ -138,7 +134,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    rowData.Add("Column" + i.ToString(), colValue);
+                    rowData.Add("Column" + i, colValue);
                 }
             }
             place.Tag = rowData;
@@ -188,7 +184,7 @@ namespace TerraViewer
                 var lastItem = new TimeSeriesPointVertex();
                 positions.Clear();
                 UInt32 currentIndex = 0;
-                var color = Color.FromArgb((int)(opacity * (float)Color.A), Color);
+                var color = Color.FromArgb((int)(opacity * Color.A), Color);
 
                 pointScaleType = PointScaleTypes.StellarMagnitude;
 
@@ -198,8 +194,8 @@ namespace TerraViewer
                     {
                         if (lngColumn > -1 && latColumn > -1)
                         {
-                            var Xcoord = Coordinates.ParseRA(row[this.LngColumn].ToString(), true) * 15 + 180;
-                            var Ycoord = Coordinates.ParseDec(row[this.LatColumn].ToString());
+                            var Xcoord = Coordinates.ParseRA(row[LngColumn].ToString(), true) * 15 + 180;
+                            var Ycoord = Coordinates.ParseDec(row[LatColumn].ToString());
                             lastItem.Position = Coordinates.GeoTo3dDouble(Ycoord, Xcoord).Vector311;
                             positions.Add(lastItem.Position);
                             lastItem.Color = color;
@@ -310,7 +306,7 @@ namespace TerraViewer
 
             if (stcs.StartsWith("Polygon J2000"))
             {
-                var parts = stcs.Split(new char[] { ' ' });
+                var parts = stcs.Split(new[] { ' ' });
 
                 var len = parts.Length;
                 var index = 0;
@@ -329,25 +325,22 @@ namespace TerraViewer
                                 start = true;
                                 break;
                             }
-                            else
-                            {
-                                var Xcoord = Coordinates.ParseRA(parts[i], true) * 15 + 180;
-                                var Ycoord = Coordinates.ParseDec(parts[i + 1]);
+                            var Xcoord = Coordinates.ParseRA(parts[i], true) * 15 + 180;
+                            var Ycoord = Coordinates.ParseDec(parts[i + 1]);
          
 
-                                var pnt = Coordinates.GeoTo3dDouble(Ycoord, Xcoord);
+                            var pnt = Coordinates.GeoTo3dDouble(Ycoord, Xcoord);
 
-                                if (!start)
-                                {
-                                    lineList2d.AddLine(lastPoint, pnt, col, new Dates());
-                                }
-                                else
-                                {
-                                    firstPoint = pnt;
-                                    start = false;
-                                }
-                                lastPoint = pnt;
+                            if (!start)
+                            {
+                                lineList2d.AddLine(lastPoint, pnt, col, new Dates());
                             }
+                            else
+                            {
+                                firstPoint = pnt;
+                                start = false;
+                            }
+                            lastPoint = pnt;
                             index += 2;
                         }
                         if (len > 4)

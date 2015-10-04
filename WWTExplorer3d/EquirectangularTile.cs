@@ -1,12 +1,4 @@
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-
-using System.Text;
 
 namespace TerraViewer
 {
@@ -20,12 +12,12 @@ namespace TerraViewer
                 ComputeBoundingSphereBottomsUp(parent);
                 return;
             }
-            var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
-            var latMin = (90 - (((double)this.y) * tileDegrees));
-            var latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
-            var lngMin = (((double)this.x * tileDegrees) - 180.0);
-            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (90 - (y * tileDegrees));
+            var latMax = (90 - ((y + 1) * tileDegrees));
+            var lngMin = ((x * tileDegrees) - 180.0);
+            var lngMax = (((x + 1) * tileDegrees) - 180.0);
 
             var latCenter = (latMin + latMax) / 2.0;
             var lngCenter = (lngMin + lngMax) / 2.0;
@@ -41,7 +33,7 @@ namespace TerraViewer
                 localCenter = parent.localCenter;
             }
 
-            this.sphereCenter = GeoTo3d(latCenter, lngCenter, false);
+            sphereCenter = GeoTo3d(latCenter, lngCenter, false);
             TopLeft = GeoTo3dWithAltitude(latMin, lngMin, false);
             BottomRight = GeoTo3dWithAltitude(latMax, lngMax, false);
             TopRight = GeoTo3dWithAltitude(latMin, lngMax, false);
@@ -49,20 +41,20 @@ namespace TerraViewer
 
             var distVect = GeoTo3d(latMin, lngMin, false);
             distVect.Subtract(sphereCenter);
-            this.sphereRadius = distVect.Length();
+            sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
         }
 
 
         protected void ComputeBoundingSphereBottomsUp(Tile parent)
         {
-            var tileDegrees = (double)this.dataset.BaseTileDegrees / ((double)Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / Math.Pow(2, level);
 
 
-            var latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
-            var latMax = (-90 + (((double)this.y) * tileDegrees));
-            var lngMin = (((double)this.x * tileDegrees) - 180.0);
-            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (-90 + ((y + 1) * tileDegrees));
+            var latMax = (-90 + (y * tileDegrees));
+            var lngMin = ((x * tileDegrees) - 180.0);
+            var lngMax = (((x + 1) * tileDegrees) - 180.0);
 
             var latCenter = (latMin + latMax) / 2.0;
             var lngCenter = (lngMin + lngMax) / 2.0;
@@ -77,7 +69,7 @@ namespace TerraViewer
                 localCenter = parent.localCenter;
             }
 
-            this.sphereCenter = GeoTo3d(latCenter, lngCenter, false);
+            sphereCenter = GeoTo3d(latCenter, lngCenter, false);
 
             TopLeft = GeoTo3dWithAltitude(latMin, lngMin, false);
             BottomRight = GeoTo3dWithAltitude(latMax, lngMax, false);
@@ -85,7 +77,7 @@ namespace TerraViewer
             BottomLeft = GeoTo3dWithAltitude(latMax, lngMin, false);
             var distVect = TopLeft;
             distVect.Subtract(sphereCenter);
-            this.sphereRadius = distVect.Length();
+            sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
         }
 
@@ -102,15 +94,14 @@ namespace TerraViewer
                     OnCreateVertexBufferBottomsUp(vb);
                     return;
                 }
-                double lat, lng;
 
-                var index = 0;
-                var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+                int index;
+                var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
-                var latMin = (90 - (((double)this.y) * tileDegrees));
-                var latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
-                var lngMin = (((double)this.x * tileDegrees) - 180.0);
-                var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+                var latMin = (90 - (this.y * tileDegrees));
+                var latMax = (90 - ((this.y + 1) * tileDegrees));
+                var lngMin = ((this.x * tileDegrees) - 180.0);
+                var lngMax = (((this.x + 1) * tileDegrees) - 180.0);
                 var tileDegreesX = lngMax - lngMin;
                 var tileDegreesY = latMax - latMin;
 
@@ -129,6 +120,7 @@ namespace TerraViewer
                 var textureStep = 1.0f / SubDivisions;
                 for (y = 0; y <= SubDivisions; y++)
                 {
+                    double lat;
                     if (y != SubDivisions)
                     {
                         lat = latMin + (textureStep * tileDegreesY * y);
@@ -139,7 +131,7 @@ namespace TerraViewer
                     }
                     for (x = 0; x <= SubDivisions; x++)
                     {
-
+                        double lng;
                         if (x != SubDivisions)
                         {
                             lng = lngMin + (textureStep * tileDegreesX * x);
@@ -167,7 +159,7 @@ namespace TerraViewer
                 {
                     for (var x2 = 0; x2 < 2; x2++)
                     {
-                        var indexArray = (short[])this.indexBuffer[part].Lock();
+                        var indexArray = (short[])indexBuffer[part].Lock();
                         index = 0;
                         for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                         {
@@ -186,7 +178,7 @@ namespace TerraViewer
                                 index += 6;
                             }
                         }
-                        this.indexBuffer[part].Unlock();
+                        indexBuffer[part].Unlock();
                         part++;
                     }
                 }
@@ -202,13 +194,13 @@ namespace TerraViewer
             double lat, lng;
 
             var index = 0;
-            var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
 
-            var latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
-            var latMax = (-90 + (((double)this.y) * tileDegrees));
-            var lngMin = (((double)this.x * tileDegrees) - 180.0);
-            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (-90 + ((this.y + 1) * tileDegrees));
+            var latMax = (-90 + (this.y * tileDegrees));
+            var lngMin = ((this.x * tileDegrees) - 180.0);
+            var lngMax = (((this.x + 1) * tileDegrees) - 180.0);
             var tileDegreesX = lngMax - lngMin;
             var tileDegreesY = latMax - latMin;
             
@@ -257,7 +249,7 @@ namespace TerraViewer
             {
                 for (var x2 = 0; x2 < 2; x2++)
                 {
-                    var indexArray = (short[])this.indexBuffer[part].Lock();
+                    var indexArray = (short[])indexBuffer[part].Lock();
                     index = 0;
                     for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                     {
@@ -276,7 +268,7 @@ namespace TerraViewer
                             index += 6;
                         }
                     }
-                    this.indexBuffer[part].Unlock();
+                    indexBuffer[part].Unlock();
                     part++;
                 }
             }
@@ -290,10 +282,10 @@ namespace TerraViewer
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;     
+            topDown = !dataset.BottomsUp;     
             ComputeBoundingSphere(parent);
             VertexCount = ((SubDivisions + 1) * (SubDivisions + 1));
-            insideOut = this.Dataset.DataSetType == ImageSetType.Sky || this.Dataset.DataSetType == ImageSetType.Panorama;
+            insideOut = Dataset.DataSetType == ImageSetType.Sky || Dataset.DataSetType == ImageSetType.Panorama;
 
         }
 

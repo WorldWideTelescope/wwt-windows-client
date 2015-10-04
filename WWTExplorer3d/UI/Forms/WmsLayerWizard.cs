@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.Net;
 using System.IO;
 using WMS;
-using System.Globalization;
 
 namespace TerraViewer
 {
@@ -21,21 +14,21 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(902, "Web Mapping Service URL");
-            this.label2.Text = Language.GetLocalizedText(903, "Layers and Styles");
-            this.label3.Text = Language.GetLocalizedText(904, "Server List");
-            this.ServerName.Text = Language.GetLocalizedText(905, "<Type Server Name Here>");
-            this.label4.Text = Language.GetLocalizedText(906, "Server Name");
-            this.Delete.Text = Language.GetLocalizedText(167, "Delete");
-            this.close.Text = Language.GetLocalizedText(212, "Close");
-            this.add.Text = Language.GetLocalizedText(166, "Add");
-            this.AddServer.Text = Language.GetLocalizedText(907, "Add Server");
-            this.GetCapabilities.Text = Language.GetLocalizedText(908, "Get Layers");
-            this.Text = Language.GetLocalizedText(909, "WMS Layers");
-            this.dontParse.Text = Language.GetLocalizedText(1054, "Don\'t Parse");
-            this.TiledWMS.Text = Language.GetLocalizedText(1140, "Tiled WMS");
-            this.AddAsLayer.Text = Language.GetLocalizedText(1141, "Add As Layer");
-            this.AbstractLabel.Text = Language.GetLocalizedText(1142, "Abstract");
+            label1.Text = Language.GetLocalizedText(902, "Web Mapping Service URL");
+            label2.Text = Language.GetLocalizedText(903, "Layers and Styles");
+            label3.Text = Language.GetLocalizedText(904, "Server List");
+            ServerName.Text = Language.GetLocalizedText(905, "<Type Server Name Here>");
+            label4.Text = Language.GetLocalizedText(906, "Server Name");
+            Delete.Text = Language.GetLocalizedText(167, "Delete");
+            close.Text = Language.GetLocalizedText(212, "Close");
+            add.Text = Language.GetLocalizedText(166, "Add");
+            AddServer.Text = Language.GetLocalizedText(907, "Add Server");
+            GetCapabilities.Text = Language.GetLocalizedText(908, "Get Layers");
+            Text = Language.GetLocalizedText(909, "WMS Layers");
+            dontParse.Text = Language.GetLocalizedText(1054, "Don\'t Parse");
+            TiledWMS.Text = Language.GetLocalizedText(1140, "Tiled WMS");
+            AddAsLayer.Text = Language.GetLocalizedText(1141, "Add As Layer");
+            AbstractLabel.Text = Language.GetLocalizedText(1142, "Abstract");
         }
 
         private void GetCapabilities_Click(object sender, EventArgs e)
@@ -70,8 +63,8 @@ namespace TerraViewer
 
             var url = wse.Url + req;
 
-            var filename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()).ToString() + ".xml";
-            var tiledFilename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()).ToString() + ".tiled.xml";
+            var filename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()) + ".xml";
+            var tiledFilename = Properties.Settings.Default.CahceDirectory + "data\\wms\\" + ((uint)url.GetHashCode32()) + ".tiled.xml";
 
             if (!File.Exists(filename) && !download)
             {
@@ -244,7 +237,7 @@ namespace TerraViewer
             var lines = File.ReadAllLines(path);
             foreach (var line in lines)
             {
-                var parts = line.Split(new char[] { '\t' });
+                var parts = line.Split(new[] { '\t' });
 
                 var entry = new WmsServerEntry();
                 entry.Name = parts[0];
@@ -330,7 +323,7 @@ namespace TerraViewer
 
         private string GetPattern(string pattern)
         {
-            var tilePaterns = pattern.Split(new char[] { '\n' });
+            var tilePaterns = pattern.Split(new[] { '\n' });
 
             for (var i = 0; i < tilePaterns.Length; i++)
             {
@@ -358,7 +351,7 @@ namespace TerraViewer
 
             var bbox = url.Substring(start, end - start);
 
-            var parts = bbox.Split(new char[] { ',' });
+            var parts = bbox.Split(new[] { ',' });
 
             var lngMin = double.Parse(parts[0]);
             var lngMax = double.Parse(parts[2]);
@@ -401,7 +394,7 @@ namespace TerraViewer
 
             var wmsLayer = LayersTree.SelectedNode.Tag as WMS.Layer;
 
-            var style = LayersTree.SelectedNode.Tag as WMS.Style;
+            var style = LayersTree.SelectedNode.Tag as Style;
 
             if (style != null && LayersTree.SelectedNode.Parent != null)
             {
@@ -484,7 +477,7 @@ namespace TerraViewer
                     {
                         if (dim.name == "time")
                         {
-                            var dates = wmsLayer.Dimension[0].Value.Split(new char[] { ',' });
+                            var dates = wmsLayer.Dimension[0].Value.Split(new[] { ',' });
 
                             foreach (var date in dates)
                             {
@@ -505,7 +498,7 @@ namespace TerraViewer
 
         }
 
-        private void AddTiledLayer(WMS.Layer wmsLayer, WMS.Style style)
+        private void AddTiledLayer(WMS.Layer wmsLayer, Style style)
         {
        
             double baseTileDegrees = 180;
@@ -596,7 +589,7 @@ namespace TerraViewer
         private void close_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
 
         private void wmsUrl_TextChanged(object sender, EventArgs e)
@@ -617,7 +610,7 @@ namespace TerraViewer
         {
             var wmsLayer = LayersTree.SelectedNode.Tag as WMS.Layer;
 
-            var style = LayersTree.SelectedNode.Tag as WMS.Style;
+            var style = LayersTree.SelectedNode.Tag as Style;
 
             var tileGroup = LayersTree.SelectedNode.Tag as WMS_Tile_ServiceTiledPatternsTiledGroup;
 

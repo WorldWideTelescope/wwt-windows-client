@@ -1,12 +1,14 @@
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Xml;
 using System.Text;
+using SharpDX;
+using Color = System.Drawing.Color;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace TerraViewer
 {
@@ -14,23 +16,19 @@ namespace TerraViewer
     {
         void Render(Earth3d window);
         void PreRender(Earth3d window);
-        bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e);
+        bool MouseDown(object sender, MouseEventArgs e);
+        bool MouseUp(object sender, MouseEventArgs e);
+        bool MouseMove(object sender, MouseEventArgs e);
+        bool MouseClick(object sender, MouseEventArgs e);
         bool Click(object sender, EventArgs e);
-        bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e);
-        bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e);
+        bool MouseDoubleClick(object sender, MouseEventArgs e);
+        bool KeyDown(object sender, KeyEventArgs e);
+        bool KeyUp(object sender, KeyEventArgs e);
         bool Hover(Point pnt);
     }
 
     public class TourEditor : IUiController , IDisposable
     {
-        public TourEditor()
-        {
-        }
-
         Selection selection = new Selection();
 
         public Selection Selection
@@ -208,31 +206,31 @@ namespace TerraViewer
             boxPoints[0].Tv = 0;
             boxPoints[0].Color = Color;
 
-            boxPoints[1].X = (float)(rect.X + (rect.Width));
-            boxPoints[1].Y = (float)(rect.Y);
+            boxPoints[1].X = rect.X + (rect.Width);
+            boxPoints[1].Y = rect.Y;
             boxPoints[1].Tu = 1;
             boxPoints[1].Tv = 0;
             boxPoints[1].Color = Color;
             boxPoints[1].Z = .9f;
             boxPoints[1].W = 1;
 
-            boxPoints[2].X = (float)(rect.X );
-            boxPoints[2].Y = (float)(rect.Y + (rect.Height ));
+            boxPoints[2].X = rect.X;
+            boxPoints[2].Y = rect.Y + (rect.Height );
             boxPoints[2].Tu = 0;
             boxPoints[2].Tv = 1;
             boxPoints[2].Color = Color;
             boxPoints[2].Z = .9f;
             boxPoints[2].W = 1;
 
-            boxPoints[3].X = (float)(rect.X + (rect.Width ));
-            boxPoints[3].Y = (float)(rect.Y + (rect.Height ));
+            boxPoints[3].X = rect.X + (rect.Width );
+            boxPoints[3].Y = rect.Y + (rect.Height );
             boxPoints[3].Tu = 1;
             boxPoints[3].Tv = 1;
             boxPoints[3].Color = Color;
             boxPoints[3].Z = .9f;
             boxPoints[3].W = 1;
 
-            var mat = SharpDX.Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
+            var mat = Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
 
             Sprite2d.Draw(renderContext, boxPoints, 4, mat, true);
 
@@ -280,16 +278,16 @@ namespace TerraViewer
         {
             float clientHeight = Earth3d.MainWindow.RenderWindow.ClientRectangle.Height;
             float clientWidth = Earth3d.MainWindow.RenderWindow.ClientRectangle.Width;
-            var viewWidth = ((float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
-            var x = (((float)pnt.X) / ((float)clientWidth) * viewWidth)- ((viewWidth - 1920) / 2);
-            var y = ((float)pnt.Y) / clientHeight * 1116;
+            var viewWidth = (Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
+            var x = (pnt.X / clientWidth * viewWidth)- ((viewWidth - 1920) / 2);
+            var y = pnt.Y / clientHeight * 1116;
 
             return new PointF(x, y);
         }
 
         SelectionAnchor selectionAction = SelectionAnchor.None;
         bool needUndoFrame;
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             brokeThreshold = false;
             needUndoFrame = true;
@@ -397,7 +395,7 @@ namespace TerraViewer
 
         }
         Point contextPoint;
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             brokeThreshold = false;
             if (CurrentEditor != null)
@@ -435,7 +433,7 @@ namespace TerraViewer
         }
         bool dragCopying;
         bool brokeThreshold;
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
             if (CurrentEditor != null)
             {
@@ -750,7 +748,7 @@ namespace TerraViewer
 
             pasteMenu.Enabled = Clipboard.ContainsImage() | Clipboard.ContainsText() | Clipboard.ContainsAudio() | data.GetDataPresent(Overlay.ClipboardFormat);
 
-            pasteMenu.Click +=new EventHandler(pasteMenu_Click);
+            pasteMenu.Click +=pasteMenu_Click;
             contextMenu.Items.Add(pasteMenu);
             contextMenu.Show(Cursor.Position);
         }
@@ -862,12 +860,12 @@ namespace TerraViewer
             Exponential.Tag = InterpolationType.Exponential;
             Default.Tag = InterpolationType.Default;
 
-            Linear.Click += new EventHandler(Interpolation_Click);
-            Ease.Click += new EventHandler(Interpolation_Click);
-            EaseIn.Click += new EventHandler(Interpolation_Click);
-            EaseOut.Click += new EventHandler(Interpolation_Click);
-            Exponential.Click += new EventHandler(Interpolation_Click);
-            Default.Click += new EventHandler(Interpolation_Click);
+            Linear.Click += Interpolation_Click;
+            Ease.Click += Interpolation_Click;
+            EaseIn.Click += Interpolation_Click;
+            EaseOut.Click += Interpolation_Click;
+            Exponential.Click += Interpolation_Click;
+            Default.Click += Interpolation_Click;
 
             switch (Focus.InterpolationType)
             {
@@ -903,34 +901,34 @@ namespace TerraViewer
 
 
 
-            cutMenu.Click += new EventHandler(cutMenu_Click);
-            copyMenu.Click += new EventHandler(copyMenu_Click);
-            deleteMenu.Click += new EventHandler(deleteMenu_Click);
-            bringToFront.Click += new EventHandler(bringToFront_Click);
-            sendToBack.Click += new EventHandler(sendToBack_Click);
-            sendBackward.Click += new EventHandler(sendBackward_Click);
-            bringForward.Click += new EventHandler(bringForward_Click);
-            properties.Click += new EventHandler(properties_Click);
-            editText.Click += new EventHandler(editText_Click);
-            url.Click += new EventHandler(url_Click);
-            pickColor.Click += new EventHandler(pickColor_Click);
-            pasteMenu.Click += new EventHandler(pasteMenu_Click);
-            animateMenu.Click += new EventHandler(animateMenu_Click);
+            cutMenu.Click += cutMenu_Click;
+            copyMenu.Click += copyMenu_Click;
+            deleteMenu.Click += deleteMenu_Click;
+            bringToFront.Click += bringToFront_Click;
+            sendToBack.Click += sendToBack_Click;
+            sendBackward.Click += sendBackward_Click;
+            bringForward.Click += bringForward_Click;
+            properties.Click += properties_Click;
+            editText.Click += editText_Click;
+            url.Click += url_Click;
+            pickColor.Click += pickColor_Click;
+            pasteMenu.Click += pasteMenu_Click;
+            animateMenu.Click += animateMenu_Click;
 
-            addToTimeline.Click += new EventHandler(addKeyframes_Click);
-            addKeyframes.Click += new EventHandler(addKeyframes_Click);
+            addToTimeline.Click += addKeyframes_Click;
+            addKeyframes.Click += addKeyframes_Click;
             
-            fullDome.Click += new EventHandler(fullDome_Click);
-            flipbookProperties.Click += new EventHandler(flipbookProperties_Click);
-            linkID.Click += new EventHandler(linkID_Click);
+            fullDome.Click += fullDome_Click;
+            flipbookProperties.Click += flipbookProperties_Click;
+            linkID.Click += linkID_Click;
 
-            AlignTop.Click += new EventHandler(AlignTop_Click);
-            AlignBottom.Click += new EventHandler(AlignBottom_Click);
-            AlignLeft.Click += new EventHandler(AlignLeft_Click);
-            AlignRight.Click += new EventHandler(AlignRight_Click);
-            AlignHorizon.Click += new EventHandler(AlignHorizon_Click);
-            AlignVertical.Click += new EventHandler(AlignVertical_Click);
-            AlignCenter.Click += new EventHandler(AlignCenter_Click);
+            AlignTop.Click += AlignTop_Click;
+            AlignBottom.Click += AlignBottom_Click;
+            AlignLeft.Click += AlignLeft_Click;
+            AlignRight.Click += AlignRight_Click;
+            AlignHorizon.Click += AlignHorizon_Click;
+            AlignVertical.Click += AlignVertical_Click;
+            AlignCenter.Click += AlignCenter_Click;
 
 
 
@@ -1414,9 +1412,9 @@ namespace TerraViewer
                 return;
             }
             var sb = new StringBuilder();
-            using (var textWriter = new System.IO.StringWriter(sb))
+            using (var textWriter = new StringWriter(sb))
             {
-                using (var writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                     writer.WriteStartElement("Overlays");
@@ -1466,10 +1464,10 @@ namespace TerraViewer
             {
                 // add try catch block
                 var xml = dataObject.GetData(Overlay.ClipboardFormat) as string;
-                var doc = new System.Xml.XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(xml);
                 ClearSelection();
-                System.Xml.XmlNode parent = doc["Overlays"];
+                XmlNode parent = doc["Overlays"];
                 foreach (XmlNode child in parent.ChildNodes)
                 {
                     var copy = Overlay.FromXml(tour.CurrentTourStop, child);
@@ -1550,7 +1548,7 @@ namespace TerraViewer
             
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
             if (CurrentEditor != null)
             {
@@ -1574,7 +1572,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (CurrentEditor != null)
             {
@@ -1604,14 +1602,14 @@ namespace TerraViewer
                 //todo localize
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(545, "Text Edit"), tour));
                 ((TextOverlay)Focus).TextObject = te.TextObject;
-                ((TextOverlay)Focus).Width = 0;
-                ((TextOverlay)Focus).Height = 0;
+                Focus.Width = 0;
+                Focus.Height = 0;
                 Focus.Color = te.TextObject.ForegroundColor;
                 Focus.CleanUp();
             }
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             if (CurrentEditor != null)
             {
@@ -1670,23 +1668,23 @@ namespace TerraViewer
                 case Keys.C:
                     if (e.Control)
                     {
-                        this.copyMenu_Click(this, new EventArgs());
+                        copyMenu_Click(this, new EventArgs());
                     }
                     break;
                 case Keys.V:
                     if (e.Control)
                     {
-                        this.pasteMenu_Click(this, new EventArgs());
+                        pasteMenu_Click(this, new EventArgs());
                     }
                     break;
                 case Keys.X:
                     if (e.Control)
                     {
-                        this.cutMenu_Click(this, new EventArgs());
+                        cutMenu_Click(this, new EventArgs());
                     }
                     break;
                 case Keys.Delete:
-                    this.deleteMenu_Click(null, null);
+                    deleteMenu_Click(null, null);
                     return true;
                 case Keys.Tab:
                     if (e.Shift)
@@ -1890,7 +1888,7 @@ namespace TerraViewer
             OverlayList.UpdateOverlayList(tour.CurrentTourStop, Selection);
         }
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             if (CurrentEditor != null)
             {
@@ -2118,10 +2116,7 @@ namespace TerraViewer
             {
                return Focus.Color;
             }
-            else
-            {
-                return defaultColor;
-            }
+            return defaultColor;
         }
 
         public void SetCurrentColor(Color color)

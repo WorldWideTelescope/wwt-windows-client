@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -191,7 +193,7 @@ namespace TerraViewer
             return base.ToString();
         }
 
-        public void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public void SaveToXml(XmlTextWriter xmlWriter)
         {
             if (Target != null)
             {
@@ -209,7 +211,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public void SaveSelectedToXml(System.Xml.XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys)
+        public void SaveSelectedToXml(XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys)
         {
             TargetID = Target.GetIndentifier();
 
@@ -226,7 +228,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public void FromXml(System.Xml.XmlNode node)
+        public void FromXml(XmlNode node)
         {
             TargetID = node.Attributes["TargetID"].Value;
             TargetType = (AnimationTargetTypes)Enum.Parse(typeof(AnimationTargetTypes), node.Attributes["TargetType"].Value, true);
@@ -235,7 +237,7 @@ namespace TerraViewer
                 Expanded = bool.Parse(node.Attributes["Expanded"].Value);
             }
 
-            foreach (System.Xml.XmlNode child in node.ChildNodes)
+            foreach (XmlNode child in node.ChildNodes)
             {
                 var kf = new KeyGroup();
                 kf.FromXml(child);
@@ -244,9 +246,9 @@ namespace TerraViewer
             }
         }
 
-        public void PasteFromXML(System.Xml.XmlNode node, bool atTime, double time)
+        public void PasteFromXML(XmlNode node, bool atTime, double time)
         {
-            foreach (System.Xml.XmlNode child in node.ChildNodes)
+            foreach (XmlNode child in node.ChildNodes)
             {
                 var kf = new KeyGroup();
                 kf.FromXml(child);
@@ -262,7 +264,7 @@ namespace TerraViewer
                                 key.Time = time;
                             }
 
-                            this.KeyFrames[i].AddKey(key);
+                            KeyFrames[i].AddKey(key);
                         }
                     }
                 }
@@ -300,21 +302,21 @@ namespace TerraViewer
         public AnimationTarget Clone(Overlay newTarget)
         {
             var sb = new StringBuilder();
-            using (var textWriter = new System.IO.StringWriter(sb))
+            using (var textWriter = new StringWriter(sb))
             {
-                using (var writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
 
-                    this.SaveToXml(writer);
+                    SaveToXml(writer);
                 }
             }
 
-            var doc = new System.Xml.XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(sb.ToString());
 
             var at = new AnimationTarget(owner);
-            System.Xml.XmlNode node = doc["KeyFrames"];
+            XmlNode node = doc["KeyFrames"];
             at.FromXml(node);
             at.Target = newTarget;
             at.TargetID = newTarget.GetIndentifier();

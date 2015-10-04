@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,7 +14,7 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Text = Language.GetLocalizedText(863, "Histogram");
+            Text = Language.GetLocalizedText(863, "Histogram");
         }
 
         static Histogram singleton;
@@ -38,10 +35,7 @@ namespace TerraViewer
                         HideHistogram();
                     return;
                     }
-                    else
-                    {
-                        singleton.Hide();
-                    }
+                    singleton.Hide();
                 }
                 singleton.Top = pnt.Y - singleton.Height;
                 singleton.Left = pnt.X;
@@ -161,7 +155,7 @@ namespace TerraViewer
             var low = image.MinVal + (lowPosition * factor);
             var hi = image.MinVal + (highPosition * factor);
 
-            this.Tile = (SkyImageTile)TileCache.GetTile(Tile.Level, Tile.X, Tile.Y, Tile.Dataset, null);
+            Tile = (SkyImageTile)TileCache.GetTile(Tile.Level, Tile.X, Tile.Y, Tile.Dataset, null);
             updateTimer.Enabled = false;
             updateTimer.Enabled = true;
             image.lastMax = highPosition;
@@ -214,7 +208,7 @@ namespace TerraViewer
                         var val = .000001;
                         for (var i = lowPosition; i != highPosition; i += jump)
                         {
-                            Curve.Add(new PointF((float)i, (float)(150 - (Math.Log(val) * factor))));
+                            Curve.Add(new PointF(i, (float)(150 - (Math.Log(val) * factor))));
                             val += step;
                         }
                     }
@@ -229,7 +223,7 @@ namespace TerraViewer
                         var val = .000001;
                         for (var i = lowPosition; i != highPosition; i += jump)
                         {
-                            Curve.Add(new PointF((float)i, (float)(150 - (Math.Pow(val, 2) * factor))));
+                            Curve.Add(new PointF(i, (float)(150 - (Math.Pow(val, 2) * factor))));
                             val += step;
                         }
                     }
@@ -245,7 +239,7 @@ namespace TerraViewer
                         var val = .000001;
                         for (var i = lowPosition; i != highPosition; i += jump)
                         {
-                            Curve.Add(new PointF((float)i, (float)(150 - (Math.Sqrt(val) * factor))));
+                            Curve.Add(new PointF(i, (float)(150 - (Math.Sqrt(val) * factor))));
                             val += step;
                         }
                     }
@@ -266,7 +260,7 @@ namespace TerraViewer
 
         private void scaleType_SelectionChanged(object sender, EventArgs e)
         {
-            this.Refresh();
+            Refresh();
 
             if (image != null && scaleType.SelectedIndex != (int)image.lastScale)
             {

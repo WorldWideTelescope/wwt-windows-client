@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml.Serialization;
+using MIDI;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -21,31 +21,31 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.Control.Text = Language.GetLocalizedText(1159, "Control");
-            this.Binding.Text = Language.GetLocalizedText(1161, "Binding");
-            this.Repeat.Text = Language.GetLocalizedText(1168, "Repeat");
-            this.Property.Text = Language.GetLocalizedText(1166, "Property");
-            this.BindTypeLabel.Text = Language.GetLocalizedText(1165, "Bind Type");
-            this.BindingTargetTypeLabel.Text = Language.GetLocalizedText(1164, "Binding Target Type");
-            this.label1.Text = Language.GetLocalizedText(1318, "Left Sholder");
-            this.label2.Text = Language.GetLocalizedText(1319, "Left Trigger");
-            this.label3.Text = Language.GetLocalizedText(1320, "Right Trigger");
-            this.label6.Text = Language.GetLocalizedText(1321, "Right Sholder");
-            this.label7.Text = Language.GetLocalizedText(1322, "A, B, X, Y Buttons");
-            this.label8.Text = Language.GetLocalizedText(1323, "Right Thumb");
-            this.label9.Text = Language.GetLocalizedText(1324, "D-Pad");
-            this.label10.Text = Language.GetLocalizedText(1325, "Left Thumb");
-            this.label11.Text = Language.GetLocalizedText(913, "Back");
-            this.label12.Text = Language.GetLocalizedText(1326, "Start");
-            this.modeLabel.Text = Language.GetLocalizedText(1327, "Mode");
-            this.export.Text = Language.GetLocalizedText(1328, "Export");
-            this.Import.Text = Language.GetLocalizedText(1329, "Import");
-            this.RepeatCheckbox.Text = Language.GetLocalizedText(1168, "Repeat");
-            this.ModeDependentMaps.Text = Language.GetLocalizedText(1330, "Use Mode Dependent Mappings");
-            this.UseCustomMaps.Text = Language.GetLocalizedText(1331, "Use Custom Mappings");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.Text = Language.GetLocalizedText(1332, "XBox 360 Controller Configuration");
+            Control.Text = Language.GetLocalizedText(1159, "Control");
+            Binding.Text = Language.GetLocalizedText(1161, "Binding");
+            Repeat.Text = Language.GetLocalizedText(1168, "Repeat");
+            Property.Text = Language.GetLocalizedText(1166, "Property");
+            BindTypeLabel.Text = Language.GetLocalizedText(1165, "Bind Type");
+            BindingTargetTypeLabel.Text = Language.GetLocalizedText(1164, "Binding Target Type");
+            label1.Text = Language.GetLocalizedText(1318, "Left Sholder");
+            label2.Text = Language.GetLocalizedText(1319, "Left Trigger");
+            label3.Text = Language.GetLocalizedText(1320, "Right Trigger");
+            label6.Text = Language.GetLocalizedText(1321, "Right Sholder");
+            label7.Text = Language.GetLocalizedText(1322, "A, B, X, Y Buttons");
+            label8.Text = Language.GetLocalizedText(1323, "Right Thumb");
+            label9.Text = Language.GetLocalizedText(1324, "D-Pad");
+            label10.Text = Language.GetLocalizedText(1325, "Left Thumb");
+            label11.Text = Language.GetLocalizedText(913, "Back");
+            label12.Text = Language.GetLocalizedText(1326, "Start");
+            modeLabel.Text = Language.GetLocalizedText(1327, "Mode");
+            export.Text = Language.GetLocalizedText(1328, "Export");
+            Import.Text = Language.GetLocalizedText(1329, "Import");
+            RepeatCheckbox.Text = Language.GetLocalizedText(1168, "Repeat");
+            ModeDependentMaps.Text = Language.GetLocalizedText(1330, "Use Mode Dependent Mappings");
+            UseCustomMaps.Text = Language.GetLocalizedText(1331, "Use Custom Mappings");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            Text = Language.GetLocalizedText(1332, "XBox 360 Controller Configuration");
         }
 
         static XBoxConfig()
@@ -132,7 +132,7 @@ namespace TerraViewer
 
             var map = xboxMaps[mode].ControlMaps[(int)id];
 
-            map.BindingA.DispatchMessage(MIDI.MidiMessage.NoteOn, -1, 0, value * 127);
+            map.BindingA.DispatchMessage(MidiMessage.NoteOn, -1, 0, value * 127);
 
 
             return !map.AutoRepeat;
@@ -311,14 +311,14 @@ namespace TerraViewer
 
         private void OK_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Close();           
+            DialogResult = DialogResult.Cancel;
+            Close();           
         }
 
         static List<XboxMap> xboxMaps = new List<XboxMap>();
@@ -535,7 +535,7 @@ namespace TerraViewer
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             mouseDown = false;
-            System.Diagnostics.Debug.Write("g.DrawLine(Pens.White," + pnt1.X.ToString() + "," + pnt1.Y.ToString() + "," + pnt2.X.ToString() + "," + pnt2.Y.ToString() + ");");
+            Debug.Write("g.DrawLine(Pens.White," + pnt1.X + "," + pnt1.Y + "," + pnt2.X + "," + pnt2.Y + ");");
 
         }
 
@@ -543,7 +543,7 @@ namespace TerraViewer
         {
             var g = e.Graphics;
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
 
             g.DrawLine(Pens.White, pnt1, pnt2);
 
@@ -589,7 +589,7 @@ namespace TerraViewer
             {
                 if (string.IsNullOrEmpty(midiMapPath))
                 {
-                    midiMapPath = string.Format("{0}\\WWT Xbox Controller Maps\\", System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                    midiMapPath = string.Format("{0}\\WWT Xbox Controller Maps\\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 }
                 return midiMapPath;
             }
@@ -646,7 +646,7 @@ namespace TerraViewer
                 {
                     Directory.CreateDirectory(XboxMapPath);
                 }
-                File.WriteAllText(filename, Properties.Resources.XboxDefaults);
+                File.WriteAllText(filename, Resources.XboxDefaults);
             }
 
             return LoadMapPack(filename);

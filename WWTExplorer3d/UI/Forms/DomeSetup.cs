@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,18 +14,18 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(942, "Dome Tilt");
-            this.domeTypeLabel.Text = Language.GetLocalizedText(943, "Dome Type");
-            this.CustomFilenameLabel.Text = Language.GetLocalizedText(944, "Custom Warp Filename");
-            this.largeTextures.Text = " " + Language.GetLocalizedText(945, "Large Textures");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.Text = Language.GetLocalizedText(575, "Dome Setup");
-            this.browseButton.Text = Language.GetLocalizedText(884, "Browse");
-            this.flatScreenWarp.Text = Language.GetLocalizedText(1353, "Warp from flat screen");
-            this.label2.Text = Language.GetLocalizedText(1354, "Dome Alt");
-            this.DomeAz.Name = Language.GetLocalizedText(1355, "DomeAz");
-            this.DomeNorth.Text = Language.GetLocalizedText(1356, "Face North in Sky Mode");
-            this.label4.Text = Language.GetLocalizedText(1357, "Scriptable Parameters");
+            label1.Text = Language.GetLocalizedText(942, "Dome Tilt");
+            domeTypeLabel.Text = Language.GetLocalizedText(943, "Dome Type");
+            CustomFilenameLabel.Text = Language.GetLocalizedText(944, "Custom Warp Filename");
+            largeTextures.Text = " " + Language.GetLocalizedText(945, "Large Textures");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            Text = Language.GetLocalizedText(575, "Dome Setup");
+            browseButton.Text = Language.GetLocalizedText(884, "Browse");
+            flatScreenWarp.Text = Language.GetLocalizedText(1353, "Warp from flat screen");
+            label2.Text = Language.GetLocalizedText(1354, "Dome Alt");
+            DomeAz.Name = Language.GetLocalizedText(1355, "DomeAz");
+            DomeNorth.Text = Language.GetLocalizedText(1356, "Face North in Sky Mode");
+            label4.Text = Language.GetLocalizedText(1357, "Scriptable Parameters");
 
         }
 
@@ -64,7 +60,7 @@ namespace TerraViewer
             {
                 Properties.Settings.Default.DomeTypeIndex = 0;
             }
-            this.Close();
+            Close();
         }
 
         private void largeTextures_CheckedChanged(object sender, EventArgs e)
@@ -99,7 +95,7 @@ namespace TerraViewer
             tiltEdit.Text = Properties.Settings.Default.DomeTilt.ToString();
             domeTilt.Value = (int)Properties.Settings.Default.DomeTilt;
             largeTextures.Checked = Properties.Settings.Default.LargeDomeTextures;
-            domeTypeCombo.Items.AddRange(new string[] { "Fisheye", "Mirrordome 16:9", "Mirrordome 4:3", "<Custom Warp>" });
+            domeTypeCombo.Items.AddRange(new[] { "Fisheye", "Mirrordome 16:9", "Mirrordome 4:3", "<Custom Warp>" });
             domeTypeCombo.SelectedIndex = Properties.Settings.Default.DomeTypeIndex;
             customWarpFilename.Text = Properties.Settings.Default.CustomWarpFilename;
             flatScreenWarp.Checked = Properties.Settings.Default.FlatScreenWarp;

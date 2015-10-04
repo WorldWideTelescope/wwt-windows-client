@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,8 +12,8 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(1052, "Overlay Item List");
-            this.Text = Language.GetLocalizedText(1053, "Overlay List");
+            label1.Text = Language.GetLocalizedText(1052, "Overlay Item List");
+            Text = Language.GetLocalizedText(1053, "Overlay List");
         }
 
 
@@ -93,7 +87,7 @@ namespace TerraViewer
 
         private void ItemList_MouseClick(object sender, MouseEventArgs e)
         {
-            if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right)
+            if (MouseButtons == MouseButtons.Right)
             {
                 if (Earth3d.MainWindow.TourEdit != null)
                 {
@@ -123,7 +117,7 @@ namespace TerraViewer
                 return;
             } 
             
-            if (!(Control.ModifierKeys == Keys.Control || Control.ModifierKeys == Keys.Shift))
+            if (!(ModifierKeys == Keys.Control || ModifierKeys == Keys.Shift))
             {
                 foreach (TreeNode child in ItemList.Nodes)
                 {
@@ -142,7 +136,7 @@ namespace TerraViewer
             Earth3d.MainWindow.TourEdit.TourEditorUI.Selection.AddSelection(e.Node.Tag as Overlay);
             Earth3d.MainWindow.TourEdit.TourEditorUI.Focus = e.Node.Tag as Overlay;
 
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 if (Earth3d.MainWindow.TourEdit != null)
                 {

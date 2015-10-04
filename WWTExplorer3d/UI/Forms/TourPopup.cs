@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using TerraViewer.Properties;
+
 namespace TerraViewer
 {
     public partial class TourPopup : Form
@@ -34,7 +32,7 @@ namespace TerraViewer
             }
 
             endTour = new TourPopup();
-            endTour.PopupType = TourPopup.PopupTypes.TourOver;
+            endTour.PopupType = PopupTypes.TourOver;
             var tourResult = FolderBrowser.GetRelatedTour(tour.Id);
             if (tourResult == null)
             {
@@ -68,7 +66,7 @@ namespace TerraViewer
             }
 
             endTour = new TourPopup();
-            endTour.PopupType = TourPopup.PopupTypes.TourOver;
+            endTour.PopupType = PopupTypes.TourOver;
             var tourResult = FolderBrowser.GetRelatedTour(tour.Id);
             if (tourResult == null)
             {
@@ -101,16 +99,16 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.ratingLabel.Text = Language.GetLocalizedText(459, "Rating:");
-            this.runLengthLabel.Text = Language.GetLocalizedText(460, "Run Length:");
-            this.toolTips.SetToolTip(this.averageStars, Language.GetLocalizedText(461, "Average rating from users"));
-            this.toolTips.SetToolTip(this.MyRating, Language.GetLocalizedText(462, "Click to set your own rating."));
-            this.yourRatingLabel.Text = Language.GetLocalizedText(463, "Your Rating:");
-            this.CloseTour.Text = Language.GetLocalizedText(464, "Close Tour");
-            this.label3.Text = Language.GetLocalizedText(465, "Related Tours:");
-            this.WatchAgain.Text = Language.GetLocalizedText(466, "Watch Again");
-            this.relatedTours.AddText = Language.GetLocalizedText(161, "Add New Item");
-            this.relatedTours.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+            ratingLabel.Text = Language.GetLocalizedText(459, "Rating:");
+            runLengthLabel.Text = Language.GetLocalizedText(460, "Run Length:");
+            toolTips.SetToolTip(averageStars, Language.GetLocalizedText(461, "Average rating from users"));
+            toolTips.SetToolTip(MyRating, Language.GetLocalizedText(462, "Click to set your own rating."));
+            yourRatingLabel.Text = Language.GetLocalizedText(463, "Your Rating:");
+            CloseTour.Text = Language.GetLocalizedText(464, "Close Tour");
+            label3.Text = Language.GetLocalizedText(465, "Related Tours:");
+            WatchAgain.Text = Language.GetLocalizedText(466, "Watch Again");
+            relatedTours.AddText = Language.GetLocalizedText(161, "Add New Item");
+            relatedTours.EmptyAddText = Language.GetLocalizedText(162, "No Results");
         }
         ITourResult tourResult;
 
@@ -160,8 +158,8 @@ namespace TerraViewer
                 runLengthLabel.Visible = false;
                 runLength.Visible = false;
 
-                Left = (Earth3d.MainWindow.RenderWindow.ClientRectangle.Width - this.Width) / 2;
-                Top = (Earth3d.MainWindow.RenderWindow.ClientRectangle.Height - this.Height) / 2;
+                Left = (Earth3d.MainWindow.RenderWindow.ClientRectangle.Width - Width) / 2;
+                Top = (Earth3d.MainWindow.RenderWindow.ClientRectangle.Height - Height) / 2;
 
                 MyRating.Stars = GetMyRating(tourResult.Id);
             };
@@ -199,24 +197,24 @@ namespace TerraViewer
             {
                 orgUrl.Text = tourResult.OrgName;
             }
-            this.ttTourPopup.SetToolTip(TourTitle, tourResult.Title);
+            ttTourPopup.SetToolTip(TourTitle, tourResult.Title);
 
 
             var rect = Screen.GetWorkingArea(this);
 
-            if (this.Left + this.Width > rect.Width)
+            if (Left + Width > rect.Width)
             {
-                this.Left -= (this.Left + this.Width) - rect.Width;
+                Left -= (Left + Width) - rect.Width;
             }
 
             var ts = new TimeSpan(0,0,(int)tourResult.LengthInSeconds);
-            this.runLength.Text = String.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds);
+            runLength.Text = String.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds);
 
             fadein = new BlendState(false, 500);
             fadein.TargetState = true;
             if (!string.IsNullOrEmpty(tourResult.RelatedTours))
             {
-                var relatedList = tourResult.RelatedTours.Split(new char[] { ';' });
+                var relatedList = tourResult.RelatedTours.Split(new[] { ';' });
                 foreach (var id in relatedList)
                 {
                     var relatedItem = FolderBrowser.GetRelatedTour(id);
@@ -292,24 +290,24 @@ namespace TerraViewer
 
         private void Preview_MouseEnter(object sender, EventArgs e)
         {
-            Preview.Image = global::TerraViewer.Properties.Resources.button_play_hover;
+            Preview.Image = Resources.button_play_hover;
 
         }
 
         private void Preview_MouseLeave(object sender, EventArgs e)
         {
-            Preview.Image = global::TerraViewer.Properties.Resources.button_play_normal;
+            Preview.Image = Resources.button_play_normal;
 
         }
 
         private void Preview_MouseDown(object sender, MouseEventArgs e)
         {
-            Preview.Image = global::TerraViewer.Properties.Resources.button_play_pressed;
+            Preview.Image = Resources.button_play_pressed;
         }
 
         private void Preview_MouseUp(object sender, MouseEventArgs e)
         {
-            Preview.Image = global::TerraViewer.Properties.Resources.button_play_hover;
+            Preview.Image = Resources.button_play_hover;
         }
         BlendState fadein = new BlendState(false, 500);
         private void fadeInTimer_Tick(object sender, EventArgs e)
@@ -331,7 +329,7 @@ namespace TerraViewer
             {
                 ClosedTour.Invoke(this, new EventArgs());
             }
-            this.DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
 
             SendUpdatedRating();
 
@@ -344,7 +342,7 @@ namespace TerraViewer
             {
                 LaunchTour.Invoke(this, new EventArgs());
             }
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
       
             SendUpdatedRating();
    
@@ -366,7 +364,7 @@ namespace TerraViewer
 
                 var userId = Properties.Settings.Default.UserRatingGUID.ToString("D");
                 SaveTourRating();
-                UiTools.SendAsyncWebMessage(String.Format("http://www.worldwidetelescope.org/wwtweb/PostRatingFeedback.aspx?q={0},{1},{2}", tourResult.Id, userId, myStars.ToString()));
+                UiTools.SendAsyncWebMessage(String.Format("http://www.worldwidetelescope.org/wwtweb/PostRatingFeedback.aspx?q={0},{1},{2}", tourResult.Id, userId, myStars));
             }
         }
 
@@ -380,7 +378,7 @@ namespace TerraViewer
                     Directory.CreateDirectory(directory);
                 }
 
-                File.WriteAllText(directory + tourResult.Id.ToString() + ".rating", myStars.ToString());
+                File.WriteAllText(directory + tourResult.Id + ".rating", myStars.ToString());
             }
             catch
             {
@@ -393,7 +391,7 @@ namespace TerraViewer
 
             try
             {
-                var filename = directory + tourResult.Id.ToString() + ".rating";
+                var filename = directory + tourResult.Id + ".rating";
                 if (File.Exists(filename))
                 {
                     value = File.ReadAllText(filename);
@@ -425,7 +423,7 @@ namespace TerraViewer
             {
                 FolderBrowser.LaunchTour((Tour)e);
                 DialogResult = DialogResult.Yes;
-                this.Close();
+                Close();
             }
         }
 

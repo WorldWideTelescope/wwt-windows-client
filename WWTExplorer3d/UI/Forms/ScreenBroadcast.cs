@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
@@ -20,14 +17,14 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Broadcast.Text = Language.GetLocalizedText(1010, "Broadcast Screen");
-            this.label1.Text = Language.GetLocalizedText(1011, "Frame Rate");
-            this.label2.Text = Language.GetLocalizedText(1012, "When used in a Multi-Channel environment you can broadcast the screen contents from local applications to show up on the projected display as a window.");
-            this.label3.Text = Language.GetLocalizedText(763, "Altitude");
-            this.label4.Text = Language.GetLocalizedText(765, "Azimuth");
-            this.scalelabel.Text = Language.GetLocalizedText(920, "Scale");
-            this.Text = Language.GetLocalizedText(1013, "ScreenBroadcast");
-            this.ShowLocally.Text = Language.GetLocalizedText(1131, "Show on Console");
+            Broadcast.Text = Language.GetLocalizedText(1010, "Broadcast Screen");
+            label1.Text = Language.GetLocalizedText(1011, "Frame Rate");
+            label2.Text = Language.GetLocalizedText(1012, "When used in a Multi-Channel environment you can broadcast the screen contents from local applications to show up on the projected display as a window.");
+            label3.Text = Language.GetLocalizedText(763, "Altitude");
+            label4.Text = Language.GetLocalizedText(765, "Azimuth");
+            scalelabel.Text = Language.GetLocalizedText(920, "Scale");
+            Text = Language.GetLocalizedText(1013, "ScreenBroadcast");
+            ShowLocally.Text = Language.GetLocalizedText(1131, "Show on Console");
 
         }  
         
@@ -63,7 +60,7 @@ namespace TerraViewer
 
             if (CaptureThread == null)
             {
-                CaptureThread = new Thread(new ThreadStart(CaptureThreadFunction));
+                CaptureThread = new Thread(CaptureThreadFunction);
                 CaptureThread.IsBackground = true;
                 CaptureThread.Start();
             }
@@ -114,10 +111,10 @@ namespace TerraViewer
 
         public static bool Capturing
         {
-            get { return ScreenBroadcast.capturing; }
+            get { return capturing; }
             set
             {
-                if (value != ScreenBroadcast.capturing)
+                if (value != capturing)
                 {
                    
                     if (value)
@@ -128,7 +125,7 @@ namespace TerraViewer
                     {
                         Shutdown();
                     }
-                    ScreenBroadcast.capturing = value;
+                    capturing = value;
                 }
             }
         }
@@ -170,7 +167,7 @@ namespace TerraViewer
 
         private static void ShutdownClients()
         {
-            NetControl.SendCommand(String.Format("SCREEN,{0},0,0,0,,", Earth3d.MainWindow.Config.ClusterID.ToString()));
+            NetControl.SendCommand(String.Format("SCREEN,{0},0,0,0,,", Earth3d.MainWindow.Config.ClusterID));
             CleanUpImageSets();
 
         }
@@ -203,14 +200,14 @@ namespace TerraViewer
 
                     var ms = new MemoryStream();
 
-                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    bmp.Save(ms, ImageFormat.Jpeg);
 
                     ScreenImage = ms.ToArray();
                     ms.Dispose();
                     ms = null;
                     var url = string.Format(String.Format("http://{0}:5050/images/{1}/screenshot.png",
-                                MyWebServer.IpAddress.ToString(),
-                                frameNumber.ToString()));
+                                MyWebServer.IpAddress,
+                                frameNumber));
 
 
 
@@ -218,8 +215,8 @@ namespace TerraViewer
                         Properties.Settings.Default.ScreenOverlayAlt,
                         Properties.Settings.Default.ScreenOverlayAz,
                         Properties.Settings.Default.ScreenOverlayScale,
-                        MyWebServer.IpAddress.ToString(),
-                        Earth3d.MainWindow.Config.ClusterID.ToString(), frameNumber.ToString()));
+                        MyWebServer.IpAddress,
+                        Earth3d.MainWindow.Config.ClusterID, frameNumber));
 
 
                     if (Properties.Settings.Default.ScreenOverlayShowLocal)

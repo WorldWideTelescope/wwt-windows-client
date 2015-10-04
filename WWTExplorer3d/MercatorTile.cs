@@ -1,15 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.IO.Compression;
-using Microsoft.Bits.TileIO.GeometryEncoderDecoder;
 using DSMRender;
 
 namespace TerraViewer
@@ -165,12 +157,12 @@ namespace TerraViewer
         protected void ComputeBoundingSphere(MercatorTile parent, double altitude)
         {
 
-            var tileDegrees = 360 / (Math.Pow(2, this.level));
+            var tileDegrees = 360 / (Math.Pow(2, level));
 
             latMin = AbsoluteMetersToLatAtZoom(y * 256, level);
             latMax = AbsoluteMetersToLatAtZoom((y + 1) * 256, level);
-            lngMin = (((double)this.x * tileDegrees) - 180.0);
-            lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            lngMin = ((x * tileDegrees) - 180.0);
+            lngMax = (((x + 1) * tileDegrees) - 180.0);
 
             var latCenter = AbsoluteMetersToLatAtZoom(((y * 2) + 1) * 256, level + 1);
             var lngCenter = (lngMin + lngMax) / 2.0;
@@ -190,7 +182,7 @@ namespace TerraViewer
 
             if (parent != null && parent.DemData != null)
             {
-                this.sphereCenter = GeoTo3dWithAltitude(latCenter, lngCenter, parent.GetAltitudeAtLatLng(latCenter, lngCenter, 1), false);
+                sphereCenter = GeoTo3dWithAltitude(latCenter, lngCenter, parent.GetAltitudeAtLatLng(latCenter, lngCenter, 1), false);
                 TopLeft = GeoTo3dWithAltitude(latMin, lngMin, parent.GetAltitudeAtLatLng(latMin, lngMin, 1), false);
                 BottomRight = GeoTo3dWithAltitude(latMax, lngMax, parent.GetAltitudeAtLatLng(latMax, lngMax, 1), false);
                 TopRight = GeoTo3dWithAltitude(latMin, lngMax, parent.GetAltitudeAtLatLng(latMin, lngMax, 1), false);
@@ -198,7 +190,7 @@ namespace TerraViewer
             }
             else
             {
-                this.sphereCenter = GeoTo3dWithAltitude(latCenter, lngCenter, altitude, false);
+                sphereCenter = GeoTo3dWithAltitude(latCenter, lngCenter, altitude, false);
 
                 TopLeft = GeoTo3dWithAltitude(latMin, lngMin, altitude, false);
                 BottomRight = GeoTo3dWithAltitude(latMax, lngMax, altitude, false);
@@ -231,7 +223,7 @@ namespace TerraViewer
             distVect4.Subtract(sphereCenter);
             
             
-            this.sphereRadius = Math.Max(Math.Max(distVect1.Length(),distVect2.Length()),Math.Max(distVect3.Length(),distVect4.Length()));
+            sphereRadius = Math.Max(Math.Max(distVect1.Length(),distVect2.Length()),Math.Max(distVect3.Length(),distVect4.Length()));
             tileDegrees = lngMax - lngMin;
 
           //  if (level > 14)
@@ -250,7 +242,7 @@ namespace TerraViewer
                 double radius = 0;
                 if (dsm != null)
                 {
-                    texture = dsm.LoadMeshFile(this.filename, localCenter, out center, out radius);
+                    texture = dsm.LoadMeshFile(filename, localCenter, out center, out radius);
                 }
                 if (texture != null)
                 {
@@ -317,7 +309,7 @@ namespace TerraViewer
 
         public override bool IsPointInTile(double lat, double lng)
         {
-            if ( !this.DemReady || this.DemData == null || lat < Math.Min(latMin, latMax) || lat > Math.Max(latMax, latMin) || lng < Math.Min(lngMin, lngMax) || lng > Math.Max(lngMin, lngMax))
+            if ( !DemReady || DemData == null || lat < Math.Min(latMin, latMax) || lat > Math.Max(latMax, latMin) || lng < Math.Min(lngMin, lngMax) || lng > Math.Max(lngMin, lngMax))
             {
                 return false;
             }
@@ -342,10 +334,7 @@ namespace TerraViewer
                             {
                                 return retVal;
                             }
-                            else
-                            {
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
@@ -389,10 +378,7 @@ namespace TerraViewer
                                     {
                                         return retVal;
                                     }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
                         }
@@ -450,12 +436,12 @@ namespace TerraViewer
                 double lat, lng;
 
                 var index = 0;
-                var tileDegrees = 360 / (Math.Pow(2, this.level));
+                var tileDegrees = 360 / (Math.Pow(2, level));
 
                 latMin = AbsoluteMetersToLatAtZoom(y * 256, level);
                 latMax = AbsoluteMetersToLatAtZoom((y + 1) * 256, level);
-                lngMin = (((double)this.x * tileDegrees) - 180.0);
-                lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+                lngMin = ((x * tileDegrees) - 180.0);
+                lngMax = (((x + 1) * tileDegrees) - 180.0);
 
                 var latCenter = AbsoluteMetersToLatAtZoom(((y * 2) + 1) * 256, level + 1);
                 var lngCenter = (lngMin / lngMax) / 2;
@@ -490,7 +476,7 @@ namespace TerraViewer
                     {
                         if (x1 != SubDivisions)
                         {
-                            lng = lngMin + (textureStep * tileDegrees * (double)x1);
+                            lng = lngMin + (textureStep * tileDegrees * x1);
                         }
                         else
                         {
@@ -507,7 +493,7 @@ namespace TerraViewer
 
                          verts[index].Tv = (float)((AbsoluteLatToMetersAtZoom(lat, level) - (y * 256)) / 256f) + .002f;
 
-                        sb.Append(verts[index].Tv.ToString() + ", " + verts[index].Tu.ToString() + "\n");
+                        sb.Append(verts[index].Tv + ", " + verts[index].Tu + "\n");
                         demIndex++;
 
                     }
@@ -531,7 +517,7 @@ namespace TerraViewer
                     {
                         if (x1 != SubDivisions)
                         {
-                            lng = lngMin + (textureStep * tileDegrees * (double)x1);
+                            lng = lngMin + (textureStep * tileDegrees * x1);
                         }
                         else
                         {
@@ -549,7 +535,7 @@ namespace TerraViewer
                         verts[index].Tv = (float)((AbsoluteLatToMetersAtZoom(lat, level) - (y * 256)) / 256f) + .002f;
 
 
-                        sb.Append(verts[index].Tv.ToString() + ", " + verts[index].Tu.ToString()  + "\n");
+                        sb.Append(verts[index].Tv + ", " + verts[index].Tu  + "\n");
 
                         demIndex++;
                     }
@@ -655,7 +641,7 @@ namespace TerraViewer
             this.dataset = dataset;
             if (dataset.MeanRadius != 0)
             {
-                this.DemScaleFactor = dataset.MeanRadius;
+                DemScaleFactor = dataset.MeanRadius;
             }
             else
             {
@@ -849,7 +835,7 @@ namespace TerraViewer
         public static double AbsoluteMetersToLatAtZoom(int y, int zoom)
         {
             var metersPerPixel = MetersPerPixel2(zoom);
-            var metersY = (double)OFFSET_METERS - (double)y * metersPerPixel;
+            var metersY = OFFSET_METERS - y * metersPerPixel;
 
             return (RadToDeg(Math.PI / 2 - 2 * Math.Atan(Math.Exp(0 - metersY / EARTH_RADIUS))));
         }
@@ -903,7 +889,7 @@ namespace TerraViewer
 
         public static double MetersPerPixel2(int zoom)
         {
-            return (BASE_METERS_PER_PIXEL / (double)(1 << zoom));
+            return (BASE_METERS_PER_PIXEL / (1 << zoom));
         }
 
         private static double RadToDeg(double rad)

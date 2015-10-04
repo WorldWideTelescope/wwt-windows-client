@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,11 +12,11 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(816, "Trajectory Reference Frames are based on a time series table of Julian Date/Times and heliocentric X,Y,Z coordinates in the referenced units. The reference frame will orient itself on the path described based on interpolating positions for the current time.");
-            this.UnitsLabel.Text = Language.GetLocalizedText(817, "Units");
-            this.Import.Text = Language.GetLocalizedText(818, "Import Path");
-            this.EndDateRangeLabel.Text = Language.GetLocalizedText(819, "End Date Range");
-            this.beginDateRangeLabel.Text = Language.GetLocalizedText(820, "Begin Date Range");
+            label1.Text = Language.GetLocalizedText(816, "Trajectory Reference Frames are based on a time series table of Julian Date/Times and heliocentric X,Y,Z coordinates in the referenced units. The reference frame will orient itself on the path described based on interpolating positions for the current time.");
+            UnitsLabel.Text = Language.GetLocalizedText(817, "Units");
+            Import.Text = Language.GetLocalizedText(818, "Import Path");
+            EndDateRangeLabel.Text = Language.GetLocalizedText(819, "End Date Range");
+            beginDateRangeLabel.Text = Language.GetLocalizedText(820, "Begin Date Range");
         }
         ReferenceFrame frame;
         public override void SetData(object data)

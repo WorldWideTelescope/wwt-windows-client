@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -13,7 +8,7 @@ namespace TerraViewer
         public OpacityPopup()
         {
             InitializeComponent();
-            valueSlider.MouseCaptureChanged += new EventHandler(OpacityPopup_MouseCaptureChanged);
+            valueSlider.MouseCaptureChanged += OpacityPopup_MouseCaptureChanged;
         }
 
         void OpacityPopup_MouseCaptureChanged(object sender, EventArgs e)
@@ -51,7 +46,7 @@ namespace TerraViewer
 
         private void valueSlider_ValueChanged(object sender, EventArgs e)
         {
-            opacity = (float)valueSlider.Value / 100.0f;
+            opacity = valueSlider.Value / 100.0f;
 
             target.Opacity = opacity;
 

@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -17,15 +11,15 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.longRALable.Text = Language.GetLocalizedText(840, "Longitude");
-            this.latDecLabel.Text = Language.GetLocalizedText(839, "Latitude");
-            this.AltitudeDepthLabel.Text = Language.GetLocalizedText(838, "Altitude / Depth / Distance");
-            this.label1.Text = Language.GetLocalizedText(837, "Spatial Coordinates");
-            this.altDepthLabel.Text = Language.GetLocalizedText(941, "Altitude / Depth Column");
-            this.altDepthTypeLabel.Text = Language.GetLocalizedText(613, "Type");
-            this.label2.Text = Language.GetLocalizedText(817, "Units");
-            this.raUnitsLabel.Text = Language.GetLocalizedText(817, "Units");
-            this.label3.Text = Language.GetLocalizedText(836, "Use the drop-downs to select the columns that specify the coordinates, select the altitude/depth mapping type, and optionally the column that specifies altitude/depth and the units in which the data is specified, Positive depth values offset downward. Positive altitude values offset upward.");
+            longRALable.Text = Language.GetLocalizedText(840, "Longitude");
+            latDecLabel.Text = Language.GetLocalizedText(839, "Latitude");
+            AltitudeDepthLabel.Text = Language.GetLocalizedText(838, "Altitude / Depth / Distance");
+            label1.Text = Language.GetLocalizedText(837, "Spatial Coordinates");
+            altDepthLabel.Text = Language.GetLocalizedText(941, "Altitude / Depth Column");
+            altDepthTypeLabel.Text = Language.GetLocalizedText(613, "Type");
+            label2.Text = Language.GetLocalizedText(817, "Units");
+            raUnitsLabel.Text = Language.GetLocalizedText(817, "Units");
+            label3.Text = Language.GetLocalizedText(836, "Use the drop-downs to select the columns that specify the coordinates, select the altitude/depth mapping type, and optionally the column that specifies altitude/depth and the units in which the data is specified, Positive depth values offset downward. Positive altitude values offset upward.");
         }
         TimeSeriesLayer layer;
 

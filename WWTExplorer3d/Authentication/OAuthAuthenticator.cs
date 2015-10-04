@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Forms;
 using MicrosoftAccount.WindowsForms;
 
 namespace TerraViewer.Authentication
@@ -14,7 +15,7 @@ namespace TerraViewer.Authentication
         private const string msa_client_secret = "Ewb5SNjRBfzBDy5Ityx-nO4-kPAIwLrH";
 
 
-        public static async Task<OAuthTicket> SignInToMicrosoftAccount(System.Windows.Forms.IWin32Window parentWindow)
+        public static async Task<OAuthTicket> SignInToMicrosoftAccount(IWin32Window parentWindow)
         {
             var oldRefreshToken = Properties.Settings.Default.RefreshToken;
             AppTokenResult appToken = null;

@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TerraViewer
 {
-    class Settings : TerraViewer.ISettings, IScriptable
+    class Settings : ISettings, IScriptable
     {
         static readonly ISettings active = new Settings();
 
@@ -24,11 +22,7 @@ namespace TerraViewer
                 {
                     return tourSettings;
                 }
-                else
-                {
-                    return Settings.active;
-                }
-
+                return active;
             }
         }
 
@@ -36,12 +30,12 @@ namespace TerraViewer
 
         internal static ISettings TourSettings
         {
-            get { return Settings.tourSettings; }
+            get { return tourSettings; }
             set
             {
-                if (Settings.TourSettings != value)
+                if (TourSettings != value)
                 {
-                    Settings.tourSettings = value;
+                    tourSettings = value;
                     Properties.Settings.Default.PulseMeForUpdate = !Properties.Settings.Default.PulseMeForUpdate;
                 }
 

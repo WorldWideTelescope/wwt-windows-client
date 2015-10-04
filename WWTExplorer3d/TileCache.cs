@@ -1,14 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System.Globalization;
 using System.Net;
 using System.IO;	
 using System.Threading;
 using System.Text;
-using System.Diagnostics;
 
 namespace TerraViewer
 {
@@ -168,7 +164,7 @@ namespace TerraViewer
 
             if (!retTile.ReadyToRender)
             {
-                TileCache.GetTileFromWeb(retTile, false);
+                GetTileFromWeb(retTile, false);
                 retTile.CreateGeometry(Earth3d.MainWindow.RenderContext11, false);
             }
 
@@ -191,14 +187,11 @@ namespace TerraViewer
             {
                 return null;
             }
-            else
-            {
-                return tiles[childKey];
-            }
+            return tiles[childKey];
         }
 
 
-        public static Tile GetCachedTile(int level, int x, int y, IImageSet dataset, Tile parent)
+	    public static Tile GetCachedTile(int level, int x, int y, IImageSet dataset, Tile parent)
         {
             if (level < dataset.BaseLevel)
             {
@@ -213,10 +206,7 @@ namespace TerraViewer
                 {
                     return null;
                 }
-                else
-                {
-                    retTile = tiles[tileKey];
-                }
+                retTile = tiles[tileKey];
             }
             catch
             {
@@ -244,7 +234,7 @@ namespace TerraViewer
 
                 if (queue.ContainsKey(tile.Key))
                 {
-                    ((Tile)queue[tile.Key]).RequestHits += hitValue;
+                    queue[tile.Key].RequestHits += hitValue;
                 }
                 else
                 {
@@ -473,17 +463,17 @@ namespace TerraViewer
 		public static void QueueThread()
 		{
             
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false);
             var fileOnly = fileOnlyThreadID == Thread.CurrentThread.ManagedThreadId;
 			while (running)
 			{
                 if (queue.Count < 1)
                 {
-                    System.Threading.Thread.Sleep(50);
+                    Thread.Sleep(50);
                 }
                 else
                 {
-                    System.Threading.Thread.Sleep(1);
+                    Thread.Sleep(1);
                 }
 
                 double minDistance = 1000000000000000000; 
@@ -516,7 +506,7 @@ namespace TerraViewer
                         if (distTemp < minDistance && (!overlayTile || thisIsOverlay))
 						{
 
-                            var test = (Tile)queue[t.Key];
+                            var test = queue[t.Key];
 
 
 
@@ -545,13 +535,13 @@ namespace TerraViewer
 				}
 				if (maxKey != 0)
 				{
-					var workTile = (Tile)queue[maxKey];
+					var workTile = queue[maxKey];
 					workTile.RequestPending = true;
-					TileCache.RequestCount++;
+					RequestCount++;
                     queueMutex.ReleaseMutex();
-					TileCache.GetTileFromWeb(workTile, true);
+					GetTileFromWeb(workTile, true);
                     queueMutex.WaitOne();
-					TileCache.RequestCount--;
+					RequestCount--;
                     workTile.RequestPending = false;
 					queue.Remove(workTile.Key);
 				}
@@ -619,12 +609,12 @@ namespace TerraViewer
 
 		public static void StartQueue()
 		{
-			if (!TileCache.running)
+			if (!running)
 			{
-				TileCache.running = true;
+				running = true;
 				for (var i = 0; i<THREAD_COUNT; i++)
 				{
-					queueThreads[i] = new Thread(new ThreadStart(TileCache.QueueThread));
+					queueThreads[i] = new Thread(QueueThread);
                     queueThreads[i].Priority = ThreadPriority.BelowNormal;
 					// Start the thread.
 					queueThreads[i].Start();
@@ -639,9 +629,9 @@ namespace TerraViewer
 
 		public static void ShutdownQueue()
 		{
-			if (TileCache.running)
+			if (running)
 			{
-				TileCache.running = false;
+				running = false;
                 WaitingTileQueueEvent.Set();
                 Thread.Sleep(2000);
 				for (var i = 0; i<THREAD_COUNT; i++)
@@ -659,7 +649,7 @@ namespace TerraViewer
         {      
             var loaded = false;
 
-            while (!loaded && TileCache.running)
+            while (!loaded && running)
             {
                 WaitingTileQueueMutex.WaitOne();
 
@@ -858,7 +848,7 @@ namespace TerraViewer
                                 var dlFile = string.Format("{0}.tmp{1}", meshFilename, NodeID);
 
 
-                                Client.DownloadFile(string.Format("http://ak.t{1}.tiles.virtualearth.net/tiles/mtx{0}?g={2}", tileID, Tile.GetServerID(retTile.X, retTile.Y), gen.ToString()), dlFile);
+                                Client.DownloadFile(string.Format("http://ak.t{1}.tiles.virtualearth.net/tiles/mtx{0}?g={2}", tileID, Tile.GetServerID(retTile.X, retTile.Y), gen), dlFile);
 
                                 try
                                 {
@@ -893,7 +883,7 @@ namespace TerraViewer
                     InitializeTile(retTile);
                 }
 			}
-			catch (System.Exception)
+			catch (Exception)
 			{
                 if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Initialize: Exception"); }
 				retTile.errored = true;
@@ -908,9 +898,9 @@ namespace TerraViewer
         public static void InitNextWaitingTile()
         {
             WaitingTileQueueMutex.WaitOne();
-            if (CountToLoad < (double)Properties.Settings.Default.TileThrottling / 60.0)
+            if (CountToLoad < Properties.Settings.Default.TileThrottling / 60.0)
             {
-                CountToLoad += (double)Properties.Settings.Default.TileThrottling / 60.0;
+                CountToLoad += Properties.Settings.Default.TileThrottling / 60.0;
             }
             WaitingTileQueueMutex.ReleaseMutex();
             WaitingTileQueueEvent.Set();
@@ -994,9 +984,6 @@ namespace TerraViewer
     }
     public class FakeMutex
     {
-        public FakeMutex()
-        {
-        }
         public void WaitOne()
         {
         }
@@ -1027,7 +1014,7 @@ namespace TerraViewer
             }
             if (url.StartsWith("http://ecn.t1.tiles.virtualearth.net/tiles/"))
             {
-                parts = url.Split(new char[] { '?' });
+                parts = url.Split(new[] { '?' });
                 if (parts.Length < 2)
                 {
                     return url;
@@ -1038,7 +1025,7 @@ namespace TerraViewer
             }
             if (url.StartsWith("http://ecn.t2.tiles.virtualearth.net/tiles/"))
             {
-                parts = url.Split(new char[] { '?' });
+                parts = url.Split(new[] { '?' });
                 if (parts.Length < 2)
                 {
                     return url;
@@ -1049,7 +1036,7 @@ namespace TerraViewer
             }
             if (url.StartsWith("http://ecn.t3.tiles.virtualearth.net/tiles/"))
             {
-                parts = url.Split(new char[] { '?' });
+                parts = url.Split(new[] { '?' });
                 if (parts.Length < 2)
                 {
                     return url;
@@ -1060,7 +1047,7 @@ namespace TerraViewer
             }
             if (url.StartsWith("http://ecn.t0.tiles.virtualearth.net/tiles/"))
             {
-                parts = url.Split(new char[] { '?' });
+                parts = url.Split(new[] { '?' });
                 if (parts.Length < 2)
                 {
                     return url;

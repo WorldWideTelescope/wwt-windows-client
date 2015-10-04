@@ -9,10 +9,6 @@ namespace TerraViewer
 {
     class Table
     {
-        public Table()
-        {
-        }
-
         public Guid Guid = new Guid();
         public string[] Header = new string[0];
         public List<string[]> Rows = new List<string[]>();
@@ -137,10 +133,7 @@ namespace TerraViewer
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
 

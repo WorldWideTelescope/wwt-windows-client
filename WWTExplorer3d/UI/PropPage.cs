@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace TerraViewer
 {
@@ -11,9 +7,9 @@ namespace TerraViewer
     {
         public PropPage()
         {
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(22)))), ((int)(((byte)(31)))));
-            this.ForeColor = Color.White;
-            this.MinimumSize = this.MinimumSize = new System.Drawing.Size(690, 230);
+            BackColor = Color.FromArgb(20, 22, 31);
+            ForeColor = Color.White;
+            MinimumSize = MinimumSize = new Size(690, 230);
         }
         public virtual bool Save()
         {

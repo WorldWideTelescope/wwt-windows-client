@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
     class PushPin
     {
         static readonly Dictionary<int,Texture11> pinTextureCache = new Dictionary<int,Texture11>();
-        static readonly Bitmap Pins = global::TerraViewer.Properties.Resources.pins;
+        static readonly Bitmap Pins = Resources.pins;
         public static Texture11 GetPushPinTexture(int pinId)
         {
             if (pinTextureCache.ContainsKey(pinId))
@@ -17,7 +16,7 @@ namespace TerraViewer
                 return pinTextureCache[pinId];
             }
 
-            var bmp = new Bitmap(32, 32, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(32, 32, PixelFormat.Format32bppArgb);
 
             var gOut = Graphics.FromImage(bmp);
 
@@ -42,7 +41,7 @@ namespace TerraViewer
                 return pinBitmapCache[pinId];
             }
 
-            var bmp = new Bitmap(32, 32, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var bmp = new Bitmap(32, 32, PixelFormat.Format32bppArgb);
 
             var gOut = Graphics.FromImage(bmp);
 

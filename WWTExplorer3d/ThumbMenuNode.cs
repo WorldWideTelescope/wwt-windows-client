@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TerraViewer
@@ -41,7 +39,7 @@ namespace TerraViewer
             }
         }
 
-        public System.Drawing.Bitmap ThumbNail
+        public Bitmap ThumbNail
         {
             get
             {

@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -20,15 +14,15 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
-            this.label1.Text = Language.GetLocalizedText(238, "Name");
-            this.Property.Text = Language.GetLocalizedText(1166, "Property");
-            this.BindTypeLabel.Text = Language.GetLocalizedText(1165, "Bind Type");
-            this.label4.Text = Language.GetLocalizedText(1164, "Binding Target Type");
-            this.buttonTypeLabel.Text = Language.GetLocalizedText(1316, "Button Type");
-            this.Text = Language.GetLocalizedText(1317, "Button Properties");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
+            label1.Text = Language.GetLocalizedText(238, "Name");
+            Property.Text = Language.GetLocalizedText(1166, "Property");
+            BindTypeLabel.Text = Language.GetLocalizedText(1165, "Bind Type");
+            label4.Text = Language.GetLocalizedText(1164, "Binding Target Type");
+            buttonTypeLabel.Text = Language.GetLocalizedText(1316, "Button Type");
+            Text = Language.GetLocalizedText(1317, "Button Properties");
         }
 
         private void TargetTypeCombo_SelectionChanged(object sender, EventArgs e)
@@ -195,14 +189,14 @@ namespace TerraViewer
 
         private void OK_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.OK;
+            DialogResult = DialogResult.OK;
             ButtonMap.BindingB.HadnlerType = HandlerType.None;
             ButtonMap.BindingA.HadnlerType = HandlerType.KeyDown;
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
         }
 
         private void SetupBidingCombos()
@@ -224,7 +218,7 @@ namespace TerraViewer
 
         private void filterList_SelectionChanged(object sender, EventArgs e)
         {
-            var binding = (ControlBinding)ButtonMap.BindingA;
+            var binding = ButtonMap.BindingA;
 
             var prop = TargetPropertyCombo.SelectedItem as ScriptableProperty;
 

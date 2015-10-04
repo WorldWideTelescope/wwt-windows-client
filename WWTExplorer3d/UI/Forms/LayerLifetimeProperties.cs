@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,12 +13,12 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(867, "Start DateTime");
-            this.label2.Text = Language.GetLocalizedText(868, "End DateTime");
-            this.label3.Text = Language.GetLocalizedText(869, "Fade In/Out Time");
-            this.label4.Text = Language.GetLocalizedText(870, "Fade Type");
-            this.OK.Text = Language.GetLocalizedText(212, "Close");
-            this.Text = Language.GetLocalizedText(871, "Layer Lifetime");
+            label1.Text = Language.GetLocalizedText(867, "Start DateTime");
+            label2.Text = Language.GetLocalizedText(868, "End DateTime");
+            label3.Text = Language.GetLocalizedText(869, "Fade In/Out Time");
+            label4.Text = Language.GetLocalizedText(870, "Fade Type");
+            OK.Text = Language.GetLocalizedText(212, "Close");
+            Text = Language.GetLocalizedText(871, "Layer Lifetime");
         }
 
         private void LayerLifetimeProperties_Load(object sender, EventArgs e)
@@ -65,7 +61,7 @@ namespace TerraViewer
             if (!failed)
             {
                 DialogResult = DialogResult.OK;
-                this.Close();
+                Close();
             }
         }
 

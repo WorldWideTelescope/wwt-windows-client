@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 
 namespace WwtDataUtils
 {
@@ -71,12 +70,9 @@ namespace WwtDataUtils
                 {
                     return false;
                 }
-                else
-                {
-                    x = 0;
-                    pCurrentPixel = fastBitmap[0, y];
-                    //Debug.WriteLine(String.Format("{0}", pCurrentPixel - fastBitmap[0, 0]));
-                }
+                x = 0;
+                pCurrentPixel = fastBitmap[0, y];
+                //Debug.WriteLine(String.Format("{0}", pCurrentPixel - fastBitmap[0, 0]));
             }
             return true;
         }
@@ -184,10 +180,7 @@ namespace WwtDataUtils
                     UnlockBitmap();
                     return null;
                 }
-                else
-                {
-                    pCurrentPixel = this[0, yLocation];
-                }
+                pCurrentPixel = this[0, yLocation];
             }
             else
             {
@@ -289,11 +282,11 @@ namespace WwtDataUtils
         {
             var x = (int)(xd);
 
-            var xr = xd - (double)x;
+            var xr = xd - x;
 
             var y = (int)(yd);
 
-            var yr = yd - (double)y;
+            var yr = yd - y;
 
             if (x < 0 || x > (bitmap.Width - 1) || y < 0 || y > (bitmap.Height - 1))
             {
@@ -319,14 +312,14 @@ namespace WwtDataUtils
 
             PixelData result;
 
-            result.alpha = (byte)((((((double)tl->alpha * (1.0 - xr)) + ((double)tr->alpha * xr))) * (1.0 - yr)) +
-                             (((((double)bl->alpha * (1.0 - xr)) + ((double)br->alpha * xr))) * yr));
-            result.red = (byte)((((((double)tl->red * (1.0 - xr)) + ((double)tr->red * xr))) * (1.0 - yr)) +
-                             (((((double)bl->red * (1.0 - xr)) + ((double)br->red * xr))) * yr));
-            result.green = (byte)((((((double)tl->green * (1.0 - xr)) + ((double)tr->green * xr))) * (1.0 - yr)) +
-                             (((((double)bl->green * (1.0 - xr)) + ((double)br->green * xr))) * yr));
-            result.blue = (byte)((((((double)tl->blue * (1.0 - xr)) + ((double)tr->blue * xr))) * (1.0 - yr)) +
-                             (((((double)bl->blue * (1.0 - xr)) + ((double)br->blue * xr))) * yr));
+            result.alpha = (byte)(((((tl->alpha * (1.0 - xr)) + (tr->alpha * xr))) * (1.0 - yr)) +
+                             ((((bl->alpha * (1.0 - xr)) + (br->alpha * xr))) * yr));
+            result.red = (byte)(((((tl->red * (1.0 - xr)) + (tr->red * xr))) * (1.0 - yr)) +
+                             ((((bl->red * (1.0 - xr)) + (br->red * xr))) * yr));
+            result.green = (byte)(((((tl->green * (1.0 - xr)) + (tr->green * xr))) * (1.0 - yr)) +
+                             ((((bl->green * (1.0 - xr)) + (br->green * xr))) * yr));
+            result.blue = (byte)(((((tl->blue * (1.0 - xr)) + (tr->blue * xr))) * (1.0 - yr)) +
+                             ((((bl->blue * (1.0 - xr)) + (br->blue * xr))) * yr));
 
 
             return result;

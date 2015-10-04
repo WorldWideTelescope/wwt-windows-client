@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -81,10 +77,7 @@ namespace TerraViewer
             {
                 return backSlashIndexBuffer[index, accomidation];
             }
-            else
-            {
-                return slashIndexBuffer[index, accomidation];
-            }
+            return slashIndexBuffer[index, accomidation];
         }
 
         protected void CalcSphere(Vector3d[] list)
@@ -119,7 +112,7 @@ namespace TerraViewer
                 }         
             }
 
-            if (!this.DemReady || this.DemData == null )
+            if (!DemReady || DemData == null )
             {
                 return false;
             }
@@ -169,10 +162,7 @@ namespace TerraViewer
                             {
                                 return retVal;
                             }
-                            else
-                            {
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
@@ -253,10 +243,7 @@ namespace TerraViewer
                                     {
                                         return retVal;
                                     }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
                         }
@@ -737,11 +724,11 @@ namespace TerraViewer
             var arrayX = (byte)(int)(vert.Tu * 16 + .5);
             var arrayY = (byte)(int)(vert.Tv * 16 + .5);
 
-            System.Diagnostics.Debug.Write(index );
-            System.Diagnostics.Debug.Write("\t" );
-            System.Diagnostics.Debug.Write(arrayX );
-            System.Diagnostics.Debug.Write("\t" );
-            System.Diagnostics.Debug.WriteLine(arrayY );
+            Debug.Write(index );
+            Debug.Write("\t" );
+            Debug.Write(arrayX );
+            Debug.Write("\t" );
+            Debug.WriteLine(arrayY );
 
         }
 
@@ -956,7 +943,7 @@ namespace TerraViewer
         {
             var xQuad = 0;
             var yQuad = 0;
-            var tiles = (int)Math.Pow(2, this.level);
+            var tiles = (int)Math.Pow(2, level);
 
             if (x > (tiles / 2) - 1)
             {
@@ -976,11 +963,11 @@ namespace TerraViewer
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;
+            topDown = !dataset.BottomsUp;
             demSize = 513;
             if (dataset.MeanRadius != 0)
             {
-                this.DemScaleFactor = dataset.MeanRadius;
+                DemScaleFactor = dataset.MeanRadius;
             }
             else
             {
@@ -998,7 +985,7 @@ namespace TerraViewer
 
 
             ComputeBoundingSphere( parent, parent !=null ? parent.demAverage : 0);
-            insideOut = this.Dataset.DataSetType == ImageSetType.Sky || this.Dataset.DataSetType == ImageSetType.Panorama;
+            insideOut = Dataset.DataSetType == ImageSetType.Sky || Dataset.DataSetType == ImageSetType.Panorama;
         }
 
         public override void CleanUp(bool removeFromParent)

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Data;
-using System.Data.OleDb;
 using System.Text.RegularExpressions;
 
 
@@ -82,7 +82,7 @@ namespace ShapefileTools
 
         public FileHeader Header
         {
-            get { return this.fileHeader; }
+            get { return fileHeader; }
         }
 
         // The integers that make up the data description fields in the
@@ -132,21 +132,21 @@ namespace ShapefileTools
 
         public void Read()
         {
-            this.fileHeader = this.ReadFileHeader();
+            fileHeader = ReadFileHeader();
 
             // Spatial reference system parameters are stored in a file with the same name but a different (.prj) extension. 
             var prjFile = fName.Replace(".shp", ".prj");
             prjFile = prjFile.Replace(".SHP", ".PRJ");
-            this.ReadSRSInfo(prjFile);
+            ReadSRSInfo(prjFile);
 
             // Read geometry
             Shapes = new List<Shape>();
-            this.ReadShapes();
+            ReadShapes();
 
             // dBase file has the same name but a different (.dbf) extension. 
             var dbaseFile = fName.Replace(".shp", ".dbf");
             dbaseFile = dbaseFile.Replace(".SHP", ".DBF");
-            this.ReadDBaseFile(dbaseFile);
+            ReadDBaseFile(dbaseFile);
 
             if (fileHeader.ProjectionInfo != null)
             {
@@ -187,7 +187,7 @@ namespace ShapefileTools
              var gcs = new GeographicCoordinateSystem();
              var prj = new Projection();
 
-             System.IO.TextReader tr = new StreamReader(prjFile);
+             TextReader tr = new StreamReader(prjFile);
              var prjContent = tr.ReadLine();
 
             var projected = new Regex("(?:PROJCS\\[\")(?<PRJName>.*)(?:\",GEOGCS\\[\")(?<CRSName>.*"+
@@ -231,7 +231,7 @@ namespace ShapefileTools
                                 punits.Name = m.Groups["ProjectionUnit"].Value;
                                 punits.ConversionFactor = double.Parse(m.Groups["PrjUnitConversion"].Value);
                                 prj.Units = punits;
-                                var prjParamsArray = m.Groups["Parameters"].Value.Split(new Char [] {','});
+                                var prjParamsArray = m.Groups["Parameters"].Value.Split(new[] {','});
                                 var  prjParams = new List<ProjectionParameter>();
                                  for (var i = 0; i < prjParamsArray.Length-1; i++)
                                  {
@@ -270,8 +270,8 @@ namespace ShapefileTools
 
              tr.Close();
 
-             this.fileHeader.ProjectionInfo = prj;
-             this.fileHeader.CoordinateReferenceSystem = gcs;
+             fileHeader.ProjectionInfo = prj;
+             fileHeader.CoordinateReferenceSystem = gcs;
         }
 
 
@@ -833,7 +833,7 @@ namespace ShapefileTools
                     return new UndefinedRing();
                 default:
                     {
-                        var msg = String.Format(System.Globalization.CultureInfo.InvariantCulture, "PartType {0} is not supported.", (MultiPatchPartType)partType);
+                        var msg = String.Format(CultureInfo.InvariantCulture, "PartType {0} is not supported.", (MultiPatchPartType)partType);
                         throw new Exception(msg);
                     }
             }
@@ -950,7 +950,7 @@ namespace ShapefileTools
 
             var fInfo = new FileInfo(dbfFile);
             var dirName = fInfo.DirectoryName;
-            var fName = fInfo.Name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+            var fName = fInfo.Name.ToUpper(CultureInfo.InvariantCulture);
             if (fName.EndsWith(".DBF"))
                 fName = fName.Substring(0, fName.Length - 4);
 
@@ -970,7 +970,7 @@ namespace ShapefileTools
             Table = reader.Table;
             if (Table != null && Table.Rows.Count > 0)
             {
-                this.AssociateAttributes(Table);
+                AssociateAttributes(Table);
             }
 
             ////string connectionString = "PROVIDER=Microsoft.Jet.OLEDB.4.0;Data Source=" + dirName + ";Extended Properties=dBASE 5.0";
@@ -1010,9 +1010,9 @@ namespace ShapefileTools
             var index = 0;
             foreach (DataRow row in table.Rows)
             {
-                if (index >= this.Shapes.Count)
+                if (index >= Shapes.Count)
                     break;
-                this.Shapes[index].props = row;
+                Shapes[index].props = row;
                 ++index;
             }
         }
@@ -1024,7 +1024,7 @@ namespace ShapefileTools
 
             // Skip to the end of file header
             var pos = 100;
-            while (pos < (this.fileHeader.FileLength*2))
+            while (pos < (fileHeader.FileLength*2))
             {
                 // Record header
                 var recordNumber = ReadIntBigEndian(data, pos);
@@ -1079,7 +1079,7 @@ namespace ShapefileTools
                         break;
                     default:
                         {
-                            var msg = String.Format(System.Globalization.CultureInfo.InvariantCulture, "ShapeType {0} is not supported.", (ShapeType)shapeType);
+                            var msg = String.Format(CultureInfo.InvariantCulture, "ShapeType {0} is not supported.", (ShapeType)shapeType);
                             throw new Exception(msg);
                         }
                 }
@@ -1162,7 +1162,7 @@ namespace ShapefileTools
                 field.Name = columnName;
 
                 var fieldType = br.ReadByte();
-                field.Type = Encoding.ASCII.GetString(new byte[] { fieldType }, 0, 1);
+                field.Type = Encoding.ASCII.GetString(new[] { fieldType }, 0, 1);
 
                 switch (fieldType)
                 {
@@ -1218,7 +1218,7 @@ namespace ShapefileTools
                 {
                     var fieldData = data.Substring(index, field.Length);
                     index += field.Length;
-                    row[field.Name] = System.DBNull.Value;
+                    row[field.Name] = DBNull.Value;
                     switch (field.Type)
                     {
                         case "F": // F = Floating Point

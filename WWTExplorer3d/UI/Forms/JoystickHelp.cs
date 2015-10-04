@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,10 +13,10 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = "Joystick or Game Contoller Found";
-            this.richTextBox1.Text = Language.GetLocalizedText(250, "WorldWide Telescope can use a XBOX 360 Game controller or other compatible device to navigate the 3d viewport. Some controllers are not properly center calibrated and can cause the viewport to zoom or spin out of control. Having more than one type of controller can cause conflicts. If you have problems with the viewport, either disable the joystick control or unplug conflicting devices before launching WorldWide Telescope.");
-            this.UserController.Text = Language.GetLocalizedText(156, "OK");
-            this.close.Text = Language.GetLocalizedText(252, "Ignore the controller");
+            label1.Text = "Joystick or Game Contoller Found";
+            richTextBox1.Text = Language.GetLocalizedText(250, "WorldWide Telescope can use a XBOX 360 Game controller or other compatible device to navigate the 3d viewport. Some controllers are not properly center calibrated and can cause the viewport to zoom or spin out of control. Having more than one type of controller can cause conflicts. If you have problems with the viewport, either disable the joystick control or unplug conflicting devices before launching WorldWide Telescope.");
+            UserController.Text = Language.GetLocalizedText(156, "OK");
+            close.Text = Language.GetLocalizedText(252, "Ignore the controller");
         }
         private void close_Click(object sender, EventArgs e)
         {

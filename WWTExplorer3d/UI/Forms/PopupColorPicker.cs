@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -18,8 +14,8 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(305, "Opacity");
-            this.ok.Text = Language.GetLocalizedText(156, "OK");
+            label1.Text = Language.GetLocalizedText(305, "Opacity");
+            ok.Text = Language.GetLocalizedText(156, "OK");
         }
 
         public Color Color = Color.White;
@@ -59,13 +55,13 @@ namespace TerraViewer
 
             var rect = Screen.GetWorkingArea(this);
 
-            if (this.Left + this.Width > rect.Width)
+            if (Left + Width > rect.Width)
             {
-                this.Left -= (this.Left + this.Width) - rect.Width;
+                Left -= (Left + Width) - rect.Width;
             }
-            if (this.Top + this.Height > (rect.Height-120))
+            if (Top + Height > (rect.Height-120))
             {
-                this.Top -= (this.Top + this.Height) - (rect.Height-120);
+                Top -= (Top + Height) - (rect.Height-120);
             }
         }
 
@@ -97,14 +93,14 @@ namespace TerraViewer
 
         private void PopupColorPicker_Deactivate(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void ok_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
             Color = Color.FromArgb((int)((float)opacity.Value * 255 / 100), Color.R, Color.G, Color.B);
-            this.Close();
+            Close();
         }
 
         private void PopupColorPicker_KeyDown(object sender, KeyEventArgs e)
@@ -113,14 +109,14 @@ namespace TerraViewer
             {
                 var temp = oldColor.BackColor;
                 Color = Color.FromArgb((int)((float)opacity.Value * 255 / 100), temp.R, temp.G, temp.B);
-                this.Close();
+                Close();
             }
         }
 
         private void colors_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
     }
 }

@@ -10,12 +10,8 @@
 */
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Collections;
-using System.Threading;
-using System.Drawing;
 using System.Xml;
 
 namespace TerraViewer
@@ -57,7 +53,7 @@ namespace TerraViewer
                         xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                         xmlWriter.WriteStartElement("Folder");
                         
-                        var imageset = (IImageSet)Earth3d.ImagesetHashTable[hash];
+                        var imageset = Earth3d.ImagesetHashTable[hash];
                         var alternateUrl = "";
 
                         try

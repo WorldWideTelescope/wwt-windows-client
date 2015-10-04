@@ -39,10 +39,10 @@ namespace TerraViewer.Callibration
         [XmlArray("Constraints")]
         public List<GroundTruthPoint> Constraints = new List<GroundTruthPoint>();
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public int SelectedBlendPoint = -1;
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public int SelectedGroundTruth = -1;
 
         [XmlElement("ViewProjection")]
@@ -114,14 +114,14 @@ namespace TerraViewer.Callibration
         {
             var proj = new Projection
             {
-                FOV = this.FOV,
-                Aspect = this.Aspect,
-                XOffset = this.XOffset,
-                YOffset = this.YOffset,
-                RadialAmountX = this.RadialAmountX,
-                RadialAmountY = this.RadialAmountY,
-                RadialCenterX = this.RadialCenterX,
-                RadialCenterY = this.RadialCenterY
+                FOV = FOV,
+                Aspect = Aspect,
+                XOffset = XOffset,
+                YOffset = YOffset,
+                RadialAmountX = RadialAmountX,
+                RadialAmountY = RadialAmountY,
+                RadialCenterX = RadialCenterX,
+                RadialCenterY = RadialCenterY
             };
 
             return proj;
@@ -149,12 +149,12 @@ namespace TerraViewer.Callibration
         {
             var tran = new Transform
             {
-                X = this.X,
-                Y = this.Y,
-                Z = this.Z,
-                Heading = this.Heading,
-                Pitch = this.Pitch,
-                Roll = this.Roll
+                X = X,
+                Y = Y,
+                Z = Z,
+                Heading = Heading,
+                Pitch = Pitch,
+                Roll = Roll
             };
 
             return tran;

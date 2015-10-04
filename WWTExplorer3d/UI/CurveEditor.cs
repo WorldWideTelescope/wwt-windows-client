@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -109,7 +105,7 @@ namespace TerraViewer
 
 
             var pnt1 = first;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
 
             float w = Width - 1;
 
@@ -133,8 +129,8 @@ namespace TerraViewer
         bool dragging2;
         private void CurveEditor_MouseDown(object sender, MouseEventArgs e)
         {
-            var x = Math.Max(0, Math.Min(1, (double)e.X / (double)Width));
-            var y = Math.Max(0, Math.Min(1, 1.0 - (double)e.Y / (double)Height));
+            var x = Math.Max(0, Math.Min(1, e.X / (double)Width));
+            var y = Math.Max(0, Math.Min(1, 1.0 - e.Y / (double)Height));
 
             if (Math.Sqrt((P1 - x) * (P1 - x) + (P2 - y) * (P2 - y)) < .07)
             {
@@ -153,8 +149,8 @@ namespace TerraViewer
 
         private void CurveEditor_MouseMove(object sender, MouseEventArgs e)
         {
-            var x = Math.Max(0, Math.Min(1, (double)e.X / (double)Width));
-            var y = Math.Max(0, Math.Min(1, 1.0 - (double)e.Y / (double)Height));
+            var x = Math.Max(0, Math.Min(1, e.X / (double)Width));
+            var y = Math.Max(0, Math.Min(1, 1.0 - e.Y / (double)Height));
 
             if (dragging1)
             {
@@ -196,10 +192,7 @@ namespace TerraViewer
                 var B2 = Vector2d.Lerp(A2, A3, tween);
                 return Vector2d.Lerp(B1, B2, tween);
             }
-            else
-            {
-                return new Vector2d(tween, Key.EaseCurve(curveType, tween, control1.X, control1.Y, control2.X, control2.Y));
-            }
+            return new Vector2d(tween, Key.EaseCurve(curveType, tween, control1.X, control1.Y, control2.X, control2.Y));
         }
     }
 }

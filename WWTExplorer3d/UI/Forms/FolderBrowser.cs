@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using System.Web.Services.Protocols;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -19,9 +19,9 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.exploreText.Text = Language.GetLocalizedText(219, "Select a Collection to explore...");
-            this.BrowseList.AddText = Language.GetLocalizedText(161, "Add New Item");
-            this.BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+            exploreText.Text = Language.GetLocalizedText(219, "Select a Collection to explore...");
+            BrowseList.AddText = Language.GetLocalizedText(161, "Add New Item");
+            BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
         }
 
         bool showMyFolders;
@@ -43,7 +43,7 @@ namespace TerraViewer
             {
                 if (!string.IsNullOrEmpty(tour.Keywords))
                 {
-                    var keywords = tour.Keywords.Split(new char[] { ';', ':'});
+                    var keywords = tour.Keywords.Split(new[] { ';', ':'});
                     foreach (var id in keywords)
                     {
                         var place = Search.FindCatalogObject(id);
@@ -152,8 +152,8 @@ namespace TerraViewer
         {
             BrowseList.Clear();
             BrowseList.Refresh();
-            this.BrowseList.EmptyAddText = Language.GetLocalizedText(1278, "Loading...");
-            backgroundLoad = new BackgroundTourLoad(LoadToursDeffered);
+            BrowseList.EmptyAddText = Language.GetLocalizedText(1278, "Loading...");
+            backgroundLoad = LoadToursDeffered;
 
             backgroundLoad.BeginInvoke(null, null);
 
@@ -183,7 +183,7 @@ namespace TerraViewer
                 MethodInvoker LoadIt = delegate
                 {
                     LoadRootFoder(loadFolder);
-                    this.BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+                    BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
                 };
                 try
                 {
@@ -200,7 +200,7 @@ namespace TerraViewer
             {
                 MethodInvoker Error = delegate
                 {
-                    this.BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+                    BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
                     UiTools.ShowMessageBox(Language.GetLocalizedText(220, "Could not connect to the WorldWide Telescope Server to download tours, and there was no available cached tour list. Please check your network or proxy settings and make sure you have a network connection."));
 
                 };
@@ -225,7 +225,7 @@ namespace TerraViewer
                 Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory + "tourcache\\");
             }
 
-            var tempFile = Properties.Settings.Default.CahceDirectory + "tourcache\\" + result.Id.ToString() + ".wtt";
+            var tempFile = Properties.Settings.Default.CahceDirectory + "tourcache\\" + result.Id + ".wtt";
 
             if (FileDownload.DownloadFile(url, tempFile, false))
             {
@@ -249,7 +249,7 @@ namespace TerraViewer
                 Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory + "tourcache\\");
             }
 
-            var tempFile = Properties.Settings.Default.CahceDirectory + "tourcache\\" + ((uint)url.GetHashCode32()).ToString() + ".wwtl";
+            var tempFile = Properties.Settings.Default.CahceDirectory + "tourcache\\" + ((uint)url.GetHashCode32()) + ".wwtl";
 
             if (FileDownload.DownloadFile(url, tempFile, true))
             {
@@ -291,7 +291,7 @@ namespace TerraViewer
                 popup.TourResult = (ITourResult)e;
                 popup.Left = popup.TourResult.Bounds.Left;
                 popup.Top = popup.TourResult.Bounds.Bottom - 10;
-                popup.LaunchTour += new EventHandler(popup_LaunchTour);
+                popup.LaunchTour += popup_LaunchTour;
                 popup.Show();
             }
         }
@@ -428,10 +428,10 @@ namespace TerraViewer
             var deleteFolder = new ToolStripMenuItem(Language.GetLocalizedText(997, "Delete from Community Web Site"));
             var removeFolder = new ToolStripMenuItem(Language.GetLocalizedText(998, "Remove Subscription of this Community"));
 
-            showFolder.Click += new EventHandler(showFolder_Click);
-            editFolder.Click += new EventHandler(editFolder_Click);
-            deleteFolder.Click += new EventHandler(deleteFolder_Click);
-            removeFolder.Click += new EventHandler(removeFolder_Click);
+            showFolder.Click += showFolder_Click;
+            editFolder.Click += editFolder_Click;
+            deleteFolder.Click += deleteFolder_Click;
+            removeFolder.Click += removeFolder_Click;
             showFolder.Tag = folder;
             editFolder.Tag = folder;
             deleteFolder.Tag = folder;
@@ -465,7 +465,7 @@ namespace TerraViewer
 
             if (folder.MSRCommunityId > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/CommunityDetail/" + folder.MSRCommunityId.ToString(), true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/CommunityDetail/" + folder.MSRCommunityId, true);
             }
         }
 
@@ -475,7 +475,7 @@ namespace TerraViewer
 
             if (folder.MSRCommunityId > 0)
             {
-                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditCommunity/" + folder.MSRCommunityId.ToString(), true);
+                WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditCommunity/" + folder.MSRCommunityId, true);
             }
         }
 
@@ -494,7 +494,7 @@ namespace TerraViewer
 
             if (id > 0)
             {
-                if (UiTools.ShowMessageBox(Language.GetLocalizedText(999, "Do you really want to permanently delete this item from your community?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                if (UiTools.ShowMessageBox(Language.GetLocalizedText(999, "Do you really want to permanently delete this item from your community?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     EOCalls.InvokeDeleteCommunity(id);
                     Earth3d.RefreshCommunity();
@@ -506,7 +506,7 @@ namespace TerraViewer
         void removeFolder_Click(object sender, EventArgs e)
         {
             var folder = (Folder)((ToolStripMenuItem)sender).Tag;
-            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1000, "Do you really want to unsubscribe this community link on this computer?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1000, "Do you really want to unsubscribe this community link on this computer?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 var target = BrowseList.Selected;
 
@@ -535,9 +535,9 @@ namespace TerraViewer
             var editItem = new ToolStripMenuItem(Language.GetLocalizedText(996, "Edit on Community Web Site"));
             var deleteItem = new ToolStripMenuItem(Language.GetLocalizedText(997, "Delete from Community Web Site"));
   
-            showItem.Click += new EventHandler(showItem_Click);
-            editItem.Click += new EventHandler(editItem_Click);
-            deleteItem.Click += new EventHandler(deleteItem_Click);
+            showItem.Click += showItem_Click;
+            editItem.Click += editItem_Click;
+            deleteItem.Click += deleteItem_Click;
             showItem.Tag = item;
             editItem.Tag = item;
             deleteItem.Tag = item;
@@ -636,7 +636,7 @@ namespace TerraViewer
 
             if (id > 0)
             {
-                if (UiTools.ShowMessageBox(Language.GetLocalizedText(999, "Do you really want to permanently delete this item from your community?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                if (UiTools.ShowMessageBox(Language.GetLocalizedText(999, "Do you really want to permanently delete this item from your community?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     EOCalls.InvokeDeleteContent(id);
                     Earth3d.RefreshCommunity();
@@ -661,10 +661,10 @@ namespace TerraViewer
 
 
             var renameMenu = new ToolStripMenuItem(Language.GetLocalizedText(225, "Rename"));
-            addToStack.Click += new EventHandler(addToStack_Click);
-            deleteMenu.Click += new EventHandler(deleteMenu_Click);
+            addToStack.Click += addToStack_Click;
+            deleteMenu.Click += deleteMenu_Click;
 
-            renameMenu.Click += new EventHandler(renameMenu_Click);
+            renameMenu.Click += renameMenu_Click;
             addToStack.Tag = folder;
             deleteMenu.Tag = folder;
             renameMenu.Tag = folder;
@@ -703,7 +703,7 @@ namespace TerraViewer
             if (Earth3d.MainWindow.ImageStackVisible)
             {
                 var addToStack = new ToolStripMenuItem(Language.GetLocalizedText(1001, "Add Children to Image stack"));
-                addToStack.Click += new EventHandler(addToStack_Click);
+                addToStack.Click += addToStack_Click;
                 addToStack.Tag = folder;
                 contextMenu.Items.Add(addToStack);
             }
@@ -741,8 +741,8 @@ namespace TerraViewer
 
             var closeMenu = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
             var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(226, "Copy To My Collections"));
-            closeMenu.Click += new EventHandler(closeMenu_Click);
-            copyMenu.Click += new EventHandler(copyMenu_Click);
+            closeMenu.Click += closeMenu_Click;
+            copyMenu.Click += copyMenu_Click;
             closeMenu.Tag = folder;
             copyMenu.Tag = folder;
             contextMenu.Items.Add(closeMenu);
@@ -761,8 +761,8 @@ namespace TerraViewer
 
             var closeImageMenu = new ToolStripMenuItem(Language.GetLocalizedText(212, "Close"));
             var popertiesMenu = new ToolStripMenuItem(Language.GetLocalizedText(20, "Properties"));
-            closeImageMenu.Click += new EventHandler(closeImageMenu_Click);
-            popertiesMenu.Click += new EventHandler(popertiesMenu_Click);
+            closeImageMenu.Click += closeImageMenu_Click;
+            popertiesMenu.Click += popertiesMenu_Click;
             closeImageMenu.Tag = place;
             popertiesMenu.Tag = place;
             contextMenu.Items.Add(popertiesMenu);
@@ -1081,7 +1081,7 @@ namespace TerraViewer
                 {
                     openImages = new Folder();
                     openImages.Name = Language.GetLocalizedText(222, "Open Images");
-                    openImages.ThumbNail = Properties.Resources.Folder;
+                    openImages.ThumbNail = Resources.Folder;
                 }
                 return openImages;
             }
@@ -1096,7 +1096,7 @@ namespace TerraViewer
                 {
                     openCollections = new Folder();
                     openCollections.Name = Language.GetLocalizedText(223, "Open Collections");
-                    openCollections.ThumbNail = Properties.Resources.Folder;
+                    openCollections.ThumbNail = Resources.Folder;
                 }
                 return openCollections;
             }
@@ -1110,7 +1110,7 @@ namespace TerraViewer
             {
                 if (string.IsNullOrEmpty(myCollectionsPath))
                 {
-                    myCollectionsPath = string.Format("{0}\\WWT Collections\\", System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                    myCollectionsPath = string.Format("{0}\\WWT Collections\\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 }
                 return myCollectionsPath; }
             set { myCollectionsPath = value; }
@@ -1128,7 +1128,7 @@ namespace TerraViewer
                     }
                     myCollections = new Folder();
                     myCollections.Name = Language.GetLocalizedText(236, "My Collections");
-                    myCollections.ThumbNail = Properties.Resources.Folder;
+                    myCollections.ThumbNail = Resources.Folder;
                     myCollections.ReadOnly = false;
                     var collectionFolder = MyCollectionsPath;
                     if (!Directory.Exists(collectionFolder))
@@ -1140,9 +1140,9 @@ namespace TerraViewer
                         try
                         {
                             var loadFolder = Folder.LoadFromFile(file, false);
-                            loadFolder.ThumbNail = Properties.Resources.Folder;
+                            loadFolder.ThumbNail = Resources.Folder;
                             loadFolder.ReadOnly = false;
-                            this.MyCollections.AddChildFolder(loadFolder);
+                            MyCollections.AddChildFolder(loadFolder);
                         }
                         catch
                         {
@@ -1183,7 +1183,7 @@ namespace TerraViewer
                 {
                     myCommunities = new Folder();
                     myCommunities.Name = Language.GetLocalizedText(237, "My Communities");
-                    myCommunities.ThumbNail = Properties.Resources.Folder;
+                    myCommunities.ThumbNail = Resources.Folder;
                     myCommunities.ReadOnly = false;
                     var communitiesFolder = Earth3d.CommuinitiesDirectory;
                     if (!Directory.Exists(communitiesFolder))
@@ -1238,10 +1238,10 @@ namespace TerraViewer
                             {
                                 var newCollection = new Folder();
                                 newCollection.Name = input.ResultText;
-                                newCollection.ThumbNail = Properties.Resources.Folder;
+                                newCollection.ThumbNail = Resources.Folder;
                                 newCollection.LoadedFilename = CollectionFileName(input.ResultText);
                                 newCollection.ReadOnly = false;
-                                this.MyCollections.AddChildFolder(newCollection);
+                                MyCollections.AddChildFolder(newCollection);
                                 retry = false;
                                 return newCollection;
                             }
@@ -1447,7 +1447,7 @@ namespace TerraViewer
                 exploreText.Text = text;
             }
             BrowseList.ShowAddButton = (!parent.ReadOnly) && !(hideAddButtonInLowerLevels && !topLevel);
-            this.Refresh();
+            Refresh();
             Cursor.Current = Cursors.Default;
         }
 
@@ -1462,7 +1462,7 @@ namespace TerraViewer
             TourItemHover(sender, e);
             if (Earth3d.MainWindow.IsWindowOrChildFocused())
             {
-                this.Focus();
+                Focus();
             }
             if (e is IPlace || e is IImageSet)
             {
@@ -1576,7 +1576,7 @@ namespace TerraViewer
 
                     return;
                 }
-                else if (item is IImageSet)
+                if (item is IImageSet)
                 {
                     var imageSet = (IImageSet)item;
                     Earth3d.MainWindow.StudyImageset = imageSet;
@@ -1606,13 +1606,12 @@ namespace TerraViewer
 
                     return;
                 }
-                else if (item is IImageSet)
+                if (item is IImageSet)
                 {
                     var imageSet = (IImageSet)item;
                     Earth3d.MainWindow.CurrentImageSet = imageSet;
                 }
             }
-          
         }
 
 
@@ -1686,7 +1685,7 @@ namespace TerraViewer
                             {
                                 var newCollection = new Folder();
                                 newCollection.Name = input.ResultText;
-                                newCollection.ThumbNail = Properties.Resources.Folder;
+                                newCollection.ThumbNail = Resources.Folder;
                                 newCollection.LoadedFilename = CollectionFileName(input.ResultText);
                                 newCollection.ReadOnly = false;
                                 owner.AddChildFolder(newCollection);
@@ -1734,7 +1733,7 @@ namespace TerraViewer
             rootSize = ThumbnailSize.Big;
             BrowseList.AddText = Language.GetLocalizedText(240, "Join a community");
             BrowseList.ShowAddButton = true;     
-            this.BrowseList.AddNewItem += new ItemClickedEventHandler(BrowseList_AddNewCommunity);
+            BrowseList.AddNewItem += BrowseList_AddNewCommunity;
             hideAddButtonInLowerLevels = true;
             communities = true;
         }
@@ -1746,7 +1745,7 @@ namespace TerraViewer
 
         internal void SetExploreMode()
         {
-            this.BrowseList.AddNewItem += new TerraViewer.ItemClickedEventHandler(this.BrowseList_AddNewItem);
+            BrowseList.AddNewItem += BrowseList_AddNewItem;
         }
 
         internal void AutoSave()
@@ -1775,7 +1774,7 @@ namespace TerraViewer
         {
             get
             {
-                return Properties.Resources.FolderUp;
+                return Resources.FolderUp;
             }
             set
             {

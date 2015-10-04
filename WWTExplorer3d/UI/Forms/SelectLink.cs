@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -14,7 +9,7 @@ namespace TerraViewer
         {
             InitializeComponent();
             SetUiStrings();
-            tourStopList.ItemClicked += new TourStopClickedEventHandler(tourStopList_ItemClicked);
+            tourStopList.ItemClicked += tourStopList_ItemClicked;
             tourStopList.ShowAddButton = false;
         }
 
@@ -22,7 +17,7 @@ namespace TerraViewer
         {
             LinkToSlideCheckbox.Text = Language.GetLocalizedText(599, "Link to Slide (Select below)");
             LinkToNextCheckbox.Text = Language.GetLocalizedText(600, "Link to Next Slide");
-            this.Text = Language.GetLocalizedText(601, "Select Link Navigation");
+            Text = Language.GetLocalizedText(601, "Select Link Navigation");
             ReturnToCallerCheckbox.Text = Language.GetLocalizedText(602, "Return to Caller");
             cancel.Text = Language.GetLocalizedText(157, "Cancel");
             Ok.Text = Language.GetLocalizedText(156, "OK");
@@ -102,13 +97,13 @@ namespace TerraViewer
             {
                 id = "";
             }
-            this.Close();
+            Close();
         }
 
         private void cancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
-            this.Close();
+            Close();
         }
 
         private void LinkToNextCheckbox_CheckedChanged(object sender, EventArgs e)

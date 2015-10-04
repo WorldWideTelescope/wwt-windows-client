@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 
@@ -27,9 +23,9 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Finish.Text = Language.GetLocalizedText(911, "Finish");
-            this.Next.Text = Language.GetLocalizedText(912, "Next");
-            this.Back.Text = Language.GetLocalizedText(913, "Back");
+            Finish.Text = Language.GetLocalizedText(911, "Finish");
+            Next.Text = Language.GetLocalizedText(912, "Next");
+            Back.Text = Language.GetLocalizedText(913, "Back");
         }
 
         private void WizardShell_Load(object sender, EventArgs e)
@@ -37,13 +33,13 @@ namespace TerraViewer
             if (Target == null && Target.Pages.Count == 0)
             {
                 DialogResult = DialogResult.Cancel;
-                this.Close();
+                Close();
             }
 
             Contents.Visible = false;
-            target.ReadyForNext += new RedayForNextDelegate(target_ReadyForNext);
+            target.ReadyForNext += target_ReadyForNext;
             ShowNextPage();
-            this.Text = Target.WizardName;
+            Text = Target.WizardName;
 
         }
         bool readyForNext = true;
@@ -89,19 +85,19 @@ namespace TerraViewer
                 {
                     return;
                 }
-                this.Controls.Remove(currentPage);
+                Controls.Remove(currentPage);
                 currentPage.Dispose();
             }
 
             currentPageIndex = checkPageIndex;
 
             var page = (PropPage)Activator.CreateInstance(Target.Pages[currentPageIndex].Page);
-            page.Top = this.Contents.Top;
-            page.Left = this.Contents.Left;
+            page.Top = Contents.Top;
+            page.Left = Contents.Left;
             page.Binding = target;
             StepTitle.Text = Target.Pages[currentPageIndex].Title;
             page.SetData(Target.Data);
-            this.Controls.Add(page);
+            Controls.Add(page);
 
             currentPage = page;
 
@@ -139,20 +135,20 @@ namespace TerraViewer
                 {
                     return;
                 }
-                this.Controls.Remove(currentPage);
+                Controls.Remove(currentPage);
                 currentPage.Dispose();
             }
             
             currentPageIndex = checkPageIndex;
 
             var page = (PropPage)Activator.CreateInstance(Target.Pages[currentPageIndex].Page);
-            page.Top = this.Contents.Top;
-            page.Left = this.Contents.Left;
+            page.Top = Contents.Top;
+            page.Left = Contents.Left;
             page.Binding = target;
             StepTitle.Text = Target.Pages[currentPageIndex].Title;
             page.SetData(Target.Data);
 
-            this.Controls.Add(page);
+            Controls.Add(page);
 
             currentPage = page;
             UpdateButtonStates();
@@ -220,7 +216,7 @@ namespace TerraViewer
             var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
             var p = new Pen(Color.FromArgb(71, 84, 108));
-            g.FillRectangle(b, this.ClientRectangle);
+            g.FillRectangle(b, ClientRectangle);
             g.DrawRectangle(p, new Rectangle(0, ClientSize.Height - 1, ClientSize.Width - 1, ClientSize.Height - 1));
             p.Dispose();
             b.Dispose();

@@ -1,11 +1,9 @@
 using System;
 using System.Drawing;
-using System.IO;
-using System.Collections.Generic;
 using System.Xml;
 using TerraViewer.org.worldwidetelescope.www;
-using AstroCalc;
-
+using TerraViewer.Properties;
+using WWTThumbnails;
 
 
 namespace TerraViewer
@@ -15,7 +13,7 @@ namespace TerraViewer
 	/// <summary>
 	/// Summary description for Place.
 	/// </summary>
-	public class TourPlace : IDisposable, TerraViewer.IThumbnail, TerraViewer.IPlace
+	public class TourPlace : IDisposable, IThumbnail, IPlace
 	{
 		public TourPlace()
 		{
@@ -58,9 +56,9 @@ namespace TerraViewer
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    return ("").Split(new char[] { ';' });
+                    return ("").Split(new[] { ';' });
                 }
-                return name.Split(new char[] { ';' });
+                return name.Split(new[] { ';' });
             }
             set
             {
@@ -79,7 +77,7 @@ namespace TerraViewer
                     var raDec = Planets.GetPlanetLocation(Name);
                     camParams.RA = raDec.RA;
                     camParams.Dec = raDec.Dec;
-                    this.distnace = raDec.Distance;
+                    distnace = raDec.Distance;
                 }
 
                 return camParams;
@@ -103,7 +101,7 @@ namespace TerraViewer
             {
                 if (Classification == Classification.SolarSystem || (location3d.X == 0 && location3d.Y == 0 && location3d.Z == 0))
                 {
-                    location3d = Coordinates.RADecTo3d(this.RA, this.Dec, 1);
+                    location3d = Coordinates.RADecTo3d(RA, Dec, 1);
                 }
                 return location3d;
             }
@@ -236,11 +234,11 @@ namespace TerraViewer
                     }
                     else
                     {
-                        thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
+                        thumbNail = WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
                         if (thumbNail == null)
                         {
-                            var obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
-                            thumbNail = ((System.Drawing.Bitmap)(obj));
+                            var obj = Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), Resources.Culture);
+                            thumbNail = ((Bitmap)(obj));
                         }
                     }
                     //Stream s = this.GetType().Assembly.GetManifestResourceStream(String.Format("TerraViewer.Properties.Resources.{0}", Enum.GetName(typeof(DataSetType), Type)));
@@ -408,13 +406,13 @@ namespace TerraViewer
 
         #endregion
 
-        internal void SaveToXml(System.Xml.XmlTextWriter xmlWriter, string elementName)
+        internal void SaveToXml(XmlTextWriter xmlWriter, string elementName)
         {
 
             xmlWriter.WriteStartElement(elementName);
             xmlWriter.WriteAttributeString("Name", name);
-            xmlWriter.WriteAttributeString("DataSetType", this.Type.ToString());
-            if (this.Type == ImageSetType.Sky)
+            xmlWriter.WriteAttributeString("DataSetType", Type.ToString());
+            if (Type == ImageSetType.Sky)
             {
                 xmlWriter.WriteAttributeString("RA", camParams.RA.ToString());
                 xmlWriter.WriteAttributeString("Dec", camParams.Dec.ToString());
@@ -599,7 +597,7 @@ namespace TerraViewer
         }   
         static string ProperCaps(string name)
         {
-            var list = name.Split(new char[] {' '});
+            var list = name.Split(new[] {' '});
  
             var ProperName = "";
 

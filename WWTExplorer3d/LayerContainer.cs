@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 
 
@@ -45,7 +45,7 @@ namespace TerraViewer
             {
                 if (String.IsNullOrEmpty(workingDirectory))
                 {
-                    workingDirectory = LayerContainer.BaseWorkingDirectory + id.ToString() + @"\";
+                    workingDirectory = BaseWorkingDirectory + id + @"\";
                 }
 
                 if (!Directory.Exists(workingDirectory))
@@ -73,7 +73,7 @@ namespace TerraViewer
         {
             var cab = new FileCabinet(filename, BaseWorkingDirectory);
             cab.Extract();
-            var newDoc = LayerContainer.FromXml(cab.MasterFile, parentFrame,  referenceFrameRightClick);
+            var newDoc = FromXml(cab.MasterFile, parentFrame,  referenceFrameRightClick);
             if (forEdit)
             {
                 newDoc.SaveFileName = filename;
@@ -100,7 +100,7 @@ namespace TerraViewer
             doc.Load(filename);
 
             XmlNode root = doc["LayerContainer"];
-            newDoc.id = root.Attributes["ID"].Value.ToString();
+            newDoc.id = root.Attributes["ID"].Value;
 
             XmlNode Layers = root["Layers"];
 
@@ -138,14 +138,14 @@ namespace TerraViewer
                 foreach (XmlNode layer in Layers)
                 {
                     var newLayer = Layer.FromXml(layer, true);
-                    var fileName = newDoc.WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
+                    var fileName = newDoc.WorkingDirectory + string.Format("{0}.txt", newLayer.ID);
 
 
                     if (LayerManager.LayerList.ContainsKey(newLayer.ID) && newLayer.ID != ISSLayer.ISSGuid)
                     {
                         if (!newDoc.CollisionChecked)
                         {
-                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 newDoc.OverWrite = true;
                             }
@@ -188,7 +188,7 @@ namespace TerraViewer
         {
             get
             {
-                return Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id.ToString() + "\\" + id.ToString() + ".wwtxml";
+                return Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id + "\\" + id + ".wwtxml";
             }
         }
 
@@ -205,7 +205,7 @@ namespace TerraViewer
                 //Use a guid if the Title is only non-legal characters or is empty
                 if (String.IsNullOrEmpty(filename))
                 {
-                    filename = Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id.ToString() + ".wwtxml";
+                    filename = Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id + ".wwtxml";
                 }
                 outFile = filename;
             }
@@ -216,12 +216,12 @@ namespace TerraViewer
                 
             }
 
-            using (var xmlWriter = new XmlTextWriter(outFile, System.Text.Encoding.UTF8))
+            using (var xmlWriter = new XmlTextWriter(outFile, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("LayerContainer");
-                xmlWriter.WriteAttributeString("ID", this.id);
+                xmlWriter.WriteAttributeString("ID", id);
               
                 List<Guid> masterList = null;
 
@@ -361,8 +361,8 @@ namespace TerraViewer
             SaveToXml(false);
 
             var fc = new FileCabinet(saveFilename, BaseWorkingDirectory);
-            fc.PackageID = this.Id;
-            this.saveFileName = saveFilename;
+            fc.PackageID = Id;
+            saveFileName = saveFilename;
             fc.AddFile(filename);
  
             var masterList = CreateLayerMasterList();

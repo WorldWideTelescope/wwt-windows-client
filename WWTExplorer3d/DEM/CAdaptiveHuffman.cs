@@ -12,6 +12,8 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
@@ -116,7 +118,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				throw new ArgumentOutOfRangeException("iNSymbols", "iNSymbols = " + iNSymbols);
 			}
 
-			this.m_iNSymbols = iNSymbols;
+			m_iNSymbols = iNSymbols;
 
 			m_pDelta = null;
 			m_iDiscriminant = m_iUpperBound = m_iLowerBound = 0;
@@ -155,7 +157,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		internal int GetHuffShort(SimpleBitIO bitIO)
 		{
 			int iSymbol = m_pHuffman.m_hufDecTable[bitIO.PeekBit16(Constant.HUFFMAN_DECODE_ROOT_BITS)];
-			System.Diagnostics.Debug.Assert(iSymbol >= 0);
+			Debug.Assert(iSymbol >= 0);
 
 			bitIO.GetBit16((uint)(iSymbol & ((1 << Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
 			return iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
@@ -165,7 +167,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/**********************************************************************
 		  Adapt fixed length codes based on discriminant
 		**********************************************************************/
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		internal void AdaptDiscriminant()
 		{
 			var bChange = false;
@@ -224,8 +226,8 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				}
 
 			var t = m_iTableIndex;
-			System.Diagnostics.Debug.Assert(t >= 0);
-			System.Diagnostics.Debug.Assert(t < Constant.gMaxTables[m_iNSymbols]);
+			Debug.Assert(t >= 0);
+			Debug.Assert(t < Constant.gMaxTables[m_iNSymbols]);
 
 			m_iLowerBound = (t == 0) ? (-1 << 31) : -Constant.THRESHOLD;
 			m_iUpperBound = (t == Constant.gMaxTables[m_iNSymbols] - 1) ? (1 << 30) : Constant.THRESHOLD;

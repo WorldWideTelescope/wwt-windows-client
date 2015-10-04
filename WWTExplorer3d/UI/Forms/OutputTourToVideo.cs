@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
@@ -18,36 +13,36 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.WaitForDownloads.Text = Language.GetLocalizedText(882, "Wait for all downloads");
-            this.Close.Text = Language.GetLocalizedText(212, "Close");
-            this.PathLabel.Text = Language.GetLocalizedText(883, "Filename Out (Use {NNNN} notation for auto frame numbering)");
-            this.Browse.Text = Language.GetLocalizedText(884, "Browse");
-            this.label1.Text = Language.GetLocalizedText(209, "Width");
-            this.label2.Text = Language.GetLocalizedText(208, "Height");
-            this.OutputFormatLabel.Text = Language.GetLocalizedText(885, "Output Format");
-            this.fpsLabel.Text = Language.GetLocalizedText(886, "FPS");
-            this.Render.Text = Language.GetLocalizedText(887, "Render");
-            this.label3.Text = Language.GetLocalizedText(424, "Run Time");
-            this.totalTimeLabel.Text = Language.GetLocalizedText(888, "Total Frames");
-            this.label4.Text = Language.GetLocalizedText(889, "Start Frame");
-            this.DomeMaster.Text = Language.GetLocalizedText(890, "Dome Master");
-            this.Text = Language.GetLocalizedText(891, "Render Tour to Video");
+            WaitForDownloads.Text = Language.GetLocalizedText(882, "Wait for all downloads");
+            Close.Text = Language.GetLocalizedText(212, "Close");
+            PathLabel.Text = Language.GetLocalizedText(883, "Filename Out (Use {NNNN} notation for auto frame numbering)");
+            Browse.Text = Language.GetLocalizedText(884, "Browse");
+            label1.Text = Language.GetLocalizedText(209, "Width");
+            label2.Text = Language.GetLocalizedText(208, "Height");
+            OutputFormatLabel.Text = Language.GetLocalizedText(885, "Output Format");
+            fpsLabel.Text = Language.GetLocalizedText(886, "FPS");
+            Render.Text = Language.GetLocalizedText(887, "Render");
+            label3.Text = Language.GetLocalizedText(424, "Run Time");
+            totalTimeLabel.Text = Language.GetLocalizedText(888, "Total Frames");
+            label4.Text = Language.GetLocalizedText(889, "Start Frame");
+            DomeMaster.Text = Language.GetLocalizedText(890, "Dome Master");
+            Text = Language.GetLocalizedText(891, "Render Tour to Video");
         }
 
         private void OutputTourToVideo_Load(object sender, EventArgs e)
         {
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(892, "Standard Definition"), 640, 480, 30, false));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(893, "High Definition 720P"), 1280, 720, 30, false));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(894, "High Definition 1080P"), 1920, 1080, 30, false));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(895, "Dome Master 1k"), 1024, 1024, 30, true));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(896, "Dome Master 2k"), 2048, 2048, 30, true));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(897, "Dome Master 3k"), 3072, 3072, 30, true));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(898, "Dome Master 4k"), 4096, 4096, 30, true));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(1044, "Dome Master 8k"), 8192, 8192, 30, true));
-            this.OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(899, "Custom"), 0, 0, 0, false));
-            this.OutputFormatCombo.SelectedIndex = Properties.Settings.Default.LastVideoOutFormat;
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(892, "Standard Definition"), 640, 480, 30, false));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(893, "High Definition 720P"), 1280, 720, 30, false));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(894, "High Definition 1080P"), 1920, 1080, 30, false));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(895, "Dome Master 1k"), 1024, 1024, 30, true));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(896, "Dome Master 2k"), 2048, 2048, 30, true));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(897, "Dome Master 3k"), 3072, 3072, 30, true));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(898, "Dome Master 4k"), 4096, 4096, 30, true));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(1044, "Dome Master 8k"), 8192, 8192, 30, true));
+            OutputFormatCombo.Items.Add(new VideoOutputType(Language.GetLocalizedText(899, "Custom"), 0, 0, 0, false));
+            OutputFormatCombo.SelectedIndex = Properties.Settings.Default.LastVideoOutFormat;
             var ts = Target.RunTime;
-            this.runTimeEdit.Text = String.Format("{0:0}:{1:00}", ts.Minutes, ts.Seconds);
+            runTimeEdit.Text = String.Format("{0:0}:{1:00}", ts.Minutes, ts.Seconds);
             if (string.IsNullOrEmpty(Properties.Settings.Default.VideoOutputPath))
             {
                 Properties.Settings.Default.VideoOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\VideoFrames\\VideoOut.png";

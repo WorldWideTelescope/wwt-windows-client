@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.IO;
 
@@ -49,7 +47,7 @@ namespace TerraViewer
             }
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             XmlNode imageSetNode = node["ImageSet"];
 
@@ -97,14 +95,14 @@ namespace TerraViewer
             renderContext.ViewBase = renderContext.View;
             Earth3d.MainWindow.MakeFrustum();
             renderContext.MakeFrustum();
-            Earth3d.MainWindow.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
+            Earth3d.MainWindow.PaintLayerFullTint11(imageSet, Opacity * opacity * 100, Color);
 
      
             return true;
 
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             if (imageSet.WcsImage != null)
             {
@@ -140,7 +138,7 @@ namespace TerraViewer
                 var copy = !fName.Contains(ID.ToString());
                 var extension = Path.GetExtension(fName);
 
-                var fileName = fc.TempDirectory + string.Format("{0}\\{1}{2}", fc.PackageID, this.ID.ToString(), extension);
+                var fileName = fc.TempDirectory + string.Format("{0}\\{1}{2}", fc.PackageID, ID, extension);
                 var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
 
                 if (fName != fileName)

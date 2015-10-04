@@ -187,10 +187,5 @@ namespace TerraViewer
     }
     public class ZipArchiveWriter
     {
-        public ZipArchiveWriter()
-        {
-        }
-
-
     }
 }

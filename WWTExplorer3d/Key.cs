@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Windows;
 using System.Windows.Media.Animation;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -32,7 +31,7 @@ namespace TerraViewer
             BaseTweenType = baseTweenType;
         }
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Key");
             xmlWriter.WriteAttributeString("Time", Time.ToString());
@@ -46,7 +45,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public Key(System.Xml.XmlNode node)
+        public Key(XmlNode node)
         {
             Time = double.Parse(node.Attributes["Time"].Value);
             Value = double.Parse(node.Attributes["Value"].Value);
@@ -84,29 +83,23 @@ namespace TerraViewer
                     {
                         return Math.Sinh(alpha / factor) / 100.0;
                     }
-                    else
-                    {
-                        return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
-                    }
+                    return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
                 case KeyType.Custom:
                     {
-                        ks.ControlPoint1 = new System.Windows.Point(P1, P2);
-                        ks.ControlPoint2 = new System.Windows.Point(P3, P4);
+                        ks.ControlPoint1 = new Point(P1, P2);
+                        ks.ControlPoint2 = new Point(P3, P4);
 
                         return ks.GetSplineProgress(alpha);
                         //return ComputeSpline(first, new Vector2d(P1, P2), new Vector2d(P3, P4), last, alpha).Y;
                     }
                 case KeyType.Instant:
-                    {
-                        if (alpha > .999)
+                {
+                    if (alpha > .999)
                         {
                             return 1;
                         }
-                        else
-                        {
-                            return 0;
-                        }
-                    }         
+                    return 0;
+                }
                 default:
                     return alpha;
             }
@@ -129,29 +122,23 @@ namespace TerraViewer
                     {
                         return Math.Sinh(alpha / factor) / 100.0;
                     }
-                    else
-                    {
-                        return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
-                    }
+                    return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
                 case KeyType.Custom:
                     {
-                        ks.ControlPoint1 = new System.Windows.Point(p1, p2);
-                        ks.ControlPoint2 = new System.Windows.Point(p3, p4);
+                        ks.ControlPoint1 = new Point(p1, p2);
+                        ks.ControlPoint2 = new Point(p3, p4);
 
                         return ks.GetSplineProgress(alpha);
                         //return ComputeSpline(first, new Vector2d(P1, P2), new Vector2d(P3, P4), last, alpha).Y;
                     }
                 case KeyType.Instant:
-                    {
-                        if (alpha > .999)
+                {
+                    if (alpha > .999)
                         {
                             return 1;
                         }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
+                    return 0;
+                }
                 default:
                     return alpha;
             }

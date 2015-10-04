@@ -1,16 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
 using System.Threading;
-using ShapefileTools;
-using System.Data;
-
+using SharpDX;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
+using TerraViewer.Properties;
+using Color = System.Drawing.Color;
+using Device = SharpDX.Direct3D11.Device;
 using Matrix = SharpDX.Matrix;
 using Vector3 = SharpDX.Vector3;
 namespace TerraViewer
@@ -62,11 +62,11 @@ namespace TerraViewer
 
                     auroraPoints[index].Position = Vector3d.TransformCoordinate(Coordinates.GeoTo3dDouble(lat, lng, 1.0001),mat);
                     auroraPoints[index].Tu = (float)(lng / 360);
-                    auroraPoints[index].Tv = (float)0;
+                    auroraPoints[index].Tv = 0;
                     index++;
                     auroraPoints[index].Position = Vector3d.TransformCoordinate(Coordinates.GeoTo3dDouble(lat - .1, lng, 1.0200), mat);
                     auroraPoints[index].Tu = (float)(lng / 360);
-                    auroraPoints[index].Tv = (float)1;
+                    auroraPoints[index].Tv = 1;
                     index++;
                 }
 
@@ -277,11 +277,11 @@ namespace TerraViewer
                     else if (l < 0)
                     {
 
-                        text = "  " + (Math.Abs(l).ToString()) + " BCE";
+                        text = "  " + (Math.Abs(l)) + " BCE";
                     }
                     else
                     {
-                        text = (Math.Abs(l).ToString()) + " CE";
+                        text = (Math.Abs(l)) + " CE";
                     }
 
                     if (text.Length == 9)
@@ -316,8 +316,8 @@ namespace TerraViewer
                 altAzLineList.DepthBuffered = false;
 
                 var col = drawColor;
-                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * ((float)col.A / 255.0f));
-                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * ((float)col.A / 255.0f));
+                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * (col.A / 255.0f));
+                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * (col.A / 255.0f));
                 for (double l = 0; l < 360; l += 10)
                 {
                     for (double b = -80; b < 80; b += 2)
@@ -437,14 +437,14 @@ namespace TerraViewer
                 AltAzTextBatch = new Text3dBatch(80);
                 for (double l = 0; l < 360; l += 10)
                 {
-                    var text = "       " + l.ToString();
+                    var text = "       " + l;
                     if (l < 10)
                     {
-                        text = "   " + l.ToString();
+                        text = "   " + l;
                     }
                     else if (l < 100)
                     {
-                        text = "     " + l.ToString();
+                        text = "     " + l;
                     }
                     var lc = 360 - l;
                     AltAzTextBatch.Add(new Text3d(Coordinates.RADecTo3d(lc / 15 - 6, .4, 1), Coordinates.RADecTo3d(lc / 15 - 6, .5, 1), text, 80, .00006));
@@ -463,7 +463,7 @@ namespace TerraViewer
                         var text = b.ToString();
                         if (b > 0)
                         {
-                            text = "  +" + b.ToString();
+                            text = "  +" + b;
                             AltAzTextBatch.Add(new Text3d(Coordinates.RADecTo3d(l / 15, b - .4, 1), Coordinates.RADecTo3d(l / 15, b - .3, 1), text, 80, .00006));
                         }
                         else
@@ -491,8 +491,8 @@ namespace TerraViewer
                 var mat = Matrix3d.RotationX((obliquity / 360.0 * (Math.PI * 2)));
 
                 var col = drawColor;
-                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * ((float)col.A / 255.0f));
-                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * ((float)col.A / 255.0f));
+                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * (col.A / 255.0f));
+                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * (col.A / 255.0f));
                 for (double l = 0; l < 360; l += 10)
                 {
                     for (double b = -80; b < 80; b += 2)
@@ -584,14 +584,14 @@ namespace TerraViewer
                 EclipticTextBatch = new Text3dBatch(80);
                 for (double l = 0; l < 360; l += 10)
                 {
-                    var text = "       " + l.ToString();
+                    var text = "       " + l;
                     if (l < 10)
                     {
-                        text = "   " + l.ToString();
+                        text = "   " + l;
                     }
                     else if (l < 100)
                     {
-                        text = "     " + l.ToString();
+                        text = "     " + l;
                     }
                     EclipticTextBatch.Add(new Text3d(Vector3d.TransformCoordinate(Coordinates.RADecTo3d(l / 15 + 12, .4, 1), mat), Vector3d.TransformCoordinate(Coordinates.RADecTo3d(l / 15 + 12, .5, 1), mat), text, 80, .00006));
                 }
@@ -608,7 +608,7 @@ namespace TerraViewer
                         var text = b.ToString();
                         if (b > 0)
                         {
-                            text = "  +" + b.ToString();
+                            text = "  +" + b;
                             EclipticTextBatch.Add(new Text3d(Vector3d.TransformCoordinate(Coordinates.RADecTo3d(l / 15, b - .4, 1 ), mat), Vector3d.TransformCoordinate(Coordinates.RADecTo3d(l / 15, b - .3, 1), mat), text, 80, .00006));
                         }
                         else
@@ -632,8 +632,8 @@ namespace TerraViewer
                 galLineList.DepthBuffered = false;
 
                 var col = drawColor;
-                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * ((float)col.A / 255.0f));
-                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * ((float)col.A / 255.0f));
+                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * (col.A / 255.0f));
+                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * (col.A / 255.0f));
                 for (double l = 0; l < 360; l += 10)
                 {
                     for (double b = -80; b < 80; b += 2)
@@ -720,14 +720,14 @@ namespace TerraViewer
                 GalTextBatch = new Text3dBatch(80);
                 for (var l = 0; l < 360; l += 10)
                 {
-                    var text = "       " + l.ToString();
+                    var text = "       " + l;
                     if (l < 10)
                     {
-                        text = "   " + l.ToString();
+                        text = "   " + l;
                     }
                     else if (l < 100)
                     {
-                        text = "     " + l.ToString();
+                        text = "     " + l;
                     }
                     GalTextBatch.Add(new Text3d(Coordinates.GalacticTo3dDouble(l, 0.4), Coordinates.GalacticTo3dDouble(l, 0.5), text, 80, .00006));
                 }
@@ -744,7 +744,7 @@ namespace TerraViewer
                         var text = b.ToString();
                         if (b > 0)
                         {
-                            text = "  +" + b.ToString();
+                            text = "  +" + b;
                             GalTextBatch.Add(new Text3d(Coordinates.GalacticTo3dDouble(l, b - .4), Coordinates.GalacticTo3dDouble(l, b - .3), text, 80, .00006));
                         }
                         else
@@ -769,8 +769,8 @@ namespace TerraViewer
                 planetLineList.DepthBuffered = false;
 
                 var col = drawColor;
-                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * ((float)col.A / 255.0f));
-                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * ((float)col.A / 255.0f));
+                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * (col.A / 255.0f));
+                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * (col.A / 255.0f));
                 for (double lng = 0; lng < 360; lng += 10)
                 {
                     for (double lat = -80; lat < 80; lat += 2)
@@ -859,14 +859,14 @@ namespace TerraViewer
                 PlanetTextBatch = new Text3dBatch(80);
                 for (var lng = -180; lng < 180; lng += 10)
                 {
-                    var text = "       " + lng.ToString();
+                    var text = "       " + lng;
                     if (lng < 10)
                     {
-                        text = "   " + lng.ToString();
+                        text = "   " + lng;
                     }
                     else if (lng < 100)
                     {
-                        text = "     " + lng.ToString();
+                        text = "     " + lng;
                     }
                     PlanetTextBatch.Add(new Text3d(Coordinates.GeoTo3dDouble( 0.4, lng), Coordinates.GeoTo3dDouble( 0.5, lng), text, -80, .00006));
                 }
@@ -883,7 +883,7 @@ namespace TerraViewer
                         var text = lat.ToString();
                         if (lat > 0)
                         {
-                            text = "  +" + lat.ToString();
+                            text = "  +" + lat;
                             PlanetTextBatch.Add(new Text3d(Coordinates.GeoTo3dDouble( lat - .4, lng), Coordinates.GeoTo3dDouble( lat - .3, lng), text, -80, .00006));
                         }
                         else
@@ -911,8 +911,8 @@ namespace TerraViewer
 
 
                 var col = drawColor;
-                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * ((float)col.A / 255.0f));
-                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * ((float)col.A / 255.0f));
+                var color = UiTools.GetTransparentColor(col.ToArgb(), .5f * opacity * (col.A / 255.0f));
+                var colorBright = UiTools.GetTransparentColor(col.ToArgb(), opacity * (col.A / 255.0f));
                 for (double hour = 0; hour < 24; hour++)
                 {
                     for (double dec = -80; dec < 80; dec += 2)
@@ -1006,10 +1006,10 @@ namespace TerraViewer
 
                 for (var ra = 0; ra < 24; ra++)
                 {
-                    var text = ra.ToString() + " hr";
+                    var text = ra + " hr";
                     if (ra < 10)
                     {
-                        text = "  " + ra.ToString() + " hr";
+                        text = "  " + ra + " hr";
                     }
 
                     EquTextBatch.Add(new Text3d(Coordinates.RADecTo3d(ra + 12.005, 0.4, 1), Coordinates.RADecTo3d(ra + 12.005, 0.5, 1), text, 80, .00006));
@@ -1028,7 +1028,7 @@ namespace TerraViewer
                         var text = dec.ToString();
                         if (dec > 0)
                         {
-                            text = "  +" + dec.ToString();
+                            text = "  +" + dec;
                             EquTextBatch.Add(new Text3d(Coordinates.RADecTo3d(ra + 12, dec - .4, 1), Coordinates.RADecTo3d(ra + 12, dec - .3, 1), text, 80, .00006));
                         }
                         else
@@ -1249,7 +1249,7 @@ namespace TerraViewer
 
             var points = new PositionColoredTextured[(count*2 + 3)];
 
-            points[0].Position = new SharpDX.Vector4(Vector3.TransformCoordinate(new Vector3(0, -1, 0), mat), 1);
+            points[0].Position = new Vector4(Vector3.TransformCoordinate(new Vector3(0, -1, 0), mat), 1);
 
             points[0].Color = color;
 
@@ -1258,9 +1258,9 @@ namespace TerraViewer
             for (var i = 0; i < count + 1; i++)
             {
 
-                points[index].Position = new SharpDX.Vector4(Vector3.TransformCoordinate(new Vector3((float)(.9 * Math.Cos(((double)i * Math.PI * 2.0) / (double)count)),
+                points[index].Position = new Vector4(Vector3.TransformCoordinate(new Vector3((float)(.9 * Math.Cos((i * Math.PI * 2.0) / count)),
                                                  0,
-                                                 (float)(.9 * Math.Sin(((double)i * Math.PI * 2.0) / (double)count))), mat), 1);
+                                                 (float)(.9 * Math.Sin((i * Math.PI * 2.0) / count))), mat), 1);
 
 
                 points[index++].Color = color;
@@ -1269,7 +1269,7 @@ namespace TerraViewer
 
             }
 
-            Sprite2d.Draw(renderContext, points, points.Length, null, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+            Sprite2d.Draw(renderContext, points, points.Length, null, PrimitiveTopology.TriangleStrip);
 
             //todo11 enable text
             //device.DrawUserPrimitives(PrimitiveType.TriangleFan, count, points);
@@ -1576,10 +1576,7 @@ namespace TerraViewer
             {
                 return closestPlace;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
        
 
@@ -1598,8 +1595,8 @@ namespace TerraViewer
                 return;
             }
 
-            var filterCount = Math.Max(0, Math.Min(starCount, (int)(int)Math.Pow(1.1236, (double)(Properties.Settings.Default.ImageQuality / 2.5 + 60.0)) - 1150));
-            var d = (double)(Properties.Settings.Default.ImageQuality / 2.5 + 60.0);
+            var filterCount = Math.Max(0, Math.Min(starCount, (int)Math.Pow(1.1236, Properties.Settings.Default.ImageQuality / 2.5 + 60.0) - 1150));
+            var d = Properties.Settings.Default.ImageQuality / 2.5 + 60.0;
 
             renderContext.BlendMode = BlendMode.Additive;
             renderContext.DepthStencilMode = DepthStencilMode.Off;
@@ -1617,7 +1614,7 @@ namespace TerraViewer
         }
 
 
-        public static void InitStarVertexBuffer(SharpDX.Direct3D11.Device device)
+        public static void InitStarVertexBuffer(Device device)
         {
             starMutex.WaitOne();
             try
@@ -1674,11 +1671,11 @@ namespace TerraViewer
             {
                 if (starProfile == null)
                 {
-                    starProfile = Planets.LoadPlanetTexture( Properties.Resources.StarProfile);
+                    starProfile = Planets.LoadPlanetTexture( Resources.StarProfile);
                 }
-                return Grids.starProfile;
+                return starProfile;
             }
-            set { Grids.starProfile = value; }
+            set { starProfile = value; }
         }
         static double limitingMagnitude = 16;
         public static void DrawStars(RenderContext11 renderContext, float opacity)
@@ -1714,16 +1711,16 @@ namespace TerraViewer
             mvp.Transpose();
             PointSpriteShader11.WVPMatrix = mvp;
             PointSpriteShader11.Color = SharpDX.Color.White;
-            PointSpriteShader11.ViewportScale = new SharpDX.Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
-            PointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);
+            PointSpriteShader11.ViewportScale = new Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
+            PointSpriteShader11.PointScaleFactors = new Vector3(0.0f, 0.0f, 10000.0f);
             PointSpriteShader11.Use(renderContext.Device.ImmediateContext);
 
             renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, StarProfile.ResourceView);
 
-            var filterCount = Math.Max(0, Math.Min(starCount, (int)(int)Math.Pow(1.1236, (double)(Properties.Settings.Default.ImageQuality/2.5+60.0))-1150));
-            var d =  (double)(Properties.Settings.Default.ImageQuality / 2.5 + 60.0);
+            var filterCount = Math.Max(0, Math.Min(starCount, (int)Math.Pow(1.1236, Properties.Settings.Default.ImageQuality/2.5+60.0)-1150));
+            var d =  Properties.Settings.Default.ImageQuality / 2.5 + 60.0;
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
             renderContext.devContext.Draw(filterCount, 0);
 
             renderContext.Device.ImmediateContext.GeometryShader.Set(null);
@@ -1847,7 +1844,7 @@ namespace TerraViewer
         static PointSpriteSet milkyWaySprites;
         static PointSpriteSet occludingSprites;
         // static PositionColorSizeVertexBuffer11 galaxyVertexBuffer = null;
-        static SharpDX.Direct3D11.InputLayout galaxyImageInputLayout;
+        static InputLayout galaxyImageInputLayout;
         static int galaxyPointCount;
         static Texture11 galacticCloud;
         static Texture11 milkyWayImage;
@@ -1868,10 +1865,7 @@ namespace TerraViewer
                 DrawGalaxyImage(renderContext, 1 * opacity);
                 return;
             }
-            else
-            {
-                DrawGalaxyImage(renderContext, .75f * fadeOut);
-            }
+            DrawGalaxyImage(renderContext, .75f * fadeOut);
 
             var lowestIndex = -1;
             float lowestValue = 100000;
@@ -1900,7 +1894,7 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Alpha;
 
 
-            milkyWaySprites.TintColor = new SharpDX.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+            milkyWaySprites.TintColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
             milkyWaySprites.Draw(renderContext, galaxyPointCount, galacticCloud, 1f, MilkyWayIndexBuffers[lowestIndex]);
 
 
@@ -1908,7 +1902,7 @@ namespace TerraViewer
             if (opacity > 0 && opacity < 1)
             {
 
-                var color = Color.FromArgb( (int)UiTools.Gamma(255 - (int)(opacity * 255), 1 / 2.2f), Color.Black);
+                var color = Color.FromArgb( UiTools.Gamma(255 - (int)(opacity * 255), 1 / 2.2f), Color.Black);
 
                 fadePoints[0].X = 0;
                 fadePoints[0].Y = renderContext.ViewPort.Height;
@@ -1939,7 +1933,7 @@ namespace TerraViewer
                 fadePoints[3].W = 1;
                 fadePoints[3].Color = color;
 
-                Sprite2d.DrawForScreen(renderContext, fadePoints, 4, null, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+                Sprite2d.DrawForScreen(renderContext, fadePoints, 4, null, PrimitiveTopology.TriangleStrip);
             }
         }
         static readonly PositionColoredTextured[] fadePoints = new PositionColoredTextured[4];
@@ -1965,17 +1959,17 @@ namespace TerraViewer
             renderContext.SetupBasicEffect(BasicEffect.TextureColorOpacity, opacity, Color.FromArgb(alpha, alpha, alpha, alpha));
             if (galaxyImageInputLayout == null)
             {
-                galaxyImageInputLayout = new SharpDX.Direct3D11.InputLayout(device, renderContext.Shader.InputSignature, new[]
+                galaxyImageInputLayout = new InputLayout(device, renderContext.Shader.InputSignature, new[]
                 {
-                    new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                    new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       12, 0),   
+                    new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                    new InputElement("TEXCOORD", 0, Format.R32G32_Float,       12, 0),   
                 });
             }
 
             renderContext.Device.ImmediateContext.InputAssembler.InputLayout = galaxyImageInputLayout;
             renderContext.SetVertexBuffer(galaxyImageVertexBuffer);
             renderContext.SetIndexBuffer(galaxyImageIndexBuffer);
-            device.ImmediateContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             renderContext.PreDraw();
             device.ImmediateContext.DrawIndexed(galaxyImageTriangleCount * 3, 0, 0);
         }
@@ -1984,7 +1978,7 @@ namespace TerraViewer
 
         public static Vector3 MilkyWayNormal = new Vector3();
 
-        public static void MakeMilkyWay(SharpDX.Direct3D11.Device device)
+        public static void MakeMilkyWay(Device device)
         {
             starMutex.WaitOne();
             if (milkyWaySprites == null)
@@ -2000,7 +1994,7 @@ namespace TerraViewer
 
                 if (galacticCloud == null)
                 {
-                    galacticCloud = Planets.LoadPlanetTexture(Properties.Resources.StarProfileAlpha);
+                    galacticCloud = Planets.LoadPlanetTexture(Resources.StarProfileAlpha);
                 }
 
 
@@ -2039,10 +2033,7 @@ namespace TerraViewer
                     WritePointListFile(pointList, filename);
 
                 }
-                else
-                {
-                    pointList = ReadPointListFile(filename);
-                }
+                pointList = ReadPointListFile(filename);
 
 
                 // Make indexes for difference angles around the milkyway
@@ -2505,7 +2496,7 @@ namespace TerraViewer
         }
 
 
-        public static void MakeOccludingSprites(SharpDX.Direct3D11.Device device)
+        public static void MakeOccludingSprites(Device device)
         {
             starMutex.WaitOne();
 
@@ -2515,7 +2506,7 @@ namespace TerraViewer
 
                 if (galacticCloud == null)
                 {
-                    galacticCloud = Planets.LoadPlanetTexture(Properties.Resources.StarProfileAlpha);
+                    galacticCloud = Planets.LoadPlanetTexture(Resources.StarProfileAlpha);
                 }
 
 
@@ -2612,7 +2603,7 @@ namespace TerraViewer
             starMutex.ReleaseMutex();
         }
 
-        public static void MakeGalaxySprites(SharpDX.Direct3D11.Device device)
+        public static void MakeGalaxySprites(Device device)
         {
             return;
             starMutex.WaitOne();
@@ -2623,7 +2614,7 @@ namespace TerraViewer
 
                 if (galacticCloud == null)
                 {
-                    galacticCloud = Planets.LoadPlanetTexture(Properties.Resources.StarProfileAlpha);
+                    galacticCloud = Planets.LoadPlanetTexture(Resources.StarProfileAlpha);
                 }
 
 
@@ -2722,7 +2713,7 @@ namespace TerraViewer
             starMutex.ReleaseMutex();
         }
 
-        public static void MakeGalaxySpritesOld(SharpDX.Direct3D11.Device device)
+        public static void MakeGalaxySpritesOld(Device device)
         {
             starMutex.WaitOne();
 
@@ -2732,10 +2723,10 @@ namespace TerraViewer
 
                 if (galacticCloud == null)
                 {
-                    galacticCloud = Planets.LoadPlanetTexture(Properties.Resources.GalacticCloud);
+                    galacticCloud = Planets.LoadPlanetTexture(Resources.GalacticCloud);
                 }
 
-                var bmp = Properties.Resources.milkyWay;
+                var bmp = Resources.milkyWay;
 
                 var rnd = new Random(1231232);
                 var scaleFactor = 60800000.0;
@@ -2754,7 +2745,7 @@ namespace TerraViewer
                         var col = bmp.GetPixel(x, y);
                         var icol = (new SharpDX.Color(col.R, col.G, col.B, 255)).ToRgba();
 
-                        var luminance = (0.265 * (double)col.R + 0.670 * (double)col.G + 0.065 * (double)col.B);
+                        var luminance = (0.265 * col.R + 0.670 * col.G + 0.065 * col.B);
                         if (luminance > 5)
                         {
                             var variance = Math.Log(luminance - 19, 2);
@@ -2828,11 +2819,11 @@ namespace TerraViewer
         static PositionTexturedVertexBuffer11 galaxyImageVertexBuffer;
         static IndexBuffer11 galaxyImageIndexBuffer;
         static int galaxyImageTriangleCount;
-        private static void CreateGalaxyImage(SharpDX.Direct3D11.Device device)
+        private static void CreateGalaxyImage(Device device)
         {
             if (milkyWayImage == null)
             {
-                milkyWayImage = Planets.LoadPlanetTexture(Properties.Resources.milkywaybar);
+                milkyWayImage = Planets.LoadPlanetTexture(Resources.milkywaybar);
 
                // milkyWayImage = Texture11.FromFile(@"c:\milkyway\MilkyWayMap.png");
             }
@@ -2873,7 +2864,7 @@ namespace TerraViewer
 
                 if (y1 != subdivs)
                 {
-                    lat = latMax - (textureStepY * latDegrees * (double)y1);
+                    lat = latMax - (textureStepY * latDegrees * y1);
                 }
                 else
                 {
@@ -2884,7 +2875,7 @@ namespace TerraViewer
                 {
                     if (x1 != subdivs)
                     {
-                        lng = lngMin + (textureStepX * lngDegrees * (double)x1);
+                        lng = lngMin + (textureStepX * lngDegrees * x1);
                     }
                     else
                     {
@@ -2961,26 +2952,26 @@ namespace TerraViewer
                 else
                 {
                     galaxyTextures = new Texture11[20];
-                    galaxyTextures[0] = Planets.LoadPlanetTexture(Properties.Resources.g000);
-                    galaxyTextures[1] = Planets.LoadPlanetTexture(Properties.Resources.g001);
-                    galaxyTextures[2] = Planets.LoadPlanetTexture(Properties.Resources.g002);
-                    galaxyTextures[3] = Planets.LoadPlanetTexture(Properties.Resources.g003);
-                    galaxyTextures[4] = Planets.LoadPlanetTexture(Properties.Resources.g004);
-                    galaxyTextures[5] = Planets.LoadPlanetTexture(Properties.Resources.g005);
-                    galaxyTextures[6] = Planets.LoadPlanetTexture(Properties.Resources.g006);
-                    galaxyTextures[7] = Planets.LoadPlanetTexture(Properties.Resources.g007);
-                    galaxyTextures[8] = Planets.LoadPlanetTexture(Properties.Resources.g008);
-                    galaxyTextures[9] = Planets.LoadPlanetTexture(Properties.Resources.g009);
-                    galaxyTextures[10] = Planets.LoadPlanetTexture(Properties.Resources.g010);
-                    galaxyTextures[11] = Planets.LoadPlanetTexture(Properties.Resources.g011);
-                    galaxyTextures[12] = Planets.LoadPlanetTexture(Properties.Resources.g012);
-                    galaxyTextures[13] = Planets.LoadPlanetTexture(Properties.Resources.g013);
-                    galaxyTextures[14] = Planets.LoadPlanetTexture(Properties.Resources.g014);
-                    galaxyTextures[15] = Planets.LoadPlanetTexture(Properties.Resources.g015);
-                    galaxyTextures[16] = Planets.LoadPlanetTexture(Properties.Resources.g016);
-                    galaxyTextures[17] = Planets.LoadPlanetTexture(Properties.Resources.g017);
-                    galaxyTextures[18] = Planets.LoadPlanetTexture(Properties.Resources.g018);
-                    galaxyTextures[19] = Planets.LoadPlanetTexture(Properties.Resources.g019);
+                    galaxyTextures[0] = Planets.LoadPlanetTexture(Resources.g000);
+                    galaxyTextures[1] = Planets.LoadPlanetTexture(Resources.g001);
+                    galaxyTextures[2] = Planets.LoadPlanetTexture(Resources.g002);
+                    galaxyTextures[3] = Planets.LoadPlanetTexture(Resources.g003);
+                    galaxyTextures[4] = Planets.LoadPlanetTexture(Resources.g004);
+                    galaxyTextures[5] = Planets.LoadPlanetTexture(Resources.g005);
+                    galaxyTextures[6] = Planets.LoadPlanetTexture(Resources.g006);
+                    galaxyTextures[7] = Planets.LoadPlanetTexture(Resources.g007);
+                    galaxyTextures[8] = Planets.LoadPlanetTexture(Resources.g008);
+                    galaxyTextures[9] = Planets.LoadPlanetTexture(Resources.g009);
+                    galaxyTextures[10] = Planets.LoadPlanetTexture(Resources.g010);
+                    galaxyTextures[11] = Planets.LoadPlanetTexture(Resources.g011);
+                    galaxyTextures[12] = Planets.LoadPlanetTexture(Resources.g012);
+                    galaxyTextures[13] = Planets.LoadPlanetTexture(Resources.g013);
+                    galaxyTextures[14] = Planets.LoadPlanetTexture(Resources.g014);
+                    galaxyTextures[15] = Planets.LoadPlanetTexture(Resources.g015);
+                    galaxyTextures[16] = Planets.LoadPlanetTexture(Resources.g016);
+                    galaxyTextures[17] = Planets.LoadPlanetTexture(Resources.g017);
+                    galaxyTextures[18] = Planets.LoadPlanetTexture(Resources.g018);
+                    galaxyTextures[19] = Planets.LoadPlanetTexture(Resources.g019);
                 }
             }
 
@@ -3117,40 +3108,36 @@ namespace TerraViewer
                     //// Write Binary file
                     DumpGalaxyBinaryFile(Properties.Settings.Default.CahceDirectory + @"cosmos\cosmos.bin");
                 }
-                else
+                if (cosmos == null)
                 {
+                    cosmos = new List<Galaxy>();
+                    //string filename = Properties.Settings.Default.CahceDirectory + @"cosmos\cosmos.bin";
+                    //DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=cosmosbin", filename, false, true);
+                    //FileStream fs = new FileStream(filename, FileMode.Open);
 
-                    if (cosmos == null)
+                    // From Resrouce
+                    var name = "TerraViewer.Cosmos.cosmos.bin";
+                    var fs = Earth3d.MainWindow.GetType().Assembly.GetManifestResourceStream(name);
+
+                    var len = fs.Length;
+                    var br = new BinaryReader(fs);
+                    Galaxy galaxy;
+                    try
                     {
-                        cosmos = new List<Galaxy>();
-                        //string filename = Properties.Settings.Default.CahceDirectory + @"cosmos\cosmos.bin";
-                        //DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=cosmosbin", filename, false, true);
-                        //FileStream fs = new FileStream(filename, FileMode.Open);
-
-                        // From Resrouce
-                        var name = "TerraViewer.Cosmos.cosmos.bin";
-                        var fs = Earth3d.MainWindow.GetType().Assembly.GetManifestResourceStream(name);
-
-                        var len = fs.Length;
-                        var br = new BinaryReader(fs);
-                        Galaxy galaxy;
-                        try
+                        var count = 0; 
+                        while (fs.Position < len & count < max)
                         {
-                            var count = 0; 
-                            while (fs.Position < len & count < max)
-                            {
-                                galaxy = new Galaxy(br);
-                                cosmos.Add(galaxy);
-                                galaxyVertexCounts[galaxy.eTypeBucket]++;
-                                count++;
-                            }
+                            galaxy = new Galaxy(br);
+                            cosmos.Add(galaxy);
+                            galaxyVertexCounts[galaxy.eTypeBucket]++;
+                            count++;
                         }
-                        catch
-                        {
-                        }
-                        br.Close();
-                        fs.Close();
                     }
+                    catch
+                    {
+                    }
+                    br.Close();
+                    fs.Close();
                 }
             }
         }
@@ -3198,26 +3185,26 @@ namespace TerraViewer
                 else
                 {
                     galaxyTextures = new Texture11[20];
-                    galaxyTextures[0] = Planets.LoadPlanetTexture(Properties.Resources.g000);
-                    galaxyTextures[1] = Planets.LoadPlanetTexture(Properties.Resources.g001);
-                    galaxyTextures[2] = Planets.LoadPlanetTexture(Properties.Resources.g002);
-                    galaxyTextures[3] = Planets.LoadPlanetTexture(Properties.Resources.g003);
-                    galaxyTextures[4] = Planets.LoadPlanetTexture(Properties.Resources.g004);
-                    galaxyTextures[5] = Planets.LoadPlanetTexture(Properties.Resources.g005);
-                    galaxyTextures[6] = Planets.LoadPlanetTexture(Properties.Resources.g006);
-                    galaxyTextures[7] = Planets.LoadPlanetTexture(Properties.Resources.g007);
-                    galaxyTextures[8] = Planets.LoadPlanetTexture(Properties.Resources.g008);
-                    galaxyTextures[9] = Planets.LoadPlanetTexture(Properties.Resources.g009);
-                    galaxyTextures[10] = Planets.LoadPlanetTexture(Properties.Resources.g010);
-                    galaxyTextures[11] = Planets.LoadPlanetTexture(Properties.Resources.g011);
-                    galaxyTextures[12] = Planets.LoadPlanetTexture(Properties.Resources.g012);
-                    galaxyTextures[13] = Planets.LoadPlanetTexture(Properties.Resources.g013);
-                    galaxyTextures[14] = Planets.LoadPlanetTexture(Properties.Resources.g014);
-                    galaxyTextures[15] = Planets.LoadPlanetTexture(Properties.Resources.g015);
-                    galaxyTextures[16] = Planets.LoadPlanetTexture(Properties.Resources.g016);
-                    galaxyTextures[17] = Planets.LoadPlanetTexture(Properties.Resources.g017);
-                    galaxyTextures[18] = Planets.LoadPlanetTexture(Properties.Resources.g018);
-                    galaxyTextures[19] = Planets.LoadPlanetTexture(Properties.Resources.g019);
+                    galaxyTextures[0] = Planets.LoadPlanetTexture(Resources.g000);
+                    galaxyTextures[1] = Planets.LoadPlanetTexture(Resources.g001);
+                    galaxyTextures[2] = Planets.LoadPlanetTexture(Resources.g002);
+                    galaxyTextures[3] = Planets.LoadPlanetTexture(Resources.g003);
+                    galaxyTextures[4] = Planets.LoadPlanetTexture(Resources.g004);
+                    galaxyTextures[5] = Planets.LoadPlanetTexture(Resources.g005);
+                    galaxyTextures[6] = Planets.LoadPlanetTexture(Resources.g006);
+                    galaxyTextures[7] = Planets.LoadPlanetTexture(Resources.g007);
+                    galaxyTextures[8] = Planets.LoadPlanetTexture(Resources.g008);
+                    galaxyTextures[9] = Planets.LoadPlanetTexture(Resources.g009);
+                    galaxyTextures[10] = Planets.LoadPlanetTexture(Resources.g010);
+                    galaxyTextures[11] = Planets.LoadPlanetTexture(Resources.g011);
+                    galaxyTextures[12] = Planets.LoadPlanetTexture(Resources.g012);
+                    galaxyTextures[13] = Planets.LoadPlanetTexture(Resources.g013);
+                    galaxyTextures[14] = Planets.LoadPlanetTexture(Resources.g014);
+                    galaxyTextures[15] = Planets.LoadPlanetTexture(Resources.g015);
+                    galaxyTextures[16] = Planets.LoadPlanetTexture(Resources.g016);
+                    galaxyTextures[17] = Planets.LoadPlanetTexture(Resources.g017);
+                    galaxyTextures[18] = Planets.LoadPlanetTexture(Resources.g018);
+                    galaxyTextures[19] = Planets.LoadPlanetTexture(Resources.g019);
                 }
             }
 
@@ -3252,7 +3239,7 @@ namespace TerraViewer
             Galaxy galaxy;
             foreach(var row in table.Rows)
             {
-                var line = string.Format("{0}\t{1}\t{2}\t{3}",row[raCol].ToString(),row[decCol].ToString(),row[distanceCol],row[eClassCol]);
+                var line = string.Format("{0}\t{1}\t{2}\t{3}",row[raCol],row[decCol],row[distanceCol],row[eClassCol]);
                 galaxy = new Galaxy(line, false);
                 customGalaxyVertexCounts[galaxy.eTypeBucket]++;
                 customCosmos.Add(galaxy);
@@ -3405,7 +3392,7 @@ namespace TerraViewer
                 structure = new TriangleList();
 
 
-                var radStep = Math.PI * 2.0 / (double)subDivisionsRings;
+                var radStep = Math.PI * 2.0 / subDivisionsRings;
 
                 for (var i = 0; i < 4; i++)
                 {
@@ -3419,7 +3406,7 @@ namespace TerraViewer
                         if (x > (subDivisionsRings / 2)-1)
                         {
                             var col = zoneColor[i];
-                            col = Color.FromArgb((int)(col.A), (int)(col.R * .7), (int)(col.G * .7), (int)(col.B * .7f));
+                            col = Color.FromArgb(col.A, (int)(col.R * .7), (int)(col.G * .7), (int)(col.B * .7f));
 
                             var rads1 = x * radStep + Math.PI / 2;
                             var rads2 = (x + 1) * radStep + Math.PI / 2;
@@ -3461,7 +3448,7 @@ namespace TerraViewer
         public Galaxy(string line, bool largeSet)
         {
             line = line.Replace("  ", " ");
-            var values = line.Split(new char[] { '\t', ' ', ',' });
+            var values = line.Split(new[] { '\t', ' ', ',' });
             SdssID = Convert.ToInt64(values[0]);
             RA = Convert.ToSingle(values[1])/15;
             Dec = Convert.ToSingle(values[2]);
@@ -3483,12 +3470,12 @@ namespace TerraViewer
         public Galaxy(string line)
         {
             line = line.Replace("  ", " ");
-            var values = line.Split(new char[] { '\t', ' ', ',' });
+            var values = line.Split(new[] { '\t', ' ', ',' });
             SdssID = Convert.ToInt64(values[0]);
             RA = Convert.ToSingle(values[1]) / 15;
             Dec = Convert.ToSingle(values[2]);
             Distance = Convert.ToSingle(values[3]);
-            this.Size = 500;
+            Size = 500;
             Type = Convert.ToSingle(values[4]);
 
         }
@@ -3497,9 +3484,9 @@ namespace TerraViewer
         {
             get
             {
-                var place = new TourPlace("SDSS "+SdssID.ToString(), Dec, RA, Classification.Galaxy, Earth3d.MainWindow.ConstellationCheck.FindConstellationForPoint(RA, Dec), ImageSetType.SolarSystem, -1);
+                var place = new TourPlace("SDSS "+SdssID, Dec, RA, Classification.Galaxy, Earth3d.MainWindow.ConstellationCheck.FindConstellationForPoint(RA, Dec), ImageSetType.SolarSystem, -1);
                 place.Magnitude = 0;
-                place.Distance = (this.Distance * UiTools.AuPerParsec * 1000000.0)/.73;
+                place.Distance = (Distance * UiTools.AuPerParsec * 1000000.0)/.73;
                 return place;
             }
         }
@@ -3553,8 +3540,8 @@ namespace TerraViewer
     {
         public SortSprite(uint index, float distance)
         {
-            this.Index = index;
-            this.Distance = distance;
+            Index = index;
+            Distance = distance;
         }
         public uint Index;
         public float Distance;
@@ -3566,7 +3553,7 @@ namespace TerraViewer
 
         public int CompareTo(SortSprite other)
         {
-            return -this.Distance.CompareTo( other.Distance);
+            return -Distance.CompareTo( other.Distance);
         }
     }
 
@@ -3580,7 +3567,7 @@ namespace TerraViewer
         {
             get
             {
-                return "HIP" + ID.ToString();
+                return "HIP" + ID;
             }
         }
         public Coordinates Coordinates
@@ -3595,7 +3582,7 @@ namespace TerraViewer
         public double AbsoluteMagnitude;
         public double Par;
         public double Distance;
-        public System.Drawing.Color Col;
+        public Color Col;
         public Vector3d Position;
 
         public IPlace Place
@@ -3622,9 +3609,9 @@ namespace TerraViewer
         public void WriteText(StreamWriter sw)
         {
             sw.Write(ID + "\t");
-            sw.Write(RA.ToString() + "\t");
-            sw.Write(Dec.ToString() + "\t");
-            sw.Write(Magnitude.ToString() + "\t");
+            sw.Write(RA + "\t");
+            sw.Write(Dec + "\t");
+            sw.Write(Magnitude + "\t");
             sw.WriteLine(String.Format("#{0:X}{1:X}{2:X}{3:X}", Col.A, Col.R, Col.G, Col.B) + "\t");
 
         }

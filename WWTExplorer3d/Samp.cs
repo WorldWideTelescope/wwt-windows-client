@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Net;
@@ -47,7 +48,7 @@ namespace TerraViewer
                         var line = sr.ReadLine();
                         if (!line.StartsWith("#"))
                         {
-                            var split = line.Split(new char[] { '=' });
+                            var split = line.Split(new[] { '=' });
                             dotSamp.Add(split[0], split[1]);
                         }
                     }
@@ -115,7 +116,7 @@ namespace TerraViewer
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.unregister</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>"+this.clientId.ToString()+"</string></value></param>");
+            callData.AppendLine("<param><value><string>"+clientId+"</string></value></param>");
             callData.AppendLine("</params>");
             callData.AppendLine("</methodCall>");
 
@@ -147,12 +148,12 @@ namespace TerraViewer
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.declareMetadata</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><struct>");
             callData.AppendLine("<member><name>samp.name</name><value><string>WorldWideTelescope</string></value></member>");
             callData.AppendLine("<member><name>samp.description.text</name><value><string>Microsoft Research WorldWide Telescope Application</string></value></member>");
             callData.AppendLine("<member><name>samp.icon.url</name><value><string>http://www.worldwidetelescope.org/images/wwt_icon1.png</string></value></member>");
-            callData.AppendLine("<member><name>worldwidetelescope.version</name><value><string>"+System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()+"</string></value></member>");
+            callData.AppendLine("<member><name>worldwidetelescope.version</name><value><string>"+Assembly.GetExecutingAssembly().GetName().Version+"</string></value></member>");
             callData.AppendLine("<member><name>home.page</name><value><string>http://www.worldwidetelescope.org</string></value></member>");
             callData.AppendLine("</struct></value></param>");
             callData.AppendLine("</params>");
@@ -186,7 +187,7 @@ namespace TerraViewer
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.getSubscribedClients</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><string>" + mType + "</string></value></param>");
             callData.AppendLine("</params>");
             callData.AppendLine("</methodCall>");
@@ -221,14 +222,14 @@ namespace TerraViewer
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
           //  callData.AppendLine("<methodName>coord.pointAt.sky</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><struct>");
             callData.AppendLine("<member><name>samp.mtype</name><value><string>coord.pointAt.sky</string></value></member>");
             callData.AppendLine("<member><name>samp.params</name><value>");
             
             callData.AppendLine("<struct>");
-            callData.AppendLine("<member><name>ra</name><value><string>" + (ra*15).ToString() + "</string></value></member>");
-            callData.AppendLine("<member><name>dec</name><value><string>" + dec.ToString() + "</string></value></member>");
+            callData.AppendLine("<member><name>ra</name><value><string>" + (ra*15) + "</string></value></member>");
+            callData.AppendLine("<member><name>dec</name><value><string>" + dec + "</string></value></member>");
             callData.AppendLine("</struct>");
             
 
@@ -265,7 +266,7 @@ namespace TerraViewer
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.setXmlrpcCallback</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><string>" + url + "</string></value></param>");
             callData.AppendLine("</params>");
             callData.AppendLine("</methodCall>");
@@ -299,7 +300,7 @@ namespace TerraViewer
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
             //  callData.AppendLine("<methodName>coord.pointAt.sky</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><struct>");
             callData.AppendLine("<member><name>samp.mtype</name><value><string>table.load.votable</string></value></member>");
             callData.AppendLine("<member><name>samp.params</name><value>");
@@ -345,7 +346,7 @@ namespace TerraViewer
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
             
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><struct>");
             callData.AppendLine("<member><name>samp.mtype</name><value><string>table.highlight.row</string></value></member>");
             callData.AppendLine("<member><name>samp.params</name><value>");
@@ -394,7 +395,7 @@ namespace TerraViewer
             callData.AppendLine("<methodName>samp.hub.notifyAll</methodName>");
             //  callData.AppendLine("<methodName>coord.pointAt.sky</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><struct>");
             callData.AppendLine("<member><name>samp.mtype</name><value><string>image.load.fits</string></value></member>");
             callData.AppendLine("<member><name>samp.params</name><value>");
@@ -437,7 +438,7 @@ namespace TerraViewer
             callData.AppendLine("<methodCall>");
             callData.AppendLine("<methodName>samp.hub.declareSubscriptions</methodName>");
             callData.AppendLine("<params>");
-            callData.AppendLine("<param><value><string>" + this.clientId.ToString() + "</string></value></param>");
+            callData.AppendLine("<param><value><string>" + clientId + "</string></value></param>");
             callData.AppendLine("<param><value><struct>");
             callData.AppendLine("<member><name>samp.hub.*</name><value><struct /></value></member>");
             callData.AppendLine("<member><name>coord.*</name><value><struct /></value></member>");

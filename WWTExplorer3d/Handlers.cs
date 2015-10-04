@@ -9,12 +9,9 @@
 */
 using System;	
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections;
-using System.Threading ;
-using System.Drawing;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -110,12 +107,10 @@ namespace TerraViewer
             {
                 return "true";
             }
-            else
-            {
-                return "false";
-            }
-        }	
-        public abstract void ProcessRequest(string request, ref Socket socket, bool authenticated, string body);
+            return "false";
+        }
+
+	    public abstract void ProcessRequest(string request, ref Socket socket, bool authenticated, string body);
         public static void SendContinue(ref Socket mySocket)
         {
             var sBuffer = new StringBuilder("", 1024);
@@ -269,7 +264,7 @@ namespace TerraViewer
                     return _WebTextFileCache[fileNameKey];
                 }
 
-                var file = (Stream)Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles + fileName);
+                var file = Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles + fileName);
 
                 var reader = new StreamReader(file);
                 contents = reader.ReadToEnd();
@@ -311,7 +306,7 @@ namespace TerraViewer
             try
             {
                 fileName = fileName.ToLower();
-                var file = (Stream)Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles+ fileName);
+                var file = Assembly.GetExecutingAssembly().GetManifestResourceStream(_RootWebfiles+ fileName);
                 data = new byte[file.Length];
 
                 file.Read(data, 0, (int)file.Length);

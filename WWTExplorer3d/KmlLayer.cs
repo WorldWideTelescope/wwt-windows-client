@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-
-using System.IO;
-
+using System.Xml;
+using TerraViewer.Properties;
 using Vector3 = SharpDX.Vector3;
-using Matrix = SharpDX.Matrix;
 
 namespace TerraViewer
 {
-    class KmlLayer : Layer, TerraViewer.ITimeSeriesDescription
+    class KmlLayer : Layer, ITimeSeriesDescription
     {
         public KmlRoot root = null;
         static Texture11 star;
@@ -29,9 +26,9 @@ namespace TerraViewer
             {
                 if (star == null)
                 {
-                    star = Texture11.FromBitmap( Properties.Resources.icon_rating_star_large_on, 0);
+                    star = Texture11.FromBitmap( Resources.icon_rating_star_large_on, 0);
                 }
-                return KmlLayer.star; 
+                return star; 
             }
         }
         private readonly TriangleList triangles = new TriangleList();
@@ -80,11 +77,11 @@ namespace TerraViewer
         {
             base.AddFilesToCabinet(fc);
         }
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             base.WriteLayerProperties(xmlWriter);
         }
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             base.InitializeFromXml(node);
         }
@@ -119,7 +116,7 @@ namespace TerraViewer
                 {
                     return;
                 }
-                else if (feature is KmlPlacemark)
+                if (feature is KmlPlacemark)
                 {
                     var placemark = (KmlPlacemark)feature;
                     var style = placemark.Style.GetStyle(placemark.Selected);
@@ -452,7 +449,7 @@ namespace TerraViewer
                         if (placemark.Selected)
                         {
                             double ticks = HiResTimer.TickCount;
-                            var elapsedSeconds = ((double)(ticks - TicksAtLastSelect)) / HiResTimer.Frequency;
+                            var elapsedSeconds = (ticks - TicksAtLastSelect) / HiResTimer.Frequency;
                             sizeFactor = 1 + .3 * (Math.Sin(elapsedSeconds * 15) * Math.Max(0, (1 - elapsedSeconds)));
                         }
 
@@ -469,7 +466,7 @@ namespace TerraViewer
                             placemark.hitTestRect = new Rectangle((int)(point.X - (size / 2)), (int)(point.Y - (size / 2)), (int)(size + .5), (int)(size + .5));
                             if (texture != null)
                             {
-                                center = new Vector3((float)texture.Width / 2f, (float)texture.Height / 2f, 0);
+                                center = new Vector3(texture.Width / 2f, texture.Height / 2f, 0);
 
                                 Sprite2d.Draw2D(Earth3d.MainWindow.RenderContext11, texture, new SizeF(size, size), new PointF(center.X, center.Y), (float)(style.IconStyle.Heading * Math.PI / 180f), new PointF(point.X, point.Y), Color.White);
                             }
@@ -744,10 +741,10 @@ namespace TerraViewer
                 node.Tag = feature;
                 node.Checked = feature.visibility;
                 node.Opened = feature.open;
-                node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
-                node.NodeUpdated += new LayerUITreeNodeUpdatedDelegate(node_NodeUpdated);
-                node.NodeActivated += new LayerUITreeNodeActivatedDelegate(node_NodeActivated);
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
+                node.NodeChecked += node_NodeChecked;
+                node.NodeUpdated += node_NodeUpdated;
+                node.NodeActivated += node_NodeActivated;
+                node.NodeSelected += node_NodeSelected;
                 if (bold)
                 {
                     node.Bold = true;

@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 using System.Net;
+using TerraViewer.Properties;
 
 
 namespace TerraViewer
@@ -41,7 +44,7 @@ namespace TerraViewer
             {
                 if (String.IsNullOrEmpty(workingDirectory))
                 {
-                    workingDirectory = TourDocument.BaseWorkingDirectory + id.ToString() + @"\";
+                    workingDirectory = BaseWorkingDirectory + id + @"\";
                 }
 
                 if (!Directory.Exists(workingDirectory))
@@ -69,7 +72,7 @@ namespace TerraViewer
         {
             var cab = new FileCabinet(filename, BaseWorkingDirectory);
             cab.Extract();
-            var newTour =  TourDocument.FromXml(cab.MasterFile);
+            var newTour =  FromXml(cab.MasterFile);
             if (forEdit)
             {
                 newTour.SaveFileName = filename;
@@ -138,9 +141,9 @@ namespace TerraViewer
             XmlNode root = doc["Tour"];
 
 
-            newTour.id = root.Attributes["ID"].Value.ToString();
-            newTour.Title = root.Attributes["Title"].Value.ToString();
-            newTour.Author = root.Attributes["Author"].Value.ToString();
+            newTour.id = root.Attributes["ID"].Value;
+            newTour.Title = root.Attributes["Title"].Value;
+            newTour.Author = root.Attributes["Author"].Value;
 
             if (root.Attributes["Descirption"] != null)
             {
@@ -172,10 +175,10 @@ namespace TerraViewer
                 newTour.DomeMode = bool.Parse(root.Attributes["DomeMode"].Value);
             }
 
-            newTour.organizationUrl = root.Attributes["OrganizationUrl"].Value.ToString();
-            newTour.level = (UserLevel)Enum.Parse(typeof(UserLevel), root.Attributes["UserLevel"].Value.ToString());
-            newTour.type = (Classification)Enum.Parse(typeof(Classification), root.Attributes["Classification"].Value.ToString());
-            newTour.taxonomy = root.Attributes["Taxonomy"].Value.ToString();
+            newTour.organizationUrl = root.Attributes["OrganizationUrl"].Value;
+            newTour.level = (UserLevel)Enum.Parse(typeof(UserLevel), root.Attributes["UserLevel"].Value);
+            newTour.type = (Classification)Enum.Parse(typeof(Classification), root.Attributes["Classification"].Value);
+            newTour.taxonomy = root.Attributes["Taxonomy"].Value;
 
             var timeLineTour = false;
             if (root.Attributes["TimeLineTour"] != null)
@@ -228,7 +231,7 @@ namespace TerraViewer
                 foreach (XmlNode layer in Layers)
                 {
                     var newLayer = Layer.FromXml(layer, true);
-                    var fileName = newTour.WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
+                    var fileName = newTour.WorkingDirectory + string.Format("{0}.txt", newLayer.ID);
 
                     // Overwite ISS layer if in a tour using the authored ISS details
                     if (LayerManager.LayerList.ContainsKey(newLayer.ID) && newLayer.ID == ISSLayer.ISSGuid)
@@ -241,7 +244,7 @@ namespace TerraViewer
                     {
                         if (!newTour.CollisionChecked)
                         {
-                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 newTour.OverWrite = true;
                             }
@@ -342,7 +345,7 @@ namespace TerraViewer
                 foreach (XmlNode layer in Layers)
                 {
                     var newLayer = Layer.FromXml(layer, true);
-                    var fileName = WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
+                    var fileName = WorkingDirectory + string.Format("{0}.txt", newLayer.ID);
 
                     newLayer.LoadData(fileName);
                     LayerManager.Add(newLayer, false);
@@ -365,7 +368,7 @@ namespace TerraViewer
         {
             get
             {
-                return Properties.Settings.Default.CahceDirectory + @"Temp\" + id.ToString() + "\\" + id.ToString() + ".wwtxml";
+                return Properties.Settings.Default.CahceDirectory + @"Temp\" + id + "\\" + id + ".wwtxml";
             }
         }
 
@@ -382,13 +385,13 @@ namespace TerraViewer
                 // Try with title first cleaned for filename
                 if (String.IsNullOrEmpty(filename) && UiTools.CleanFileName(title) != null)
                 {
-                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + UiTools.CleanFileName(this.title) + ".wwtxml";
+                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + UiTools.CleanFileName(title) + ".wwtxml";
                 }
 
                 //Use a guid if the Title is only non-legal characters or is empty
                 if (String.IsNullOrEmpty(filename))
                 {
-                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + id.ToString() + ".wwtxml";
+                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + id + ".wwtxml";
                 }
                 outFile = filename;
             }
@@ -403,32 +406,32 @@ namespace TerraViewer
 
             if (authorImage != null)
             {
-                UiTools.SaveBitmap(authorImage,AuthorThumbnailFilename,System.Drawing.Imaging.ImageFormat.Png);
+                UiTools.SaveBitmap(authorImage,AuthorThumbnailFilename,ImageFormat.Png);
             }
 
         }
 
         internal void WriteTourXML(string outFile)
         {
-            using (var xmlWriter = new XmlTextWriter(outFile, System.Text.Encoding.UTF8))
+            using (var xmlWriter = new XmlTextWriter(outFile, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("Tour");
 
-                xmlWriter.WriteAttributeString("ID", this.id);
-                xmlWriter.WriteAttributeString("Title", this.title);
-                xmlWriter.WriteAttributeString("Descirption", this.Description);
-                xmlWriter.WriteAttributeString("Description", this.Description);
-                xmlWriter.WriteAttributeString("RunTime", this.RunTime.TotalSeconds.ToString());
-                xmlWriter.WriteAttributeString("Author", this.author);
-                xmlWriter.WriteAttributeString("AuthorEmail", this.authorEmail);
-                xmlWriter.WriteAttributeString("OrganizationUrl", this.organizationUrl);
-                xmlWriter.WriteAttributeString("OrganizationName", this.OrgName);
-                xmlWriter.WriteAttributeString("Keywords", this.Keywords);
+                xmlWriter.WriteAttributeString("ID", id);
+                xmlWriter.WriteAttributeString("Title", title);
+                xmlWriter.WriteAttributeString("Descirption", Description);
+                xmlWriter.WriteAttributeString("Description", Description);
+                xmlWriter.WriteAttributeString("RunTime", RunTime.TotalSeconds.ToString());
+                xmlWriter.WriteAttributeString("Author", author);
+                xmlWriter.WriteAttributeString("AuthorEmail", authorEmail);
+                xmlWriter.WriteAttributeString("OrganizationUrl", organizationUrl);
+                xmlWriter.WriteAttributeString("OrganizationName", OrgName);
+                xmlWriter.WriteAttributeString("Keywords", Keywords);
                 xmlWriter.WriteAttributeString("UserLevel", level.ToString());
                 xmlWriter.WriteAttributeString("Classification", type.ToString());
-                xmlWriter.WriteAttributeString("Taxonomy", taxonomy.ToString());
+                xmlWriter.WriteAttributeString("Taxonomy", taxonomy);
                 xmlWriter.WriteAttributeString("DomeMode", DomeMode.ToString());
                 var timeLineTour = IsTimelineTour();
                 xmlWriter.WriteAttributeString("TimeLineTour", timeLineTour.ToString());
@@ -442,7 +445,7 @@ namespace TerraViewer
                     }
                     xmlWriter.WriteEndElement();
 
-                    xmlWriter.WriteRaw(Properties.Resources.UpdateRequired);
+                    xmlWriter.WriteRaw(Resources.UpdateRequired);
 
                 }           
                 else
@@ -568,10 +571,7 @@ namespace TerraViewer
                 {
                     return tourStops[representativeThumbnailTourstop].TourStopThumbnailFilename;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }        
 
@@ -624,50 +624,50 @@ namespace TerraViewer
                     xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-16'");
                     xmlWriter.WriteStartElement("ImportTourRequest");
                     xmlWriter.WriteStartElement("Tour");
-                    xmlWriter.WriteElementString("TourGUID", this.id);
-                    xmlWriter.WriteElementString("Title", this.title);
-                    xmlWriter.WriteElementString("Description", this.description);
-                    xmlWriter.WriteElementString("AttributesAndCredits", this.attributesAndCredits);
+                    xmlWriter.WriteElementString("TourGUID", id);
+                    xmlWriter.WriteElementString("Title", title);
+                    xmlWriter.WriteElementString("Description", description);
+                    xmlWriter.WriteElementString("AttributesAndCredits", attributesAndCredits);
                     xmlWriter.WriteStartElement("Author");
-                    xmlWriter.WriteElementString("Name", this.author);
-                    xmlWriter.WriteElementString("EMailAddr", this.authorEmail);
-                    xmlWriter.WriteElementString("URL", this.authorUrl);
-                    xmlWriter.WriteElementString("OtherEmails", this.authorEmailOther);
-                    xmlWriter.WriteElementString("ContactPhone", this.authorPhone);
-                    xmlWriter.WriteElementString("ContactText", this.authorContactText);
+                    xmlWriter.WriteElementString("Name", author);
+                    xmlWriter.WriteElementString("EMailAddr", authorEmail);
+                    xmlWriter.WriteElementString("URL", authorUrl);
+                    xmlWriter.WriteElementString("OtherEmails", authorEmailOther);
+                    xmlWriter.WriteElementString("ContactPhone", authorPhone);
+                    xmlWriter.WriteElementString("ContactText", authorContactText);
                     xmlWriter.WriteStartElement("Organization");
-                    xmlWriter.WriteElementString("OrgName", this.orgName);
-                    xmlWriter.WriteElementString("URL", this.organizationUrl);
+                    xmlWriter.WriteElementString("OrgName", orgName);
+                    xmlWriter.WriteElementString("URL", organizationUrl);
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteStartElement("Keywords");
-                    foreach (var keyword in this.Keywords.Split(new char[] {';'}))
+                    foreach (var keyword in Keywords.Split(new[] {';'}))
                     {
                         xmlWriter.WriteElementString("Keyword", keyword);
                     }
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteStartElement("AstroObjects");
-                    foreach (var obj in this.Objects.Split(new char[] {';'}))
+                    foreach (var obj in Objects.Split(new[] {';'}))
                     {
                         xmlWriter.WriteElementString("AstroObject", obj);
                     }
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteStartElement("ImageTaxonomyHierarchy");
-                    foreach (var node in this.Taxonomy.Split(new char[] {';'}))
+                    foreach (var node in Taxonomy.Split(new[] {';'}))
                     {
                         xmlWriter.WriteElementString("ITH_Node", node);
                     }
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteStartElement("ExplicitTourLinks");
-                    foreach (var guid in this.ExplicitTourLinks)
+                    foreach (var guid in ExplicitTourLinks)
                     {
                         xmlWriter.WriteElementString("TourGUID", guid);
                     }
                     xmlWriter.WriteEndElement();
-                    xmlWriter.WriteElementString("LengthInSecs", ((int)(this.runTime.TotalSeconds+.9)).ToString());
+                    xmlWriter.WriteElementString("LengthInSecs", ((int)(runTime.TotalSeconds+.9)).ToString());
 
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteEndElement();
@@ -690,10 +690,10 @@ namespace TerraViewer
             SaveToXml(false);
 
             var fc = new FileCabinet(saveFilename, BaseWorkingDirectory);
-            fc.PackageID = this.Id;
+            fc.PackageID = Id;
             if (!tempFile)
             {
-                this.saveFileName = saveFilename;
+                saveFileName = saveFilename;
             }
 
             fc.AddFile(filename);
@@ -1080,7 +1080,7 @@ namespace TerraViewer
             var totalTime = 0.0;
             for (var i = 0; i < tourStops.Count; i++)
             {
-                totalTime += (double)(tourStops[i].Duration.TotalMilliseconds / 1000);
+                totalTime += tourStops[i].Duration.TotalMilliseconds / 1000;
                 if (i > 0)
                 {
                     switch (tourStops[i].Transition)
@@ -1117,7 +1117,7 @@ namespace TerraViewer
             var totalTime = 0.0;
             for (var i = 0; i < index; i++)
             {
-                totalTime += (double)(tourStops[i].Duration.TotalMilliseconds / 1000);
+                totalTime += tourStops[i].Duration.TotalMilliseconds / 1000;
                 if (i > 0)
                 {
                     switch (tourStops[i].Transition)
@@ -1161,7 +1161,7 @@ namespace TerraViewer
                     masterOut = tourStops[i];
                 }
 
-                totalTime += (double)(tourStops[i].Duration.TotalMilliseconds / 1000);
+                totalTime += tourStops[i].Duration.TotalMilliseconds / 1000;
                 if (i > 0 && !tourStops[i].MasterSlide)
                 {
                     switch (tourStops[i].Transition)
@@ -1314,10 +1314,7 @@ namespace TerraViewer
                 {
                     return TourStops[currentTourstopIndex];
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             set
             {
@@ -1424,7 +1421,7 @@ namespace TerraViewer
 
 
             var index = 0;
-            foreach (var ts in this.tourStops)
+            foreach (var ts in tourStops)
             {
                 xw.WriteStartElement("Slide");
                 xw.WriteElementString("Index", (index++).ToString());
@@ -1465,7 +1462,7 @@ namespace TerraViewer
             return Encoding.UTF8.GetBytes(sb.ToString());
         }
     }
-    public class UndoTourSlidelistChange : TerraViewer.IUndoStep
+    public class UndoTourSlidelistChange : IUndoStep
     {
         List<TourStop> undoList;
         List<TourStop> redoList;
@@ -1519,7 +1516,7 @@ namespace TerraViewer
         }
     }
 
-    public class UndoTourPropertiesChange : TerraViewer.IUndoStep
+    public class UndoTourPropertiesChange : IUndoStep
     {
 
         string actionText = "";

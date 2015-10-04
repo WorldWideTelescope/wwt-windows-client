@@ -1,12 +1,5 @@
 
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.Text;
 
 namespace TerraViewer
 {
@@ -20,17 +13,17 @@ namespace TerraViewer
                 ComputeBoundingSphereBottomsUp(parent);
                 return;
             }
-            var tileDegrees = (float)this.dataset.BaseTileDegrees / ((float)Math.Pow(2, this.level));
+            var tileDegrees = (float)dataset.BaseTileDegrees / ((float)Math.Pow(2, level));
 
-            var latMin = (float)(((double)this.dataset.BaseTileDegrees / 2 - (((double)this.y) * tileDegrees)) + dataset.OffsetY);
-            var latMax = (float)(((double)this.dataset.BaseTileDegrees / 2 - (((double)(this.y + 1)) * tileDegrees)) + dataset.OffsetY);
-            var lngMin = (float)((((double)this.x * tileDegrees) - (float)this.dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
-            var lngMax = (float)(((((double)(this.x + 1)) * tileDegrees) - (float)this.dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
+            var latMin = (float)((dataset.BaseTileDegrees / 2 - (((double)y) * tileDegrees)) + dataset.OffsetY);
+            var latMax = (float)((dataset.BaseTileDegrees / 2 - (((double)(y + 1)) * tileDegrees)) + dataset.OffsetY);
+            var lngMin = (float)((((double)x * tileDegrees) - (float)dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
+            var lngMax = (float)(((((double)(x + 1)) * tileDegrees) - (float)dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
 
             var latCenter = (latMin + latMax) / 2.0;
             var lngCenter = (lngMin + lngMax) / 2.0;
 
-            this.sphereCenter = GeoTo3d(latCenter, lngCenter, false);
+            sphereCenter = GeoTo3d(latCenter, lngCenter, false);
             TopLeft = GeoTo3d(latMin, lngMin, false);
             BottomRight = GeoTo3d(latMax, lngMax, false);
             TopRight = GeoTo3d(latMin, lngMax, false);
@@ -38,7 +31,7 @@ namespace TerraViewer
 
             var distVect = GeoTo3d(latMin, lngMin, false);
             distVect.Subtract(sphereCenter);
-            this.sphereRadius = distVect.Length();
+            sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
 
             if (level == 0)
@@ -54,18 +47,18 @@ namespace TerraViewer
 
         protected void ComputeBoundingSphereBottomsUp(Tile parent)
         {
-            var tileDegrees = (double)this.dataset.BaseTileDegrees / ((double)Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / Math.Pow(2, level);
 
 
-            var latMin = ((double)this.dataset.BaseTileDegrees / 2 + (((double)(this.y + 1)) * tileDegrees)) + dataset.OffsetY;
-            var latMax = ((double)this.dataset.BaseTileDegrees / 2 + (((double)this.y) * tileDegrees)) + dataset.OffsetY;
-            var lngMin = (((double)this.x * tileDegrees) - this.dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX;
-            var lngMax = ((((double)(this.x + 1)) * tileDegrees) - this.dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX;
+            var latMin = (dataset.BaseTileDegrees / 2 + ((y + 1) * tileDegrees)) + dataset.OffsetY;
+            var latMax = (dataset.BaseTileDegrees / 2 + (y * tileDegrees)) + dataset.OffsetY;
+            var lngMin = ((x * tileDegrees) - dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX;
+            var lngMax = (((x + 1) * tileDegrees) - dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX;
 
             var latCenter = (latMin + latMax) / 2.0;
             var lngCenter = (lngMin + lngMax) / 2.0;
 
-            this.sphereCenter = GeoTo3d(latCenter, lngCenter, false);
+            sphereCenter = GeoTo3d(latCenter, lngCenter, false);
 
             TopLeft = GeoTo3d(latMin, lngMin, false);
             BottomRight = GeoTo3d(latMax, lngMax, false);
@@ -73,7 +66,7 @@ namespace TerraViewer
             BottomLeft = GeoTo3d(latMax, lngMin, false);
             var distVect = TopLeft;
             distVect.Subtract(sphereCenter);
-            this.sphereRadius = distVect.Length();
+            sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
             if (level == 0)
             {
@@ -90,7 +83,7 @@ namespace TerraViewer
         {
 
             lng = -lng;
-            var fac1 = this.dataset.BaseTileDegrees / 2;
+            var fac1 = dataset.BaseTileDegrees / 2;
             var factor = Math.Tan(fac1*RC);
 
             var retPoint = Vector3d.TransformCoordinate(new Vector3d(1f, (lat/fac1*factor), (lng/fac1*factor)), dataset.Matrix) ;
@@ -99,11 +92,7 @@ namespace TerraViewer
             {
                 return retPoint - localCenter;
             }
-            else
-            {
-                return retPoint;
-            }
-
+            return retPoint;
         }
         protected Coordinates ThreeDeeToGeo(Vector3d vector)
         {
@@ -119,10 +108,10 @@ namespace TerraViewer
 
         public Vector3d TransformPoint(double x, double y)
         {
-            var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
             var pixelDegrees = tileDegrees / 256;
-            var lat = (((double)this.dataset.BaseTileDegrees / 2.0 - (Y * pixelDegrees)) + this.dataset.OffsetY);
-            var lng = ((X * pixelDegrees - (float)this.dataset.BaseTileDegrees / dataset.WidthFactor) + this.dataset.OffsetX);
+            var lat = ((dataset.BaseTileDegrees / 2.0 - (Y * pixelDegrees)) + dataset.OffsetY);
+            var lng = ((X * pixelDegrees - (float)dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
             return GeoTo3d(lat, lng, false);
         }
 
@@ -130,11 +119,11 @@ namespace TerraViewer
         public void UnTransformPoint(Vector3d point, out double x, out double y)
         {
             var result = ThreeDeeToGeo(point);
-            var tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
             var pixelDegrees = tileDegrees / 256;
 
-            y = (result.Lat - this.dataset.OffsetY + (dataset.BaseTileDegrees / 2.0)) / pixelDegrees;
-            x = (result.Lng - this.dataset.OffsetX + (dataset.BaseTileDegrees / dataset.WidthFactor)) / pixelDegrees;
+            y = (result.Lat - dataset.OffsetY + (dataset.BaseTileDegrees / 2.0)) / pixelDegrees;
+            x = (result.Lng - dataset.OffsetX + (dataset.BaseTileDegrees / dataset.WidthFactor)) / pixelDegrees;
             return;
         }
 
@@ -154,12 +143,12 @@ namespace TerraViewer
                 double lat, lng;
 
                 var index = 0;
-                var tileDegrees = (float)this.dataset.BaseTileDegrees / ((float)Math.Pow(2, this.level));
+                var tileDegrees = (float)dataset.BaseTileDegrees / ((float)Math.Pow(2, level));
 
-                var latMin = (float)(((double)this.dataset.BaseTileDegrees / 2.0 - (((double)this.y) * tileDegrees)) + this.dataset.OffsetY);
-                var latMax = (float)(((double)this.dataset.BaseTileDegrees / 2.0 - (((double)(this.y + 1)) * tileDegrees)) + this.dataset.OffsetY);
-                var lngMin = (float)((((double)this.x * tileDegrees) - (float)this.dataset.BaseTileDegrees / dataset.WidthFactor) + this.dataset.OffsetX);
-                var lngMax = (float)(((((double)(this.x + 1)) * tileDegrees) - (float)this.dataset.BaseTileDegrees / dataset.WidthFactor) + this.dataset.OffsetX);
+                var latMin = (float)((dataset.BaseTileDegrees / 2.0 - (((double)this.y) * tileDegrees)) + dataset.OffsetY);
+                var latMax = (float)((dataset.BaseTileDegrees / 2.0 - (((double)(this.y + 1)) * tileDegrees)) + dataset.OffsetY);
+                var lngMin = (float)((((double)this.x * tileDegrees) - (float)dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
+                var lngMax = (float)(((((double)(this.x + 1)) * tileDegrees) - (float)dataset.BaseTileDegrees / dataset.WidthFactor) + dataset.OffsetX);
                 var tileDegreesX = lngMax - lngMin;
                 var tileDegreesY = latMax - latMin;
 
@@ -214,7 +203,7 @@ namespace TerraViewer
                 {
                     for (var x2 = 0; x2 < 2; x2++)
                     {
-                        var indexArray = (short[])this.indexBuffer[part].Lock();
+                        var indexArray = (short[])indexBuffer[part].Lock();
                         index = 0;
                         for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                         {
@@ -233,7 +222,7 @@ namespace TerraViewer
                                 index += 6;
                             }
                         }
-                        this.indexBuffer[part].Unlock();
+                        indexBuffer[part].Unlock();
                         part++;
                     }
                 }
@@ -249,7 +238,7 @@ namespace TerraViewer
             double lat, lng;
 
             var index = 0;
-            var tileDegrees = (float)this.dataset.BaseTileDegrees / ((float)Math.Pow(2, this.level));
+            var tileDegrees = (float)dataset.BaseTileDegrees / ((float)Math.Pow(2, level));
 
 
             var latMin = (float)((-90 + (((double)(this.y+1)) * tileDegrees))+dataset.OffsetY);
@@ -304,7 +293,7 @@ namespace TerraViewer
             {
                 for (var x2 = 0; x2 < 2; x2++)
                 {
-                    var indexArray = (short[])this.indexBuffer[part].Lock();
+                    var indexArray = (short[])indexBuffer[part].Lock();
                     index = 0;
                     for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                     {
@@ -323,7 +312,7 @@ namespace TerraViewer
                             index += 6;
                         }
                     }
-                    this.indexBuffer[part].Unlock();
+                    indexBuffer[part].Unlock();
                     part++;
                 }
             }
@@ -336,7 +325,7 @@ namespace TerraViewer
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;     
+            topDown = !dataset.BottomsUp;     
             ComputeBoundingSphere(parent);
             VertexCount = ((SubDivisions + 1) * (SubDivisions + 1));
 

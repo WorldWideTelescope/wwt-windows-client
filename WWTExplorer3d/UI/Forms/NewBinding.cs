@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using MIDI;
 
@@ -20,11 +14,11 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.StatusText.Text = Language.GetLocalizedText(1173, "Listening for unmapped controls: Activate Control now.");
-            this.Ok.Text = Language.GetLocalizedText(156, "OK");
-            this.controlTypeLabel.Text = Language.GetLocalizedText(1174, "Control Type");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");  
-            this.Text = Language.GetLocalizedText(1175, "New Control");
+            StatusText.Text = Language.GetLocalizedText(1173, "Listening for unmapped controls: Activate Control now.");
+            Ok.Text = Language.GetLocalizedText(156, "OK");
+            controlTypeLabel.Text = Language.GetLocalizedText(1174, "Control Type");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");  
+            Text = Language.GetLocalizedText(1175, "New Control");
         }
 
         public MidiMap MidiMap = null;
@@ -34,7 +28,7 @@ namespace TerraViewer
         {
             if (MidiMap != null)
             {
-                MidiMap.UnhandledMessageReceived += new MIDI.MidiMessageReceived(Owner_MessageReceived);
+                MidiMap.UnhandledMessageReceived += Owner_MessageReceived;
             }
             ControlTypeCombo.Items.Clear();
             ControlTypeCombo.Items.AddRange(Enum.GetNames(typeof(ControlType)));
@@ -97,15 +91,15 @@ namespace TerraViewer
 
             MethodInvoker doIt = delegate
             {
-                MidiMap.UnhandledMessageReceived -= new MIDI.MidiMessageReceived(Owner_MessageReceived);
+                MidiMap.UnhandledMessageReceived -= Owner_MessageReceived;
                 EnableControlUi();
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(doIt);
+                    Invoke(doIt);
                 }
                 catch
                 {
@@ -131,13 +125,13 @@ namespace TerraViewer
         {
             if (MidiMap != null)
             {
-                MidiMap.UnhandledMessageReceived -= new MIDI.MidiMessageReceived(Owner_MessageReceived);
+                MidiMap.UnhandledMessageReceived -= Owner_MessageReceived;
             }
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-            DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
            
         }
 
@@ -172,7 +166,7 @@ namespace TerraViewer
                         break;
                 }
             }
-            DialogResult = System.Windows.Forms.DialogResult.OK;
+            DialogResult = DialogResult.OK;
         }
 
     }

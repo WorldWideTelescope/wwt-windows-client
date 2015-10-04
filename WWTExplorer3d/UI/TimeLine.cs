@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -19,13 +19,13 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.toolTip.SetToolTip(this.End, Language.GetLocalizedText(1285, "Jump to End"));
-            this.toolTip.SetToolTip(this.DelKey, Language.GetLocalizedText(1286, "Delete Key"));
-            this.toolTip.SetToolTip(this.AddKey, Language.GetLocalizedText(1287, "Add Key"));
-            this.toolTip.SetToolTip(this.Start, Language.GetLocalizedText(1288, "Jump to Begin"));
-            this.toolTip.SetToolTip(this.Forward, Language.GetLocalizedText(441, "Play"));
-            this.toolTip.SetToolTip(this.Back, Language.GetLocalizedText(1289, "Play Backward"));
-            this.toolTip.SetToolTip(this.Pause, Language.GetLocalizedText(440, "Pause"));
+            toolTip.SetToolTip(End, Language.GetLocalizedText(1285, "Jump to End"));
+            toolTip.SetToolTip(DelKey, Language.GetLocalizedText(1286, "Delete Key"));
+            toolTip.SetToolTip(AddKey, Language.GetLocalizedText(1287, "Add Key"));
+            toolTip.SetToolTip(Start, Language.GetLocalizedText(1288, "Jump to Begin"));
+            toolTip.SetToolTip(Forward, Language.GetLocalizedText(441, "Play"));
+            toolTip.SetToolTip(Back, Language.GetLocalizedText(1289, "Play Backward"));
+            toolTip.SetToolTip(Pause, Language.GetLocalizedText(440, "Pause"));
         }
 
         private TourDocument tour;
@@ -45,13 +45,13 @@ namespace TerraViewer
             }
         }
 
-        static readonly Bitmap bmpScrollBackLeft = global::TerraViewer.Properties.Resources.scroll_background_left;
-        static readonly Bitmap bmpScrollBackMiddle = global::TerraViewer.Properties.Resources.scroll_background_middle;
-        static readonly Bitmap bmpScrollBackRight = global::TerraViewer.Properties.Resources.scroll_background_right;
+        static readonly Bitmap bmpScrollBackLeft = Resources.scroll_background_left;
+        static readonly Bitmap bmpScrollBackMiddle = Resources.scroll_background_middle;
+        static readonly Bitmap bmpScrollBackRight = Resources.scroll_background_right;
 
-        static readonly Bitmap bmpScrollBarLeft = global::TerraViewer.Properties.Resources.scroll_bar_left;
-        static readonly Bitmap bmpScrollBarMiddle = global::TerraViewer.Properties.Resources.scroll_bar_middle;
-        static readonly Bitmap bmpScrollBarRight = global::TerraViewer.Properties.Resources.scroll_bar_right;
+        static readonly Bitmap bmpScrollBarLeft = Resources.scroll_bar_left;
+        static readonly Bitmap bmpScrollBarMiddle = Resources.scroll_bar_middle;
+        static readonly Bitmap bmpScrollBarRight = Resources.scroll_bar_right;
 
 
         public static void RefreshUi()
@@ -194,7 +194,7 @@ namespace TerraViewer
             var g = e.Graphics;
             var p = new Pen(Color.FromArgb(71, 84, 108));
 
-            offset = left - (int)(((double)ScrollPos / ((double)scrollbarWidth / (double)(Width - left))) % pixelsPerSecond);
+            offset = left - (int)((ScrollPos / (scrollbarWidth / (double)(Width - left))) % pixelsPerSecond);
 
             if (Tour != null && Tour.CurrentTourStop != null)
             {
@@ -208,14 +208,14 @@ namespace TerraViewer
 
             pixelsPerSecond = 30 * tick;
             totalPixelWith = (int)(pixelsPerSecond * slideTime);
-            secondsOnscreen = (double)(Width - left) / (double)pixelsPerSecond;
+            secondsOnscreen = (Width - left) / (double)pixelsPerSecond;
             ScrollPos = (int)Math.Max(0, Math.Min(ScrollPos, (slideTime * pixelsPerSecond - secondsOnscreen * pixelsPerSecond)));
             scrollbarWidth = (int)((Width - left) * Math.Min(1, (secondsOnscreen / slideTime)));
             scrollbarStart = ScrollPos + left;
-            startSecond = (int)(((double)ScrollPos / ((double)scrollbarWidth / (double)(Width - left))) / (double)pixelsPerSecond);
+            startSecond = (int)((ScrollPos / (scrollbarWidth / (double)(Width - left))) / pixelsPerSecond);
 
             var background = new SolidBrush(Color.FromArgb(40, 44, 60));
-            var darkBackground = new SolidBrush(this.BackColor);
+            var darkBackground = new SolidBrush(BackColor);
             var lightBackground = new SolidBrush(Color.FromArgb(30, 33, 46));
             g.FillRectangle(background, new Rectangle(0, 0, Width, bottom));
 
@@ -461,7 +461,7 @@ namespace TerraViewer
                     {
                         g.DrawLine(Pens.Yellow, tx, bottom, tx, Height - 8);
                         g.DrawLine(Pens.Yellow, tx + step, bottom, tx + step, Height - 8);
-                        g.FillPolygon(UiTools.YellowTextBrush, new Point[] { new Point(tx - (step / 2), bottom - 8), new Point((int)(tx + (step * 1.5)), bottom - 8), new Point(tx + (step / 2), bottom) });
+                        g.FillPolygon(UiTools.YellowTextBrush, new[] { new Point(tx - (step / 2), bottom - 8), new Point((int)(tx + (step * 1.5)), bottom - 8), new Point(tx + (step / 2), bottom) });
                     }
 
                     //Key Selection Rect
@@ -551,7 +551,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    if (Control.ModifierKeys != Keys.Control)
+                    if (ModifierKeys != Keys.Control)
                     {
                         Selection.Clear();
                     }
@@ -569,7 +569,7 @@ namespace TerraViewer
 
                     }
 
-                    if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0 && Selection.Count > 0)
+                    if (MouseButtons == MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0 && Selection.Count > 0)
                     {
                         var contextMenu = new ContextMenuStrip();
 
@@ -578,11 +578,11 @@ namespace TerraViewer
                         var deleteFrames = new ToolStripMenuItem(Language.GetLocalizedText(1281, "Delete Keyframes"));
                         var copyPopertyKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1370, "Copy Property Keyframes"));
                         var pastePropertyKeyframes = new ToolStripMenuItem(Language.GetLocalizedText(1372, "Paste Keyframes"));
-                        pastePropertyKeyframes.Click += new EventHandler(pastePropertyKeyframes_Click);
-                        copyPopertyKeyframes.Click += new EventHandler(copyPopertyKeyframes_Click);
-                        deleteItem.Click += new EventHandler(deleteItem_Click);
-                        deleteFrames.Click += new EventHandler(deleteFrames_Click);
-                        addKey.Click += new EventHandler(addKey_Click);
+                        pastePropertyKeyframes.Click += pastePropertyKeyframes_Click;
+                        copyPopertyKeyframes.Click += copyPopertyKeyframes_Click;
+                        deleteItem.Click += deleteItem_Click;
+                        deleteFrames.Click += deleteFrames_Click;
+                        addKey.Click += addKey_Click;
                         contextMenu.Items.Add(addKey);
                         var dataObject = Clipboard.GetDataObject();
                         
@@ -637,14 +637,14 @@ namespace TerraViewer
             {
  
                 SetTweenPosition(PixelToTime(e.X + (step / 2)));
-                if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
+                if (MouseButtons == MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
                 {
                     var contextMenu = new ContextMenuStrip();
                     var addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
                     var pasteKeys = new ToolStripMenuItem("Paste");
-                    pasteKeys.Click += new EventHandler(pasteKeys_Click);
+                    pasteKeys.Click += pasteKeys_Click;
 
-                    addKey.Click += new EventHandler(addKey_Click);
+                    addKey.Click += addKey_Click;
                     contextMenu.Items.Add(addKey);
 
                     var dataObject = Clipboard.GetDataObject();
@@ -656,7 +656,7 @@ namespace TerraViewer
                     if (dataObject.GetDataPresent(Key.ClipboardFormatColumn))
                     {
                         var pasteColumn = new ToolStripMenuItem(Language.GetLocalizedText(1373, "Paste at current time"));
-                        pasteColumn.Click += new EventHandler(pasteColumn_Click);
+                        pasteColumn.Click += pasteColumn_Click;
 
                         contextMenu.Items.Add(pasteColumn);
                     }
@@ -664,10 +664,7 @@ namespace TerraViewer
                     contextMenu.Show(Cursor.Position);
                     return;
                 }
-                else
-                {
-                    timeDrag = true;
-                }
+                timeDrag = true;
                 return;
             }
 
@@ -697,38 +694,35 @@ namespace TerraViewer
 
             if (e.X > left && e.Y > bottom && e.Y < Height - 8)
             {
-                if (Control.ModifierKeys != Keys.Control)
+                if (ModifierKeys != Keys.Control)
                 {
                     if (ClickedOnSelection(pointDown))
                     {
-                        if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
+                        if (MouseButtons == MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
                         {
                             var contextMenu = new ContextMenuStrip();
 
                             var deleteFrames = new ToolStripMenuItem(Language.GetLocalizedText(1281, "Delete Keyframes"));
                             var copyKeys = new ToolStripMenuItem(Language.GetLocalizedText(1371, "Copy Selected Keyframes"));
-                            deleteFrames.Click += new EventHandler(deleteFrames_Click);
-                            copyKeys.Click += new EventHandler(copyKeys_Click);
+                            deleteFrames.Click += deleteFrames_Click;
+                            copyKeys.Click += copyKeys_Click;
                             contextMenu.Items.Add(copyKeys);
                             contextMenu.Items.Add(deleteFrames);
                             contextMenu.Show(Cursor.Position);
                             return;
                         }
-                        else
-                        {
-                            draggingKeys = true;
-                            mouseDown = true;
-                            firstMove = true;
-                            return;
-                        }
+                        draggingKeys = true;
+                        mouseDown = true;
+                        firstMove = true;
+                        return;
                     }
                     selectedKeys.Clear();
                     Refresh();
-                    if (Control.MouseButtons == System.Windows.Forms.MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
+                    if (MouseButtons == MouseButtons.Right && Tour != null && Tour.CurrentTourStop != null && Tour.CurrentTourStop.AnimationTargets != null && Tour.CurrentTourStop.AnimationTargets.Count > 0)
                     {
                         var contextMenu = new ContextMenuStrip();
                         var addKey = new ToolStripMenuItem(Language.GetLocalizedText(1280, "Add Keyframe"));
-                        addKey.Click += new EventHandler(addKey_Click);
+                        addKey.Click += addKey_Click;
                         addKey.Enabled = (Selection.Count > 0);
                         contextMenu.Items.Add(addKey);
 
@@ -736,7 +730,7 @@ namespace TerraViewer
                         if (dataObject.GetDataPresent(Key.ClipboardFormatSelection))
                         {
                             var pasteKeys = new ToolStripMenuItem(Language.GetLocalizedText(425, "Paste"));
-                            pasteKeys.Click += new EventHandler(pasteKeys_Click);
+                            pasteKeys.Click += pasteKeys_Click;
 
                             contextMenu.Items.Add(pasteKeys);
                         }
@@ -744,7 +738,7 @@ namespace TerraViewer
                         if (dataObject.GetDataPresent(Key.ClipboardFormatColumn))
                         {
                             var pasteColumn = new ToolStripMenuItem(Language.GetLocalizedText(1373, "Paste at current time"));
-                            pasteColumn.Click += new EventHandler(pasteColumn_Click);
+                            pasteColumn.Click += pasteColumn_Click;
 
                             contextMenu.Items.Add(pasteColumn);
                         }
@@ -787,10 +781,10 @@ namespace TerraViewer
             {
                 // add try catch block
                 var xml = dataObject.GetData(format) as string;
-                var doc = new System.Xml.XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(xml);
-                System.Xml.XmlNode node = doc["CopiedKeys"];
-                foreach (System.Xml.XmlNode child in node.ChildNodes)
+                XmlNode node = doc["CopiedKeys"];
+                foreach (XmlNode child in node.ChildNodes)
                 {
                     var targetID = Selection[0];
                     var target = GetTargetByID(targetID);
@@ -818,9 +812,9 @@ namespace TerraViewer
                 if (Selection.Count > 0)
                 {
                     var sb = new StringBuilder();
-                    using (var textWriter = new System.IO.StringWriter(sb))
+                    using (var textWriter = new StringWriter(sb))
                     {
-                        using (var writer = new System.Xml.XmlTextWriter(textWriter))
+                        using (var writer = new XmlTextWriter(textWriter))
                         {
                             writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                             writer.WriteStartElement("CopiedKeys");
@@ -856,10 +850,10 @@ namespace TerraViewer
             {
                 // add try catch block
                 var xml = dataObject.GetData(Key.ClipboardFormatSelection) as string;
-                var doc = new System.Xml.XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(xml);
-                System.Xml.XmlNode node = doc["CopiedKeys"];
-                foreach (System.Xml.XmlNode child in node.ChildNodes)
+                XmlNode node = doc["CopiedKeys"];
+                foreach (XmlNode child in node.ChildNodes)
                 {
                     var targetID = child.Attributes["TargetID"].Value;
                     var target = GetTargetByID(targetID);
@@ -926,9 +920,9 @@ namespace TerraViewer
                 if (selectedKeys.Count > 0)
                 {
                     var sb = new StringBuilder();
-                    using (var textWriter = new System.IO.StringWriter(sb))
+                    using (var textWriter = new StringWriter(sb))
                     {
-                        using (var writer = new System.Xml.XmlTextWriter(textWriter))
+                        using (var writer = new XmlTextWriter(textWriter))
                         {
                             writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                             writer.WriteStartElement("CopiedKeys");
@@ -986,7 +980,7 @@ namespace TerraViewer
                 selectingKeys = false;
                 if (wasSelectRectDrug == false)
                 {
-                    if (Control.ModifierKeys != Keys.Control)
+                    if (ModifierKeys != Keys.Control)
                     {
                         selectedKeys.Clear();
                     }
@@ -1008,7 +1002,7 @@ namespace TerraViewer
                     
                 }
                 KeyProperties.ShowProperties(selectedKeys);
-                this.Focus();
+                Focus();
                 Refresh();
             }
         }
@@ -1077,13 +1071,13 @@ namespace TerraViewer
             if (vScroolling)
             {
                 var dragDist = pointDown.Y - e.Y;
-                var t = (double)vScrollBarHieght / (int)((Height - bottom) / 16);
+                var t = (double)vScrollBarHieght / ((Height - bottom) / 16);
 
                 var m = (int)(dragDist / t);
 
                 if (m != 0)
                 {
-                    startLine = Math.Min(this.totalLines - displayLines, Math.Max(0, (int)(startLine - m)));
+                    startLine = Math.Min(totalLines - displayLines, Math.Max(0, startLine - m));
                     Refresh();
                     pointDown = e.Location;
                     return;
@@ -1358,7 +1352,7 @@ namespace TerraViewer
 
         private void SelectAllKeys()
         {
-            this.selectedKeys.Clear();
+            selectedKeys.Clear();
 
             if (Tour != null && tour.CurrentTourStop != null)
             {
@@ -1380,7 +1374,7 @@ namespace TerraViewer
 
         private void SelectColumnKeys()
         {
-            this.selectedKeys.Clear();
+            selectedKeys.Clear();
 
             if (Tour != null && tour.CurrentTourStop != null)
             {
@@ -1406,7 +1400,7 @@ namespace TerraViewer
 
         private void NextKey()
         {
-            var currentTime = KeyGroup.Quant(this.QuantizeTimeToFrame( Tour.CurrentTourStop.TweenPosition + frameTime));
+            var currentTime = KeyGroup.Quant(QuantizeTimeToFrame( Tour.CurrentTourStop.TweenPosition + frameTime));
             var closestMatch = KeyGroup.Quant(1);
             double closestTime = 1;
             if (Tour != null && tour.CurrentTourStop != null)
@@ -1523,14 +1517,14 @@ namespace TerraViewer
 
                     if (e.Delta < 0)
                     {
-                        startLine = Math.Min(this.totalLines - displayLines, Math.Max(0, (int)(startLine + 1)));
+                        startLine = Math.Min(totalLines - displayLines, Math.Max(0, startLine + 1));
                         Refresh();
                         return;
                     }
                 }
                 return;
             }
-            else if (e.Y < bottom)
+            if (e.Y < bottom)
             {
                 if (e.Delta < 0)
                 {
@@ -1565,7 +1559,6 @@ namespace TerraViewer
                     return;
                 }
             }
-
 
 
             //base.OnMouseWheel(e);
@@ -1667,7 +1660,7 @@ namespace TerraViewer
         public double QuantizeTimeToFrame(double time)
         {
             var frames = (int)((time * slideTime * 30) + .5);
-            return (double)frames / (double) totalFrames;
+            return frames / (double) totalFrames;
         }
 
         private void LastFrame()
@@ -1724,7 +1717,7 @@ namespace TerraViewer
             if (id.Contains("\t"))
             {
                 // Child
-                var parts = id.Split(new char[] { '\t' });
+                var parts = id.Split(new[] { '\t' });
 
                 target = FindTarget(parts[0]);
                 if (target != null)

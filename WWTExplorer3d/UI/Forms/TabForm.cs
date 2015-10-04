@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -22,7 +18,7 @@ namespace TerraViewer
             var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
             var p = new Pen(Color.FromArgb(71,84,108));           
-            g.FillRectangle(b, this.ClientRectangle);
+            g.FillRectangle(b, ClientRectangle);
             g.DrawRectangle(p, new Rectangle(0,ClientSize.Height-1,ClientSize.Width-1,ClientSize.Height-1));
             p.Dispose();
             GC.SuppressFinalize(p);
@@ -96,7 +92,7 @@ namespace TerraViewer
 
         private void TabForm_MouseHover(object sender, EventArgs e)
         {
-            if (!this.ContainsFocus)
+            if (!ContainsFocus)
             {
                 if (UiTools.IsAppFocused())
                 {
@@ -113,11 +109,11 @@ namespace TerraViewer
         public static bool InsideTabRect = false;
         private void fadeTimer_Tick(object sender, EventArgs e)
         {
-            if (this.DesignMode)
+            if (DesignMode)
             {
                 return;
             }
-            var rect = this.RectangleToScreen(this.ClientRectangle);
+            var rect = RectangleToScreen(ClientRectangle);
             rect = new Rectangle(rect.X, rect.Y , rect.Width, rect.Height);
 
             InsideTabRect = rect.Contains(Cursor.Position);
@@ -140,11 +136,11 @@ namespace TerraViewer
                     if (Properties.Settings.Default.TranparentWindows)
                     {
 
-                        this.Visible = true;
+                        Visible = true;
                     }
                     else
                     {
-                        this.Visible = fader.TargetState;
+                        Visible = fader.TargetState;
                     }
                     if (Earth3d.FullScreen)
                     {

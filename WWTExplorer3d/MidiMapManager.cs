@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using MIDI;
@@ -183,7 +181,7 @@ namespace TerraViewer
             {
                 if (string.IsNullOrEmpty(midiMapPath))
                 {
-                    midiMapPath = string.Format("{0}\\WWT MIDI Controller Maps\\", System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                    midiMapPath = string.Format("{0}\\WWT MIDI Controller Maps\\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 }
                 return midiMapPath;
             }

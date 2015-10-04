@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-
 using System.Drawing;
-
+using SharpDX;
+using SharpDX.Direct3D;
+using TerraViewer.Properties;
+using Color = System.Drawing.Color;
+using Rectangle = System.Drawing.Rectangle;
 using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
@@ -33,7 +35,7 @@ namespace TerraViewer
 
             if (texture == null)
             {
-                texture = Texture11.FromBitmap(Properties.Resources.circle, 0);
+                texture = Texture11.FromBitmap(Resources.circle, 0);
             }
 
             var up = new Vector3d();
@@ -82,7 +84,7 @@ namespace TerraViewer
 
             if (texture == null)
             {
-                texture = Texture11.FromBitmap(Properties.Resources.circle, 0);
+                texture = Texture11.FromBitmap(Resources.circle, 0);
             }
 
 
@@ -138,7 +140,7 @@ namespace TerraViewer
             }
 
 
-            screenPos = new Vector3((float)(int)screenPos.X, (float)(int)screenPos.Y, 1);
+            screenPos = new Vector3((int)screenPos.X, (int)screenPos.Y, 1);
 
             Sprite2d.Draw2D(renderContext, texture, new SizeF(20, 20), new PointF(0, 0), 0, new PointF(screenPos.X, screenPos.Y), Color.White);
 
@@ -215,8 +217,8 @@ namespace TerraViewer
         public KmlLabels()
         {
        
-            texture = Texture11.FromBitmap( Properties.Resources.circle, 0);
-            star = Texture11.FromBitmap(Properties.Resources.icon_rating_star_large_on, 0);
+            texture = Texture11.FromBitmap( Resources.circle, 0);
+            star = Texture11.FromBitmap(Resources.icon_rating_star_large_on, 0);
 
             center = new Vector3(10, 10, 0);
             positions = new List<Vector3>();
@@ -307,7 +309,7 @@ namespace TerraViewer
             key.overlayTextureCount = overlayCount;
             var overlayShader = PlanetShader11.GetPlanetShader(renderContext.Device, key);
             renderContext.Shader = overlayShader;
-            renderContext.Shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            renderContext.Shader.DiffuseColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             var devContext = renderContext.Device.ImmediateContext;
             var overlayIndex = 0;
             foreach (var overlay in GroundOverlays)
@@ -361,13 +363,13 @@ namespace TerraViewer
 
             var adjustedScale = .01f; // (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
 
-            PointSpriteShader11.ViewportScale = new SharpDX.Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
-            PointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);
+            PointSpriteShader11.ViewportScale = new Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
+            PointSpriteShader11.PointScaleFactors = new Vector3(0.0f, 0.0f, 10000.0f);
             PointSpriteShader11.Use(renderContext.Device.ImmediateContext);
 
             renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, texture.ResourceView);
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
             renderContext.devContext.Draw(labelBuffer.Count, 0);
 
             renderContext.Device.ImmediateContext.GeometryShader.Set(null);
@@ -410,7 +412,7 @@ namespace TerraViewer
             }
 
             var pnt = Coordinates.CartesianToSpherical(positions[closestItem]);
-            var name = this.names[closestItem];
+            var name = names[closestItem];
             if (String.IsNullOrEmpty(name))
             {
                 name = string.Format("RA={0}, Dec={1}", Coordinates.FormatHMS(pnt.RA), Coordinates.FormatDMS(pnt.Dec));
@@ -452,7 +454,7 @@ namespace TerraViewer
                 var index = 0;
                 foreach (var point in positions)
                 {
-                    labelPoints[index].Position = new SharpDX.Vector3(point.X, point.Y, point.Z);
+                    labelPoints[index].Position = new Vector3(point.X, point.Y, point.Z);
                     labelPoints[index].Color = Color.White;
                     labelPoints[index].size = 20f;
                     index++;

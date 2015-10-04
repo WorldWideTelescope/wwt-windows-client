@@ -8,13 +8,8 @@
 ===============================================================================
 */
 using System;
-using System.IO;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Collections.Generic;
-using System.Threading;
-using System.Drawing;
 using System.Xml;
 
 
@@ -230,10 +225,6 @@ namespace TerraViewer
     public abstract class XmlRpcMethod
     {
         public string Name;
-        public XmlRpcMethod()
-        {
-
-        }
         abstract public string Dispatch(XmlNode node);
         static readonly Dictionary<string, XmlRpcMethod> RpcDispatchMap = new Dictionary<string, XmlRpcMethod>();
         public static void RegisterDispatchMap(XmlRpcMethod method)

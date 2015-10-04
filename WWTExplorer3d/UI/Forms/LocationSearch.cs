@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Net;
 using System.Xml;
@@ -20,11 +16,11 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
-            this.label1.Text = Language.GetLocalizedText(1145, "Place Name or Address");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.OK.Text = Language.GetLocalizedText(137, "Search");
-            this.Text = Language.GetLocalizedText(1146, "Location Search - Powered by Bing");
+            txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
+            label1.Text = Language.GetLocalizedText(1145, "Place Name or Address");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(137, "Search");
+            Text = Language.GetLocalizedText(1146, "Location Search - Powered by Bing");
         }
         string objectName = "";
 
@@ -70,9 +66,9 @@ namespace TerraViewer
                 resultsListbox.Items.Add(Language.GetLocalizedText(1148, "Change your search text and try again."));
                 resultsListbox.Visible = true;
                 resultsListLabel.Visible = true;
-                this.Height = 356;
+                Height = 356;
                 searchMode = true;
-                this.OK.Text = Language.GetLocalizedText(137, "Search");
+                OK.Text = Language.GetLocalizedText(137, "Search");
 
             }
             else if (count == 1)
@@ -88,11 +84,11 @@ namespace TerraViewer
                     resultsListbox.Items.Add(place);
                     resultsListbox.Visible = true;
                     resultsListLabel.Visible = true;
-                    this.Height = 356;
+                    Height = 356;
                 }
                 resultsListbox.SelectedIndex = 0;
                 searchMode = false;
-                this.OK.Text = Language.GetLocalizedText(156, "OK");
+                OK.Text = Language.GetLocalizedText(156, "OK");
                 searchMode = false;
             }
         }
@@ -109,7 +105,7 @@ namespace TerraViewer
         {
             resultsListLabel.Visible = false;
             resultsListbox.Visible = false;
-            this.Height = 132;
+            Height = 132;
 
             if (!string.IsNullOrEmpty(ObejctName))
             {
@@ -168,7 +164,7 @@ namespace TerraViewer
 
                             var place = new TourPlace(name, lat, lng,  Classification.Unidentified, "", ImageSetType.Earth, -1);
 
-                            resultslist.Add((IPlace)place);
+                            resultslist.Add(place);
                         }
                     }
                 }
@@ -188,7 +184,7 @@ namespace TerraViewer
         private void txtName_TextChanged(object sender, EventArgs e)
         {
             searchMode = true;
-            this.OK.Text = Language.GetLocalizedText(137, "Search");
+            OK.Text = Language.GetLocalizedText(137, "Search");
         }
 
         private void resultsListbox_MouseDoubleClick(object sender, MouseEventArgs e)

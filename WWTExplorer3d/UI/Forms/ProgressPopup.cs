@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -47,8 +42,8 @@ namespace TerraViewer
 
         public string Title
         {
-            get { return this.Text; }
-            set { this.Text = value; }
+            get { return Text; }
+            set { Text = value; }
         }
 
         static public bool SetProgress(int percentComplete, string progressText)

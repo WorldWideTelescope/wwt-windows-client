@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 using System.IO;
+using MIDI;
 
 namespace TerraViewer
 {
@@ -20,22 +16,22 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Control.Text = Language.GetLocalizedText(1159, "Control");
-            this.Channel.Text = Language.GetLocalizedText(1160, "Chan");
-            this.ID.Text = Language.GetLocalizedText(782, "ID");
-            this.Type.Text = Language.GetLocalizedText(613, "Type");
-            this.Binding.Text = Language.GetLocalizedText(1161, "Binding");
-            this.label1.Text = Language.GetLocalizedText(1162, "MIDI Devices");
-            this.label2.Text = Language.GetLocalizedText(1163, "Control Bindings");
-            this.label4.Text = Language.GetLocalizedText(1164, "Binding Target Type");
-            this.BindTypeLabel.Text = Language.GetLocalizedText(1165, "Bind Type");
-            this.label6.Text = Language.GetLocalizedText(1166, "Property");
-            this.Monitor.Text = Language.GetLocalizedText(1167, "Monitor");
-            this.DeviceProperties.Text = Language.GetLocalizedText(20, "Properties");
-            this.RepeatCheckbox.Text = Language.GetLocalizedText(1168, "Repeat");
-            this.Save.Text = Language.GetLocalizedText(168, "Save");
-            this.LoadMap.Text = Language.GetLocalizedText(730, "Load");
-            this.Text = Language.GetLocalizedText(1169, "Controller Setup");
+            Control.Text = Language.GetLocalizedText(1159, "Control");
+            Channel.Text = Language.GetLocalizedText(1160, "Chan");
+            ID.Text = Language.GetLocalizedText(782, "ID");
+            Type.Text = Language.GetLocalizedText(613, "Type");
+            Binding.Text = Language.GetLocalizedText(1161, "Binding");
+            label1.Text = Language.GetLocalizedText(1162, "MIDI Devices");
+            label2.Text = Language.GetLocalizedText(1163, "Control Bindings");
+            label4.Text = Language.GetLocalizedText(1164, "Binding Target Type");
+            BindTypeLabel.Text = Language.GetLocalizedText(1165, "Bind Type");
+            label6.Text = Language.GetLocalizedText(1166, "Property");
+            Monitor.Text = Language.GetLocalizedText(1167, "Monitor");
+            DeviceProperties.Text = Language.GetLocalizedText(20, "Properties");
+            RepeatCheckbox.Text = Language.GetLocalizedText(1168, "Repeat");
+            Save.Text = Language.GetLocalizedText(168, "Save");
+            LoadMap.Text = Language.GetLocalizedText(730, "Load");
+            Text = Language.GetLocalizedText(1169, "Controller Setup");
         }
 
         public static void UpdateDeviceList()
@@ -105,7 +101,7 @@ namespace TerraViewer
         {
             master = this;
             UpdateDeviceListLocal();
-            this.Height = Properties.Settings.Default.MidiEditWindowHeight;
+            Height = Properties.Settings.Default.MidiEditWindowHeight;
           
 
         }
@@ -167,7 +163,7 @@ namespace TerraViewer
         private void SetDeviceImage(string url)
         {
             var downloadPath = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\";
-            var downloadName = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\" + Math.Abs(url.GetHashCode32()).ToString() + ".png";
+            var downloadName = Properties.Settings.Default.CahceDirectory + @"Imagery\Cache\" + Math.Abs(url.GetHashCode32()) + ".png";
 
             if (!Directory.Exists(downloadPath))
             {
@@ -295,7 +291,7 @@ namespace TerraViewer
 
                 nb.MidiMap = (MidiMap)DeviceList.SelectedItem;
                 nb.ControlMap = new ControlMap();
-                if (nb.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (nb.ShowDialog() == DialogResult.OK)
                 {
                     nb.MidiMap.ControlMaps.Add(nb.ControlMap);
                     nb.ControlMap.Owner = nb.MidiMap;
@@ -513,7 +509,7 @@ namespace TerraViewer
 
         private void Delete_Click(object sender, EventArgs e)
         {
-            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1171, "This will remove this control map. Are you sure you want to do this?"), Language.GetLocalizedText(1172, "Remove Control Map"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1171, "This will remove this control map. Are you sure you want to do this?"), Language.GetLocalizedText(1172, "Remove Control Map"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
 
                 var midiMap = (MidiMap)DeviceList.SelectedItem;
@@ -545,7 +541,7 @@ namespace TerraViewer
                 var midiMap = (MidiMap)DeviceList.SelectedItem;
                 var props = new ControllerProperties();
                 props.DeviceMap = midiMap;
-                if (props.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (props.ShowDialog() == DialogResult.OK)
                 {
                     DeviceSelected();
                 }
@@ -700,7 +696,7 @@ namespace TerraViewer
 
         private void MidiSetup_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.MidiEditWindowHeight = this.Height;
+            Properties.Settings.Default.MidiEditWindowHeight = Height;
             TurnOffMonitoring();
         }
 
@@ -750,13 +746,10 @@ namespace TerraViewer
                     monitoringMap = (MidiMap)DeviceList.SelectedItem;
                     if (monitoringMap.Connected)
                     {
-                        monitoringMap.MessageReceived += new MIDI.MidiMessageReceived(monitoringMap_MessageReceived);
+                        monitoringMap.MessageReceived += monitoringMap_MessageReceived;
                         return;
                     }
-                    else
-                    {
-                        monitoringMap = null;
-                    }
+                    monitoringMap = null;
                 }
             }
             TurnOffMonitoring();
@@ -766,13 +759,13 @@ namespace TerraViewer
         {
             if (monitoringMap != null)
             {
-                monitoringMap.MessageReceived -= new MIDI.MidiMessageReceived(monitoringMap_MessageReceived);
+                monitoringMap.MessageReceived -= monitoringMap_MessageReceived;
                 monitoringMap = null;
                 Monitor.Checked = false;
             }
         }
 
-        void monitoringMap_MessageReceived(object sender, MIDI.MidiMessage message, int channel, int key, int value)
+        void monitoringMap_MessageReceived(object sender, MidiMessage message, int channel, int key, int value)
         {
             if (monitoringMap != null)
             {
@@ -797,11 +790,11 @@ namespace TerraViewer
                         }
                     };
 
-                    if (this.InvokeRequired)
+                    if (InvokeRequired)
                     {
                         try
                         {
-                            this.Invoke(doIt);
+                            Invoke(doIt);
                         }
                         catch
                         {

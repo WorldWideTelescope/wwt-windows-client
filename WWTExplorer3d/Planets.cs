@@ -1,14 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
 using System.IO;
-using System.IO.Compression;
-using System.Text;
 using AstroCalc;
 using System.Threading;
+using SharpDX;
+using SharpDX.Direct3D;
+using TerraViewer.Properties;
+using Color = System.Drawing.Color;
 
 
 namespace TerraViewer
@@ -68,8 +67,8 @@ namespace TerraViewer
 
         //SharpDX.Direct3D11.Buffer vertexBuffer;
         //SharpDX.Direct3D11.VertexBufferBinding vertexBinding;
-        GenVertexBuffer<SharpDX.Vector4> vertexBuffer;
-        SharpDX.Vector4[] transferBuffer;
+        GenVertexBuffer<Vector4> vertexBuffer;
+        Vector4[] transferBuffer;
 
         const double coverageWindowDurationFactor = 1.5;
 
@@ -77,7 +76,7 @@ namespace TerraViewer
         {
             this.body = body;
             this.pathDuration = pathDuration;
-            this.coverageDuration = this.pathDuration * coverageWindowDurationFactor;
+            coverageDuration = this.pathDuration * coverageWindowDurationFactor;
             this.pointCount = (uint) (pointCount * coverageWindowDurationFactor);
         }
 
@@ -141,7 +140,7 @@ namespace TerraViewer
                 var savedWorld = renderContext.World;
                 renderContext.World = worldMatrix;
 
-                renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineStrip;
+                renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
 
                 OrbitTraceShader.UseShader(renderContext, new SharpDX.Color(color.R, color.G, color.B, color.A), savedWorld, positionNow, timeOffset, 1.5);
                 renderContext.SetVertexBuffer(vertexBuffer);
@@ -155,8 +154,8 @@ namespace TerraViewer
         {
             if (vertexBuffer == null)
             {
-                transferBuffer = new SharpDX.Vector4[pointCount];
-                vertexBuffer = new GenVertexBuffer<SharpDX.Vector4>(RenderContext11.PrepDevice, transferBuffer);
+                transferBuffer = new Vector4[pointCount];
+                vertexBuffer = new GenVertexBuffer<Vector4>(RenderContext11.PrepDevice, transferBuffer);
             }
 
             var t0 = points[0].jd;
@@ -165,7 +164,7 @@ namespace TerraViewer
             for (uint i = 0; i < pointCount; ++i)
             {
                 var pathPoint = points[i];
-                transferBuffer[i] = new SharpDX.Vector4((float)pathPoint.position.X,
+                transferBuffer[i] = new Vector4((float)pathPoint.position.X,
                                                         (float)pathPoint.position.Y,
                                                         (float)pathPoint.position.Z,
                                                         (float)((t0 - pathPoint.jd) / coverageDuration));
@@ -187,7 +186,7 @@ namespace TerraViewer
                 {
                     LoadPlanetTextures();
                 }
-                return Planets.planetTextures;
+                return planetTextures;
             }
         }
         public static Texture11[] planetTexturesMaps;
@@ -362,7 +361,7 @@ namespace TerraViewer
             {
                 if (ringsMap == null)
                 {
-                    ringsMap = LoadPlanetTexture(Properties.Resources.SaturnRings);
+                    ringsMap = LoadPlanetTexture(Resources.SaturnRings);
                 }
                 return ringsMap;
             }
@@ -389,13 +388,13 @@ namespace TerraViewer
             Vector3d temp;
             if (jNow == 0)
             {
-                temp = Planets.GetPlanet3dLocation(target);
+                temp = GetPlanet3dLocation(target);
             }
             else
             {
-                temp = Planets.GetPlanet3dLocation(target, jNow);
+                temp = GetPlanet3dLocation(target, jNow);
             }
-            temp.Add(Coordinates.RADecTo3d((lng / 15) + 6, lat, Planets.GetPlanet3dSufaceAltitude(target)));
+            temp.Add(Coordinates.RADecTo3d((lng / 15) + 6, lat, GetPlanet3dSufaceAltitude(target)));
             return temp;
         }
 
@@ -473,10 +472,7 @@ namespace TerraViewer
 
                     return planetLocations[id];
                 }
-                else
-                {
-                    return AstroCalc.AstroCalc.GetPlanet(SpaceTimeController.JNow, id, SpaceTimeController.Location.Lat, SpaceTimeController.Location.Lng, SpaceTimeController.Altitude);
-                }
+                return AstroCalc.AstroCalc.GetPlanet(SpaceTimeController.JNow, id, SpaceTimeController.Location.Lat, SpaceTimeController.Location.Lng, SpaceTimeController.Altitude);
             }
             return new AstroRaDec(0, 0, 1, false, false);
         }
@@ -1011,7 +1007,7 @@ namespace TerraViewer
                                 for (var j = 0; j < orbitalSampleRate; j++)
                                 {
                                     var centerId = planetCenter;
-                                    var now = jNow + ((planetOrbitalYears[i] * 365.25 / (orbitalSampleRate)) * (double)(j - (orbitalSampleRate / 2)));
+                                    var now = jNow + ((planetOrbitalYears[i] * 365.25 / (orbitalSampleRate)) * (j - (orbitalSampleRate / 2)));
                                     var center = new Vector3d(0, 0, 0);
 
                                     if (i == (int)SolarSystemObjects.Moon)
@@ -1197,46 +1193,46 @@ namespace TerraViewer
             
 
             planetTextures = new Texture11[20];
-            planetTextures[0] = LoadPlanetTexture(Properties.Resources.sun);
-            planetTextures[1] = LoadPlanetTexture(Properties.Resources.mercury);
-            planetTextures[2] = LoadPlanetTexture(Properties.Resources.venus);
-            planetTextures[3] = LoadPlanetTexture(Properties.Resources.mars);
-            planetTextures[4] = LoadPlanetTexture(Properties.Resources.jupiter);
-            planetTextures[5] = LoadPlanetTexture(Properties.Resources.saturn);
-            planetTextures[6] = LoadPlanetTexture(Properties.Resources.uranus);
-            planetTextures[7] = LoadPlanetTexture(Properties.Resources.neptune);
-            planetTextures[8] = LoadPlanetTexture(Properties.Resources.pluto);
-            planetTextures[9] = LoadPlanetTexture(Properties.Resources.moon);
-            planetTextures[10] = LoadPlanetTexture(Properties.Resources.io);
-            planetTextures[11] = LoadPlanetTexture(Properties.Resources.europa);
-            planetTextures[12] = LoadPlanetTexture(Properties.Resources.ganymede);
-            planetTextures[13] = LoadPlanetTexture(Properties.Resources.callisto);
-            planetTextures[14] = LoadPlanetTexture(Properties.Resources.pointsourcemoon);
-            planetTextures[15] = LoadPlanetTexture(Properties.Resources.moonshadow);
-            planetTextures[18] = LoadPlanetTexture(Properties.Resources.sunCorona);
-            planetTextures[19] = LoadPlanetTexture(Properties.Resources.earth);
+            planetTextures[0] = LoadPlanetTexture(Resources.sun);
+            planetTextures[1] = LoadPlanetTexture(Resources.mercury);
+            planetTextures[2] = LoadPlanetTexture(Resources.venus);
+            planetTextures[3] = LoadPlanetTexture(Resources.mars);
+            planetTextures[4] = LoadPlanetTexture(Resources.jupiter);
+            planetTextures[5] = LoadPlanetTexture(Resources.saturn);
+            planetTextures[6] = LoadPlanetTexture(Resources.uranus);
+            planetTextures[7] = LoadPlanetTexture(Resources.neptune);
+            planetTextures[8] = LoadPlanetTexture(Resources.pluto);
+            planetTextures[9] = LoadPlanetTexture(Resources.moon);
+            planetTextures[10] = LoadPlanetTexture(Resources.io);
+            planetTextures[11] = LoadPlanetTexture(Resources.europa);
+            planetTextures[12] = LoadPlanetTexture(Resources.ganymede);
+            planetTextures[13] = LoadPlanetTexture(Resources.callisto);
+            planetTextures[14] = LoadPlanetTexture(Resources.pointsourcemoon);
+            planetTextures[15] = LoadPlanetTexture(Resources.moonshadow);
+            planetTextures[18] = LoadPlanetTexture(Resources.sunCorona);
+            planetTextures[19] = LoadPlanetTexture(Resources.earth);
         }
 
         private static void LoadPlanetTextureMaps()
         {
             planetTexturesMaps = new Texture11[22];
-            planetTexturesMaps[0] = LoadPlanetTexture(Properties.Resources.sunMap);
-            planetTexturesMaps[1] = LoadPlanetTexture(Properties.Resources.mercuryMap);
-            planetTexturesMaps[2] = LoadPlanetTexture(Properties.Resources.venusMap);
-            planetTexturesMaps[3] = LoadPlanetTexture(Properties.Resources.marsMap);
-            planetTexturesMaps[4] = LoadPlanetTexture(Properties.Resources.jupiterMap);
-            planetTexturesMaps[5] = LoadPlanetTexture(Properties.Resources.saturnMap);
-            planetTexturesMaps[6] = LoadPlanetTexture(Properties.Resources.uranusMap);
-            planetTexturesMaps[7] = LoadPlanetTexture(Properties.Resources.neptuneMap);
-            planetTexturesMaps[8] = LoadPlanetTexture(Properties.Resources.plutoMap);
-            planetTexturesMaps[9] = LoadPlanetTexture(Properties.Resources.moonMap);
-            planetTexturesMaps[10] = LoadPlanetTexture(Properties.Resources.ioMap);
-            planetTexturesMaps[11] = LoadPlanetTexture(Properties.Resources.europaMap);
-            planetTexturesMaps[12] = LoadPlanetTexture(Properties.Resources.ganymedeMap);
-            planetTexturesMaps[13] = LoadPlanetTexture(Properties.Resources.callistoMap);
-            planetTexturesMaps[19] = LoadPlanetTexture(Properties.Resources.earthMap);
-            planetTexturesMaps[20] = LoadPlanetTexture(Properties.Resources.earthMapNight);
-            planetTexturesMaps[21] = LoadPlanetTexture(Properties.Resources.earthsMapSpec);
+            planetTexturesMaps[0] = LoadPlanetTexture(Resources.sunMap);
+            planetTexturesMaps[1] = LoadPlanetTexture(Resources.mercuryMap);
+            planetTexturesMaps[2] = LoadPlanetTexture(Resources.venusMap);
+            planetTexturesMaps[3] = LoadPlanetTexture(Resources.marsMap);
+            planetTexturesMaps[4] = LoadPlanetTexture(Resources.jupiterMap);
+            planetTexturesMaps[5] = LoadPlanetTexture(Resources.saturnMap);
+            planetTexturesMaps[6] = LoadPlanetTexture(Resources.uranusMap);
+            planetTexturesMaps[7] = LoadPlanetTexture(Resources.neptuneMap);
+            planetTexturesMaps[8] = LoadPlanetTexture(Resources.plutoMap);
+            planetTexturesMaps[9] = LoadPlanetTexture(Resources.moonMap);
+            planetTexturesMaps[10] = LoadPlanetTexture(Resources.ioMap);
+            planetTexturesMaps[11] = LoadPlanetTexture(Resources.europaMap);
+            planetTexturesMaps[12] = LoadPlanetTexture(Resources.ganymedeMap);
+            planetTexturesMaps[13] = LoadPlanetTexture(Resources.callistoMap);
+            planetTexturesMaps[19] = LoadPlanetTexture(Resources.earthMap);
+            planetTexturesMaps[20] = LoadPlanetTexture(Resources.earthMapNight);
+            planetTexturesMaps[21] = LoadPlanetTexture(Resources.earthsMapSpec);
         }
         static readonly SortedList<double, int> drawOrder = new SortedList<double, int>();
         public static bool DrawPlanets3D(RenderContext11 renderContext, float opacity, Vector3d centerPoint)
@@ -1763,7 +1759,7 @@ namespace TerraViewer
 
                 var wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
                 shader.WVPMatrix = wvp;
-                shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                shader.DiffuseColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
                 var invWorld = worldMatrix;
                 invWorld.Invert();
@@ -1837,8 +1833,8 @@ namespace TerraViewer
             // 1/wavelength^4 in Rayleigh scattering. The invented constants for Mars are meant to simulate
             // the pinkish color of the Martian atmosphere, which is actually due to suspended dust particles
             // rather than Rayleigh scattering.
-            var earthRayleighCoeff = new SharpDX.Vector3(5.8f, 13.5f, 33.1f) * 1.8f;
-            var marsRayleighCoeff = new SharpDX.Vector3(13.0f, 9.5f, 8.1f) * 0.85f;
+            var earthRayleighCoeff = new Vector3(5.8f, 13.5f, 33.1f) * 1.8f;
+            var marsRayleighCoeff = new Vector3(13.0f, 9.5f, 8.1f) * 0.85f;
 
             var planetRadiusKm = (float)GetPlanetRadiusInMeters(planetID) / 1000.0f;
 
@@ -1855,10 +1851,10 @@ namespace TerraViewer
             atmosphereShader.AtmosphereZeroHeight = 1.0f / geometryScaleFactor;
             atmosphereShader.AtmosphereInvScaleHeight = 1.0f / atmosphereScaleHeight; ;
             atmosphereShader.RayleighScatterCoeff = rayleighCoeff;
-            atmosphereShader.AtmosphereCenter = new SharpDX.Vector3();
+            atmosphereShader.AtmosphereCenter = new Vector3();
         }
 
-        private static SharpDX.Matrix bias = SharpDX.Matrix.Scaling(new SharpDX.Vector3(.5f, .5f, .5f)) * SharpDX.Matrix.Translation(new SharpDX.Vector3(.5f, .5f, .5f));
+        private static Matrix bias = Matrix.Scaling(new Vector3(.5f, .5f, .5f)) * Matrix.Translation(new Vector3(.5f, .5f, .5f));
         private static void DrawPlanet3d(RenderContext11 renderContext, int planetID, Vector3d centerPoint, float opacity)
         {
             // Assume that KML is only used for Earth
@@ -2110,7 +2106,7 @@ namespace TerraViewer
 
                         // Set up specular properties; this should eventually be abstracted by RenderContext
                         renderContext.Shader.SpecularPower = 50.0f;
-                        renderContext.Shader.SpecularColor = new SharpDX.Vector4(0.5f, 0.5f, 0.5f, 0.0f);
+                        renderContext.Shader.SpecularColor = new Vector4(0.5f, 0.5f, 0.5f, 0.0f);
 
                         renderContext.BlendMode = BlendMode.Additive;
                         DrawSphere(renderContext, planetTexturesMaps[21], planetID, sizeIndex, false, true, shaderKey);
@@ -2153,7 +2149,7 @@ namespace TerraViewer
 
                         // We're rendering just the atmosphere; there's no contribution from a surface, so set the
                         // diffuse color to black.
-                        atmosphereShader.DiffuseColor = new SharpDX.Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+                        atmosphereShader.DiffuseColor = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
                         atmosphereShader.Opacity = 0.0f;
 
                         //renderContext.BlendMode = BlendMode.Alpha;
@@ -2163,7 +2159,7 @@ namespace TerraViewer
                         var blendFactor = Math.Min(3.0f, skyShellPixels) / 3.0f;
 
                         renderContext.BlendMode = BlendMode.BlendFactorInverseAlpha;
-                        renderContext.BlendFactor = new SharpDX.Color4(blendFactor, blendFactor, blendFactor, 1.0f);
+                        renderContext.BlendFactor = new Color4(blendFactor, blendFactor, blendFactor, 1.0f);
 
                         renderContext.DepthStencilMode = DepthStencilMode.ZReadOnly;
 
@@ -2388,7 +2384,7 @@ namespace TerraViewer
             if (planetsPointSet == null)
             {
                 planetsPointSet = new PointSpriteSet(renderContext.Device, vertices);
-                planetsPointSet.PointScaleFactors = new SharpDX.Vector3(1.0f, 0.0f, 0.0f);
+                planetsPointSet.PointScaleFactors = new Vector3(1.0f, 0.0f, 0.0f);
             }
             else
             {
@@ -2411,7 +2407,7 @@ namespace TerraViewer
 
             if (PlanetShadow == null)
             {
-                PlanetShadow = Texture11.FromBitmap(device, Properties.Resources.planetShadow);
+                PlanetShadow = Texture11.FromBitmap(device, Resources.planetShadow);
             }
 
             var invViewCam = renderContext.View;
@@ -2454,7 +2450,7 @@ namespace TerraViewer
             var diameter = planetDiameters[planetID];
 
 
-            var radius = (double)(diameter / 2.0);
+            var radius = diameter / 2.0;
             if (planetID != 0)
             {
                 radius = radius * (1 + (3 * (Settings.Active.SolarSystemScale - 1)));
@@ -2551,7 +2547,7 @@ namespace TerraViewer
 
 
             renderContext.DepthStencilMode = DepthStencilMode.Off;
-            Sprite2d.Draw(renderContext, drawPlanetPoints, 4, currentPlanetTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+            Sprite2d.Draw(renderContext, drawPlanetPoints, 4, currentPlanetTexture, PrimitiveTopology.TriangleStrip);
 
         }
         static readonly PositionColoredTextured[] drawPlanetPoints = new PositionColoredTextured[4];
@@ -2615,10 +2611,10 @@ namespace TerraViewer
 
             var rotation = -Math.Cos(planetPosition.RA / 12 * Math.PI) * 23.5;
 
-            var matrix = SharpDX.Matrix.Identity;
-            matrix = SharpDX.Matrix.Multiply(matrix, SharpDX.Matrix.RotationX((float)(((rotation)) / 180f * Math.PI)));
-            matrix = SharpDX.Matrix.Multiply(matrix, SharpDX.Matrix.RotationZ((float)((planetPosition.Dec) / 180f * Math.PI)));
-            matrix = SharpDX.Matrix.Multiply(matrix, SharpDX.Matrix.RotationY((float)(((360 - (planetPosition.RA * 15)) + 180) / 180f * Math.PI)));
+            var matrix = Matrix.Identity;
+            matrix = Matrix.Multiply(matrix, Matrix.RotationX((float)(((rotation)) / 180f * Math.PI)));
+            matrix = Matrix.Multiply(matrix, Matrix.RotationZ((float)((planetPosition.Dec) / 180f * Math.PI)));
+            matrix = Matrix.Multiply(matrix, Matrix.RotationY((float)(((360 - (planetPosition.RA * 15)) + 180) / 180f * Math.PI)));
 
             var step = 1.0 / planetSegments;
             for (var i = 0; i <= planetSegments; i++)
@@ -2691,16 +2687,16 @@ namespace TerraViewer
             }
 
             renderContext.DepthStencilMode = DepthStencilMode.Off;
-            Sprite2d.Draw(renderContext, triangles, triangles.Length, currentPlanetTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleList);
+            Sprite2d.Draw(renderContext, triangles, triangles.Length, currentPlanetTexture, PrimitiveTopology.TriangleList);
 
         }
         static int planetSegments = 128;
         static readonly PositionColoredTextured[] points = new PositionColoredTextured[4 * (planetSegments + 1)];
         static readonly PositionColoredTextured[] triangles = new PositionColoredTextured[18 * (planetSegments)];
 
-        static SharpDX.Vector4 ToVector4(SharpDX.Vector3 vector)
+        static Vector4 ToVector4(Vector3 vector)
         {
-            return new SharpDX.Vector4(vector, 1);
+            return new Vector4(vector, 1);
         }
 
         static double GeocentricElongation(double ObjectAlpha, double ObjectDelta, double SunAlpha, double SunDelta)
@@ -2783,7 +2779,7 @@ namespace TerraViewer
 
                     if (planet != null)
                     {
-                        var normColor = new SharpDX.Vector4(defaultLayerColor.R, defaultLayerColor.G, defaultLayerColor.B, defaultLayerColor.A) * (1.0f / 255.0f);
+                        var normColor = new Vector4(defaultLayerColor.R, defaultLayerColor.G, defaultLayerColor.B, defaultLayerColor.A) * (1.0f / 255.0f);
                         if (RenderContext11.sRGB)
                         {
                             normColor.X = (float) Math.Pow(normColor.X, 2.2);
@@ -2836,7 +2832,7 @@ namespace TerraViewer
 
             renderContext.MainTexture = texture;
 
-            renderContext.Device.ImmediateContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             renderContext.Device.ImmediateContext.InputAssembler.InputLayout = renderContext.Shader.inputLayout(PlanetShader11.StandardVertexLayout.PositionNormalTex2);
 
             renderContext.PreDraw();
@@ -2851,7 +2847,7 @@ namespace TerraViewer
         {
             if (sphereVertexBuffers != null && sphereVertexBuffers[sphereIndex] != null)
             {
-                renderContext.Device.ImmediateContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+                renderContext.Device.ImmediateContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
                 renderContext.Device.ImmediateContext.InputAssembler.InputLayout = renderContext.Shader.inputLayout(PlanetShader11.StandardVertexLayout.PositionNormalTex2);
 
                 renderContext.PreDraw();
@@ -2929,7 +2925,7 @@ namespace TerraViewer
 
                     if (y1 != countY)
                     {
-                        lat = latMax - (textureStepY * latDegrees * (double)y1);
+                        lat = latMax - (textureStepY * latDegrees * y1);
                     }
                     else
                     {
@@ -2940,7 +2936,7 @@ namespace TerraViewer
                     {
                         if (x1 != countX)
                         {
-                            lng = lngMin + (textureStepX * lngDegrees * (double)x1);
+                            lng = lngMin + (textureStepX * lngDegrees * x1);
                         }
                         else
                         {
@@ -2964,26 +2960,26 @@ namespace TerraViewer
                         if (bWinding)
                         {
                             // First triangle in quad
-                            indexArray[index] = (int)(y1 * (countX + 1) + x1); //A
-                            indexArray[index + 2] = (int)(y1 * (countX + 1) + (x1 + 1));//B
-                            indexArray[index + 1] = (int)((y1 + 1) * (countX + 1) + x1);//C
+                            indexArray[index] = y1 * (countX + 1) + x1; //A
+                            indexArray[index + 2] = y1 * (countX + 1) + (x1 + 1);//B
+                            indexArray[index + 1] = (y1 + 1) * (countX + 1) + x1;//C
 
                             // Second triangle in quad
-                            indexArray[index + 3] = (int)(y1 * (countX + 1) + (x1 + 1));//B
-                            indexArray[index + 5] = (int)((y1 + 1) * (countX + 1) + (x1 + 1)); //D
-                            indexArray[index + 4] = (int)((y1 + 1) * (countX + 1) + x1);// C
+                            indexArray[index + 3] = y1 * (countX + 1) + (x1 + 1);//B
+                            indexArray[index + 5] = (y1 + 1) * (countX + 1) + (x1 + 1); //D
+                            indexArray[index + 4] = (y1 + 1) * (countX + 1) + x1;// C
                         }
                         else
                         {
                             // First triangle in quad
-                            indexArray[index] = (int)(y1 * (countX + 1) + x1); //A
-                            indexArray[index + 2] = (int)((y1 + 1) * (countX + 1) + (x1 + 1)); //D
-                            indexArray[index + 1] = (int)((y1 + 1) * (countX + 1) + x1);//C
+                            indexArray[index] = y1 * (countX + 1) + x1; //A
+                            indexArray[index + 2] = (y1 + 1) * (countX + 1) + (x1 + 1); //D
+                            indexArray[index + 1] = (y1 + 1) * (countX + 1) + x1;//C
 
                             // Second triangle in quad
-                            indexArray[index + 3] = (int)(y1 * (countX + 1) + (x1 + 1));//B
-                            indexArray[index + 5] = (int)((y1 + 1) * (countX + 1) + (x1 + 1)); //D
-                            indexArray[index + 4] = (int)(y1 * (countX + 1) + x1); //A
+                            indexArray[index + 3] = y1 * (countX + 1) + (x1 + 1);//B
+                            indexArray[index + 5] = (y1 + 1) * (countX + 1) + (x1 + 1); //D
+                            indexArray[index + 4] = y1 * (countX + 1) + x1; //A
                         }
                     }
                 }
@@ -3012,7 +3008,7 @@ namespace TerraViewer
             SetupPlanetSurfaceEffect(renderContext, ringsKey, 1.0f);
             renderContext.Shader.MainTexture = RingsMap.ResourceView;
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleStrip;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
             renderContext.Device.ImmediateContext.InputAssembler.InputLayout = renderContext.Shader.inputLayout(PlanetShader11.StandardVertexLayout.PositionNormalTex);
 
             renderContext.PreDraw();             
@@ -3040,7 +3036,7 @@ namespace TerraViewer
             triangleCountRings = (subDivisionsRings) * 2;
             var verts = (PositionNormalTexturedX2[])ringsVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
 
-            var radStep = Math.PI * 2.0 / (double)subDivisionsRings;
+            var radStep = Math.PI * 2.0 / subDivisionsRings;
             var index = 0;
             for (var x = 0; x <= subDivisionsRings; x += 2)
             {

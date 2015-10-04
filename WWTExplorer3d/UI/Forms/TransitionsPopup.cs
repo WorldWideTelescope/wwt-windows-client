@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -15,15 +10,15 @@ namespace TerraViewer
         {
             InitializeComponent();
             Earth3d.NoStealFocus = true;
-            transitionPicker.SelectedIndexChanged += new EventHandler(transitionPicker_SelectedIndexChanged);
+            transitionPicker.SelectedIndexChanged += transitionPicker_SelectedIndexChanged;
         }
 
         private void SetUiStrings()
         {
-            this.spreadsheetNameLabel.Text = Language.GetLocalizedText(1122, "A Time");
-            this.label1.Text = Language.GetLocalizedText(1123, "B Time");
-            this.label2.Text = Language.GetLocalizedText(1124, "Hold Time");
-            this.Text = Language.GetLocalizedText(1125, "Transitions");
+            spreadsheetNameLabel.Text = Language.GetLocalizedText(1122, "A Time");
+            label1.Text = Language.GetLocalizedText(1123, "B Time");
+            label2.Text = Language.GetLocalizedText(1124, "Hold Time");
+            Text = Language.GetLocalizedText(1125, "Transitions");
 
         }
 
@@ -121,7 +116,7 @@ namespace TerraViewer
         {
             if (e.KeyCode == Keys.Enter)
             {
-                this.Close();
+                Close();
             }
         }
 

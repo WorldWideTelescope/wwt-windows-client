@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -18,11 +12,11 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.altDepthLabel.Text = Language.GetLocalizedText(802, "Altitude (Meters)");
-            this.LongitudeLabel.Text = Language.GetLocalizedText(803, "Longitude (Decimal Degrees)");
-            this.LatitudeLabel.Text = Language.GetLocalizedText(804, "Latitude (Decimal Degrees)");
-            this.label3.Text = Language.GetLocalizedText(801, "Select the Latitude, Longitude and Altitude");
-            this.GetFromView.Text = Language.GetLocalizedText(259, "Get From View");
+            altDepthLabel.Text = Language.GetLocalizedText(802, "Altitude (Meters)");
+            LongitudeLabel.Text = Language.GetLocalizedText(803, "Longitude (Decimal Degrees)");
+            LatitudeLabel.Text = Language.GetLocalizedText(804, "Latitude (Decimal Degrees)");
+            label3.Text = Language.GetLocalizedText(801, "Select the Latitude, Longitude and Altitude");
+            GetFromView.Text = Language.GetLocalizedText(259, "Get From View");
         }
 
         ReferenceFrame frame;

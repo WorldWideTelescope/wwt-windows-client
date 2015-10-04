@@ -1,33 +1,29 @@
 using System;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.IO;
 
 namespace TerraViewer
 {
 	/// <summary>
 	/// Summary description for GoToLatLong.
 	/// </summary>
-	public class LocationSetup : System.Windows.Forms.Form
+	public class LocationSetup : Form
     {
-		private System.Windows.Forms.TextBox txtLong;
-		private System.Windows.Forms.ListBox PlacesList;
-		private System.Windows.Forms.Button Remove;
-		private System.Windows.Forms.Button Add;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox txtName;
-		private System.Windows.Forms.TextBox txtLat;
-		private System.Windows.Forms.Label lblLatitude;
-		private System.Windows.Forms.Label lblLongitude;
-        private System.Windows.Forms.Label datasetLabel;
-		private System.Windows.Forms.Label lblCatagory;
+		private TextBox txtLong;
+		private ListBox PlacesList;
+		private Button Remove;
+		private Button Add;
+		private Label label1;
+		private TextBox txtName;
+		private TextBox txtLat;
+		private Label lblLatitude;
+		private Label lblLongitude;
+        private Label datasetLabel;
+		private Label lblCatagory;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private readonly System.ComponentModel.Container components = null;
+		private readonly Container components = null;
         private WwtButton OK;
         private WwtButton Cancel;
         private WwtCombo DataSetList;
@@ -56,20 +52,20 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.lblLatitude.Text = Language.GetLocalizedText(253, "Latitude (Dec. deg.)");
-            this.lblLongitude.Text = Language.GetLocalizedText(254, "E. Longitude (Dec. deg.)");
-            this.Remove.Text = Language.GetLocalizedText(129, "Remove");
-            this.Add.Text = Language.GetLocalizedText(166, "Add");
-            this.label1.Text = Language.GetLocalizedText(238, "Name");
-            this.txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
-            this.datasetLabel.Text = Language.GetLocalizedText(256, "Data Set");
-            this.lblCatagory.Text = Language.GetLocalizedText(257, "Region");
-            this.label2.Text = Language.GetLocalizedText(258, "Elevation (Meters)");
-            this.FromEarthView.Text = Language.GetLocalizedText(259, "Get From View");
-            this.Categorys.Name = Language.GetLocalizedText(260, "Categorys");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.Text = Language.GetLocalizedText(261, "Observing Location Options");
+            lblLatitude.Text = Language.GetLocalizedText(253, "Latitude (Dec. deg.)");
+            lblLongitude.Text = Language.GetLocalizedText(254, "E. Longitude (Dec. deg.)");
+            Remove.Text = Language.GetLocalizedText(129, "Remove");
+            Add.Text = Language.GetLocalizedText(166, "Add");
+            label1.Text = Language.GetLocalizedText(238, "Name");
+            txtName.Text = Language.GetLocalizedText(255, "<Type name here>");
+            datasetLabel.Text = Language.GetLocalizedText(256, "Data Set");
+            lblCatagory.Text = Language.GetLocalizedText(257, "Region");
+            label2.Text = Language.GetLocalizedText(258, "Elevation (Meters)");
+            FromEarthView.Text = Language.GetLocalizedText(259, "Get From View");
+            Categorys.Name = Language.GetLocalizedText(260, "Categorys");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            Text = Language.GetLocalizedText(261, "Observing Location Options");
 
         }
 
@@ -385,59 +381,59 @@ namespace TerraViewer
 		#endregion
 
 		public static int lastSelectedDatasetIndex = 0;
-		private void GoToLatLong_Load(object sender, System.EventArgs e)
+		private void GoToLatLong_Load(object sender, EventArgs e)
 		{
             var datasets = DataSetManager.GetDataSets();
             foreach (var d in datasets.Values)
 			{
                 if (d.Sky == sky)
                 {
-                    this.DataSetList.Items.Add(d);
+                    DataSetList.Items.Add(d);
                 }
 			}
-			this.DataSetList.SelectedIndex=lastSelectedDatasetIndex;
+			DataSetList.SelectedIndex=lastSelectedDatasetIndex;
 			
-			this.Categorys.SelectedIndex = lastSelectedIndexCatagorys;
-			this.txtLat.Text = Latitude.ToString();
-			this.txtLong.Text = Longitude.ToString();
-            this.txtName.Text = LocationName;
-            this.txtAltitude.Text = Altitude.ToString();
+			Categorys.SelectedIndex = lastSelectedIndexCatagorys;
+			txtLat.Text = Latitude.ToString();
+			txtLong.Text = Longitude.ToString();
+            txtName.Text = LocationName;
+            txtAltitude.Text = Altitude.ToString();
             if (sky)
             {
-                this.lblLatitude.Text = Language.GetLocalizedText(262, "Declination");
-                this.lblLongitude.Text = Language.GetLocalizedText(263, "Right Ascension");
+                lblLatitude.Text = Language.GetLocalizedText(262, "Declination");
+                lblLongitude.Text = Language.GetLocalizedText(263, "Right Ascension");
 
             }
 
-            this.txtLat.Text = Coordinates.FormatDMS(Latitude);
-            this.txtLong.Text = Coordinates.FormatDMS(Longitude);
+            txtLat.Text = Coordinates.FormatDMS(Latitude);
+            txtLong.Text = Coordinates.FormatDMS(Longitude);
             if (Earth3d.MainWindow.CurrentImageSet.DataSetType == ImageSetType.Earth)
             {
                 FromEarthView.Visible = true;
             }
 		}
 
-        private void PlacesList_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void PlacesList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var p = (TourPlace)this.PlacesList.SelectedItem;
+            var p = (TourPlace)PlacesList.SelectedItem;
             if (p != null)
             {
-                this.txtName.Text = p.Name;
+                txtName.Text = p.Name;
 
-                this.txtLat.Text = Coordinates.FormatDMS(p.Lat);
-                this.txtLong.Text = Coordinates.FormatDMS(p.Lng);
-                this.txtAltitude.Text = p.Elevation.ToString();
+                txtLat.Text = Coordinates.FormatDMS(p.Lat);
+                txtLong.Text = Coordinates.FormatDMS(p.Lng);
+                txtAltitude.Text = p.Elevation.ToString();
 
             }
         }
 
-		private void Add_Click(object sender, System.EventArgs e)
+		private void Add_Click(object sender, EventArgs e)
 		{
 
 
 		}
 
-		private void Remove_Click(object sender, System.EventArgs e)
+		private void Remove_Click(object sender, EventArgs e)
 		{
 			if (PlacesList.SelectedItem != null)
 			{
@@ -445,10 +441,10 @@ namespace TerraViewer
 			}
 		}
 
-		private void cancelButton_Click(object sender, System.EventArgs e)
+		private void cancelButton_Click(object sender, EventArgs e)
 		{
             DialogResult = DialogResult.Cancel;
-			this.Close();
+			Close();
 		}
 		public double Latitude;
 		public double Longitude;
@@ -456,7 +452,7 @@ namespace TerraViewer
         public double Altitude;
      
 
-		private void goButton_Click(object sender, System.EventArgs e)
+		private void goButton_Click(object sender, EventArgs e)
 		{
 			Latitude = Coordinates.Parse(txtLat.Text);
             Longitude = Coordinates.Parse(txtLong.Text);
@@ -475,29 +471,29 @@ namespace TerraViewer
             {
             }
             Altitude = alt;
-            LocationName = this.txtName.Text;
+            LocationName = txtName.Text;
             DialogResult = DialogResult.OK;
-			this.Close();
+			Close();
 		}
 
-		private void DataSetList_SelectedIndexChanged(object sender, System.EventArgs e)
+		private void DataSetList_SelectedIndexChanged(object sender, EventArgs e)
 		{
             try
             {
-                lastSelectedDatasetIndex = this.DataSetList.SelectedIndex;
-                var ds = (DataSet)this.DataSetList.SelectedItem;
+                lastSelectedDatasetIndex = DataSetList.SelectedIndex;
+                var ds = (DataSet)DataSetList.SelectedItem;
                 if (ds != null)
                 {
-                    this.Categorys.Items.Clear();
+                    Categorys.Items.Clear();
                     var placesList = ds.GetPlaces();
                     foreach (var places in placesList.Values)
                     {
-                        this.Categorys.Items.Add(places);
+                        Categorys.Items.Add(places);
                     }
 
                     if (Categorys.Items.Count > 0)
                     {
-                        this.Categorys.SelectedIndex = 0;
+                        Categorys.SelectedIndex = 0;
                     }
                 }
             }
@@ -507,20 +503,20 @@ namespace TerraViewer
 		}
 		public static int lastSelectedIndexCatagorys = 0;
 		public static Places placesLastSelected = null;
-		private void Catagorys_SelectedIndexChanged(object sender, System.EventArgs e)
+		private void Catagorys_SelectedIndexChanged(object sender, EventArgs e)
 		{
             try
             {
-                lastSelectedIndexCatagorys = this.Categorys.SelectedIndex;
-                var places = (Places)this.Categorys.SelectedItem;
+                lastSelectedIndexCatagorys = Categorys.SelectedIndex;
+                var places = (Places)Categorys.SelectedItem;
                 placesLastSelected = places;
                 if (places != null)
                 {
-                    this.PlacesList.Items.Clear();
+                    PlacesList.Items.Clear();
                     var placeList = places.GetPlaceList();
                     foreach (TourPlace place in placeList)
                     {
-                        this.PlacesList.Items.Add(place);
+                        PlacesList.Items.Add(place);
                     }
                 }
             }
@@ -544,7 +540,7 @@ namespace TerraViewer
             if (e.KeyCode == Keys.Escape)
             {
                 DialogResult = DialogResult.Cancel;
-                this.Close();
+                Close();
             }
             if (e.KeyCode == Keys.F1)
             {

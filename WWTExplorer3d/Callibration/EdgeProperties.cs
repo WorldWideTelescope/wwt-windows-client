@@ -12,10 +12,10 @@ namespace TerraViewer.Callibration
         }
         private void SetUiStrings()
         {
-            this.Ok.Text = Language.GetLocalizedText(759, "Ok");
-            this.leftLabel.Text = Language.GetLocalizedText(760, "Left Projector");
-            this.label2.Text = Language.GetLocalizedText(761, "Right Projector");
-            this.Text = Language.GetLocalizedText(762, "Edge Properties");
+            Ok.Text = Language.GetLocalizedText(759, "Ok");
+            leftLabel.Text = Language.GetLocalizedText(760, "Left Projector");
+            label2.Text = Language.GetLocalizedText(761, "Right Projector");
+            Text = Language.GetLocalizedText(762, "Edge Properties");
         }
         
         public Edge Edge;

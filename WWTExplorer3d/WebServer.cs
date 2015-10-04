@@ -7,14 +7,11 @@
  FITNESS FOR A PARTICULAR PURPOSE.
 ===============================================================================
 */
-using System;	
-using System.IO;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading ;
-using System.Drawing;
-using Microsoft.Win32;
 using System.Collections.Generic;
 
 
@@ -80,13 +77,11 @@ namespace TerraViewer
 
         public static int RunCount
         {
-            get { return MyWebServer._RunCount; }
-            set { MyWebServer._RunCount = value; }
+            get { return _RunCount; }
+            set { _RunCount = value; }
         }
-		public MyWebServer()
-		{
-		}
-        static public Dictionary<string,string> WhiteList = new Dictionary<string,string>();
+
+	    static public Dictionary<string,string> WhiteList = new Dictionary<string,string>();
 
         static bool initializedOnce;
 
@@ -127,9 +122,9 @@ namespace TerraViewer
                         {
                             if (Earth3d.Logging)
                             {
-                                Earth3d.WriteLogMessage(" Web Server - Adding:" + ipAdd.ToString());
+                                Earth3d.WriteLogMessage(" Web Server - Adding:" + ipAdd);
                             }
-                            listener = new WebListener(new ParameterizedThreadStart(ListenerThreadFunc), ipAdd);
+                            listener = new WebListener(ListenerThreadFunc, ipAdd);
                             listeners.Add(listener);
                             listener.Start();
                         }
@@ -140,7 +135,7 @@ namespace TerraViewer
                     Earth3d.WriteLogMessage(" Web Server - Adding Loopback");
                 }
                 // Add Loopback localhost
-                listener = new WebListener(new ParameterizedThreadStart(ListenerThreadFunc), IPAddress.Loopback);
+                listener = new WebListener(ListenerThreadFunc, IPAddress.Loopback);
                 listeners.Add(listener);
                 listener.Start();
 
@@ -166,7 +161,7 @@ namespace TerraViewer
         {
             var whiteList = new Dictionary<string, string>();
 
-            var ipList = Properties.Settings.Default.HTTPWhiteList.Split(new char[] { ';' });
+            var ipList = Properties.Settings.Default.HTTPWhiteList.Split(new[] { ';' });
 
             foreach (var ip in ipList)
             {
@@ -184,7 +179,7 @@ namespace TerraViewer
         public static bool IsAuthorized(IPAddress ip)
         {
             var address = ip.ToString();
-            var parts = address.Split(new char[] { '.' });
+            var parts = address.Split(new[] { '.' });
 
             var wild1 = string.Format("{0}.{1}.{2}.*", parts[0], parts[1], parts[2]);
             var wild2 = string.Format("{0}.{1}.*.*", parts[0], parts[1]);
@@ -214,17 +209,14 @@ namespace TerraViewer
             {
                 return true;
             }
-            else
+            if (WhiteList.ContainsKey("*.*.*.*"))
             {
-                if (WhiteList.ContainsKey("*.*.*.*"))
-                {
-                    return true;
-                }
+                return true;
+            }
 
-                if (WhiteList.ContainsKey(address) || WhiteList.ContainsKey(wild1) || WhiteList.ContainsKey(wild2) || WhiteList.ContainsKey(wild3))
-                {
-                    return true;
-                }
+            if (WhiteList.ContainsKey(address) || WhiteList.ContainsKey(wild1) || WhiteList.ContainsKey(wild2) || WhiteList.ContainsKey(wild3))
+            {
+                return true;
             }
 
             RemoteAccessControl.ipTarget = address;
@@ -292,7 +284,7 @@ namespace TerraViewer
                     {
                         if (AsyncRequests)
                         {
-                            ThreadPool.QueueUserWorkItem(new WaitCallback(HandleRequest), mySocket);
+                            ThreadPool.QueueUserWorkItem(HandleRequest, mySocket);
 
                         }
                         else
@@ -434,7 +426,7 @@ namespace TerraViewer
                 catch (Exception ex)
                 {
                     if (Earth3d.Logging) { Earth3d.WriteLogMessage("Web Server Request Exception" + ex.Message); }
-                    sErrorMessage = "<H2>Error: " + ex.ToString() + "</H2>";
+                    sErrorMessage = "<H2>Error: " + ex + "</H2>";
                     RequestHandler.SendHeader(RequestHandler.HttpVersion, "", sErrorMessage.Length, " 200 OK", ref mySocket);
                     RequestHandler.SendHeader(RequestHandler.HttpVersion, "", sErrorMessage.Length, " 404 Not Found", ref mySocket);
                     RequestHandler.SendToBrowser(sErrorMessage, ref mySocket);

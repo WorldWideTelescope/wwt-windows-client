@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
@@ -17,7 +14,6 @@ namespace TerraViewer
             {
                 var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/User");
                 var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-                string body;
                 var request = WebRequest.Create(getQuestionsUri.Uri);
                 request.Method = "POST";
                 request.ContentLength = 0;
@@ -27,11 +23,14 @@ namespace TerraViewer
                 {
                     using (var responseStream = response.GetResponseStream())
                     {
-                        using (var responseStreamReader = new StreamReader(responseStream))
+                        if (responseStream != null)
                         {
-                            body = responseStreamReader.ReadToEnd();
-                            body = body.Substring(body.IndexOf('>') + 1);
-                            body = body.Substring(0, body.IndexOf('<'));
+                            using (var responseStreamReader = new StreamReader(responseStream))
+                            {
+                                string body = responseStreamReader.ReadToEnd();
+                                body = body.Substring(body.IndexOf('>') + 1);
+                                body = body.Substring(0, body.IndexOf('<'));
+                            }
                         }
                     }
                 }
@@ -55,7 +54,6 @@ namespace TerraViewer
             fileStream.Close();
             var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/Publish/" + name);
             var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-            string body;
             var request = WebRequest.Create(getQuestionsUri.Uri);
             request.Method = "POST";
             request.ContentType = "text/plain";
@@ -65,7 +63,6 @@ namespace TerraViewer
             var reqStream = request.GetRequestStream();
             reqStream.Write(buffer, 0, buffer.Length);
             reqStream.Close();
-            var id = -1;
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
@@ -73,14 +70,14 @@ namespace TerraViewer
                 {
                     using (var responseStreamReader = new StreamReader(responseStream))
                     {
-                        body = responseStreamReader.ReadToEnd();
+                        string body = responseStreamReader.ReadToEnd();
                         body = body.Substring(body.IndexOf('>') + 1);
                         body = body.Substring(0, body.IndexOf('<'));
-                        id = int.Parse(body);
+                        var id = int.Parse(body);
 
                         if (id > 0)
                         {
-                            WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditContent/" + id.ToString(), true);
+                            WebWindow.OpenUrl(Properties.Settings.Default.CloudCommunityUrlNew + @"/Community#/EditContent/" + id, true);
                         }
                         // MessageBox.Show(body);
                     }
@@ -92,7 +89,6 @@ namespace TerraViewer
         {
             var getQuestionsUri = new UriBuilder(url);
             var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-            string body;
             var request = WebRequest.Create(getQuestionsUri.Uri);
             request.Method = "GET";
             request.ContentLength = 0;
@@ -104,7 +100,7 @@ namespace TerraViewer
                 {
                     using (var responseStreamReader = new StreamReader(responseStream))
                     {
-                        body = responseStreamReader.ReadToEnd();
+                        string body = responseStreamReader.ReadToEnd();
                         MessageBox.Show(body);
                     }
                 }
@@ -115,9 +111,8 @@ namespace TerraViewer
         {
             try
             {
-                var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/" + id.ToString());
+                var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/" + id);
                 var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-                string body;
                 var request = WebRequest.Create(getQuestionsUri.Uri);
                 request.Method = "Delete";
                 request.ContentLength = 0;
@@ -129,7 +124,7 @@ namespace TerraViewer
                     {
                         using (var responseStreamReader = new StreamReader(responseStream))
                         {
-                            body = responseStreamReader.ReadToEnd();
+                            string body = responseStreamReader.ReadToEnd();
                             body = body.Substring(body.IndexOf('>') + 1);
                             body = body.Substring(0, body.IndexOf('<'));
                             return Boolean.Parse(body);
@@ -151,9 +146,8 @@ namespace TerraViewer
         {
             try
             {
-                var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Community/" + id.ToString());
+                var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Community/" + id);
                 var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-                string body;
                 var request = WebRequest.Create(getQuestionsUri.Uri);
                 request.Method = "Delete";
                 request.ContentLength = 0;
@@ -165,7 +159,7 @@ namespace TerraViewer
                     {
                         using (var responseStreamReader = new StreamReader(responseStream))
                         {
-                            body = responseStreamReader.ReadToEnd();
+                            string body = responseStreamReader.ReadToEnd();
                             body = body.Substring(body.IndexOf('>') + 1);
                             body = body.Substring(0, body.IndexOf('<'));
                             return Boolean.Parse(body);
@@ -187,9 +181,8 @@ namespace TerraViewer
         {
             try
             {
-                var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/Rate/" + id.ToString() + "/" + rating.ToString());
+                var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/Content/Rate/" + id + "/" + rating);
                 var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-                string body;
                 var request = WebRequest.Create(getQuestionsUri.Uri);
                 request.Method = "Post";
                 request.ContentLength = 0;
@@ -201,7 +194,7 @@ namespace TerraViewer
                     {
                         using (var responseStreamReader = new StreamReader(responseStream))
                         {
-                            body = responseStreamReader.ReadToEnd();
+                            string body = responseStreamReader.ReadToEnd();
                             body = body.Substring(body.IndexOf('>') + 1);
                             body = body.Substring(0, body.IndexOf('<'));
                             return Boolean.Parse(body);
@@ -220,7 +213,6 @@ namespace TerraViewer
         {
             var getQuestionsUri = new UriBuilder(Properties.Settings.Default.CloudCommunityUrlNew + @"/Resource/Service/User");
             var appSecurityToken = Properties.Settings.Default.LiveIdToken;
-            string body;
             var request = WebRequest.Create(getQuestionsUri.Uri);
             request.Method = "Get";
             request.ContentLength = 0;
@@ -232,7 +224,7 @@ namespace TerraViewer
                 {
                     using (var responseStreamReader = new StreamReader(responseStream))
                     {
-                        body = responseStreamReader.ReadToEnd();
+                        string body = responseStreamReader.ReadToEnd();
                         body = body.Substring(body.IndexOf('>') + 1);
                         body = body.Substring(0, body.IndexOf('<'));
                         return Boolean.Parse(body);

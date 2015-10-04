@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Net;
@@ -88,8 +90,8 @@ namespace TerraViewer.Callibration
                 var url = string.Format("http://{0}:5050/Configuration/images/executable", NetControl.MasterAddress);
                 var data = client.DownloadData(url);
                 File.WriteAllBytes("wwtexplorer.exe", data);
-                System.Diagnostics.Process.Start("wwtexplorer.exe", "restart");
-                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Process.Start("wwtexplorer.exe", "restart");
+                Process.GetCurrentProcess().Kill();
             }
             catch
             {
@@ -297,13 +299,13 @@ namespace TerraViewer.Callibration
 
         private void CalibrationScreen_Paint(object sender, PaintEventArgs e)
         {
-            var rect = this.ClientRectangle;
+            var rect = ClientRectangle;
 
             e.Graphics.Clear(Background);
 
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality; 
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality; 
 
             if (DrawOutline)
             {

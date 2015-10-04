@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Threading;
 
@@ -15,7 +16,7 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(372, "Initializing Data...");
+            label1.Text = Language.GetLocalizedText(372, "Initializing Data...");
         }
         enum SplashState { FadingIn, Showing, FadingOut };
 
@@ -26,8 +27,8 @@ namespace TerraViewer
             switch(splashState)
             {
                 case SplashState.FadingIn:
-                    this.Opacity += .05;
-                    if (this.Opacity == 1.0)
+                    Opacity += .05;
+                    if (Opacity == 1.0)
                     {
                         splashState = SplashState.Showing;
                         timer1.Interval = 1000;
@@ -49,10 +50,10 @@ namespace TerraViewer
                     }
                     break;
                 case SplashState.FadingOut:
-                    this.Opacity -= .05;
-                    if (this.Opacity == 0.0)
+                    Opacity -= .05;
+                    if (Opacity == 0.0)
                     {
-                        this.Close();
+                        Close();
                     }                    
                     break;
             }
@@ -60,13 +61,13 @@ namespace TerraViewer
         static Thread splashTread;
         public static void ShowSplashScreen()
         {
-            splashTread = new Thread( new ThreadStart(SplashTreadFunction));
+            splashTread = new Thread( SplashTreadFunction);
             splashTread.Start();
         }
 
         private static void SplashTreadFunction()
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US", false);
             var splash = new Splash();
             splash.ShowDialog();
         }

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -43,12 +39,12 @@ namespace TerraViewer
         {
             if (selected)
             {
-                this.BackgroundImage = global::TerraViewer.Properties.Resources.tabSelected;
+                BackgroundImage = Resources.tabSelected;
             }
             else
             {
                 //this.BackgroundImage = global::TerraViewer.Properties.Resources.tabHover;
-                this.BackgroundImage = global::TerraViewer.Properties.Resources.tabPlain;
+                BackgroundImage = Resources.tabPlain;
             }
         }
 
@@ -62,11 +58,11 @@ namespace TerraViewer
         {
             if (selected)
             {
-                this.BackgroundImage = global::TerraViewer.Properties.Resources.tabSelectedHover;
+                BackgroundImage = Resources.tabSelectedHover;
             }
             else
             {
-                this.BackgroundImage = global::TerraViewer.Properties.Resources.tabHover;
+                BackgroundImage = Resources.tabHover;
             }
 
         }

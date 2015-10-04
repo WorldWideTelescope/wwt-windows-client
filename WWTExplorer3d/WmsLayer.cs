@@ -4,12 +4,12 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 using System.Globalization;
-using System.Xml.Serialization;
 using System.Threading;
+using System.Xml;
 
 namespace TerraViewer
 {
-    public class WmsLayer : Layer, TerraViewer.ITimeSeriesDescription
+    public class WmsLayer : Layer, ITimeSeriesDescription
     {
         public KmlGroundOverlay Overlay = new KmlGroundOverlay();
         public string filename;
@@ -25,7 +25,7 @@ namespace TerraViewer
 
             var copy = !fName.Contains(ID.ToString());
 
-            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, this.ID.ToString());
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, ID);
             var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
 
             if (copy)
@@ -64,7 +64,7 @@ namespace TerraViewer
         {
             SetCurrentImage();
 
-            Overlay.color = Color.FromArgb((int)(this.Opacity * opacity * Color.A), Color);
+            Overlay.color = Color.FromArgb((int)(Opacity * opacity * Color.A), Color);
             Earth3d.MainWindow.KmlMarkers.AddGroundOverlay(Overlay);
             return true;
         }
@@ -288,7 +288,7 @@ namespace TerraViewer
             return val;
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("North", North.ToString());
             xmlWriter.WriteAttributeString("South", South.ToString());
@@ -340,7 +340,7 @@ namespace TerraViewer
 
         private void ParseRanges(string p)
         {
-            var parts = p.Split(new char[] { ',' });
+            var parts = p.Split(new[] { ',' });
             foreach (var part in parts)
             {
                 TimeRanges.Add(new TimeRange(part));
@@ -447,7 +447,7 @@ namespace TerraViewer
 
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             North = Double.Parse(node.Attributes["North"].Value);
 
@@ -509,7 +509,7 @@ namespace TerraViewer
         public TimeRange(string dateString)
         {
             dateString = dateString.Replace("\n", "").Replace(" ", "");
-            var dateParts = dateString.Split(new char[] { '/' });
+            var dateParts = dateString.Split(new[] { '/' });
             IsRange = false;
             StartTime = new DateTime();
             EndTime = new DateTime();
@@ -523,7 +523,7 @@ namespace TerraViewer
                 if (dateParts.Length > 0)
                 {
                     StartTimeString = dateParts[0];
-                    StartTime = DateTime.ParseExact(dateParts[0], new string[] { @"yyyy-MM-dd\THH:mm:ss.000\Z", @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM", "o" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+                    StartTime = DateTime.ParseExact(dateParts[0], new[] { @"yyyy-MM-dd\THH:mm:ss.000\Z", @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM", "o" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 
                     //layer.StartTime = DateTime.Parse(dateParts[0]);
                     if (StartTime.Kind == DateTimeKind.Local)
@@ -541,7 +541,7 @@ namespace TerraViewer
                 if (dateParts.Length > 1)
                 {
                     EndTimeString = dateParts[1];
-                    EndTime = DateTime.ParseExact(dateParts[1], new string[] { @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+                    EndTime = DateTime.ParseExact(dateParts[1], new[] { @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 
                     if (EndTime.Kind == DateTimeKind.Local)
                     {
@@ -558,7 +558,7 @@ namespace TerraViewer
                 if (dateParts.Length > 2)
                 {
                     TimeStepString = dateParts[2];
-                    TimeStep = System.Xml.XmlConvert.ToTimeSpan(dateParts[2]);
+                    TimeStep = XmlConvert.ToTimeSpan(dateParts[2]);
                 }
                 else
                 {
@@ -586,26 +586,23 @@ namespace TerraViewer
             {
                 return StartTimeString;
             }
-            else if (SpaceTimeController.Now > EndTime)
+            if (SpaceTimeController.Now > EndTime)
             {
                 return EndTimeString;
             }
+            if (TimeStep.TotalDays == 30)
+            {
+                var tmp = now;
+
+                targetTime = new DateTime(tmp.Year, tmp.Month, 1);
+            }
             else
             {
-                if (TimeStep.TotalDays == 30)
-                {
-                    var tmp = now;
+                var ts = now - StartTime;
 
-                    targetTime = new DateTime(tmp.Year, tmp.Month, 1);
-                }
-                else
-                {
-                    var ts = now - StartTime;
+                var steps = (int)((ts.TotalSeconds / TimeStep.TotalSeconds) + .5);
 
-                    var steps = (int)((ts.TotalSeconds / TimeStep.TotalSeconds) + .5);
-
-                    targetTime = StartTime.Add(TimeSpan.FromSeconds(TimeStep.TotalSeconds * steps));
-                }
+                targetTime = StartTime.Add(TimeSpan.FromSeconds(TimeStep.TotalSeconds * steps));
             }
 
             if (TimeStep.TotalDays == 30)
@@ -616,7 +613,7 @@ namespace TerraViewer
             }
 
 
-            var timeString = targetTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + "Z";
+            var timeString = targetTime.ToString("s", CultureInfo.InvariantCulture) + "Z";
             timeString = timeString.Replace("0001-01-01T00Z", "");
 
             if (TimeStep.TotalDays == 30)
@@ -722,7 +719,7 @@ namespace TerraViewer
             entry.Requested = true;
 
             // Do a background load on this
-            ThreadPool.QueueUserWorkItem(new WaitCallback(LoadTexture), entry);
+            ThreadPool.QueueUserWorkItem(LoadTexture, entry);
         }
 
         public static int MaxErrorCount = 3;
@@ -742,7 +739,7 @@ namespace TerraViewer
                 var Client = new MyWebClient();
 
 
-                var filename = dir + ((uint)entry.URL.GetHashCode32()).ToString() + ".png";
+                var filename = dir + ((uint)entry.URL.GetHashCode32()) + ".png";
 
 
                 Stream stream = null;

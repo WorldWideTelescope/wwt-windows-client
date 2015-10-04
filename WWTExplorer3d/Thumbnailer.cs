@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing.Drawing2D;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace TerraViewer
 {
@@ -16,7 +14,7 @@ namespace TerraViewer
 
                 var g = Graphics.FromImage(bmpThumb);
 
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 var imageAspect = ((double)imgOrig.Width) / (imgOrig.Height);
 
@@ -27,11 +25,11 @@ namespace TerraViewer
 
                 if (imageAspect < clientAspect)
                 {
-                    ch = (int)((double)cw / imageAspect);
+                    ch = (int)(cw / imageAspect);
                 }
                 else
                 {
-                    cw = (int)((double)ch * imageAspect);
+                    cw = (int)(ch * imageAspect);
                 }
 
                 var cx = (imgOrig.Width - cw) / 2;
@@ -39,7 +37,7 @@ namespace TerraViewer
                 var srcRect = new Rectangle(cx, cy, cw, ch);//+ 1);
 
                 var destRect = new Rectangle(0, 0, x, y);
-                g.DrawImage(imgOrig, destRect, srcRect, System.Drawing.GraphicsUnit.Pixel);
+                g.DrawImage(imgOrig, destRect, srcRect, GraphicsUnit.Pixel);
                 g.Dispose();
                 GC.SuppressFinalize(g);
                 imgOrig.Dispose();

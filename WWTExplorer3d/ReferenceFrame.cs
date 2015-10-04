@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
-using System.Drawing;
 using System.IO;
 using SharpDX;
 using Color = System.Drawing.Color;
-using System.Reflection;
 using System.Xml;
 
 namespace TerraViewer
@@ -338,7 +335,7 @@ namespace TerraViewer
             }
         }
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("ReferenceFrame");
             xmlWriter.WriteAttributeString("Name", Name);
@@ -371,7 +368,7 @@ namespace TerraViewer
             if (ReferenceFrameType == ReferenceFrameTypes.Orbital)
             {
                 xmlWriter.WriteAttributeString("SemiMajorAxis", SemiMajorAxis.ToString());
-                xmlWriter.WriteAttributeString("SemiMajorAxisScale", this.SemiMajorAxisUnits.ToString());
+                xmlWriter.WriteAttributeString("SemiMajorAxisScale", SemiMajorAxisUnits.ToString());
                 xmlWriter.WriteAttributeString("Eccentricity", Eccentricity.ToString());
                 xmlWriter.WriteAttributeString("Inclination", Inclination.ToString());
                 xmlWriter.WriteAttributeString("ArgumentOfPeriapsis", ArgumentOfPeriapsis.ToString());
@@ -396,7 +393,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
             Name = node.Attributes["Name"].Value;
             Parent = node.Attributes["Parent"].Value;
@@ -553,7 +550,7 @@ namespace TerraViewer
 
         public void ComputeFrame(RenderContext11 renderContext)
         {
-            if (this.Reference == ReferenceFrames.Sandbox)
+            if (Reference == ReferenceFrames.Sandbox)
             {
                 WorldMatrix = Matrix3d.Identity;
                 return;
@@ -603,7 +600,7 @@ namespace TerraViewer
             WorldMatrix.Translate(Translation);
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI)));
             WorldMatrix.Scale(new Vector3d(Scale, Scale, Scale));
-            WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)(Coordinates.MstFromUTC2(SpaceTimeController.Now, 0) / 180 * Math.PI), (float)0, (float)0));
+            WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)(Coordinates.MstFromUTC2(SpaceTimeController.Now, 0) / 180 * Math.PI), 0, 0));
         }
         private void ComputeFixedSherical(RenderContext11 renderContext)
         {
@@ -624,7 +621,7 @@ namespace TerraViewer
             WorldMatrix.Multiply(Matrix3d.RotationZ(-90.0 / 180.0 * Math.PI));
             if (RotationalPeriod != 0)
             {
-                var rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
+                var rotationCurrent = (((SpaceTimeController.JNow - ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
             WorldMatrix.Translate(new Vector3d(1 + (Altitude / renderContext.NominalRadius), 0, 0));
@@ -705,7 +702,7 @@ namespace TerraViewer
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI))); 
             if (RotationalPeriod != 0)
             {
-                var rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
+                var rotationCurrent = (((SpaceTimeController.JNow - ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
 
@@ -841,7 +838,7 @@ namespace TerraViewer
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI)));
             if (RotationalPeriod != 0)
             {
-                var rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
+                var rotationCurrent = (((SpaceTimeController.JNow - ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
 
@@ -858,7 +855,7 @@ namespace TerraViewer
 
         public bool SetProp(string name, string value)
         {
-            var thisType = this.GetType();
+            var thisType = GetType();
             var pi = thisType.GetProperty(name);
             var safeToSet = false;
             var layerPropType = typeof(LayerProperty);
@@ -924,7 +921,7 @@ namespace TerraViewer
 
         public string GetProp(string name)
         {
-            var thisType = this.GetType();
+            var thisType = GetType();
             var pi = thisType.GetProperty(name);
             var safeToGet = false;
             var layerPropType = typeof(LayerProperty);
@@ -950,17 +947,17 @@ namespace TerraViewer
         public string GetProps()
         {
             var ms = new MemoryStream();
-            using (var xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
+            using (var xmlWriter = new XmlTextWriter(ms, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("LayerApi");
                 xmlWriter.WriteElementString("Status", "Success");
                 xmlWriter.WriteStartElement("Frame");
-                xmlWriter.WriteAttributeString("Class", this.GetType().ToString().Replace("TerraViewer.", ""));
+                xmlWriter.WriteAttributeString("Class", GetType().ToString().Replace("TerraViewer.", ""));
 
 
-                var thisType = this.GetType();
+                var thisType = GetType();
                 var properties = thisType.GetProperties();
 
                 var layerPropType = typeof(LayerProperty);
@@ -1017,7 +1014,7 @@ namespace TerraViewer
 
         public string[] GetParamNames()
         {
-            return new string[] 
+            return new[] 
             { 
                 "MeanRadius",
                 "Oblateness",
@@ -1036,7 +1033,7 @@ namespace TerraViewer
 
         public BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[]
+            return new[]
             { 
                 BaseTweenType.Power,
                 BaseTweenType.Linear,
@@ -1123,7 +1120,7 @@ namespace TerraViewer
             line = line.Replace("  ", " ");
             line = line.Replace("  ", " ");
 
-            var parts = line.Split(new char[] { ' ', '\t', ',' });
+            var parts = line.Split(new[] { ' ', '\t', ',' });
 
             if (parts.Length > 3)
             {
@@ -1146,11 +1143,7 @@ namespace TerraViewer
             {
                 return string.Format("{0} {1} {2} {3}", Time, X, Y, Z);
             }
-            else
-            {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
-            }
-
+            return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
         }
     }
 }

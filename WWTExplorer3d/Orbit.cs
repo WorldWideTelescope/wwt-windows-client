@@ -1,12 +1,8 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-
-using System.Windows.Forms;
+using SharpDX;
+using SharpDX.Direct3D;
+using Color = System.Drawing.Color;
 
 namespace TerraViewer
 {
@@ -20,8 +16,8 @@ namespace TerraViewer
         public Orbit(CAAEllipticalObjectElements elements, int segments, Color color, float thickness, float scale)
         {
             this.elements = elements;
-            this.segmentCount = segments;
-            this.orbitColor = color;
+            segmentCount = segments;
+            orbitColor = color;
             this.scale = scale;
         }
         public void CleanUp()
@@ -38,10 +34,7 @@ namespace TerraViewer
                 {
                     return (elements.a * (1.0 + elements.e)) / scale;
                 }
-                else
-                {
-                    return 0.0;
-                }
+                return 0.0;
             }
         }
 
@@ -128,7 +121,7 @@ namespace TerraViewer
             var savedWorld = renderContext.World;
             renderContext.World = worldMatrix;
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineStrip;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
 
             renderContext.SetVertexBuffer(ellipseVertexBuffer);
 
@@ -156,7 +149,7 @@ namespace TerraViewer
             var savedWorld = renderContext.World;
             renderContext.World = worldMatrix;
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineStrip;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
 
             renderContext.SetVertexBuffer(ellipseWithoutStartPointVertexBuffer);
 
@@ -171,17 +164,17 @@ namespace TerraViewer
         public static PositionVertexBuffer11 CreateEllipseVertexBuffer(int vertexCount)
         {
             var vb = new PositionVertexBuffer11( vertexCount,RenderContext11.PrepDevice);
-            var verts = (SharpDX.Vector3[])vb.Lock(0,0);
+            var verts = (Vector3[])vb.Lock(0,0);
             var index = 0;
             // Pack extra samples into the front of the orbit to avoid obvious segmentation
             // when viewed from near the planet or moon.
             for (var i = 0; i < vertexCount / 2; ++i)
             {
-                verts[index++] = new SharpDX.Vector3(2.0f * (float)i / (float)vertexCount * 0.05f, 0.0f, 0.0f);
+                verts[index++] = new Vector3(2.0f * i / vertexCount * 0.05f, 0.0f, 0.0f);
             }
             for (var i = 0; i < vertexCount / 2; ++i)
             {
-                verts[index++] = new SharpDX.Vector3(2.0f * (float)i / (float)vertexCount * 0.95f + 0.05f, 0.0f, 0.0f);
+                verts[index++] = new Vector3(2.0f * i / vertexCount * 0.95f + 0.05f, 0.0f, 0.0f);
             }
 
             vb.Unlock();
@@ -193,14 +186,14 @@ namespace TerraViewer
         public static PositionVertexBuffer11 CreateEllipseVertexBufferWithoutStartPoint(int vertexCount)
         {
             var vb = new PositionVertexBuffer11(vertexCount, RenderContext11.PrepDevice);
-            var verts = (SharpDX.Vector3[])vb.Lock(0, 0);
+            var verts = (Vector3[])vb.Lock(0, 0);
 
             // Setting a non-zero value will prevent the ellipse shader from using the 'head' point
-            verts[0] = new SharpDX.Vector3(1.0e-6f, 0.0f, 0.0f);
+            verts[0] = new Vector3(1.0e-6f, 0.0f, 0.0f);
 
             for (var i = 1; i < vertexCount; ++i)
             {
-                verts[i] = new SharpDX.Vector3(2.0f * (float)i / (float)vertexCount, 0.0f, 0.0f);
+                verts[i] = new Vector3(2.0f * i / vertexCount, 0.0f, 0.0f);
             }
 
             vb.Unlock();

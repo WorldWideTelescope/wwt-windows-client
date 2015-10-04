@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,22 +12,22 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.PitchLabel.Text = Language.GetLocalizedText(779, "Pitch");
-            this.HeadingLabel.Text = Language.GetLocalizedText(780, "Heading");
-            this.RollLabel.Text = Language.GetLocalizedText(781, "Roll");
-            this.TranslationYLabel.Text = Language.GetLocalizedText(872, "Translation Y");
-            this.TranslationZLabel.Text = Language.GetLocalizedText(873, "Translation Z");
-            this.ScaleYLabel.Text = Language.GetLocalizedText(874, "Scale Y");
-            this.TranslationXLabel.Text = Language.GetLocalizedText(875, "Translation X");
-            this.ScaleZLabel.Text = Language.GetLocalizedText(876, "Scale Z");
-            this.ScaleXLabel.Text = Language.GetLocalizedText(877, "Scale X");
-            this.Smooth.Text = Language.GetLocalizedText(878, "Smooth Normals");
-            this.FlipV.Text = Language.GetLocalizedText(879, "Flip Textures");
-            this.UniformScaling.Text = Language.GetLocalizedText(880, "Uniform Scaling");
-            this.Close.Text = Language.GetLocalizedText(212, "Close");
-            this.Text = Language.GetLocalizedText(881, "3d Model Properties");
-            this.TwoSidedGeometry.Text = Language.GetLocalizedText(1149, "Two-sided");
-            this.rightHanded.Text = Language.GetLocalizedText(1315, "Right Handed");
+            PitchLabel.Text = Language.GetLocalizedText(779, "Pitch");
+            HeadingLabel.Text = Language.GetLocalizedText(780, "Heading");
+            RollLabel.Text = Language.GetLocalizedText(781, "Roll");
+            TranslationYLabel.Text = Language.GetLocalizedText(872, "Translation Y");
+            TranslationZLabel.Text = Language.GetLocalizedText(873, "Translation Z");
+            ScaleYLabel.Text = Language.GetLocalizedText(874, "Scale Y");
+            TranslationXLabel.Text = Language.GetLocalizedText(875, "Translation X");
+            ScaleZLabel.Text = Language.GetLocalizedText(876, "Scale Z");
+            ScaleXLabel.Text = Language.GetLocalizedText(877, "Scale X");
+            Smooth.Text = Language.GetLocalizedText(878, "Smooth Normals");
+            FlipV.Text = Language.GetLocalizedText(879, "Flip Textures");
+            UniformScaling.Text = Language.GetLocalizedText(880, "Uniform Scaling");
+            Close.Text = Language.GetLocalizedText(212, "Close");
+            Text = Language.GetLocalizedText(881, "3d Model Properties");
+            TwoSidedGeometry.Text = Language.GetLocalizedText(1149, "Two-sided");
+            rightHanded.Text = Language.GetLocalizedText(1315, "Right Handed");
         }
 
         public Object3dLayer layer;
@@ -41,7 +36,7 @@ namespace TerraViewer
         {
             Earth3d.MainWindow.UiController = layer.GetEditUI();
 
-            layer.PropertiesChanged += new EventHandler(layer_PropertiesChanged);
+            layer.PropertiesChanged += layer_PropertiesChanged;
 
             SetParamaters();
 
@@ -175,7 +170,7 @@ namespace TerraViewer
                 Earth3d.MainWindow.UiController = null;
             }
 
-            layer.PropertiesChanged += new EventHandler(layer_PropertiesChanged);
+            layer.PropertiesChanged += layer_PropertiesChanged;
         }
 
     }

@@ -59,7 +59,7 @@ namespace TerraViewer
             catch
             {
                 error = true;
-                errorText = voTable["DESCRIPTION"].InnerText.ToString();
+                errorText = voTable["DESCRIPTION"].InnerText;
             }
             try
             {
@@ -106,7 +106,7 @@ namespace TerraViewer
         }
         public VoColumn GetColumnByUcd(string ucd)
         {
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (col.Ucd.Replace("_", ".").ToLower().Contains(ucd.ToLower()))
                 {
@@ -118,14 +118,14 @@ namespace TerraViewer
 
         public VoColumn GetRAColumn()
         {
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (col.Ucd.ToLower().Contains("pos.eq.ra") || col.Ucd.ToLower().Contains("pos_eq_ra"))
                 {
                     return col;
                 }
             }
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (col.Name.ToLower().Contains("ra"))
                 {
@@ -138,7 +138,7 @@ namespace TerraViewer
 
         public VoColumn GetDecColumn()
         {
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (col.Ucd.ToLower().Contains("pos.eq.dec") || col.Ucd.ToLower().Contains("pos_eq_dec"))
                 {
@@ -146,7 +146,7 @@ namespace TerraViewer
                 }
             }
 
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (col.Name.ToLower().Contains("dec"))
                 {
@@ -158,7 +158,7 @@ namespace TerraViewer
 
         public VoColumn GetDistanceColumn()
         {
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (col.Ucd.ToLower().Contains("pos.distance") || col.Ucd.ToLower().Contains("pos_distance"))
                 {
@@ -174,7 +174,7 @@ namespace TerraViewer
 
             var first = true;
             // Copy header
-            foreach (var col in this.Columns.Values)
+            foreach (var col in Columns.Values)
             {
                 if (first)
                 {
@@ -205,7 +205,7 @@ namespace TerraViewer
                         sb.Append("\t");
                     }
 
-                    sb.Append(col.ToString());
+                    sb.Append(col);
                 }
                 sb.AppendLine("");
             }
@@ -254,17 +254,17 @@ namespace TerraViewer
             Index = index;
             if (node.Attributes["datatype"] != null)
             {
-                this.Type = GetType(node.Attributes["datatype"].Value);
+                Type = GetType(node.Attributes["datatype"].Value);
             }
             if (node.Attributes["ucd"] != null)
             {
-                this.Ucd = node.Attributes["ucd"].Value;
+                Ucd = node.Attributes["ucd"].Value;
             }
             if (node.Attributes["precision"] != null)
             {
                 try
                 {
-                    this.Precision = Convert.ToInt32(node.Attributes["precision"].Value);
+                    Precision = Convert.ToInt32(node.Attributes["precision"].Value);
                 }
                 catch
                 {
@@ -272,27 +272,27 @@ namespace TerraViewer
             }
             if (node.Attributes["ID"] != null)
             {
-                this.Id = node.Attributes["ID"].Value;
+                Id = node.Attributes["ID"].Value;
             }       
             
             if (node.Attributes["name"] != null)
             {
-                this.Name = node.Attributes["name"].Value;
+                Name = node.Attributes["name"].Value;
             }
             else
             {
-                this.Name = this.Id;
+                Name = Id;
             }
 
             if (node.Attributes["unit"] != null)
             {
-                this.Unit = node.Attributes["unit"].Value;
+                Unit = node.Attributes["unit"].Value;
             }
 
             
             if (node.Attributes["arraysize"] != null)
             {
-                var split = node.Attributes["arraysize"].Value.Split(new char[] { 'x' });
+                var split = node.Attributes["arraysize"].Value.Split(new[] { 'x' });
                 Dimentions = split.GetLength(0);
                 Sizes = new int[split.GetLength(0)];
                 var indexer = 0;

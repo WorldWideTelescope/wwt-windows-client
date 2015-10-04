@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -26,8 +23,8 @@ namespace TerraViewer
         private void UpdateTrackStatus()
         {
             var enable = Track != null;
-            this.Enabled = target!=null;
-            Browse.Enabled = this.Enabled;
+            Enabled = target!=null;
+            Browse.Enabled = Enabled;
             if (enable)
             {
                 Volume.Value = Track.Volume;
@@ -63,10 +60,7 @@ namespace TerraViewer
                 {
                     return target.MusicTrack;
                 }
-                else
-                {
-                    return target.VoiceTrack;
-                }
+                return target.VoiceTrack;
             }
         }
 
@@ -87,11 +81,11 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label43.Text = Language.GetLocalizedText(142, "In:");
-            this.punchOut.Text = Language.GetLocalizedText(143, "End");
-            this.label3.Text = Language.GetLocalizedText(144, "Out:");
-            this.Volume.Name = Language.GetLocalizedText(145, "Volume");
-            this.Browse.Text = Language.GetLocalizedText(130, "Browse...");
+            label43.Text = Language.GetLocalizedText(142, "In:");
+            punchOut.Text = Language.GetLocalizedText(143, "End");
+            label3.Text = Language.GetLocalizedText(144, "Out:");
+            Volume.Name = Language.GetLocalizedText(145, "Volume");
+            Browse.Text = Language.GetLocalizedText(130, "Browse...");
             
         }
 
@@ -103,8 +97,8 @@ namespace TerraViewer
             set
             {
                 mute = value;
-                MuteButton.ImageDisabled = mute ? Properties.Resources.glyph_mute_on_disabled : Properties.Resources.glyph_mute_off_disabled;
-                MuteButton.ImageEnabled = mute ? Properties.Resources.glyph_mute_on_enabled : Properties.Resources.glyph_mute_off_enabled;
+                MuteButton.ImageDisabled = mute ? Resources.glyph_mute_on_disabled : Resources.glyph_mute_off_disabled;
+                MuteButton.ImageEnabled = mute ? Resources.glyph_mute_on_enabled : Resources.glyph_mute_off_enabled;
             }
         }
 

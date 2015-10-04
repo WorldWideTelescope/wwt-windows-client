@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 
@@ -16,7 +13,7 @@ namespace TerraViewer
             SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
             InitializeComponent();
-            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.MainWndow_MouseWheel);
+            MouseWheel += MainWndow_MouseWheel;
 
         }
 
@@ -32,11 +29,11 @@ namespace TerraViewer
                     ra = value;
                     if (space)
                     {
-                        this.raLabel.Text = Language.GetLocalizedText(364, "RA :   ") + Coordinates.FormatHMS(ra);
+                        raLabel.Text = Language.GetLocalizedText(364, "RA :   ") + Coordinates.FormatHMS(ra);
                     }
                     else
                     {
-                        this.raLabel.Text = Language.GetLocalizedText(365, "Lng:   ") + Coordinates.FormatDMS(ra);
+                        raLabel.Text = Language.GetLocalizedText(365, "Lng:   ") + Coordinates.FormatDMS(ra);
                     }
                     RefreshHint();
                 }
@@ -54,11 +51,11 @@ namespace TerraViewer
                     dec = value;
                     if (space)
                     {
-                        this.decLabel.Text = Language.GetLocalizedText(366, "Dec :  ") + Coordinates.FormatDMS(dec, true);
+                        decLabel.Text = Language.GetLocalizedText(366, "Dec :  ") + Coordinates.FormatDMS(dec, true);
                     }
                     else
                     {
-                        this.decLabel.Text = Language.GetLocalizedText(367, "Lat :  ") + Coordinates.FormatDMS(dec, true);
+                        decLabel.Text = Language.GetLocalizedText(367, "Lat :  ") + Coordinates.FormatDMS(dec, true);
                     }
                     RefreshHint();
                 }
@@ -70,7 +67,7 @@ namespace TerraViewer
 
         public void RefreshHint()
         {
-            this.Invalidate();
+            Invalidate();
         }
 
         public void SetViewRect(Coordinates[] corners)
@@ -105,7 +102,7 @@ namespace TerraViewer
                 cornersAltAz = new Coordinates[4];
                 for (var i = 0; i < 4; i++)
                 {
-                    this.cornersAltAz[i] = Coordinates.EquitorialToHorizon(corners[i], SpaceTimeController.Location, SpaceTimeController.Now);
+                    cornersAltAz[i] = Coordinates.EquitorialToHorizon(corners[i], SpaceTimeController.Location, SpaceTimeController.Now);
                 }
             }
 
@@ -193,7 +190,7 @@ namespace TerraViewer
         {
             var g = e.Graphics;
             g.Clear(BackColor);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
             var radius = 33;
             centerf = new PointF(48, 44);
             var center = new Point(48, 44);
@@ -251,7 +248,7 @@ namespace TerraViewer
         {
             var g = e.Graphics;
             g.Clear(BackColor);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
             var radius = 33;
             centerf = new PointF(48, 47);
             var center = new Point(48, 47);
@@ -315,7 +312,7 @@ namespace TerraViewer
         {
             var g = e.Graphics;
             g.Clear(BackColor);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
             var radius = 33;
             centerf = new PointF(48, 47);
             var center = new Point(48, 47);
@@ -352,11 +349,11 @@ namespace TerraViewer
         bool mouseDown;
         private void SkyBall_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 var contextMenu = new ContextMenuStrip();
                 var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(1277, "Copy Coordinates"));
-                copyMenu.Click += new EventHandler(copyMenu_Click);
+                copyMenu.Click += copyMenu_Click;
                 contextMenu.Items.Add(copyMenu);
                 contextMenu.Show(Cursor.Position);
             }
@@ -369,7 +366,7 @@ namespace TerraViewer
 
         void copyMenu_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(dec.ToString() + ", " + RA.ToString());
+            Clipboard.SetText(dec + ", " + RA);
         }
         PointF moveVector;
         private void SkyBall_MouseMove(object sender, MouseEventArgs e)
@@ -383,7 +380,7 @@ namespace TerraViewer
             mouseDown = false;
 
         }
-        private void MainWndow_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void MainWndow_MouseWheel(object sender, MouseEventArgs e)
         {
 
             if (e.Delta != 0)

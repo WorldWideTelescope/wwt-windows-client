@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 using ShapefileTools;
 
 using System.Drawing;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using Point = ShapefileTools.Point;
 using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
@@ -58,9 +62,9 @@ namespace TerraViewer
 
             var copy = !fName.Contains(ID.ToString());
 
-            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.shp", fc.PackageID, this.ID.ToString());
-            var prjFileName = fc.TempDirectory + string.Format("{0}\\{1}.prj", fc.PackageID, this.ID.ToString());
-            var dbFileName = fc.TempDirectory + string.Format("{0}\\{1}.dbf", fc.PackageID, this.ID.ToString());
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.shp", fc.PackageID, ID);
+            var prjFileName = fc.TempDirectory + string.Format("{0}\\{1}.prj", fc.PackageID, ID);
+            var dbFileName = fc.TempDirectory + string.Format("{0}\\{1}.dbf", fc.PackageID, ID);
      
             var prjFile = fName.ToUpper().Replace(".SHP", ".PRJ");
             var dbaseFile = fName.ToUpper().Replace(".SHP", ".DBF");
@@ -100,7 +104,7 @@ namespace TerraViewer
             }
         }
 
-        public override void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public override void SaveToXml(XmlTextWriter xmlWriter)
         {
             base.SaveToXml(xmlWriter);
         }
@@ -174,9 +178,9 @@ namespace TerraViewer
                     }
                 }
 
-                else if (shapefile.Shapes[i].GetType() == typeof(ShapefileTools.Point))
+                else if (shapefile.Shapes[i].GetType() == typeof(Point))
                 {
-                    var p = (ShapefileTools.Point)shapefile.Shapes[i];
+                    var p = (Point)shapefile.Shapes[i];
 
                     var point = Coordinates.GeoTo3dDouble(p.Y, p.X, 1);
                     var dist = target3d - point;
@@ -194,7 +198,7 @@ namespace TerraViewer
 
             if (pointFound)
             {
-                var p = (ShapefileTools.Point)shapefile.Shapes[pointIndex];
+                var p = (Point)shapefile.Shapes[pointIndex];
                 if (p.Attributes.ItemArray.GetLength(0) > 0)
                 {
                     var place = new TourPlace(p.Attributes.ItemArray[0].ToString(), p.Y, p.X, Classification.Unidentified, "", ImageSetType.Earth, -1);
@@ -212,7 +216,7 @@ namespace TerraViewer
             }
             return closestPlace;
         }
-        private static SharpDX.Direct3D11.InputLayout layout;
+        private static InputLayout layout;
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
@@ -458,9 +462,9 @@ namespace TerraViewer
 
                         }
                     }
-                    else if (shapefile.Shapes[i].GetType() == typeof(ShapefileTools.Point))
+                    else if (shapefile.Shapes[i].GetType() == typeof(Point))
                     {
-                        var p = (ShapefileTools.Point)shapefile.Shapes[i];
+                        var p = (Point)shapefile.Shapes[i];
 
                         // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
                         var Xcoord = p.X;
@@ -550,17 +554,17 @@ namespace TerraViewer
 
             if (lines)
             {
-                renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
+                renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
                 renderContext.SetIndexBuffer(shapeFileIndex);
                 renderContext.devContext.DrawIndexed(shapeFileIndex.Count, 0, 0);
             }
             else
             {
-                renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+                renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
                 renderContext.devContext.Draw(shapeVertexCount, 0);
             }
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             return true;
         }
@@ -667,7 +671,7 @@ namespace TerraViewer
                             }
 
                           //  sb.Append(Xcoord.ToString("F5") + " " + Ycoord.ToString("F5"));
-                            sb.Append(Xcoord.ToString() + " " + Ycoord.ToString());
+                            sb.Append(Xcoord + " " + Ycoord);
                         }
 
                         sb.Append(")");
@@ -712,7 +716,7 @@ namespace TerraViewer
                                 sb.Append(",");
                             }
 
-                            sb.Append(Xcoord.ToString() + " " + Ycoord.ToString());
+                            sb.Append(Xcoord + " " + Ycoord);
 
                         }
                         sb.Append(")");
@@ -757,7 +761,7 @@ namespace TerraViewer
                                 sb.Append(",");
                             }
 
-                            sb.Append(Xcoord.ToString() + " " + Ycoord.ToString() + " " + Zcoord.ToString());
+                            sb.Append(Xcoord + " " + Ycoord + " " + Zcoord);
 
                         }
                         sb.Append(")");
@@ -766,9 +770,9 @@ namespace TerraViewer
 
                     }
                 }
-                else if (shapefile.Shapes[i].GetType() == typeof(ShapefileTools.Point))
+                else if (shapefile.Shapes[i].GetType() == typeof(Point))
                 {
-                    var p = (ShapefileTools.Point)shapefile.Shapes[i];
+                    var p = (Point)shapefile.Shapes[i];
 
                     // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
                     var Xcoord = p.X;
@@ -796,7 +800,7 @@ namespace TerraViewer
                 foreach (var col in dataRow.ItemArray)
                 {
                     sb.Append("\t");
-                    sb.Append(col.ToString());
+                    sb.Append(col);
                 }
             }
         }
@@ -895,7 +899,7 @@ namespace TerraViewer
 
                 node.Tag = layer.shapefile.Shapes[i];
                 node.Checked = true;
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
+                node.NodeSelected += node_NodeSelected;
                 nodes.Add(node);
             }
             return nodes;

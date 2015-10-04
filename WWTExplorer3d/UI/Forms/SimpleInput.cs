@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -22,8 +17,8 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            OK.Text = Language.GetLocalizedText(156, "OK");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
         }
 
         readonly string title;
@@ -48,7 +43,7 @@ namespace TerraViewer
         private void SimpleInput_Load(object sender, EventArgs e)
         {
             textLabel.Text = label;
-            this.Text = title;
+            Text = title;
             inputText.Text = ResultText;
             inputText.MaxLength = limit;
 

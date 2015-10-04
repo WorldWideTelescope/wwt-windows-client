@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
-using System.Threading;
-using ShapefileTools;
-using System.Data;
-
-using Matrix = SharpDX.Matrix;
-using Vector3 = SharpDX.Vector3;
+using SharpDX.Direct3D;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -187,12 +176,12 @@ namespace TerraViewer
         {
             if (reticleImage == null)
             {
-                reticleImage = Texture11.FromBitmap(Properties.Resources.Reticle);
+                reticleImage = Texture11.FromBitmap(Resources.Reticle);
             }
 
             ComputePoints();
 
-            Sprite2d.Draw(renderContext, points, 4, reticleImage, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+            Sprite2d.Draw(renderContext, points, 4, reticleImage, PrimitiveTopology.TriangleStrip);
 
      
         }

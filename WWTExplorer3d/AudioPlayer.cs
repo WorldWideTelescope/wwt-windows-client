@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-
+using System.Windows.Media;
 
 
 namespace TerraViewer
 {
     public class AudioPlayer : IDisposable
     {
-        System.Windows.Media.MediaPlayer me;
+        MediaPlayer me;
         public static void Initialize()
         {
 
@@ -22,18 +18,12 @@ namespace TerraViewer
 
         public AudioPlayer(string filename)
         {
-            try
+            Patterns.ActIgnoringExceptions(() =>
             {
-
-                me = new System.Windows.Media.MediaPlayer();
-
+                me = new MediaPlayer();
                 me.Open(new Uri(filename, UriKind.RelativeOrAbsolute));
-                me.MediaEnded += new EventHandler(me_MediaEnded);
-            }
-            catch
-            {
-            }
-            
+                me.MediaEnded += me_MediaEnded;
+            });
         }
 
         void me_MediaEnded(object sender, EventArgs e)

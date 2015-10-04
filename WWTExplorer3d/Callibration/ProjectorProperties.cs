@@ -13,17 +13,17 @@ namespace TerraViewer.Callibration
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(782, "ID");
-            this.label2.Text = Language.GetLocalizedText(238, "Name");
-            this.projectorListLabel.Text = Language.GetLocalizedText(783, "Projector List");
-            this.ProjectorTab.Title = Language.GetLocalizedText(784, "Projector");
-            this.ViewTab.Title = Language.GetLocalizedText(140, "View");
-            this.OK.Text = Language.GetLocalizedText(759, "Ok");
-            this.Solved.Title = Language.GetLocalizedText(785, "Solved");
-            this.CopySolved.Text = Language.GetLocalizedText(786, "Copy Solved");
-            this.CopyView.Text = Language.GetLocalizedText(787, "Copy View");
-            this.updateClient.Text = Language.GetLocalizedText(788, "Send Update");
-            this.Text = Language.GetLocalizedText(789, "Projector Properties");
+            label1.Text = Language.GetLocalizedText(782, "ID");
+            label2.Text = Language.GetLocalizedText(238, "Name");
+            projectorListLabel.Text = Language.GetLocalizedText(783, "Projector List");
+            ProjectorTab.Title = Language.GetLocalizedText(784, "Projector");
+            ViewTab.Title = Language.GetLocalizedText(140, "View");
+            OK.Text = Language.GetLocalizedText(759, "Ok");
+            Solved.Title = Language.GetLocalizedText(785, "Solved");
+            CopySolved.Text = Language.GetLocalizedText(786, "Copy Solved");
+            CopyView.Text = Language.GetLocalizedText(787, "Copy View");
+            updateClient.Text = Language.GetLocalizedText(788, "Send Update");
+            Text = Language.GetLocalizedText(789, "Projector Properties");
         }
 
         public ProjectorEntry Projector;

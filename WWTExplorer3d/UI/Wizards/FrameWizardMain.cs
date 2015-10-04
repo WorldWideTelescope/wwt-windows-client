@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -17,19 +13,19 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.HeadingLabel.Text = Language.GetLocalizedText(780, "Heading");
-            this.PitchLabel.Text = Language.GetLocalizedText(779, "Pitch");
-            this.RollLabel.Text = Language.GetLocalizedText(781, "Roll");
-            this.RotationPeriodLabel.Text = Language.GetLocalizedText(792, "Rotation Period (days)");
-            this.ZeroRotationLabel.Text = Language.GetLocalizedText(793, "Zero Rotation (Julian Day)");
-            this.meanRadiusLabel.Text = Language.GetLocalizedText(794, "Mean Radius (meters)");
-            this.OblatenessLabel.Text = Language.GetLocalizedText(795, "Oblateness (Percent)");
-            this.OrbitColorLabel.Text = Language.GetLocalizedText(796, "Orbit/Point Color");
-            this.ShowAsPoint.Text = Language.GetLocalizedText(797, "Show as Point at Distance");
-            this.ShowOrbitPath.Text = Language.GetLocalizedText(798, "Show Orbit Path");
-            this.ScaleLabel.Text = Language.GetLocalizedText(799, "Scale (Meters to Units)");
-            this.StationKeeping.Text = Language.GetLocalizedText(800, "Station Keeping");
-            this.label2.Text = Language.GetLocalizedText(933, "The Mean allows you to specify the primary bounds of the reference frame such as the surface height of a planet, or the bounding sphere of a 3d model of a spacecraft. Rotation period and zero rotation day allow the specification of a rotating frame of reference. Heading Pitch and roll allow for orientation relative to the parent reference frame. Station Keeping automatically orients the reference frame to track the Earth rather than tumble in orbit.");
+            HeadingLabel.Text = Language.GetLocalizedText(780, "Heading");
+            PitchLabel.Text = Language.GetLocalizedText(779, "Pitch");
+            RollLabel.Text = Language.GetLocalizedText(781, "Roll");
+            RotationPeriodLabel.Text = Language.GetLocalizedText(792, "Rotation Period (days)");
+            ZeroRotationLabel.Text = Language.GetLocalizedText(793, "Zero Rotation (Julian Day)");
+            meanRadiusLabel.Text = Language.GetLocalizedText(794, "Mean Radius (meters)");
+            OblatenessLabel.Text = Language.GetLocalizedText(795, "Oblateness (Percent)");
+            OrbitColorLabel.Text = Language.GetLocalizedText(796, "Orbit/Point Color");
+            ShowAsPoint.Text = Language.GetLocalizedText(797, "Show as Point at Distance");
+            ShowOrbitPath.Text = Language.GetLocalizedText(798, "Show Orbit Path");
+            ScaleLabel.Text = Language.GetLocalizedText(799, "Scale (Meters to Units)");
+            StationKeeping.Text = Language.GetLocalizedText(800, "Station Keeping");
+            label2.Text = Language.GetLocalizedText(933, "The Mean allows you to specify the primary bounds of the reference frame such as the surface height of a planet, or the bounding sphere of a 3d model of a spacecraft. Rotation period and zero rotation day allow the specification of a rotating frame of reference. Heading Pitch and roll allow for orientation relative to the parent reference frame. Station Keeping automatically orients the reference frame to track the Earth rather than tumble in orbit.");
         }
         ReferenceFrame frame;
         public override void SetData(object data)
@@ -69,7 +65,7 @@ namespace TerraViewer
             {
                 frame.RepresentativeColor = picker.Color;
             }
-            this.Refresh();
+            Refresh();
         }
 
         private void RepresentativeColor_Paint(object sender, PaintEventArgs e)

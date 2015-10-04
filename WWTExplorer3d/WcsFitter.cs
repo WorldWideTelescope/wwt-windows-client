@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Solver;
 using TerraViewer.Callibration;
 
@@ -134,9 +133,9 @@ namespace TerraViewer
                 data[0, i] = i;
                 data[1, i] = 0;
             }
-            var observed = new Parameter[] { ParmeterIndex };
+            var observed = new[] { ParmeterIndex };
 
-            lm = new LevenbergMarquardt(new functionDelegate(SolveFunction), regressionParameters.ToArray(), observed, data);
+            lm = new LevenbergMarquardt(SolveFunction, regressionParameters.ToArray(), observed, data);
 
             for (var d = 0; d < 50; d++)
             {

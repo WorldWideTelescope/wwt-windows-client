@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Drawing;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -26,7 +24,7 @@ namespace TerraViewer
                 InitializeRoute(renderContext);
             }
             triangleList.JNow = percentComplete / 100;
-            triangleList.Draw(renderContext, opacity * this.Opacity, TriangleList.CullMode.CounterClockwise);
+            triangleList.Draw(renderContext, opacity * Opacity, TriangleList.CullMode.CounterClockwise);
 
 
 
@@ -38,7 +36,7 @@ namespace TerraViewer
         {
             triangleList = new TriangleList();
             triangleList.Decay = 1000;
-            triangleList.Sky = this.Astronomical;
+            triangleList.Sky = Astronomical;
             triangleList.TimeSeries = true;
             triangleList.DepthBuffered = false;
             triangleList.AutoTime = false;
@@ -108,11 +106,11 @@ namespace TerraViewer
 
         public override string[] GetParamNames()
         {
-            return new string[] { "Percentage" , "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
+            return new[] { "Percentage" , "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
         }
         public override BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
         }
 
         public override void SetParams(double[] paramList)
@@ -121,7 +119,7 @@ namespace TerraViewer
             {
                 percentComplete = paramList[0];
                 Opacity = (float)paramList[5];
-                var color = System.Drawing.Color.FromArgb((int)(paramList[4] * 255), (int)(paramList[1] * 255), (int)(paramList[2] * 255), (int)(paramList[3] * 255));
+                var color = Color.FromArgb((int)(paramList[4] * 255), (int)(paramList[1] * 255), (int)(paramList[2] * 255), (int)(paramList[3] * 255));
                 Color = color;
             }
         }
@@ -219,7 +217,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("LatStart", LatStart.ToString());
             xmlWriter.WriteAttributeString("LngStart", LngStart.ToString());
@@ -232,7 +230,7 @@ namespace TerraViewer
 
 
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             latStart = double.Parse(node.Attributes["LatStart"].Value);
             lngStart = double.Parse(node.Attributes["LngStart"].Value);

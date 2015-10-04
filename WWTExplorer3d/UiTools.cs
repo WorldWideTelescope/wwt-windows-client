@@ -1,29 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Text;
 using System.Drawing;
 
 using System.IO;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Net;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using WwtDataUtils;
+using WWTThumbnails;
 
 namespace TerraViewer
 {
     class MyWebClient : WebClient
     {
-        public MyWebClient()
-        {
-
-        }
-
         protected override WebRequest GetWebRequest(Uri uri)
         {
             var w = base.GetWebRequest(uri);
@@ -34,13 +29,13 @@ namespace TerraViewer
 
     class UiTools
     {
-        static public System.Drawing.Font StandardSmall = new System.Drawing.Font("Segoe UI", 7, FontStyle.Regular);
-        static public System.Drawing.Font StandardRegular = new System.Drawing.Font("Segoe UI", 8, FontStyle.Regular);
-        static public System.Drawing.Font StandardLarge = new System.Drawing.Font("Segoe UI", 12, FontStyle.Regular);
-        static public System.Drawing.Font StandardHuge = new System.Drawing.Font("Segoe UI", 15, FontStyle.Regular);
-        static public System.Drawing.Font StandardGargantuan = new System.Drawing.Font("Segoe UI", 15, FontStyle.Regular);
-        static public System.Drawing.Font TreeViewRegular = new System.Drawing.Font("Segoe UI", 8.25f, FontStyle.Regular);
-        static public System.Drawing.Font TreeViewBold = new System.Drawing.Font("Segoe UI", 9f, FontStyle.Bold);
+        static public Font StandardSmall = new Font("Segoe UI", 7, FontStyle.Regular);
+        static public Font StandardRegular = new Font("Segoe UI", 8, FontStyle.Regular);
+        static public Font StandardLarge = new Font("Segoe UI", 12, FontStyle.Regular);
+        static public Font StandardHuge = new Font("Segoe UI", 15, FontStyle.Regular);
+        static public Font StandardGargantuan = new Font("Segoe UI", 15, FontStyle.Regular);
+        static public Font TreeViewRegular = new Font("Segoe UI", 8.25f, FontStyle.Regular);
+        static public Font TreeViewBold = new Font("Segoe UI", 9f, FontStyle.Bold);
         static public Brush StadardTextBrush = new SolidBrush(Color.White);
         static public Brush DisabledTextBrush = new SolidBrush(Color.Gray);
         static public Brush YellowTextBrush = new SolidBrush(Color.Yellow);
@@ -50,7 +45,7 @@ namespace TerraViewer
         static public StringFormat StringFormatCenterCenter = new StringFormat();
         static public StringFormat StringFormatCenterLeft = new StringFormat();
         static public StringFormat StringFormatThumbnails = new StringFormat();
-        static public Color TextBackground = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(105)))));
+        static public Color TextBackground = Color.FromArgb(68, 88, 105);
         //        static public Direct3D.Material DefaultMaterial = new Direct3D.Material();
 
         static UiTools()
@@ -83,7 +78,7 @@ namespace TerraViewer
             FormatProvider = new NumberFormatInfo();
             FormatProvider.NumberDecimalSeparator = ".";
             FormatProvider.NumberGroupSeparator = ",";
-            FormatProvider.NumberGroupSizes = new int[] { 3 };
+            FormatProvider.NumberGroupSizes = new[] { 3 };
 
             var colorList = new List<Color>();
             foreach (KnownColor name in Enum.GetValues(typeof(KnownColor)))
@@ -109,10 +104,7 @@ namespace TerraViewer
             {
                 return date.ToString("MMM");
             }
-            else
-            {
-                return date.ToString("MMMM");
-            }
+            return date.ToString("MMMM");
         }
 
         public static string GetDayName(int day, bool shortName)
@@ -123,10 +115,7 @@ namespace TerraViewer
             {
                 return date.ToString("ddd");
             }
-            else
-            {
-                return date.ToString("dddd");
-            }
+            return date.ToString("dddd");
         }
 
         public static string GetHourName(int hour)
@@ -140,7 +129,7 @@ namespace TerraViewer
         {
             if (delimiter == '\t')
             {
-                return data.Split(new char[] { '\t' });
+                return data.Split(new[] { '\t' });
             }
 
             var output = new List<string>();
@@ -197,7 +186,7 @@ namespace TerraViewer
 
             if (sucsess)
             {
-                input.BackColor = UiTools.TextBackground;
+                input.BackColor = TextBackground;
             }
             else
             {
@@ -219,7 +208,7 @@ namespace TerraViewer
             if (sucsess)
             {
                 result = Coordinates.Parse(input.Text);
-                input.BackColor = UiTools.TextBackground;
+                input.BackColor = TextBackground;
             }
             else
             {
@@ -244,7 +233,7 @@ namespace TerraViewer
         static public bool ValidateString(string instr, string regexstr)
         {
             instr = instr.Trim();
-            var pattern = new System.Text.RegularExpressions.Regex(regexstr);
+            var pattern = new Regex(regexstr);
             return pattern.IsMatch(instr);
         }
 
@@ -274,10 +263,7 @@ namespace TerraViewer
                     GC.SuppressFinalize(bmpTemp);
                     return bmpReturn;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             catch
             {
@@ -297,7 +283,7 @@ namespace TerraViewer
             {
                 var name = url.Substring(url.LastIndexOf("/") + 1).Replace(".jpg", "").Replace(".png", "");
 
-                var bmp = WWTThumbnails.WWTThmbnail.GetThumbnail(name);
+                var bmp = WWTThmbnail.GetThumbnail(name);
                 if (bmp != null)
                 {
                     return bmp;
@@ -309,7 +295,7 @@ namespace TerraViewer
             {
                 var name = url.Replace("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=", "");
 
-                var bmp = WWTThumbnails.WWTThmbnail.GetThumbnail(name);
+                var bmp = WWTThmbnail.GetThumbnail(name);
                 if (bmp != null)
                 {
                     return bmp;
@@ -318,7 +304,7 @@ namespace TerraViewer
             }
             int id = Math.Abs(url.GetHashCode32());
 
-            var filename = id.ToString() + ".jpg";
+            var filename = id + ".jpg";
 
             return LoadThumbnailFromWeb(url, filename);
         }
@@ -332,7 +318,7 @@ namespace TerraViewer
             {
                 DataSetManager.DownloadFile(CacheProxy.GetCacheUrl(url), Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename, true, true);
 
-                return UiTools.LoadBitmap(Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename);
+                return LoadBitmap(Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename);
 
             }
             catch
@@ -372,12 +358,7 @@ namespace TerraViewer
                 return filtered.ToArray();
 
             }
-            else
-            {
-                return properties;
-            }
-
-
+            return properties;
         }
 
 
@@ -387,7 +368,7 @@ namespace TerraViewer
             try
             {
                 Bitmap bmpTemp = null;
-                using (Stream stream = File.Open(filename, System.IO.FileMode.Open))
+                using (Stream stream = File.Open(filename, FileMode.Open))
                 {
                     var tempImg = Image.FromStream(stream);
                     bmpTemp = new Bitmap(tempImg);
@@ -408,7 +389,7 @@ namespace TerraViewer
 
         }
 
-        static public void SaveBitmap(Bitmap bmp, string filename, System.Drawing.Imaging.ImageFormat format)
+        static public void SaveBitmap(Bitmap bmp, string filename, ImageFormat format)
         {
             using (Stream stream = File.Open(filename, FileMode.Create))
             {
@@ -503,7 +484,7 @@ namespace TerraViewer
 
         static public string CleanFileName(string filename)
         {
-            var invalidChars = System.IO.Path.GetInvalidFileNameChars();
+            var invalidChars = Path.GetInvalidFileNameChars();
             var index = -1;
             while ((index = filename.IndexOfAny(invalidChars)) != -1)
             {
@@ -524,8 +505,7 @@ namespace TerraViewer
             var re = new Regex(strRegex);
             if (re.IsMatch(Email))
                 return (true);
-            else
-                return (false);
+            return (false);
         }
 
         public static bool IsUrl(string Url)
@@ -544,8 +524,7 @@ namespace TerraViewer
 
             if (re.IsMatch(Url))
                 return (true);
-            else
-                return (false);
+            return (false);
         }
 
         static readonly WebClient client = new WebClient();
@@ -603,9 +582,9 @@ namespace TerraViewer
         }
 
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hwnd, StringBuilder text, int length);
         [DllImport("user32.dll")]
         public static extern IntPtr GetFocus();
@@ -627,12 +606,12 @@ namespace TerraViewer
         public const double SSMUnitConversion = 370; // No idea where this fudge factors comes from
         public static double SolarSystemToMeters(double SolarSystemCameraDistance)
         {
-            return SolarSystemCameraDistance * UiTools.KilometersPerAu * SSMUnitConversion;
+            return SolarSystemCameraDistance * KilometersPerAu * SSMUnitConversion;
         }
 
         public static double MetersToSolarSystemDistance(double meters)
         {
-            return meters / SSMUnitConversion * UiTools.KilometersPerAu;
+            return meters / SSMUnitConversion * KilometersPerAu;
         }
 
 
@@ -647,38 +626,29 @@ namespace TerraViewer
             {
                 return distance.ToString("#.######");
             }
-            else
-                if (distance < .0001)
-                {
-                    return distance.ToString("#.#####");
-                }
-                else
-                    if (distance < .001)
-                    {
-                        return distance.ToString("#.####");
-                    }
-                    else
-                        if (distance < .01)
-                        {
-                            return distance.ToString("#.###");
-                        }
-                        else
-                            if (distance < .1)
-                            {
-                                return distance.ToString("#.##");
-                            }
-                            else
-                            {
-                                return distance.ToString("###,###,###,###.#");
-                            }
-
+            if (distance < .0001)
+            {
+                return distance.ToString("#.#####");
+            }
+            if (distance < .001)
+            {
+                return distance.ToString("#.####");
+            }
+            if (distance < .01)
+            {
+                return distance.ToString("#.###");
+            }
+            if (distance < .1)
+            {
+                return distance.ToString("#.##");
+            }
+            return distance.ToString("###,###,###,###.#");
         }
 
 
         // Distance is stored in AU in WWT but is displayed in KM AU, LY, MPC
         public static string FormatDistance(double distance)
         {
-
             if (distance < .1)
             {
                 // Kilometers
@@ -689,42 +659,39 @@ namespace TerraViewer
                     double m = (int)(km * 1000);
                     return m.ToString("###,###,###,###.#") + " m";
                 }
-                else
-                {
-                    km = (int)km;
-                    return km.ToString("###,###,###,###.#") + " km";
-                }
+                km = (int)km;
+                return km.ToString("###,###,###,###.#") + " km";
             }
-            else if (distance < (10))
+            if (distance < (10))
             {
                 //Units in u
                 var au = ((int)(distance * 10 + .5)) / 10.0;
                 return au.ToString("###,###,###,###.#") + " au";
             }
-            else if (distance < (AuPerLightYear / 10.0))
+            if (distance < (AuPerLightYear / 10.0))
             {
                 //Units in u
                 double au = (int)(distance);
                 return au.ToString("###,###,###,###.#") + " au";
             }
-            else if (distance < (AuPerLightYear * 10))
+            if (distance < (AuPerLightYear * 10))
             {
                 // Units in lightyears
                 var ly = ((int)((distance * 10) / AuPerLightYear)) / 10.0;
                 return ly.ToString("###,###,###,###.#") + " ly";
             }
-            else if (distance < (AuPerLightYear * 1000000))
+            if (distance < (AuPerLightYear * 1000000))
             {
                 // Units in lightyears
                 double ly = ((int)((distance) / AuPerLightYear));
                 return ly.ToString("###,###,###,###.#") + " ly";
             }
-            else if (distance < (AuPerParsec * 10000000))
+            if (distance < (AuPerParsec * 10000000))
             {
                 var mpc = ((int)((distance * 10) / (AuPerParsec * 1000000.0))) / 10.0;
                 return mpc.ToString("###,###,###,###.#") + " Mpc";
             }
-            else if (distance < (AuPerParsec * 1000000000))
+            if (distance < (AuPerParsec * 1000000000))
             {
                 double mpc = ((int)((distance) / (AuPerParsec * 1000000.0)));
                 return mpc.ToString("###,###,###,###.#") + " Mpc";
@@ -750,8 +717,8 @@ namespace TerraViewer
                 day += 24;
             }
             var hours = (int)day;
-            var minutes = (int)((day * 60.0) - ((double)hours * 60.0));
-            var seconds = (int)((day * 3600) - (((double)hours * 3600) + ((double)minutes * 60.0)));
+            var minutes = (int)((day * 60.0) - (hours * 60.0));
+            var seconds = (int)((day * 3600) - (((double)hours * 3600) + (minutes * 60.0)));
 
             return string.Format("{0:00}:{1:00}", hours, minutes, seconds);
             //return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
@@ -766,7 +733,7 @@ namespace TerraViewer
 
                 var g = Graphics.FromImage(bmpThumb);
 
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 var imageAspect = ((double)imgOrig.Width) / (imgOrig.Height);
 
@@ -777,11 +744,11 @@ namespace TerraViewer
 
                 if (imageAspect < clientAspect)
                 {
-                    ch = (int)((double)cw / imageAspect);
+                    ch = (int)(cw / imageAspect);
                 }
                 else
                 {
-                    cw = (int)((double)ch * imageAspect);
+                    cw = (int)(ch * imageAspect);
                 }
 
                 var cx = (bmpThumb.Width - cw) / 2;
@@ -789,7 +756,7 @@ namespace TerraViewer
                 var destRect = new Rectangle(cx, cy, cw, ch);//+ 1);
 
                 var srcRect = new Rectangle(0, 0, imgOrig.Width, imgOrig.Height);
-                g.DrawImage(imgOrig, destRect, srcRect, System.Drawing.GraphicsUnit.Pixel);
+                g.DrawImage(imgOrig, destRect, srcRect, GraphicsUnit.Pixel);
                 g.Dispose();
                 GC.SuppressFinalize(g);
                 return bmpThumb;
@@ -800,7 +767,7 @@ namespace TerraViewer
                 var g = Graphics.FromImage(bmp);
                 g.Clear(Color.Blue);
 
-                g.DrawString("Can't Capture", UiTools.StandardSmall, UiTools.StadardTextBrush, new PointF(3, 15));
+                g.DrawString("Can't Capture", StandardSmall, StadardTextBrush, new PointF(3, 15));
                 return bmp;
             }
         }
@@ -1218,7 +1185,7 @@ namespace TerraViewer
 
             }
 
-            oDevice = System.Runtime.InteropServices.Marshal.GetObjectForIUnknown(pDevice);
+            oDevice = Marshal.GetObjectForIUnknown(pDevice);
 
             imd = oDevice as IMMDevice;
 
@@ -1246,7 +1213,7 @@ namespace TerraViewer
 
             }
 
-            oEndPoint = System.Runtime.InteropServices.Marshal.GetObjectForIUnknown(pEndPoint);
+            oEndPoint = Marshal.GetObjectForIUnknown(pEndPoint);
 
             iAudioEndpoint = oEndPoint as IAudioEndpointVolume;
 
@@ -1266,7 +1233,7 @@ namespace TerraViewer
             if (iAudioEndpoint != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(iAudioEndpoint);
+                Marshal.ReleaseComObject(iAudioEndpoint);
 
                 iAudioEndpoint = null;
 
@@ -1275,7 +1242,7 @@ namespace TerraViewer
             if (oEndPoint != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(oEndPoint);
+                Marshal.ReleaseComObject(oEndPoint);
 
                 oEndPoint = null;
 
@@ -1284,7 +1251,7 @@ namespace TerraViewer
             if (imd != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(imd);
+                Marshal.ReleaseComObject(imd);
 
                 imd = null;
 
@@ -1293,7 +1260,7 @@ namespace TerraViewer
             if (oDevice != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(oDevice);
+                Marshal.ReleaseComObject(oDevice);
 
                 oDevice = null;
 
@@ -1302,7 +1269,7 @@ namespace TerraViewer
             if (iMde != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(iMde);
+                Marshal.ReleaseComObject(iMde);
 
                 iMde = null;
 
@@ -1311,7 +1278,7 @@ namespace TerraViewer
             if (oEnumerator != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(oEnumerator);
+                Marshal.ReleaseComObject(oEnumerator);
 
                 oEnumerator = null;
 

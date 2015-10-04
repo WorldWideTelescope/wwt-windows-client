@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 
@@ -27,7 +23,7 @@ namespace TerraViewer
         }
         private void SetUiStrings()
         {
-            this.Finish.Text = Language.GetLocalizedText(930, "Done");
+            Finish.Text = Language.GetLocalizedText(930, "Done");
         }
         Tab[] tabs;
         private void WizardShell_Load(object sender, EventArgs e)
@@ -35,7 +31,7 @@ namespace TerraViewer
             if (Target == null && Target.Pages.Count == 0)
             {
                 DialogResult = DialogResult.Cancel;
-                this.Close();
+                Close();
             }
 
             target.SendUpdateTab(this);
@@ -44,9 +40,9 @@ namespace TerraViewer
 
             Contents.Visible = false;
             ShowTab(tabs[0].Tag as WizPropPageElement);
-            this.Text = Target.WizardName + " Properties";
+            Text = Target.WizardName + " Properties";
        //     target.UpdateTabs += new EventHandler(target_UpdateTabs);
-            target.ReadyForNext += new RedayForNextDelegate(target_ReadyForNext);
+            target.ReadyForNext += target_ReadyForNext;
         }
         bool showOk = true;
         bool target_ReadyForNext(object sender, bool ready)
@@ -93,11 +89,11 @@ namespace TerraViewer
                     tabs[i].Location = new Point(7 + i * 100, 7);
                     tabs[i].Title = page.Title;
                     tabs[i].Tag = page;
-                    tabs[i].Click += new EventHandler(PropsShell_Click);
+                    tabs[i].Click += PropsShell_Click;
                     i++;
                 }
             }
-            this.Controls.AddRange(tabs);
+            Controls.AddRange(tabs);
             tabs[0].Selected = true;
 
             foreach (var tab in tabs)
@@ -142,17 +138,17 @@ namespace TerraViewer
             if (currentPage != null)
             {
                 currentPage.Save();
-                this.Controls.Remove(currentPage);
+                Controls.Remove(currentPage);
                 currentPage.Dispose();
             }
 
 
             var page = (PropPage)Activator.CreateInstance(element.Page);
-            page.Top = this.Contents.Top;
-            page.Left = this.Contents.Left;
+            page.Top = Contents.Top;
+            page.Left = Contents.Left;
             page.Binding = target;
             page.SetData(Target.Data);
-            this.Controls.Add(page);
+            Controls.Add(page);
 
             currentPage = page;
             UpdateButtonStates();
@@ -178,7 +174,7 @@ namespace TerraViewer
             var g = e.Graphics;
             Brush b = new LinearGradientBrush(new Point(0, 0), new Point(0, Height), Color.FromArgb(20, 30, 39), Color.FromArgb(41, 49, 73));
             var p = new Pen(Color.FromArgb(71, 84, 108));
-            g.FillRectangle(b, this.ClientRectangle);
+            g.FillRectangle(b, ClientRectangle);
             g.DrawRectangle(p, new Rectangle(0, ClientSize.Height - 1, ClientSize.Width - 1, ClientSize.Height - 1));
             p.Dispose();
             b.Dispose();

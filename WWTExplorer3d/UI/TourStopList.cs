@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -70,40 +68,37 @@ namespace TerraViewer
                 {
                     return Tour.TourStops;
                 }
-                else
-                {
-                    return new List<TourStop>();
-                }
+                return new List<TourStop>();
             }
         }
 
 
-        static readonly Bitmap bmpBackground = global::TerraViewer.Properties.Resources.thumbBackground;
-        static readonly Bitmap bmpBackgroundHover = global::TerraViewer.Properties.Resources.ThumbBackgroundHover;
-        static readonly Bitmap bmpBackgroundWide = global::TerraViewer.Properties.Resources.thumbBackgroundWide;
-        static readonly Bitmap bmpBackgroundWideHover = global::TerraViewer.Properties.Resources.ThumbBackgroundWideHover;
-        static readonly Bitmap bmpDropInsertMarker = global::TerraViewer.Properties.Resources.DragInsertMarker;
-        static readonly Bitmap bmpMasterMarker = global::TerraViewer.Properties.Resources.master;
+        static readonly Bitmap bmpBackground = Resources.thumbBackground;
+        static readonly Bitmap bmpBackgroundHover = Resources.ThumbBackgroundHover;
+        static readonly Bitmap bmpBackgroundWide = Resources.thumbBackgroundWide;
+        static readonly Bitmap bmpBackgroundWideHover = Resources.ThumbBackgroundWideHover;
+        static readonly Bitmap bmpDropInsertMarker = Resources.DragInsertMarker;
+        static readonly Bitmap bmpMasterMarker = Resources.master;
 
-        static readonly Bitmap bmpScrollBackLeft = global::TerraViewer.Properties.Resources.scroll_background_left;
-        static readonly Bitmap bmpScrollBackMiddle = global::TerraViewer.Properties.Resources.scroll_background_middle;
-        static readonly Bitmap bmpScrollBackRight = global::TerraViewer.Properties.Resources.scroll_background_right;
+        static readonly Bitmap bmpScrollBackLeft = Resources.scroll_background_left;
+        static readonly Bitmap bmpScrollBackMiddle = Resources.scroll_background_middle;
+        static readonly Bitmap bmpScrollBackRight = Resources.scroll_background_right;
 
-        static readonly Bitmap bmpScrollBarLeft = global::TerraViewer.Properties.Resources.scroll_bar_left;
-        static readonly Bitmap bmpScrollBarMiddle = global::TerraViewer.Properties.Resources.scroll_bar_middle;
-        static readonly Bitmap bmpScrollBarRight = global::TerraViewer.Properties.Resources.scroll_bar_right;
+        static readonly Bitmap bmpScrollBarLeft = Resources.scroll_bar_left;
+        static readonly Bitmap bmpScrollBarMiddle = Resources.scroll_bar_middle;
+        static readonly Bitmap bmpScrollBarRight = Resources.scroll_bar_right;
 
-        static readonly Bitmap bmpPunchInOutBlock = global::TerraViewer.Properties.Resources.PunchInOutBlock;
-        static readonly Bitmap bmpPunchIn = global::TerraViewer.Properties.Resources.PunchIn;
-        static readonly Bitmap bmpPunchOut = global::TerraViewer.Properties.Resources.PunchOut;
+        static readonly Bitmap bmpPunchInOutBlock = Resources.PunchInOutBlock;
+        static readonly Bitmap bmpPunchIn = Resources.PunchIn;
+        static readonly Bitmap bmpPunchOut = Resources.PunchOut;
 
-        static readonly Bitmap transCrossFade = global::TerraViewer.Properties.Resources.TransCrossfade;
-        static readonly Bitmap TransCut = global::TerraViewer.Properties.Resources.TransCut;
-        static readonly Bitmap TransFadeIn = global::TerraViewer.Properties.Resources.TransFadeIn;
-        static readonly Bitmap TransFadeOut = global::TerraViewer.Properties.Resources.TransFadeOut;
-        static readonly Bitmap TransFadeOutIn = global::TerraViewer.Properties.Resources.TransFadeOutIn;
-        static readonly Bitmap TransArrow = global::TerraViewer.Properties.Resources.TransArrow;
-        static readonly Bitmap TransHighlight = global::TerraViewer.Properties.Resources.TransHighlight;
+        static readonly Bitmap transCrossFade = Resources.TransCrossfade;
+        static readonly Bitmap TransCut = Resources.TransCut;
+        static readonly Bitmap TransFadeIn = Resources.TransFadeIn;
+        static readonly Bitmap TransFadeOut = Resources.TransFadeOut;
+        static readonly Bitmap TransFadeOutIn = Resources.TransFadeOutIn;
+        static readonly Bitmap TransArrow = Resources.TransArrow;
+        static readonly Bitmap TransHighlight = Resources.TransHighlight;
 
         public void PageChanged(object sender, PageChange e)
         {
@@ -318,14 +313,14 @@ namespace TerraViewer
             {
                 if (paginator != null)
                 {
-                    paginator.PageChanged -= new PageChangedEventHandler(PageChanged);
+                    paginator.PageChanged -= PageChanged;
                 }
 
                 paginator = value;
 
                 if (paginator != null)
                 {
-                    paginator.PageChanged += new PageChangedEventHandler(PageChanged);
+                    paginator.PageChanged += PageChanged;
                 }
             }
         }
@@ -369,8 +364,8 @@ namespace TerraViewer
             var scrollbarWidth = Width;
             var scrollbarStart = 0;
 
-            scrollbarWidth = Math.Max(14, (int)(Math.Min(1.0f, (float)ItemsPerPage / (float)(TotalItems + 1)) * (float)Width));
-            scrollbarStart = (int)(((float)startIndex / (float)(TotalItems + 1)) * (float)Width);
+            scrollbarWidth = Math.Max(14, (int)(Math.Min(1.0f, ItemsPerPage / (float)(TotalItems + 1)) * Width));
+            scrollbarStart = (int)((startIndex / (float)(TotalItems + 1)) * Width);
 
 
             g.DrawImageUnscaled(bmpScrollBarLeft, scrollbarStart, 1);
@@ -386,14 +381,14 @@ namespace TerraViewer
             {
                 for (var x = 0; x < colCount; x++)
                 {
-                    var rectf = new RectangleF((float)x * horzMultiple + 47f, y * VertSpacing + 20, ThumbWidth - 10, 64);
+                    var rectf = new RectangleF(x * horzMultiple + 47f, y * VertSpacing + 20, ThumbWidth - 10, 64);
                     var textBrush = UiTools.StadardTextBrush;
 
                     if (index >= Items.Count)
                     {
-                        if (this.dragDropItemLocation == -2)
+                        if (dragDropItemLocation == -2)
                         {
-                            g.DrawImage(bmpDropInsertMarker, (int)((float)x * horzMultiple) + 34, (int)((float)y * VertSpacing) + 20);
+                            g.DrawImage(bmpDropInsertMarker, (int)(x * horzMultiple) + 34, (int)((float)y * VertSpacing) + 20);
                             //g.DrawRectangle(Pens.Yellow, new Rectangle((int)((float)x * horzMultiple), (int)((float)y * VertSpacing + 1), 1, VertSpacing - 22));
                         }
 
@@ -401,17 +396,17 @@ namespace TerraViewer
                         {
                             if (addButtonHover && !dragging)
                             {
-                                g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWideHover : bmpBackgroundHover, (int)((float)x * horzMultiple + 44), y * VertSpacing + 20);
+                                g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWideHover : bmpBackgroundHover, (int)(x * horzMultiple + 44), y * VertSpacing + 20);
                                 textBrush = UiTools.YellowTextBrush;
                             }
                             else
                             {
-                                g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWide : bmpBackground, (int)((float)x * horzMultiple + 44), y * VertSpacing + 20);
+                                g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWide : bmpBackground, (int)(x * horzMultiple + 44), y * VertSpacing + 20);
                             }
 
                             // Changed + 33f to + 21f to accomodate slightly longer "add new slide" string: Peter
 
-                            rectf = new RectangleF((float)x * horzMultiple + 55f, y * VertSpacing, ThumbWidth - 17, 62);
+                            rectf = new RectangleF(x * horzMultiple + 55f, y * VertSpacing, ThumbWidth - 17, 62);
 
                             // Changed "Add a slide" to "Add New Slide" in order to pick up a localized string: Peter
 
@@ -424,30 +419,30 @@ namespace TerraViewer
                     //                   if (index == selectedItem && !dragging && !TransitionHighlighted)
                     if (SelectedItems.ContainsKey(index) && !dragging && (!TransitionHighlighted || multipleSelection))
                     {
-                        g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWideHover : bmpBackgroundHover, (int)((float)x * horzMultiple + 44), y * VertSpacing + 20);
+                        g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWideHover : bmpBackgroundHover, (int)(x * horzMultiple + 44), y * VertSpacing + 20);
                         textBrush = UiTools.YellowTextBrush;
                         if (Items[index].Owner.EditMode && !multipleSelection)
                         {
-                            g.DrawImage(bmpPunchInOutBlock, (int)((float)x * horzMultiple + 44), y * VertSpacing + 10);
+                            g.DrawImage(bmpPunchInOutBlock, (int)(x * horzMultiple + 44), y * VertSpacing + 10);
 
                             if (Items[index].TweenPosition < .5f)
                             {
-                                g.DrawImage(bmpPunchIn, (int)((float)x * horzMultiple + 44), y * VertSpacing + 10);
+                                g.DrawImage(bmpPunchIn, (int)(x * horzMultiple + 44), y * VertSpacing + 10);
                             }
                             else
                             {
-                                g.DrawImage(bmpPunchOut, (int)((float)x * horzMultiple + 135), y * VertSpacing + 10);
+                                g.DrawImage(bmpPunchOut, (int)(x * horzMultiple + 135), y * VertSpacing + 10);
                             }
                         }
                     }
                     else
                     {
-                        g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWide : bmpBackground, (int)((float)x * horzMultiple + 44), y * VertSpacing + 20);
+                        g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWide : bmpBackground, (int)(x * horzMultiple + 44), y * VertSpacing + 20);
                     }
 
                     if (index == selectedItem && !dragging && TransitionHighlighted && !multipleSelection)
                     {
-                        g.DrawImage(TransHighlight, (int)((float)x * horzMultiple + 3), y * VertSpacing + 20);
+                        g.DrawImage(TransHighlight, (int)(x * horzMultiple + 3), y * VertSpacing + 20);
                     }
 
                     Bitmap bmpTrans = null;
@@ -475,13 +470,13 @@ namespace TerraViewer
                             break;
                     }
 
-                    g.DrawImage(bmpTrans, (int)((float)x * horzMultiple + 5), y * VertSpacing + 22);
+                    g.DrawImage(bmpTrans, (int)(x * horzMultiple + 5), y * VertSpacing + 22);
 
 
                     try
                     {
-                        g.DrawImage(Items[index].Thumbnail, (int)((float)x * horzMultiple) + 46, y * VertSpacing + 23);
-                        g.DrawRectangle(Pens.Black, (int)((float)x * horzMultiple + 10) + 36, y * VertSpacing + 23, Items[index].Thumbnail.Width, Items[index].Thumbnail.Height);
+                        g.DrawImage(Items[index].Thumbnail, (int)(x * horzMultiple) + 46, y * VertSpacing + 23);
+                        g.DrawRectangle(Pens.Black, (int)(x * horzMultiple + 10) + 36, y * VertSpacing + 23, Items[index].Thumbnail.Width, Items[index].Thumbnail.Height);
 
                     }
                     // TODO FIX this! 
@@ -491,11 +486,11 @@ namespace TerraViewer
 
                     if (Items[index].MasterSlide)
                     {
-                        g.DrawImage(bmpMasterMarker, (int)((float)x * horzMultiple + 46), y * VertSpacing + 20);
+                        g.DrawImage(bmpMasterMarker, (int)(x * horzMultiple + 46), y * VertSpacing + 20);
                     }
 
 
-                    var rectTime = new RectangleF((float)x * horzMultiple + 47f, y * VertSpacing + 87, ThumbWidth - 10, 15);
+                    var rectTime = new RectangleF(x * horzMultiple + 47f, y * VertSpacing + 87, ThumbWidth - 10, 15);
                     if (Items[index].Description != null)
                     {
                         g.DrawString(Items[index].Description, UiTools.StandardRegular, textBrush, rectf, UiTools.StringFormatThumbnails);
@@ -505,15 +500,15 @@ namespace TerraViewer
 
                     g.DrawString(durationString, UiTools.StandardRegular, textBrush, rectTime, UiTools.StringFormatBottomCenter);
 
-                    if (index == this.dragDropItemLocation)
+                    if (index == dragDropItemLocation)
                     {
-                        g.DrawImage(bmpDropInsertMarker, (int)((float)x * horzMultiple) + 34, (int)((float)y * VertSpacing) + 20);
+                        g.DrawImage(bmpDropInsertMarker, (int)(x * horzMultiple) + 34, (int)((float)y * VertSpacing) + 20);
                         //g.DrawRectangle(Pens.Yellow, new Rectangle((int)((float)x * horzMultiple), (int)((float)y * VertSpacing + 1), 1, VertSpacing - 22));
                     }
 
                     if (Properties.Settings.Default.ShowSlideNumbers)
                     {
-                        var rectSlideNumber = new RectangleF((float)x * horzMultiple + 47f, y * VertSpacing + 7, ThumbWidth - 10, 15);
+                        var rectSlideNumber = new RectangleF(x * horzMultiple + 47f, y * VertSpacing + 7, ThumbWidth - 10, 15);
 
 
                         g.DrawString(index.ToString(), UiTools.StandardRegular, textBrush, rectSlideNumber, UiTools.StringFormatBottomCenter);
@@ -536,7 +531,7 @@ namespace TerraViewer
             set
             {
                 showAddButton = value;
-                this.Refresh();
+                Refresh();
             }
         }
 
@@ -545,7 +540,7 @@ namespace TerraViewer
         private int GetItemIndexFromCursor(Point testPoint)
         {
             var index = -1;
-            var xpos = (int)((float)testPoint.X / horzMultiple);
+            var xpos = (int)(testPoint.X / horzMultiple);
             if (xpos >= colCount)
             {
                 return -2;
@@ -579,8 +574,8 @@ namespace TerraViewer
         private Point GetTimeEditLocation(Point testPoint)
         {
             var index = -1;
-            var xpos = (int)((float)testPoint.X / horzMultiple);
-            var xResidual = (int)((float)testPoint.X % horzMultiple);
+            var xpos = (int)(testPoint.X / horzMultiple);
+            var xResidual = (int)(testPoint.X % horzMultiple);
             if (xpos >= colCount)
             {
                 return new Point(-100, -100);
@@ -606,15 +601,15 @@ namespace TerraViewer
                 return new Point(-100, -100);
             }
 
-            return new Point((int)((float)xpos * horzMultiple) + 34, ypos * VertSpacing + 20);
+            return new Point((int)(xpos * horzMultiple) + 34, ypos * VertSpacing + 20);
         }
 
         public enum HitPosition { Default, Drag, EditName, EditTime, StartPosition, EndPosition, Transition };
         private HitPosition GetCusorSytleFromCursorPosition(Point testPoint)
         {
             var index = -1;
-            var xpos = (int)((float)testPoint.X / horzMultiple);
-            var xResidual = (int)((float)(testPoint.X) % horzMultiple) - 34;
+            var xpos = (int)(testPoint.X / horzMultiple);
+            var xResidual = (int)(testPoint.X % horzMultiple) - 34;
 
 
             var ypos = (testPoint.Y - 20) / VertSpacing;
@@ -697,7 +692,7 @@ namespace TerraViewer
 
                 if (multiSelectMode)
                 {
-                    if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                    if (e.Button == MouseButtons.Right)
                     {
                         if (SelectedItems.ContainsKey(index) && SelectedItems.Count > 1)
                         {
@@ -708,13 +703,13 @@ namespace TerraViewer
                     }
 
 
-                    if ((Control.ModifierKeys & Keys.Control) != Keys.Control)
+                    if ((ModifierKeys & Keys.Control) != Keys.Control)
                     {
                         // No control key means clear existing selection and replace
                         SelectedItems.Clear();
                     }
 
-                    if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    if ((ModifierKeys & Keys.Shift) == Keys.Shift)
                     {
                         extendingRange = true;
                         // Add Range to selection
@@ -761,13 +756,13 @@ namespace TerraViewer
                     selectedItem = index;
                 }
 
-                if (((Control.ModifierKeys & Keys.Control) == Keys.Control) || ((Control.ModifierKeys & Keys.Shift) == Keys.Shift))
+                if (((ModifierKeys & Keys.Control) == Keys.Control) || ((ModifierKeys & Keys.Shift) == Keys.Shift))
                 {
                     // Early exit if multi-selecting
                     return;
                 }
 
-                hitType = this.GetCusorSytleFromCursorPosition(e.Location);
+                hitType = GetCusorSytleFromCursorPosition(e.Location);
 
                 if (ItemClicked != null)
                 {
@@ -838,7 +833,7 @@ namespace TerraViewer
                     {
                         var transPopup = new TransitionsPopup();
                         transPopup.Target = Items[index];
-                        transPopup.TargetWasChanged += new EventHandler(transPopup_TargetWasChanged);
+                        transPopup.TargetWasChanged += transPopup_TargetWasChanged;
                         var pnt = new Point((int)((int)(e.X / horzMultiple) * horzMultiple), Height);
 
                         transPopup.Show();
@@ -853,7 +848,7 @@ namespace TerraViewer
             }
             else if (addButtonHover)
             {
-                if (e.Button != System.Windows.Forms.MouseButtons.Right)
+                if (e.Button != MouseButtons.Right)
                 {
                     if (Tour.EditMode && showAddButton)
                     {
@@ -930,8 +925,8 @@ namespace TerraViewer
                 var scrollbarWidth = Width;
                 var scrollbarStart = 0;
 
-                scrollbarWidth = Math.Max(14, (int)(Math.Min(1.0f, (float)ItemsPerPage / (float)(TotalItems + 1)) * (float)Width));
-                scrollbarStart = (int)(((float)startIndex / (float)(TotalItems + 1)) * (float)Width);
+                scrollbarWidth = Math.Max(14, (int)(Math.Min(1.0f, ItemsPerPage / (float)(TotalItems + 1)) * Width));
+                scrollbarStart = (int)((startIndex / (float)(TotalItems + 1)) * Width);
 
                 // Page Up
                 if (e.X > (scrollbarWidth + scrollbarStart))
@@ -979,7 +974,7 @@ namespace TerraViewer
                         }
 
                         //TourStop ts = Items[dragItem];
-                        if (Control.ModifierKeys != Keys.Control)
+                        if (ModifierKeys != Keys.Control)
                         {
                             Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(550, "Move Slide"), Tour));
 
@@ -1039,10 +1034,10 @@ namespace TerraViewer
                 var scrollbarWidth = Width;
                 var scrollbarStart = 0;
 
-                var scrollUnit = (1f / (float)(TotalItems + 1) * Width);
+                var scrollUnit = (1f / (TotalItems + 1) * Width);
 
-                scrollbarWidth = Math.Max(14, (int)(Math.Min(1.0f, (float)ItemsPerPage / (float)(TotalItems + 1)) * (float)Width));
-                scrollbarStart = (int)(((float)startIndex / (float)(TotalItems + 1)) * (float)Width);
+                scrollbarWidth = Math.Max(14, (int)(Math.Min(1.0f, ItemsPerPage / (float)(TotalItems + 1)) * Width));
+                scrollbarStart = (int)((startIndex / (float)(TotalItems + 1)) * Width);
 
 
                 var dragDist = pointDown.X - e.X;
@@ -1059,7 +1054,7 @@ namespace TerraViewer
                 {
                     if (dragging)
                     {
-                        var pntTemp = Control.MousePosition;
+                        var pntTemp = MousePosition;
                         pntTemp.Offset(-48, -27);
                         dragThumbnail.Location = pntTemp;
                         dragDropItemLocation = GetItemIndexFromCursor(e.Location);
@@ -1077,7 +1072,7 @@ namespace TerraViewer
                             {
                                 dragging = true;
                                 dragThumbnail = new DragThumbnail();
-                                var pntTemp = this.PointToScreen(Control.MousePosition);
+                                var pntTemp = PointToScreen(MousePosition);
                                 pntTemp.Offset(-48, -27);
                                 dragThumbnail.Location = pntTemp;
                                 dragThumbnail.Thumbnail = Items[dragItem].Thumbnail;
@@ -1171,7 +1166,7 @@ namespace TerraViewer
 
         private void TourStopList_Load(object sender, EventArgs e)
         {
-            MouseWheel += new MouseEventHandler(TourStopList_MouseWheel);
+            MouseWheel += TourStopList_MouseWheel;
         }
 
         void TourStopList_MouseWheel(object sender, MouseEventArgs e)
@@ -1180,11 +1175,11 @@ namespace TerraViewer
             {
                 if (e.Delta < 0)
                 {
-                    this.PageChanged(this, PageChange.Next);
+                    PageChanged(this, PageChange.Next);
                 }
                 else
                 {
-                    this.PageChanged(this, PageChange.Back);
+                    PageChanged(this, PageChange.Back);
                 }
                 UpdatePaginator();
             }
@@ -1195,7 +1190,7 @@ namespace TerraViewer
             switch (e.KeyCode)
             {
                 case Keys.A:
-                    if (Control.ModifierKeys == Keys.Control)
+                    if (ModifierKeys == Keys.Control)
                     {
                         SelectAll();
                     }

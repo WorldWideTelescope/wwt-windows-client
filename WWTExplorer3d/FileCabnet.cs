@@ -156,22 +156,20 @@ namespace TerraViewer
         {
             try
             {
-                string data;
                 var doc = new XmlDocument();
-                var headerSize = 0;
                 using (var fs = File.OpenRead(Filename))
                 {
 
                     var buffer = new byte[256];
                     fs.Read(buffer, 0, 255);
-                    data = Encoding.UTF8.GetString(buffer);
+                    string data = Encoding.UTF8.GetString(buffer);
 
                     var start = data.IndexOf("0x");
                     if (start == -1)
                     {
                         throw new SystemException(Language.GetLocalizedText(215, "Invalid File Format"));
                     }
-                    headerSize = Convert.ToInt32(data.Substring(start, 10), 16);
+                    int headerSize = Convert.ToInt32(data.Substring(start, 10), 16);
 
                     fs.Seek(0, SeekOrigin.Begin);
 
@@ -188,7 +186,7 @@ namespace TerraViewer
                     FileList.Clear();
                     foreach (XmlNode child in files.ChildNodes)
                     {
-                        var fe = new FileEntry(child.Attributes["Name"].Value.ToString(), Convert.ToInt32(child.Attributes["Size"].Value));
+                        var fe = new FileEntry(child.Attributes["Name"].Value, Convert.ToInt32(child.Attributes["Size"].Value));
                         fe.Offset = offset;
                         offset += fe.Size;
                         FileList.Add(fe);
@@ -249,10 +247,7 @@ namespace TerraViewer
                 {
                     return TempDirectory + FileList[0].Filename.Substring(FileList[0].Filename.LastIndexOf("\\")+1);
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
         public void ClearTempFiles()

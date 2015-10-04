@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -19,16 +15,16 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.Text = Language.GetLocalizedText(187, "Date Time Selection");
-            this.label8.Text = Language.GetLocalizedText(188, "Year");
-            this.label9.Text = Language.GetLocalizedText(189, "Month");
-            this.label10.Text = Language.GetLocalizedText(190, "Day");
-            this.label1.Text = Language.GetLocalizedText(191, "Hrs");
-            this.label2.Text = Language.GetLocalizedText(192, "Min");
-            this.label4.Text = Language.GetLocalizedText(193, "Sec");
-            this.showUtcTime.Text = Language.GetLocalizedText(194, "UTC");
-            this.apply.Text = Language.GetLocalizedText(195, "Apply");
-            this.OK.Text = Language.GetLocalizedText(156, "OK");
+            Text = Language.GetLocalizedText(187, "Date Time Selection");
+            label8.Text = Language.GetLocalizedText(188, "Year");
+            label9.Text = Language.GetLocalizedText(189, "Month");
+            label10.Text = Language.GetLocalizedText(190, "Day");
+            label1.Text = Language.GetLocalizedText(191, "Hrs");
+            label2.Text = Language.GetLocalizedText(192, "Min");
+            label4.Text = Language.GetLocalizedText(193, "Sec");
+            showUtcTime.Text = Language.GetLocalizedText(194, "UTC");
+            apply.Text = Language.GetLocalizedText(195, "Apply");
+            OK.Text = Language.GetLocalizedText(156, "OK");
             
         }
 
@@ -121,7 +117,7 @@ namespace TerraViewer
             else
             {
                 showUtcTime.Visible = false;
-                this.PushPin.Visible = false;
+                PushPin.Visible = false;
 
             }
         }
@@ -250,16 +246,16 @@ namespace TerraViewer
 
         private void PushPin_Click(object sender, EventArgs e)
         {
-            if (this.FormBorderStyle == FormBorderStyle.None)
+            if (FormBorderStyle == FormBorderStyle.None)
             {
-                this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+                FormBorderStyle = FormBorderStyle.FixedToolWindow;
                 PushPin.Hide();
-                this.Top += 10;
-                this.Left += 5;
+                Top += 10;
+                Left += 5;
             }
             else
             {
-                this.FormBorderStyle = FormBorderStyle.None;
+                FormBorderStyle = FormBorderStyle.None;
             }
         }
 
@@ -343,7 +339,7 @@ namespace TerraViewer
         {
             try
             {
-                var s = Convert.ToInt32( this.sec.Text);
+                var s = Convert.ToInt32( sec.Text);
                 ScratchTime = ScratchTime.AddSeconds(s - ScratchTime.Second);
             }
             catch

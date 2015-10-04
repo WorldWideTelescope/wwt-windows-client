@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 using MicrosoftInternal.AdvancedCollections;
-using TerraViewer.org.worldwidetelescope.www;
 using System.Threading;
 namespace TerraViewer
 {
@@ -24,18 +20,18 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.searchText.Text = Language.GetLocalizedText(308, "Type your search here");
-            this.toolTips.SetToolTip(this.searchText, Language.GetLocalizedText(309, "Enter your search terms here."));
-            this.raLabel.Text = Language.GetLocalizedText(310, "RA");
-            this.decLabel.Text = Language.GetLocalizedText(311, "Dec");
-            this.searchResults.AddText = Language.GetLocalizedText(161, "Add New Item");
-            this.searchResults.EmptyAddText = Language.GetLocalizedText(162, "No Results");
-            this.SearchView.Text = Language.GetLocalizedText(312, "Search View");
-            this.wwtButton1.Text = Language.GetLocalizedText(313, "Server");
-            this.plotResults.Text = Language.GetLocalizedText(314, "Plot Results");
-            this.toolTips.SetToolTip(this.plotResults, Language.GetLocalizedText(316, "Show the location of each result on the sky map."));
-            this.GoToRADec.Text = Language.GetLocalizedText(315, "Go");
-            this.measureTool.Text = Language.GetLocalizedText(931, "Distance");
+            searchText.Text = Language.GetLocalizedText(308, "Type your search here");
+            toolTips.SetToolTip(searchText, Language.GetLocalizedText(309, "Enter your search terms here."));
+            raLabel.Text = Language.GetLocalizedText(310, "RA");
+            decLabel.Text = Language.GetLocalizedText(311, "Dec");
+            searchResults.AddText = Language.GetLocalizedText(161, "Add New Item");
+            searchResults.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+            SearchView.Text = Language.GetLocalizedText(312, "Search View");
+            wwtButton1.Text = Language.GetLocalizedText(313, "Server");
+            plotResults.Text = Language.GetLocalizedText(314, "Plot Results");
+            toolTips.SetToolTip(plotResults, Language.GetLocalizedText(316, "Show the location of each result on the sky map."));
+            GoToRADec.Text = Language.GetLocalizedText(315, "Go");
+            measureTool.Text = Language.GetLocalizedText(931, "Distance");
         }
         protected override void SetFocusedChild()
         {
@@ -47,7 +43,7 @@ namespace TerraViewer
 
             key = key.ToLower();
             autoCompleteList.Add(key, place);
-            var parts = key.Split(new char[] { ' ' });
+            var parts = key.Split(new[] { ' ' });
             if (parts.Length > 1)
             {
                 foreach (var part in parts)
@@ -399,7 +395,7 @@ namespace TerraViewer
         {
             if (Earth3d.MainWindow.IsWindowOrChildFocused())
             {
-                this.Focus();
+                Focus();
             }
             if (e is IPlace || e is IImageSet)
             {
@@ -784,24 +780,24 @@ namespace TerraViewer
             switch (index)
             {
                 case 0: // RA-DEC
-                    this.raLabel.Text = Language.GetLocalizedText(310, "RA");
-                    this.decLabel.Text = Language.GetLocalizedText(311, "Dec");
+                    raLabel.Text = Language.GetLocalizedText(310, "RA");
+                    decLabel.Text = Language.GetLocalizedText(311, "Dec");
                     break;
                 case 1: // alt-az
-                    this.raLabel.Text = Language.GetLocalizedText(268, "Az :");
-                    this.decLabel.Text = Language.GetLocalizedText(269, "Alt : ");
+                    raLabel.Text = Language.GetLocalizedText(268, "Az :");
+                    decLabel.Text = Language.GetLocalizedText(269, "Alt : ");
                     break;
                 case 2: // Galactic
-                    this.raLabel.Text = "\u03BB";
-                    this.decLabel.Text = "\u03B2";
+                    raLabel.Text = "\u03BB";
+                    decLabel.Text = "\u03B2";
                     break;
                 case 3: // Ecliptic
-                    this.raLabel.Text = "\u03BB";
-                    this.decLabel.Text = "\u03B2";
+                    raLabel.Text = "\u03BB";
+                    decLabel.Text = "\u03B2";
                     break;
                 case 4: // Ecliptic
-                    this.raLabel.Text = Language.GetLocalizedText(950, "Lng");
-                    this.decLabel.Text = Language.GetLocalizedText(951, "Lat");
+                    raLabel.Text = Language.GetLocalizedText(950, "Lng");
+                    decLabel.Text = Language.GetLocalizedText(951, "Lat");
                     break;
             }
         }
@@ -824,7 +820,7 @@ namespace TerraViewer
             
             
 
-            var keywords = new List<string>(searchString.ToLower().Split(new char[] { ' ' }));
+            var keywords = new List<string>(searchString.ToLower().Split(new[] { ' ' }));
             if (keywords.Count > 1)
             {
                 for (var i = keywords.Count - 1; i > -1; i--)

@@ -1,4 +1,9 @@
-﻿namespace TerraViewer
+﻿using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
+using Device = SharpDX.Direct3D11.Device;
+
+namespace TerraViewer
 {
     using System;
     using System.Drawing;
@@ -7,17 +12,17 @@
     {
         SharpDX.Direct3D11.Buffer vertices;
         SharpDX.Direct3D11.Buffer indexBuffer;
-        SharpDX.Direct3D11.VertexBufferBinding vertexBufferBinding;
+        VertexBufferBinding vertexBufferBinding;
 
         Texture11 texture;
 
-        private SharpDX.Direct3D11.InputLayout layout;
+        private InputLayout layout;
 
         public void Draw(RenderContext11 renderContext)
         {
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             renderContext.devContext.InputAssembler.SetVertexBuffers(0, vertexBufferBinding);
-            renderContext.devContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
+            renderContext.devContext.InputAssembler.SetIndexBuffer(indexBuffer, Format.R32_UInt, 0);
 
 
 
@@ -33,10 +38,10 @@
 
             if (layout == null)
             {
-                layout = new SharpDX.Direct3D11.InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
+                layout = new InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       16, 0)
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("TEXCOORD", 0, Format.R32G32_Float,       16, 0)
                            });
                 renderContext.Device.ImmediateContext.InputAssembler.InputLayout = layout;
             }
@@ -52,7 +57,7 @@
 
         int triangleCount = subDivisionsX * subDivisionsY * 2;
 
-        public void MakeSphere(SharpDX.Direct3D11.Device d3dDevice)
+        public void MakeSphere(Device d3dDevice)
         {
             // Layout from VertexShader input signature
 
@@ -125,11 +130,11 @@
                 }
             }
 
-            vertices = SharpDX.Direct3D11.Buffer.Create(d3dDevice, SharpDX.Direct3D11.BindFlags.VertexBuffer, verts);
+            vertices = SharpDX.Direct3D11.Buffer.Create(d3dDevice, BindFlags.VertexBuffer, verts);
 
-            vertexBufferBinding = new SharpDX.Direct3D11.VertexBufferBinding(vertices, sizeof(float) * 6, 0);
+            vertexBufferBinding = new VertexBufferBinding(vertices, sizeof(float) * 6, 0);
 
-            indexBuffer = SharpDX.Direct3D11.Buffer.Create(d3dDevice, SharpDX.Direct3D11.BindFlags.IndexBuffer, indexes);
+            indexBuffer = SharpDX.Direct3D11.Buffer.Create(d3dDevice, BindFlags.IndexBuffer, indexes);
 
 
         }

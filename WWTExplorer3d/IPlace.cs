@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Xml.Serialization;
+
 namespace TerraViewer
 {
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    [Serializable]
+    [XmlType(AnonymousType = true)]
     public enum Classification
     {
         Star = 1,
@@ -42,13 +44,13 @@ namespace TerraViewer
         Galactic = 133693440,
         Other = 436207616
     };
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    [Serializable]
+    [XmlType(AnonymousType = true)]
     public enum ProjectionType { Mercator, Equirectangular, Tangent, Tan = Tangent, Toast, Spherical, SkyImage, Plotted };
  
     
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    [Serializable]
+    [XmlType(AnonymousType = true)]
     public enum BandPass { Gamma, XRay, Ultraviolet, Visible, HydrogenAlpha, IR, Microwave, Radio, VisibleNight };
 
     public interface IPlace : IThumbnail

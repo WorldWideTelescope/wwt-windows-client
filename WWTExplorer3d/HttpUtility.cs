@@ -286,10 +286,6 @@ namespace TerraViewer
             _Entities.Add("euro", '\u20AC');
         }
 
-        public HttpUtility()
-        {
-        }
-
         #endregion // Constructors
 
         #region Methods
@@ -640,9 +636,9 @@ namespace TerraViewer
                     (c > 'z'))
                 {
                     result.Add((byte)'%');
-                    var idx = ((int)c) >> 4;
+                    var idx = c >> 4;
                     result.Add((byte)hexChars[idx]);
-                    idx = ((int)c) & 0x0F;
+                    idx = c & 0x0F;
                     result.Add((byte)hexChars[idx]);
                 }
                 else
@@ -674,13 +670,13 @@ namespace TerraViewer
                 if (c > 255)
                 {
                     result.Append("%u");
-                    idx = ((int)c) >> 24;
+                    idx = c >> 24;
                     result.Append(hexChars[idx]);
-                    idx = (((int)c) >> 16) & 0x0F;
+                    idx = (c >> 16) & 0x0F;
                     result.Append(hexChars[idx]);
-                    idx = (((int)c) >> 8) & 0x0F;
+                    idx = (c >> 8) & 0x0F;
                     result.Append(hexChars[idx]);
-                    idx = ((int)c) & 0x0F;
+                    idx = c & 0x0F;
                     result.Append(hexChars[idx]);
                     continue;
                 }
@@ -691,9 +687,9 @@ namespace TerraViewer
                     (c > 'z'))
                 {
                     result.Append('%');
-                    idx = ((int)c) >> 4;
+                    idx = c >> 4;
                     result.Append(hexChars[idx]);
-                    idx = ((int)c) & 0x0F;
+                    idx = c & 0x0F;
                     result.Append(hexChars[idx]);
                     continue;
                 }
@@ -809,7 +805,7 @@ namespace TerraViewer
                         output.Append("\"");
                         break;
                     default:
-                        if ((int)c > 128)
+                        if (c > 128)
                         {
                             output.Append("&#");
                             output.Append(((int)c).ToString());

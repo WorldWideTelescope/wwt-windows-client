@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -34,7 +33,7 @@ namespace TerraViewer
 
                 if (!String.IsNullOrEmpty(values))
                 {
-                    var parts = values.Split(new char[] { ',' });
+                    var parts = values.Split(new[] { ',' });
                     foreach (var part in parts)
                     {
                         var x = Convert.ToInt32(part.Trim());
@@ -94,7 +93,7 @@ namespace TerraViewer
             FramesX = Convert.ToInt32(gridXText.Text);
             FramesY = Convert.ToInt32(gridYText.Text);
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
 
         private void flipbookStyle_SelectionChanged(object sender, EventArgs e)

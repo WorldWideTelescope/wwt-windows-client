@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.IO;
 using System.Net;
@@ -20,9 +17,9 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(216, "Please wait while the file is being downloaded.");
-            this.Cancel.Text = Language.GetLocalizedText(157, "Cancel");
-            this.Text = Language.GetLocalizedText(217, "File Download Progress");
+            label1.Text = Language.GetLocalizedText(216, "Please wait while the file is being downloaded.");
+            Cancel.Text = Language.GetLocalizedText(157, "Cancel");
+            Text = Language.GetLocalizedText(217, "File Download Progress");
         }
 
 
@@ -33,8 +30,8 @@ namespace TerraViewer
         static FileDownload dialog;
         static FileDownload()
         {
-            client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-            client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+            client.DownloadProgressChanged += client_DownloadProgressChanged;
+            client.DownloadFileCompleted += client_DownloadFileCompleted;
         }
 
         static void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
@@ -72,7 +69,7 @@ namespace TerraViewer
             canceled = false;
             client.DownloadFileAsync( uri, filename);
 
-            System.Threading.Thread.Sleep(250);
+            Thread.Sleep(250);
             if (!complete)
             {
 
@@ -120,27 +117,27 @@ namespace TerraViewer
 
         private void FileDownload_Load(object sender, EventArgs e)
         {
-            ProgressChanged += new DownloadProgressChangedEventHandler(FileDownload_ProgressChanged);
-            DownloadComplete += new AsyncCompletedEventHandler(FileDownload_DownloadComplete);
+            ProgressChanged += FileDownload_ProgressChanged;
+            DownloadComplete += FileDownload_DownloadComplete;
         }
 
         void FileDownload_DownloadComplete(object sender, AsyncCompletedEventArgs e)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(DownloadComplete, new object[] { sender, e });
+                Invoke(DownloadComplete, new[] { sender, e });
             }
             else
             {
-                this.Close();
+                Close();
             }
         }
 
         void FileDownload_ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(ProgressChanged, new object[] { sender, e });
+                Invoke(ProgressChanged, new[] { sender, e });
             }
             else
             {

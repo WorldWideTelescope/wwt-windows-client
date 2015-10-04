@@ -1,10 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -19,20 +14,20 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.Text = Language.GetLocalizedText(404, "Text Editor");
-            this.SaveButton.Text = Language.GetLocalizedText(168, "Save");
-            this.FontSize.ToolTipText = Language.GetLocalizedText(405, "Font Size");
-            this.FontBold.Text = Language.GetLocalizedText(406, "Bold");
-            this.FontBold.ToolTipText = Language.GetLocalizedText(406, "Bold");
-            this.FontItalic.Text = Language.GetLocalizedText(407, "Italic");
-            this.FontColor.Text = Language.GetLocalizedText(408, "Text Color");
-            this.BackgroundColor.Text = Language.GetLocalizedText(409, "Background Preview Color");
-            this.BackgroundStyle.Text = Language.GetLocalizedText(410, "Text Background Options");
-            this.BackgroundStyle.ToolTipText = Language.GetLocalizedText(411, "Backgound Options");
-            this.noBackgroundToolStripMenuItem.Text = Language.GetLocalizedText(412, "No Background");
-            this.tightFitBackgroundToolStripMenuItem.Text = Language.GetLocalizedText(413, "Tight Fit Background");
-            this.smallBorderToolStripMenuItem.Text = Language.GetLocalizedText(414, "Small Border");
-            this.largerBoarderToolStripMenuItem.Text = Language.GetLocalizedText(415, "Larger Border");
+            Text = Language.GetLocalizedText(404, "Text Editor");
+            SaveButton.Text = Language.GetLocalizedText(168, "Save");
+            FontSize.ToolTipText = Language.GetLocalizedText(405, "Font Size");
+            FontBold.Text = Language.GetLocalizedText(406, "Bold");
+            FontBold.ToolTipText = Language.GetLocalizedText(406, "Bold");
+            FontItalic.Text = Language.GetLocalizedText(407, "Italic");
+            FontColor.Text = Language.GetLocalizedText(408, "Text Color");
+            BackgroundColor.Text = Language.GetLocalizedText(409, "Background Preview Color");
+            BackgroundStyle.Text = Language.GetLocalizedText(410, "Text Background Options");
+            BackgroundStyle.ToolTipText = Language.GetLocalizedText(411, "Backgound Options");
+            noBackgroundToolStripMenuItem.Text = Language.GetLocalizedText(412, "No Background");
+            tightFitBackgroundToolStripMenuItem.Text = Language.GetLocalizedText(413, "Tight Fit Background");
+            smallBorderToolStripMenuItem.Text = Language.GetLocalizedText(414, "Small Border");
+            largerBoarderToolStripMenuItem.Text = Language.GetLocalizedText(415, "Larger Border");
         }
         static public TextObject DefaultTextobject = new TextObject("", false, false, false, 24, "Arial", Color.White, Color.Black, TextBorderStyle.None);
 

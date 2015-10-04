@@ -2,9 +2,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Xml;
 
 namespace TerraViewer
 {
@@ -84,7 +81,7 @@ namespace TerraViewer
                     {
                         tour.CurrentTourStop.KeyFrameMover.CurrentDateTime = tour.CurrentTourStop.StartTime;
                         tour.CurrentTourStop.KeyFrameMover.CurrentPosition = tour.CurrentTourStop.Target.CamParams;
-                        tour.CurrentTourStop.KeyFrameMover.MoveTime = (double)(tour.CurrentTourStop.Duration.TotalMilliseconds / 1000.0);
+                        tour.CurrentTourStop.KeyFrameMover.MoveTime = tour.CurrentTourStop.Duration.TotalMilliseconds / 1000.0;
                         Earth3d.MainWindow.Mover = tour.CurrentTourStop.KeyFrameMover;
                     }
                     else if (tour.CurrentTourStop.EndTarget != null && tour.CurrentTourStop.EndTarget.ZoomLevel != -1)
@@ -634,10 +631,7 @@ namespace TerraViewer
             {
                 return tour.CurrentTourStop.TweenPosition = Math.Min(1,tween);
             }
-            else
-            {
-                return tour.CurrentTourStop.TweenPosition = Math.Min(1, (float)(slideElapsedTime.TotalMilliseconds / tour.CurrentTourStop.Duration.TotalMilliseconds));
-            }
+            return tour.CurrentTourStop.TweenPosition = Math.Min(1, (float)(slideElapsedTime.TotalMilliseconds / tour.CurrentTourStop.Duration.TotalMilliseconds));
         }
 
         public void Close()
@@ -649,7 +643,7 @@ namespace TerraViewer
             }
         }
 
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             var location = PointToView(e.Location);
 
@@ -708,12 +702,12 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             return false;
         }
 
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
             var location = PointToView(e.Location);
 
@@ -733,7 +727,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
             return false;
         }
@@ -743,13 +737,13 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
 
             return false;
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             if (Earth3d.MainWindow.TourEdit == null)
             {
@@ -831,7 +825,7 @@ namespace TerraViewer
             }
         }                     
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             return false;
         }
@@ -860,9 +854,9 @@ namespace TerraViewer
         {
             float clientHeight = Earth3d.MainWindow.RenderWindow.ClientRectangle.Height;
             float clientWidth = Earth3d.MainWindow.RenderWindow.ClientRectangle.Width;
-            var viewWidth = ((float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
-            var x = (((float)pnt.X) / ((float)clientWidth) * viewWidth) - ((viewWidth - 1920) / 2);
-            var y = ((float)pnt.Y) / clientHeight * 1116;
+            var viewWidth = (Earth3d.MainWindow.RenderWindow.ClientRectangle.Width / (float)Earth3d.MainWindow.RenderWindow.ClientRectangle.Height) * 1116f;
+            var x = (pnt.X / clientWidth * viewWidth) - ((viewWidth - 1920) / 2);
+            var y = pnt.Y / clientHeight * 1116;
 
             return new PointF(x, y);
         }

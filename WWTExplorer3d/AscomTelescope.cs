@@ -826,7 +826,7 @@ namespace TerraViewer
 
         public void Dispose()
         {
-            if (this.objScopeLateBound != null)
+            if (objScopeLateBound != null)
             {
                 objScopeLateBound = null;
             }

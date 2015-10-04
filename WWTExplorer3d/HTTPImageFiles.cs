@@ -8,13 +8,7 @@
 ===============================================================================
 */
 using System;
-using System.IO;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Collections;
-using System.Threading;
-using System.Drawing;
 
 namespace TerraViewer
 {
@@ -86,8 +80,8 @@ namespace TerraViewer
             }
             else if (request.Contains("/imageset/"))
             {
-                var parts = request.Split(new char[] { '/' });
-                var imageset = (IImageSet)Earth3d.ImagesetHashTable[Convert.ToInt32(parts[2])];
+                var parts = request.Split(new[] { '/' });
+                var imageset = Earth3d.ImagesetHashTable[Convert.ToInt32(parts[2])];
                 if (imageset != null)
                 {
                     data = ReadBinaryWebFileFromDisk(imageset.Url);

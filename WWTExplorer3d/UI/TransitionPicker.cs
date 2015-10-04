@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -43,12 +39,12 @@ namespace TerraViewer
 
 
         public Bitmap[] images = new Bitmap[] { 
-            global::TerraViewer.Properties.Resources.TransArrow,
-            global::TerraViewer.Properties.Resources.TransCrossfade,
-            global::TerraViewer.Properties.Resources.TransCut,
-            global::TerraViewer.Properties.Resources.TransFadeOutIn,  
-            global::TerraViewer.Properties.Resources.TransFadeIn,
-            global::TerraViewer.Properties.Resources.TransFadeOut,    
+            Resources.TransArrow,
+            Resources.TransCrossfade,
+            Resources.TransCut,
+            Resources.TransFadeOutIn,  
+            Resources.TransFadeIn,
+            Resources.TransFadeOut,    
         };
 
 
@@ -58,11 +54,11 @@ namespace TerraViewer
             {
                 if (SelectedIndex == i)
                 {
-                    e.Graphics.DrawImage(global::TerraViewer.Properties.Resources.TransHighlight, i * 44+4, 4);
+                    e.Graphics.DrawImage(Resources.TransHighlight, i * 44+4, 4);
                 }
                 else
                 {
-                    e.Graphics.DrawImage(global::TerraViewer.Properties.Resources.TransBackground, i * 44+4, 4);
+                    e.Graphics.DrawImage(Resources.TransBackground, i * 44+4, 4);
                 }
                 e.Graphics.DrawImage(images[i], i * 44 + 7, 6);
             }

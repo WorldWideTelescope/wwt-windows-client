@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -27,10 +26,6 @@ namespace TerraViewer
             return primaryUI;
         }
 
-        public OrbitLayer()
-        {
-        }
-
         public override void CleanUp()
         {
             foreach (var frame in frames)
@@ -43,7 +38,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("PointOpacity", PointOpacity.ToString());
             xmlWriter.WriteAttributeString("PointColor", SavedColor.Save(pointColor));
@@ -101,12 +96,12 @@ namespace TerraViewer
 
         public override string[] GetParamNames()
         {
-            return new string[] { "PointOpacity", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
+            return new[] { "PointOpacity", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
         }
 
         public override BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
         }
 
         public override void SetParams(double[] paramList)
@@ -122,7 +117,7 @@ namespace TerraViewer
         }
 
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             PointOpacity = double.Parse(node.Attributes["PointOpacity"].Value);
             PointColor = SavedColor.Load(node.Attributes["PointColor"].Value);
@@ -141,9 +136,9 @@ namespace TerraViewer
                 {
                     if (frame.Orbit == null)
                     {
-                        frame.Orbit = new Orbit(frame.Elements, 360, this.Color, 1, (float)renderContext.NominalRadius);
+                        frame.Orbit = new Orbit(frame.Elements, 360, Color, 1, (float)renderContext.NominalRadius);
                     }
-                    frame.Orbit.Draw3D(renderContext, opacity * this.Opacity, new Vector3d(0, 0, 0));
+                    frame.Orbit.Draw3D(renderContext, opacity * Opacity, new Vector3d(0, 0, 0));
                 }
             }
             renderContext.World = matSaved;
@@ -158,7 +153,7 @@ namespace TerraViewer
 
             var copy = true;
 
-            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID, this.ID.ToString());
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID, ID);
             var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
             var path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
 
@@ -263,8 +258,8 @@ namespace TerraViewer
 
                 node.Tag = frame;
                 node.Checked = frame.ShowOrbitPath;
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
-                node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
+                node.NodeSelected += node_NodeSelected;
+                node.NodeChecked += node_NodeChecked;
                 nodes.Add(node);
             }
             return nodes;

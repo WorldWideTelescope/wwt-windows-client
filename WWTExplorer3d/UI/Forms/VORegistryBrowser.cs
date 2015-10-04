@@ -1,15 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using TerraViewer.edu.stsci.nvo;
 using System.Xml;
-using System.Net;
 using System.IO;
-using System.Web;
 
 namespace TerraViewer
 {
@@ -38,9 +30,9 @@ namespace TerraViewer
             In.Text = Language.GetLocalizedText(620, "NVO Registry Search");
             
             // Is this robust? Peter
-            this.ResourceList.TopItem.Text = Language.GetLocalizedText(619, "Enter a keyword above to search the US NVO registry for Cone Search services");
+            ResourceList.TopItem.Text = Language.GetLocalizedText(619, "Enter a keyword above to search the US NVO registry for Cone Search services");
 
-            this.Text = Language.GetLocalizedText(621, "VO Cone Search / Registry Browser");
+            Text = Language.GetLocalizedText(621, "VO Cone Search / Registry Browser");
         }
 
         static VoTable registry;
@@ -63,8 +55,8 @@ namespace TerraViewer
             if (registry != null)
             {
                 LoadRegistryResults();
-                this.keyword.Text = lastKeyword;
-                this.baseUrl.Text = lastConeSearch;
+                keyword.Text = lastKeyword;
+                baseUrl.Text = lastConeSearch;
             }
 
             siapCheckbox.Checked = !coneSearch;
@@ -264,13 +256,13 @@ namespace TerraViewer
 
         private void VORegistryBrowser_FormClosing(object sender, FormClosingEventArgs e)
         {
-             lastConeSearch = this.baseUrl.Text;
+             lastConeSearch = baseUrl.Text;
 
         }
 
         private void verbosity_SelectionChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.VOTableVerbosityDefault = this.verbosity.SelectedIndex+1;
+            Properties.Settings.Default.VOTableVerbosityDefault = verbosity.SelectedIndex+1;
         }
 
         private void baseUrl_TextChanged(object sender, EventArgs e)

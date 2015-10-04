@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using TerraViewer.fr.u_strasbg.cdsws;
 
 using System.Xml;
@@ -8,11 +6,6 @@ namespace TerraViewer
 {
     class ObjectLookup
     {
-
-        public ObjectLookup()
-        {
-        }
-
         public AstroObjectResult SkyLookup(string target)
         {
             var service = new SesameService();
@@ -65,9 +58,6 @@ namespace TerraViewer
 
     public class AstroObjectResult
     {
-        public AstroObjectResult()
-        {
-        }
         public double RA = 0.0;
         public double Dec = 0.0;
         public string Name = "";

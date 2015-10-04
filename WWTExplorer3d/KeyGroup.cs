@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -75,10 +74,10 @@ namespace TerraViewer
             return (first.Value * (1 - keyTween)) + (last.Value * keyTween);
         }
 
-        public void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Keys");
-            xmlWriter.WriteAttributeString("ParameterName", ParameterName.ToString());
+            xmlWriter.WriteAttributeString("ParameterName", ParameterName);
             foreach (var key in Keys.Values)
             {
                 key.SaveToXml(xmlWriter);
@@ -86,7 +85,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public void SaveToXml(System.Xml.XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys, AnimationTarget target, int parameterIndex)
+        public void SaveToXml(XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys, AnimationTarget target, int parameterIndex)
         {
             var anythingToWrite = false;
             foreach (var key in Keys.Values)
@@ -100,7 +99,7 @@ namespace TerraViewer
             if (anythingToWrite)
             {
                 xmlWriter.WriteStartElement("Keys");
-                xmlWriter.WriteAttributeString("ParameterName", ParameterName.ToString());
+                xmlWriter.WriteAttributeString("ParameterName", ParameterName);
                 foreach (var key in Keys.Values)
                 {
                     if (selectedKeys.ContainsKey(VisibleKey.GetIndexKey(target, parameterIndex, key.Time)))
@@ -112,10 +111,10 @@ namespace TerraViewer
             }
         }
 
-        public void FromXml(System.Xml.XmlNode node)
+        public void FromXml(XmlNode node)
         {
             ParameterName = node.Attributes["ParameterName"].Value;
-            foreach (System.Xml.XmlNode child in node.ChildNodes)
+            foreach (XmlNode child in node.ChildNodes)
             {
                 var key = new Key(child);
                 Keys.Add(Quant(key.Time), key);

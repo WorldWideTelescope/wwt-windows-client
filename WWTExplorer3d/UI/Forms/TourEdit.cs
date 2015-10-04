@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -18,16 +19,16 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.toolTip.SetToolTip(this.tourStopList, Language.GetLocalizedText(416, "Slides"));
-            this.AddText.Text = Language.GetLocalizedText(417, "Text");
-            this.EditTourProperties.Text = Language.GetLocalizedText(418, "Tour Properties");
-            this.AddShape.Text = Language.GetLocalizedText(419, "Shapes");
-            this.AddPicture.Text = Language.GetLocalizedText(420, "Picture");
-            this.AddVideo.Text = Language.GetLocalizedText(421, "Video");
-            this.SaveTour.Text = Language.GetLocalizedText(422, " Save");
-            this.ShowSafeArea.Text = Language.GetLocalizedText(423, "Show Safe Area");
-            this.runTimeLabel.Text = Language.GetLocalizedText(424, "Run Time");
-            this.Dome.Text = Language.GetLocalizedText(1109, "Dome");
+            toolTip.SetToolTip(tourStopList, Language.GetLocalizedText(416, "Slides"));
+            AddText.Text = Language.GetLocalizedText(417, "Text");
+            EditTourProperties.Text = Language.GetLocalizedText(418, "Tour Properties");
+            AddShape.Text = Language.GetLocalizedText(419, "Shapes");
+            AddPicture.Text = Language.GetLocalizedText(420, "Picture");
+            AddVideo.Text = Language.GetLocalizedText(421, "Video");
+            SaveTour.Text = Language.GetLocalizedText(422, " Save");
+            ShowSafeArea.Text = Language.GetLocalizedText(423, "Show Safe Area");
+            runTimeLabel.Text = Language.GetLocalizedText(424, "Run Time");
+            Dome.Text = Language.GetLocalizedText(1109, "Dome");
         }
         TourDocument tour;
         public TourEditor TourEditorUI = new TourEditor();
@@ -44,7 +45,7 @@ namespace TerraViewer
                 tourStopList.Tour = tour;
                 
                 Dome.Checked = Tour.DomeMode;
-                tour.CurrentTourstopChanged += new EventHandler(tour_CurrentTourstopChanged);
+                tour.CurrentTourstopChanged += tour_CurrentTourstopChanged;
                 Overlay.DefaultAnchor = Tour.DomeMode ? OverlayAnchor.Dome : OverlayAnchor.Screen;
                 if (tour.TourStops.Count > 0)
                 {
@@ -84,7 +85,7 @@ namespace TerraViewer
             {
                 PlayNow(true);
             }
-            TourPlayer.TourEnded += new EventHandler(TourPlayer_TourEnded);
+            TourPlayer.TourEnded += TourPlayer_TourEnded;
             ShowSafeArea.Checked = Properties.Settings.Default.ShowSafeArea;
 
             if (tour.EditMode)
@@ -249,11 +250,11 @@ namespace TerraViewer
                     var copyMenu = new ToolStripMenuItem(Language.GetLocalizedText(428, "Copy"));
                     var pasteMenu = new ToolStripMenuItem(Language.GetLocalizedText(429, "Paste"));
                     var deleteMenu = new ToolStripMenuItem(Language.GetLocalizedText(167, "Delete"));
-                    cutMenu.Click += new EventHandler(cutMenu_Click);
-                    copyMenu.Click += new EventHandler(copyMenu_Click);
-                    pasteMenu.Click += new EventHandler(pasteMenu_Click);
-                    deleteMenu.Click += new EventHandler(deleteMenu_Click);
-                    selectAllMenu.Click += new EventHandler(selectAllMenu_Click);
+                    cutMenu.Click += cutMenu_Click;
+                    copyMenu.Click += copyMenu_Click;
+                    pasteMenu.Click += pasteMenu_Click;
+                    deleteMenu.Click += deleteMenu_Click;
+                    selectAllMenu.Click += selectAllMenu_Click;
                     var sep1 = new ToolStripSeparator();
 
                     contextMenu.Items.Add(selectAllMenu);
@@ -280,10 +281,10 @@ namespace TerraViewer
                     var sep2 = new ToolStripSeparator();
                     var insertSlide = new ToolStripMenuItem(Language.GetLocalizedText(426, "Add New Slide"));
 
-                    pasteMenu.Click += new EventHandler(pasteMenu_Click);
-                    selectAllMenu.Click += new EventHandler(selectAllMenu_Click);
+                    pasteMenu.Click += pasteMenu_Click;
+                    selectAllMenu.Click += selectAllMenu_Click;
 
-                    insertSlide.Click += new EventHandler(AddNewSlide_Click);
+                    insertSlide.Click += AddNewSlide_Click;
 
 
                     // todo check for clibboard format first
@@ -377,11 +378,11 @@ namespace TerraViewer
                     EaseOut.Tag = InterpolationType.EaseOut;
                     Exponential.Tag = InterpolationType.Exponential;
 
-                    Linear.Click += new EventHandler(Interpolation_Click);
-                    Ease.Click += new EventHandler(Interpolation_Click);
-                    EaseIn.Click += new EventHandler(Interpolation_Click);
-                    EaseOut.Click += new EventHandler(Interpolation_Click);
-                    Exponential.Click += new EventHandler(Interpolation_Click);
+                    Linear.Click += Interpolation_Click;
+                    Ease.Click += Interpolation_Click;
+                    EaseIn.Click += Interpolation_Click;
+                    EaseOut.Click += Interpolation_Click;
+                    Exponential.Click += Interpolation_Click;
 
 
                     switch (tour.CurrentTourStop.InterpolationType)
@@ -412,28 +413,28 @@ namespace TerraViewer
                     interpolation.DropDownItems.Add(EaseOut);
                     interpolation.DropDownItems.Add(Exponential);
 
-                    selectAllMenu.Click += new EventHandler(selectAllMenu_Click);
-                    insertDuplicate.Click += new EventHandler(insertDuplicate_Click);
-                    cutMenu.Click += new EventHandler(cutMenu_Click);
-                    copyMenu.Click += new EventHandler(copyMenu_Click);
-                    pasteMenu.Click += new EventHandler(pasteMenu_Click);
-                    deleteMenu.Click += new EventHandler(deleteMenu_Click);
-                    insertSlide.Click += new EventHandler(InsertNewSlide_Click);
-                    properties.Click += new EventHandler(properties_Click);
-                    captureThumbnail.Click += new EventHandler(captureThumbnail_Click);
-                    setSkyPosition.Click += new EventHandler(setSkyPosition_Click);
-                    setEndSkyPosition.Click += new EventHandler(setEndSkyPosition_Click);
-                    showEndSkyPosition.Click += new EventHandler(showEndSkyPosition_Click);
-                    showSkyPosition.Click += new EventHandler(showSkyPosition_Click);
-                    playFromHere.Click += new EventHandler(playFromHere_Click);
-                    masterSlide.Click += new EventHandler(masterSlide_Click);
-                    setNextSlide.Click += new EventHandler(setNextSlide_Click);
-                    trackSpaceTime.Click += new EventHandler(trackSpaceTime_Click);
-                    insertSlideshow.Click += new EventHandler(insertSlideshow_Click);
-                    fadeInOverlays.Click += new EventHandler(fadeInOverlays_Click);
+                    selectAllMenu.Click += selectAllMenu_Click;
+                    insertDuplicate.Click += insertDuplicate_Click;
+                    cutMenu.Click += cutMenu_Click;
+                    copyMenu.Click += copyMenu_Click;
+                    pasteMenu.Click += pasteMenu_Click;
+                    deleteMenu.Click += deleteMenu_Click;
+                    insertSlide.Click += InsertNewSlide_Click;
+                    properties.Click += properties_Click;
+                    captureThumbnail.Click += captureThumbnail_Click;
+                    setSkyPosition.Click += setSkyPosition_Click;
+                    setEndSkyPosition.Click += setEndSkyPosition_Click;
+                    showEndSkyPosition.Click += showEndSkyPosition_Click;
+                    showSkyPosition.Click += showSkyPosition_Click;
+                    playFromHere.Click += playFromHere_Click;
+                    masterSlide.Click += masterSlide_Click;
+                    setNextSlide.Click += setNextSlide_Click;
+                    trackSpaceTime.Click += trackSpaceTime_Click;
+                    insertSlideshow.Click += insertSlideshow_Click;
+                    fadeInOverlays.Click += fadeInOverlays_Click;
 
-                    makeTimeline.Click += new EventHandler(makeTimeline_Click);
-                    showTimeline.Click += new EventHandler(makeTimeline_Click);
+                    makeTimeline.Click += makeTimeline_Click;
+                    showTimeline.Click += makeTimeline_Click;
 
                     if (tour.CurrentTourStop.MasterSlide)
                     {
@@ -816,13 +817,13 @@ namespace TerraViewer
                 Undo.Push(new UndoTourSlidelistChange(Language.GetLocalizedText(535, "Paste Slide"), tour));
                 // add try catch block
                 var xml = dataObject.GetData(TourStop.ClipboardFormat) as string;
-                var doc = new System.Xml.XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(xml);
-                System.Xml.XmlNode node = doc["TourStops"];
+                XmlNode node = doc["TourStops"];
 
                 var pasteStack = new Stack<TourStop>();
 
-                foreach (System.Xml.XmlNode child in node.ChildNodes)
+                foreach (XmlNode child in node.ChildNodes)
                 {
                     var ts = TourStop.FromXml(tour, child);
                     ts.Id = Guid.NewGuid().ToString();
@@ -845,9 +846,9 @@ namespace TerraViewer
         void copyMenu_Click(object sender, EventArgs e)
         {
             var sb = new StringBuilder();
-            using (var textWriter = new System.IO.StringWriter(sb))
+            using (var textWriter = new StringWriter(sb))
             {
-                using (var writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                     writer.WriteStartElement("TourStops");
@@ -927,7 +928,7 @@ namespace TerraViewer
                     player.Tour = tour;
                     Earth3d.MainWindow.UiController = player;
                     player.Play();
-                    Preview.Image = global::TerraViewer.Properties.Resources.button_pause_normal;
+                    Preview.Image = Resources.button_pause_normal;
                     Preview.Text = Language.GetLocalizedText(440, "Pause");
                     tourStopList.ShowAddButton = false;
                 }
@@ -935,7 +936,7 @@ namespace TerraViewer
                 {
                     Earth3d.MainWindow.UiController = TourEditorUI;
 
-                    Preview.Image = global::TerraViewer.Properties.Resources.button_play_normal;
+                    Preview.Image = Resources.button_play_normal;
                     Preview.Text = Language.GetLocalizedText(441, "Play");
                     if (player != null)
                     {
@@ -958,7 +959,7 @@ namespace TerraViewer
                     player.Tour = tour;
                     Earth3d.MainWindow.UiController = player;
                     player.Play();
-                    Preview.Image = global::TerraViewer.Properties.Resources.button_pause_normal;
+                    Preview.Image = Resources.button_pause_normal;
                     Preview.Text = Language.GetLocalizedText(440, "Pause");
                     tourStopList.ShowAddButton = false;
                 }
@@ -968,7 +969,7 @@ namespace TerraViewer
                     Earth3d.MainWindow.UiController = null;
                     Earth3d.MainWindow.FreezeView();
 
-                    Preview.Image = global::TerraViewer.Properties.Resources.button_play_normal;
+                    Preview.Image = Resources.button_play_normal;
                     Preview.Text = Language.GetLocalizedText(441, "Play");
                     if (player != null)
                     {
@@ -984,7 +985,7 @@ namespace TerraViewer
 
         private void PlayerTimer_Tick(object sender, EventArgs e)
         {
-            if (this.DesignMode)
+            if (DesignMode)
             {
                 return;
             }
@@ -1083,7 +1084,7 @@ namespace TerraViewer
         {
             if (Earth3d.MainWindow.IsWindowOrChildFocused())
             {
-                this.Focus();
+                Focus();
             }
         }
 
@@ -1131,10 +1132,7 @@ namespace TerraViewer
                 }
                 return true;
             }
-            else
-            {
-                tour.SaveToFile(tour.SaveFileName);
-            }
+            tour.SaveToFile(tour.SaveFileName);
             return true;
         }
 
@@ -1158,7 +1156,7 @@ namespace TerraViewer
 
 
             var flipBook = false;
-            if (Control.ModifierKeys == (Keys.Control | Keys.Shift))
+            if (ModifierKeys == (Keys.Control | Keys.Shift))
             {
                 flipBook = true;
             }
@@ -1199,13 +1197,13 @@ namespace TerraViewer
                 var AddArrow = new ToolStripMenuItem(Language.GetLocalizedText(449, "Arrow"));
                 var AddStar = new ToolStripMenuItem(Language.GetLocalizedText(450, "Star"));
 
-                AddCircle.Click += new EventHandler(InsertShapeCircle_Click);
-                AddRectangle.Click += new EventHandler(InsertShapeRectangle_Click);
-                AddOpenRectangle.Click += new EventHandler(AddOpenRectangle_Click);
-                AddRing.Click += new EventHandler(insertDonut_Click);
-                AddLine.Click += new EventHandler(InsertShapeLine_Click);
-                AddArrow.Click += new EventHandler(AddArrow_Click);
-                AddStar.Click += new EventHandler(AddStar_Click);
+                AddCircle.Click += InsertShapeCircle_Click;
+                AddRectangle.Click += InsertShapeRectangle_Click;
+                AddOpenRectangle.Click += AddOpenRectangle_Click;
+                AddRing.Click += insertDonut_Click;
+                AddLine.Click += InsertShapeLine_Click;
+                AddArrow.Click += AddArrow_Click;
+                AddStar.Click += AddStar_Click;
 
 
                 contextMenu.Items.Add(AddCircle);
@@ -1251,20 +1249,17 @@ namespace TerraViewer
             {
                 //todo change image based on enable/disable state
             }
-            else
-            {
-            }
         }
 
         private void Preview_MouseEnter(object sender, EventArgs e)
         {
             if (playing)
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_pause_hover;
+                Preview.Image = Resources.button_pause_hover;
             }
             else
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_play_hover;
+                Preview.Image = Resources.button_play_hover;
             }
         }
 
@@ -1272,11 +1267,11 @@ namespace TerraViewer
         {
             if (playing)
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_pause_normal;
+                Preview.Image = Resources.button_pause_normal;
             }
             else
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_play_normal;
+                Preview.Image = Resources.button_play_normal;
             }
         }
 
@@ -1284,11 +1279,11 @@ namespace TerraViewer
         {
             if (playing)
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_pause_hover;
+                Preview.Image = Resources.button_pause_hover;
             }
             else
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_play_hover;
+                Preview.Image = Resources.button_play_hover;
             }
         }
 
@@ -1296,15 +1291,15 @@ namespace TerraViewer
         {
             if (playing)
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_pause_pressed;
+                Preview.Image = Resources.button_pause_pressed;
             }
             else
             {
-                Preview.Image = global::TerraViewer.Properties.Resources.button_play_pressed;
+                Preview.Image = Resources.button_play_pressed;
             }
         }
 
-        readonly Bitmap menuArrow = global::TerraViewer.Properties.Resources.menuArrow;
+        readonly Bitmap menuArrow = Resources.menuArrow;
 
         private void AddShape_Paint(object sender, PaintEventArgs e)
         {
@@ -1327,7 +1322,7 @@ namespace TerraViewer
         private void TourEditTab_FormClosed(object sender, FormClosedEventArgs e)
         {
             TourPlayer.Playing = false;
-            TourPlayer.TourEnded -= new EventHandler(TourPlayer_TourEnded);
+            TourPlayer.TourEnded -= TourPlayer_TourEnded;
         }
 
         private void EditTourProperties_Load(object sender, EventArgs e)
@@ -1348,7 +1343,7 @@ namespace TerraViewer
                 tourStopList.Refresh();
                 tourStopList.SelectedItem = tour.CurrentTourstopIndex;
                 ShowSlideStartPosition(tour.CurrentTourStop);
-                this.Refresh();
+                Refresh();
                 OverlayList.UpdateOverlayList(tour.CurrentTourStop, TourEditorUI.Selection);
             }
         }
@@ -1361,7 +1356,7 @@ namespace TerraViewer
                 tourStopList.Refresh();
                 tourStopList.SelectedItem = tour.CurrentTourstopIndex;
                 ShowSlideStartPosition(tour.CurrentTourStop);
-                this.Refresh();
+                Refresh();
                 OverlayList.UpdateOverlayList(tour.CurrentTourStop, TourEditorUI.Selection);
             }
         }
@@ -1386,7 +1381,7 @@ namespace TerraViewer
 
         private void tourStopList_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Control.ModifierKeys == Keys.Control)
+            if (ModifierKeys == Keys.Control)
             {
                 switch (e.KeyCode)
                 {

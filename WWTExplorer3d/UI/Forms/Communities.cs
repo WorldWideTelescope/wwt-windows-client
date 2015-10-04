@@ -1,10 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -18,10 +12,10 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.resultsList.AddText = Language.GetLocalizedText(161, "Add New Item");
-            this.resultsList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
-            this.selectText.Text = Language.GetLocalizedText(163, "Select a Community...");
-            this.Text = Language.GetLocalizedText(138, "Community");
+            resultsList.AddText = Language.GetLocalizedText(161, "Add New Item");
+            resultsList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+            selectText.Text = Language.GetLocalizedText(163, "Select a Community...");
+            Text = Language.GetLocalizedText(138, "Community");
         }
 
         private void Communities_Load(object sender, EventArgs e)

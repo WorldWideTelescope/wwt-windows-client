@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 namespace TerraViewer
@@ -200,9 +201,9 @@ namespace TerraViewer
             set { filename = value; }
         }
 
-        private System.Drawing.Color color = System.Drawing.Color.White;
+        private Color color = Color.White;
 
-        public System.Drawing.Color Color
+        public Color Color
         {
             get { return color; }
             set { color = value; }
@@ -218,6 +219,6 @@ namespace TerraViewer
         }
 
 
-        abstract public System.Drawing.Bitmap GetBitmap();
+        abstract public Bitmap GetBitmap();
     }
 }

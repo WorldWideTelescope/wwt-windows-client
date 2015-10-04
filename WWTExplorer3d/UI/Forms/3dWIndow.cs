@@ -1,12 +1,21 @@
 using System;
+using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Xml;
+using Newtonsoft.Json;
+using SharpDX;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SpaceNavigator;
 using TerraViewer.Authentication;
+using TerraViewer.Callibration;
 using TerraViewer.org.worldwidetelescope.www;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
@@ -15,12 +24,16 @@ using System.Globalization;
 using System.Text;
 using TerraViewer.edu.stsci.masthla;
 using Microsoft.XInput;
+using TerraViewer.Properties;
 using WwtDataUtils;
 using System.Net.NetworkInformation;
-using RegistryKey = Microsoft.Win32.RegistryKey;
 using Registry = Microsoft.Win32.Registry;
 using System.Threading.Tasks;
 using System.Security;
+using Color = System.Drawing.Color;
+using Matrix = SharpDX.Matrix;
+using Message = System.Windows.Forms.Message;
+using Rectangle = System.Drawing.Rectangle;
 using Timer = System.Windows.Forms.Timer;
 
 namespace TerraViewer
@@ -357,9 +370,9 @@ namespace TerraViewer
         const float FOVMULT = 343.774f;
         public enum ZoomSpeeds { SLOW = 0, MEDIUM, FAST };
 
-        private System.Windows.Forms.Timer timer;
+        private Timer timer;
         private ToolStripMenuItem viewOverlayTopo;
-        private System.Windows.Forms.ToolStripMenuItem menuItem7;
+        private ToolStripMenuItem menuItem7;
 
         DataSetManager dsm;
 
@@ -385,7 +398,7 @@ namespace TerraViewer
             }
         }
 
-        private System.ComponentModel.IContainer components;
+        private IContainer components;
         static bool pause;
 
         public event EventHandler ImageSetChanged;
@@ -458,18 +471,15 @@ namespace TerraViewer
 
                 return GetAltitudeForLatLongForPlanet((int)viewCamera.Target, point.Y, point.X);
             }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Earth)
+            if (CurrentImageSet.DataSetType == ImageSetType.Earth)
             {
                 return TargetAltitude;
             }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Planet)
+            if (CurrentImageSet.DataSetType == ImageSetType.Planet)
             {
                 return GetAltitudeForLatLong(ViewLat, ViewLong);
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
         public Vector2d GetEarthCoordinates()
@@ -484,14 +494,11 @@ namespace TerraViewer
 
                 return Coordinates.CartesianToLatLng(pnt);
             }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Earth || CurrentImageSet.DataSetType == ImageSetType.Planet)
+            if (CurrentImageSet.DataSetType == ImageSetType.Earth || CurrentImageSet.DataSetType == ImageSetType.Planet)
             {
                 return new Vector2d(viewCamera.Lng, viewCamera.Lat);
             }
-            else
-            {
-                return new Vector2d();
-            }
+            return new Vector2d();
         }
 
 
@@ -514,10 +521,7 @@ namespace TerraViewer
                 {
                     return CurrentImageSet.DataSetType == ImageSetType.Sky;
                 }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
         }
 
@@ -529,10 +533,7 @@ namespace TerraViewer
                 {
                     return CurrentImageSet.DataSetType == ImageSetType.Earth || CurrentImageSet.DataSetType == ImageSetType.Planet;
                 }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
         }
 
@@ -550,9 +551,9 @@ namespace TerraViewer
                     value = 0;
                 }
                 var temp = 180 - ((value) / 24.0 * 360) - 180;
-                if (temp != this.TargetLong)
+                if (temp != TargetLong)
                 {
-                    this.TargetLong = temp;
+                    TargetLong = temp;
                 }
             }
         }
@@ -562,7 +563,7 @@ namespace TerraViewer
         {
             get
             {
-                return this.ViewLat;
+                return ViewLat;
             }
             set
             {
@@ -573,7 +574,7 @@ namespace TerraViewer
                         // Break Here
                         value = 0;
                     }
-                    this.TargetLat = value;
+                    TargetLat = value;
                 }
             }
         }
@@ -682,10 +683,7 @@ namespace TerraViewer
                 {
                     return renderWindow.Width / 2;
                 }
-                else
-                {
-                    return renderWindow.Width;
-                }
+                return renderWindow.Width;
             }
         }
         public int ViewHeight
@@ -902,12 +900,12 @@ namespace TerraViewer
             {
                 if (Math.Abs((double)state.Gamepad.RightThumbX) > 8000)
                 {
-                    CameraRotateTarget = (CameraRotateTarget + ((((double)state.Gamepad.RightThumbX / (zoomRate * 100)) * factor)));
+                    CameraRotateTarget = (CameraRotateTarget + (((state.Gamepad.RightThumbX / (zoomRate * 100)) * factor)));
                 }
 
                 if (Math.Abs((double)state.Gamepad.RightThumbY) > 8000)
                 {
-                    CameraAngleTarget = (CameraAngleTarget + ((((double)state.Gamepad.RightThumbY / (zoomRate * 100)) * factor)));
+                    CameraAngleTarget = (CameraAngleTarget + (((state.Gamepad.RightThumbY / (zoomRate * 100)) * factor)));
                 }
             }
             else
@@ -921,13 +919,13 @@ namespace TerraViewer
                 if (Math.Abs((double)state.Gamepad.RightThumbX) > 7000)
                 {
                     var reticle = Reticle.Reticles[retId];
-                    reticle.Az = (reticle.Az - ((((double)state.Gamepad.RightThumbX / (zoomRate * 3)) * factor)) / Math.Cos(reticle.Alt * Math.PI / 180));
+                    reticle.Az = (reticle.Az - (((state.Gamepad.RightThumbX / (zoomRate * 3)) * factor)) / Math.Cos(reticle.Alt * Math.PI / 180));
                 }
 
                 if (Math.Abs((double)state.Gamepad.RightThumbY) > 7000)
                 {
                     var reticle = Reticle.Reticles[retId];
-                    reticle.Alt = (reticle.Alt + ((((double)state.Gamepad.RightThumbY / (zoomRate * 3)) * factor)));
+                    reticle.Alt = (reticle.Alt + (((state.Gamepad.RightThumbY / (zoomRate * 3)) * factor)));
                 }
             }
 
@@ -945,7 +943,7 @@ namespace TerraViewer
 
             if (Math.Abs((double)state.Gamepad.LeftThumbX) > 8000 || Math.Abs((double)state.Gamepad.LeftThumbY) > 8000)
             {
-                MoveView(((double)state.Gamepad.LeftThumbX / moveRate) * factor, ((double)state.Gamepad.LeftThumbY / moveRate) * factor, false);
+                MoveView((state.Gamepad.LeftThumbX / moveRate) * factor, (state.Gamepad.LeftThumbY / moveRate) * factor, false);
                 JoyInMotion = true;
             }
 
@@ -1125,10 +1123,10 @@ namespace TerraViewer
             switch (CurrentImageSet.DataSetType)
             {
                 case ImageSetType.Earth:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Planet);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Planet);
                     break;
                 case ImageSetType.Planet:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Sky);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Sky);
                     break;
                 case ImageSetType.Sky:
                     if (!Properties.Settings.Default.LocalHorizonMode)
@@ -1138,18 +1136,18 @@ namespace TerraViewer
                     else
                     {
                         Properties.Settings.Default.LocalHorizonMode = false;
-                        Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Panorama);
+                        MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Panorama);
 
                     }
                     break;
                 case ImageSetType.Panorama:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.SolarSystem);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.SolarSystem);
                     break;
                 case ImageSetType.SolarSystem:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Earth);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Earth);
                     break;
                 case ImageSetType.Sandbox:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Earth);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Earth);
                     break;
                 default:
                     break;
@@ -1161,10 +1159,10 @@ namespace TerraViewer
             switch (CurrentImageSet.DataSetType)
             {
                 case ImageSetType.Earth:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Sandbox);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Sandbox);
                     break;
                 case ImageSetType.Planet:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Earth);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Earth);
                     break;
                 case ImageSetType.Sky:
                     if (Properties.Settings.Default.LocalHorizonMode)
@@ -1174,18 +1172,18 @@ namespace TerraViewer
                     else
                     {
                         Properties.Settings.Default.LocalHorizonMode = false;
-                        Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Planet);
+                        MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Planet);
                     }
                     break;
                 case ImageSetType.Panorama:
                     Properties.Settings.Default.LocalHorizonMode = true;
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Sky);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Sky);
                     break;
                 case ImageSetType.SolarSystem:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Panorama);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.Panorama);
                     break;
                 case ImageSetType.Sandbox:
-                    Earth3d.MainWindow.contextPanel.SetLookAtTarget(ImageSetType.SolarSystem);
+                    MainWindow.contextPanel.SetLookAtTarget(ImageSetType.SolarSystem);
                     break;
                 default:
                     break;
@@ -1210,7 +1208,7 @@ namespace TerraViewer
                 return;
             }
 
-            this.NetZoomRate = 0;
+            NetZoomRate = 0;
 
             if (state.Gamepad.RightTrigger > 4)
             {
@@ -1441,27 +1439,27 @@ namespace TerraViewer
         {
             AudioPlayer.Initialize();
 
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
             if (!HideSplash)
             {
                 Splash.ShowSplashScreen();
             }
 
             // Set the initial size of our form
-            this.ClientSize = new Size(400, 300);
+            ClientSize = new Size(400, 300);
             // And its caption
 
 
 
             config = new Config();
 
-            this.MonitorX = config.MonitorX;
-            this.MonitorY = config.MonitorY;
-            this.MonitorCountX = config.MonitorCountX;
-            this.MonitorCountY = config.MonitorCountY;
-            this.monitorHeight = config.Height;
-            this.monitorWidth = config.Width;
-            this.bezelSpacing = (float)config.Bezel;
+            MonitorX = config.MonitorX;
+            MonitorY = config.MonitorY;
+            MonitorCountX = config.MonitorCountX;
+            MonitorCountY = config.MonitorCountY;
+            monitorHeight = config.Height;
+            monitorWidth = config.Width;
+            bezelSpacing = (float)config.Bezel;
 
 
             ProjectorServer = !config.Master;
@@ -1474,7 +1472,7 @@ namespace TerraViewer
             InitializeComponent();
             SetUiStrings();
 
-            this.Text = Language.GetLocalizedText(3, "Microsoft WorldWide Telescope");
+            Text = Language.GetLocalizedText(3, "Microsoft WorldWide Telescope");
 
             if (!InitializeGraphics())
             {
@@ -1508,12 +1506,12 @@ namespace TerraViewer
             {
                 try
                 {
-                    this.StartPosition = FormStartPosition.Manual;
+                    StartPosition = FormStartPosition.Manual;
                     Screen screenTarget;
                     screenTarget = Screen.AllScreens[TargetScreenId];
 
-                    this.Top = screenTarget.WorkingArea.Y;
-                    this.Left = screenTarget.WorkingArea.X;
+                    Top = screenTarget.WorkingArea.Y;
+                    Left = screenTarget.WorkingArea.X;
                 }
                 catch
                 {
@@ -1545,7 +1543,7 @@ namespace TerraViewer
             RenderContext11.SetVertexBuffer(distortVertexBuffer);
             RenderContext11.SetIndexBuffer(distortIndexBuffer);
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.Alpha;
             RenderContext11.setRasterizerState(TriangleCullMode.Off);
 
@@ -1620,8 +1618,8 @@ namespace TerraViewer
                         index = y1 * (subX + 1) + x1;
                         var pdata = fastDistort.GetRgbPixel(x1, y1);
 
-                        tu = (float)(pdata->blue + ((uint)pdata->red % 16) * 256) / 4095f;
-                        tv = (float)(pdata->green + ((uint)pdata->red / 16) * 256) / 4095f;
+                        tu = (pdata->blue + ((uint)pdata->red % 16) * 256) / 4095f;
+                        tv = (pdata->green + ((uint)pdata->red / 16) * 256) / 4095f;
 
                         //tu = (tu - .5f) * 1.7777778 + .5f;
 
@@ -1634,7 +1632,7 @@ namespace TerraViewer
                             maxV = tv;
                         }
 
-                        verts[index].Position = new SharpDX.Vector4(((float)x1 / subX) - .5f, (1f - ((float)y1 / subY)) - .5f, .9f, 1f);
+                        verts[index].Position = new Vector4(((float)x1 / subX) - .5f, (1f - ((float)y1 / subY)) - .5f, .9f, 1f);
                         verts[index].Tu = (float)tu;
                         verts[index].Tv = (float)tv;
                         var pPixel = fastBlend.GetRgbPixel(x1, y1);
@@ -1663,7 +1661,7 @@ namespace TerraViewer
                         index += 6;
                     }
                 }
-                this.distortIndexBuffer.Unlock();
+                distortIndexBuffer.Unlock();
             }
             fastDistort.UnlockBitmap();
             fastBlend.UnlockBitmap();
@@ -1688,7 +1686,7 @@ namespace TerraViewer
         }
 
 
-        SpaceNavigator._3DxMouse myMouse;
+        _3DxMouse myMouse;
 
         int spaceDeviceType = 0;
 
@@ -1696,12 +1694,12 @@ namespace TerraViewer
         {
             try
             {
-                myMouse = new SpaceNavigator._3DxMouse(this.Handle);
+                myMouse = new _3DxMouse(Handle);
                 var NumberOf3DxMice = myMouse.EnumerateDevices();
 
                 // Setup event handlers to be called when something happens
-                myMouse.MotionEvent += new SpaceNavigator._3DxMouse.MotionEventHandler(myMouse_MotionEvent);
-                myMouse.ButtonEvent += new SpaceNavigator._3DxMouse.ButtonEventHandler(myMouse_ButtonEvent);
+                myMouse.MotionEvent += myMouse_MotionEvent;
+                myMouse.ButtonEvent += myMouse_ButtonEvent;
                 return true;
 
             }
@@ -1715,7 +1713,7 @@ namespace TerraViewer
         Vector3d SensorTranslation;
         Vector3d SensorRotation;
 
-        void myMouse_ButtonEvent(object sender, SpaceNavigator._3DxMouse.ButtonEventArgs e)
+        void myMouse_ButtonEvent(object sender, _3DxMouse.ButtonEventArgs e)
         {
             CameraParameters cameraParams;
             if ((e.ButtonMask.Pressed & 1) == 1)
@@ -1725,12 +1723,12 @@ namespace TerraViewer
             if ((e.ButtonMask.Pressed & 2) == 2)
             {
                 cameraParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-                this.GotoTarget(cameraParams, false, false);
+                GotoTarget(cameraParams, false, false);
 
             }
         }
 
-        void myMouse_MotionEvent(object sender, SpaceNavigator._3DxMouse.MotionEventArgs e)
+        void myMouse_MotionEvent(object sender, _3DxMouse.MotionEventArgs e)
         {
             if (e.TranslationVector != null)
             {
@@ -1758,14 +1756,11 @@ namespace TerraViewer
         {
             get
             {
-                if (Properties.Settings.Default.UnconstrainedTilt || Control.ModifierKeys == (Keys.Shift | Keys.Control))
+                if (Properties.Settings.Default.UnconstrainedTilt || ModifierKeys == (Keys.Shift | Keys.Control))
                 {
                     return -1.52 * 2;
                 }
-                else
-                {
-                    return -1.52;
-                }
+                return -1.52;
             }
         }
 
@@ -1795,7 +1790,7 @@ namespace TerraViewer
 
                 if (Math.Abs(SensorRotation.Y) > 0)
                 {
-                    var angle = ((((double)SensorRotation.Y / sensitivity) * factor));
+                    var angle = (((SensorRotation.Y / sensitivity) * factor));
                     if (!PlanetLike)
                     {
                         angle = -angle;
@@ -1806,7 +1801,7 @@ namespace TerraViewer
 
                 if (Math.Abs(SensorRotation.X) > 0)
                 {
-                    var angle = ((((double)SensorRotation.X / sensitivity) * factor));
+                    var angle = (((SensorRotation.X / sensitivity) * factor));
 
                     CameraAngleTarget = (CameraAngleTarget + angle);
                     if (CameraAngleTarget < TiltMin)
@@ -1874,7 +1869,7 @@ namespace TerraViewer
                     break;
                 case 2:
                     cameraParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-                    this.GotoTarget(cameraParams, false, false);
+                    GotoTarget(cameraParams, false, false);
                     break;
             }
         }
@@ -1915,7 +1910,7 @@ namespace TerraViewer
             fitter.Solve();
         }
 
-        private void Earth3d_Load(object sender, System.EventArgs e)
+        private void Earth3d_Load(object sender, EventArgs e)
         {
             CheckOSVersion();
             var path = Properties.Settings.Default.ImageSetUrl;
@@ -1925,9 +1920,9 @@ namespace TerraViewer
                 Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5";
             }
              
-            Earth3d.MainWindow = this;
-            this.dsm = new DataSetManager();
-            Constellations.Containment = this.constellationCheck;
+            MainWindow = this;
+            dsm = new DataSetManager();
+            Constellations.Containment = constellationCheck;
 
             ContextSearch.InitializeDatabase(true);
 
@@ -1942,20 +1937,20 @@ namespace TerraViewer
 
             initBackground.BeginInvoke(null, null);
 
-            this.WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Maximized;
 
 
 
-            this.FormBorderStyle = TouchKiosk ? FormBorderStyle.None : FormBorderStyle.Sizable;
+            FormBorderStyle = TouchKiosk ? FormBorderStyle.None : FormBorderStyle.Sizable;
             TileCache.StartQueue();
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            this.SetStyle(ControlStyles.UserPaint, true);
-            Earth3d.MainWindow.Config.DomeTilt = (float)Properties.Settings.Default.DomeTilt;
+            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(ControlStyles.UserPaint, true);
+            MainWindow.Config.DomeTilt = (float)Properties.Settings.Default.DomeTilt;
             if (ProjectorServer)
             {
                 ShowFullScreen(true);
-                this.timer.Interval = 1000;
-                this.InputTimer.Enabled = false;
+                timer.Interval = 1000;
+                InputTimer.Enabled = false;
                 Cursor.Hide();
                 Properties.Settings.Default.ShowCrosshairs = false;
                 Properties.Settings.Default.SolarSystemMultiRes = true;
@@ -1979,17 +1974,17 @@ namespace TerraViewer
                 NetControl.LoadNodeList();
             }
 
-            if (Earth3d.TouchKiosk)
+            if (TouchKiosk)
             {
-                this.menuTabs.IsVisible = false;
-                this.kioskTitleBar.Visible = true;
+                menuTabs.IsVisible = false;
+                kioskTitleBar.Visible = true;
                 Properties.Settings.Default.ShowTouchControls = true;
                 ShowFullScreen(true);
             }
 
             if (NoUi)
             {
-                this.menuTabs.IsVisible = false;
+                menuTabs.IsVisible = false;
                 Properties.Settings.Default.ShowTouchControls = true;
                 ShowFullScreen(true);
             }
@@ -2043,14 +2038,14 @@ namespace TerraViewer
             SpaceTimeController.Altitude = Properties.Settings.Default.LocationAltitude;
             SpaceTimeController.Location = Coordinates.FromLatLng(Properties.Settings.Default.LocationLat, Properties.Settings.Default.LocationLng);
 
-            TourPlayer.TourEnded += new EventHandler(TourPlayer_TourEnded);
+            TourPlayer.TourEnded += TourPlayer_TourEnded;
             if (KmlMarkers == null)
             {
                 KmlMarkers = new KmlLabels();
             }
             ReadyToRender = true;
             Initialized = true;
-            this.Activate();
+            Activate();
             fadeImageSet.State = false;
             fadeImageSet.State = true;
             fadeImageSet.TargetState = false;
@@ -2072,12 +2067,12 @@ namespace TerraViewer
                 sampConnection = new Samp();
 
                 // Register goto
-                SampMessageHandler.RegiseterMessage(new SampCoordPointAtSky(new CoordPointAtSkyDelegate(SampGoto)));
-                SampMessageHandler.RegiseterMessage(new SampTableLoadVoTable(new TableLoadVoTableDelegate(SampLoadTable)));
-                SampMessageHandler.RegiseterMessage(new SampImageLoadFits(new ImageLoadFitsDelegate(SampLoadFitsImage)));
-                SampMessageHandler.RegiseterMessage(new SampTableHighlightRow(new TableHighlightRowDelegate(SampHighlightRow)));
+                SampMessageHandler.RegiseterMessage(new SampCoordPointAtSky(SampGoto));
+                SampMessageHandler.RegiseterMessage(new SampTableLoadVoTable(SampLoadTable));
+                SampMessageHandler.RegiseterMessage(new SampImageLoadFits(SampLoadFitsImage));
+                SampMessageHandler.RegiseterMessage(new SampTableHighlightRow(SampHighlightRow));
 
-                NetworkChange.NetworkAddressChanged += new NetworkAddressChangedEventHandler(NetworkChange_NetworkAddressChanged);
+                NetworkChange.NetworkAddressChanged += NetworkChange_NetworkAddressChanged;
 
                 MidiMapManager.Startup();
 
@@ -2124,11 +2119,11 @@ namespace TerraViewer
                         layer.Viewer.HighlightRow(row);
                     };
 
-                    if (this.InvokeRequired)
+                    if (InvokeRequired)
                     {
                         try
                         {
-                            this.Invoke(doIt);
+                            Invoke(doIt);
                         }
                         catch
                         {
@@ -2163,11 +2158,11 @@ namespace TerraViewer
                 DownloadFitsImage(url);
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(doIt);
+                    Invoke(doIt);
                 }
                 catch
                 {
@@ -2207,11 +2202,11 @@ namespace TerraViewer
                 RunVoSearch(url, id);
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(doIt);
+                    Invoke(doIt);
                 }
                 catch
                 {
@@ -2230,11 +2225,11 @@ namespace TerraViewer
                 GotoTargetRADec(ra, dec, true, false);
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(doIt);
+                    Invoke(doIt);
                 }
                 catch
                 {
@@ -2253,41 +2248,41 @@ namespace TerraViewer
         public static int DetachScreenId = -1;
         public void ShowFullScreen(bool showFull)
         {
-            this.SuspendLayout();
+            SuspendLayout();
             menuTabs.IsVisible = !showFull && !TouchKiosk;
             if (showFull)
             {
                 var doubleWide = (StereoMode == StereoModes.SideBySide || StereoMode == StereoModes.CrossEyed) && !rift;
-                this.FormBorderStyle = FormBorderStyle.None;
+                FormBorderStyle = FormBorderStyle.None;
                 if (doubleWide || Properties.Settings.Default.FullScreenHeight != 0)
                 {
-                    this.WindowState = FormWindowState.Normal;
-                    this.TopMost = true;
+                    WindowState = FormWindowState.Normal;
+                    TopMost = true;
                 }
                 else
                 {
-                    this.WindowState = FormWindowState.Maximized;
+                    WindowState = FormWindowState.Maximized;
                 }
                 UiTools.ShowFullScreen(this, doubleWide, TargetScreenId);
             }
             else
             {
-                this.FormBorderStyle = TouchKiosk ? FormBorderStyle.None : FormBorderStyle.Sizable;
+                FormBorderStyle = TouchKiosk ? FormBorderStyle.None : FormBorderStyle.Sizable;
             }
             if (showFull)
             {
-                holder = this.Menu;
-                this.Menu = null;
+                holder = Menu;
+                Menu = null;
             }
             else
             {
                 if (holder != null)
                 {
-                    this.Menu = holder;
+                    Menu = holder;
                 }
             }
             fullScreen = showFull;
-            this.ResumeLayout();
+            ResumeLayout();
             RenderContext11.Resize(renderWindow);
         }
 
@@ -2296,7 +2291,7 @@ namespace TerraViewer
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hwnd, StringBuilder text, int length);
 
 
@@ -2317,7 +2312,7 @@ namespace TerraViewer
         public bool IsWindowOrChildFocused()
         {
             var hwndFG = GetForegroundWindow();
-            var bFocused = hwndFG == this.Handle || hwndFG == renderWindow.Handle || ((currentTab != null && currentTab.Handle == hwndFG) || (contextPanel != null && contextPanel.Handle == hwndFG));
+            var bFocused = hwndFG == Handle || hwndFG == renderWindow.Handle || ((currentTab != null && currentTab.Handle == hwndFG) || (contextPanel != null && contextPanel.Handle == hwndFG));
 
             return bFocused;
         }
@@ -2504,7 +2499,7 @@ namespace TerraViewer
                 case ApplicationMode.Explore:
                     {
                         menuTabs.Freeze();
-                        this.exploreMenu.Show(menuTabs.PointToScreen(menuPoint));
+                        exploreMenu.Show(menuTabs.PointToScreen(menuPoint));
                     }
                     break;
                 case ApplicationMode.Tours:
@@ -2569,17 +2564,17 @@ namespace TerraViewer
                 case ControlAction.Close:
                     CloseOpenToursOrAbort(false);
                     TourPopup.CloseTourPopups();
-                    this.Close();
+                    Close();
                     break;
                 case ControlAction.Maximize:
                 case ControlAction.Restore:
                     if (WindowState == FormWindowState.Maximized)
                     {
-                        this.WindowState = FormWindowState.Normal;
+                        WindowState = FormWindowState.Normal;
                     }
                     else
                     {
-                        this.WindowState = FormWindowState.Maximized;
+                        WindowState = FormWindowState.Maximized;
                     }
                     break;
                 case ControlAction.CloseTour:
@@ -2667,7 +2662,7 @@ namespace TerraViewer
                 return;
             }
 
-            this.SuspendLayout();
+            SuspendLayout();
 
             if (mode != currentMode)
             {
@@ -2899,7 +2894,7 @@ namespace TerraViewer
                 toursTab.LoadTours();
             }
 
-            ClearClientArea = this.ClientRectangle;
+            ClearClientArea = ClientRectangle;
 
             if (Properties.Settings.Default.TranparentWindows)
             {
@@ -2916,7 +2911,7 @@ namespace TerraViewer
                 ClearClientArea.Location = new Point(ClearClientArea.Location.X + widthUsed, ClearClientArea.Location.Y + currentTab.Height);
             }
 
-            if (this.WindowState != FormWindowState.Minimized)
+            if (WindowState != FormWindowState.Minimized)
             {
                 KeyFramer.ShowZOrder();
             }
@@ -3005,7 +3000,7 @@ namespace TerraViewer
         int changeCount;
         public static bool ignoreChanges = false;
 
-        void Default_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        void Default_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (ignoreChanges)
             {
@@ -3059,7 +3054,7 @@ namespace TerraViewer
 
 
 
-        void Default_SettingChanging(object sender, System.Configuration.SettingChangingEventArgs e)
+        void Default_SettingChanging(object sender, SettingChangingEventArgs e)
         {
             settingsDirty = true;
         }
@@ -3109,11 +3104,11 @@ namespace TerraViewer
                     targetAlt = alt = currentAltAz.Alt;
                     targetAz = az = currentAltAz.Az;
                 }
-                this.CameraAngle = cameraAngle;
-                this.CameraRotate = cameraRotate;
-                this.StudyOpacity = blendOpacity;
-                this.SolarSystemTrack = target;
-                this.viewCamera.ViewTarget = targetPoint;
+                CameraAngle = cameraAngle;
+                CameraRotate = cameraRotate;
+                StudyOpacity = blendOpacity;
+                SolarSystemTrack = target;
+                viewCamera.ViewTarget = targetPoint;
                 if (Properties.Settings.Default.SolarSystemScale != solarSystemScale)
                 {
                     Properties.Settings.Default.SolarSystemScale = solarSystemScale;
@@ -3159,7 +3154,7 @@ namespace TerraViewer
                     if (backgroundImageSetHash != 0)
                     {
                         bgImagesetGets++;
-                        if (Earth3d.Logging) { Earth3d.WriteLogMessage("Get Background Imageset from Server"); }
+                        if (Logging) { WriteLogMessage("Get Background Imageset from Server"); }
                         var client = new WebClient();
                         var url = string.Format("http://{0}:5050/imagesetwtml?id={1}", NetControl.MasterAddress, backgroundImageSetHash);
                         var wtml = client.DownloadString(url);
@@ -3198,7 +3193,7 @@ namespace TerraViewer
                 {
                     if (foregroundImageSetHash != 0)
                     {
-                        if (Earth3d.Logging) { Earth3d.WriteLogMessage("Get Background Imageset from Server"); }
+                        if (Logging) { WriteLogMessage("Get Background Imageset from Server"); }
                         fgImagesetGets++;
                         var client = new WebClient();
                         var url = string.Format("http://{0}:5050/imagesetwtml?id={1}", NetControl.MasterAddress, foregroundImageSetHash);
@@ -3281,10 +3276,10 @@ namespace TerraViewer
             openObservingListMenuItem.Text = Language.GetLocalizedText(57, "Collection...");
             // openImageMenuItem.Text = Language.GetLocalizedText(58, "Image...");
             openImageMenuItem.Text = Language.GetLocalizedText(948, "Astronomical Image...");
-            this.remoteAccessControlToolStripMenuItem.Text = Language.GetLocalizedText(1024, "Remote Access Control...");
-            this.screenBroadcastToolStripMenuItem.Text = Language.GetLocalizedText(1023, "Screen Broadcast...");
-            this.publishTourToCommunityToolStripMenuItem.Text = Language.GetLocalizedText(1022, "Publish Tour to Community...");
-            this.layersToolStripMenuItem.Text = Language.GetLocalizedText(1021, "Layers...");
+            remoteAccessControlToolStripMenuItem.Text = Language.GetLocalizedText(1024, "Remote Access Control...");
+            screenBroadcastToolStripMenuItem.Text = Language.GetLocalizedText(1023, "Screen Broadcast...");
+            publishTourToCommunityToolStripMenuItem.Text = Language.GetLocalizedText(1022, "Publish Tour to Community...");
+            layersToolStripMenuItem.Text = Language.GetLocalizedText(1021, "Layers...");
             showFinderToolStripMenuItem.Text = Language.GetLocalizedText(59, "Show Finder");
             playCollectionAsSlideShowToolStripMenuItem.Text = Language.GetLocalizedText(60, "Play Collection as Slide Show");
             aboutMenuItem.Text = Language.GetLocalizedText(61, "About WorldWide Telescope");
@@ -3359,2165 +3354,2165 @@ namespace TerraViewer
             sendLayersToProjectorServersToolStripMenuItem.Text = Language.GetLocalizedText(670, "Send Layers to Projector Servers");
             showTouchControlsToolStripMenuItem.Text = Language.GetLocalizedText(671, "Show On-Screen Controls");
             saveCurrentViewImageToFileToolStripMenuItem.Text = Language.GetLocalizedText(672, "Save Current View Image to File...");
-            this.renderToVideoToolStripMenuItem.Text = Language.GetLocalizedText(673, "Render to Video...");
+            renderToVideoToolStripMenuItem.Text = Language.GetLocalizedText(673, "Render to Video...");
             layerManagerToolStripMenuItem.Text = Language.GetLocalizedText(949, "Layer Manager");
-            this.showOverlayListToolStripMenuItem.Text = Language.GetLocalizedText(1057, "Show Overlay List");
-            this.sendTourToProjectorServersToolStripMenuItem.Text = Language.GetLocalizedText(1058, "Send Tour to Projector Servers");
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Text = Language.GetLocalizedText(1059, "Automatic Tour Sync with Projector Servers");
-            this.findEarthBasedLocationToolStripMenuItem.Text = Language.GetLocalizedText(1060, "Find Earth Based Location...");
-            this.multiSampleAntialiasingToolStripMenuItem.Text = Language.GetLocalizedText(1061, "Multi-Sample Antialiasing");
-            this.noneToolStripMenuItem.Text = Language.GetLocalizedText(832, "None");
-            this.fourSamplesToolStripMenuItem.Text = Language.GetLocalizedText(1062, "Four Samples");
-            this.eightSamplesToolStripMenuItem.Text = Language.GetLocalizedText(1063, "Eight Samples");
-            this.lockVerticalSyncToolStripMenuItem.Text = Language.GetLocalizedText(1064, "Lock Vertical Sync");
-            this.targetFrameRateToolStripMenuItem.Text = Language.GetLocalizedText(1065, "Target Frame Rate");
-            this.fpsToolStripMenuItemUnlimited.Text = Language.GetLocalizedText(1066, "Unlimited");
-            this.fPSToolStripMenuItem60.Text = Language.GetLocalizedText(1067, "60 FPS");
-            this.fPSToolStripMenuItem30.Text = Language.GetLocalizedText(1068, "30 FPS");
-            this.fPSToolStripMenuItem24.Text = Language.GetLocalizedText(1069, "24 FPS");
-            this.monochromeStyleToolStripMenuItem.Text = Language.GetLocalizedText(1070, "Monochrome Style");
-            this.mIDIControllerSetupToolStripMenuItem.Text = Language.GetLocalizedText(1071, "Controller Setup...");
-            this.tileLoadingThrottlingToolStripMenuItem.Text = Language.GetLocalizedText(1072, "Tile Loading Throttling");
-            this.tpsToolStripMenuItem15.Text = Language.GetLocalizedText(1073, "15 tps");
-            this.tpsToolStripMenuItem30.Text = Language.GetLocalizedText(1074, "30 tps");
-            this.tpsToolStripMenuItem60.Text = Language.GetLocalizedText(1075, "60 tps");
-            this.tpsToolStripMenuItem120.Text = Language.GetLocalizedText(1076, "120 tps");
-            this.tpsToolStripMenuItemUnlimited.Text = Language.GetLocalizedText(1066, "Unlimited");
-            this.saveCacheAsCabinetFileToolStripMenuItem.Text = Language.GetLocalizedText(1077, "Save Cache as Cabinet File...");
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Text = Language.GetLocalizedText(1078, "Restore Cache from Cabinet File...");
-            this.clientNodeListToolStripMenuItem.Text = Language.GetLocalizedText(1079, "Projector Server List");
+            showOverlayListToolStripMenuItem.Text = Language.GetLocalizedText(1057, "Show Overlay List");
+            sendTourToProjectorServersToolStripMenuItem.Text = Language.GetLocalizedText(1058, "Send Tour to Projector Servers");
+            automaticTourSyncWithProjectorServersToolStripMenuItem.Text = Language.GetLocalizedText(1059, "Automatic Tour Sync with Projector Servers");
+            findEarthBasedLocationToolStripMenuItem.Text = Language.GetLocalizedText(1060, "Find Earth Based Location...");
+            multiSampleAntialiasingToolStripMenuItem.Text = Language.GetLocalizedText(1061, "Multi-Sample Antialiasing");
+            noneToolStripMenuItem.Text = Language.GetLocalizedText(832, "None");
+            fourSamplesToolStripMenuItem.Text = Language.GetLocalizedText(1062, "Four Samples");
+            eightSamplesToolStripMenuItem.Text = Language.GetLocalizedText(1063, "Eight Samples");
+            lockVerticalSyncToolStripMenuItem.Text = Language.GetLocalizedText(1064, "Lock Vertical Sync");
+            targetFrameRateToolStripMenuItem.Text = Language.GetLocalizedText(1065, "Target Frame Rate");
+            fpsToolStripMenuItemUnlimited.Text = Language.GetLocalizedText(1066, "Unlimited");
+            fPSToolStripMenuItem60.Text = Language.GetLocalizedText(1067, "60 FPS");
+            fPSToolStripMenuItem30.Text = Language.GetLocalizedText(1068, "30 FPS");
+            fPSToolStripMenuItem24.Text = Language.GetLocalizedText(1069, "24 FPS");
+            monochromeStyleToolStripMenuItem.Text = Language.GetLocalizedText(1070, "Monochrome Style");
+            mIDIControllerSetupToolStripMenuItem.Text = Language.GetLocalizedText(1071, "Controller Setup...");
+            tileLoadingThrottlingToolStripMenuItem.Text = Language.GetLocalizedText(1072, "Tile Loading Throttling");
+            tpsToolStripMenuItem15.Text = Language.GetLocalizedText(1073, "15 tps");
+            tpsToolStripMenuItem30.Text = Language.GetLocalizedText(1074, "30 tps");
+            tpsToolStripMenuItem60.Text = Language.GetLocalizedText(1075, "60 tps");
+            tpsToolStripMenuItem120.Text = Language.GetLocalizedText(1076, "120 tps");
+            tpsToolStripMenuItemUnlimited.Text = Language.GetLocalizedText(1066, "Unlimited");
+            saveCacheAsCabinetFileToolStripMenuItem.Text = Language.GetLocalizedText(1077, "Save Cache as Cabinet File...");
+            restoreCacheFromCabinetFileToolStripMenuItem.Text = Language.GetLocalizedText(1078, "Restore Cache from Cabinet File...");
+            clientNodeListToolStripMenuItem.Text = Language.GetLocalizedText(1079, "Projector Server List");
             allowUnconstrainedTiltToolStripMenuItem.Name = Language.GetLocalizedText(1270, "allowUnconstrainedTiltToolStripMenuItem");
-            this.ShowWelcomeTips.Text = Language.GetLocalizedText(1305, "Show Welcome Tips");
-            this.allowUnconstrainedTiltToolStripMenuItem.Text = Language.GetLocalizedText(1306, "Allow Unconstrained Tilt");
-            this.alternatingLinesEvenToolStripMenuItem.Text = Language.GetLocalizedText(1307, "Alternating Lines Even");
-            this.alternatingLinesOddToolStripMenuItem.Text = Language.GetLocalizedText(1308, "Alternating Lines Odd");
-            this.oculusRiftToolStripMenuItem.Text = Language.GetLocalizedText(1309, "Oculus Rift");
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Text = Language.GetLocalizedText(1310, "Detach Main View to Third Monitor");
-            this.fullDomePreviewToolStripMenuItem.Text = Language.GetLocalizedText(1311, "Full Dome Preview");
-            this.xBoxControllerSetupToolStripMenuItem.Text = Language.GetLocalizedText(1312, "Xbox Controller Setup...");
-            this.showKeyframerToolStripMenuItem.Text = Language.GetLocalizedText(1343, "Show Timeline Editor");
-            this.showSlideNumbersToolStripMenuItem.Text = Language.GetLocalizedText(1344, "Show Slide Numbers");
-            this.newFullDomeViewInstanceToolStripMenuItem.Text = Language.GetLocalizedText(1376, "New Full Dome View Instance");
-            this.customGalaxyFileToolStripMenuItem.Text = Language.GetLocalizedText(1377, "Custom Galaxy File...");
-            this.monitorOneToolStripMenuItem.Text = Language.GetLocalizedText(1378, "Monitor One");
-            this.monitorTwoToolStripMenuItem.Text = Language.GetLocalizedText(1379, "Monitor Two");
-            this.monitorThreeToolStripMenuItem.Text = Language.GetLocalizedText(1380, "Monitor Three");
-            this.monitorFourToolStripMenuItem.Text = Language.GetLocalizedText(1381, "Monitor Four");
-            this.monitorFiveToolStripMenuItem.Text = Language.GetLocalizedText(1382, "Monitor Five");
-            this.monitorSixToolStripMenuItem.Text = Language.GetLocalizedText(1383, "Monitor Six");
-            this.monitorSevenToolStripMenuItem.Text = Language.GetLocalizedText(1384, "Monitor Seven");
-            this.monitorEightToolStripMenuItem.Text = Language.GetLocalizedText(1385, "Monitor Eight");
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Text = Language.GetLocalizedText(1386, "Export Current View as STL File for 3D Printing...");
+            ShowWelcomeTips.Text = Language.GetLocalizedText(1305, "Show Welcome Tips");
+            allowUnconstrainedTiltToolStripMenuItem.Text = Language.GetLocalizedText(1306, "Allow Unconstrained Tilt");
+            alternatingLinesEvenToolStripMenuItem.Text = Language.GetLocalizedText(1307, "Alternating Lines Even");
+            alternatingLinesOddToolStripMenuItem.Text = Language.GetLocalizedText(1308, "Alternating Lines Odd");
+            oculusRiftToolStripMenuItem.Text = Language.GetLocalizedText(1309, "Oculus Rift");
+            detachMainViewToThirdMonitorToolStripMenuItem.Text = Language.GetLocalizedText(1310, "Detach Main View to Third Monitor");
+            fullDomePreviewToolStripMenuItem.Text = Language.GetLocalizedText(1311, "Full Dome Preview");
+            xBoxControllerSetupToolStripMenuItem.Text = Language.GetLocalizedText(1312, "Xbox Controller Setup...");
+            showKeyframerToolStripMenuItem.Text = Language.GetLocalizedText(1343, "Show Timeline Editor");
+            showSlideNumbersToolStripMenuItem.Text = Language.GetLocalizedText(1344, "Show Slide Numbers");
+            newFullDomeViewInstanceToolStripMenuItem.Text = Language.GetLocalizedText(1376, "New Full Dome View Instance");
+            customGalaxyFileToolStripMenuItem.Text = Language.GetLocalizedText(1377, "Custom Galaxy File...");
+            monitorOneToolStripMenuItem.Text = Language.GetLocalizedText(1378, "Monitor One");
+            monitorTwoToolStripMenuItem.Text = Language.GetLocalizedText(1379, "Monitor Two");
+            monitorThreeToolStripMenuItem.Text = Language.GetLocalizedText(1380, "Monitor Three");
+            monitorFourToolStripMenuItem.Text = Language.GetLocalizedText(1381, "Monitor Four");
+            monitorFiveToolStripMenuItem.Text = Language.GetLocalizedText(1382, "Monitor Five");
+            monitorSixToolStripMenuItem.Text = Language.GetLocalizedText(1383, "Monitor Six");
+            monitorSevenToolStripMenuItem.Text = Language.GetLocalizedText(1384, "Monitor Seven");
+            monitorEightToolStripMenuItem.Text = Language.GetLocalizedText(1385, "Monitor Eight");
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Text = Language.GetLocalizedText(1386, "Export Current View as STL File for 3D Printing...");
         }
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(Earth3d));
-            this.timer = new Timer(this.components);
-            this.menuItem7 = new ToolStripMenuItem();
-            this.viewOverlayTopo = new ToolStripMenuItem();
-            this.InputTimer = new Timer(this.components);
-            this.contextMenu = new ContextMenuStrip(this.components);
-            this.nameToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator11 = new ToolStripSeparator();
-            this.informationToolStripMenuItem = new ToolStripMenuItem();
-            this.lookupOnSimbadToolStripMenuItem = new ToolStripMenuItem();
-            this.lookupOnSEDSToolStripMenuItem = new ToolStripMenuItem();
-            this.lookupOnWikipediaToolStripMenuItem = new ToolStripMenuItem();
-            this.publicationsToolStripMenuItem = new ToolStripMenuItem();
-            this.lookUpOnNEDToolStripMenuItem = new ToolStripMenuItem();
-            this.lookUpOnSDSSToolStripMenuItem = new ToolStripMenuItem();
-            this.imageryToolStripMenuItem = new ToolStripMenuItem();
-            this.getDSSImageToolStripMenuItem = new ToolStripMenuItem();
-            this.getSDSSImageToolStripMenuItem = new ToolStripMenuItem();
-            this.getDSSFITSToolStripMenuItem = new ToolStripMenuItem();
-            this.virtualObservatorySearchesToolStripMenuItem = new ToolStripMenuItem();
-            this.uSNONVOConeSearchToolStripMenuItem = new ToolStripMenuItem();
-            this.hLAFootprintsToolStripMenuItem = new ToolStripMenuItem();
-            this.nEDSearchToolStripMenuItem = new ToolStripMenuItem();
-            this.sDSSSearchToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem3 = new ToolStripMenuItem();
-            this.toolStripSeparator15 = new ToolStripSeparator();
-            this.setAsForegroundImageryToolStripMenuItem = new ToolStripMenuItem();
-            this.setAsBackgroundImageryToolStripMenuItem = new ToolStripMenuItem();
-            this.addToImageStackToolStripMenuItem = new ToolStripMenuItem();
-            this.addAsNewLayerToolStripMenuItem = new ToolStripMenuItem();
-            this.cacheManagementToolStripMenuItem1 = new ToolStripMenuItem();
-            this.cacheImageryTilePyramidToolStripMenuItem = new ToolStripMenuItem();
-            this.showCacheSpaceUsedToolStripMenuItem = new ToolStripMenuItem();
-            this.removeFromImageCacheToolStripMenuItem = new ToolStripMenuItem();
-            this.ImagerySeperator = new ToolStripSeparator();
-            this.propertiesToolStripMenuItem = new ToolStripMenuItem();
-            this.copyShortcutToolStripMenuItem = new ToolStripMenuItem();
-            this.addToCollectionsToolStripMenuItem = new ToolStripMenuItem();
-            this.newCollectionToolStripMenuItem = new ToolStripMenuItem();
-            this.removeFromCollectionToolStripMenuItem = new ToolStripMenuItem();
-            this.editToolStripMenuItem = new ToolStripMenuItem();
-            this.sAMPToolStripMenuItem = new ToolStripMenuItem();
-            this.sendImageToToolStripMenuItem = new ToolStripMenuItem();
-            this.broadcastToolStripMenuItem = new ToolStripMenuItem();
-            this.sendTableToToolStripMenuItem = new ToolStripMenuItem();
-            this.broadcastToolStripMenuItem1 = new ToolStripMenuItem();
-            this.HoverTimer = new Timer(this.components);
-            this.communitiesMenu = new ContextMenuStrip(this.components);
-            this.joinCoomunityMenuItem = new ToolStripMenuItem();
-            this.updateLoginCredentialsMenuItem = new ToolStripMenuItem();
-            this.logoutMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator8 = new ToolStripSeparator();
-            this.uploadObservingListToCommunityMenuItem = new ToolStripMenuItem();
-            this.uploadImageToCommunityMenuItem = new ToolStripMenuItem();
-            this.searchMenu = new ContextMenuStrip(this.components);
-            this.sIMBADSearchToolStripMenuItem = new ToolStripMenuItem();
-            this.vORegistryToolStripMenuItem = new ToolStripMenuItem();
-            this.findEarthBasedLocationToolStripMenuItem = new ToolStripMenuItem();
-            this.toursMenu = new ContextMenuStrip(this.components);
-            this.tourHomeMenuItem = new ToolStripMenuItem();
-            this.tourSearchWebPageMenuItem = new ToolStripMenuItem();
-            this.musicAndOtherTourResourceToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator6 = new ToolStripSeparator();
-            this.createANewTourToolStripMenuItem = new ToolStripMenuItem();
-            this.saveTourAsToolStripMenuItem = new ToolStripMenuItem();
-            this.publishTourMenuItem = new ToolStripMenuItem();
-            this.renderToVideoToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator1 = new ToolStripSeparator();
-            this.autoRepeatToolStripMenuItem = new ToolStripMenuItem();
-            this.oneToolStripMenuItem = new ToolStripMenuItem();
-            this.allToolStripMenuItem = new ToolStripMenuItem();
-            this.offToolStripMenuItem = new ToolStripMenuItem();
-            this.editTourToolStripMenuItem = new ToolStripMenuItem();
-            this.showOverlayListToolStripMenuItem = new ToolStripMenuItem();
-            this.showKeyframerToolStripMenuItem = new ToolStripMenuItem();
-            this.showSlideNumbersToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem12 = new ToolStripSeparator();
-            this.undoToolStripMenuItem = new ToolStripMenuItem();
-            this.redoToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem13 = new ToolStripSeparator();
-            this.publishTourToCommunityToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator23 = new ToolStripSeparator();
-            this.sendTourToProjectorServersToolStripMenuItem = new ToolStripMenuItem();
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem = new ToolStripMenuItem();
-            this.telescopeMenu = new ContextMenuStrip(this.components);
-            this.slewTelescopeMenuItem = new ToolStripMenuItem();
-            this.centerTelescopeMenuItem = new ToolStripMenuItem();
-            this.SyncTelescopeMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator3 = new ToolStripSeparator();
-            this.chooseTelescopeMenuItem = new ToolStripMenuItem();
-            this.connectTelescopeMenuItem = new ToolStripMenuItem();
-            this.trackScopeMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator12 = new ToolStripSeparator();
-            this.parkTelescopeMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator13 = new ToolStripSeparator();
-            this.ASCOMPlatformHomePage = new ToolStripMenuItem();
-            this.exploreMenu = new ContextMenuStrip(this.components);
-            this.createNewObservingListToolStripMenuItem = new ToolStripMenuItem();
-            this.newObservingListpMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator5 = new ToolStripSeparator();
-            this.newSimpleTourMenuItem = new ToolStripMenuItem();
-            this.openFileToolStripMenuItem = new ToolStripMenuItem();
-            this.openTourMenuItem = new ToolStripMenuItem();
-            this.openObservingListMenuItem = new ToolStripMenuItem();
-            this.layersToolStripMenuItem = new ToolStripMenuItem();
-            this.openImageMenuItem = new ToolStripMenuItem();
-            this.openKMLMenuItem = new ToolStripMenuItem();
-            this.vOTableToolStripMenuItem = new ToolStripMenuItem();
-            this.shapeFileToolStripMenuItem = new ToolStripMenuItem();
-            this.layerManagerToolStripMenuItem = new ToolStripMenuItem();
-            this.customGalaxyFileToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator7 = new ToolStripSeparator();
-            this.showFinderToolStripMenuItem = new ToolStripMenuItem();
-            this.playCollectionAsSlideShowToolStripMenuItem = new ToolStripMenuItem();
-            this.addCollectionAsTourStopsToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator2 = new ToolStripSeparator();
-            this.ShowWelcomeTips = new ToolStripMenuItem();
-            this.aboutMenuItem = new ToolStripMenuItem();
-            this.gettingStarteMenuItem = new ToolStripMenuItem();
-            this.homepageMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator4 = new ToolStripSeparator();
-            this.exitMenuItem = new ToolStripMenuItem();
-            this.settingsMenu = new ContextMenuStrip(this.components);
-            this.checkForUpdatesToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem1 = new ToolStripSeparator();
-            this.feedbackToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator17 = new ToolStripSeparator();
-            this.restoreDefaultsToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator16 = new ToolStripSeparator();
-            this.advancedToolStripMenuItem = new ToolStripMenuItem();
-            this.downloadQueueToolStripMenuItem = new ToolStripMenuItem();
-            this.startQueueToolStripMenuItem = new ToolStripMenuItem();
-            this.stopQueueToolStripMenuItem = new ToolStripMenuItem();
-            this.tileLoadingThrottlingToolStripMenuItem = new ToolStripMenuItem();
-            this.tpsToolStripMenuItem15 = new ToolStripMenuItem();
-            this.tpsToolStripMenuItem30 = new ToolStripMenuItem();
-            this.tpsToolStripMenuItem60 = new ToolStripMenuItem();
-            this.tpsToolStripMenuItem120 = new ToolStripMenuItem();
-            this.tpsToolStripMenuItemUnlimited = new ToolStripMenuItem();
-            this.toolStripMenuItem8 = new ToolStripSeparator();
-            this.saveCacheAsCabinetFileToolStripMenuItem = new ToolStripMenuItem();
-            this.restoreCacheFromCabinetFileToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator22 = new ToolStripSeparator();
-            this.flushCacheToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator18 = new ToolStripSeparator();
-            this.showPerformanceDataToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator19 = new ToolStripSeparator();
-            this.toolStripMenuItem2 = new ToolStripMenuItem();
-            this.multiChanelCalibrationToolStripMenuItem = new ToolStripMenuItem();
-            this.clientNodeListToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem6 = new ToolStripSeparator();
-            this.sendLayersToProjectorServersToolStripMenuItem = new ToolStripMenuItem();
-            this.mIDIControllerSetupToolStripMenuItem = new ToolStripMenuItem();
-            this.xBoxControllerSetupToolStripMenuItem = new ToolStripMenuItem();
-            this.remoteAccessControlToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem14 = new ToolStripSeparator();
-            this.selectLanguageToolStripMenuItem = new ToolStripMenuItem();
-            this.regionalDataCacheToolStripMenuItem = new ToolStripMenuItem();
-            this.viewMenu = new ContextMenuStrip(this.components);
-            this.resetCameraMenuItem = new ToolStripMenuItem();
-            this.showTouchControlsToolStripMenuItem = new ToolStripMenuItem();
-            this.monochromeStyleToolStripMenuItem = new ToolStripMenuItem();
-            this.allowUnconstrainedTiltToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator9 = new ToolStripSeparator();
-            this.startupToolStripMenuItem = new ToolStripMenuItem();
-            this.earthToolStripMenuItem = new ToolStripMenuItem();
-            this.planetToolStripMenuItem = new ToolStripMenuItem();
-            this.skyToolStripMenuItem = new ToolStripMenuItem();
-            this.panoramaToolStripMenuItem = new ToolStripMenuItem();
-            this.solarSystemToolStripMenuItem = new ToolStripMenuItem();
-            this.lastToolStripMenuItem = new ToolStripMenuItem();
-            this.randomToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem5 = new ToolStripSeparator();
-            this.copyCurrentViewToClipboardToolStripMenuItem = new ToolStripMenuItem();
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem = new ToolStripMenuItem();
-            this.saveCurrentViewImageToFileToolStripMenuItem = new ToolStripMenuItem();
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem = new ToolStripMenuItem();
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator21 = new ToolStripSeparator();
-            this.screenBroadcastToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator14 = new ToolStripSeparator();
-            this.imageStackToolStripMenuItem = new ToolStripMenuItem();
-            this.showLayerManagerToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripSeparator20 = new ToolStripSeparator();
-            this.stereoToolStripMenuItem = new ToolStripMenuItem();
-            this.enabledToolStripMenuItem = new ToolStripMenuItem();
-            this.anaglyphToolStripMenuItem = new ToolStripMenuItem();
-            this.anaglyphYellowBlueToolStripMenuItem = new ToolStripMenuItem();
-            this.sideBySideProjectionToolStripMenuItem = new ToolStripMenuItem();
-            this.sideBySideCrossEyedToolStripMenuItem = new ToolStripMenuItem();
-            this.alternatingLinesOddToolStripMenuItem = new ToolStripMenuItem();
-            this.alternatingLinesEvenToolStripMenuItem = new ToolStripMenuItem();
-            this.oculusRiftToolStripMenuItem = new ToolStripMenuItem();
-            this.expermentalToolStripMenuItem = new ToolStripMenuItem();
-            this.fullDomeToolStripMenuItem = new ToolStripMenuItem();
-            this.newFullDomeViewInstanceToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorOneToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorTwoToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorThreeToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorFourToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorFiveToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorSixToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorSevenToolStripMenuItem = new ToolStripMenuItem();
-            this.monitorEightToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem15 = new ToolStripSeparator();
-            this.domeSetupToolStripMenuItem = new ToolStripMenuItem();
-            this.listenUpBoysToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem11 = new ToolStripSeparator();
-            this.detachMainViewToSecondMonitor = new ToolStripMenuItem();
-            this.detachMainViewToThirdMonitorToolStripMenuItem = new ToolStripMenuItem();
-            this.toolStripMenuItem10 = new ToolStripSeparator();
-            this.fullDomePreviewToolStripMenuItem = new ToolStripMenuItem();
-            this.toggleFullScreenModeF11ToolStripMenuItem = new ToolStripMenuItem();
-            this.multiSampleAntialiasingToolStripMenuItem = new ToolStripMenuItem();
-            this.noneToolStripMenuItem = new ToolStripMenuItem();
-            this.fourSamplesToolStripMenuItem = new ToolStripMenuItem();
-            this.eightSamplesToolStripMenuItem = new ToolStripMenuItem();
-            this.lockVerticalSyncToolStripMenuItem = new ToolStripMenuItem();
-            this.targetFrameRateToolStripMenuItem = new ToolStripMenuItem();
-            this.fpsToolStripMenuItemUnlimited = new ToolStripMenuItem();
-            this.fPSToolStripMenuItem60 = new ToolStripMenuItem();
-            this.fPSToolStripMenuItem30 = new ToolStripMenuItem();
-            this.fPSToolStripMenuItem24 = new ToolStripMenuItem();
-            this.StatupTimer = new Timer(this.components);
-            this.SlideAdvanceTimer = new Timer(this.components);
-            this.TourEndCheck = new Timer(this.components);
-            this.autoSaveTimer = new Timer(this.components);
-            this.DeviceHeartbeat = new Timer(this.components);
-            this.kioskTitleBar = new KioskTitleBar();
-            this.renderWindow = new RenderTarget();
-            this.menuTabs = new MenuTabs();
-            this.contextMenu.SuspendLayout();
-            this.communitiesMenu.SuspendLayout();
-            this.searchMenu.SuspendLayout();
-            this.toursMenu.SuspendLayout();
-            this.telescopeMenu.SuspendLayout();
-            this.exploreMenu.SuspendLayout();
-            this.settingsMenu.SuspendLayout();
-            this.viewMenu.SuspendLayout();
-            this.SuspendLayout();
+            components = new Container();
+            var resources = new ComponentResourceManager(typeof(Earth3d));
+            timer = new Timer(components);
+            menuItem7 = new ToolStripMenuItem();
+            viewOverlayTopo = new ToolStripMenuItem();
+            InputTimer = new Timer(components);
+            contextMenu = new ContextMenuStrip(components);
+            nameToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator11 = new ToolStripSeparator();
+            informationToolStripMenuItem = new ToolStripMenuItem();
+            lookupOnSimbadToolStripMenuItem = new ToolStripMenuItem();
+            lookupOnSEDSToolStripMenuItem = new ToolStripMenuItem();
+            lookupOnWikipediaToolStripMenuItem = new ToolStripMenuItem();
+            publicationsToolStripMenuItem = new ToolStripMenuItem();
+            lookUpOnNEDToolStripMenuItem = new ToolStripMenuItem();
+            lookUpOnSDSSToolStripMenuItem = new ToolStripMenuItem();
+            imageryToolStripMenuItem = new ToolStripMenuItem();
+            getDSSImageToolStripMenuItem = new ToolStripMenuItem();
+            getSDSSImageToolStripMenuItem = new ToolStripMenuItem();
+            getDSSFITSToolStripMenuItem = new ToolStripMenuItem();
+            virtualObservatorySearchesToolStripMenuItem = new ToolStripMenuItem();
+            uSNONVOConeSearchToolStripMenuItem = new ToolStripMenuItem();
+            hLAFootprintsToolStripMenuItem = new ToolStripMenuItem();
+            nEDSearchToolStripMenuItem = new ToolStripMenuItem();
+            sDSSSearchToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripMenuItem();
+            toolStripSeparator15 = new ToolStripSeparator();
+            setAsForegroundImageryToolStripMenuItem = new ToolStripMenuItem();
+            setAsBackgroundImageryToolStripMenuItem = new ToolStripMenuItem();
+            addToImageStackToolStripMenuItem = new ToolStripMenuItem();
+            addAsNewLayerToolStripMenuItem = new ToolStripMenuItem();
+            cacheManagementToolStripMenuItem1 = new ToolStripMenuItem();
+            cacheImageryTilePyramidToolStripMenuItem = new ToolStripMenuItem();
+            showCacheSpaceUsedToolStripMenuItem = new ToolStripMenuItem();
+            removeFromImageCacheToolStripMenuItem = new ToolStripMenuItem();
+            ImagerySeperator = new ToolStripSeparator();
+            propertiesToolStripMenuItem = new ToolStripMenuItem();
+            copyShortcutToolStripMenuItem = new ToolStripMenuItem();
+            addToCollectionsToolStripMenuItem = new ToolStripMenuItem();
+            newCollectionToolStripMenuItem = new ToolStripMenuItem();
+            removeFromCollectionToolStripMenuItem = new ToolStripMenuItem();
+            editToolStripMenuItem = new ToolStripMenuItem();
+            sAMPToolStripMenuItem = new ToolStripMenuItem();
+            sendImageToToolStripMenuItem = new ToolStripMenuItem();
+            broadcastToolStripMenuItem = new ToolStripMenuItem();
+            sendTableToToolStripMenuItem = new ToolStripMenuItem();
+            broadcastToolStripMenuItem1 = new ToolStripMenuItem();
+            HoverTimer = new Timer(components);
+            communitiesMenu = new ContextMenuStrip(components);
+            joinCoomunityMenuItem = new ToolStripMenuItem();
+            updateLoginCredentialsMenuItem = new ToolStripMenuItem();
+            logoutMenuItem = new ToolStripMenuItem();
+            toolStripSeparator8 = new ToolStripSeparator();
+            uploadObservingListToCommunityMenuItem = new ToolStripMenuItem();
+            uploadImageToCommunityMenuItem = new ToolStripMenuItem();
+            searchMenu = new ContextMenuStrip(components);
+            sIMBADSearchToolStripMenuItem = new ToolStripMenuItem();
+            vORegistryToolStripMenuItem = new ToolStripMenuItem();
+            findEarthBasedLocationToolStripMenuItem = new ToolStripMenuItem();
+            toursMenu = new ContextMenuStrip(components);
+            tourHomeMenuItem = new ToolStripMenuItem();
+            tourSearchWebPageMenuItem = new ToolStripMenuItem();
+            musicAndOtherTourResourceToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator6 = new ToolStripSeparator();
+            createANewTourToolStripMenuItem = new ToolStripMenuItem();
+            saveTourAsToolStripMenuItem = new ToolStripMenuItem();
+            publishTourMenuItem = new ToolStripMenuItem();
+            renderToVideoToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            autoRepeatToolStripMenuItem = new ToolStripMenuItem();
+            oneToolStripMenuItem = new ToolStripMenuItem();
+            allToolStripMenuItem = new ToolStripMenuItem();
+            offToolStripMenuItem = new ToolStripMenuItem();
+            editTourToolStripMenuItem = new ToolStripMenuItem();
+            showOverlayListToolStripMenuItem = new ToolStripMenuItem();
+            showKeyframerToolStripMenuItem = new ToolStripMenuItem();
+            showSlideNumbersToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem12 = new ToolStripSeparator();
+            undoToolStripMenuItem = new ToolStripMenuItem();
+            redoToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem13 = new ToolStripSeparator();
+            publishTourToCommunityToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator23 = new ToolStripSeparator();
+            sendTourToProjectorServersToolStripMenuItem = new ToolStripMenuItem();
+            automaticTourSyncWithProjectorServersToolStripMenuItem = new ToolStripMenuItem();
+            telescopeMenu = new ContextMenuStrip(components);
+            slewTelescopeMenuItem = new ToolStripMenuItem();
+            centerTelescopeMenuItem = new ToolStripMenuItem();
+            SyncTelescopeMenuItem = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            chooseTelescopeMenuItem = new ToolStripMenuItem();
+            connectTelescopeMenuItem = new ToolStripMenuItem();
+            trackScopeMenuItem = new ToolStripMenuItem();
+            toolStripSeparator12 = new ToolStripSeparator();
+            parkTelescopeMenuItem = new ToolStripMenuItem();
+            toolStripSeparator13 = new ToolStripSeparator();
+            ASCOMPlatformHomePage = new ToolStripMenuItem();
+            exploreMenu = new ContextMenuStrip(components);
+            createNewObservingListToolStripMenuItem = new ToolStripMenuItem();
+            newObservingListpMenuItem = new ToolStripMenuItem();
+            toolStripSeparator5 = new ToolStripSeparator();
+            newSimpleTourMenuItem = new ToolStripMenuItem();
+            openFileToolStripMenuItem = new ToolStripMenuItem();
+            openTourMenuItem = new ToolStripMenuItem();
+            openObservingListMenuItem = new ToolStripMenuItem();
+            layersToolStripMenuItem = new ToolStripMenuItem();
+            openImageMenuItem = new ToolStripMenuItem();
+            openKMLMenuItem = new ToolStripMenuItem();
+            vOTableToolStripMenuItem = new ToolStripMenuItem();
+            shapeFileToolStripMenuItem = new ToolStripMenuItem();
+            layerManagerToolStripMenuItem = new ToolStripMenuItem();
+            customGalaxyFileToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator7 = new ToolStripSeparator();
+            showFinderToolStripMenuItem = new ToolStripMenuItem();
+            playCollectionAsSlideShowToolStripMenuItem = new ToolStripMenuItem();
+            addCollectionAsTourStopsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
+            ShowWelcomeTips = new ToolStripMenuItem();
+            aboutMenuItem = new ToolStripMenuItem();
+            gettingStarteMenuItem = new ToolStripMenuItem();
+            homepageMenuItem = new ToolStripMenuItem();
+            toolStripSeparator4 = new ToolStripSeparator();
+            exitMenuItem = new ToolStripMenuItem();
+            settingsMenu = new ContextMenuStrip(components);
+            checkForUpdatesToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripSeparator();
+            feedbackToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator17 = new ToolStripSeparator();
+            restoreDefaultsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator16 = new ToolStripSeparator();
+            advancedToolStripMenuItem = new ToolStripMenuItem();
+            downloadQueueToolStripMenuItem = new ToolStripMenuItem();
+            startQueueToolStripMenuItem = new ToolStripMenuItem();
+            stopQueueToolStripMenuItem = new ToolStripMenuItem();
+            tileLoadingThrottlingToolStripMenuItem = new ToolStripMenuItem();
+            tpsToolStripMenuItem15 = new ToolStripMenuItem();
+            tpsToolStripMenuItem30 = new ToolStripMenuItem();
+            tpsToolStripMenuItem60 = new ToolStripMenuItem();
+            tpsToolStripMenuItem120 = new ToolStripMenuItem();
+            tpsToolStripMenuItemUnlimited = new ToolStripMenuItem();
+            toolStripMenuItem8 = new ToolStripSeparator();
+            saveCacheAsCabinetFileToolStripMenuItem = new ToolStripMenuItem();
+            restoreCacheFromCabinetFileToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator22 = new ToolStripSeparator();
+            flushCacheToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator18 = new ToolStripSeparator();
+            showPerformanceDataToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator19 = new ToolStripSeparator();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            multiChanelCalibrationToolStripMenuItem = new ToolStripMenuItem();
+            clientNodeListToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem6 = new ToolStripSeparator();
+            sendLayersToProjectorServersToolStripMenuItem = new ToolStripMenuItem();
+            mIDIControllerSetupToolStripMenuItem = new ToolStripMenuItem();
+            xBoxControllerSetupToolStripMenuItem = new ToolStripMenuItem();
+            remoteAccessControlToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem14 = new ToolStripSeparator();
+            selectLanguageToolStripMenuItem = new ToolStripMenuItem();
+            regionalDataCacheToolStripMenuItem = new ToolStripMenuItem();
+            viewMenu = new ContextMenuStrip(components);
+            resetCameraMenuItem = new ToolStripMenuItem();
+            showTouchControlsToolStripMenuItem = new ToolStripMenuItem();
+            monochromeStyleToolStripMenuItem = new ToolStripMenuItem();
+            allowUnconstrainedTiltToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator9 = new ToolStripSeparator();
+            startupToolStripMenuItem = new ToolStripMenuItem();
+            earthToolStripMenuItem = new ToolStripMenuItem();
+            planetToolStripMenuItem = new ToolStripMenuItem();
+            skyToolStripMenuItem = new ToolStripMenuItem();
+            panoramaToolStripMenuItem = new ToolStripMenuItem();
+            solarSystemToolStripMenuItem = new ToolStripMenuItem();
+            lastToolStripMenuItem = new ToolStripMenuItem();
+            randomToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem5 = new ToolStripSeparator();
+            copyCurrentViewToClipboardToolStripMenuItem = new ToolStripMenuItem();
+            copyShortCutToThisViewToClipboardToolStripMenuItem = new ToolStripMenuItem();
+            saveCurrentViewImageToFileToolStripMenuItem = new ToolStripMenuItem();
+            setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem = new ToolStripMenuItem();
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator21 = new ToolStripSeparator();
+            screenBroadcastToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator14 = new ToolStripSeparator();
+            imageStackToolStripMenuItem = new ToolStripMenuItem();
+            showLayerManagerToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator20 = new ToolStripSeparator();
+            stereoToolStripMenuItem = new ToolStripMenuItem();
+            enabledToolStripMenuItem = new ToolStripMenuItem();
+            anaglyphToolStripMenuItem = new ToolStripMenuItem();
+            anaglyphYellowBlueToolStripMenuItem = new ToolStripMenuItem();
+            sideBySideProjectionToolStripMenuItem = new ToolStripMenuItem();
+            sideBySideCrossEyedToolStripMenuItem = new ToolStripMenuItem();
+            alternatingLinesOddToolStripMenuItem = new ToolStripMenuItem();
+            alternatingLinesEvenToolStripMenuItem = new ToolStripMenuItem();
+            oculusRiftToolStripMenuItem = new ToolStripMenuItem();
+            expermentalToolStripMenuItem = new ToolStripMenuItem();
+            fullDomeToolStripMenuItem = new ToolStripMenuItem();
+            newFullDomeViewInstanceToolStripMenuItem = new ToolStripMenuItem();
+            monitorOneToolStripMenuItem = new ToolStripMenuItem();
+            monitorTwoToolStripMenuItem = new ToolStripMenuItem();
+            monitorThreeToolStripMenuItem = new ToolStripMenuItem();
+            monitorFourToolStripMenuItem = new ToolStripMenuItem();
+            monitorFiveToolStripMenuItem = new ToolStripMenuItem();
+            monitorSixToolStripMenuItem = new ToolStripMenuItem();
+            monitorSevenToolStripMenuItem = new ToolStripMenuItem();
+            monitorEightToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem15 = new ToolStripSeparator();
+            domeSetupToolStripMenuItem = new ToolStripMenuItem();
+            listenUpBoysToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem11 = new ToolStripSeparator();
+            detachMainViewToSecondMonitor = new ToolStripMenuItem();
+            detachMainViewToThirdMonitorToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem10 = new ToolStripSeparator();
+            fullDomePreviewToolStripMenuItem = new ToolStripMenuItem();
+            toggleFullScreenModeF11ToolStripMenuItem = new ToolStripMenuItem();
+            multiSampleAntialiasingToolStripMenuItem = new ToolStripMenuItem();
+            noneToolStripMenuItem = new ToolStripMenuItem();
+            fourSamplesToolStripMenuItem = new ToolStripMenuItem();
+            eightSamplesToolStripMenuItem = new ToolStripMenuItem();
+            lockVerticalSyncToolStripMenuItem = new ToolStripMenuItem();
+            targetFrameRateToolStripMenuItem = new ToolStripMenuItem();
+            fpsToolStripMenuItemUnlimited = new ToolStripMenuItem();
+            fPSToolStripMenuItem60 = new ToolStripMenuItem();
+            fPSToolStripMenuItem30 = new ToolStripMenuItem();
+            fPSToolStripMenuItem24 = new ToolStripMenuItem();
+            StatupTimer = new Timer(components);
+            SlideAdvanceTimer = new Timer(components);
+            TourEndCheck = new Timer(components);
+            autoSaveTimer = new Timer(components);
+            DeviceHeartbeat = new Timer(components);
+            kioskTitleBar = new KioskTitleBar();
+            renderWindow = new RenderTarget();
+            menuTabs = new MenuTabs();
+            contextMenu.SuspendLayout();
+            communitiesMenu.SuspendLayout();
+            searchMenu.SuspendLayout();
+            toursMenu.SuspendLayout();
+            telescopeMenu.SuspendLayout();
+            exploreMenu.SuspendLayout();
+            settingsMenu.SuspendLayout();
+            viewMenu.SuspendLayout();
+            SuspendLayout();
             // 
             // timer
             // 
-            this.timer.Tick += new EventHandler(this.timer1_Tick);
+            timer.Tick += timer1_Tick;
             // 
             // Seperator
             // 
-            this.menuItem7.Name = "menuItem7";
-            this.menuItem7.Size = new Size(32, 19);
-            this.menuItem7.Text = "-";
+            menuItem7.Name = "menuItem7";
+            menuItem7.Size = new Size(32, 19);
+            menuItem7.Text = "-";
             // 
             // viewOverlayTopo
             // 
-            this.viewOverlayTopo.Name = "viewOverlayTopo";
-            this.viewOverlayTopo.Size = new Size(32, 19);
+            viewOverlayTopo.Name = "viewOverlayTopo";
+            viewOverlayTopo.Size = new Size(32, 19);
             // 
             // InputTimer
             // 
-            this.InputTimer.Enabled = true;
-            this.InputTimer.Interval = 350;
-            this.InputTimer.Tick += new EventHandler(this.timer2_Tick);
+            InputTimer.Enabled = true;
+            InputTimer.Interval = 350;
+            InputTimer.Tick += timer2_Tick;
             // 
             // contextMenu
             // 
-            this.contextMenu.Items.AddRange(new ToolStripItem[] {
-            this.nameToolStripMenuItem,
-            this.toolStripSeparator11,
-            this.informationToolStripMenuItem,
-            this.imageryToolStripMenuItem,
-            this.virtualObservatorySearchesToolStripMenuItem,
-            this.toolStripSeparator15,
-            this.setAsForegroundImageryToolStripMenuItem,
-            this.setAsBackgroundImageryToolStripMenuItem,
-            this.addToImageStackToolStripMenuItem,
-            this.addAsNewLayerToolStripMenuItem,
-            this.cacheManagementToolStripMenuItem1,
-            this.ImagerySeperator,
-            this.propertiesToolStripMenuItem,
-            this.copyShortcutToolStripMenuItem,
-            this.addToCollectionsToolStripMenuItem,
-            this.removeFromCollectionToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.sAMPToolStripMenuItem});
-            this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new Size(225, 352);
-            this.contextMenu.Closing += new ToolStripDropDownClosingEventHandler(this.contextMenu_Closing);
-            this.contextMenu.Opening += this.contextMenu_Opening;
+            contextMenu.Items.AddRange(new ToolStripItem[] {
+            nameToolStripMenuItem,
+            toolStripSeparator11,
+            informationToolStripMenuItem,
+            imageryToolStripMenuItem,
+            virtualObservatorySearchesToolStripMenuItem,
+            toolStripSeparator15,
+            setAsForegroundImageryToolStripMenuItem,
+            setAsBackgroundImageryToolStripMenuItem,
+            addToImageStackToolStripMenuItem,
+            addAsNewLayerToolStripMenuItem,
+            cacheManagementToolStripMenuItem1,
+            ImagerySeperator,
+            propertiesToolStripMenuItem,
+            copyShortcutToolStripMenuItem,
+            addToCollectionsToolStripMenuItem,
+            removeFromCollectionToolStripMenuItem,
+            editToolStripMenuItem,
+            sAMPToolStripMenuItem});
+            contextMenu.Name = "contextMenu";
+            contextMenu.Size = new Size(225, 352);
+            contextMenu.Closing += contextMenu_Closing;
+            contextMenu.Opening += contextMenu_Opening;
             // 
             // nameToolStripMenuItem
             // 
-            this.nameToolStripMenuItem.Name = "nameToolStripMenuItem";
-            this.nameToolStripMenuItem.Size = new Size(224, 22);
-            this.nameToolStripMenuItem.Text = "Name:";
-            this.nameToolStripMenuItem.Click += new EventHandler(this.nameToolStripMenuItem_Click);
+            nameToolStripMenuItem.Name = "nameToolStripMenuItem";
+            nameToolStripMenuItem.Size = new Size(224, 22);
+            nameToolStripMenuItem.Text = "Name:";
+            nameToolStripMenuItem.Click += nameToolStripMenuItem_Click;
             // 
             // toolStripSeparator11
             // 
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new Size(221, 6);
+            toolStripSeparator11.Name = "toolStripSeparator11";
+            toolStripSeparator11.Size = new Size(221, 6);
             // 
             // informationToolStripMenuItem
             // 
-            this.informationToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.lookupOnSimbadToolStripMenuItem,
-            this.lookupOnSEDSToolStripMenuItem,
-            this.lookupOnWikipediaToolStripMenuItem,
-            this.publicationsToolStripMenuItem,
-            this.lookUpOnNEDToolStripMenuItem,
-            this.lookUpOnSDSSToolStripMenuItem});
-            this.informationToolStripMenuItem.Name = "informationToolStripMenuItem";
-            this.informationToolStripMenuItem.Size = new Size(224, 22);
-            this.informationToolStripMenuItem.Text = "Information";
+            informationToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            lookupOnSimbadToolStripMenuItem,
+            lookupOnSEDSToolStripMenuItem,
+            lookupOnWikipediaToolStripMenuItem,
+            publicationsToolStripMenuItem,
+            lookUpOnNEDToolStripMenuItem,
+            lookUpOnSDSSToolStripMenuItem});
+            informationToolStripMenuItem.Name = "informationToolStripMenuItem";
+            informationToolStripMenuItem.Size = new Size(224, 22);
+            informationToolStripMenuItem.Text = "Information";
             // 
             // lookupOnSimbadToolStripMenuItem
             // 
-            this.lookupOnSimbadToolStripMenuItem.Name = "lookupOnSimbadToolStripMenuItem";
-            this.lookupOnSimbadToolStripMenuItem.Size = new Size(227, 22);
-            this.lookupOnSimbadToolStripMenuItem.Text = "Look up on SIMBAD";
-            this.lookupOnSimbadToolStripMenuItem.Click += new EventHandler(this.lookupOnSimbadToolStripMenuItem_Click);
+            lookupOnSimbadToolStripMenuItem.Name = "lookupOnSimbadToolStripMenuItem";
+            lookupOnSimbadToolStripMenuItem.Size = new Size(227, 22);
+            lookupOnSimbadToolStripMenuItem.Text = "Look up on SIMBAD";
+            lookupOnSimbadToolStripMenuItem.Click += lookupOnSimbadToolStripMenuItem_Click;
             // 
             // lookupOnSEDSToolStripMenuItem
             // 
-            this.lookupOnSEDSToolStripMenuItem.Name = "lookupOnSEDSToolStripMenuItem";
-            this.lookupOnSEDSToolStripMenuItem.Size = new Size(227, 22);
-            this.lookupOnSEDSToolStripMenuItem.Text = "Look up on SEDS";
-            this.lookupOnSEDSToolStripMenuItem.Click += new EventHandler(this.lookupOnSEDSToolStripMenuItem_Click);
+            lookupOnSEDSToolStripMenuItem.Name = "lookupOnSEDSToolStripMenuItem";
+            lookupOnSEDSToolStripMenuItem.Size = new Size(227, 22);
+            lookupOnSEDSToolStripMenuItem.Text = "Look up on SEDS";
+            lookupOnSEDSToolStripMenuItem.Click += lookupOnSEDSToolStripMenuItem_Click;
             // 
             // lookupOnWikipediaToolStripMenuItem
             // 
-            this.lookupOnWikipediaToolStripMenuItem.Name = "lookupOnWikipediaToolStripMenuItem";
-            this.lookupOnWikipediaToolStripMenuItem.Size = new Size(227, 22);
-            this.lookupOnWikipediaToolStripMenuItem.Text = "Look up on Wikipedia";
-            this.lookupOnWikipediaToolStripMenuItem.Click += new EventHandler(this.lookupOnWikipediaToolStripMenuItem_Click);
+            lookupOnWikipediaToolStripMenuItem.Name = "lookupOnWikipediaToolStripMenuItem";
+            lookupOnWikipediaToolStripMenuItem.Size = new Size(227, 22);
+            lookupOnWikipediaToolStripMenuItem.Text = "Look up on Wikipedia";
+            lookupOnWikipediaToolStripMenuItem.Click += lookupOnWikipediaToolStripMenuItem_Click;
             // 
             // publicationsToolStripMenuItem
             // 
-            this.publicationsToolStripMenuItem.Name = "publicationsToolStripMenuItem";
-            this.publicationsToolStripMenuItem.Size = new Size(227, 22);
-            this.publicationsToolStripMenuItem.Text = "Look up publications on ADS";
-            this.publicationsToolStripMenuItem.Click += new EventHandler(this.publicationsToolStripMenuItem_Click);
+            publicationsToolStripMenuItem.Name = "publicationsToolStripMenuItem";
+            publicationsToolStripMenuItem.Size = new Size(227, 22);
+            publicationsToolStripMenuItem.Text = "Look up publications on ADS";
+            publicationsToolStripMenuItem.Click += publicationsToolStripMenuItem_Click;
             // 
             // lookUpOnNEDToolStripMenuItem
             // 
-            this.lookUpOnNEDToolStripMenuItem.Name = "lookUpOnNEDToolStripMenuItem";
-            this.lookUpOnNEDToolStripMenuItem.Size = new Size(227, 22);
-            this.lookUpOnNEDToolStripMenuItem.Text = "Look up on NED";
-            this.lookUpOnNEDToolStripMenuItem.Click += new EventHandler(this.lookUpOnNEDToolStripMenuItem_Click);
+            lookUpOnNEDToolStripMenuItem.Name = "lookUpOnNEDToolStripMenuItem";
+            lookUpOnNEDToolStripMenuItem.Size = new Size(227, 22);
+            lookUpOnNEDToolStripMenuItem.Text = "Look up on NED";
+            lookUpOnNEDToolStripMenuItem.Click += lookUpOnNEDToolStripMenuItem_Click;
             // 
             // lookUpOnSDSSToolStripMenuItem
             // 
-            this.lookUpOnSDSSToolStripMenuItem.Name = "lookUpOnSDSSToolStripMenuItem";
-            this.lookUpOnSDSSToolStripMenuItem.Size = new Size(227, 22);
-            this.lookUpOnSDSSToolStripMenuItem.Text = "Look up on SDSS";
-            this.lookUpOnSDSSToolStripMenuItem.Click += new EventHandler(this.lookUpOnSDSSToolStripMenuItem_Click);
+            lookUpOnSDSSToolStripMenuItem.Name = "lookUpOnSDSSToolStripMenuItem";
+            lookUpOnSDSSToolStripMenuItem.Size = new Size(227, 22);
+            lookUpOnSDSSToolStripMenuItem.Text = "Look up on SDSS";
+            lookUpOnSDSSToolStripMenuItem.Click += lookUpOnSDSSToolStripMenuItem_Click;
             // 
             // imageryToolStripMenuItem
             // 
-            this.imageryToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.getDSSImageToolStripMenuItem,
-            this.getSDSSImageToolStripMenuItem,
-            this.getDSSFITSToolStripMenuItem});
-            this.imageryToolStripMenuItem.Name = "imageryToolStripMenuItem";
-            this.imageryToolStripMenuItem.Size = new Size(224, 22);
-            this.imageryToolStripMenuItem.Text = "Imagery";
+            imageryToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            getDSSImageToolStripMenuItem,
+            getSDSSImageToolStripMenuItem,
+            getDSSFITSToolStripMenuItem});
+            imageryToolStripMenuItem.Name = "imageryToolStripMenuItem";
+            imageryToolStripMenuItem.Size = new Size(224, 22);
+            imageryToolStripMenuItem.Text = "Imagery";
             // 
             // getDSSImageToolStripMenuItem
             // 
-            this.getDSSImageToolStripMenuItem.Name = "getDSSImageToolStripMenuItem";
-            this.getDSSImageToolStripMenuItem.Size = new Size(157, 22);
-            this.getDSSImageToolStripMenuItem.Text = "Get DSS image";
-            this.getDSSImageToolStripMenuItem.Click += new EventHandler(this.getDSSImageToolStripMenuItem_Click);
+            getDSSImageToolStripMenuItem.Name = "getDSSImageToolStripMenuItem";
+            getDSSImageToolStripMenuItem.Size = new Size(157, 22);
+            getDSSImageToolStripMenuItem.Text = "Get DSS image";
+            getDSSImageToolStripMenuItem.Click += getDSSImageToolStripMenuItem_Click;
             // 
             // getSDSSImageToolStripMenuItem
             // 
-            this.getSDSSImageToolStripMenuItem.Name = "getSDSSImageToolStripMenuItem";
-            this.getSDSSImageToolStripMenuItem.Size = new Size(157, 22);
-            this.getSDSSImageToolStripMenuItem.Text = "Get SDSS image";
-            this.getSDSSImageToolStripMenuItem.Click += new EventHandler(this.getSDSSImageToolStripMenuItem_Click);
+            getSDSSImageToolStripMenuItem.Name = "getSDSSImageToolStripMenuItem";
+            getSDSSImageToolStripMenuItem.Size = new Size(157, 22);
+            getSDSSImageToolStripMenuItem.Text = "Get SDSS image";
+            getSDSSImageToolStripMenuItem.Click += getSDSSImageToolStripMenuItem_Click;
             // 
             // getDSSFITSToolStripMenuItem
             // 
-            this.getDSSFITSToolStripMenuItem.Name = "getDSSFITSToolStripMenuItem";
-            this.getDSSFITSToolStripMenuItem.Size = new Size(157, 22);
-            this.getDSSFITSToolStripMenuItem.Text = "Get DSS FITS";
-            this.getDSSFITSToolStripMenuItem.Click += new EventHandler(this.getDSSFITSToolStripMenuItem_Click);
+            getDSSFITSToolStripMenuItem.Name = "getDSSFITSToolStripMenuItem";
+            getDSSFITSToolStripMenuItem.Size = new Size(157, 22);
+            getDSSFITSToolStripMenuItem.Text = "Get DSS FITS";
+            getDSSFITSToolStripMenuItem.Click += getDSSFITSToolStripMenuItem_Click;
             // 
             // virtualObservatorySearchesToolStripMenuItem
             // 
-            this.virtualObservatorySearchesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.uSNONVOConeSearchToolStripMenuItem,
-            this.hLAFootprintsToolStripMenuItem,
-            this.nEDSearchToolStripMenuItem,
-            this.sDSSSearchToolStripMenuItem,
-            this.toolStripMenuItem3});
-            this.virtualObservatorySearchesToolStripMenuItem.Name = "virtualObservatorySearchesToolStripMenuItem";
-            this.virtualObservatorySearchesToolStripMenuItem.Size = new Size(224, 22);
-            this.virtualObservatorySearchesToolStripMenuItem.Text = "Virtual Observatory Searches";
-            this.virtualObservatorySearchesToolStripMenuItem.Click += new EventHandler(this.virtualObservatorySearchesToolStripMenuItem_Click);
+            virtualObservatorySearchesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            uSNONVOConeSearchToolStripMenuItem,
+            hLAFootprintsToolStripMenuItem,
+            nEDSearchToolStripMenuItem,
+            sDSSSearchToolStripMenuItem,
+            toolStripMenuItem3});
+            virtualObservatorySearchesToolStripMenuItem.Name = "virtualObservatorySearchesToolStripMenuItem";
+            virtualObservatorySearchesToolStripMenuItem.Size = new Size(224, 22);
+            virtualObservatorySearchesToolStripMenuItem.Text = "Virtual Observatory Searches";
+            virtualObservatorySearchesToolStripMenuItem.Click += virtualObservatorySearchesToolStripMenuItem_Click;
             // 
             // uSNONVOConeSearchToolStripMenuItem
             // 
-            this.uSNONVOConeSearchToolStripMenuItem.Name = "uSNONVOConeSearchToolStripMenuItem";
-            this.uSNONVOConeSearchToolStripMenuItem.Size = new Size(264, 22);
-            this.uSNONVOConeSearchToolStripMenuItem.Text = "USNO NVO cone search";
-            this.uSNONVOConeSearchToolStripMenuItem.Visible = false;
-            this.uSNONVOConeSearchToolStripMenuItem.Click += new EventHandler(this.uSNONVOConeSearchToolStripMenuItem_Click);
+            uSNONVOConeSearchToolStripMenuItem.Name = "uSNONVOConeSearchToolStripMenuItem";
+            uSNONVOConeSearchToolStripMenuItem.Size = new Size(264, 22);
+            uSNONVOConeSearchToolStripMenuItem.Text = "USNO NVO cone search";
+            uSNONVOConeSearchToolStripMenuItem.Visible = false;
+            uSNONVOConeSearchToolStripMenuItem.Click += uSNONVOConeSearchToolStripMenuItem_Click;
             // 
             // hLAFootprintsToolStripMenuItem
             // 
-            this.hLAFootprintsToolStripMenuItem.MergeAction = MergeAction.Insert;
-            this.hLAFootprintsToolStripMenuItem.Name = "hLAFootprintsToolStripMenuItem";
-            this.hLAFootprintsToolStripMenuItem.Size = new Size(264, 22);
-            this.hLAFootprintsToolStripMenuItem.Text = "HLA Footprints";
-            this.hLAFootprintsToolStripMenuItem.Visible = false;
-            this.hLAFootprintsToolStripMenuItem.Click += new EventHandler(this.hLAFootprintsToolStripMenuItem_Click);
+            hLAFootprintsToolStripMenuItem.MergeAction = MergeAction.Insert;
+            hLAFootprintsToolStripMenuItem.Name = "hLAFootprintsToolStripMenuItem";
+            hLAFootprintsToolStripMenuItem.Size = new Size(264, 22);
+            hLAFootprintsToolStripMenuItem.Text = "HLA Footprints";
+            hLAFootprintsToolStripMenuItem.Visible = false;
+            hLAFootprintsToolStripMenuItem.Click += hLAFootprintsToolStripMenuItem_Click;
             // 
             // nEDSearchToolStripMenuItem
             // 
-            this.nEDSearchToolStripMenuItem.Name = "nEDSearchToolStripMenuItem";
-            this.nEDSearchToolStripMenuItem.Size = new Size(264, 22);
-            this.nEDSearchToolStripMenuItem.Text = "NED Search";
-            this.nEDSearchToolStripMenuItem.Click += new EventHandler(this.NEDSearchToolStripMenuItem_Click);
+            nEDSearchToolStripMenuItem.Name = "nEDSearchToolStripMenuItem";
+            nEDSearchToolStripMenuItem.Size = new Size(264, 22);
+            nEDSearchToolStripMenuItem.Text = "NED Search";
+            nEDSearchToolStripMenuItem.Click += NEDSearchToolStripMenuItem_Click;
             // 
             // sDSSSearchToolStripMenuItem
             // 
-            this.sDSSSearchToolStripMenuItem.Name = "sDSSSearchToolStripMenuItem";
-            this.sDSSSearchToolStripMenuItem.Size = new Size(264, 22);
-            this.sDSSSearchToolStripMenuItem.Text = "SDSS Search";
-            this.sDSSSearchToolStripMenuItem.Click += new EventHandler(this.sDSSSearchToolStripMenuItem_Click);
+            sDSSSearchToolStripMenuItem.Name = "sDSSSearchToolStripMenuItem";
+            sDSSSearchToolStripMenuItem.Size = new Size(264, 22);
+            sDSSSearchToolStripMenuItem.Text = "SDSS Search";
+            sDSSSearchToolStripMenuItem.Click += sDSSSearchToolStripMenuItem_Click;
             // 
             // toolStripMenuItem3
             // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new Size(264, 22);
-            this.toolStripMenuItem3.Text = "VO Cone Search / Registry Lookup...";
-            this.toolStripMenuItem3.Click += new EventHandler(this.vORegistryToolStripMenuItem_Click);
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(264, 22);
+            toolStripMenuItem3.Text = "VO Cone Search / Registry Lookup...";
+            toolStripMenuItem3.Click += vORegistryToolStripMenuItem_Click;
             // 
             // toolStripSeparator15
             // 
-            this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new Size(221, 6);
+            toolStripSeparator15.Name = "toolStripSeparator15";
+            toolStripSeparator15.Size = new Size(221, 6);
             // 
             // setAsForegroundImageryToolStripMenuItem
             // 
-            this.setAsForegroundImageryToolStripMenuItem.Name = "setAsForegroundImageryToolStripMenuItem";
-            this.setAsForegroundImageryToolStripMenuItem.Size = new Size(224, 22);
-            this.setAsForegroundImageryToolStripMenuItem.Text = "Set as Forground Imagery";
-            this.setAsForegroundImageryToolStripMenuItem.Click += new EventHandler(this.setAsForegroundImageryToolStripMenuItem_Click);
+            setAsForegroundImageryToolStripMenuItem.Name = "setAsForegroundImageryToolStripMenuItem";
+            setAsForegroundImageryToolStripMenuItem.Size = new Size(224, 22);
+            setAsForegroundImageryToolStripMenuItem.Text = "Set as Forground Imagery";
+            setAsForegroundImageryToolStripMenuItem.Click += setAsForegroundImageryToolStripMenuItem_Click;
             // 
             // setAsBackgroundImageryToolStripMenuItem
             // 
-            this.setAsBackgroundImageryToolStripMenuItem.Name = "setAsBackgroundImageryToolStripMenuItem";
-            this.setAsBackgroundImageryToolStripMenuItem.Size = new Size(224, 22);
-            this.setAsBackgroundImageryToolStripMenuItem.Text = "Set as Background Imagery";
-            this.setAsBackgroundImageryToolStripMenuItem.Click += new EventHandler(this.setAsBackgroundImageryToolStripMenuItem_Click);
+            setAsBackgroundImageryToolStripMenuItem.Name = "setAsBackgroundImageryToolStripMenuItem";
+            setAsBackgroundImageryToolStripMenuItem.Size = new Size(224, 22);
+            setAsBackgroundImageryToolStripMenuItem.Text = "Set as Background Imagery";
+            setAsBackgroundImageryToolStripMenuItem.Click += setAsBackgroundImageryToolStripMenuItem_Click;
             // 
             // addToImageStackToolStripMenuItem
             // 
-            this.addToImageStackToolStripMenuItem.Name = "addToImageStackToolStripMenuItem";
-            this.addToImageStackToolStripMenuItem.Size = new Size(224, 22);
-            this.addToImageStackToolStripMenuItem.Text = "Add to Image Stack";
-            this.addToImageStackToolStripMenuItem.Click += new EventHandler(this.addToImageStackToolStripMenuItem_Click);
+            addToImageStackToolStripMenuItem.Name = "addToImageStackToolStripMenuItem";
+            addToImageStackToolStripMenuItem.Size = new Size(224, 22);
+            addToImageStackToolStripMenuItem.Text = "Add to Image Stack";
+            addToImageStackToolStripMenuItem.Click += addToImageStackToolStripMenuItem_Click;
             // 
             // addAsNewLayerToolStripMenuItem
             // 
-            this.addAsNewLayerToolStripMenuItem.Name = "addAsNewLayerToolStripMenuItem";
-            this.addAsNewLayerToolStripMenuItem.Size = new Size(224, 22);
-            this.addAsNewLayerToolStripMenuItem.Text = "Add as New Layer";
-            this.addAsNewLayerToolStripMenuItem.Click += new EventHandler(this.addAsNewLayerToolStripMenuItem_Click);
+            addAsNewLayerToolStripMenuItem.Name = "addAsNewLayerToolStripMenuItem";
+            addAsNewLayerToolStripMenuItem.Size = new Size(224, 22);
+            addAsNewLayerToolStripMenuItem.Text = "Add as New Layer";
+            addAsNewLayerToolStripMenuItem.Click += addAsNewLayerToolStripMenuItem_Click;
             // 
             // cacheManagementToolStripMenuItem1
             // 
-            this.cacheManagementToolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] {
-            this.cacheImageryTilePyramidToolStripMenuItem,
-            this.showCacheSpaceUsedToolStripMenuItem,
-            this.removeFromImageCacheToolStripMenuItem});
-            this.cacheManagementToolStripMenuItem1.Name = "cacheManagementToolStripMenuItem1";
-            this.cacheManagementToolStripMenuItem1.Size = new Size(224, 22);
-            this.cacheManagementToolStripMenuItem1.Text = "Cache Management";
+            cacheManagementToolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] {
+            cacheImageryTilePyramidToolStripMenuItem,
+            showCacheSpaceUsedToolStripMenuItem,
+            removeFromImageCacheToolStripMenuItem});
+            cacheManagementToolStripMenuItem1.Name = "cacheManagementToolStripMenuItem1";
+            cacheManagementToolStripMenuItem1.Size = new Size(224, 22);
+            cacheManagementToolStripMenuItem1.Text = "Cache Management";
             // 
             // cacheImageryTilePyramidToolStripMenuItem
             // 
-            this.cacheImageryTilePyramidToolStripMenuItem.Name = "cacheImageryTilePyramidToolStripMenuItem";
-            this.cacheImageryTilePyramidToolStripMenuItem.Size = new Size(231, 22);
-            this.cacheImageryTilePyramidToolStripMenuItem.Text = "Cache Imagery Tile Pyramid...";
-            this.cacheImageryTilePyramidToolStripMenuItem.Click += new EventHandler(this.cacheImageryTilePyramidToolStripMenuItem_Click);
+            cacheImageryTilePyramidToolStripMenuItem.Name = "cacheImageryTilePyramidToolStripMenuItem";
+            cacheImageryTilePyramidToolStripMenuItem.Size = new Size(231, 22);
+            cacheImageryTilePyramidToolStripMenuItem.Text = "Cache Imagery Tile Pyramid...";
+            cacheImageryTilePyramidToolStripMenuItem.Click += cacheImageryTilePyramidToolStripMenuItem_Click;
             // 
             // showCacheSpaceUsedToolStripMenuItem
             // 
-            this.showCacheSpaceUsedToolStripMenuItem.Name = "showCacheSpaceUsedToolStripMenuItem";
-            this.showCacheSpaceUsedToolStripMenuItem.Size = new Size(231, 22);
-            this.showCacheSpaceUsedToolStripMenuItem.Text = "Show Cache Space Used...";
-            this.showCacheSpaceUsedToolStripMenuItem.Click += new EventHandler(this.showCacheSpaceUsedToolStripMenuItem_Click);
+            showCacheSpaceUsedToolStripMenuItem.Name = "showCacheSpaceUsedToolStripMenuItem";
+            showCacheSpaceUsedToolStripMenuItem.Size = new Size(231, 22);
+            showCacheSpaceUsedToolStripMenuItem.Text = "Show Cache Space Used...";
+            showCacheSpaceUsedToolStripMenuItem.Click += showCacheSpaceUsedToolStripMenuItem_Click;
             // 
             // removeFromImageCacheToolStripMenuItem
             // 
-            this.removeFromImageCacheToolStripMenuItem.Name = "removeFromImageCacheToolStripMenuItem";
-            this.removeFromImageCacheToolStripMenuItem.Size = new Size(231, 22);
-            this.removeFromImageCacheToolStripMenuItem.Text = "Remove from Image Cache";
-            this.removeFromImageCacheToolStripMenuItem.Click += new EventHandler(this.removeFromImageCacheToolStripMenuItem_Click);
+            removeFromImageCacheToolStripMenuItem.Name = "removeFromImageCacheToolStripMenuItem";
+            removeFromImageCacheToolStripMenuItem.Size = new Size(231, 22);
+            removeFromImageCacheToolStripMenuItem.Text = "Remove from Image Cache";
+            removeFromImageCacheToolStripMenuItem.Click += removeFromImageCacheToolStripMenuItem_Click;
             // 
             // ImagerySeperator
             // 
-            this.ImagerySeperator.Name = "ImagerySeperator";
-            this.ImagerySeperator.Size = new Size(221, 6);
+            ImagerySeperator.Name = "ImagerySeperator";
+            ImagerySeperator.Size = new Size(221, 6);
             // 
             // propertiesToolStripMenuItem
             // 
-            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new Size(224, 22);
-            this.propertiesToolStripMenuItem.Text = "Properties";
-            this.propertiesToolStripMenuItem.Click += new EventHandler(this.propertiesToolStripMenuItem_Click);
+            propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            propertiesToolStripMenuItem.Size = new Size(224, 22);
+            propertiesToolStripMenuItem.Text = "Properties";
+            propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
             // copyShortcutToolStripMenuItem
             // 
-            this.copyShortcutToolStripMenuItem.Name = "copyShortcutToolStripMenuItem";
-            this.copyShortcutToolStripMenuItem.Size = new Size(224, 22);
-            this.copyShortcutToolStripMenuItem.Text = "Copy Shortcut";
-            this.copyShortcutToolStripMenuItem.Click += new EventHandler(this.copyShortcutToolStripMenuItem_Click);
+            copyShortcutToolStripMenuItem.Name = "copyShortcutToolStripMenuItem";
+            copyShortcutToolStripMenuItem.Size = new Size(224, 22);
+            copyShortcutToolStripMenuItem.Text = "Copy Shortcut";
+            copyShortcutToolStripMenuItem.Click += copyShortcutToolStripMenuItem_Click;
             // 
             // addToCollectionsToolStripMenuItem
             // 
-            this.addToCollectionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.newCollectionToolStripMenuItem});
-            this.addToCollectionsToolStripMenuItem.Name = "addToCollectionsToolStripMenuItem";
-            this.addToCollectionsToolStripMenuItem.Size = new Size(224, 22);
-            this.addToCollectionsToolStripMenuItem.Text = "Add to Collection";
-            this.addToCollectionsToolStripMenuItem.DropDownOpening += new EventHandler(this.addToCollectionsToolStripMenuItem_DropDownOpening);
-            this.addToCollectionsToolStripMenuItem.Click += new EventHandler(this.addToCollectionsToolStripMenuItem_Click);
+            addToCollectionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            newCollectionToolStripMenuItem});
+            addToCollectionsToolStripMenuItem.Name = "addToCollectionsToolStripMenuItem";
+            addToCollectionsToolStripMenuItem.Size = new Size(224, 22);
+            addToCollectionsToolStripMenuItem.Text = "Add to Collection";
+            addToCollectionsToolStripMenuItem.DropDownOpening += addToCollectionsToolStripMenuItem_DropDownOpening;
+            addToCollectionsToolStripMenuItem.Click += addToCollectionsToolStripMenuItem_Click;
             // 
             // newCollectionToolStripMenuItem
             // 
-            this.newCollectionToolStripMenuItem.Name = "newCollectionToolStripMenuItem";
-            this.newCollectionToolStripMenuItem.Size = new Size(164, 22);
-            this.newCollectionToolStripMenuItem.Text = "New Collection...";
+            newCollectionToolStripMenuItem.Name = "newCollectionToolStripMenuItem";
+            newCollectionToolStripMenuItem.Size = new Size(164, 22);
+            newCollectionToolStripMenuItem.Text = "New Collection...";
             // 
             // removeFromCollectionToolStripMenuItem
             // 
-            this.removeFromCollectionToolStripMenuItem.Name = "removeFromCollectionToolStripMenuItem";
-            this.removeFromCollectionToolStripMenuItem.Size = new Size(224, 22);
-            this.removeFromCollectionToolStripMenuItem.Text = "Remove from Collection";
-            this.removeFromCollectionToolStripMenuItem.Click += new EventHandler(this.removeFromCollectionToolStripMenuItem_Click);
+            removeFromCollectionToolStripMenuItem.Name = "removeFromCollectionToolStripMenuItem";
+            removeFromCollectionToolStripMenuItem.Size = new Size(224, 22);
+            removeFromCollectionToolStripMenuItem.Text = "Remove from Collection";
+            removeFromCollectionToolStripMenuItem.Click += removeFromCollectionToolStripMenuItem_Click;
             // 
             // editToolStripMenuItem
             // 
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new Size(224, 22);
-            this.editToolStripMenuItem.Text = "Edit...";
-            this.editToolStripMenuItem.Click += new EventHandler(this.editToolStripMenuItem_Click);
+            editToolStripMenuItem.Name = "editToolStripMenuItem";
+            editToolStripMenuItem.Size = new Size(224, 22);
+            editToolStripMenuItem.Text = "Edit...";
+            editToolStripMenuItem.Click += editToolStripMenuItem_Click;
             // 
             // sAMPToolStripMenuItem
             // 
-            this.sAMPToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.sendImageToToolStripMenuItem,
-            this.sendTableToToolStripMenuItem});
-            this.sAMPToolStripMenuItem.Name = "sAMPToolStripMenuItem";
-            this.sAMPToolStripMenuItem.Size = new Size(224, 22);
-            this.sAMPToolStripMenuItem.Text = "SAMP";
+            sAMPToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            sendImageToToolStripMenuItem,
+            sendTableToToolStripMenuItem});
+            sAMPToolStripMenuItem.Name = "sAMPToolStripMenuItem";
+            sAMPToolStripMenuItem.Size = new Size(224, 22);
+            sAMPToolStripMenuItem.Text = "SAMP";
             // 
             // sendImageToToolStripMenuItem
             // 
-            this.sendImageToToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.broadcastToolStripMenuItem});
-            this.sendImageToToolStripMenuItem.Name = "sendImageToToolStripMenuItem";
-            this.sendImageToToolStripMenuItem.Size = new Size(153, 22);
-            this.sendImageToToolStripMenuItem.Text = "Send Image To";
+            sendImageToToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            broadcastToolStripMenuItem});
+            sendImageToToolStripMenuItem.Name = "sendImageToToolStripMenuItem";
+            sendImageToToolStripMenuItem.Size = new Size(153, 22);
+            sendImageToToolStripMenuItem.Text = "Send Image To";
             // 
             // broadcastToolStripMenuItem
             // 
-            this.broadcastToolStripMenuItem.Name = "broadcastToolStripMenuItem";
-            this.broadcastToolStripMenuItem.Size = new Size(126, 22);
-            this.broadcastToolStripMenuItem.Text = "Broadcast";
-            this.broadcastToolStripMenuItem.Click += new EventHandler(this.broadcastToolStripMenuItem_Click);
+            broadcastToolStripMenuItem.Name = "broadcastToolStripMenuItem";
+            broadcastToolStripMenuItem.Size = new Size(126, 22);
+            broadcastToolStripMenuItem.Text = "Broadcast";
+            broadcastToolStripMenuItem.Click += broadcastToolStripMenuItem_Click;
             // 
             // sendTableToToolStripMenuItem
             // 
-            this.sendTableToToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.broadcastToolStripMenuItem1});
-            this.sendTableToToolStripMenuItem.Name = "sendTableToToolStripMenuItem";
-            this.sendTableToToolStripMenuItem.Size = new Size(153, 22);
-            this.sendTableToToolStripMenuItem.Text = "Send Table To";
+            sendTableToToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            broadcastToolStripMenuItem1});
+            sendTableToToolStripMenuItem.Name = "sendTableToToolStripMenuItem";
+            sendTableToToolStripMenuItem.Size = new Size(153, 22);
+            sendTableToToolStripMenuItem.Text = "Send Table To";
             // 
             // broadcastToolStripMenuItem1
             // 
-            this.broadcastToolStripMenuItem1.Name = "broadcastToolStripMenuItem1";
-            this.broadcastToolStripMenuItem1.Size = new Size(126, 22);
-            this.broadcastToolStripMenuItem1.Text = "Broadcast";
+            broadcastToolStripMenuItem1.Name = "broadcastToolStripMenuItem1";
+            broadcastToolStripMenuItem1.Size = new Size(126, 22);
+            broadcastToolStripMenuItem1.Text = "Broadcast";
             // 
             // HoverTimer
             // 
-            this.HoverTimer.Enabled = true;
-            this.HoverTimer.Interval = 500;
-            this.HoverTimer.Tick += new EventHandler(this.HoverTimer_Tick);
+            HoverTimer.Enabled = true;
+            HoverTimer.Interval = 500;
+            HoverTimer.Tick += HoverTimer_Tick;
             // 
             // communitiesMenu
             // 
-            this.communitiesMenu.Items.AddRange(new ToolStripItem[] {
-            this.joinCoomunityMenuItem,
-            this.updateLoginCredentialsMenuItem,
-            this.logoutMenuItem,
-            this.toolStripSeparator8,
-            this.uploadObservingListToCommunityMenuItem,
-            this.uploadImageToCommunityMenuItem});
-            this.communitiesMenu.Name = "communitiesMenu";
-            this.communitiesMenu.Size = new Size(281, 120);
-            this.communitiesMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.communitiesMenu.Opening += this.communitiesMenu_Opening;
-            this.communitiesMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            communitiesMenu.Items.AddRange(new ToolStripItem[] {
+            joinCoomunityMenuItem,
+            updateLoginCredentialsMenuItem,
+            logoutMenuItem,
+            toolStripSeparator8,
+            uploadObservingListToCommunityMenuItem,
+            uploadImageToCommunityMenuItem});
+            communitiesMenu.Name = "communitiesMenu";
+            communitiesMenu.Size = new Size(281, 120);
+            communitiesMenu.Closed += PopupClosed;
+            communitiesMenu.Opening += communitiesMenu_Opening;
+            communitiesMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // joinCoomunityMenuItem
             // 
-            this.joinCoomunityMenuItem.Name = "joinCoomunityMenuItem";
-            this.joinCoomunityMenuItem.Size = new Size(280, 22);
-            this.joinCoomunityMenuItem.Text = "Join a Community...";
-            this.joinCoomunityMenuItem.Click += new EventHandler(this.joinCoomunityMenuItem_Click);
+            joinCoomunityMenuItem.Name = "joinCoomunityMenuItem";
+            joinCoomunityMenuItem.Size = new Size(280, 22);
+            joinCoomunityMenuItem.Text = "Join a Community...";
+            joinCoomunityMenuItem.Click += joinCoomunityMenuItem_Click;
             // 
             // updateLoginCredentialsMenuItem
             // 
-            this.updateLoginCredentialsMenuItem.Name = "updateLoginCredentialsMenuItem";
-            this.updateLoginCredentialsMenuItem.Size = new Size(280, 22);
-            this.updateLoginCredentialsMenuItem.Text = "Update Login Credentials...";
-            this.updateLoginCredentialsMenuItem.Click += new EventHandler(this.associateLiveIDToolStripMenuItem_Click);
+            updateLoginCredentialsMenuItem.Name = "updateLoginCredentialsMenuItem";
+            updateLoginCredentialsMenuItem.Size = new Size(280, 22);
+            updateLoginCredentialsMenuItem.Text = "Update Login Credentials...";
+            updateLoginCredentialsMenuItem.Click += associateLiveIDToolStripMenuItem_Click;
             // 
             // logoutMenuItem
             // 
-            this.logoutMenuItem.Enabled = false;
-            this.logoutMenuItem.Name = "logoutMenuItem";
-            this.logoutMenuItem.Size = new Size(280, 22);
-            this.logoutMenuItem.Text = "Logout";
-            this.logoutMenuItem.Visible = false;
+            logoutMenuItem.Enabled = false;
+            logoutMenuItem.Name = "logoutMenuItem";
+            logoutMenuItem.Size = new Size(280, 22);
+            logoutMenuItem.Text = "Logout";
+            logoutMenuItem.Visible = false;
             // 
             // toolStripSeparator8
             // 
-            this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new Size(277, 6);
-            this.toolStripSeparator8.Visible = false;
+            toolStripSeparator8.Name = "toolStripSeparator8";
+            toolStripSeparator8.Size = new Size(277, 6);
+            toolStripSeparator8.Visible = false;
             // 
             // uploadObservingListToCommunityMenuItem
             // 
-            this.uploadObservingListToCommunityMenuItem.Name = "uploadObservingListToCommunityMenuItem";
-            this.uploadObservingListToCommunityMenuItem.Size = new Size(280, 22);
-            this.uploadObservingListToCommunityMenuItem.Text = "Upload Observing List to Community...";
-            this.uploadObservingListToCommunityMenuItem.Visible = false;
+            uploadObservingListToCommunityMenuItem.Name = "uploadObservingListToCommunityMenuItem";
+            uploadObservingListToCommunityMenuItem.Size = new Size(280, 22);
+            uploadObservingListToCommunityMenuItem.Text = "Upload Observing List to Community...";
+            uploadObservingListToCommunityMenuItem.Visible = false;
             // 
             // uploadImageToCommunityMenuItem
             // 
-            this.uploadImageToCommunityMenuItem.Name = "uploadImageToCommunityMenuItem";
-            this.uploadImageToCommunityMenuItem.Size = new Size(280, 22);
-            this.uploadImageToCommunityMenuItem.Text = "Upload Image to Community... ";
-            this.uploadImageToCommunityMenuItem.Visible = false;
+            uploadImageToCommunityMenuItem.Name = "uploadImageToCommunityMenuItem";
+            uploadImageToCommunityMenuItem.Size = new Size(280, 22);
+            uploadImageToCommunityMenuItem.Text = "Upload Image to Community... ";
+            uploadImageToCommunityMenuItem.Visible = false;
             // 
             // searchMenu
             // 
-            this.searchMenu.Items.AddRange(new ToolStripItem[] {
-            this.sIMBADSearchToolStripMenuItem,
-            this.vORegistryToolStripMenuItem,
-            this.findEarthBasedLocationToolStripMenuItem});
-            this.searchMenu.Name = "contextMenuStrip1";
-            this.searchMenu.Size = new Size(265, 70);
-            this.searchMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.searchMenu.Opening += this.searchMenu_Opening;
-            this.searchMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            searchMenu.Items.AddRange(new ToolStripItem[] {
+            sIMBADSearchToolStripMenuItem,
+            vORegistryToolStripMenuItem,
+            findEarthBasedLocationToolStripMenuItem});
+            searchMenu.Name = "contextMenuStrip1";
+            searchMenu.Size = new Size(265, 70);
+            searchMenu.Closed += PopupClosed;
+            searchMenu.Opening += searchMenu_Opening;
+            searchMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // sIMBADSearchToolStripMenuItem
             // 
-            this.sIMBADSearchToolStripMenuItem.Name = "sIMBADSearchToolStripMenuItem";
-            this.sIMBADSearchToolStripMenuItem.Size = new Size(264, 22);
-            this.sIMBADSearchToolStripMenuItem.Text = "SIMBAD Search...";
-            this.sIMBADSearchToolStripMenuItem.Click += new EventHandler(this.sIMBADSearchToolStripMenuItem_Click);
+            sIMBADSearchToolStripMenuItem.Name = "sIMBADSearchToolStripMenuItem";
+            sIMBADSearchToolStripMenuItem.Size = new Size(264, 22);
+            sIMBADSearchToolStripMenuItem.Text = "SIMBAD Search...";
+            sIMBADSearchToolStripMenuItem.Click += sIMBADSearchToolStripMenuItem_Click;
             // 
             // vORegistryToolStripMenuItem
             // 
-            this.vORegistryToolStripMenuItem.Name = "vORegistryToolStripMenuItem";
-            this.vORegistryToolStripMenuItem.Size = new Size(264, 22);
-            this.vORegistryToolStripMenuItem.Text = "VO Cone Search / Registry Lookup...";
-            this.vORegistryToolStripMenuItem.Click += new EventHandler(this.vORegistryToolStripMenuItem_Click);
+            vORegistryToolStripMenuItem.Name = "vORegistryToolStripMenuItem";
+            vORegistryToolStripMenuItem.Size = new Size(264, 22);
+            vORegistryToolStripMenuItem.Text = "VO Cone Search / Registry Lookup...";
+            vORegistryToolStripMenuItem.Click += vORegistryToolStripMenuItem_Click;
             // 
             // findEarthBasedLocationToolStripMenuItem
             // 
-            this.findEarthBasedLocationToolStripMenuItem.Name = "findEarthBasedLocationToolStripMenuItem";
-            this.findEarthBasedLocationToolStripMenuItem.Size = new Size(264, 22);
-            this.findEarthBasedLocationToolStripMenuItem.Text = "Find Earth Based Location...";
-            this.findEarthBasedLocationToolStripMenuItem.Click += new EventHandler(this.findEarthBasedLocationToolStripMenuItem_Click);
+            findEarthBasedLocationToolStripMenuItem.Name = "findEarthBasedLocationToolStripMenuItem";
+            findEarthBasedLocationToolStripMenuItem.Size = new Size(264, 22);
+            findEarthBasedLocationToolStripMenuItem.Text = "Find Earth Based Location...";
+            findEarthBasedLocationToolStripMenuItem.Click += findEarthBasedLocationToolStripMenuItem_Click;
             // 
             // toursMenu
             // 
-            this.toursMenu.Items.AddRange(new ToolStripItem[] {
-            this.tourHomeMenuItem,
-            this.tourSearchWebPageMenuItem,
-            this.musicAndOtherTourResourceToolStripMenuItem,
-            this.toolStripSeparator6,
-            this.createANewTourToolStripMenuItem,
-            this.saveTourAsToolStripMenuItem,
-            this.publishTourMenuItem,
-            this.renderToVideoToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.autoRepeatToolStripMenuItem,
-            this.editTourToolStripMenuItem,
-            this.showOverlayListToolStripMenuItem,
-            this.showKeyframerToolStripMenuItem,
-            this.showSlideNumbersToolStripMenuItem,
-            this.toolStripMenuItem12,
-            this.undoToolStripMenuItem,
-            this.redoToolStripMenuItem,
-            this.toolStripMenuItem13,
-            this.publishTourToCommunityToolStripMenuItem,
-            this.toolStripSeparator23,
-            this.sendTourToProjectorServersToolStripMenuItem,
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem});
-            this.toursMenu.Name = "contextMenuStrip1";
-            this.toursMenu.Size = new Size(304, 408);
-            this.toursMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.toursMenu.Opening += new System.ComponentModel.CancelEventHandler(this.toursMenu_Opening);
-            this.toursMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            toursMenu.Items.AddRange(new ToolStripItem[] {
+            tourHomeMenuItem,
+            tourSearchWebPageMenuItem,
+            musicAndOtherTourResourceToolStripMenuItem,
+            toolStripSeparator6,
+            createANewTourToolStripMenuItem,
+            saveTourAsToolStripMenuItem,
+            publishTourMenuItem,
+            renderToVideoToolStripMenuItem,
+            toolStripSeparator1,
+            autoRepeatToolStripMenuItem,
+            editTourToolStripMenuItem,
+            showOverlayListToolStripMenuItem,
+            showKeyframerToolStripMenuItem,
+            showSlideNumbersToolStripMenuItem,
+            toolStripMenuItem12,
+            undoToolStripMenuItem,
+            redoToolStripMenuItem,
+            toolStripMenuItem13,
+            publishTourToCommunityToolStripMenuItem,
+            toolStripSeparator23,
+            sendTourToProjectorServersToolStripMenuItem,
+            automaticTourSyncWithProjectorServersToolStripMenuItem});
+            toursMenu.Name = "contextMenuStrip1";
+            toursMenu.Size = new Size(304, 408);
+            toursMenu.Closed += PopupClosed;
+            toursMenu.Opening += toursMenu_Opening;
+            toursMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // tourHomeMenuItem
             // 
-            this.tourHomeMenuItem.Name = "tourHomeMenuItem";
-            this.tourHomeMenuItem.Size = new Size(303, 22);
-            this.tourHomeMenuItem.Text = "Tour Home";
-            this.tourHomeMenuItem.Click += new EventHandler(this.tourHomeMenuItem_Click);
+            tourHomeMenuItem.Name = "tourHomeMenuItem";
+            tourHomeMenuItem.Size = new Size(303, 22);
+            tourHomeMenuItem.Text = "Tour Home";
+            tourHomeMenuItem.Click += tourHomeMenuItem_Click;
             // 
             // tourSearchWebPageMenuItem
             // 
-            this.tourSearchWebPageMenuItem.Name = "tourSearchWebPageMenuItem";
-            this.tourSearchWebPageMenuItem.Size = new Size(303, 22);
-            this.tourSearchWebPageMenuItem.Text = "Tour Search Web Page";
-            this.tourSearchWebPageMenuItem.Visible = false;
-            this.tourSearchWebPageMenuItem.Click += new EventHandler(this.tourSearchWebPageMenuItem_Click);
+            tourSearchWebPageMenuItem.Name = "tourSearchWebPageMenuItem";
+            tourSearchWebPageMenuItem.Size = new Size(303, 22);
+            tourSearchWebPageMenuItem.Text = "Tour Search Web Page";
+            tourSearchWebPageMenuItem.Visible = false;
+            tourSearchWebPageMenuItem.Click += tourSearchWebPageMenuItem_Click;
             // 
             // musicAndOtherTourResourceToolStripMenuItem
             // 
-            this.musicAndOtherTourResourceToolStripMenuItem.Name = "musicAndOtherTourResourceToolStripMenuItem";
-            this.musicAndOtherTourResourceToolStripMenuItem.Size = new Size(303, 22);
-            this.musicAndOtherTourResourceToolStripMenuItem.Text = "Music and other Tour Resource";
-            this.musicAndOtherTourResourceToolStripMenuItem.Click += new EventHandler(this.musicAndOtherTourResourceToolStripMenuItem_Click);
+            musicAndOtherTourResourceToolStripMenuItem.Name = "musicAndOtherTourResourceToolStripMenuItem";
+            musicAndOtherTourResourceToolStripMenuItem.Size = new Size(303, 22);
+            musicAndOtherTourResourceToolStripMenuItem.Text = "Music and other Tour Resource";
+            musicAndOtherTourResourceToolStripMenuItem.Click += musicAndOtherTourResourceToolStripMenuItem_Click;
             // 
             // toolStripSeparator6
             // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new Size(300, 6);
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new Size(300, 6);
             // 
             // createANewTourToolStripMenuItem
             // 
-            this.createANewTourToolStripMenuItem.Name = "createANewTourToolStripMenuItem";
-            this.createANewTourToolStripMenuItem.Size = new Size(303, 22);
-            this.createANewTourToolStripMenuItem.Text = "Create a New Tour...";
-            this.createANewTourToolStripMenuItem.Click += new EventHandler(this.newSlideBasedTour);
+            createANewTourToolStripMenuItem.Name = "createANewTourToolStripMenuItem";
+            createANewTourToolStripMenuItem.Size = new Size(303, 22);
+            createANewTourToolStripMenuItem.Text = "Create a New Tour...";
+            createANewTourToolStripMenuItem.Click += newSlideBasedTour;
             // 
             // saveTourAsToolStripMenuItem
             // 
-            this.saveTourAsToolStripMenuItem.Name = "saveTourAsToolStripMenuItem";
-            this.saveTourAsToolStripMenuItem.Size = new Size(303, 22);
-            this.saveTourAsToolStripMenuItem.Text = "Save Tour As...";
-            this.saveTourAsToolStripMenuItem.Click += new EventHandler(this.saveTourAsToolStripMenuItem_Click);
+            saveTourAsToolStripMenuItem.Name = "saveTourAsToolStripMenuItem";
+            saveTourAsToolStripMenuItem.Size = new Size(303, 22);
+            saveTourAsToolStripMenuItem.Text = "Save Tour As...";
+            saveTourAsToolStripMenuItem.Click += saveTourAsToolStripMenuItem_Click;
             // 
             // publishTourMenuItem
             // 
-            this.publishTourMenuItem.Name = "publishTourMenuItem";
-            this.publishTourMenuItem.Size = new Size(303, 22);
-            this.publishTourMenuItem.Text = "Submit Tour for Publication...";
-            this.publishTourMenuItem.Click += new EventHandler(this.publishTourMenuItem_Click);
+            publishTourMenuItem.Name = "publishTourMenuItem";
+            publishTourMenuItem.Size = new Size(303, 22);
+            publishTourMenuItem.Text = "Submit Tour for Publication...";
+            publishTourMenuItem.Click += publishTourMenuItem_Click;
             // 
             // renderToVideoToolStripMenuItem
             // 
-            this.renderToVideoToolStripMenuItem.Name = "renderToVideoToolStripMenuItem";
-            this.renderToVideoToolStripMenuItem.Size = new Size(303, 22);
-            this.renderToVideoToolStripMenuItem.Text = "Render to Video...";
-            this.renderToVideoToolStripMenuItem.Click += new EventHandler(this.renderToVideoToolStripMenuItem_Click);
+            renderToVideoToolStripMenuItem.Name = "renderToVideoToolStripMenuItem";
+            renderToVideoToolStripMenuItem.Size = new Size(303, 22);
+            renderToVideoToolStripMenuItem.Text = "Render to Video...";
+            renderToVideoToolStripMenuItem.Click += renderToVideoToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new Size(300, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(300, 6);
             // 
             // autoRepeatToolStripMenuItem
             // 
-            this.autoRepeatToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.oneToolStripMenuItem,
-            this.allToolStripMenuItem,
-            this.offToolStripMenuItem});
-            this.autoRepeatToolStripMenuItem.Name = "autoRepeatToolStripMenuItem";
-            this.autoRepeatToolStripMenuItem.Size = new Size(303, 22);
-            this.autoRepeatToolStripMenuItem.Text = "Auto Repeat";
+            autoRepeatToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            oneToolStripMenuItem,
+            allToolStripMenuItem,
+            offToolStripMenuItem});
+            autoRepeatToolStripMenuItem.Name = "autoRepeatToolStripMenuItem";
+            autoRepeatToolStripMenuItem.Size = new Size(303, 22);
+            autoRepeatToolStripMenuItem.Text = "Auto Repeat";
             // 
             // oneToolStripMenuItem
             // 
-            this.oneToolStripMenuItem.Name = "oneToolStripMenuItem";
-            this.oneToolStripMenuItem.Size = new Size(96, 22);
-            this.oneToolStripMenuItem.Text = "One";
-            this.oneToolStripMenuItem.Click += new EventHandler(this.oneToolStripMenuItem_Click);
+            oneToolStripMenuItem.Name = "oneToolStripMenuItem";
+            oneToolStripMenuItem.Size = new Size(96, 22);
+            oneToolStripMenuItem.Text = "One";
+            oneToolStripMenuItem.Click += oneToolStripMenuItem_Click;
             // 
             // allToolStripMenuItem
             // 
-            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new Size(96, 22);
-            this.allToolStripMenuItem.Text = "All";
-            this.allToolStripMenuItem.Click += new EventHandler(this.allToolStripMenuItem_Click);
+            allToolStripMenuItem.Name = "allToolStripMenuItem";
+            allToolStripMenuItem.Size = new Size(96, 22);
+            allToolStripMenuItem.Text = "All";
+            allToolStripMenuItem.Click += allToolStripMenuItem_Click;
             // 
             // offToolStripMenuItem
             // 
-            this.offToolStripMenuItem.Name = "offToolStripMenuItem";
-            this.offToolStripMenuItem.Size = new Size(96, 22);
-            this.offToolStripMenuItem.Text = "Off";
-            this.offToolStripMenuItem.Click += new EventHandler(this.offToolStripMenuItem_Click);
+            offToolStripMenuItem.Name = "offToolStripMenuItem";
+            offToolStripMenuItem.Size = new Size(96, 22);
+            offToolStripMenuItem.Text = "Off";
+            offToolStripMenuItem.Click += offToolStripMenuItem_Click;
             // 
             // editTourToolStripMenuItem
             // 
-            this.editTourToolStripMenuItem.Name = "editTourToolStripMenuItem";
-            this.editTourToolStripMenuItem.Size = new Size(303, 22);
-            this.editTourToolStripMenuItem.Text = "Edit Tour";
-            this.editTourToolStripMenuItem.Click += new EventHandler(this.editTourToolStripMenuItem_Click);
+            editTourToolStripMenuItem.Name = "editTourToolStripMenuItem";
+            editTourToolStripMenuItem.Size = new Size(303, 22);
+            editTourToolStripMenuItem.Text = "Edit Tour";
+            editTourToolStripMenuItem.Click += editTourToolStripMenuItem_Click;
             // 
             // showOverlayListToolStripMenuItem
             // 
-            this.showOverlayListToolStripMenuItem.Name = "showOverlayListToolStripMenuItem";
-            this.showOverlayListToolStripMenuItem.Size = new Size(303, 22);
-            this.showOverlayListToolStripMenuItem.Text = "Show Overlay List";
-            this.showOverlayListToolStripMenuItem.Click += new EventHandler(this.showOverlayListToolStripMenuItem_Click);
+            showOverlayListToolStripMenuItem.Name = "showOverlayListToolStripMenuItem";
+            showOverlayListToolStripMenuItem.Size = new Size(303, 22);
+            showOverlayListToolStripMenuItem.Text = "Show Overlay List";
+            showOverlayListToolStripMenuItem.Click += showOverlayListToolStripMenuItem_Click;
             // 
             // showKeyframerToolStripMenuItem
             // 
-            this.showKeyframerToolStripMenuItem.Name = "showKeyframerToolStripMenuItem";
-            this.showKeyframerToolStripMenuItem.Size = new Size(303, 22);
-            this.showKeyframerToolStripMenuItem.Text = "Show Timeline Editor";
-            this.showKeyframerToolStripMenuItem.Click += new EventHandler(this.showKeyframerToolStripMenuItem_Click);
+            showKeyframerToolStripMenuItem.Name = "showKeyframerToolStripMenuItem";
+            showKeyframerToolStripMenuItem.Size = new Size(303, 22);
+            showKeyframerToolStripMenuItem.Text = "Show Timeline Editor";
+            showKeyframerToolStripMenuItem.Click += showKeyframerToolStripMenuItem_Click;
             // 
             // showSlideNumbersToolStripMenuItem
             // 
-            this.showSlideNumbersToolStripMenuItem.Name = "showSlideNumbersToolStripMenuItem";
-            this.showSlideNumbersToolStripMenuItem.Size = new Size(303, 22);
-            this.showSlideNumbersToolStripMenuItem.Text = "Show Slide Numbers";
-            this.showSlideNumbersToolStripMenuItem.Click += new EventHandler(this.showSlideNumbersToolStripMenuItem_Click);
+            showSlideNumbersToolStripMenuItem.Name = "showSlideNumbersToolStripMenuItem";
+            showSlideNumbersToolStripMenuItem.Size = new Size(303, 22);
+            showSlideNumbersToolStripMenuItem.Text = "Show Slide Numbers";
+            showSlideNumbersToolStripMenuItem.Click += showSlideNumbersToolStripMenuItem_Click;
             // 
             // toolStripMenuItem12
             // 
-            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new Size(300, 6);
+            toolStripMenuItem12.Name = "toolStripMenuItem12";
+            toolStripMenuItem12.Size = new Size(300, 6);
             // 
             // undoToolStripMenuItem
             // 
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.ShortcutKeys = ((Keys)((Keys.Control | Keys.Z)));
-            this.undoToolStripMenuItem.Size = new Size(303, 22);
-            this.undoToolStripMenuItem.Text = "&Undo:";
-            this.undoToolStripMenuItem.Click += new EventHandler(this.undoToolStripMenuItem_Click);
+            undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
+            undoToolStripMenuItem.Size = new Size(303, 22);
+            undoToolStripMenuItem.Text = "&Undo:";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
             // redoToolStripMenuItem
             // 
-            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.ShortcutKeys = ((Keys)((Keys.Control | Keys.Y)));
-            this.redoToolStripMenuItem.Size = new Size(303, 22);
-            this.redoToolStripMenuItem.Text = "Redo:";
-            this.redoToolStripMenuItem.Click += new EventHandler(this.redoToolStripMenuItem_Click);
+            redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
+            redoToolStripMenuItem.Size = new Size(303, 22);
+            redoToolStripMenuItem.Text = "Redo:";
+            redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
             // 
             // toolStripMenuItem13
             // 
-            this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new Size(300, 6);
+            toolStripMenuItem13.Name = "toolStripMenuItem13";
+            toolStripMenuItem13.Size = new Size(300, 6);
             // 
             // publishTourToCommunityToolStripMenuItem
             // 
-            this.publishTourToCommunityToolStripMenuItem.Name = "publishTourToCommunityToolStripMenuItem";
-            this.publishTourToCommunityToolStripMenuItem.Size = new Size(303, 22);
-            this.publishTourToCommunityToolStripMenuItem.Text = "Publish Tour to Community...";
-            this.publishTourToCommunityToolStripMenuItem.Click += new EventHandler(this.publishTourToCommunityToolStripMenuItem_Click);
+            publishTourToCommunityToolStripMenuItem.Name = "publishTourToCommunityToolStripMenuItem";
+            publishTourToCommunityToolStripMenuItem.Size = new Size(303, 22);
+            publishTourToCommunityToolStripMenuItem.Text = "Publish Tour to Community...";
+            publishTourToCommunityToolStripMenuItem.Click += publishTourToCommunityToolStripMenuItem_Click;
             // 
             // toolStripSeparator23
             // 
-            this.toolStripSeparator23.Name = "toolStripSeparator23";
-            this.toolStripSeparator23.Size = new Size(300, 6);
+            toolStripSeparator23.Name = "toolStripSeparator23";
+            toolStripSeparator23.Size = new Size(300, 6);
             // 
             // sendTourToProjectorServersToolStripMenuItem
             // 
-            this.sendTourToProjectorServersToolStripMenuItem.Name = "sendTourToProjectorServersToolStripMenuItem";
-            this.sendTourToProjectorServersToolStripMenuItem.Size = new Size(303, 22);
-            this.sendTourToProjectorServersToolStripMenuItem.Text = "Send Tour to Projector Servers";
-            this.sendTourToProjectorServersToolStripMenuItem.Click += new EventHandler(this.sendTourToProjectorServersToolStripMenuItem_Click);
+            sendTourToProjectorServersToolStripMenuItem.Name = "sendTourToProjectorServersToolStripMenuItem";
+            sendTourToProjectorServersToolStripMenuItem.Size = new Size(303, 22);
+            sendTourToProjectorServersToolStripMenuItem.Text = "Send Tour to Projector Servers";
+            sendTourToProjectorServersToolStripMenuItem.Click += sendTourToProjectorServersToolStripMenuItem_Click;
             // 
             // automaticTourSyncWithProjectorServersToolStripMenuItem
             // 
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Name = "automaticTourSyncWithProjectorServersToolStripMenuItem";
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Size = new Size(303, 22);
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Text = "Automatic Tour Sync with Projector Servers";
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Click += new EventHandler(this.automaticTourSyncWithProjectorServersToolStripMenuItem_Click);
+            automaticTourSyncWithProjectorServersToolStripMenuItem.Name = "automaticTourSyncWithProjectorServersToolStripMenuItem";
+            automaticTourSyncWithProjectorServersToolStripMenuItem.Size = new Size(303, 22);
+            automaticTourSyncWithProjectorServersToolStripMenuItem.Text = "Automatic Tour Sync with Projector Servers";
+            automaticTourSyncWithProjectorServersToolStripMenuItem.Click += automaticTourSyncWithProjectorServersToolStripMenuItem_Click;
             // 
             // telescopeMenu
             // 
-            this.telescopeMenu.Items.AddRange(new ToolStripItem[] {
-            this.slewTelescopeMenuItem,
-            this.centerTelescopeMenuItem,
-            this.SyncTelescopeMenuItem,
-            this.toolStripSeparator3,
-            this.chooseTelescopeMenuItem,
-            this.connectTelescopeMenuItem,
-            this.trackScopeMenuItem,
-            this.toolStripSeparator12,
-            this.parkTelescopeMenuItem,
-            this.toolStripSeparator13,
-            this.ASCOMPlatformHomePage});
-            this.telescopeMenu.Name = "contextMenuStrip1";
-            this.telescopeMenu.Size = new Size(241, 198);
-            this.telescopeMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.telescopeMenu.Opening += new System.ComponentModel.CancelEventHandler(this.telescopeMenu_Opening);
-            this.telescopeMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            telescopeMenu.Items.AddRange(new ToolStripItem[] {
+            slewTelescopeMenuItem,
+            centerTelescopeMenuItem,
+            SyncTelescopeMenuItem,
+            toolStripSeparator3,
+            chooseTelescopeMenuItem,
+            connectTelescopeMenuItem,
+            trackScopeMenuItem,
+            toolStripSeparator12,
+            parkTelescopeMenuItem,
+            toolStripSeparator13,
+            ASCOMPlatformHomePage});
+            telescopeMenu.Name = "contextMenuStrip1";
+            telescopeMenu.Size = new Size(241, 198);
+            telescopeMenu.Closed += PopupClosed;
+            telescopeMenu.Opening += telescopeMenu_Opening;
+            telescopeMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // slewTelescopeMenuItem
             // 
-            this.slewTelescopeMenuItem.MergeIndex = 0;
-            this.slewTelescopeMenuItem.Name = "slewTelescopeMenuItem";
-            this.slewTelescopeMenuItem.Size = new Size(240, 22);
-            this.slewTelescopeMenuItem.Text = "Slew To Object";
-            this.slewTelescopeMenuItem.Click += new EventHandler(this.slewTelescopeMenuItem_Click);
+            slewTelescopeMenuItem.MergeIndex = 0;
+            slewTelescopeMenuItem.Name = "slewTelescopeMenuItem";
+            slewTelescopeMenuItem.Size = new Size(240, 22);
+            slewTelescopeMenuItem.Text = "Slew To Object";
+            slewTelescopeMenuItem.Click += slewTelescopeMenuItem_Click;
             // 
             // centerTelescopeMenuItem
             // 
-            this.centerTelescopeMenuItem.MergeIndex = 1;
-            this.centerTelescopeMenuItem.Name = "centerTelescopeMenuItem";
-            this.centerTelescopeMenuItem.Size = new Size(240, 22);
-            this.centerTelescopeMenuItem.Text = "Center on Scope";
-            this.centerTelescopeMenuItem.Click += new EventHandler(this.centerTelescopeMenuItem_Click);
+            centerTelescopeMenuItem.MergeIndex = 1;
+            centerTelescopeMenuItem.Name = "centerTelescopeMenuItem";
+            centerTelescopeMenuItem.Size = new Size(240, 22);
+            centerTelescopeMenuItem.Text = "Center on Scope";
+            centerTelescopeMenuItem.Click += centerTelescopeMenuItem_Click;
             // 
             // SyncTelescopeMenuItem
             // 
-            this.SyncTelescopeMenuItem.MergeIndex = 2;
-            this.SyncTelescopeMenuItem.Name = "SyncTelescopeMenuItem";
-            this.SyncTelescopeMenuItem.Size = new Size(240, 22);
-            this.SyncTelescopeMenuItem.Text = "Sync Scope to Current Location";
-            this.SyncTelescopeMenuItem.Click += new EventHandler(this.SyncTelescopeMenuItem_Click);
+            SyncTelescopeMenuItem.MergeIndex = 2;
+            SyncTelescopeMenuItem.Name = "SyncTelescopeMenuItem";
+            SyncTelescopeMenuItem.Size = new Size(240, 22);
+            SyncTelescopeMenuItem.Text = "Sync Scope to Current Location";
+            SyncTelescopeMenuItem.Click += SyncTelescopeMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
-            this.toolStripSeparator3.MergeIndex = 3;
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new Size(237, 6);
+            toolStripSeparator3.MergeIndex = 3;
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(237, 6);
             // 
             // chooseTelescopeMenuItem
             // 
-            this.chooseTelescopeMenuItem.MergeIndex = 4;
-            this.chooseTelescopeMenuItem.Name = "chooseTelescopeMenuItem";
-            this.chooseTelescopeMenuItem.Size = new Size(240, 22);
-            this.chooseTelescopeMenuItem.Text = "Choose Telescope";
-            this.chooseTelescopeMenuItem.Click += new EventHandler(this.chooseTelescopeMenuItem_Click);
+            chooseTelescopeMenuItem.MergeIndex = 4;
+            chooseTelescopeMenuItem.Name = "chooseTelescopeMenuItem";
+            chooseTelescopeMenuItem.Size = new Size(240, 22);
+            chooseTelescopeMenuItem.Text = "Choose Telescope";
+            chooseTelescopeMenuItem.Click += chooseTelescopeMenuItem_Click;
             // 
             // connectTelescopeMenuItem
             // 
-            this.connectTelescopeMenuItem.AccessibleName = "";
-            this.connectTelescopeMenuItem.MergeIndex = 5;
-            this.connectTelescopeMenuItem.Name = "connectTelescopeMenuItem";
-            this.connectTelescopeMenuItem.Size = new Size(240, 22);
-            this.connectTelescopeMenuItem.Text = "Connect";
-            this.connectTelescopeMenuItem.Click += new EventHandler(this.connectTelescopeMenuItem_Click);
+            connectTelescopeMenuItem.AccessibleName = "";
+            connectTelescopeMenuItem.MergeIndex = 5;
+            connectTelescopeMenuItem.Name = "connectTelescopeMenuItem";
+            connectTelescopeMenuItem.Size = new Size(240, 22);
+            connectTelescopeMenuItem.Text = "Connect";
+            connectTelescopeMenuItem.Click += connectTelescopeMenuItem_Click;
             // 
             // trackScopeMenuItem
             // 
-            this.trackScopeMenuItem.MergeIndex = 6;
-            this.trackScopeMenuItem.Name = "trackScopeMenuItem";
-            this.trackScopeMenuItem.Size = new Size(240, 22);
-            this.trackScopeMenuItem.Text = "Track Telescope";
-            this.trackScopeMenuItem.Click += new EventHandler(this.trackScopeMenuItem_Click);
+            trackScopeMenuItem.MergeIndex = 6;
+            trackScopeMenuItem.Name = "trackScopeMenuItem";
+            trackScopeMenuItem.Size = new Size(240, 22);
+            trackScopeMenuItem.Text = "Track Telescope";
+            trackScopeMenuItem.Click += trackScopeMenuItem_Click;
             // 
             // toolStripSeparator12
             // 
-            this.toolStripSeparator12.MergeIndex = 7;
-            this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new Size(237, 6);
+            toolStripSeparator12.MergeIndex = 7;
+            toolStripSeparator12.Name = "toolStripSeparator12";
+            toolStripSeparator12.Size = new Size(237, 6);
             // 
             // parkTelescopeMenuItem
             // 
-            this.parkTelescopeMenuItem.MergeIndex = 8;
-            this.parkTelescopeMenuItem.Name = "parkTelescopeMenuItem";
-            this.parkTelescopeMenuItem.Size = new Size(240, 22);
-            this.parkTelescopeMenuItem.Text = "Park";
-            this.parkTelescopeMenuItem.Click += new EventHandler(this.parkTelescopeMenuItem_Click);
+            parkTelescopeMenuItem.MergeIndex = 8;
+            parkTelescopeMenuItem.Name = "parkTelescopeMenuItem";
+            parkTelescopeMenuItem.Size = new Size(240, 22);
+            parkTelescopeMenuItem.Text = "Park";
+            parkTelescopeMenuItem.Click += parkTelescopeMenuItem_Click;
             // 
             // toolStripSeparator13
             // 
-            this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new Size(237, 6);
+            toolStripSeparator13.Name = "toolStripSeparator13";
+            toolStripSeparator13.Size = new Size(237, 6);
             // 
             // ASCOMPlatformHomePage
             // 
-            this.ASCOMPlatformHomePage.Name = "ASCOMPlatformHomePage";
-            this.ASCOMPlatformHomePage.Size = new Size(240, 22);
-            this.ASCOMPlatformHomePage.Text = "ASCOM Platform";
-            this.ASCOMPlatformHomePage.Click += new EventHandler(this.AscomPlatformMenuItem_Click);
+            ASCOMPlatformHomePage.Name = "ASCOMPlatformHomePage";
+            ASCOMPlatformHomePage.Size = new Size(240, 22);
+            ASCOMPlatformHomePage.Text = "ASCOM Platform";
+            ASCOMPlatformHomePage.Click += AscomPlatformMenuItem_Click;
             // 
             // exploreMenu
             // 
-            this.exploreMenu.Items.AddRange(new ToolStripItem[] {
-            this.createNewObservingListToolStripMenuItem,
-            this.openFileToolStripMenuItem,
-            this.toolStripSeparator7,
-            this.showFinderToolStripMenuItem,
-            this.playCollectionAsSlideShowToolStripMenuItem,
-            this.addCollectionAsTourStopsToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.ShowWelcomeTips,
-            this.aboutMenuItem,
-            this.gettingStarteMenuItem,
-            this.homepageMenuItem,
-            this.toolStripSeparator4,
-            this.exitMenuItem});
-            this.exploreMenu.Name = "contextMenuStrip1";
-            this.exploreMenu.Size = new Size(255, 242);
-            this.exploreMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.exploreMenu.Opening += new System.ComponentModel.CancelEventHandler(this.exploreMenu_Opening);
-            this.exploreMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            exploreMenu.Items.AddRange(new ToolStripItem[] {
+            createNewObservingListToolStripMenuItem,
+            openFileToolStripMenuItem,
+            toolStripSeparator7,
+            showFinderToolStripMenuItem,
+            playCollectionAsSlideShowToolStripMenuItem,
+            addCollectionAsTourStopsToolStripMenuItem,
+            toolStripSeparator2,
+            ShowWelcomeTips,
+            aboutMenuItem,
+            gettingStarteMenuItem,
+            homepageMenuItem,
+            toolStripSeparator4,
+            exitMenuItem});
+            exploreMenu.Name = "contextMenuStrip1";
+            exploreMenu.Size = new Size(255, 242);
+            exploreMenu.Closed += PopupClosed;
+            exploreMenu.Opening += exploreMenu_Opening;
+            exploreMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // createNewObservingListToolStripMenuItem
             // 
-            this.createNewObservingListToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.newObservingListpMenuItem,
-            this.toolStripSeparator5,
-            this.newSimpleTourMenuItem});
-            this.createNewObservingListToolStripMenuItem.Name = "createNewObservingListToolStripMenuItem";
-            this.createNewObservingListToolStripMenuItem.Size = new Size(254, 22);
-            this.createNewObservingListToolStripMenuItem.Text = "New";
+            createNewObservingListToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            newObservingListpMenuItem,
+            toolStripSeparator5,
+            newSimpleTourMenuItem});
+            createNewObservingListToolStripMenuItem.Name = "createNewObservingListToolStripMenuItem";
+            createNewObservingListToolStripMenuItem.Size = new Size(254, 22);
+            createNewObservingListToolStripMenuItem.Text = "New";
             // 
             // newObservingListpMenuItem
             // 
-            this.newObservingListpMenuItem.Name = "newObservingListpMenuItem";
-            this.newObservingListpMenuItem.Size = new Size(172, 22);
-            this.newObservingListpMenuItem.Text = "Collection...";
-            this.newObservingListpMenuItem.Click += new EventHandler(this.newObservingListpMenuItem_Click);
+            newObservingListpMenuItem.Name = "newObservingListpMenuItem";
+            newObservingListpMenuItem.Size = new Size(172, 22);
+            newObservingListpMenuItem.Text = "Collection...";
+            newObservingListpMenuItem.Click += newObservingListpMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new Size(169, 6);
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(169, 6);
             // 
             // newSimpleTourMenuItem
             // 
-            this.newSimpleTourMenuItem.Name = "newSimpleTourMenuItem";
-            this.newSimpleTourMenuItem.Size = new Size(172, 22);
-            this.newSimpleTourMenuItem.Text = "Slide-Based Tour...";
-            this.newSimpleTourMenuItem.Click += new EventHandler(this.newSlideBasedTour);
+            newSimpleTourMenuItem.Name = "newSimpleTourMenuItem";
+            newSimpleTourMenuItem.Size = new Size(172, 22);
+            newSimpleTourMenuItem.Text = "Slide-Based Tour...";
+            newSimpleTourMenuItem.Click += newSlideBasedTour;
             // 
             // openFileToolStripMenuItem
             // 
-            this.openFileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.openTourMenuItem,
-            this.openObservingListMenuItem,
-            this.layersToolStripMenuItem,
-            this.openImageMenuItem,
-            this.openKMLMenuItem,
-            this.vOTableToolStripMenuItem,
-            this.shapeFileToolStripMenuItem,
-            this.layerManagerToolStripMenuItem,
-            this.customGalaxyFileToolStripMenuItem});
-            this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-            this.openFileToolStripMenuItem.Size = new Size(254, 22);
-            this.openFileToolStripMenuItem.Text = "&Open";
+            openFileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            openTourMenuItem,
+            openObservingListMenuItem,
+            layersToolStripMenuItem,
+            openImageMenuItem,
+            openKMLMenuItem,
+            vOTableToolStripMenuItem,
+            shapeFileToolStripMenuItem,
+            layerManagerToolStripMenuItem,
+            customGalaxyFileToolStripMenuItem});
+            openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
+            openFileToolStripMenuItem.Size = new Size(254, 22);
+            openFileToolStripMenuItem.Text = "&Open";
             // 
             // openTourMenuItem
             // 
-            this.openTourMenuItem.Name = "openTourMenuItem";
-            this.openTourMenuItem.Size = new Size(190, 22);
-            this.openTourMenuItem.Text = "Tour...";
-            this.openTourMenuItem.Click += new EventHandler(this.openTourMenuItem_Click);
+            openTourMenuItem.Name = "openTourMenuItem";
+            openTourMenuItem.Size = new Size(190, 22);
+            openTourMenuItem.Text = "Tour...";
+            openTourMenuItem.Click += openTourMenuItem_Click;
             // 
             // openObservingListMenuItem
             // 
-            this.openObservingListMenuItem.Name = "openObservingListMenuItem";
-            this.openObservingListMenuItem.Size = new Size(190, 22);
-            this.openObservingListMenuItem.Text = "Collection...";
-            this.openObservingListMenuItem.Click += new EventHandler(this.openObservingListMenuItem_Click);
+            openObservingListMenuItem.Name = "openObservingListMenuItem";
+            openObservingListMenuItem.Size = new Size(190, 22);
+            openObservingListMenuItem.Text = "Collection...";
+            openObservingListMenuItem.Click += openObservingListMenuItem_Click;
             // 
             // layersToolStripMenuItem
             // 
-            this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
-            this.layersToolStripMenuItem.Size = new Size(190, 22);
-            this.layersToolStripMenuItem.Text = "Layers...";
-            this.layersToolStripMenuItem.Click += new EventHandler(this.layersToolStripMenuItem_Click);
+            layersToolStripMenuItem.Name = "layersToolStripMenuItem";
+            layersToolStripMenuItem.Size = new Size(190, 22);
+            layersToolStripMenuItem.Text = "Layers...";
+            layersToolStripMenuItem.Click += layersToolStripMenuItem_Click;
             // 
             // openImageMenuItem
             // 
-            this.openImageMenuItem.Name = "openImageMenuItem";
-            this.openImageMenuItem.Size = new Size(190, 22);
-            this.openImageMenuItem.Text = "Astronomical Image...";
-            this.openImageMenuItem.Click += new EventHandler(this.openImageMenuItem_Click);
+            openImageMenuItem.Name = "openImageMenuItem";
+            openImageMenuItem.Size = new Size(190, 22);
+            openImageMenuItem.Text = "Astronomical Image...";
+            openImageMenuItem.Click += openImageMenuItem_Click;
             // 
             // openKMLMenuItem
             // 
-            this.openKMLMenuItem.Name = "openKMLMenuItem";
-            this.openKMLMenuItem.Size = new Size(190, 22);
-            this.openKMLMenuItem.Text = "KML...";
-            this.openKMLMenuItem.Visible = false;
-            this.openKMLMenuItem.Click += new EventHandler(this.openKMLMenuItem_Click);
+            openKMLMenuItem.Name = "openKMLMenuItem";
+            openKMLMenuItem.Size = new Size(190, 22);
+            openKMLMenuItem.Text = "KML...";
+            openKMLMenuItem.Visible = false;
+            openKMLMenuItem.Click += openKMLMenuItem_Click;
             // 
             // vOTableToolStripMenuItem
             // 
-            this.vOTableToolStripMenuItem.Name = "vOTableToolStripMenuItem";
-            this.vOTableToolStripMenuItem.Size = new Size(190, 22);
-            this.vOTableToolStripMenuItem.Text = "VO Table...";
-            this.vOTableToolStripMenuItem.Click += new EventHandler(this.vOTableToolStripMenuItem_Click);
+            vOTableToolStripMenuItem.Name = "vOTableToolStripMenuItem";
+            vOTableToolStripMenuItem.Size = new Size(190, 22);
+            vOTableToolStripMenuItem.Text = "VO Table...";
+            vOTableToolStripMenuItem.Click += vOTableToolStripMenuItem_Click;
             // 
             // shapeFileToolStripMenuItem
             // 
-            this.shapeFileToolStripMenuItem.Name = "shapeFileToolStripMenuItem";
-            this.shapeFileToolStripMenuItem.Size = new Size(190, 22);
-            this.shapeFileToolStripMenuItem.Text = "Shape File...";
-            this.shapeFileToolStripMenuItem.Visible = false;
-            this.shapeFileToolStripMenuItem.Click += new EventHandler(this.shapeFileToolStripMenuItem_Click);
+            shapeFileToolStripMenuItem.Name = "shapeFileToolStripMenuItem";
+            shapeFileToolStripMenuItem.Size = new Size(190, 22);
+            shapeFileToolStripMenuItem.Text = "Shape File...";
+            shapeFileToolStripMenuItem.Visible = false;
+            shapeFileToolStripMenuItem.Click += shapeFileToolStripMenuItem_Click;
             // 
             // layerManagerToolStripMenuItem
             // 
-            this.layerManagerToolStripMenuItem.Name = "layerManagerToolStripMenuItem";
-            this.layerManagerToolStripMenuItem.Size = new Size(190, 22);
-            this.layerManagerToolStripMenuItem.Text = "Layer Manager";
-            this.layerManagerToolStripMenuItem.Click += new EventHandler(this.layerManagerToolStripMenuItem_Click);
+            layerManagerToolStripMenuItem.Name = "layerManagerToolStripMenuItem";
+            layerManagerToolStripMenuItem.Size = new Size(190, 22);
+            layerManagerToolStripMenuItem.Text = "Layer Manager";
+            layerManagerToolStripMenuItem.Click += layerManagerToolStripMenuItem_Click;
             // 
             // customGalaxyFileToolStripMenuItem
             // 
-            this.customGalaxyFileToolStripMenuItem.Name = "customGalaxyFileToolStripMenuItem";
-            this.customGalaxyFileToolStripMenuItem.Size = new Size(190, 22);
-            this.customGalaxyFileToolStripMenuItem.Text = "Custom Galaxy File...";
-            this.customGalaxyFileToolStripMenuItem.Click += new EventHandler(this.customGalaxyFileToolStripMenuItem_Click);
+            customGalaxyFileToolStripMenuItem.Name = "customGalaxyFileToolStripMenuItem";
+            customGalaxyFileToolStripMenuItem.Size = new Size(190, 22);
+            customGalaxyFileToolStripMenuItem.Text = "Custom Galaxy File...";
+            customGalaxyFileToolStripMenuItem.Click += customGalaxyFileToolStripMenuItem_Click;
             // 
             // toolStripSeparator7
             // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new Size(251, 6);
+            toolStripSeparator7.Name = "toolStripSeparator7";
+            toolStripSeparator7.Size = new Size(251, 6);
             // 
             // showFinderToolStripMenuItem
             // 
-            this.showFinderToolStripMenuItem.Name = "showFinderToolStripMenuItem";
-            this.showFinderToolStripMenuItem.Size = new Size(254, 22);
-            this.showFinderToolStripMenuItem.Text = "Show Finder";
-            this.showFinderToolStripMenuItem.Click += new EventHandler(this.showFinderToolStripMenuItem_Click);
+            showFinderToolStripMenuItem.Name = "showFinderToolStripMenuItem";
+            showFinderToolStripMenuItem.Size = new Size(254, 22);
+            showFinderToolStripMenuItem.Text = "Show Finder";
+            showFinderToolStripMenuItem.Click += showFinderToolStripMenuItem_Click;
             // 
             // playCollectionAsSlideShowToolStripMenuItem
             // 
-            this.playCollectionAsSlideShowToolStripMenuItem.Name = "playCollectionAsSlideShowToolStripMenuItem";
-            this.playCollectionAsSlideShowToolStripMenuItem.Size = new Size(254, 22);
-            this.playCollectionAsSlideShowToolStripMenuItem.Text = "Play Collection as Slide Show";
-            this.playCollectionAsSlideShowToolStripMenuItem.Click += new EventHandler(this.playCollectionAsSlideShowToolStripMenuItem_Click);
+            playCollectionAsSlideShowToolStripMenuItem.Name = "playCollectionAsSlideShowToolStripMenuItem";
+            playCollectionAsSlideShowToolStripMenuItem.Size = new Size(254, 22);
+            playCollectionAsSlideShowToolStripMenuItem.Text = "Play Collection as Slide Show";
+            playCollectionAsSlideShowToolStripMenuItem.Click += playCollectionAsSlideShowToolStripMenuItem_Click;
             // 
             // addCollectionAsTourStopsToolStripMenuItem
             // 
-            this.addCollectionAsTourStopsToolStripMenuItem.Name = "addCollectionAsTourStopsToolStripMenuItem";
-            this.addCollectionAsTourStopsToolStripMenuItem.Size = new Size(254, 22);
-            this.addCollectionAsTourStopsToolStripMenuItem.Text = "Add Collection as Tour Stops";
-            this.addCollectionAsTourStopsToolStripMenuItem.Click += new EventHandler(this.addCollectionAsTourStopsToolStripMenuItem_Click);
+            addCollectionAsTourStopsToolStripMenuItem.Name = "addCollectionAsTourStopsToolStripMenuItem";
+            addCollectionAsTourStopsToolStripMenuItem.Size = new Size(254, 22);
+            addCollectionAsTourStopsToolStripMenuItem.Text = "Add Collection as Tour Stops";
+            addCollectionAsTourStopsToolStripMenuItem.Click += addCollectionAsTourStopsToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new Size(251, 6);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(251, 6);
             // 
             // ShowWelcomeTips
             // 
-            this.ShowWelcomeTips.Name = "ShowWelcomeTips";
-            this.ShowWelcomeTips.Size = new Size(254, 22);
-            this.ShowWelcomeTips.Text = "Show Welcome Tips";
-            this.ShowWelcomeTips.Click += new EventHandler(this.ShowWelcomeTips_Click);
+            ShowWelcomeTips.Name = "ShowWelcomeTips";
+            ShowWelcomeTips.Size = new Size(254, 22);
+            ShowWelcomeTips.Text = "Show Welcome Tips";
+            ShowWelcomeTips.Click += ShowWelcomeTips_Click;
             // 
             // aboutMenuItem
             // 
-            this.aboutMenuItem.Name = "aboutMenuItem";
-            this.aboutMenuItem.Size = new Size(254, 22);
-            this.aboutMenuItem.Text = "About WorldWide Telescope";
-            this.aboutMenuItem.Click += new EventHandler(this.aboutMenuItem_Click);
+            aboutMenuItem.Name = "aboutMenuItem";
+            aboutMenuItem.Size = new Size(254, 22);
+            aboutMenuItem.Text = "About WorldWide Telescope";
+            aboutMenuItem.Click += aboutMenuItem_Click;
             // 
             // gettingStarteMenuItem
             // 
-            this.gettingStarteMenuItem.Name = "gettingStarteMenuItem";
-            this.gettingStarteMenuItem.Size = new Size(254, 22);
-            this.gettingStarteMenuItem.Text = "Getting Started (Help)";
-            this.gettingStarteMenuItem.Click += new EventHandler(this.gettingStarteMenuItem_Click);
+            gettingStarteMenuItem.Name = "gettingStarteMenuItem";
+            gettingStarteMenuItem.Size = new Size(254, 22);
+            gettingStarteMenuItem.Text = "Getting Started (Help)";
+            gettingStarteMenuItem.Click += gettingStarteMenuItem_Click;
             // 
             // homepageMenuItem
             // 
-            this.homepageMenuItem.Name = "homepageMenuItem";
-            this.homepageMenuItem.Size = new Size(254, 22);
-            this.homepageMenuItem.Text = "WorldWide Telescope Home Page";
-            this.homepageMenuItem.Click += new EventHandler(this.homepageMenuItem_Click);
+            homepageMenuItem.Name = "homepageMenuItem";
+            homepageMenuItem.Size = new Size(254, 22);
+            homepageMenuItem.Text = "WorldWide Telescope Home Page";
+            homepageMenuItem.Click += homepageMenuItem_Click;
             // 
             // toolStripSeparator4
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new Size(251, 6);
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(251, 6);
             // 
             // exitMenuItem
             // 
-            this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new Size(254, 22);
-            this.exitMenuItem.Text = "E&xit";
-            this.exitMenuItem.Click += new EventHandler(this.exitMenuItem_Click);
+            exitMenuItem.Name = "exitMenuItem";
+            exitMenuItem.Size = new Size(254, 22);
+            exitMenuItem.Text = "E&xit";
+            exitMenuItem.Click += exitMenuItem_Click;
             // 
             // settingsMenu
             // 
-            this.settingsMenu.Items.AddRange(new ToolStripItem[] {
-            this.checkForUpdatesToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.feedbackToolStripMenuItem,
-            this.toolStripSeparator17,
-            this.restoreDefaultsToolStripMenuItem,
-            this.toolStripSeparator16,
-            this.advancedToolStripMenuItem,
-            this.mIDIControllerSetupToolStripMenuItem,
-            this.xBoxControllerSetupToolStripMenuItem,
-            this.remoteAccessControlToolStripMenuItem,
-            this.toolStripMenuItem14,
-            this.selectLanguageToolStripMenuItem,
-            this.regionalDataCacheToolStripMenuItem});
-            this.settingsMenu.Name = "contextMenuStrip1";
-            this.settingsMenu.Size = new Size(207, 248);
-            this.settingsMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.settingsMenu.Opening += new System.ComponentModel.CancelEventHandler(this.settingsMenu_Opening);
-            this.settingsMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            settingsMenu.Items.AddRange(new ToolStripItem[] {
+            checkForUpdatesToolStripMenuItem,
+            toolStripMenuItem1,
+            feedbackToolStripMenuItem,
+            toolStripSeparator17,
+            restoreDefaultsToolStripMenuItem,
+            toolStripSeparator16,
+            advancedToolStripMenuItem,
+            mIDIControllerSetupToolStripMenuItem,
+            xBoxControllerSetupToolStripMenuItem,
+            remoteAccessControlToolStripMenuItem,
+            toolStripMenuItem14,
+            selectLanguageToolStripMenuItem,
+            regionalDataCacheToolStripMenuItem});
+            settingsMenu.Name = "contextMenuStrip1";
+            settingsMenu.Size = new Size(207, 248);
+            settingsMenu.Closed += PopupClosed;
+            settingsMenu.Opening += settingsMenu_Opening;
+            settingsMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // checkForUpdatesToolStripMenuItem
             // 
-            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new Size(206, 22);
-            this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
-            this.checkForUpdatesToolStripMenuItem.Click += new EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
+            checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
+            checkForUpdatesToolStripMenuItem.Size = new Size(206, 22);
+            checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
+            checkForUpdatesToolStripMenuItem.Click += checkForUpdatesToolStripMenuItem_Click;
             // 
             // toolStripMenuItem1
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new Size(203, 6);
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(203, 6);
             // 
             // feedbackToolStripMenuItem
             // 
-            this.feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
-            this.feedbackToolStripMenuItem.Size = new Size(206, 22);
-            this.feedbackToolStripMenuItem.Text = "Product Support...";
-            this.feedbackToolStripMenuItem.Click += new EventHandler(this.feedbackToolStripMenuItem_Click);
+            feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
+            feedbackToolStripMenuItem.Size = new Size(206, 22);
+            feedbackToolStripMenuItem.Text = "Product Support...";
+            feedbackToolStripMenuItem.Click += feedbackToolStripMenuItem_Click;
             // 
             // toolStripSeparator17
             // 
-            this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new Size(203, 6);
+            toolStripSeparator17.Name = "toolStripSeparator17";
+            toolStripSeparator17.Size = new Size(203, 6);
             // 
             // restoreDefaultsToolStripMenuItem
             // 
-            this.restoreDefaultsToolStripMenuItem.Name = "restoreDefaultsToolStripMenuItem";
-            this.restoreDefaultsToolStripMenuItem.Size = new Size(206, 22);
-            this.restoreDefaultsToolStripMenuItem.Text = "Restore Defaults";
-            this.restoreDefaultsToolStripMenuItem.Click += new EventHandler(this.restoreDefaultsToolStripMenuItem_Click);
+            restoreDefaultsToolStripMenuItem.Name = "restoreDefaultsToolStripMenuItem";
+            restoreDefaultsToolStripMenuItem.Size = new Size(206, 22);
+            restoreDefaultsToolStripMenuItem.Text = "Restore Defaults";
+            restoreDefaultsToolStripMenuItem.Click += restoreDefaultsToolStripMenuItem_Click;
             // 
             // toolStripSeparator16
             // 
-            this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new Size(203, 6);
+            toolStripSeparator16.Name = "toolStripSeparator16";
+            toolStripSeparator16.Size = new Size(203, 6);
             // 
             // advancedToolStripMenuItem
             // 
-            this.advancedToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.downloadQueueToolStripMenuItem,
-            this.startQueueToolStripMenuItem,
-            this.stopQueueToolStripMenuItem,
-            this.tileLoadingThrottlingToolStripMenuItem,
-            this.toolStripMenuItem8,
-            this.saveCacheAsCabinetFileToolStripMenuItem,
-            this.restoreCacheFromCabinetFileToolStripMenuItem,
-            this.toolStripSeparator22,
-            this.flushCacheToolStripMenuItem,
-            this.toolStripSeparator18,
-            this.showPerformanceDataToolStripMenuItem,
-            this.toolStripSeparator19,
-            this.toolStripMenuItem2,
-            this.multiChanelCalibrationToolStripMenuItem,
-            this.clientNodeListToolStripMenuItem,
-            this.toolStripMenuItem6,
-            this.sendLayersToProjectorServersToolStripMenuItem});
-            this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new Size(206, 22);
-            this.advancedToolStripMenuItem.Text = "Advanced";
-            this.advancedToolStripMenuItem.DropDownOpening += new EventHandler(this.advancedToolStripMenuItem_DropDownOpening);
+            advancedToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            downloadQueueToolStripMenuItem,
+            startQueueToolStripMenuItem,
+            stopQueueToolStripMenuItem,
+            tileLoadingThrottlingToolStripMenuItem,
+            toolStripMenuItem8,
+            saveCacheAsCabinetFileToolStripMenuItem,
+            restoreCacheFromCabinetFileToolStripMenuItem,
+            toolStripSeparator22,
+            flushCacheToolStripMenuItem,
+            toolStripSeparator18,
+            showPerformanceDataToolStripMenuItem,
+            toolStripSeparator19,
+            toolStripMenuItem2,
+            multiChanelCalibrationToolStripMenuItem,
+            clientNodeListToolStripMenuItem,
+            toolStripMenuItem6,
+            sendLayersToProjectorServersToolStripMenuItem});
+            advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+            advancedToolStripMenuItem.Size = new Size(206, 22);
+            advancedToolStripMenuItem.Text = "Advanced";
+            advancedToolStripMenuItem.DropDownOpening += advancedToolStripMenuItem_DropDownOpening;
             // 
             // downloadQueueToolStripMenuItem
             // 
-            this.downloadQueueToolStripMenuItem.Name = "downloadQueueToolStripMenuItem";
-            this.downloadQueueToolStripMenuItem.Size = new Size(252, 22);
-            this.downloadQueueToolStripMenuItem.Text = "Show Download Queue";
-            this.downloadQueueToolStripMenuItem.Click += new EventHandler(this.showQueue_Click);
+            downloadQueueToolStripMenuItem.Name = "downloadQueueToolStripMenuItem";
+            downloadQueueToolStripMenuItem.Size = new Size(252, 22);
+            downloadQueueToolStripMenuItem.Text = "Show Download Queue";
+            downloadQueueToolStripMenuItem.Click += showQueue_Click;
             // 
             // startQueueToolStripMenuItem
             // 
-            this.startQueueToolStripMenuItem.Name = "startQueueToolStripMenuItem";
-            this.startQueueToolStripMenuItem.Size = new Size(252, 22);
-            this.startQueueToolStripMenuItem.Text = "Start Queue";
-            this.startQueueToolStripMenuItem.Click += new EventHandler(this.startQueue_Click);
+            startQueueToolStripMenuItem.Name = "startQueueToolStripMenuItem";
+            startQueueToolStripMenuItem.Size = new Size(252, 22);
+            startQueueToolStripMenuItem.Text = "Start Queue";
+            startQueueToolStripMenuItem.Click += startQueue_Click;
             // 
             // stopQueueToolStripMenuItem
             // 
-            this.stopQueueToolStripMenuItem.Name = "stopQueueToolStripMenuItem";
-            this.stopQueueToolStripMenuItem.Size = new Size(252, 22);
-            this.stopQueueToolStripMenuItem.Text = "Stop Queue";
-            this.stopQueueToolStripMenuItem.Click += new EventHandler(this.stopQueue_Click);
+            stopQueueToolStripMenuItem.Name = "stopQueueToolStripMenuItem";
+            stopQueueToolStripMenuItem.Size = new Size(252, 22);
+            stopQueueToolStripMenuItem.Text = "Stop Queue";
+            stopQueueToolStripMenuItem.Click += stopQueue_Click;
             // 
             // tileLoadingThrottlingToolStripMenuItem
             // 
-            this.tileLoadingThrottlingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.tpsToolStripMenuItem15,
-            this.tpsToolStripMenuItem30,
-            this.tpsToolStripMenuItem60,
-            this.tpsToolStripMenuItem120,
-            this.tpsToolStripMenuItemUnlimited});
-            this.tileLoadingThrottlingToolStripMenuItem.Name = "tileLoadingThrottlingToolStripMenuItem";
-            this.tileLoadingThrottlingToolStripMenuItem.Size = new Size(252, 22);
-            this.tileLoadingThrottlingToolStripMenuItem.Text = "Tile Loading Throttling";
-            this.tileLoadingThrottlingToolStripMenuItem.DropDownOpening += new EventHandler(this.tileLoadingThrottlingToolStripMenuItem_DropDownOpening);
+            tileLoadingThrottlingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            tpsToolStripMenuItem15,
+            tpsToolStripMenuItem30,
+            tpsToolStripMenuItem60,
+            tpsToolStripMenuItem120,
+            tpsToolStripMenuItemUnlimited});
+            tileLoadingThrottlingToolStripMenuItem.Name = "tileLoadingThrottlingToolStripMenuItem";
+            tileLoadingThrottlingToolStripMenuItem.Size = new Size(252, 22);
+            tileLoadingThrottlingToolStripMenuItem.Text = "Tile Loading Throttling";
+            tileLoadingThrottlingToolStripMenuItem.DropDownOpening += tileLoadingThrottlingToolStripMenuItem_DropDownOpening;
             // 
             // tpsToolStripMenuItem15
             // 
-            this.tpsToolStripMenuItem15.Name = "tpsToolStripMenuItem15";
-            this.tpsToolStripMenuItem15.Size = new Size(126, 22);
-            this.tpsToolStripMenuItem15.Text = "15 tps";
-            this.tpsToolStripMenuItem15.Click += new EventHandler(this.tpsToolStripMenuItem15_Click);
+            tpsToolStripMenuItem15.Name = "tpsToolStripMenuItem15";
+            tpsToolStripMenuItem15.Size = new Size(126, 22);
+            tpsToolStripMenuItem15.Text = "15 tps";
+            tpsToolStripMenuItem15.Click += tpsToolStripMenuItem15_Click;
             // 
             // tpsToolStripMenuItem30
             // 
-            this.tpsToolStripMenuItem30.Name = "tpsToolStripMenuItem30";
-            this.tpsToolStripMenuItem30.Size = new Size(126, 22);
-            this.tpsToolStripMenuItem30.Text = "30 tps";
-            this.tpsToolStripMenuItem30.Click += new EventHandler(this.tpsToolStripMenuItem30_Click);
+            tpsToolStripMenuItem30.Name = "tpsToolStripMenuItem30";
+            tpsToolStripMenuItem30.Size = new Size(126, 22);
+            tpsToolStripMenuItem30.Text = "30 tps";
+            tpsToolStripMenuItem30.Click += tpsToolStripMenuItem30_Click;
             // 
             // tpsToolStripMenuItem60
             // 
-            this.tpsToolStripMenuItem60.Name = "tpsToolStripMenuItem60";
-            this.tpsToolStripMenuItem60.Size = new Size(126, 22);
-            this.tpsToolStripMenuItem60.Text = "60 tps";
-            this.tpsToolStripMenuItem60.Click += new EventHandler(this.tpsToolStripMenuItem60_Click);
+            tpsToolStripMenuItem60.Name = "tpsToolStripMenuItem60";
+            tpsToolStripMenuItem60.Size = new Size(126, 22);
+            tpsToolStripMenuItem60.Text = "60 tps";
+            tpsToolStripMenuItem60.Click += tpsToolStripMenuItem60_Click;
             // 
             // tpsToolStripMenuItem120
             // 
-            this.tpsToolStripMenuItem120.Name = "tpsToolStripMenuItem120";
-            this.tpsToolStripMenuItem120.Size = new Size(126, 22);
-            this.tpsToolStripMenuItem120.Text = "120 tps";
-            this.tpsToolStripMenuItem120.Click += new EventHandler(this.tpsToolStripMenuItem120_Click);
+            tpsToolStripMenuItem120.Name = "tpsToolStripMenuItem120";
+            tpsToolStripMenuItem120.Size = new Size(126, 22);
+            tpsToolStripMenuItem120.Text = "120 tps";
+            tpsToolStripMenuItem120.Click += tpsToolStripMenuItem120_Click;
             // 
             // tpsToolStripMenuItemUnlimited
             // 
-            this.tpsToolStripMenuItemUnlimited.Name = "tpsToolStripMenuItemUnlimited";
-            this.tpsToolStripMenuItemUnlimited.Size = new Size(126, 22);
-            this.tpsToolStripMenuItemUnlimited.Text = "Unlimited";
-            this.tpsToolStripMenuItemUnlimited.Click += new EventHandler(this.tpsToolStripMenuItemUnlimited_Click);
+            tpsToolStripMenuItemUnlimited.Name = "tpsToolStripMenuItemUnlimited";
+            tpsToolStripMenuItemUnlimited.Size = new Size(126, 22);
+            tpsToolStripMenuItemUnlimited.Text = "Unlimited";
+            tpsToolStripMenuItemUnlimited.Click += tpsToolStripMenuItemUnlimited_Click;
             // 
             // toolStripMenuItem8
             // 
-            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new Size(249, 6);
+            toolStripMenuItem8.Name = "toolStripMenuItem8";
+            toolStripMenuItem8.Size = new Size(249, 6);
             // 
             // saveCacheAsCabinetFileToolStripMenuItem
             // 
-            this.saveCacheAsCabinetFileToolStripMenuItem.Name = "saveCacheAsCabinetFileToolStripMenuItem";
-            this.saveCacheAsCabinetFileToolStripMenuItem.Size = new Size(252, 22);
-            this.saveCacheAsCabinetFileToolStripMenuItem.Text = "Save Cache as Cabinet File...";
-            this.saveCacheAsCabinetFileToolStripMenuItem.Click += new EventHandler(this.saveCacheAsCabinetFileToolStripMenuItem_Click);
+            saveCacheAsCabinetFileToolStripMenuItem.Name = "saveCacheAsCabinetFileToolStripMenuItem";
+            saveCacheAsCabinetFileToolStripMenuItem.Size = new Size(252, 22);
+            saveCacheAsCabinetFileToolStripMenuItem.Text = "Save Cache as Cabinet File...";
+            saveCacheAsCabinetFileToolStripMenuItem.Click += saveCacheAsCabinetFileToolStripMenuItem_Click;
             // 
             // restoreCacheFromCabinetFileToolStripMenuItem
             // 
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Name = "restoreCacheFromCabinetFileToolStripMenuItem";
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Size = new Size(252, 22);
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Text = "Restore Cache from Cabinet File...";
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Click += new EventHandler(this.restoreCacheFromCabinetFileToolStripMenuItem_Click);
+            restoreCacheFromCabinetFileToolStripMenuItem.Name = "restoreCacheFromCabinetFileToolStripMenuItem";
+            restoreCacheFromCabinetFileToolStripMenuItem.Size = new Size(252, 22);
+            restoreCacheFromCabinetFileToolStripMenuItem.Text = "Restore Cache from Cabinet File...";
+            restoreCacheFromCabinetFileToolStripMenuItem.Click += restoreCacheFromCabinetFileToolStripMenuItem_Click;
             // 
             // toolStripSeparator22
             // 
-            this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new Size(249, 6);
+            toolStripSeparator22.Name = "toolStripSeparator22";
+            toolStripSeparator22.Size = new Size(249, 6);
             // 
             // flushCacheToolStripMenuItem
             // 
-            this.flushCacheToolStripMenuItem.Name = "flushCacheToolStripMenuItem";
-            this.flushCacheToolStripMenuItem.Size = new Size(252, 22);
-            this.flushCacheToolStripMenuItem.Text = "Flush Cache";
-            this.flushCacheToolStripMenuItem.Click += new EventHandler(this.helpFlush_Click);
+            flushCacheToolStripMenuItem.Name = "flushCacheToolStripMenuItem";
+            flushCacheToolStripMenuItem.Size = new Size(252, 22);
+            flushCacheToolStripMenuItem.Text = "Flush Cache";
+            flushCacheToolStripMenuItem.Click += helpFlush_Click;
             // 
             // toolStripSeparator18
             // 
-            this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new Size(249, 6);
+            toolStripSeparator18.Name = "toolStripSeparator18";
+            toolStripSeparator18.Size = new Size(249, 6);
             // 
             // showPerformanceDataToolStripMenuItem
             // 
-            this.showPerformanceDataToolStripMenuItem.CheckOnClick = true;
-            this.showPerformanceDataToolStripMenuItem.Name = "showPerformanceDataToolStripMenuItem";
-            this.showPerformanceDataToolStripMenuItem.Size = new Size(252, 22);
-            this.showPerformanceDataToolStripMenuItem.Text = "Show Performance Data";
-            this.showPerformanceDataToolStripMenuItem.Click += new EventHandler(this.showPerformanceDataToolStripMenuItem_Click);
+            showPerformanceDataToolStripMenuItem.CheckOnClick = true;
+            showPerformanceDataToolStripMenuItem.Name = "showPerformanceDataToolStripMenuItem";
+            showPerformanceDataToolStripMenuItem.Size = new Size(252, 22);
+            showPerformanceDataToolStripMenuItem.Text = "Show Performance Data";
+            showPerformanceDataToolStripMenuItem.Click += showPerformanceDataToolStripMenuItem_Click;
             // 
             // toolStripSeparator19
             // 
-            this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new Size(249, 6);
+            toolStripSeparator19.Name = "toolStripSeparator19";
+            toolStripSeparator19.Size = new Size(249, 6);
             // 
             // toolStripMenuItem2
             // 
-            this.toolStripMenuItem2.MergeIndex = 1;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new Size(252, 22);
-            this.toolStripMenuItem2.Text = "Master Controller";
-            this.toolStripMenuItem2.Click += new EventHandler(this.menuMasterControler_Click);
+            toolStripMenuItem2.MergeIndex = 1;
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(252, 22);
+            toolStripMenuItem2.Text = "Master Controller";
+            toolStripMenuItem2.Click += menuMasterControler_Click;
             // 
             // multiChanelCalibrationToolStripMenuItem
             // 
-            this.multiChanelCalibrationToolStripMenuItem.Name = "multiChanelCalibrationToolStripMenuItem";
-            this.multiChanelCalibrationToolStripMenuItem.Size = new Size(252, 22);
-            this.multiChanelCalibrationToolStripMenuItem.Text = "Multi-Channel Calibration";
-            this.multiChanelCalibrationToolStripMenuItem.Click += new EventHandler(this.multiChanelCalibrationToolStripMenuItem_Click);
+            multiChanelCalibrationToolStripMenuItem.Name = "multiChanelCalibrationToolStripMenuItem";
+            multiChanelCalibrationToolStripMenuItem.Size = new Size(252, 22);
+            multiChanelCalibrationToolStripMenuItem.Text = "Multi-Channel Calibration";
+            multiChanelCalibrationToolStripMenuItem.Click += multiChanelCalibrationToolStripMenuItem_Click;
             // 
             // clientNodeListToolStripMenuItem
             // 
-            this.clientNodeListToolStripMenuItem.Name = "clientNodeListToolStripMenuItem";
-            this.clientNodeListToolStripMenuItem.Size = new Size(252, 22);
-            this.clientNodeListToolStripMenuItem.Text = "Projector Server List";
-            this.clientNodeListToolStripMenuItem.Click += new EventHandler(this.clientNodeListToolStripMenuItem_Click);
+            clientNodeListToolStripMenuItem.Name = "clientNodeListToolStripMenuItem";
+            clientNodeListToolStripMenuItem.Size = new Size(252, 22);
+            clientNodeListToolStripMenuItem.Text = "Projector Server List";
+            clientNodeListToolStripMenuItem.Click += clientNodeListToolStripMenuItem_Click;
             // 
             // toolStripMenuItem6
             // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new Size(249, 6);
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.Size = new Size(249, 6);
             // 
             // sendLayersToProjectorServersToolStripMenuItem
             // 
-            this.sendLayersToProjectorServersToolStripMenuItem.Name = "sendLayersToProjectorServersToolStripMenuItem";
-            this.sendLayersToProjectorServersToolStripMenuItem.Size = new Size(252, 22);
-            this.sendLayersToProjectorServersToolStripMenuItem.Text = "Send Layers to Projector Servers";
-            this.sendLayersToProjectorServersToolStripMenuItem.Click += new EventHandler(this.sendLayersToProjectorServersToolStripMenuItem_Click);
+            sendLayersToProjectorServersToolStripMenuItem.Name = "sendLayersToProjectorServersToolStripMenuItem";
+            sendLayersToProjectorServersToolStripMenuItem.Size = new Size(252, 22);
+            sendLayersToProjectorServersToolStripMenuItem.Text = "Send Layers to Projector Servers";
+            sendLayersToProjectorServersToolStripMenuItem.Click += sendLayersToProjectorServersToolStripMenuItem_Click;
             // 
             // mIDIControllerSetupToolStripMenuItem
             // 
-            this.mIDIControllerSetupToolStripMenuItem.Name = "mIDIControllerSetupToolStripMenuItem";
-            this.mIDIControllerSetupToolStripMenuItem.Size = new Size(206, 22);
-            this.mIDIControllerSetupToolStripMenuItem.Text = "Controller Setup...";
-            this.mIDIControllerSetupToolStripMenuItem.Click += new EventHandler(this.mIDIControllerSetupToolStripMenuItem_Click);
+            mIDIControllerSetupToolStripMenuItem.Name = "mIDIControllerSetupToolStripMenuItem";
+            mIDIControllerSetupToolStripMenuItem.Size = new Size(206, 22);
+            mIDIControllerSetupToolStripMenuItem.Text = "Controller Setup...";
+            mIDIControllerSetupToolStripMenuItem.Click += mIDIControllerSetupToolStripMenuItem_Click;
             // 
             // xBoxControllerSetupToolStripMenuItem
             // 
-            this.xBoxControllerSetupToolStripMenuItem.Name = "xBoxControllerSetupToolStripMenuItem";
-            this.xBoxControllerSetupToolStripMenuItem.Size = new Size(206, 22);
-            this.xBoxControllerSetupToolStripMenuItem.Text = "Xbox Controller Setup...";
-            this.xBoxControllerSetupToolStripMenuItem.Click += new EventHandler(this.xBoxControllerSetupToolStripMenuItem_Click);
+            xBoxControllerSetupToolStripMenuItem.Name = "xBoxControllerSetupToolStripMenuItem";
+            xBoxControllerSetupToolStripMenuItem.Size = new Size(206, 22);
+            xBoxControllerSetupToolStripMenuItem.Text = "Xbox Controller Setup...";
+            xBoxControllerSetupToolStripMenuItem.Click += xBoxControllerSetupToolStripMenuItem_Click;
             // 
             // remoteAccessControlToolStripMenuItem
             // 
-            this.remoteAccessControlToolStripMenuItem.Name = "remoteAccessControlToolStripMenuItem";
-            this.remoteAccessControlToolStripMenuItem.Size = new Size(206, 22);
-            this.remoteAccessControlToolStripMenuItem.Text = "Remote Access Control...";
-            this.remoteAccessControlToolStripMenuItem.Click += new EventHandler(this.remoteAccessControlToolStripMenuItem_Click);
+            remoteAccessControlToolStripMenuItem.Name = "remoteAccessControlToolStripMenuItem";
+            remoteAccessControlToolStripMenuItem.Size = new Size(206, 22);
+            remoteAccessControlToolStripMenuItem.Text = "Remote Access Control...";
+            remoteAccessControlToolStripMenuItem.Click += remoteAccessControlToolStripMenuItem_Click;
             // 
             // toolStripMenuItem14
             // 
-            this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-            this.toolStripMenuItem14.Size = new Size(203, 6);
+            toolStripMenuItem14.Name = "toolStripMenuItem14";
+            toolStripMenuItem14.Size = new Size(203, 6);
             // 
             // selectLanguageToolStripMenuItem
             // 
-            this.selectLanguageToolStripMenuItem.Name = "selectLanguageToolStripMenuItem";
-            this.selectLanguageToolStripMenuItem.Size = new Size(206, 22);
-            this.selectLanguageToolStripMenuItem.Text = "Select Language...";
-            this.selectLanguageToolStripMenuItem.Click += new EventHandler(this.selectLanguageToolStripMenuItem_Click);
+            selectLanguageToolStripMenuItem.Name = "selectLanguageToolStripMenuItem";
+            selectLanguageToolStripMenuItem.Size = new Size(206, 22);
+            selectLanguageToolStripMenuItem.Text = "Select Language...";
+            selectLanguageToolStripMenuItem.Click += selectLanguageToolStripMenuItem_Click;
             // 
             // regionalDataCacheToolStripMenuItem
             // 
-            this.regionalDataCacheToolStripMenuItem.Name = "regionalDataCacheToolStripMenuItem";
-            this.regionalDataCacheToolStripMenuItem.Size = new Size(206, 22);
-            this.regionalDataCacheToolStripMenuItem.Text = "Regional Data Cache...";
-            this.regionalDataCacheToolStripMenuItem.Click += new EventHandler(this.regionalDataCacheToolStripMenuItem_Click);
+            regionalDataCacheToolStripMenuItem.Name = "regionalDataCacheToolStripMenuItem";
+            regionalDataCacheToolStripMenuItem.Size = new Size(206, 22);
+            regionalDataCacheToolStripMenuItem.Text = "Regional Data Cache...";
+            regionalDataCacheToolStripMenuItem.Click += regionalDataCacheToolStripMenuItem_Click;
             // 
             // viewMenu
             // 
-            this.viewMenu.Items.AddRange(new ToolStripItem[] {
-            this.resetCameraMenuItem,
-            this.showTouchControlsToolStripMenuItem,
-            this.monochromeStyleToolStripMenuItem,
-            this.allowUnconstrainedTiltToolStripMenuItem,
-            this.toolStripSeparator9,
-            this.startupToolStripMenuItem,
-            this.toolStripMenuItem5,
-            this.copyCurrentViewToClipboardToolStripMenuItem,
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem,
-            this.saveCurrentViewImageToFileToolStripMenuItem,
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem,
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem,
-            this.toolStripSeparator21,
-            this.screenBroadcastToolStripMenuItem,
-            this.toolStripSeparator14,
-            this.imageStackToolStripMenuItem,
-            this.showLayerManagerToolStripMenuItem,
-            this.toolStripSeparator20,
-            this.stereoToolStripMenuItem,
-            this.expermentalToolStripMenuItem,
-            this.toggleFullScreenModeF11ToolStripMenuItem,
-            this.multiSampleAntialiasingToolStripMenuItem,
-            this.lockVerticalSyncToolStripMenuItem,
-            this.targetFrameRateToolStripMenuItem});
-            this.viewMenu.Name = "contextMenuStrip1";
-            this.viewMenu.Size = new Size(341, 452);
-            this.viewMenu.Closed += new ToolStripDropDownClosedEventHandler(this.PopupClosed);
-            this.viewMenu.Opening += this.viewMenu_Opening;
-            this.viewMenu.PreviewKeyDown += new PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
+            viewMenu.Items.AddRange(new ToolStripItem[] {
+            resetCameraMenuItem,
+            showTouchControlsToolStripMenuItem,
+            monochromeStyleToolStripMenuItem,
+            allowUnconstrainedTiltToolStripMenuItem,
+            toolStripSeparator9,
+            startupToolStripMenuItem,
+            toolStripMenuItem5,
+            copyCurrentViewToClipboardToolStripMenuItem,
+            copyShortCutToThisViewToClipboardToolStripMenuItem,
+            saveCurrentViewImageToFileToolStripMenuItem,
+            setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem,
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem,
+            toolStripSeparator21,
+            screenBroadcastToolStripMenuItem,
+            toolStripSeparator14,
+            imageStackToolStripMenuItem,
+            showLayerManagerToolStripMenuItem,
+            toolStripSeparator20,
+            stereoToolStripMenuItem,
+            expermentalToolStripMenuItem,
+            toggleFullScreenModeF11ToolStripMenuItem,
+            multiSampleAntialiasingToolStripMenuItem,
+            lockVerticalSyncToolStripMenuItem,
+            targetFrameRateToolStripMenuItem});
+            viewMenu.Name = "contextMenuStrip1";
+            viewMenu.Size = new Size(341, 452);
+            viewMenu.Closed += PopupClosed;
+            viewMenu.Opening += viewMenu_Opening;
+            viewMenu.PreviewKeyDown += exploreMenu_PreviewKeyDown;
             // 
             // resetCameraMenuItem
             // 
-            this.resetCameraMenuItem.Name = "resetCameraMenuItem";
-            this.resetCameraMenuItem.Size = new Size(340, 22);
-            this.resetCameraMenuItem.Text = "Reset Camera";
-            this.resetCameraMenuItem.Click += new EventHandler(this.resetCameraToolStripMenuItem_Click);
+            resetCameraMenuItem.Name = "resetCameraMenuItem";
+            resetCameraMenuItem.Size = new Size(340, 22);
+            resetCameraMenuItem.Text = "Reset Camera";
+            resetCameraMenuItem.Click += resetCameraToolStripMenuItem_Click;
             // 
             // showTouchControlsToolStripMenuItem
             // 
-            this.showTouchControlsToolStripMenuItem.Name = "showTouchControlsToolStripMenuItem";
-            this.showTouchControlsToolStripMenuItem.Size = new Size(340, 22);
-            this.showTouchControlsToolStripMenuItem.Text = "Show On-Screen Controls";
-            this.showTouchControlsToolStripMenuItem.Click += new EventHandler(this.showTouchControlsToolStripMenuItem_Click);
+            showTouchControlsToolStripMenuItem.Name = "showTouchControlsToolStripMenuItem";
+            showTouchControlsToolStripMenuItem.Size = new Size(340, 22);
+            showTouchControlsToolStripMenuItem.Text = "Show On-Screen Controls";
+            showTouchControlsToolStripMenuItem.Click += showTouchControlsToolStripMenuItem_Click;
             // 
             // monochromeStyleToolStripMenuItem
             // 
-            this.monochromeStyleToolStripMenuItem.Name = "monochromeStyleToolStripMenuItem";
-            this.monochromeStyleToolStripMenuItem.Size = new Size(340, 22);
-            this.monochromeStyleToolStripMenuItem.Text = "Monochrome Style";
-            this.monochromeStyleToolStripMenuItem.Click += new EventHandler(this.monochromeStyleToolStripMenuItem_Click);
+            monochromeStyleToolStripMenuItem.Name = "monochromeStyleToolStripMenuItem";
+            monochromeStyleToolStripMenuItem.Size = new Size(340, 22);
+            monochromeStyleToolStripMenuItem.Text = "Monochrome Style";
+            monochromeStyleToolStripMenuItem.Click += monochromeStyleToolStripMenuItem_Click;
             // 
             // allowUnconstrainedTiltToolStripMenuItem
             // 
-            this.allowUnconstrainedTiltToolStripMenuItem.Name = "allowUnconstrainedTiltToolStripMenuItem";
-            this.allowUnconstrainedTiltToolStripMenuItem.Size = new Size(340, 22);
-            this.allowUnconstrainedTiltToolStripMenuItem.Text = "Allow Unconstrained Tilt";
-            this.allowUnconstrainedTiltToolStripMenuItem.Click += new EventHandler(this.allowUnconstrainedTiltToolStripMenuItem_Click);
+            allowUnconstrainedTiltToolStripMenuItem.Name = "allowUnconstrainedTiltToolStripMenuItem";
+            allowUnconstrainedTiltToolStripMenuItem.Size = new Size(340, 22);
+            allowUnconstrainedTiltToolStripMenuItem.Text = "Allow Unconstrained Tilt";
+            allowUnconstrainedTiltToolStripMenuItem.Click += allowUnconstrainedTiltToolStripMenuItem_Click;
             // 
             // toolStripSeparator9
             // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new Size(337, 6);
+            toolStripSeparator9.Name = "toolStripSeparator9";
+            toolStripSeparator9.Size = new Size(337, 6);
             // 
             // startupToolStripMenuItem
             // 
-            this.startupToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.earthToolStripMenuItem,
-            this.planetToolStripMenuItem,
-            this.skyToolStripMenuItem,
-            this.panoramaToolStripMenuItem,
-            this.solarSystemToolStripMenuItem,
-            this.lastToolStripMenuItem,
-            this.randomToolStripMenuItem});
-            this.startupToolStripMenuItem.Name = "startupToolStripMenuItem";
-            this.startupToolStripMenuItem.Size = new Size(340, 22);
-            this.startupToolStripMenuItem.Text = "Startup Look At";
-            this.startupToolStripMenuItem.DropDownOpening += new EventHandler(this.startupToolStripMenuItem_DropDownOpening);
+            startupToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            earthToolStripMenuItem,
+            planetToolStripMenuItem,
+            skyToolStripMenuItem,
+            panoramaToolStripMenuItem,
+            solarSystemToolStripMenuItem,
+            lastToolStripMenuItem,
+            randomToolStripMenuItem});
+            startupToolStripMenuItem.Name = "startupToolStripMenuItem";
+            startupToolStripMenuItem.Size = new Size(340, 22);
+            startupToolStripMenuItem.Text = "Startup Look At";
+            startupToolStripMenuItem.DropDownOpening += startupToolStripMenuItem_DropDownOpening;
             // 
             // earthToolStripMenuItem
             // 
-            this.earthToolStripMenuItem.Name = "earthToolStripMenuItem";
-            this.earthToolStripMenuItem.Size = new Size(141, 22);
-            this.earthToolStripMenuItem.Text = "Earth";
-            this.earthToolStripMenuItem.Click += new EventHandler(this.earthToolStripMenuItem_Click);
+            earthToolStripMenuItem.Name = "earthToolStripMenuItem";
+            earthToolStripMenuItem.Size = new Size(141, 22);
+            earthToolStripMenuItem.Text = "Earth";
+            earthToolStripMenuItem.Click += earthToolStripMenuItem_Click;
             // 
             // planetToolStripMenuItem
             // 
-            this.planetToolStripMenuItem.Name = "planetToolStripMenuItem";
-            this.planetToolStripMenuItem.Size = new Size(141, 22);
-            this.planetToolStripMenuItem.Text = "Planet";
-            this.planetToolStripMenuItem.Click += new EventHandler(this.planetToolStripMenuItem_Click);
+            planetToolStripMenuItem.Name = "planetToolStripMenuItem";
+            planetToolStripMenuItem.Size = new Size(141, 22);
+            planetToolStripMenuItem.Text = "Planet";
+            planetToolStripMenuItem.Click += planetToolStripMenuItem_Click;
             // 
             // skyToolStripMenuItem
             // 
-            this.skyToolStripMenuItem.Name = "skyToolStripMenuItem";
-            this.skyToolStripMenuItem.Size = new Size(141, 22);
-            this.skyToolStripMenuItem.Text = "Sky";
-            this.skyToolStripMenuItem.Click += new EventHandler(this.skyToolStripMenuItem_Click);
+            skyToolStripMenuItem.Name = "skyToolStripMenuItem";
+            skyToolStripMenuItem.Size = new Size(141, 22);
+            skyToolStripMenuItem.Text = "Sky";
+            skyToolStripMenuItem.Click += skyToolStripMenuItem_Click;
             // 
             // panoramaToolStripMenuItem
             // 
-            this.panoramaToolStripMenuItem.Name = "panoramaToolStripMenuItem";
-            this.panoramaToolStripMenuItem.Size = new Size(141, 22);
-            this.panoramaToolStripMenuItem.Text = "Panorama";
-            this.panoramaToolStripMenuItem.Click += new EventHandler(this.panoramaToolStripMenuItem_Click);
+            panoramaToolStripMenuItem.Name = "panoramaToolStripMenuItem";
+            panoramaToolStripMenuItem.Size = new Size(141, 22);
+            panoramaToolStripMenuItem.Text = "Panorama";
+            panoramaToolStripMenuItem.Click += panoramaToolStripMenuItem_Click;
             // 
             // solarSystemToolStripMenuItem
             // 
-            this.solarSystemToolStripMenuItem.Name = "solarSystemToolStripMenuItem";
-            this.solarSystemToolStripMenuItem.Size = new Size(141, 22);
-            this.solarSystemToolStripMenuItem.Text = "Solar System";
-            this.solarSystemToolStripMenuItem.Click += new EventHandler(this.solarSystemToolStripMenuItem_Click);
+            solarSystemToolStripMenuItem.Name = "solarSystemToolStripMenuItem";
+            solarSystemToolStripMenuItem.Size = new Size(141, 22);
+            solarSystemToolStripMenuItem.Text = "Solar System";
+            solarSystemToolStripMenuItem.Click += solarSystemToolStripMenuItem_Click;
             // 
             // lastToolStripMenuItem
             // 
-            this.lastToolStripMenuItem.Name = "lastToolStripMenuItem";
-            this.lastToolStripMenuItem.Size = new Size(141, 22);
-            this.lastToolStripMenuItem.Text = "Last";
-            this.lastToolStripMenuItem.Click += new EventHandler(this.lastToolStripMenuItem_Click);
+            lastToolStripMenuItem.Name = "lastToolStripMenuItem";
+            lastToolStripMenuItem.Size = new Size(141, 22);
+            lastToolStripMenuItem.Text = "Last";
+            lastToolStripMenuItem.Click += lastToolStripMenuItem_Click;
             // 
             // randomToolStripMenuItem
             // 
-            this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new Size(141, 22);
-            this.randomToolStripMenuItem.Text = "Random";
-            this.randomToolStripMenuItem.Click += new EventHandler(this.randomToolStripMenuItem_Click);
+            randomToolStripMenuItem.Name = "randomToolStripMenuItem";
+            randomToolStripMenuItem.Size = new Size(141, 22);
+            randomToolStripMenuItem.Text = "Random";
+            randomToolStripMenuItem.Click += randomToolStripMenuItem_Click;
             // 
             // toolStripMenuItem5
             // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new Size(337, 6);
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.Size = new Size(337, 6);
             // 
             // copyCurrentViewToClipboardToolStripMenuItem
             // 
-            this.copyCurrentViewToClipboardToolStripMenuItem.Name = "copyCurrentViewToClipboardToolStripMenuItem";
-            this.copyCurrentViewToClipboardToolStripMenuItem.Size = new Size(340, 22);
-            this.copyCurrentViewToClipboardToolStripMenuItem.Text = "Copy Current View Image";
-            this.copyCurrentViewToClipboardToolStripMenuItem.Click += new EventHandler(this.copyCurrentViewToClipboardToolStripMenuItem_Click);
+            copyCurrentViewToClipboardToolStripMenuItem.Name = "copyCurrentViewToClipboardToolStripMenuItem";
+            copyCurrentViewToClipboardToolStripMenuItem.Size = new Size(340, 22);
+            copyCurrentViewToClipboardToolStripMenuItem.Text = "Copy Current View Image";
+            copyCurrentViewToClipboardToolStripMenuItem.Click += copyCurrentViewToClipboardToolStripMenuItem_Click;
             // 
             // copyShortCutToThisViewToClipboardToolStripMenuItem
             // 
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Name = "copyShortCutToThisViewToClipboardToolStripMenuItem";
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Size = new Size(340, 22);
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Text = "Copy Shortcut to this View";
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Click += new EventHandler(this.copyShortcutMenuItem_Click);
+            copyShortCutToThisViewToClipboardToolStripMenuItem.Name = "copyShortCutToThisViewToClipboardToolStripMenuItem";
+            copyShortCutToThisViewToClipboardToolStripMenuItem.Size = new Size(340, 22);
+            copyShortCutToThisViewToClipboardToolStripMenuItem.Text = "Copy Shortcut to this View";
+            copyShortCutToThisViewToClipboardToolStripMenuItem.Click += copyShortcutMenuItem_Click;
             // 
             // saveCurrentViewImageToFileToolStripMenuItem
             // 
-            this.saveCurrentViewImageToFileToolStripMenuItem.Name = "saveCurrentViewImageToFileToolStripMenuItem";
-            this.saveCurrentViewImageToFileToolStripMenuItem.Size = new Size(340, 22);
-            this.saveCurrentViewImageToFileToolStripMenuItem.Text = "Save Current View Image to File...";
-            this.saveCurrentViewImageToFileToolStripMenuItem.Click += new EventHandler(this.saveCurrentViewImageToFileToolStripMenuItem_Click);
+            saveCurrentViewImageToFileToolStripMenuItem.Name = "saveCurrentViewImageToFileToolStripMenuItem";
+            saveCurrentViewImageToFileToolStripMenuItem.Size = new Size(340, 22);
+            saveCurrentViewImageToFileToolStripMenuItem.Text = "Save Current View Image to File...";
+            saveCurrentViewImageToFileToolStripMenuItem.Click += saveCurrentViewImageToFileToolStripMenuItem_Click;
             // 
             // setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem
             // 
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Name = "setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem";
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Size = new Size(340, 22);
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Text = "Set Current View as Windows Desktop Background";
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Click += new EventHandler(this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem_Click);
+            setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Name = "setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem";
+            setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Size = new Size(340, 22);
+            setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Text = "Set Current View as Windows Desktop Background";
+            setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Click += setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem_Click;
             // 
             // exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem
             // 
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Name = "exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem";
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Size = new Size(340, 22);
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Text = "Export Current View as STL File for 3D Printing...";
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Click += new EventHandler(this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem_Click);
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Name = "exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem";
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Size = new Size(340, 22);
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Text = "Export Current View as STL File for 3D Printing...";
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Click += exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem_Click;
             // 
             // toolStripSeparator21
             // 
-            this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new Size(337, 6);
+            toolStripSeparator21.Name = "toolStripSeparator21";
+            toolStripSeparator21.Size = new Size(337, 6);
             // 
             // screenBroadcastToolStripMenuItem
             // 
-            this.screenBroadcastToolStripMenuItem.Name = "screenBroadcastToolStripMenuItem";
-            this.screenBroadcastToolStripMenuItem.Size = new Size(340, 22);
-            this.screenBroadcastToolStripMenuItem.Text = "Screen Broadcast...";
-            this.screenBroadcastToolStripMenuItem.Click += new EventHandler(this.screenBroadcastToolStripMenuItem_Click);
+            screenBroadcastToolStripMenuItem.Name = "screenBroadcastToolStripMenuItem";
+            screenBroadcastToolStripMenuItem.Size = new Size(340, 22);
+            screenBroadcastToolStripMenuItem.Text = "Screen Broadcast...";
+            screenBroadcastToolStripMenuItem.Click += screenBroadcastToolStripMenuItem_Click;
             // 
             // toolStripSeparator14
             // 
-            this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new Size(337, 6);
-            this.toolStripSeparator14.Visible = false;
+            toolStripSeparator14.Name = "toolStripSeparator14";
+            toolStripSeparator14.Size = new Size(337, 6);
+            toolStripSeparator14.Visible = false;
             // 
             // imageStackToolStripMenuItem
             // 
-            this.imageStackToolStripMenuItem.Name = "imageStackToolStripMenuItem";
-            this.imageStackToolStripMenuItem.Size = new Size(340, 22);
-            this.imageStackToolStripMenuItem.Text = "Image Stack";
-            this.imageStackToolStripMenuItem.Click += new EventHandler(this.imageStackToolStripMenuItem_Click);
+            imageStackToolStripMenuItem.Name = "imageStackToolStripMenuItem";
+            imageStackToolStripMenuItem.Size = new Size(340, 22);
+            imageStackToolStripMenuItem.Text = "Image Stack";
+            imageStackToolStripMenuItem.Click += imageStackToolStripMenuItem_Click;
             // 
             // showLayerManagerToolStripMenuItem
             // 
-            this.showLayerManagerToolStripMenuItem.Name = "showLayerManagerToolStripMenuItem";
-            this.showLayerManagerToolStripMenuItem.Size = new Size(340, 22);
-            this.showLayerManagerToolStripMenuItem.Text = "Show Layer Manager";
-            this.showLayerManagerToolStripMenuItem.Click += new EventHandler(this.showLayerManagerToolStripMenuItem_Click);
+            showLayerManagerToolStripMenuItem.Name = "showLayerManagerToolStripMenuItem";
+            showLayerManagerToolStripMenuItem.Size = new Size(340, 22);
+            showLayerManagerToolStripMenuItem.Text = "Show Layer Manager";
+            showLayerManagerToolStripMenuItem.Click += showLayerManagerToolStripMenuItem_Click;
             // 
             // toolStripSeparator20
             // 
-            this.toolStripSeparator20.Name = "toolStripSeparator20";
-            this.toolStripSeparator20.Size = new Size(337, 6);
+            toolStripSeparator20.Name = "toolStripSeparator20";
+            toolStripSeparator20.Size = new Size(337, 6);
             // 
             // stereoToolStripMenuItem
             // 
-            this.stereoToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.enabledToolStripMenuItem,
-            this.anaglyphToolStripMenuItem,
-            this.anaglyphYellowBlueToolStripMenuItem,
-            this.sideBySideProjectionToolStripMenuItem,
-            this.sideBySideCrossEyedToolStripMenuItem,
-            this.alternatingLinesOddToolStripMenuItem,
-            this.alternatingLinesEvenToolStripMenuItem,
-            this.oculusRiftToolStripMenuItem});
-            this.stereoToolStripMenuItem.Name = "stereoToolStripMenuItem";
-            this.stereoToolStripMenuItem.Size = new Size(340, 22);
-            this.stereoToolStripMenuItem.Text = "Stereo";
-            this.stereoToolStripMenuItem.DropDownOpening += new EventHandler(this.stereoToolStripMenuItem_DropDownOpening);
+            stereoToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            enabledToolStripMenuItem,
+            anaglyphToolStripMenuItem,
+            anaglyphYellowBlueToolStripMenuItem,
+            sideBySideProjectionToolStripMenuItem,
+            sideBySideCrossEyedToolStripMenuItem,
+            alternatingLinesOddToolStripMenuItem,
+            alternatingLinesEvenToolStripMenuItem,
+            oculusRiftToolStripMenuItem});
+            stereoToolStripMenuItem.Name = "stereoToolStripMenuItem";
+            stereoToolStripMenuItem.Size = new Size(340, 22);
+            stereoToolStripMenuItem.Text = "Stereo";
+            stereoToolStripMenuItem.DropDownOpening += stereoToolStripMenuItem_DropDownOpening;
             // 
             // enabledToolStripMenuItem
             // 
-            this.enabledToolStripMenuItem.Name = "enabledToolStripMenuItem";
-            this.enabledToolStripMenuItem.Size = new Size(199, 22);
-            this.enabledToolStripMenuItem.Text = "Disabled";
-            this.enabledToolStripMenuItem.Click += new EventHandler(this.enabledToolStripMenuItem_Click);
+            enabledToolStripMenuItem.Name = "enabledToolStripMenuItem";
+            enabledToolStripMenuItem.Size = new Size(199, 22);
+            enabledToolStripMenuItem.Text = "Disabled";
+            enabledToolStripMenuItem.Click += enabledToolStripMenuItem_Click;
             // 
             // anaglyphToolStripMenuItem
             // 
-            this.anaglyphToolStripMenuItem.Name = "anaglyphToolStripMenuItem";
-            this.anaglyphToolStripMenuItem.Size = new Size(199, 22);
-            this.anaglyphToolStripMenuItem.Text = "Anaglyph (Red-Cyan)";
-            this.anaglyphToolStripMenuItem.Click += new EventHandler(this.anaglyphToolStripMenuItem_Click);
+            anaglyphToolStripMenuItem.Name = "anaglyphToolStripMenuItem";
+            anaglyphToolStripMenuItem.Size = new Size(199, 22);
+            anaglyphToolStripMenuItem.Text = "Anaglyph (Red-Cyan)";
+            anaglyphToolStripMenuItem.Click += anaglyphToolStripMenuItem_Click;
             // 
             // anaglyphYellowBlueToolStripMenuItem
             // 
-            this.anaglyphYellowBlueToolStripMenuItem.Name = "anaglyphYellowBlueToolStripMenuItem";
-            this.anaglyphYellowBlueToolStripMenuItem.Size = new Size(199, 22);
-            this.anaglyphYellowBlueToolStripMenuItem.Text = "Anaglyph (Yellow-Blue)";
-            this.anaglyphYellowBlueToolStripMenuItem.Click += new EventHandler(this.anaglyphYellowBlueToolStripMenuItem_Click);
+            anaglyphYellowBlueToolStripMenuItem.Name = "anaglyphYellowBlueToolStripMenuItem";
+            anaglyphYellowBlueToolStripMenuItem.Size = new Size(199, 22);
+            anaglyphYellowBlueToolStripMenuItem.Text = "Anaglyph (Yellow-Blue)";
+            anaglyphYellowBlueToolStripMenuItem.Click += anaglyphYellowBlueToolStripMenuItem_Click;
             // 
             // sideBySideProjectionToolStripMenuItem
             // 
-            this.sideBySideProjectionToolStripMenuItem.Name = "sideBySideProjectionToolStripMenuItem";
-            this.sideBySideProjectionToolStripMenuItem.Size = new Size(199, 22);
-            this.sideBySideProjectionToolStripMenuItem.Text = "Side by Side Projection";
-            this.sideBySideProjectionToolStripMenuItem.Click += new EventHandler(this.sideBySideProjectionToolStripMenuItem_Click);
+            sideBySideProjectionToolStripMenuItem.Name = "sideBySideProjectionToolStripMenuItem";
+            sideBySideProjectionToolStripMenuItem.Size = new Size(199, 22);
+            sideBySideProjectionToolStripMenuItem.Text = "Side by Side Projection";
+            sideBySideProjectionToolStripMenuItem.Click += sideBySideProjectionToolStripMenuItem_Click;
             // 
             // sideBySideCrossEyedToolStripMenuItem
             // 
-            this.sideBySideCrossEyedToolStripMenuItem.Name = "sideBySideCrossEyedToolStripMenuItem";
-            this.sideBySideCrossEyedToolStripMenuItem.Size = new Size(199, 22);
-            this.sideBySideCrossEyedToolStripMenuItem.Text = "Side by Side Cross-Eyed";
-            this.sideBySideCrossEyedToolStripMenuItem.Click += new EventHandler(this.sideBySideCrossEyedToolStripMenuItem_Click);
+            sideBySideCrossEyedToolStripMenuItem.Name = "sideBySideCrossEyedToolStripMenuItem";
+            sideBySideCrossEyedToolStripMenuItem.Size = new Size(199, 22);
+            sideBySideCrossEyedToolStripMenuItem.Text = "Side by Side Cross-Eyed";
+            sideBySideCrossEyedToolStripMenuItem.Click += sideBySideCrossEyedToolStripMenuItem_Click;
             // 
             // alternatingLinesOddToolStripMenuItem
             // 
-            this.alternatingLinesOddToolStripMenuItem.Name = "alternatingLinesOddToolStripMenuItem";
-            this.alternatingLinesOddToolStripMenuItem.Size = new Size(199, 22);
-            this.alternatingLinesOddToolStripMenuItem.Text = "Alternating Lines Odd";
-            this.alternatingLinesOddToolStripMenuItem.Click += new EventHandler(this.alternatingLinesOddToolStripMenuItem_Click);
+            alternatingLinesOddToolStripMenuItem.Name = "alternatingLinesOddToolStripMenuItem";
+            alternatingLinesOddToolStripMenuItem.Size = new Size(199, 22);
+            alternatingLinesOddToolStripMenuItem.Text = "Alternating Lines Odd";
+            alternatingLinesOddToolStripMenuItem.Click += alternatingLinesOddToolStripMenuItem_Click;
             // 
             // alternatingLinesEvenToolStripMenuItem
             // 
-            this.alternatingLinesEvenToolStripMenuItem.Name = "alternatingLinesEvenToolStripMenuItem";
-            this.alternatingLinesEvenToolStripMenuItem.Size = new Size(199, 22);
-            this.alternatingLinesEvenToolStripMenuItem.Text = "Alternating Lines Even";
-            this.alternatingLinesEvenToolStripMenuItem.Click += new EventHandler(this.alternatingLinesEvenToolStripMenuItem_Click);
+            alternatingLinesEvenToolStripMenuItem.Name = "alternatingLinesEvenToolStripMenuItem";
+            alternatingLinesEvenToolStripMenuItem.Size = new Size(199, 22);
+            alternatingLinesEvenToolStripMenuItem.Text = "Alternating Lines Even";
+            alternatingLinesEvenToolStripMenuItem.Click += alternatingLinesEvenToolStripMenuItem_Click;
             // 
             // oculusRiftToolStripMenuItem
             // 
-            this.oculusRiftToolStripMenuItem.Name = "oculusRiftToolStripMenuItem";
-            this.oculusRiftToolStripMenuItem.Size = new Size(199, 22);
-            this.oculusRiftToolStripMenuItem.Text = "Oculus Rift";
-            this.oculusRiftToolStripMenuItem.Click += new EventHandler(this.oculusRiftToolStripMenuItem_Click);
+            oculusRiftToolStripMenuItem.Name = "oculusRiftToolStripMenuItem";
+            oculusRiftToolStripMenuItem.Size = new Size(199, 22);
+            oculusRiftToolStripMenuItem.Text = "Oculus Rift";
+            oculusRiftToolStripMenuItem.Click += oculusRiftToolStripMenuItem_Click;
             // 
             // expermentalToolStripMenuItem
             // 
-            this.expermentalToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.fullDomeToolStripMenuItem,
-            this.newFullDomeViewInstanceToolStripMenuItem,
-            this.toolStripMenuItem15,
-            this.domeSetupToolStripMenuItem,
-            this.listenUpBoysToolStripMenuItem,
-            this.toolStripMenuItem11,
-            this.detachMainViewToSecondMonitor,
-            this.detachMainViewToThirdMonitorToolStripMenuItem,
-            this.toolStripMenuItem10,
-            this.fullDomePreviewToolStripMenuItem});
-            this.expermentalToolStripMenuItem.Name = "expermentalToolStripMenuItem";
-            this.expermentalToolStripMenuItem.Size = new Size(340, 22);
-            this.expermentalToolStripMenuItem.Text = "Single Channel Full Dome";
+            expermentalToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            fullDomeToolStripMenuItem,
+            newFullDomeViewInstanceToolStripMenuItem,
+            toolStripMenuItem15,
+            domeSetupToolStripMenuItem,
+            listenUpBoysToolStripMenuItem,
+            toolStripMenuItem11,
+            detachMainViewToSecondMonitor,
+            detachMainViewToThirdMonitorToolStripMenuItem,
+            toolStripMenuItem10,
+            fullDomePreviewToolStripMenuItem});
+            expermentalToolStripMenuItem.Name = "expermentalToolStripMenuItem";
+            expermentalToolStripMenuItem.Size = new Size(340, 22);
+            expermentalToolStripMenuItem.Text = "Single Channel Full Dome";
             // 
             // fullDomeToolStripMenuItem
             // 
-            this.fullDomeToolStripMenuItem.Name = "fullDomeToolStripMenuItem";
-            this.fullDomeToolStripMenuItem.Size = new Size(271, 22);
-            this.fullDomeToolStripMenuItem.Text = "Dome View";
-            this.fullDomeToolStripMenuItem.Click += new EventHandler(this.fullDomeToolStripMenuItem_Click);
+            fullDomeToolStripMenuItem.Name = "fullDomeToolStripMenuItem";
+            fullDomeToolStripMenuItem.Size = new Size(271, 22);
+            fullDomeToolStripMenuItem.Text = "Dome View";
+            fullDomeToolStripMenuItem.Click += fullDomeToolStripMenuItem_Click;
             // 
             // newFullDomeViewInstanceToolStripMenuItem
             // 
-            this.newFullDomeViewInstanceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.monitorOneToolStripMenuItem,
-            this.monitorTwoToolStripMenuItem,
-            this.monitorThreeToolStripMenuItem,
-            this.monitorFourToolStripMenuItem,
-            this.monitorFiveToolStripMenuItem,
-            this.monitorSixToolStripMenuItem,
-            this.monitorSevenToolStripMenuItem,
-            this.monitorEightToolStripMenuItem});
-            this.newFullDomeViewInstanceToolStripMenuItem.Name = "newFullDomeViewInstanceToolStripMenuItem";
-            this.newFullDomeViewInstanceToolStripMenuItem.Size = new Size(271, 22);
-            this.newFullDomeViewInstanceToolStripMenuItem.Text = "New Full Dome View Instance";
-            this.newFullDomeViewInstanceToolStripMenuItem.DropDownOpening += new EventHandler(this.newFullDomeViewInstanceToolStripMenuItem_DropDownOpening);
+            newFullDomeViewInstanceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            monitorOneToolStripMenuItem,
+            monitorTwoToolStripMenuItem,
+            monitorThreeToolStripMenuItem,
+            monitorFourToolStripMenuItem,
+            monitorFiveToolStripMenuItem,
+            monitorSixToolStripMenuItem,
+            monitorSevenToolStripMenuItem,
+            monitorEightToolStripMenuItem});
+            newFullDomeViewInstanceToolStripMenuItem.Name = "newFullDomeViewInstanceToolStripMenuItem";
+            newFullDomeViewInstanceToolStripMenuItem.Size = new Size(271, 22);
+            newFullDomeViewInstanceToolStripMenuItem.Text = "New Full Dome View Instance";
+            newFullDomeViewInstanceToolStripMenuItem.DropDownOpening += newFullDomeViewInstanceToolStripMenuItem_DropDownOpening;
             // 
             // monitorOneToolStripMenuItem
             // 
-            this.monitorOneToolStripMenuItem.Name = "monitorOneToolStripMenuItem";
-            this.monitorOneToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorOneToolStripMenuItem.Tag = "1";
-            this.monitorOneToolStripMenuItem.Text = "Monitor One";
-            this.monitorOneToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorOneToolStripMenuItem.Name = "monitorOneToolStripMenuItem";
+            monitorOneToolStripMenuItem.Size = new Size(151, 22);
+            monitorOneToolStripMenuItem.Tag = "1";
+            monitorOneToolStripMenuItem.Text = "Monitor One";
+            monitorOneToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorTwoToolStripMenuItem
             // 
-            this.monitorTwoToolStripMenuItem.Name = "monitorTwoToolStripMenuItem";
-            this.monitorTwoToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorTwoToolStripMenuItem.Tag = "2";
-            this.monitorTwoToolStripMenuItem.Text = "Monitor Two";
-            this.monitorTwoToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorTwoToolStripMenuItem.Name = "monitorTwoToolStripMenuItem";
+            monitorTwoToolStripMenuItem.Size = new Size(151, 22);
+            monitorTwoToolStripMenuItem.Tag = "2";
+            monitorTwoToolStripMenuItem.Text = "Monitor Two";
+            monitorTwoToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorThreeToolStripMenuItem
             // 
-            this.monitorThreeToolStripMenuItem.Name = "monitorThreeToolStripMenuItem";
-            this.monitorThreeToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorThreeToolStripMenuItem.Tag = "3";
-            this.monitorThreeToolStripMenuItem.Text = "Monitor Three";
-            this.monitorThreeToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorThreeToolStripMenuItem.Name = "monitorThreeToolStripMenuItem";
+            monitorThreeToolStripMenuItem.Size = new Size(151, 22);
+            monitorThreeToolStripMenuItem.Tag = "3";
+            monitorThreeToolStripMenuItem.Text = "Monitor Three";
+            monitorThreeToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorFourToolStripMenuItem
             // 
-            this.monitorFourToolStripMenuItem.Name = "monitorFourToolStripMenuItem";
-            this.monitorFourToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorFourToolStripMenuItem.Tag = "4";
-            this.monitorFourToolStripMenuItem.Text = "Monitor Four";
-            this.monitorFourToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorFourToolStripMenuItem.Name = "monitorFourToolStripMenuItem";
+            monitorFourToolStripMenuItem.Size = new Size(151, 22);
+            monitorFourToolStripMenuItem.Tag = "4";
+            monitorFourToolStripMenuItem.Text = "Monitor Four";
+            monitorFourToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorFiveToolStripMenuItem
             // 
-            this.monitorFiveToolStripMenuItem.Name = "monitorFiveToolStripMenuItem";
-            this.monitorFiveToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorFiveToolStripMenuItem.Tag = "5";
-            this.monitorFiveToolStripMenuItem.Text = "Monitor Five";
-            this.monitorFiveToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorFiveToolStripMenuItem.Name = "monitorFiveToolStripMenuItem";
+            monitorFiveToolStripMenuItem.Size = new Size(151, 22);
+            monitorFiveToolStripMenuItem.Tag = "5";
+            monitorFiveToolStripMenuItem.Text = "Monitor Five";
+            monitorFiveToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorSixToolStripMenuItem
             // 
-            this.monitorSixToolStripMenuItem.Name = "monitorSixToolStripMenuItem";
-            this.monitorSixToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorSixToolStripMenuItem.Tag = "6";
-            this.monitorSixToolStripMenuItem.Text = "Monitor Six";
-            this.monitorSixToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorSixToolStripMenuItem.Name = "monitorSixToolStripMenuItem";
+            monitorSixToolStripMenuItem.Size = new Size(151, 22);
+            monitorSixToolStripMenuItem.Tag = "6";
+            monitorSixToolStripMenuItem.Text = "Monitor Six";
+            monitorSixToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorSevenToolStripMenuItem
             // 
-            this.monitorSevenToolStripMenuItem.Name = "monitorSevenToolStripMenuItem";
-            this.monitorSevenToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorSevenToolStripMenuItem.Tag = "7";
-            this.monitorSevenToolStripMenuItem.Text = "Monitor Seven";
-            this.monitorSevenToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorSevenToolStripMenuItem.Name = "monitorSevenToolStripMenuItem";
+            monitorSevenToolStripMenuItem.Size = new Size(151, 22);
+            monitorSevenToolStripMenuItem.Tag = "7";
+            monitorSevenToolStripMenuItem.Text = "Monitor Seven";
+            monitorSevenToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // monitorEightToolStripMenuItem
             // 
-            this.monitorEightToolStripMenuItem.Name = "monitorEightToolStripMenuItem";
-            this.monitorEightToolStripMenuItem.Size = new Size(151, 22);
-            this.monitorEightToolStripMenuItem.Tag = "8";
-            this.monitorEightToolStripMenuItem.Text = "Monitor Eight";
-            this.monitorEightToolStripMenuItem.Click += new EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
+            monitorEightToolStripMenuItem.Name = "monitorEightToolStripMenuItem";
+            monitorEightToolStripMenuItem.Size = new Size(151, 22);
+            monitorEightToolStripMenuItem.Tag = "8";
+            monitorEightToolStripMenuItem.Text = "Monitor Eight";
+            monitorEightToolStripMenuItem.Click += CreateDomeInstanceToolStripMenuItem_Click;
             // 
             // toolStripMenuItem15
             // 
-            this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-            this.toolStripMenuItem15.Size = new Size(268, 6);
+            toolStripMenuItem15.Name = "toolStripMenuItem15";
+            toolStripMenuItem15.Size = new Size(268, 6);
             // 
             // domeSetupToolStripMenuItem
             // 
-            this.domeSetupToolStripMenuItem.Name = "domeSetupToolStripMenuItem";
-            this.domeSetupToolStripMenuItem.Size = new Size(271, 22);
-            this.domeSetupToolStripMenuItem.Text = "Dome Setup";
-            this.domeSetupToolStripMenuItem.Click += new EventHandler(this.domeSetupToolStripMenuItem_Click);
+            domeSetupToolStripMenuItem.Name = "domeSetupToolStripMenuItem";
+            domeSetupToolStripMenuItem.Size = new Size(271, 22);
+            domeSetupToolStripMenuItem.Text = "Dome Setup";
+            domeSetupToolStripMenuItem.Click += domeSetupToolStripMenuItem_Click;
             // 
             // listenUpBoysToolStripMenuItem
             // 
-            this.listenUpBoysToolStripMenuItem.Name = "listenUpBoysToolStripMenuItem";
-            this.listenUpBoysToolStripMenuItem.Size = new Size(271, 22);
-            this.listenUpBoysToolStripMenuItem.Text = "Start Listener";
-            this.listenUpBoysToolStripMenuItem.Click += new EventHandler(this.listenUpBoysToolStripMenuItem_Click);
+            listenUpBoysToolStripMenuItem.Name = "listenUpBoysToolStripMenuItem";
+            listenUpBoysToolStripMenuItem.Size = new Size(271, 22);
+            listenUpBoysToolStripMenuItem.Text = "Start Listener";
+            listenUpBoysToolStripMenuItem.Click += listenUpBoysToolStripMenuItem_Click;
             // 
             // toolStripMenuItem11
             // 
-            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new Size(268, 6);
+            toolStripMenuItem11.Name = "toolStripMenuItem11";
+            toolStripMenuItem11.Size = new Size(268, 6);
             // 
             // detachMainViewToSecondMonitor
             // 
-            this.detachMainViewToSecondMonitor.Name = "detachMainViewToSecondMonitor";
-            this.detachMainViewToSecondMonitor.Size = new Size(271, 22);
-            this.detachMainViewToSecondMonitor.Text = "Detach Main View to Second Monitor";
-            this.detachMainViewToSecondMonitor.Click += new EventHandler(this.detatchMainViewMenuItem_Click);
+            detachMainViewToSecondMonitor.Name = "detachMainViewToSecondMonitor";
+            detachMainViewToSecondMonitor.Size = new Size(271, 22);
+            detachMainViewToSecondMonitor.Text = "Detach Main View to Second Monitor";
+            detachMainViewToSecondMonitor.Click += detatchMainViewMenuItem_Click;
             // 
             // detachMainViewToThirdMonitorToolStripMenuItem
             // 
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Name = "detachMainViewToThirdMonitorToolStripMenuItem";
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Size = new Size(271, 22);
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Text = "Detach Main View to Third Monitor";
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Click += new EventHandler(this.detachMainViewToThirdMonitorToolStripMenuItem_Click);
+            detachMainViewToThirdMonitorToolStripMenuItem.Name = "detachMainViewToThirdMonitorToolStripMenuItem";
+            detachMainViewToThirdMonitorToolStripMenuItem.Size = new Size(271, 22);
+            detachMainViewToThirdMonitorToolStripMenuItem.Text = "Detach Main View to Third Monitor";
+            detachMainViewToThirdMonitorToolStripMenuItem.Click += detachMainViewToThirdMonitorToolStripMenuItem_Click;
             // 
             // toolStripMenuItem10
             // 
-            this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new Size(268, 6);
+            toolStripMenuItem10.Name = "toolStripMenuItem10";
+            toolStripMenuItem10.Size = new Size(268, 6);
             // 
             // fullDomePreviewToolStripMenuItem
             // 
-            this.fullDomePreviewToolStripMenuItem.Name = "fullDomePreviewToolStripMenuItem";
-            this.fullDomePreviewToolStripMenuItem.Size = new Size(271, 22);
-            this.fullDomePreviewToolStripMenuItem.Text = "Full Dome Preview";
-            this.fullDomePreviewToolStripMenuItem.Click += new EventHandler(this.fullDomePreviewToolStripMenuItem_Click);
+            fullDomePreviewToolStripMenuItem.Name = "fullDomePreviewToolStripMenuItem";
+            fullDomePreviewToolStripMenuItem.Size = new Size(271, 22);
+            fullDomePreviewToolStripMenuItem.Text = "Full Dome Preview";
+            fullDomePreviewToolStripMenuItem.Click += fullDomePreviewToolStripMenuItem_Click;
             // 
             // toggleFullScreenModeF11ToolStripMenuItem
             // 
-            this.toggleFullScreenModeF11ToolStripMenuItem.Name = "toggleFullScreenModeF11ToolStripMenuItem";
-            this.toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeyDisplayString = "F11";
-            this.toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeys = Keys.F11;
-            this.toggleFullScreenModeF11ToolStripMenuItem.Size = new Size(340, 22);
-            this.toggleFullScreenModeF11ToolStripMenuItem.Text = "Toggle Full Screen Mode";
-            this.toggleFullScreenModeF11ToolStripMenuItem.Click += new EventHandler(this.toggleFullScreenModeF11ToolStripMenuItem_Click);
+            toggleFullScreenModeF11ToolStripMenuItem.Name = "toggleFullScreenModeF11ToolStripMenuItem";
+            toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeyDisplayString = "F11";
+            toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeys = Keys.F11;
+            toggleFullScreenModeF11ToolStripMenuItem.Size = new Size(340, 22);
+            toggleFullScreenModeF11ToolStripMenuItem.Text = "Toggle Full Screen Mode";
+            toggleFullScreenModeF11ToolStripMenuItem.Click += toggleFullScreenModeF11ToolStripMenuItem_Click;
             // 
             // multiSampleAntialiasingToolStripMenuItem
             // 
-            this.multiSampleAntialiasingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.noneToolStripMenuItem,
-            this.fourSamplesToolStripMenuItem,
-            this.eightSamplesToolStripMenuItem});
-            this.multiSampleAntialiasingToolStripMenuItem.Name = "multiSampleAntialiasingToolStripMenuItem";
-            this.multiSampleAntialiasingToolStripMenuItem.Size = new Size(340, 22);
-            this.multiSampleAntialiasingToolStripMenuItem.Text = "Multi-Sample Antialiasing";
-            this.multiSampleAntialiasingToolStripMenuItem.DropDownOpening += new EventHandler(this.multiSampleAntialiasingToolStripMenuItem_DropDownOpening);
+            multiSampleAntialiasingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            noneToolStripMenuItem,
+            fourSamplesToolStripMenuItem,
+            eightSamplesToolStripMenuItem});
+            multiSampleAntialiasingToolStripMenuItem.Name = "multiSampleAntialiasingToolStripMenuItem";
+            multiSampleAntialiasingToolStripMenuItem.Size = new Size(340, 22);
+            multiSampleAntialiasingToolStripMenuItem.Text = "Multi-Sample Antialiasing";
+            multiSampleAntialiasingToolStripMenuItem.DropDownOpening += multiSampleAntialiasingToolStripMenuItem_DropDownOpening;
             // 
             // noneToolStripMenuItem
             // 
-            this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-            this.noneToolStripMenuItem.Size = new Size(148, 22);
-            this.noneToolStripMenuItem.Text = "None";
-            this.noneToolStripMenuItem.Click += new EventHandler(this.noneToolStripMenuItem_Click);
+            noneToolStripMenuItem.Name = "noneToolStripMenuItem";
+            noneToolStripMenuItem.Size = new Size(148, 22);
+            noneToolStripMenuItem.Text = "None";
+            noneToolStripMenuItem.Click += noneToolStripMenuItem_Click;
             // 
             // fourSamplesToolStripMenuItem
             // 
-            this.fourSamplesToolStripMenuItem.Name = "fourSamplesToolStripMenuItem";
-            this.fourSamplesToolStripMenuItem.Size = new Size(148, 22);
-            this.fourSamplesToolStripMenuItem.Text = "Four Samples";
-            this.fourSamplesToolStripMenuItem.Click += new EventHandler(this.fourSamplesToolStripMenuItem_Click);
+            fourSamplesToolStripMenuItem.Name = "fourSamplesToolStripMenuItem";
+            fourSamplesToolStripMenuItem.Size = new Size(148, 22);
+            fourSamplesToolStripMenuItem.Text = "Four Samples";
+            fourSamplesToolStripMenuItem.Click += fourSamplesToolStripMenuItem_Click;
             // 
             // eightSamplesToolStripMenuItem
             // 
-            this.eightSamplesToolStripMenuItem.Name = "eightSamplesToolStripMenuItem";
-            this.eightSamplesToolStripMenuItem.Size = new Size(148, 22);
-            this.eightSamplesToolStripMenuItem.Text = "Eight Samples";
-            this.eightSamplesToolStripMenuItem.Click += new EventHandler(this.eightSamplesToolStripMenuItem_Click);
+            eightSamplesToolStripMenuItem.Name = "eightSamplesToolStripMenuItem";
+            eightSamplesToolStripMenuItem.Size = new Size(148, 22);
+            eightSamplesToolStripMenuItem.Text = "Eight Samples";
+            eightSamplesToolStripMenuItem.Click += eightSamplesToolStripMenuItem_Click;
             // 
             // lockVerticalSyncToolStripMenuItem
             // 
-            this.lockVerticalSyncToolStripMenuItem.Name = "lockVerticalSyncToolStripMenuItem";
-            this.lockVerticalSyncToolStripMenuItem.Size = new Size(340, 22);
-            this.lockVerticalSyncToolStripMenuItem.Text = "Lock Vertical Sync";
-            this.lockVerticalSyncToolStripMenuItem.Click += new EventHandler(this.lockVerticalSyncToolStripMenuItem_Click);
+            lockVerticalSyncToolStripMenuItem.Name = "lockVerticalSyncToolStripMenuItem";
+            lockVerticalSyncToolStripMenuItem.Size = new Size(340, 22);
+            lockVerticalSyncToolStripMenuItem.Text = "Lock Vertical Sync";
+            lockVerticalSyncToolStripMenuItem.Click += lockVerticalSyncToolStripMenuItem_Click;
             // 
             // targetFrameRateToolStripMenuItem
             // 
-            this.targetFrameRateToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            this.fpsToolStripMenuItemUnlimited,
-            this.fPSToolStripMenuItem60,
-            this.fPSToolStripMenuItem30,
-            this.fPSToolStripMenuItem24});
-            this.targetFrameRateToolStripMenuItem.Name = "targetFrameRateToolStripMenuItem";
-            this.targetFrameRateToolStripMenuItem.Size = new Size(340, 22);
-            this.targetFrameRateToolStripMenuItem.Text = "Target Frame Rate";
-            this.targetFrameRateToolStripMenuItem.DropDownOpening += new EventHandler(this.targetFrameRateToolStripMenuItem_DropDownOpening);
+            targetFrameRateToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+            fpsToolStripMenuItemUnlimited,
+            fPSToolStripMenuItem60,
+            fPSToolStripMenuItem30,
+            fPSToolStripMenuItem24});
+            targetFrameRateToolStripMenuItem.Name = "targetFrameRateToolStripMenuItem";
+            targetFrameRateToolStripMenuItem.Size = new Size(340, 22);
+            targetFrameRateToolStripMenuItem.Text = "Target Frame Rate";
+            targetFrameRateToolStripMenuItem.DropDownOpening += targetFrameRateToolStripMenuItem_DropDownOpening;
             // 
             // fpsToolStripMenuItemUnlimited
             // 
-            this.fpsToolStripMenuItemUnlimited.Name = "fpsToolStripMenuItemUnlimited";
-            this.fpsToolStripMenuItemUnlimited.Size = new Size(126, 22);
-            this.fpsToolStripMenuItemUnlimited.Text = "Unlimited";
-            this.fpsToolStripMenuItemUnlimited.Click += new EventHandler(this.fpsToolStripMenuItemUnlimited_Click);
+            fpsToolStripMenuItemUnlimited.Name = "fpsToolStripMenuItemUnlimited";
+            fpsToolStripMenuItemUnlimited.Size = new Size(126, 22);
+            fpsToolStripMenuItemUnlimited.Text = "Unlimited";
+            fpsToolStripMenuItemUnlimited.Click += fpsToolStripMenuItemUnlimited_Click;
             // 
             // fPSToolStripMenuItem60
             // 
-            this.fPSToolStripMenuItem60.Name = "fPSToolStripMenuItem60";
-            this.fPSToolStripMenuItem60.Size = new Size(126, 22);
-            this.fPSToolStripMenuItem60.Text = "60 FPS";
-            this.fPSToolStripMenuItem60.Click += new EventHandler(this.fPSToolStripMenuItem60_Click);
+            fPSToolStripMenuItem60.Name = "fPSToolStripMenuItem60";
+            fPSToolStripMenuItem60.Size = new Size(126, 22);
+            fPSToolStripMenuItem60.Text = "60 FPS";
+            fPSToolStripMenuItem60.Click += fPSToolStripMenuItem60_Click;
             // 
             // fPSToolStripMenuItem30
             // 
-            this.fPSToolStripMenuItem30.Name = "fPSToolStripMenuItem30";
-            this.fPSToolStripMenuItem30.Size = new Size(126, 22);
-            this.fPSToolStripMenuItem30.Text = "30 FPS";
-            this.fPSToolStripMenuItem30.Click += new EventHandler(this.fPSToolStripMenuItem30_Click);
+            fPSToolStripMenuItem30.Name = "fPSToolStripMenuItem30";
+            fPSToolStripMenuItem30.Size = new Size(126, 22);
+            fPSToolStripMenuItem30.Text = "30 FPS";
+            fPSToolStripMenuItem30.Click += fPSToolStripMenuItem30_Click;
             // 
             // fPSToolStripMenuItem24
             // 
-            this.fPSToolStripMenuItem24.Name = "fPSToolStripMenuItem24";
-            this.fPSToolStripMenuItem24.Size = new Size(126, 22);
-            this.fPSToolStripMenuItem24.Text = "24 FPS";
-            this.fPSToolStripMenuItem24.Click += new EventHandler(this.fPSToolStripMenuItem24_Click);
+            fPSToolStripMenuItem24.Name = "fPSToolStripMenuItem24";
+            fPSToolStripMenuItem24.Size = new Size(126, 22);
+            fPSToolStripMenuItem24.Text = "24 FPS";
+            fPSToolStripMenuItem24.Click += fPSToolStripMenuItem24_Click;
             // 
             // StatupTimer
             // 
-            this.StatupTimer.Enabled = true;
-            this.StatupTimer.Interval = 1000;
-            this.StatupTimer.Tick += new EventHandler(this.StatupTimer_Tick);
+            StatupTimer.Enabled = true;
+            StatupTimer.Interval = 1000;
+            StatupTimer.Tick += StatupTimer_Tick;
             // 
             // SlideAdvanceTimer
             // 
-            this.SlideAdvanceTimer.Interval = 10000;
-            this.SlideAdvanceTimer.Tick += new EventHandler(this.SlideAdvanceTimer_Tick);
+            SlideAdvanceTimer.Interval = 10000;
+            SlideAdvanceTimer.Tick += SlideAdvanceTimer_Tick;
             // 
             // TourEndCheck
             // 
-            this.TourEndCheck.Enabled = true;
-            this.TourEndCheck.Interval = 1000;
-            this.TourEndCheck.Tick += new EventHandler(this.TourEndCheck_Tick);
+            TourEndCheck.Enabled = true;
+            TourEndCheck.Interval = 1000;
+            TourEndCheck.Tick += TourEndCheck_Tick;
             // 
             // autoSaveTimer
             // 
-            this.autoSaveTimer.Enabled = true;
-            this.autoSaveTimer.Interval = 60000;
-            this.autoSaveTimer.Tick += new EventHandler(this.autoSaveTimer_Tick);
+            autoSaveTimer.Enabled = true;
+            autoSaveTimer.Interval = 60000;
+            autoSaveTimer.Tick += autoSaveTimer_Tick;
             // 
             // DeviceHeartbeat
             // 
-            this.DeviceHeartbeat.Enabled = true;
-            this.DeviceHeartbeat.Tick += new EventHandler(this.DeviceHeartbeat_Tick);
+            DeviceHeartbeat.Enabled = true;
+            DeviceHeartbeat.Tick += DeviceHeartbeat_Tick;
             // 
             // kioskTitleBar
             // 
-            this.kioskTitleBar.BackgroundImage = ((Image)(resources.GetObject("kioskTitleBar.BackgroundImage")));
-            this.kioskTitleBar.Dock = DockStyle.Top;
-            this.kioskTitleBar.Location = new Point(0, 34);
-            this.kioskTitleBar.Name = "kioskTitleBar";
-            this.kioskTitleBar.Size = new Size(863, 34);
-            this.kioskTitleBar.TabIndex = 9;
-            this.kioskTitleBar.Visible = false;
+            kioskTitleBar.BackgroundImage = ((Image)(resources.GetObject("kioskTitleBar.BackgroundImage")));
+            kioskTitleBar.Dock = DockStyle.Top;
+            kioskTitleBar.Location = new Point(0, 34);
+            kioskTitleBar.Name = "kioskTitleBar";
+            kioskTitleBar.Size = new Size(863, 34);
+            kioskTitleBar.TabIndex = 9;
+            kioskTitleBar.Visible = false;
             // 
             // renderWindow
             // 
-            this.renderWindow.BackColor = Color.Black;
-            this.renderWindow.Dock = DockStyle.Fill;
-            this.renderWindow.Location = new Point(0, 34);
-            this.renderWindow.Name = "renderWindow";
-            this.renderWindow.Size = new Size(863, 328);
-            this.renderWindow.TabIndex = 8;
-            this.renderWindow.TabStop = false;
-            this.renderWindow.Click += new EventHandler(this.renderWindow_Click);
-            this.renderWindow.Paint += new PaintEventHandler(this.renderWindow_Paint);
-            this.renderWindow.MouseClick += new MouseEventHandler(this.renderWindow_MouseClick);
-            this.renderWindow.MouseDoubleClick += new MouseEventHandler(this.renderWindow_MouseDoubleClick);
-            this.renderWindow.MouseDown += new MouseEventHandler(this.renderWindow_MouseDown);
-            this.renderWindow.MouseEnter += new EventHandler(this.renderWindow_MouseEnter);
-            this.renderWindow.MouseLeave += new EventHandler(this.renderWindow_MouseLeave);
-            this.renderWindow.MouseHover += new EventHandler(this.renderWindow_MouseHover);
-            this.renderWindow.MouseMove += new MouseEventHandler(this.renderWindow_MouseMove);
-            this.renderWindow.MouseUp += new MouseEventHandler(this.renderWindow_MouseUp);
-            this.renderWindow.Resize += new EventHandler(this.renderWindow_Resize);
+            renderWindow.BackColor = Color.Black;
+            renderWindow.Dock = DockStyle.Fill;
+            renderWindow.Location = new Point(0, 34);
+            renderWindow.Name = "renderWindow";
+            renderWindow.Size = new Size(863, 328);
+            renderWindow.TabIndex = 8;
+            renderWindow.TabStop = false;
+            renderWindow.Click += renderWindow_Click;
+            renderWindow.Paint += renderWindow_Paint;
+            renderWindow.MouseClick += renderWindow_MouseClick;
+            renderWindow.MouseDoubleClick += renderWindow_MouseDoubleClick;
+            renderWindow.MouseDown += renderWindow_MouseDown;
+            renderWindow.MouseEnter += renderWindow_MouseEnter;
+            renderWindow.MouseLeave += renderWindow_MouseLeave;
+            renderWindow.MouseHover += renderWindow_MouseHover;
+            renderWindow.MouseMove += renderWindow_MouseMove;
+            renderWindow.MouseUp += renderWindow_MouseUp;
+            renderWindow.Resize += renderWindow_Resize;
             // 
             // menuTabs
             // 
-            this.menuTabs.BackColor = Color.Black;
-            this.menuTabs.BackgroundImage = ((Image)(resources.GetObject("menuTabs.BackgroundImage")));
-            this.menuTabs.CurrentTour = null;
-            this.menuTabs.Dock = DockStyle.Top;
-            this.menuTabs.IsVisible = true;
-            this.menuTabs.Location = new Point(0, 0);
-            this.menuTabs.Name = "menuTabs";
-            this.menuTabs.SelectedTabIndex = 0;
-            this.menuTabs.Size = new Size(863, 34);
-            this.menuTabs.StartX = 0;
-            this.menuTabs.TabIndex = 4;
-            this.menuTabs.TabClicked += new TabClickedEventHandler(this.menuTabs_TabClicked);
-            this.menuTabs.MenuClicked += new MenuClickedEventHandler(this.menuTabs_MenuClicked);
-            this.menuTabs.ControlEvent += new ControlEventHandler(this.menuTabs_ControlEvent);
-            this.menuTabs.Load += new EventHandler(this.menuTabs_Load);
+            menuTabs.BackColor = Color.Black;
+            menuTabs.BackgroundImage = ((Image)(resources.GetObject("menuTabs.BackgroundImage")));
+            menuTabs.CurrentTour = null;
+            menuTabs.Dock = DockStyle.Top;
+            menuTabs.IsVisible = true;
+            menuTabs.Location = new Point(0, 0);
+            menuTabs.Name = "menuTabs";
+            menuTabs.SelectedTabIndex = 0;
+            menuTabs.Size = new Size(863, 34);
+            menuTabs.StartX = 0;
+            menuTabs.TabIndex = 4;
+            menuTabs.TabClicked += menuTabs_TabClicked;
+            menuTabs.MenuClicked += menuTabs_MenuClicked;
+            menuTabs.ControlEvent += menuTabs_ControlEvent;
+            menuTabs.Load += menuTabs_Load;
             // 
             // Earth3d
             // 
-            this.AutoScaleMode = AutoScaleMode.None;
-            this.BackColor = Color.Black;
-            this.ClientSize = new Size(863, 362);
-            this.Controls.Add(this.kioskTitleBar);
-            this.Controls.Add(this.renderWindow);
-            this.Controls.Add(this.menuTabs);
-            this.DoubleBuffered = true;
-            this.Icon = ((Icon)(resources.GetObject("$this.Icon")));
-            this.KeyPreview = true;
-            this.MinimumSize = new Size(800, 400);
-            this.Name = "Earth3d";
-            this.Text = "Microsoft WorldWide Telescope";
-            this.FormClosing += new FormClosingEventHandler(this.Earth3d_FormClosing);
-            this.FormClosed += new FormClosedEventHandler(this.Earth3d_FormClosed);
-            this.Load += new EventHandler(this.Earth3d_Load);
-            this.Shown += new EventHandler(this.Earth3d_Shown);
-            this.ResizeBegin += new EventHandler(this.Earth3d_ResizeBegin);
-            this.ResizeEnd += new EventHandler(this.Earth3d_ResizeEnd);
-            this.Click += new EventHandler(this.Earth3d_Click);
-            this.Paint += new PaintEventHandler(this.Earth3d_Paint);
-            this.KeyDown += new KeyEventHandler(this.MainWndow_KeyDown);
-            this.KeyUp += new KeyEventHandler(this.Earth3d_KeyUp);
-            this.MouseDoubleClick += new MouseEventHandler(this.Earth3d_MouseDoubleClick);
-            this.MouseDown += new MouseEventHandler(this.MainWndow_MouseDown);
-            this.MouseEnter += new EventHandler(this.Earth3d_MouseEnter);
-            this.MouseLeave += new EventHandler(this.Earth3d_MouseLeave);
-            this.MouseMove += new MouseEventHandler(this.MainWndow_MouseMove);
-            this.MouseUp += new MouseEventHandler(this.MainWndow_MouseUp);
-            this.MouseWheel += new MouseEventHandler(this.MainWndow_MouseWheel);
-            this.Move += new EventHandler(this.Earth3d_Move);
-            this.Resize += new EventHandler(this.Earth3d_Resize);
-            this.contextMenu.ResumeLayout(false);
-            this.communitiesMenu.ResumeLayout(false);
-            this.searchMenu.ResumeLayout(false);
-            this.toursMenu.ResumeLayout(false);
-            this.telescopeMenu.ResumeLayout(false);
-            this.exploreMenu.ResumeLayout(false);
-            this.settingsMenu.ResumeLayout(false);
-            this.viewMenu.ResumeLayout(false);
-            this.ResumeLayout(false);
+            AutoScaleMode = AutoScaleMode.None;
+            BackColor = Color.Black;
+            ClientSize = new Size(863, 362);
+            Controls.Add(kioskTitleBar);
+            Controls.Add(renderWindow);
+            Controls.Add(menuTabs);
+            DoubleBuffered = true;
+            Icon = ((Icon)(resources.GetObject("$this.Icon")));
+            KeyPreview = true;
+            MinimumSize = new Size(800, 400);
+            Name = "Earth3d";
+            Text = "Microsoft WorldWide Telescope";
+            FormClosing += Earth3d_FormClosing;
+            FormClosed += Earth3d_FormClosed;
+            Load += Earth3d_Load;
+            Shown += Earth3d_Shown;
+            ResizeBegin += Earth3d_ResizeBegin;
+            ResizeEnd += Earth3d_ResizeEnd;
+            Click += Earth3d_Click;
+            Paint += Earth3d_Paint;
+            KeyDown += MainWndow_KeyDown;
+            KeyUp += Earth3d_KeyUp;
+            MouseDoubleClick += Earth3d_MouseDoubleClick;
+            MouseDown += MainWndow_MouseDown;
+            MouseEnter += Earth3d_MouseEnter;
+            MouseLeave += Earth3d_MouseLeave;
+            MouseMove += MainWndow_MouseMove;
+            MouseUp += MainWndow_MouseUp;
+            MouseWheel += MainWndow_MouseWheel;
+            Move += Earth3d_Move;
+            Resize += Earth3d_Resize;
+            contextMenu.ResumeLayout(false);
+            communitiesMenu.ResumeLayout(false);
+            searchMenu.ResumeLayout(false);
+            toursMenu.ResumeLayout(false);
+            telescopeMenu.ResumeLayout(false);
+            exploreMenu.ResumeLayout(false);
+            settingsMenu.ResumeLayout(false);
+            viewMenu.ResumeLayout(false);
+            ResumeLayout(false);
 
         }
 
@@ -5528,7 +5523,7 @@ namespace TerraViewer
 
             if (renderHost == null)
             {
-                this.Controls.Remove(this.renderWindow);
+                Controls.Remove(renderWindow);
                 renderHost = new RenderHost();
                 renderHost.Show();
                 renderHost.Controls.Add(renderWindow);
@@ -5557,7 +5552,7 @@ namespace TerraViewer
 
             if (renderHost == null)
             {
-                this.Controls.Remove(this.renderWindow);
+                Controls.Remove(renderWindow);
                 var id = 0;
                 var foundId = -1;
                 foreach (var screen in Screen.AllScreens)
@@ -5585,7 +5580,7 @@ namespace TerraViewer
             if (renderHost != null)
             {
                 renderHost.Controls.Remove(renderWindow);
-                this.Controls.Add(renderWindow);
+                Controls.Add(renderWindow);
                 renderHost.Hide();
                 renderHost.Close();
                 renderHost = null;
@@ -5764,7 +5759,7 @@ namespace TerraViewer
                     var y = Math.Cos((netNet.Lng + 90) / 180 * Math.PI) * dist;
 
                     index = y1 * (domeSubX + 1) + x1;
-                    verts[index].Position = new SharpDX.Vector4((float)x, (float)y, .9f, 1);
+                    verts[index].Position = new Vector4((float)x, (float)y, .9f, 1);
                     verts[index].Tu = (float)tu;
                     verts[index].Tv = (float)tv;
                     verts[index].Color = Color.White;
@@ -5791,7 +5786,7 @@ namespace TerraViewer
                     index += 6;
                 }
             }
-            this.domeIndexBuffer[face].Unlock();
+            domeIndexBuffer[face].Unlock();
         }
 
         private void CleanupDomeVertexBuffers()
@@ -5885,7 +5880,7 @@ namespace TerraViewer
                     index += 6;
                 }
             }
-            this.warpIndexBuffer.Unlock();
+            warpIndexBuffer.Unlock();
         }
 
         private void CleanUpWarpBuffers()
@@ -5942,7 +5937,7 @@ namespace TerraViewer
             var sr = new StreamReader(filename, Encoding.ASCII);
             var buffer = sr.ReadLine();
             buffer = sr.ReadLine();
-            var parts = buffer.Split(new char[] { ' ' });
+            var parts = buffer.Split(new[] { ' ' });
 
             meshX = Convert.ToInt32(parts[0]);
             meshY = Convert.ToInt32(parts[1]);
@@ -5953,8 +5948,8 @@ namespace TerraViewer
                 for (var x = 0; x < meshX; x++)
                 {
                     buffer = sr.ReadLine();
-                    parts = buffer.Split(new char[] { ' ', '\t' });
-                    mesh[x, y].Position = new SharpDX.Vector4((Convert.ToSingle(parts[0])) / 2, Convert.ToSingle(parts[1]) / 2, .9f, 1);
+                    parts = buffer.Split(new[] { ' ', '\t' });
+                    mesh[x, y].Position = new Vector4((Convert.ToSingle(parts[0])) / 2, Convert.ToSingle(parts[1]) / 2, .9f, 1);
                     mesh[x, y].Tu = Convert.ToSingle(parts[2]);
                     mesh[x, y].Tv = 1.0f - Convert.ToSingle(parts[3]);
                     var col = (Byte)(Convert.ToSingle(parts[4]) * 255);
@@ -6022,14 +6017,14 @@ namespace TerraViewer
             }
         }
 
-        void device_DeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
+        void device_DeviceResizing(object sender, CancelEventArgs e)
         {
             if (renderWindow.Height == 0 | renderWindow.Width == 0)
             {
                 e.Cancel = true;
             }
         }
-        const double RC = (double)(3.1415927 / 180);
+        const double RC = 3.1415927 / 180;
         const int subDivisionsX = 48 * 4;
         const int subDivisionsY = 24 * 4;
         bool showWireFrame;
@@ -6104,11 +6099,11 @@ namespace TerraViewer
             m_nearPlane = 0f;
             if (ViewWidth > ViewHeight)
             {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(((float)ViewWidth / (float)renderWindow.ClientRectangle.Height) * 1f, 1f, 1, -1);
+                ProjMatrix.Matrix11 = Matrix.OrthoLH((ViewWidth / (float)renderWindow.ClientRectangle.Height) * 1f, 1f, 1, -1);
             }
             else
             {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(1f, ((float)renderWindow.ClientRectangle.Height / (float)ViewWidth) * 1f, 1, -1);
+                ProjMatrix.Matrix11 = Matrix.OrthoLH(1f, (renderWindow.ClientRectangle.Height / (float)ViewWidth) * 1f, 1, -1);
             }
             RenderContext11.Projection = ProjMatrix;
 
@@ -6129,11 +6124,11 @@ namespace TerraViewer
 
             if (ViewWidth > ViewHeight)
             {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(width, 1f, 1, -1);
+                ProjMatrix.Matrix11 = Matrix.OrthoLH(width, 1f, 1, -1);
             }
             else
             {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(width, 1f, 1, -1);
+                ProjMatrix.Matrix11 = Matrix.OrthoLH(width, 1f, 1, -1);
             }
 
             RenderContext11.Projection = ProjMatrix;
@@ -6149,7 +6144,7 @@ namespace TerraViewer
             RenderContext11.View = view;
 
             m_nearPlane = 0f;
-            ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(1f, 1f, 1, -1);
+            ProjMatrix.Matrix11 = Matrix.OrthoLH(1f, 1f, 1, -1);
 
             RenderContext11.Projection = ProjMatrix;
 
@@ -6320,7 +6315,7 @@ namespace TerraViewer
                 {
                     fov = (Math.PI / 4.0);
                 }
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, (double)(monitorWidth * MonitorCountX) / ((double)monitorHeight * (double)MonitorCountY), m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, monitorWidth * MonitorCountX / (monitorHeight * (double)MonitorCountY), m_nearPlane, back);
             }
             else if (dome)
             {
@@ -6328,13 +6323,13 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = riftFov;
 
             }
             else
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
             }
 
             if (multiMonClient && !config.MultiChannelDome1 && !config.MultiProjector && !config.MultiChannelGlobe)
@@ -6489,7 +6484,7 @@ namespace TerraViewer
                 {
                     fov = (Math.PI / 4.0);
                 }
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, (double)(monitorWidth * MonitorCountX) / ((double)monitorHeight * (double)MonitorCountY), m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, monitorWidth * MonitorCountX / (monitorHeight * (double)MonitorCountY), m_nearPlane, back);
             }
             else if (dome)
             {
@@ -6497,11 +6492,11 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
             }
             else
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(RenderContext11.PerspectiveFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(RenderContext11.PerspectiveFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
             }
 
             if (multiMonClient && !config.MultiChannelDome1 && !config.MultiProjector)
@@ -6547,8 +6542,8 @@ namespace TerraViewer
 
                 var gPoint = Coordinates.GalactictoJ2000(az, alt);
 
-                this.RA = gPoint[0] / 15;
-                this.Dec = gPoint[1];
+                RA = gPoint[0] / 15;
+                Dec = gPoint[1];
                 viewCamera.Lat = targetViewCamera.Lat;
                 viewCamera.Lng = targetViewCamera.Lng;
 
@@ -6557,8 +6552,8 @@ namespace TerraViewer
             {
                 // Show in Ecliptic
 
-                WorldMatrix = Matrix3d.RotationY(-((this.ViewLong + 90.0) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180.0 * Math.PI)));
+                WorldMatrix = Matrix3d.RotationY(-((ViewLong + 90.0) / 180.0 * Math.PI));
+                WorldMatrix.Multiply(Matrix3d.RotationX(((-ViewLat) / 180.0 * Math.PI)));
             }
             var camLocal = CameraRotate;
 
@@ -6616,7 +6611,7 @@ namespace TerraViewer
             RenderContext11.WorldBase = WorldMatrix;
             // altaz
 
-            ViewPoint = Coordinates.RADecTo3d(this.RA, -this.Dec, 1.0);
+            ViewPoint = Coordinates.RADecTo3d(RA, -Dec, 1.0);
 
 
 
@@ -6650,12 +6645,12 @@ namespace TerraViewer
             m_nearPlane = 0f;
             if (multiMonClient)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)(monitorWidth * MonitorCountX) / (double)(monitorHeight * MonitorCountY), .1, -2.0);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, monitorWidth * MonitorCountX / (double)(monitorHeight * MonitorCountY), .1, -2.0);
 
             }
             else
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, .1, -2.0);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, ViewWidth / (double)renderWindow.ClientRectangle.Height, .1, -2.0);
 
             }
             RenderContext11.PerspectiveFov = (localZoomFactor) / FOVMULT;
@@ -6719,7 +6714,7 @@ namespace TerraViewer
             FovAngle = ((ZoomFactor/**16*/) / FOVMULT) / Math.PI * 180;
 
             // for constellations
-            ViewPoint = Coordinates.RADecTo3d(this.RA, -this.Dec, 1.0);
+            ViewPoint = Coordinates.RADecTo3d(RA, -Dec, 1.0);
 
 
             var distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
@@ -6747,8 +6742,8 @@ namespace TerraViewer
 
                 var gPoint = Coordinates.GalactictoJ2000(az, alt);
 
-                this.RA = gPoint[0] / 15;
-                this.Dec = gPoint[1];
+                RA = gPoint[0] / 15;
+                Dec = gPoint[1];
                 targetViewCamera.Lat = viewCamera.Lat;
                 targetViewCamera.Lng = viewCamera.Lng;
             }
@@ -6756,8 +6751,8 @@ namespace TerraViewer
             {
                 // Show in Ecliptic
 
-                WorldMatrix = Matrix3d.RotationY(-((this.ViewLong + 90) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180.0 * Math.PI)));
+                WorldMatrix = Matrix3d.RotationY(-((ViewLong + 90) / 180.0 * Math.PI));
+                WorldMatrix.Multiply(Matrix3d.RotationX(((-ViewLat) / 180.0 * Math.PI)));
             }
 
 
@@ -6825,7 +6820,7 @@ namespace TerraViewer
             else if (rift)
             {
                 RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = riftFov;
 
             }
@@ -6889,18 +6884,18 @@ namespace TerraViewer
             m_nearPlane = 0f;
             if (multiMonClient)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, (double)(monitorWidth * MonitorCountX) / (double)(monitorHeight * MonitorCountY), 0, -2.0);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, monitorWidth * MonitorCountX / (double)(monitorHeight * MonitorCountY), 0, -2.0);
 
             }
             else if (rift)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = riftFov;
 
             }
             else
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, 0, -2.0);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, ViewWidth / (double)renderWindow.ClientRectangle.Height, 0, -2.0);
 
             }
 
@@ -7078,8 +7073,8 @@ namespace TerraViewer
 
         private void SetupMatricesLand11(RenderTypes renderType)
         {
-            WorldMatrix = Matrix3d.RotationY(((this.ViewLong + 90f) / 180f * Math.PI));
-            WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180f * Math.PI)));
+            WorldMatrix = Matrix3d.RotationY(((ViewLong + 90f) / 180f * Math.PI));
+            WorldMatrix.Multiply(Matrix3d.RotationX(((-ViewLat) / 180f * Math.PI)));
             RenderContext11.World = WorldMatrix;
             RenderContext11.WorldBase = WorldMatrix;
 
@@ -7303,7 +7298,7 @@ namespace TerraViewer
             else if (rift)
             {
                 m_nearPlane = distance * .05f;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = riftFov;
 
             }
@@ -7311,7 +7306,7 @@ namespace TerraViewer
             {
 
                 m_nearPlane = distance * .05f;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = fovLocal;
             }
 
@@ -7554,8 +7549,8 @@ namespace TerraViewer
                 SkyColor = Color.Black;
             }
 
-            WorldMatrix = Matrix3d.RotationY(((this.ViewLong + 90f) / 180f * Math.PI));
-            WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180f * Math.PI)));
+            WorldMatrix = Matrix3d.RotationY(((ViewLong + 90f) / 180f * Math.PI));
+            WorldMatrix.Multiply(Matrix3d.RotationX(((-ViewLat) / 180f * Math.PI)));
             RenderContext11.World = WorldMatrix;
             RenderContext11.WorldBase = WorldMatrix;
 
@@ -7587,7 +7582,7 @@ namespace TerraViewer
             ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
             if (config.MultiChannelDome1)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(((config.UpFov + config.DownFov) / 180 * Math.PI), (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(((config.UpFov + config.DownFov) / 180 * Math.PI), ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
             }
 
             else if (multiMonClient)
@@ -7687,8 +7682,8 @@ namespace TerraViewer
             var lookAt = new Vector3d(0, 0, 0);
 
             var viewAdjust = Matrix3d.Identity;
-            viewAdjust.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180f * Math.PI)));
-            viewAdjust.Multiply(Matrix3d.RotationY(((-this.ViewLong) / 180f * Math.PI)));
+            viewAdjust.Multiply(Matrix3d.RotationX(((-ViewLat) / 180f * Math.PI)));
+            viewAdjust.Multiply(Matrix3d.RotationY(((-ViewLong) / 180f * Math.PI)));
 
             var lookAtAdjust = Matrix3d.Identity;
 
@@ -7940,7 +7935,7 @@ namespace TerraViewer
                 {
                     fov = (Math.PI / 4.0);
                 }
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 4.0), (double)(monitorWidth * MonitorCountX) / ((double)monitorHeight * (double)MonitorCountY), m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 4.0), monitorWidth * MonitorCountX / (monitorHeight * (double)MonitorCountY), m_nearPlane, back);
             }
             else if (dome)
             {
@@ -7948,13 +7943,13 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(riftFov, ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = riftFov;
 
             }
             else
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = fovLocal;
             }
 
@@ -8097,8 +8092,8 @@ namespace TerraViewer
 
                 var gPoint = Coordinates.GalactictoJ2000(az, alt);
 
-                this.RA = gPoint[0] / 15;
-                this.Dec = gPoint[1];
+                RA = gPoint[0] / 15;
+                Dec = gPoint[1];
                 targetViewCamera.Lat = viewCamera.Lat;
                 targetViewCamera.Lng = viewCamera.Lng;
             }
@@ -8106,8 +8101,8 @@ namespace TerraViewer
             {
                 // Show in Ecliptic
 
-                WorldMatrix = Matrix3d.RotationY(-((this.ViewLong + 90.0) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180.0 * Math.PI)));
+                WorldMatrix = Matrix3d.RotationY(-((ViewLong + 90.0) / 180.0 * Math.PI));
+                WorldMatrix.Multiply(Matrix3d.RotationX(((-ViewLat) / 180.0 * Math.PI)));
             }
 
             RenderContext11.World = WorldMatrix;
@@ -8249,7 +8244,7 @@ namespace TerraViewer
 
 
 
-        public bool IsSphereInViewFrustum(SharpDX.Vector3 center, float radius)
+        public bool IsSphereInViewFrustum(Vector3 center, float radius)
         {
             var centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
             for (var i = 0; i < 6; i++)
@@ -8284,8 +8279,8 @@ namespace TerraViewer
                     {
                         var temp = Planets.GetPlanet3dLocation((SolarSystemObjects)Planets.GetPlanetIDFromName(place.Name));
 
-                        temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
-                        temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
+                        temp.Subtract(MainWindow.viewCamera.ViewTarget);
+                        temp.Subtract(MainWindow.viewCamera.ViewTarget);
 
                         label = new SkyLabel(RenderContext11, temp, showText ? place.Name : "", LabelSytle.Telrad);
 
@@ -8352,7 +8347,7 @@ namespace TerraViewer
                 }
             }
         }
-        private static readonly System.Threading.Mutex logMutex = new Mutex();
+        private static readonly Mutex logMutex = new Mutex();
         public static void WriteLogMessage(string message)
         {
             if (logging)
@@ -8372,8 +8367,8 @@ namespace TerraViewer
 
         public static int FrameNumber
         {
-            get { return Earth3d.frameNumber; }
-            set { Earth3d.frameNumber = value; }
+            get { return frameNumber; }
+            set { frameNumber = value; }
         }
         static int lastGcCount;
         public static float LastFPS = 0;
@@ -8399,7 +8394,7 @@ namespace TerraViewer
 
                 if (showPerfData)
                 {
-                    this.Text = Language.GetLocalizedText(3, "Microsoft WorldWide Telescope") + " - FPS:" + frameRate.ToString("0.0") + Language.GetLocalizedText(84, "  Tiles in View:") + Tile.TilesInView.ToString() + Language.GetLocalizedText(85, " Triangles Rendered:") + Tile.TrianglesRendered.ToString() + " Tiled Ready" + TileCache.GetReadyCount().ToString() + "Total Tiles:" + TileCache.GetTotalCount();
+                    Text = Language.GetLocalizedText(3, "Microsoft WorldWide Telescope") + " - FPS:" + frameRate.ToString("0.0") + Language.GetLocalizedText(84, "  Tiles in View:") + Tile.TilesInView + Language.GetLocalizedText(85, " Triangles Rendered:") + Tile.TrianglesRendered + " Tiled Ready" + TileCache.GetReadyCount() + "Total Tiles:" + TileCache.GetTotalCount();
                 }
             }
 
@@ -8481,7 +8476,7 @@ namespace TerraViewer
             set
             {
                 fovAngle = value;
-                degreesPerPixel = fovAngle / (double)renderWindow.ClientRectangle.Height;
+                degreesPerPixel = fovAngle / renderWindow.ClientRectangle.Height;
             }
         }
 
@@ -8537,7 +8532,7 @@ namespace TerraViewer
 
             if (!TourPlayer.Playing)
             {
-                Earth3d.MainWindow.CrossFadeFrame = false;
+                MainWindow.CrossFadeFrame = false;
             }
 
             
@@ -8551,7 +8546,7 @@ namespace TerraViewer
                 var frameRate = Properties.Settings.Default.TargetFrameRate;
 
 
-                if (elapsedSeconds < (1.0 / (double)frameRate))
+                if (elapsedSeconds < (1.0 / frameRate))
                 {
                     return;
                 }
@@ -8718,7 +8713,7 @@ namespace TerraViewer
 
                     if (constellationCheck != null)
                     {
-                        constellation = this.constellationCheck.FindConstellationForPoint(RA, Dec);
+                        constellation = constellationCheck.FindConstellationForPoint(RA, Dec);
                         contextPanel.Constellation = Constellations.FullName(Constellation);
                     }
                 }
@@ -8787,7 +8782,7 @@ namespace TerraViewer
 
             if (StereoMode != StereoModes.Off && (!Space || rift))
             {
-                RenderContext11.ViewPort = new SharpDX.Direct3D11.Viewport(0, 0, ViewWidth, renderWindow.Height, 0.0f, 1.0f);
+                RenderContext11.ViewPort = new Viewport(0, 0, ViewWidth, renderWindow.Height, 0.0f, 1.0f);
 
                 // Ensure that the dome depth/stencil buffer matches our requirements
                 if (domeZbuffer != null)
@@ -9146,7 +9141,7 @@ namespace TerraViewer
             if (mover.Complete)
             {
                 targetViewCamera = viewCamera = newCam;
-                Earth3d.MainWindow.Mover = null;
+                MainWindow.Mover = null;
                 //Todo Notify interested parties that move is complete
 
                 NotifyMoveComplete();
@@ -9171,7 +9166,7 @@ namespace TerraViewer
             RenderContext11.SetDisplayRenderTargets();
 
             RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.None;
             RenderContext11.setRasterizerState(TriangleCullMode.Off);
             var mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
@@ -9205,7 +9200,7 @@ namespace TerraViewer
 
         private void SaveFrame()
         {
-            RenderContext11.SaveBackBuffer(dumpFrameParams.Name.Replace(".", string.Format("_{0:0000}.", SpaceTimeController.CurrentFrameNumber)), SharpDX.Direct3D11.ImageFileFormat.Png);
+            RenderContext11.SaveBackBuffer(dumpFrameParams.Name.Replace(".", string.Format("_{0:0000}.", SpaceTimeController.CurrentFrameNumber)), ImageFileFormat.Png);
         }
 
 
@@ -9266,7 +9261,7 @@ namespace TerraViewer
             }
 
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.None;
             RenderContext11.setRasterizerState(TriangleCullMode.Off);
             var mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
@@ -9316,7 +9311,7 @@ namespace TerraViewer
                 }
             }
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.None;
             RenderContext11.setRasterizerState(TriangleCullMode.Off);
             RenderContext11.DepthStencilMode = DepthStencilMode.Off;
@@ -9337,7 +9332,7 @@ namespace TerraViewer
                 RenderContext11.devContext.DrawIndexed(domeIndexBuffer[face].Count, 0, 0);
             }
 
-            SharpDX.Direct3D11.Texture2D.ToFile(RenderContext11.devContext, domeMasterTexture.RenderTexture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, dumpFrameParams.Name.Replace(".", string.Format("_{0:0000}.", SpaceTimeController.CurrentFrameNumber)));
+            Texture2D.ToFile(RenderContext11.devContext, domeMasterTexture.RenderTexture.Texture, ImageFileFormat.Png, dumpFrameParams.Name.Replace(".", string.Format("_{0:0000}.", SpaceTimeController.CurrentFrameNumber)));
 
         }
 
@@ -9369,7 +9364,7 @@ namespace TerraViewer
             }
             RenderContext11.Device.ImmediateContext.GenerateMips(warpTexture.RenderTexture.ResourceView);
 
-            SetupMatricesWarpFisheye((float)ViewWidth / (float)renderWindow.ClientRectangle.Height);
+            SetupMatricesWarpFisheye(ViewWidth / (float)renderWindow.ClientRectangle.Height);
 
             if (warpIndexBuffer == null)
             {
@@ -9380,7 +9375,7 @@ namespace TerraViewer
             RenderContext11.SetDisplayRenderTargets();
 
             RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.None;
             RenderContext11.setRasterizerState(TriangleCullMode.Off);
             var mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
@@ -9495,9 +9490,9 @@ namespace TerraViewer
                     RenderContext11.WorldBaseNonRotating = RenderContext11.World;
                     RenderContext11.NominalRadius = 1;
 
-                    Earth3d.MainWindow.MakeFrustum();
+                    MainWindow.MakeFrustum();
 
-                    var zoom = Earth3d.MainWindow.ZoomFactor;
+                    var zoom = MainWindow.ZoomFactor;
 
                     LayerManager.Draw(RenderContext11, 1.0f, false, "Sandbox", true, false);
 
@@ -9552,7 +9547,7 @@ namespace TerraViewer
                             skyOpacity = 0f;
                         }
 
-                        var zoom = Earth3d.MainWindow.ZoomFactor;
+                        var zoom = MainWindow.ZoomFactor;
                         var milkyWayBlend = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 8.4)) / 4.2);
                         var milkyWayBlendIn = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 17.9)) / 2.3);
 
@@ -9577,7 +9572,7 @@ namespace TerraViewer
                                     matLocalMW.Multiply(Matrix3d.Translation(cameraOffset));
                                     RenderContext11.World = matLocalMW;
                                     RenderContext11.WorldBase = matLocalMW;
-                                    Earth3d.MainWindow.MakeFrustum();
+                                    MainWindow.MakeFrustum();
 
                                     RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, Color.White);
                                     RenderContext11.DepthStencilMode = DepthStencilMode.Off;
@@ -9617,7 +9612,7 @@ namespace TerraViewer
 
                                     RenderContext11.World = matLocalMW;
                                     RenderContext11.WorldBase = matLocalMW;
-                                    Earth3d.MainWindow.MakeFrustum();
+                                    MainWindow.MakeFrustum();
 
                                     RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, Color.White);
 
@@ -9639,7 +9634,7 @@ namespace TerraViewer
                             var matLocal = RenderContext11.World;
                             matLocal.Multiply(Matrix3d.Translation(viewCamera.ViewTarget));
                             RenderContext11.World = matLocal;
-                            Earth3d.MainWindow.MakeFrustum();
+                            MainWindow.MakeFrustum();
 
                             if (Properties.Settings.Default.SolarSystemCosmos.State)
                             {
@@ -9673,7 +9668,7 @@ namespace TerraViewer
                             LayerManager.Draw(RenderContext11, 1.0f, true, "Sky", true, false);
 
                             RenderContext11.World = matOld;
-                            Earth3d.MainWindow.MakeFrustum();
+                            MainWindow.MakeFrustum();
                         }
 
 
@@ -9963,7 +9958,7 @@ namespace TerraViewer
                     crossHairPoints[2].Color = Color.White;
                     crossHairPoints[3].Color = Color.White;
 
-                    Sprite2d.DrawLines(RenderContext11, crossHairPoints, 4, SharpDX.Matrix.OrthoLH(1f, 1f, 1, -1), false);
+                    Sprite2d.DrawLines(RenderContext11, crossHairPoints, 4, Matrix.OrthoLH(1f, 1f, 1, -1), false);
 
                 }
 
@@ -9983,7 +9978,7 @@ namespace TerraViewer
             }
             catch (Exception e)
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("RenderFrame: Exception"); }
+                if (Logging) { WriteLogMessage("RenderFrame: Exception"); }
                 if (offscreenRender)
                 {
                     throw e;
@@ -10042,7 +10037,7 @@ namespace TerraViewer
 
         bool flush = true;
 
-        SharpDX.Direct3D11.Query query;
+        Query query;
 
         private void PresentFrame11(bool renderToTexture)
         {
@@ -10056,12 +10051,12 @@ namespace TerraViewer
                 if (flush)
                 {
                     RenderContext11.devContext.Flush();
-                    var qd = new SharpDX.Direct3D11.QueryDescription();
+                    var qd = new QueryDescription();
 
-                    qd.Type = SharpDX.Direct3D11.QueryType.Event;
+                    qd.Type = QueryType.Event;
 
 
-                    query = new SharpDX.Direct3D11.Query(RenderContext11.Device, qd);
+                    query = new Query(RenderContext11.Device, qd);
 
                     RenderContext11.devContext.End(query);
 
@@ -10127,17 +10122,17 @@ namespace TerraViewer
 
             if ((sp.Opacity > 0) && !(Settings.MasterController && Properties.Settings.Default.FadeRemoteOnly))
             {
-                var color = Color.FromArgb(255 - (int)UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
+                var color = Color.FromArgb(255 - UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
 
                 if (!(sp.Opacity > 0))
                 {
-                    color = Color.FromArgb(255 - (int)UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
+                    color = Color.FromArgb(255 - UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
                 }
 
 
                 if (crossFadeFrame)
                 {
-                    color = Color.FromArgb((int)UiTools.Gamma((int)((sp.Opacity) * 255), 1 / 2.2f), Color.White);
+                    color = Color.FromArgb(UiTools.Gamma((int)((sp.Opacity) * 255), 1 / 2.2f), Color.White);
                 }
                 else
                 {
@@ -10177,7 +10172,7 @@ namespace TerraViewer
                 fadePoints[3].W = 1;
                 fadePoints[3].Color = color;
 
-                Sprite2d.DrawForScreen(RenderContext11, fadePoints, 4, crossFadeTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+                Sprite2d.DrawForScreen(RenderContext11, fadePoints, 4, crossFadeTexture, PrimitiveTopology.TriangleStrip);
             }
         }
 
@@ -10205,27 +10200,27 @@ namespace TerraViewer
                 var quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
 
 
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
+                quad[0].Position = new Vector4(-1, 1, .9f, 1);
                 quad[0].Tu = 0;
                 quad[0].Tv = 0;
 
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[1].Position = new Vector4(1, 1, .9f, 1);
                 quad[1].Tu = 1;
                 quad[1].Tv = 0;
 
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[2].Position = new Vector4(-1, -1, .9f, 1);
                 quad[2].Tu = 0;
                 quad[2].Tv = 1;
 
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[3].Position = new Vector4(-1, -1, .9f, 1);
                 quad[3].Tu = 0;
                 quad[3].Tv = 1;
 
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[4].Position = new Vector4(1, 1, .9f, 1);
                 quad[4].Tu = 1;
                 quad[4].Tv = 0;
 
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
+                quad[5].Position = new Vector4(1, -1, .9f, 1);
                 quad[5].Tu = 1;
                 quad[5].Tv = 1;
 
@@ -10254,7 +10249,7 @@ namespace TerraViewer
 
             RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             RenderContext11.BlendMode = BlendMode.Additive;
 
@@ -10263,7 +10258,7 @@ namespace TerraViewer
 
             //Left Eye
 
-            AnaglyphStereoShader.Color = new SharpDX.Color4(leftEyeColor.R / 255f, leftEyeColor.G / 255f, leftEyeColor.B / 255f, leftEyeColor.A / 255f);
+            AnaglyphStereoShader.Color = new Color4(leftEyeColor.R / 255f, leftEyeColor.G / 255f, leftEyeColor.B / 255f, leftEyeColor.A / 255f);
             AnaglyphStereoShader.Use(RenderContext11.devContext);
 
 
@@ -10274,7 +10269,7 @@ namespace TerraViewer
 
             //Right Eye
             RenderContext11.devContext.PixelShader.SetShaderResource(0, rightEye.RenderTexture.ResourceView);
-            AnaglyphStereoShader.Color = new SharpDX.Color4(rightEyeColor.R / 255f, rightEyeColor.G / 255f, rightEyeColor.B / 255f, rightEyeColor.A / 255f);
+            AnaglyphStereoShader.Color = new Color4(rightEyeColor.R / 255f, rightEyeColor.G / 255f, rightEyeColor.B / 255f, rightEyeColor.A / 255f);
             AnaglyphStereoShader.Use(RenderContext11.devContext);
             RenderContext11.devContext.Draw(ScreenVertexBuffer.Count, 0);
 
@@ -10310,27 +10305,27 @@ namespace TerraViewer
                 var quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
 
 
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
+                quad[0].Position = new Vector4(-1, 1, .9f, 1);
                 quad[0].Tu = 0;
                 quad[0].Tv = 0;
 
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[1].Position = new Vector4(1, 1, .9f, 1);
                 quad[1].Tu = 1;
                 quad[1].Tv = 0;
 
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[2].Position = new Vector4(-1, -1, .9f, 1);
                 quad[2].Tu = 0;
                 quad[2].Tv = 1;
 
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[3].Position = new Vector4(-1, -1, .9f, 1);
                 quad[3].Tu = 0;
                 quad[3].Tv = 1;
 
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[4].Position = new Vector4(1, 1, .9f, 1);
                 quad[4].Tu = 1;
                 quad[4].Tv = 0;
 
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
+                quad[5].Position = new Vector4(1, -1, .9f, 1);
                 quad[5].Tu = 1;
                 quad[5].Tv = 1;
 
@@ -10341,7 +10336,7 @@ namespace TerraViewer
 
             RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             RenderContext11.BlendMode = BlendMode.Additive;
 
@@ -10383,27 +10378,27 @@ namespace TerraViewer
                 var quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
 
 
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
+                quad[0].Position = new Vector4(-1, 1, .9f, 1);
                 quad[0].Tu = 0;
                 quad[0].Tv = 0;
 
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[1].Position = new Vector4(1, 1, .9f, 1);
                 quad[1].Tu = 1;
                 quad[1].Tv = 0;
 
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[2].Position = new Vector4(-1, -1, .9f, 1);
                 quad[2].Tu = 0;
                 quad[2].Tv = 1;
 
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[3].Position = new Vector4(-1, -1, .9f, 1);
                 quad[3].Tu = 0;
                 quad[3].Tv = 1;
 
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[4].Position = new Vector4(1, 1, .9f, 1);
                 quad[4].Tu = 1;
                 quad[4].Tv = 0;
 
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
+                quad[5].Position = new Vector4(1, -1, .9f, 1);
                 quad[5].Tu = 1;
                 quad[5].Tv = 1;
 
@@ -10414,7 +10409,7 @@ namespace TerraViewer
 
             RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             RenderContext11.BlendMode = BlendMode.Additive;
 
@@ -10455,27 +10450,27 @@ namespace TerraViewer
                 var quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
 
 
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
+                quad[0].Position = new Vector4(-1, 1, .9f, 1);
                 quad[0].Tu = 0;
                 quad[0].Tv = 0;
 
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[1].Position = new Vector4(1, 1, .9f, 1);
                 quad[1].Tu = 1;
                 quad[1].Tv = 0;
 
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[2].Position = new Vector4(-1, -1, .9f, 1);
                 quad[2].Tu = 0;
                 quad[2].Tv = 1;
 
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
+                quad[3].Position = new Vector4(-1, -1, .9f, 1);
                 quad[3].Tu = 0;
                 quad[3].Tv = 1;
 
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
+                quad[4].Position = new Vector4(1, 1, .9f, 1);
                 quad[4].Tu = 1;
                 quad[4].Tv = 0;
 
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
+                quad[5].Position = new Vector4(1, -1, .9f, 1);
                 quad[5].Tu = 1;
                 quad[5].Tv = 1;
 
@@ -10486,7 +10481,7 @@ namespace TerraViewer
 
             RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
 
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             RenderContext11.BlendMode = BlendMode.Additive;
 
@@ -10501,17 +10496,17 @@ namespace TerraViewer
 
             // Convert fit value to distortion-centered coordinates before fit radius
             // calculation.
-            var stereoAspect = (float)ViewWidth / (float)ViewHeight;
+            var stereoAspect = ViewWidth / (float)ViewHeight;
             var dx = -1 - XCenterOffset;
             var dy = 0 / stereoAspect;
             var fitRadius = (float)Math.Sqrt(dx * dx + dy * dy);
             var Scale = DistortionFn(fitRadius) / fitRadius;
             Scale = .5f;
-            RiftStereoShader.constants.Scale = new SharpDX.Vector2(Scale * 1f, Scale * stereoAspect);
-            RiftStereoShader.constants.ScaleIn = new SharpDX.Vector2(2.0f, 2f * (1f / stereoAspect));
-            RiftStereoShader.constants.LensCenterLeft = new SharpDX.Vector2(.5f + (iod / 2), .5f);
-            RiftStereoShader.constants.LensCenterRight = new SharpDX.Vector2(.5f - (iod / 2), .5f);
-            RiftStereoShader.constants.HmdWarpParam = new SharpDX.Vector4(riftInfo.DistortionK0, riftInfo.DistortionK1, riftInfo.DistortionK2, riftInfo.DistortionK3);
+            RiftStereoShader.constants.Scale = new Vector2(Scale * 1f, Scale * stereoAspect);
+            RiftStereoShader.constants.ScaleIn = new Vector2(2.0f, 2f * (1f / stereoAspect));
+            RiftStereoShader.constants.LensCenterLeft = new Vector2(.5f + (iod / 2), .5f);
+            RiftStereoShader.constants.LensCenterRight = new Vector2(.5f - (iod / 2), .5f);
+            RiftStereoShader.constants.HmdWarpParam = new Vector4(riftInfo.DistortionK0, riftInfo.DistortionK1, riftInfo.DistortionK2, riftInfo.DistortionK3);
             RiftStereoShader.Use(RenderContext11.devContext);
 
 
@@ -10602,13 +10597,13 @@ namespace TerraViewer
             if (Properties.Settings.Default.DomeTilt != NetControl.domeTilt)
             {
                 Properties.Settings.Default.DomeTilt = NetControl.domeTilt;
-                Earth3d.MainWindow.Config.DomeTilt = (float)NetControl.domeTilt;
+                MainWindow.Config.DomeTilt = (float)NetControl.domeTilt;
             }
 
             if (Properties.Settings.Default.DomeAngle != NetControl.domeAngle)
             {
                 Properties.Settings.Default.DomeAngle = (float)NetControl.domeAngle;
-                Earth3d.MainWindow.Config.DomeAngle = (float)NetControl.domeAngle;
+                MainWindow.Config.DomeAngle = (float)NetControl.domeAngle;
             }
 
             lastTimeSyncFrame = NetControl.currnetSyncFrame;
@@ -10616,7 +10611,7 @@ namespace TerraViewer
             SpaceTimeController.SyncToClock = NetControl.timeRate != 0;
             SpaceTimeController.Altitude = NetControl.altitude;
             SpaceTimeController.Location = Coordinates.FromLatLng(NetControl.loclat, NetControl.loclng);
-            this.SetLocation(NetControl.lat, NetControl.lng, NetControl.zoom, NetControl.cameraRotate, NetControl.cameraAngle, NetControl.foregroundImageSetHash,
+            SetLocation(NetControl.lat, NetControl.lng, NetControl.zoom, NetControl.cameraRotate, NetControl.cameraAngle, NetControl.foregroundImageSetHash,
                 NetControl.backgroundImageSetHash, NetControl.blendOpacity, NetControl.runSetup, NetControl.flush, NetControl.target, NetControl.targetPoint, NetControl.solarSystemScale, NetControl.TrackingFrame);
 
             viewCamera.DomeAlt = NetControl.domeAlt;
@@ -10669,7 +10664,7 @@ namespace TerraViewer
         }
 
 
-        private SharpDX.Direct3D11.InputLayout layout = null;
+        private InputLayout layout = null;
         public void PaintLayerFull11(IImageSet layer, float opacityPercentage)
         {
             var opacity = opacityPercentage / 100.0f;
@@ -10694,7 +10689,7 @@ namespace TerraViewer
 
             // Set up the input assembler; match the layout of the current shader
             RenderContext11.Device.ImmediateContext.InputAssembler.InputLayout = RenderContext11.Shader.inputLayout(PlanetShader11.StandardVertexLayout.PositionNormalTex2);
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             Tile.Viewport = RenderContext11.ViewPort;
             Tile.wvp = (RenderContext11.WorldBase * RenderContext11.ViewBase * RenderContext11.Projection).Matrix11;
@@ -10706,7 +10701,7 @@ namespace TerraViewer
                 HDRPixelShader.constants.a = brightness;
                 HDRPixelShader.constants.b = contrast;
                 HDRPixelShader.constants.opacity = opacity;
-                HDRPixelShader.constants.tint = new SharpDX.Color4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
+                HDRPixelShader.constants.tint = new Color4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
 
                 HDRPixelShader.Use(RenderContext11.devContext);
             }
@@ -10919,7 +10914,7 @@ namespace TerraViewer
 
         private bool IsPaused()
         {
-            return ((this.WindowState == FormWindowState.Minimized) || !this.Visible || pause);
+            return ((WindowState == FormWindowState.Minimized) || !Visible || pause);
         }
 
         public static bool renderingVideo = false;
@@ -11214,10 +11209,10 @@ namespace TerraViewer
                 }
             }
 
-            PulseMe.PulseForUpdate = Earth3d.PulseForUpdate;
+            PulseMe.PulseForUpdate = PulseForUpdate;
 
-            Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            Application.ThreadException += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             CheckDefaultProperties(true);
             defaultWebProxy = WebRequest.DefaultWebProxy;
             UpdateProxySettings();
@@ -11235,7 +11230,7 @@ namespace TerraViewer
 
             try
             {
-                if (!Earth3d.CheckForUpdates(false))
+                if (!CheckForUpdates(false))
                 {
                     return;
                 }
@@ -11299,7 +11294,7 @@ namespace TerraViewer
 
         private static void SetupRecovery()
         {
-            crashCallback = new ApplicationRecoveryCallback(CrashCallback);
+            crashCallback = CrashCallback;
 
             var cb = Marshal.GetFunctionPointerForDelegate(crashCallback);
 
@@ -11315,7 +11310,7 @@ namespace TerraViewer
                 File.WriteAllText(@"c:\wwtconfig\crashdump.txt", "Unhandled Exception in Current Domain");
 
                 LanguageReboot = true;
-                Earth3d.CloseNow = true;
+                CloseNow = true;
                 //     return 0;
             }
 
@@ -11331,7 +11326,7 @@ namespace TerraViewer
                 File.WriteAllText(@"c:\wwtconfig\crashdump.txt", "Unhandled Exception in Current Domain");
 
                 LanguageReboot = true;
-                Earth3d.CloseNow = true;
+                CloseNow = true;
                 return;
             }
         }
@@ -11340,7 +11335,7 @@ namespace TerraViewer
         {
             // Hook the application's idle event     
             Application.AddMessageFilter(new DataMessageFilter());
-            Application.Idle += new EventHandler(OnApplicationIdle);
+            Application.Idle += OnApplicationIdle;
             Application.Run(frm);
 
         }
@@ -11351,14 +11346,14 @@ namespace TerraViewer
             {
                 if (CloseNow)
                 {
-                    Earth3d.MainWindow.Close();
+                    MainWindow.Close();
                     CloseNow = false;
                 }
                 else
                 {
-                    if (Earth3d.MainWindow != null)
+                    if (MainWindow != null)
                     {
-                        Earth3d.MainWindow.Render();
+                        MainWindow.Render();
                     }
                 }
             }
@@ -11391,12 +11386,12 @@ namespace TerraViewer
         public static extern bool PeekMessage(out MessageS msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, uint flags);
 
 
-        static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
             if (ProjectorServer)
             {
                 LanguageReboot = true;
-                Earth3d.CloseNow = true;
+                CloseNow = true;
 
                 File.WriteAllText(@"c:\wwtconfig\crashdump.txt", e.Exception.Message + e.Exception.Source + e.Exception.StackTrace);
 
@@ -11605,11 +11600,11 @@ namespace TerraViewer
         private void ComputeViewParameters(IImageSet imageSet)
         {
 
-            this.MaxLevels = imageSet.Levels - 1;
-            this.baseTileDegrees = (double)imageSet.BaseTileDegrees;
+            MaxLevels = imageSet.Levels - 1;
+            baseTileDegrees = imageSet.BaseTileDegrees;
 
 
-            var level = (double)Math.Log(baseTileDegrees / ZoomFactor, 2) + 2.01F;
+            var level = Math.Log(baseTileDegrees / ZoomFactor, 2) + 2.01F;
 
             if ((int)level > MaxLevels)
             {
@@ -11631,9 +11626,9 @@ namespace TerraViewer
             tileSizeX = tileSizeY;
 
 
-            if (TileCache.CurrentLevel != this.viewTileLevel)
+            if (TileCache.CurrentLevel != viewTileLevel)
             {
-                TileCache.CurrentLevel = this.viewTileLevel;
+                TileCache.CurrentLevel = viewTileLevel;
             }
 
             return;
@@ -11641,7 +11636,7 @@ namespace TerraViewer
 
         private int GetTileXFromLng(double lng)
         {
-            var tile = ((lng + 180.0F) / (baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))));
+            var tile = ((lng + 180.0F) / (baseTileDegrees / Math.Pow(2, viewTileLevel)));
             if (tile < 0)
             {
                 tile = -1;
@@ -11705,11 +11700,7 @@ namespace TerraViewer
 
                 return GetPixelScaleY() / Math.Max(zcos, cosLat);
             }
-            else
-            {
-                return (((baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))) / tileSizeX) / 5) / Math.Max(.2, Math.Cos(targetLat));
-            }
-
+            return (((baseTileDegrees / Math.Pow(2, viewTileLevel)) / tileSizeX) / 5) / Math.Max(.2, Math.Cos(targetLat));
         }
 
         public double GetPixelScaleY()
@@ -11720,26 +11711,19 @@ namespace TerraViewer
                 {
                     return Math.Min(.06, 545000 * Math.Tan(Math.PI / 4) * ZoomFactor / renderWindow.ClientRectangle.Height);
                 }
-                else
-                {
-
-                    return .06;
-                }
+                return .06;
             }
-            else if (CurrentImageSet != null && (CurrentImageSet.DataSetType == ImageSetType.Sky || CurrentImageSet.DataSetType == ImageSetType.Panorama))
+            if (CurrentImageSet != null && (CurrentImageSet.DataSetType == ImageSetType.Sky || CurrentImageSet.DataSetType == ImageSetType.Panorama))
             {
                 var val = fovAngle / renderWindow.ClientRectangle.Height;
 
                 return val;
             }
-            else if (SandboxMode)
+            if (SandboxMode)
             {
                 return .06;
             }
-            else
-            {
-                return ((baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))) / (double)tileSizeY) / 5;
-            }
+            return ((baseTileDegrees / Math.Pow(2, viewTileLevel)) / tileSizeY) / 5;
         }
 
         SimpleLineList11 measureLines;
@@ -11783,7 +11767,7 @@ namespace TerraViewer
             {
                 // TODO fix this for earth, plantes, panoramas
                 var result = GetCoordinatesForScreenPoint(pntCenter.X, pntCenter.Y);
-                var constellation = this.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                var constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                 contextPanel.Constellation = Constellations.FullName(constellation);
                 var closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, ZoomFactor / 1300);
 
@@ -11806,8 +11790,8 @@ namespace TerraViewer
             {
                 var menuItem = new ToolStripMenuItem(place.Name);
                 menuItem.Tag = place;
-                menuItem.Click += new EventHandler(ResolveAmbiguityMenu_Click);
-                menuItem.MouseEnter += new EventHandler(ResolveAmbiguityMenu_MouseEnter);
+                menuItem.Click += ResolveAmbiguityMenu_Click;
+                menuItem.MouseEnter += ResolveAmbiguityMenu_MouseEnter;
                 ResolveMenu.Items.Add(menuItem);
 
             }
@@ -11870,7 +11854,7 @@ namespace TerraViewer
             if (AddFigurePointMenuItem == null)
             {
                 AddFigurePointMenuItem = new ToolStripMenuItem(Language.GetLocalizedText(91, "Add Point to Constellation Figure"));
-                AddFigurePointMenuItem.Click += new EventHandler(AddFigurePointMenuItem_Click);
+                AddFigurePointMenuItem.Click += AddFigurePointMenuItem_Click;
             }
 
             if (contextMenu.Items.Contains(AddFigurePointMenuItem))
@@ -12028,7 +12012,7 @@ namespace TerraViewer
             mat.MultiplyVector(ref PickRayOrig);
             var PickRayDir = pick;
             var temp = new Vector3d(PickRayOrig);
-            temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
+            temp.Subtract(MainWindow.viewCamera.ViewTarget);
 
             var closetPlace = Grids.FindClosestObject(temp, new Vector3d(PickRayDir));
 
@@ -12058,7 +12042,7 @@ namespace TerraViewer
             }
 
             // compute q as described above
-            var distSqrt = (double)Math.Sqrt(disc);
+            var distSqrt = Math.Sqrt(disc);
             double q;
             if (b < 0)
             {
@@ -12110,14 +12094,14 @@ namespace TerraViewer
         }
 
 
-        public bool SphereIntersectRay(SharpDX.Vector3 pickRayOrig, SharpDX.Vector3 pickRayDir, out Coordinates pointCoordinate)
+        public bool SphereIntersectRay(Vector3 pickRayOrig, Vector3 pickRayDir, out Coordinates pointCoordinate)
         {
             pointCoordinate = new Coordinates(0, 0);
             float r = 1;
             //Compute A, B and C coefficients
-            var a = SharpDX.Vector3.Dot(pickRayDir, pickRayDir);
-            var b = 2 * SharpDX.Vector3.Dot(pickRayDir, pickRayOrig);
-            var c = SharpDX.Vector3.Dot(pickRayOrig, pickRayOrig) - (r * r);
+            var a = Vector3.Dot(pickRayDir, pickRayDir);
+            var b = 2 * Vector3.Dot(pickRayDir, pickRayOrig);
+            var c = Vector3.Dot(pickRayOrig, pickRayOrig) - (r * r);
 
             //Find discriminant
             var disc = b * b - 4 * a * c;
@@ -12189,8 +12173,8 @@ namespace TerraViewer
 
             // Compute the vector of the pick ray in screen space
             Vector3d v;
-            v.X = (((2.0 * (double)ptCursor.X) / (double)backBufferWidth) - 1) / ProjMatrix.M11;
-            v.Y = -(((2.0 * (double)ptCursor.Y) / backBufferHeight) - 1) / ProjMatrix.M22;
+            v.X = (((2.0 * ptCursor.X) / backBufferWidth) - 1) / ProjMatrix.M11;
+            v.Y = -(((2.0 * ptCursor.Y) / backBufferHeight) - 1) / ProjMatrix.M22;
             v.Z = 1.0;
 
             //Matrix3d mInit = WorldMatrix * ViewMatrix;
@@ -12269,8 +12253,8 @@ namespace TerraViewer
                     }
                     else
                     {
-                        this.TargetLong = RAtoViewLng(point.RA);
-                        this.TargetLat = point.Lat;
+                        TargetLong = RAtoViewLng(point.RA);
+                        TargetLat = point.Lat;
                     }
                 }
                 zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
@@ -12290,11 +12274,11 @@ namespace TerraViewer
                 {
                     if (e.Delta < 0)
                     {
-                        ZoomOut((double)Math.Abs(e.Delta) / 120.0);
+                        ZoomOut(Math.Abs(e.Delta) / 120.0);
                     }
                     else
                     {
-                        ZoomIn((double)Math.Abs(e.Delta) / 120.0);
+                        ZoomIn(Math.Abs(e.Delta) / 120.0);
                     }
                 }
 
@@ -12306,7 +12290,7 @@ namespace TerraViewer
 
             MoveView(-moveVector.X, moveVector.Y, false);
             ZoomView(ZoomVector / 400);
-            this.RotateView(0, OrbitVector / 1000);
+            RotateView(0, OrbitVector / 1000);
 
 
 
@@ -12443,7 +12427,7 @@ namespace TerraViewer
                     return;
                 }
             }
-            if (Control.ModifierKeys == Keys.Alt)
+            if (ModifierKeys == Keys.Alt)
             {
                 switch (e.KeyCode)
                 {
@@ -12482,7 +12466,7 @@ namespace TerraViewer
 
                 }
             }
-            else if (Control.ModifierKeys == Keys.Control)
+            else if (ModifierKeys == Keys.Control)
             {
                 switch (e.KeyCode)
                 {
@@ -12504,7 +12488,7 @@ namespace TerraViewer
                             // We can't really tell where this image came from so dirty everything.
                             FolderBrowser.AllDirty = true;
                             uiController = new ImageAlignmentUI();
-                            Earth3d.MainWindow.StudyOpacity = 50;
+                            MainWindow.StudyOpacity = 50;
 
                         }
                         else
@@ -12532,11 +12516,11 @@ namespace TerraViewer
                 {
                     case Keys.Z:
                         riftFov *= .99f;
-                        this.Text = riftFov.ToString();
+                        Text = riftFov.ToString();
                         break;
                     case Keys.X:
                         riftFov *= 1.01f;
-                        this.Text = riftFov.ToString();
+                        Text = riftFov.ToString();
                         break;
                     case Keys.C:
                         iod *= .99f;
@@ -12632,8 +12616,8 @@ namespace TerraViewer
 
         public static bool FullScreen
         {
-            get { return Earth3d.fullScreen; }
-            set { Earth3d.fullScreen = value; }
+            get { return fullScreen; }
+            set { fullScreen = value; }
         }
         public void MoveDown()
         {
@@ -12888,7 +12872,7 @@ namespace TerraViewer
 
         private void Exit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
             Application.Exit();
 
         }
@@ -12909,7 +12893,7 @@ namespace TerraViewer
                 default:
                     break;
             }
-            if (Control.ModifierKeys == Keys.Shift)
+            if (ModifierKeys == Keys.Shift)
             {
                 net /= 5;
             }
@@ -12936,7 +12920,7 @@ namespace TerraViewer
                     default:
                         break;
                 }
-                if (Control.ModifierKeys == Keys.Shift)
+                if (ModifierKeys == Keys.Shift)
                 {
                     net /= 5;
                 }
@@ -12949,33 +12933,33 @@ namespace TerraViewer
         {
             if (amount == 99999)
             {
-                this.TargetZoom = this.ZoomFactor;
+                TargetZoom = ZoomFactor;
                 return;
             }
             if (amount > 0)
             {
-                if (this.TargetZoom > ZoomMin)
+                if (TargetZoom > ZoomMin)
                 {
-                    this.TargetZoom /= (1 + amount);
+                    TargetZoom /= (1 + amount);
 
-                    this.ComputeViewParameters(CurrentImageSet);
+                    ComputeViewParameters(CurrentImageSet);
                 }
                 else
                 {
-                    this.TargetZoom = ZoomMin;
+                    TargetZoom = ZoomMin;
                 }
             }
             if (amount < 0)
             {
-                if ((this.TargetZoom * (1 - amount)) <= ZoomMax)
+                if ((TargetZoom * (1 - amount)) <= ZoomMax)
                 {
-                    this.TargetZoom *= (1 - amount);
+                    TargetZoom *= (1 - amount);
 
-                    this.ComputeViewParameters(CurrentImageSet);
+                    ComputeViewParameters(CurrentImageSet);
                 }
                 else
                 {
-                    this.TargetZoom = ZoomMax;
+                    TargetZoom = ZoomMax;
                 }
             }
 
@@ -12983,22 +12967,22 @@ namespace TerraViewer
 
         public void DomeLeft(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAz += (float)amount;
+            MainWindow.viewCamera.DomeAz += (float)amount;
         }
 
         public void DomeRight(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAz -= (float)amount;
+            MainWindow.viewCamera.DomeAz -= (float)amount;
         }
 
         public void DomeUp(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAlt += (float)amount;
+            MainWindow.viewCamera.DomeAlt += (float)amount;
         }
 
         public void DomeDown(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAlt -= (float)amount;
+            MainWindow.viewCamera.DomeAlt -= (float)amount;
         }
 
         public void ZoomRateIn(double amount)
@@ -13034,97 +13018,97 @@ namespace TerraViewer
 
         public void ZoomIn(double amount)
         {
-            if (this.TargetZoom > this.ZoomFactor)
+            if (TargetZoom > ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                TargetZoom = ZoomFactor;
                 return;
             }
 
-            if (this.TargetZoom > ZoomMin)
+            if (TargetZoom > ZoomMin)
             {
-                this.TargetZoom /= 1 + GetNetzoom(amount);
+                TargetZoom /= 1 + GetNetzoom(amount);
 
                 if (!smoothZoom)
                 {
                     ZoomFactor = TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMin;
+                TargetZoom = ZoomMin;
             }
 
         }
 
         public void ZoomOut(double amount)
         {
-            if (this.TargetZoom < this.ZoomFactor)
+            if (TargetZoom < ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                TargetZoom = ZoomFactor;
                 return;
             }
 
-            if ((this.TargetZoom * GetNetzoom(amount)) <= ZoomMax)
+            if ((TargetZoom * GetNetzoom(amount)) <= ZoomMax)
             {
-                this.TargetZoom *= GetNetzoom(amount);
+                TargetZoom *= GetNetzoom(amount);
                 if (!smoothZoom)
                 {
                     ZoomFactor = TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMax;
+                TargetZoom = ZoomMax;
             }
         }
 
         public void ZoomIn()
         {
-            if (this.TargetZoom > this.ZoomFactor)
+            if (TargetZoom > ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                TargetZoom = ZoomFactor;
                 return;
             }
 
-            if (this.TargetZoom > ZoomMin)
+            if (TargetZoom > ZoomMin)
             {
-                this.TargetZoom /= NetZoomFactor;
+                TargetZoom /= NetZoomFactor;
 
                 if (!smoothZoom)
                 {
                     ZoomFactor = TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMin;
+                TargetZoom = ZoomMin;
             }
 
         }
 
         public void ZoomOut()
         {
-            if (this.TargetZoom < this.ZoomFactor)
+            if (TargetZoom < ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                TargetZoom = ZoomFactor;
                 return;
             }
 
-            if ((this.TargetZoom * NetZoomFactor) <= ZoomMax)
+            if ((TargetZoom * NetZoomFactor) <= ZoomMax)
             {
-                this.TargetZoom *= NetZoomFactor;
+                TargetZoom *= NetZoomFactor;
                 if (!smoothZoom)
                 {
                     ZoomFactor = TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMax;
+                TargetZoom = ZoomMax;
             }
         }
         double zoomMax = 360;
@@ -13138,10 +13122,7 @@ namespace TerraViewer
                 {
                     return zoomMaxSolarSystem;
                 }
-                else
-                {
-                    return zoomMax;
-                }
+                return zoomMax;
             }
         }
         double zoomMin = 0.001373291015625;
@@ -13155,15 +13136,12 @@ namespace TerraViewer
                 {
                     return (zoomMinSolarSystem / 10000000000) * Settings.Active.SolarSystemScale;
                 }
-                else
+                if (currentImageSetfield.IsMandelbrot)
                 {
-                    if (currentImageSetfield.IsMandelbrot)
-                    {
 
-                        return 0.00000000000000000000000000000001;
-                    }
-                    return zoomMin / 64;
+                    return 0.00000000000000000000000000000001;
                 }
+                return zoomMin / 64;
             }
             set { zoomMin = value; }
         }
@@ -13220,7 +13198,7 @@ namespace TerraViewer
 
             if (Math.Abs(CameraRotateTarget - CameraRotate) > (.1 * RC))
             {
-                this.CameraRotate += (CameraRotateTarget - CameraRotate) / 10;
+                CameraRotate += (CameraRotateTarget - CameraRotate) / 10;
             }
             else
             {
@@ -13229,7 +13207,7 @@ namespace TerraViewer
 
             if (Math.Abs(CameraAngleTarget - CameraAngle) > (.1 * RC))
             {
-                this.CameraAngle += (CameraAngleTarget - CameraAngle) / 10;
+                CameraAngle += (CameraAngleTarget - CameraAngle) / 10;
             }
             else
             {
@@ -13239,7 +13217,7 @@ namespace TerraViewer
 
             if (mover == null)
             {
-                if (this.Space && tracking && trackingObject != null)
+                if (Space && tracking && trackingObject != null)
                 {
                     if (Space && Settings.Active.GalacticMode)
                     {
@@ -13257,8 +13235,8 @@ namespace TerraViewer
                     }
                     else
                     {
-                        this.ViewLat = this.TargetLat = trackingObject.Dec;
-                        this.ViewLong = this.TargetLong = this.RAtoViewLng(trackingObject.RA);
+                        ViewLat = TargetLat = trackingObject.Dec;
+                        ViewLong = TargetLong = RAtoViewLng(trackingObject.RA);
                     }
                 }
                 else if (!SolarSystemMode)
@@ -13286,68 +13264,68 @@ namespace TerraViewer
 
                 if (Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
                 {
-                    if (((Math.Abs(this.targetAlt - this.alt) >= (minDelta)) |
-                        ((Math.Abs(this.targetAz - this.az) >= (minDelta)))))
+                    if (((Math.Abs(targetAlt - alt) >= (minDelta)) |
+                        ((Math.Abs(targetAz - az) >= (minDelta)))))
                     {
-                        this.alt += (targetAlt - alt) / 10;
+                        alt += (targetAlt - alt) / 10;
 
                         if (Math.Abs(targetAz - az) > 170)
                         {
                             if (targetAz > az)
                             {
-                                this.az += (targetAz - (360 + az)) / 10;
+                                az += (targetAz - (360 + az)) / 10;
                             }
                             else
                             {
-                                this.az += ((360 + targetAz) - az) / 10;
+                                az += ((360 + targetAz) - az) / 10;
                             }
                         }
                         else
                         {
-                            this.az += (targetAz - az) / 10;
+                            az += (targetAz - az) / 10;
                         }
 
-                        this.az = ((az + 720) % 360);
+                        az = ((az + 720) % 360);
                     }
                 }
                 else
                 {
-                    if (((Math.Abs(this.TargetLat - this.ViewLat) >= (minDelta)) |
-                        ((Math.Abs(this.TargetLong - this.ViewLong) >= (minDelta)))))
+                    if (((Math.Abs(TargetLat - ViewLat) >= (minDelta)) |
+                        ((Math.Abs(TargetLong - ViewLong) >= (minDelta)))))
                     {
                         if (deltaLat != 0 | deltaLong != 0)
                         {
-                            this.ViewLat += deltaLat;
-                            this.ViewLong += deltaLong;
+                            ViewLat += deltaLat;
+                            ViewLong += deltaLong;
                         }
                         else
                         {
-                            this.ViewLat += (TargetLat - ViewLat) / 10;
+                            ViewLat += (TargetLat - ViewLat) / 10;
 
                             if (Math.Abs(TargetLong - ViewLong) > 170)
                             {
                                 if (TargetLong > ViewLong)
                                 {
-                                    this.ViewLong += (TargetLong - (360 + ViewLong)) / 10;
+                                    ViewLong += (TargetLong - (360 + ViewLong)) / 10;
                                 }
                                 else
                                 {
-                                    this.ViewLong += ((360 + TargetLong) - ViewLong) / 10;
+                                    ViewLong += ((360 + TargetLong) - ViewLong) / 10;
                                 }
                             }
                             else
                             {
-                                this.ViewLong += (TargetLong - ViewLong) / 10;
+                                ViewLong += (TargetLong - ViewLong) / 10;
                             }
                         }
-                        this.ViewLong = ((ViewLong + 540) % 360) - 180;
+                        ViewLong = ((ViewLong + 540) % 360) - 180;
                     }
                     else
                     {
-                        if (this.ViewLat != this.TargetLat || this.ViewLong != this.TargetLong)
+                        if (ViewLat != TargetLat || ViewLong != TargetLong)
                         {
-                            this.ViewLat = this.TargetLat;
-                            this.ViewLong = this.TargetLong;
+                            ViewLat = TargetLat;
+                            ViewLong = TargetLong;
 
 
                             NotifyMoveComplete();
@@ -13356,7 +13334,7 @@ namespace TerraViewer
                         deltaLong = 0;
                         if (findingTargetGeo)
                         {
-                            this.TargetZoom = finalZoom;
+                            TargetZoom = finalZoom;
                             findingTargetGeo = false;
                         }
                     }
@@ -13368,10 +13346,10 @@ namespace TerraViewer
         double lastMoveCompleteLng;
         private void SendMoveComplete()
         {
-            if (this.ViewLat != lastMoveCompleteLat || this.ViewLong != lastMoveCompleteLng)
+            if (ViewLat != lastMoveCompleteLat || ViewLong != lastMoveCompleteLng)
             {
-                lastMoveCompleteLat = this.ViewLat;
-                lastMoveCompleteLng = this.ViewLong;
+                lastMoveCompleteLat = ViewLat;
+                lastMoveCompleteLng = ViewLong;
                 if (Space)
                 {
 
@@ -13388,7 +13366,7 @@ namespace TerraViewer
         {
             if (invokeUpdateSampClients == null)
             {
-                invokeUpdateSampClients = new UpdateSampClientsDelegate(this.UpdateSampClientsCaller);
+                invokeUpdateSampClients = UpdateSampClientsCaller;
             }
 
             invokeUpdateSampClients.BeginInvoke(null, null);
@@ -13396,7 +13374,7 @@ namespace TerraViewer
 
         private void UpdateSampClientsCaller()
         {
-            sampConnection.GotoPoint(this.RA, this.Dec);
+            sampConnection.GotoPoint(RA, Dec);
         }
         int sendMoveCount;
 
@@ -13679,7 +13657,7 @@ namespace TerraViewer
         {
             tracking = false;
             trackingObject = null;
-            GotoTarget(noZoom, instant, camParams, this.studyImageset, this.CurrentImageSet);
+            GotoTarget(noZoom, instant, camParams, studyImageset, CurrentImageSet);
 
         }
         public void GotoTargetRADec(double ra, double dec, bool noZoom, bool instant)
@@ -13768,13 +13746,13 @@ namespace TerraViewer
             {
                 if (TourPlayer.Playing)
                 {
-                    mover = new ViewMoverSlew(this.viewCamera, cameraParams);
+                    mover = new ViewMoverSlew(viewCamera, cameraParams);
                 }
                 else
                 {
-                    mover = new ViewMoverSlew(this.viewCamera, cameraParams, 1.2);
+                    mover = new ViewMoverSlew(viewCamera, cameraParams, 1.2);
                 }
-                mover.Midpoint += new EventHandler(mover_Midpoint);
+                mover.Midpoint += mover_Midpoint;
             }
         }
 
@@ -13971,31 +13949,31 @@ namespace TerraViewer
         public string PrepareUrl(string url)
         {
             url = url.Replace("{RA}", (RA * 15).ToString());
-            url = url.Replace("{DEC}", this.Dec.ToString());
-            url = url.Replace("{FOV}", this.FovAngle.ToString());
-            if (this.CurrentViewCorners != null)
+            url = url.Replace("{DEC}", Dec.ToString());
+            url = url.Replace("{FOV}", FovAngle.ToString());
+            if (CurrentViewCorners != null)
             {
-                url = url.Replace("{UL.RA}", (this.CurrentViewCorners[0].RA * 15).ToString());
-                url = url.Replace("{UL.DEC}", (this.CurrentViewCorners[0].Dec).ToString());
-                url = url.Replace("{UR.RA}", (this.CurrentViewCorners[1].RA * 15).ToString());
-                url = url.Replace("{UR.DEC}", (this.CurrentViewCorners[1].Dec).ToString());
-                url = url.Replace("{LL.RA}", (this.CurrentViewCorners[2].RA * 15).ToString());
-                url = url.Replace("{LL.DEC}", (this.CurrentViewCorners[2].Dec).ToString());
-                url = url.Replace("{LR.RA}", (this.CurrentViewCorners[3].RA * 15).ToString());
-                url = url.Replace("{LR.DEC}", (this.CurrentViewCorners[3].Dec).ToString());
+                url = url.Replace("{UL.RA}", (CurrentViewCorners[0].RA * 15).ToString());
+                url = url.Replace("{UL.DEC}", (CurrentViewCorners[0].Dec).ToString());
+                url = url.Replace("{UR.RA}", (CurrentViewCorners[1].RA * 15).ToString());
+                url = url.Replace("{UR.DEC}", (CurrentViewCorners[1].Dec).ToString());
+                url = url.Replace("{LL.RA}", (CurrentViewCorners[2].RA * 15).ToString());
+                url = url.Replace("{LL.DEC}", (CurrentViewCorners[2].Dec).ToString());
+                url = url.Replace("{LR.RA}", (CurrentViewCorners[3].RA * 15).ToString());
+                url = url.Replace("{LR.DEC}", (CurrentViewCorners[3].Dec).ToString());
             }
 
             url = url.Replace("{JD}", SpaceTimeController.JNow.ToString());
-            url = url.Replace("{ROTATION}", this.CameraRotate.ToString());
+            url = url.Replace("{ROTATION}", CameraRotate.ToString());
             url = url.Replace("{SR}", (fovAngle * 1.5).ToString());
             url = url.Replace("{LAT}", SpaceTimeController.Location.Lat.ToString());
             url = url.Replace("{LNG}", SpaceTimeController.Location.Lng.ToString());
             url = url.Replace("{ELEV}", SpaceTimeController.Altitude.ToString());
-            url = url.Replace("{WIDTH}", this.renderWindow.ClientRectangle.Width.ToString());
-            url = url.Replace("{HEIGHT}", this.renderWindow.ClientRectangle.Height.ToString());
-            url = url.Replace("{CONST}", this.constellation);
-            url = url.Replace("{ALT}", this.Alt.ToString());
-            url = url.Replace("{AZ}", this.Az.ToString());
+            url = url.Replace("{WIDTH}", renderWindow.ClientRectangle.Width.ToString());
+            url = url.Replace("{HEIGHT}", renderWindow.ClientRectangle.Height.ToString());
+            url = url.Replace("{CONST}", constellation);
+            url = url.Replace("{ALT}", Alt.ToString());
+            url = url.Replace("{AZ}", Az.ToString());
             //          url = url.Replace("{LiveToken}", CloudCommunities.GetTokenFromId(true));
             var gal = J2000toGalactic(RA * 15, Dec);
 
@@ -14040,7 +14018,7 @@ namespace TerraViewer
 
             if (ms > 350 && !pause && Initialized && !SpaceTimeController.FrameDumping)
             {
-                this.Render();
+                Render();
             }
         }
 
@@ -14076,7 +14054,7 @@ namespace TerraViewer
             {
                 if (!CheckForUpdates(true))
                 {
-                    this.Close();
+                    Close();
                 }
             }
             else
@@ -14105,7 +14083,7 @@ namespace TerraViewer
                 var url = String.Format("http://www.worldwidetelescope.org/wwtweb/login.aspx?user={0}&Version={1}&Equinox=true", Properties.Settings.Default.UserRatingGUID.ToString("D"), yourVersion);
                 var data = Client.DownloadString(url);
 
-                var lines = data.Split(new char[] { '\n' });
+                var lines = data.Split(new[] { '\n' });
 
 
 
@@ -14262,8 +14240,8 @@ namespace TerraViewer
 
         private static bool IsNewerVersion(string newVersion, string oldVersion)
         {
-            var partsOld = oldVersion.Split(new char[] { '.' });
-            var partsNew = newVersion.Split(new char[] { '.' });
+            var partsOld = oldVersion.Split(new[] { '.' });
+            var partsNew = newVersion.Split(new[] { '.' });
 
             var oldNum = Convert.ToInt32(partsOld[0]) * 10000000 + Convert.ToInt32(partsOld[1]) * 10000 + Convert.ToInt32(partsOld[2]) * 10 + Convert.ToInt32(partsOld[3]);
             var newNum = Convert.ToInt32(partsNew[0]) * 10000000 + Convert.ToInt32(partsNew[1]) * 10000 + Convert.ToInt32(partsNew[2]) * 10 + Convert.ToInt32(partsNew[3]);
@@ -14288,12 +14266,12 @@ namespace TerraViewer
 
         public static double[] J2000toGalactic(double J2000RA, double J2000DEC)
         {
-            var J2000pos = new double[] { Math.Cos(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000DEC / 180.0 * Math.PI) };
+            var J2000pos = new[] { Math.Cos(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000DEC / 180.0 * Math.PI) };
 
             var RotationMatrix = new double[3][];
-            RotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
-            RotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
-            RotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
+            RotationMatrix[0] = new[] { -.0548755604, -.8734370902, -.4838350155 };
+            RotationMatrix[1] = new[] { .4941094279, -.4448296300, .7469822445 };
+            RotationMatrix[2] = new[] { -.8676661490, -.1980763734, .4559837762 };
 
 
 
@@ -14315,7 +14293,7 @@ namespace TerraViewer
 
             var GalacticB2 = Math.Atan2(Galacticpos[2], Math.Sqrt(Galacticpos[0] * Galacticpos[0] + Galacticpos[1] * Galacticpos[1]));
 
-            return new double[] { GalacticL2 / Math.PI * 180.0, GalacticB2 / Math.PI * 180.0 };
+            return new[] { GalacticL2 / Math.PI * 180.0, GalacticB2 / Math.PI * 180.0 };
         }
 
 
@@ -14323,11 +14301,11 @@ namespace TerraViewer
 
         public static double[] GalactictoJ2000(double GalacticL2, double GalacticB2)
         {
-            var Galacticpos = new double[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
+            var Galacticpos = new[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
             var RotationMatrix = new double[3][];
-            RotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
-            RotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
-            RotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
+            RotationMatrix[0] = new[] { -.0548755604, -.8734370902, -.4838350155 };
+            RotationMatrix[1] = new[] { .4941094279, -.4448296300, .7469822445 };
+            RotationMatrix[2] = new[] { -.8676661490, -.1980763734, .4559837762 };
 
             var J2000pos = new double[3];
             for (var i = 0; i < 3; i++)
@@ -14347,7 +14325,7 @@ namespace TerraViewer
 
             var J2000DEC = Math.Atan2(J2000pos[2], Math.Sqrt(J2000pos[0] * J2000pos[0] + J2000pos[1] * J2000pos[1]));
 
-            return new double[] { J2000RA / Math.PI * 180.0, J2000DEC / Math.PI * 180.0 };
+            return new[] { J2000RA / Math.PI * 180.0, J2000DEC / Math.PI * 180.0 };
 
         }
 
@@ -14375,17 +14353,17 @@ namespace TerraViewer
 
         private void copyShortcutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA.ToString(), contextMenuTargetObject.Dec, ZoomFactor);
+            var link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA, contextMenuTargetObject.Dec, ZoomFactor);
             Clipboard.SetText(link);
         }
 
         private void copyShortcutMenuItem_Click(object sender, EventArgs e)
         {
 
-            var constellation = this.constellationCheck.FindConstellationForPoint(RA, Dec);
+            var constellation = constellationCheck.FindConstellationForPoint(RA, Dec);
             contextPanel.Constellation = Constellations.FullName(constellation);
             contextMenuTargetObject = new TourPlace("ViewShortcut", Dec, RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
-            var link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA.ToString(), contextMenuTargetObject.Dec, ZoomFactor);
+            var link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA, contextMenuTargetObject.Dec, ZoomFactor);
             Clipboard.SetText(link);
         }
         private void lookupOnAladinToolStripMenuItem_Click(object sender, EventArgs e)
@@ -14402,7 +14380,7 @@ namespace TerraViewer
         {
             if (contextMenuTargetObject.Classification == Classification.Unidentified)
             {
-                WebWindow.OpenUrl(String.Format("http://simbad.u-strasbg.fr/simbad/sim-coo?CooEpoch=2000&Coord={0}h{1}d&submit=submit%20query&Radius.unit=arcmin&CooEqui=2000&CooFrame=FK5&Radius=10", contextMenuTargetObject.RA, contextMenuTargetObject.Dec > 0 ? "%2b" + contextMenuTargetObject.Dec.ToString() : contextMenuTargetObject.Dec.ToString()), false);
+                WebWindow.OpenUrl(String.Format("http://simbad.u-strasbg.fr/simbad/sim-coo?CooEpoch=2000&Coord={0}h{1}d&submit=submit%20query&Radius.unit=arcmin&CooEqui=2000&CooFrame=FK5&Radius=10", contextMenuTargetObject.RA, contextMenuTargetObject.Dec > 0 ? "%2b" + contextMenuTargetObject.Dec : contextMenuTargetObject.Dec.ToString()), false);
             }
             else
             {
@@ -14497,8 +14475,8 @@ namespace TerraViewer
         public IImageSet videoOverlay = null;
         public float StudyOpacity
         {
-            get { return (float)this.viewCamera.Opacity; }
-            set { this.viewCamera.Opacity = value; }
+            get { return (float)viewCamera.Opacity; }
+            set { viewCamera.Opacity = value; }
         }
 
         public IImageSet StudyImageset
@@ -14609,7 +14587,7 @@ namespace TerraViewer
 
                             if (closetPlace == null)
                             {
-                                var constellation = this.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                                var constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                                 closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, ZoomFactor / 900);
                             }
 
@@ -14620,11 +14598,11 @@ namespace TerraViewer
 
                             if (closetPlace != null)
                             {
-                                Earth3d.MainWindow.SetLabelText(closetPlace, true);
+                                MainWindow.SetLabelText(closetPlace, true);
                             }
                             else
                             {
-                                Earth3d.MainWindow.SetLabelText(null, false);
+                                MainWindow.SetLabelText(null, false);
                             }
                         }
                     }
@@ -14637,11 +14615,11 @@ namespace TerraViewer
                     var closetPlace = LayerManager.FindClosest(result, (float)(ZoomFactor / 900.00), false, CurrentImageSet.ReferenceFrame);
                     if (closetPlace != null)
                     {
-                        Earth3d.MainWindow.SetLabelText(closetPlace, true);
+                        MainWindow.SetLabelText(closetPlace, true);
                     }
                     else
                     {
-                        Earth3d.MainWindow.SetLabelText(null, false);
+                        MainWindow.SetLabelText(null, false);
                     }
                 }
             }
@@ -14712,9 +14690,9 @@ namespace TerraViewer
             {
                 // Draw without safe areas
                 TourEditor.Capturing = true;
-                this.Render();
+                Render();
                 Thread.Sleep(100);
-                this.Render();
+                Render();
                 TourEditor.Capturing = false;
             }
 
@@ -14726,7 +14704,7 @@ namespace TerraViewer
 
                 var g = Graphics.FromImage(bmpThumb);
 
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 var imageAspect = ((double)imgOrig.Width) / (imgOrig.Height);
 
@@ -14737,11 +14715,11 @@ namespace TerraViewer
 
                 if (imageAspect < clientAspect)
                 {
-                    ch = (int)((double)cw / imageAspect);
+                    ch = (int)(cw / imageAspect);
                 }
                 else
                 {
-                    cw = (int)((double)ch * imageAspect);
+                    cw = (int)(ch * imageAspect);
                 }
 
                 var cx = (bmpThumb.Width - cw) / 2;
@@ -14788,8 +14766,8 @@ namespace TerraViewer
             if (tourProps.ShowDialog() == DialogResult.OK)
             {
                 tour.EditMode = true;
-                this.menuTabs.AddTour(tour);
-                this.menuTabs.FocusTour(tour);
+                menuTabs.AddTour(tour);
+                menuTabs.FocusTour(tour);
                 Undo.Clear();
             }
 
@@ -14909,8 +14887,8 @@ namespace TerraViewer
             {
                 tour.TagId = tagId;
                 tour.EditMode = editMode;
-                this.menuTabs.AddTour(tour);
-                this.menuTabs.FocusTour(tour);
+                menuTabs.AddTour(tour);
+                menuTabs.FocusTour(tour);
 
                 if (NoUi)
                 {
@@ -15065,7 +15043,7 @@ namespace TerraViewer
 
         private void AddCommunity(Folder newFolder)
         {
-            var filename = CommuinitiesDirectory + Math.Abs(newFolder.Url.GetHashCode32()).ToString() + ".wtml";
+            var filename = CommuinitiesDirectory + Math.Abs(newFolder.Url.GetHashCode32()) + ".wtml";
             if (!Directory.Exists(CommuinitiesDirectory))
             {
                 Directory.CreateDirectory(CommuinitiesDirectory);
@@ -15076,7 +15054,7 @@ namespace TerraViewer
                 UiTools.ShowMessageBox(Language.GetLocalizedText(110, "The file opened is a community registration file and this community is already registered."));
                 communitiesPane.LoadCommunities();
                 menuTabs.SetSelectedIndex((int)ApplicationMode.Explore, false);
-                this.Refresh();
+                Refresh();
                 menuTabs.SetSelectedIndex((int)ApplicationMode.Community, false);
                 return;
             }
@@ -15088,7 +15066,7 @@ namespace TerraViewer
             newFolder.SaveToFile(filename);
             communitiesPane.LoadCommunities();
             menuTabs.SetSelectedIndex((int)ApplicationMode.Explore, false);
-            this.Refresh();
+            Refresh();
             menuTabs.SetSelectedIndex((int)ApplicationMode.Community, false);
         }
 
@@ -15111,7 +15089,7 @@ namespace TerraViewer
 
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         internal KmlCollection MyPlaces = new KmlCollection();
@@ -15172,7 +15150,7 @@ namespace TerraViewer
                 {
 
                     imageSet = new ImageSetHelper(wcsImage.Description, filename, ImageSetType.Sky, BandPass.Visible, ProjectionType.SkyImage, Math.Abs(filename.GetHashCode32()), 0, 0, 256, .001, ".tif", false, "", RA * 15, ViewLat, 0, false, "", false, false, 1, bmp.Width / 2, bmp.Height / 2, wcsImage.Copyright, wcsImage.CreditsUrl, "", "", 0, "");
-                    place = new TourPlace(UiTools.GetNamesStringFromArray(wcsImage.Keywords.ToArray()), this.ViewLat, RA, Classification.Unidentified, constellationCheck.FindConstellationForPoint(wcsImage.CenterX, wcsImage.CenterY), ImageSetType.Sky, -1);
+                    place = new TourPlace(UiTools.GetNamesStringFromArray(wcsImage.Keywords.ToArray()), ViewLat, RA, Classification.Unidentified, constellationCheck.FindConstellationForPoint(wcsImage.CenterX, wcsImage.CenterY), ImageSetType.Sky, -1);
                 }
                 imageSet.WcsImage = wcsImage;
                 place.StudyImageset = imageSet;
@@ -15276,7 +15254,7 @@ namespace TerraViewer
                     MessageBox.Show(Language.GetLocalizedText(117, "There was no author image. Please add one and submit again."), Language.GetLocalizedText(116, "Submission Failed"));
                     return;
                 }
-                TerraViewer.org.worldwidetelescope.www.Tour[] results = null;
+                org.worldwidetelescope.www.Tour[] results = null;
                 try
                 {
                     results = webService.ImportTour(tourXML, tourBlob, tourThumbBlob, authorThumbBlob);
@@ -15360,7 +15338,7 @@ namespace TerraViewer
 
 
 
-        private void telescopeMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void telescopeMenu_Opening(object sender, CancelEventArgs e)
         {
             if (telescopePane == null)
             {
@@ -15372,27 +15350,27 @@ namespace TerraViewer
                 trackScopeMenuItem.Checked = telescopePane.TrackScope.Checked;
                 var state = telescopePane.TelescopeConnected;
 
-                this.centerTelescopeMenuItem.Enabled = state;
-                this.slewTelescopeMenuItem.Enabled = state;
-                this.trackScopeMenuItem.Enabled = state;
+                centerTelescopeMenuItem.Enabled = state;
+                slewTelescopeMenuItem.Enabled = state;
+                trackScopeMenuItem.Enabled = state;
                 if (state)
                 {
-                    this.SyncTelescopeMenuItem.Enabled = telescopePane.Scope.CanSync && telescopePane.Scope.Tracking;
+                    SyncTelescopeMenuItem.Enabled = telescopePane.Scope.CanSync && telescopePane.Scope.Tracking;
                     if (telescopePane.Scope.AtPark)
                     {
-                        this.parkTelescopeMenuItem.Text = Language.GetLocalizedText(122, "Unpark");
-                        this.parkTelescopeMenuItem.Enabled = telescopePane.Scope.CanUnpark;
+                        parkTelescopeMenuItem.Text = Language.GetLocalizedText(122, "Unpark");
+                        parkTelescopeMenuItem.Enabled = telescopePane.Scope.CanUnpark;
                     }
                     else
                     {
-                        this.parkTelescopeMenuItem.Text = Language.GetLocalizedText(50, "Park");
-                        this.parkTelescopeMenuItem.Enabled = telescopePane.Scope.CanPark;
+                        parkTelescopeMenuItem.Text = Language.GetLocalizedText(50, "Park");
+                        parkTelescopeMenuItem.Enabled = telescopePane.Scope.CanPark;
                     }
                 }
                 else
                 {
-                    this.SyncTelescopeMenuItem.Enabled = state;
-                    this.parkTelescopeMenuItem.Enabled = state;
+                    SyncTelescopeMenuItem.Enabled = state;
+                    parkTelescopeMenuItem.Enabled = state;
                 }
 
                 if (state)
@@ -15436,7 +15414,7 @@ namespace TerraViewer
                 {
                     if (!CheckForUpdates(true))
                     {
-                        this.Close();
+                        Close();
                     }
                 }
                 catch
@@ -15458,7 +15436,7 @@ namespace TerraViewer
             if (Initialized)
             {
                 StatupTimer.Enabled = false;
-                this.Activate();
+                Activate();
                 SetAppMode(ApplicationMode.Explore);
                 ResetStartFlag();
                 try
@@ -15637,7 +15615,7 @@ namespace TerraViewer
                     tourEdit.SetEditMode(true);
                     tourEdit.PauseTour();
                 }
-                this.menuTabs.FocusTour(menuTabs.CurrentTour);
+                menuTabs.FocusTour(menuTabs.CurrentTour);
             }
         }
         private void hLAFootprintsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -15652,7 +15630,7 @@ namespace TerraViewer
         private void uSNONVOConeSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            var url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), fovAngle.ToString());
+            var url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15), contextMenuTargetObject.Dec, fovAngle);
             var client = new WebClient();
 
             try
@@ -15695,19 +15673,19 @@ namespace TerraViewer
                     {
                         // Draw without safe areas
                         TourEditor.Capturing = true;
-                        this.Render();
+                        Render();
                         Thread.Sleep(100);
-                        this.Render();
+                        Render();
                         TourEditor.Capturing = false;
                     }
 
                     if (saveDialog.FileName.ToLower().EndsWith(".jpg") || saveDialog.FileName.ToLower().EndsWith(".jpeg"))
                     {
-                        RenderContext11.SaveBackBuffer(saveDialog.FileName, SharpDX.Direct3D11.ImageFileFormat.Jpg);
+                        RenderContext11.SaveBackBuffer(saveDialog.FileName, ImageFileFormat.Jpg);
                     }
                     else
                     {
-                        RenderContext11.SaveBackBuffer(saveDialog.FileName, SharpDX.Direct3D11.ImageFileFormat.Png);
+                        RenderContext11.SaveBackBuffer(saveDialog.FileName, ImageFileFormat.Png);
                     }
                 }
             }
@@ -15722,9 +15700,9 @@ namespace TerraViewer
             {
                 // Draw without safe areas
                 TourEditor.Capturing = true;
-                this.Render();
+                Render();
                 Thread.Sleep(100);
-                this.Render();
+                Render();
                 TourEditor.Capturing = false;
             }
 
@@ -15760,7 +15738,7 @@ namespace TerraViewer
                 Properties.Settings.Default.ShowCrosshairs = showCrossHairs;
                 var path = Properties.Settings.Default.CahceDirectory + "wallpaper.bmp";
 
-                RenderContext11.SaveBackBuffer(path, SharpDX.Direct3D11.ImageFileFormat.Bmp);
+                RenderContext11.SaveBackBuffer(path, ImageFileFormat.Bmp);
                 UiTools.SetWallpaper(path);
                 ShowFullScreen(false);
             }
@@ -15770,7 +15748,7 @@ namespace TerraViewer
             }
         }
 
-        private void viewMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void viewMenu_Opening(object sender, CancelEventArgs e)
         {
             fullDomeToolStripMenuItem.Checked = Properties.Settings.Default.DomeView;
             detachMainViewToSecondMonitor.Enabled = Screen.AllScreens.Length > 1;
@@ -15828,7 +15806,7 @@ namespace TerraViewer
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var pnt = Cursor.Position;
-            this.Focus();
+            Focus();
             ObjectProperties.ShowNofinder(contextMenuTargetObject, pnt);
         }
 
@@ -15842,7 +15820,7 @@ namespace TerraViewer
             }
         }
 
-        private void exploreMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void exploreMenu_Opening(object sender, CancelEventArgs e)
         {
             playCollectionAsSlideShowToolStripMenuItem.Checked = playingSlideShow;
             showFinderToolStripMenuItem.Enabled = CurrentImageSet.DataSetType == ImageSetType.Sky || SolarSystemMode;
@@ -15886,12 +15864,12 @@ namespace TerraViewer
             }
             else
             {
-                TargetLong += (double)(e.X - (this.Width / 2)) * GetPixelScaleX(false);
-                TargetLat -= (double)(e.Y - (this.Height / 2)) * GetPixelScaleY();
+                TargetLong += (e.X - (Width / 2)) * GetPixelScaleX(false);
+                TargetLat -= (e.Y - (Height / 2)) * GetPixelScaleY();
                 TargetLong = ((TargetLong + 180.0) % 360.0) - 180.0;
                 TargetLat = ((TargetLat + 90.0) % 180.0) - 90.0;
-                deltaLat = (this.TargetLat - this.ViewLat) / 20;
-                deltaLong = (this.TargetLong - this.ViewLong) / 20;
+                deltaLat = (TargetLat - ViewLat) / 20;
+                deltaLong = (TargetLong - ViewLong) / 20;
                 zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                 ZoomIn();
             }
@@ -15902,7 +15880,7 @@ namespace TerraViewer
 
         private void renderWindow_MouseDown(object sender, MouseEventArgs e)
         {
-            this.Focus();
+            Focus();
             if (uiController != null)
             {
                 if (uiController.MouseDown(sender, new MouseEventArgs(e.Button, e.Clicks, e.X + Properties.Settings.Default.ScreenHitTestOffsetX, e.Y + Properties.Settings.Default.ScreenHitTestOffsetY, e.Delta)))
@@ -15913,7 +15891,7 @@ namespace TerraViewer
 
 
 
-            if (Control.ModifierKeys == (Keys.Control | Keys.Alt | Keys.Shift))
+            if (ModifierKeys == (Keys.Control | Keys.Alt | Keys.Shift))
             {
                 // Contrast code here
                 contrastMode = true;
@@ -15968,12 +15946,12 @@ namespace TerraViewer
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle)
             {
 
-                if (Control.ModifierKeys == Keys.Alt || Control.ModifierKeys == Keys.Control || e.Button == MouseButtons.Middle)
+                if (ModifierKeys == Keys.Alt || ModifierKeys == Keys.Control || e.Button == MouseButtons.Middle)
                 {
                     spinning = true;
                     angle = true;
                 }
-                else if (Control.ModifierKeys == Keys.Shift || measuring)
+                else if (ModifierKeys == Keys.Shift || measuring)
                 {
                     if (Space)
                     {
@@ -15990,8 +15968,8 @@ namespace TerraViewer
                     dragging = true;
                 }
                 moved = false;
-                this.mouseDownX = e.X;
-                this.mouseDownY = e.Y;
+                mouseDownX = e.X;
+                mouseDownY = e.Y;
             }
 
 
@@ -16206,7 +16184,7 @@ namespace TerraViewer
 
                 if (activeTouch == TouchControls.PanTrack)
                 {
-                    var panTrack = TouchToScreen(this.panTracker);
+                    var panTrack = TouchToScreen(panTracker);
 
 
                     var mv = new Vector2d(panTrack.X - (e.X + Properties.Settings.Default.ScreenHitTestOffsetX), panTrack.Y - (e.Y + Properties.Settings.Default.ScreenHitTestOffsetY));
@@ -16224,7 +16202,7 @@ namespace TerraViewer
 
                 if (activeTouch == TouchControls.ZoomTrack)
                 {
-                    var zoomTrack = TouchToScreen(this.zoomTracker);
+                    var zoomTrack = TouchToScreen(zoomTracker);
                     var zoomDrag = zoomTrack.X - (e.X + Properties.Settings.Default.ScreenHitTestOffsetX);
                     if (Math.Abs(zoomDrag) > 54)
                     {
@@ -16238,7 +16216,7 @@ namespace TerraViewer
 
                 if (activeTouch == TouchControls.OrbitTrack)
                 {
-                    var orbitTrack = TouchToScreen(this.orbitTracker);
+                    var orbitTrack = TouchToScreen(orbitTracker);
                     var orbitDrag = orbitTrack.X - (e.X + Properties.Settings.Default.ScreenHitTestOffsetX);
                     if (Math.Abs(orbitDrag) > 70)
                     {
@@ -16269,17 +16247,13 @@ namespace TerraViewer
             {
                 return;
             }
-            else
+            mouseMoved = true;
+            lastMouseMove = DateTime.Now;
+
+            if (!CursorVisible && !ProjectorServer)
             {
-                mouseMoved = true;
-                lastMouseMove = DateTime.Now;
-
-                if (!CursorVisible && !ProjectorServer)
-                {
-                    Cursor.Show();
-                    CursorVisible = true;
-                }
-
+                Cursor.Show();
+                CursorVisible = true;
             }
 
             if (measuringDrag)
@@ -16309,7 +16283,7 @@ namespace TerraViewer
                 {
                     Tracking = false;
 
-                    MoveView(-(e.X - this.mouseDownX), (e.Y - this.mouseDownY), true);
+                    MoveView(-(e.X - mouseDownX), (e.Y - mouseDownY), true);
                     if (!Properties.Settings.Default.SmoothPan)
                     {
                         az = targetAz;
@@ -16319,15 +16293,15 @@ namespace TerraViewer
                         TargetLong = ViewLong = RAtoViewLng(gPoint[0] / 15);
                         NotifyMoveComplete();
                     }
-                    this.mouseDownX = e.X;
-                    this.mouseDownY = e.Y;
+                    mouseDownX = e.X;
+                    mouseDownY = e.Y;
                 }
                 else if (spinning || angle)
                 {
 
-                    CameraRotateTarget = (CameraRotateTarget + (((double)(e.X - this.mouseDownX)) / 1000 * Math.PI));
+                    CameraRotateTarget = (CameraRotateTarget + (((double)(e.X - mouseDownX)) / 1000 * Math.PI));
 
-                    CameraAngleTarget = (CameraAngleTarget + (((double)(e.Y - this.mouseDownY)) / 1000 * Math.PI));
+                    CameraAngleTarget = (CameraAngleTarget + (((double)(e.Y - mouseDownY)) / 1000 * Math.PI));
 
                     if (CameraAngleTarget < TiltMin)
                     {
@@ -16345,8 +16319,8 @@ namespace TerraViewer
                         CameraAngle = CameraAngleTarget;
                     }
 
-                    this.mouseDownX = e.X;
-                    this.mouseDownY = e.Y;
+                    mouseDownX = e.X;
+                    mouseDownY = e.Y;
                 }
                 else
                 {
@@ -16363,7 +16337,7 @@ namespace TerraViewer
                         Tracking = false;
                     }
 
-                    MoveView(-(e.X - this.mouseDownX), (e.Y - this.mouseDownY), true);
+                    MoveView(-(e.X - mouseDownX), (e.Y - mouseDownY), true);
                     if (!Properties.Settings.Default.SmoothPan)
                     {
                         az = targetAz;
@@ -16374,8 +16348,8 @@ namespace TerraViewer
                         TargetLong = ViewLong = RAtoViewLng(currentRaDec.RA);
                         NotifyMoveComplete();
                     }
-                    this.mouseDownX = e.X;
-                    this.mouseDownY = e.Y;
+                    mouseDownX = e.X;
+                    mouseDownY = e.Y;
                 }
                 else
                 {
@@ -16392,22 +16366,22 @@ namespace TerraViewer
                         Tracking = false;
                     }
 
-                    MoveView(-(e.X - this.mouseDownX), (e.Y - this.mouseDownY), true);
+                    MoveView(-(e.X - mouseDownX), (e.Y - mouseDownY), true);
                     if (!Properties.Settings.Default.SmoothPan)
                     {
                         ViewLat = TargetLat;
                         ViewLong = TargetLong;
                         NotifyMoveComplete();
                     }
-                    this.mouseDownX = e.X;
-                    this.mouseDownY = e.Y;
+                    mouseDownX = e.X;
+                    mouseDownY = e.Y;
                 }
                 else if (spinning || angle)
                 {
 
-                    CameraRotateTarget = (CameraRotateTarget + (((double)(e.X - this.mouseDownX)) / 1000 * Math.PI));
+                    CameraRotateTarget = (CameraRotateTarget + (((double)(e.X - mouseDownX)) / 1000 * Math.PI));
 
-                    CameraAngleTarget = (CameraAngleTarget + (((double)(e.Y - this.mouseDownY)) / 1000 * Math.PI));
+                    CameraAngleTarget = (CameraAngleTarget + (((double)(e.Y - mouseDownY)) / 1000 * Math.PI));
 
                     if (CameraAngleTarget < TiltMin)
                     {
@@ -16425,8 +16399,8 @@ namespace TerraViewer
                         CameraAngle = CameraAngleTarget;
                     }
 
-                    this.mouseDownX = e.X;
-                    this.mouseDownY = e.Y;
+                    mouseDownX = e.X;
+                    mouseDownY = e.Y;
                 }
                 else
                 {
@@ -16544,9 +16518,9 @@ namespace TerraViewer
                     {
                         // TODO fix this for earth, plantes, panoramas
                         var result = GetCoordinatesForScreenPoint(e.X, e.Y);
-                        var constellation = this.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                        var constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                         contextPanel.Constellation = Constellations.FullName(constellation);
-                        var closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.DegreesPerPixel * 80);
+                        var closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, MainWindow.DegreesPerPixel * 80);
                         if (closetPlace == null)
                         {
                             closetPlace = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
@@ -16749,16 +16723,16 @@ namespace TerraViewer
             Properties.Settings.Default.AutoRepeatTourAll = false;
         }
 
-        private void toursMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void toursMenu_Opening(object sender, CancelEventArgs e)
         {
-            if (Control.ModifierKeys == (Keys.Shift | Keys.Control))
+            if (ModifierKeys == (Keys.Shift | Keys.Control))
             {
                 Properties.Settings.Default.AdvancedCommunities = true;
             }
 
             if (menuTabs.CurrentTour != null)
             {
-                if (Control.ModifierKeys == (Keys.Shift | Keys.Control))
+                if (ModifierKeys == (Keys.Shift | Keys.Control))
                 {
                     publishTourMenuItem.Visible = menuTabs.CurrentTour.EditMode;
                     Properties.Settings.Default.AdvancedCommunities = true;
@@ -16769,7 +16743,7 @@ namespace TerraViewer
                 }
                 editTourToolStripMenuItem.Visible = !menuTabs.CurrentTour.EditMode;
 
-                publishTourToCommunityToolStripMenuItem.Enabled = Earth3d.IsLoggedIn;
+                publishTourToCommunityToolStripMenuItem.Enabled = IsLoggedIn;
 
                 renderToVideoToolStripMenuItem.Enabled = true;
                 showOverlayListToolStripMenuItem.Enabled = true;
@@ -16808,7 +16782,7 @@ namespace TerraViewer
 
         private void Earth3d_KeyUp(object sender, KeyEventArgs e)
         {
-            if (Control.ModifierKeys == Keys.Alt)
+            if (ModifierKeys == Keys.Alt)
             {
                 switch (e.KeyCode)
                 {
@@ -16881,11 +16855,11 @@ namespace TerraViewer
             addToCollectionsToolStripMenuItem.DropDownItems.Clear();
 
             var newCollectionMenu = new ToolStripMenuItem(Language.GetLocalizedText(23, "New Collection..."));
-            newCollectionMenu.Click += new EventHandler(newCollectionMenu_Click);
+            newCollectionMenu.Click += newCollectionMenu_Click;
             addToCollectionsToolStripMenuItem.DropDownItems.Add(newCollectionMenu);
 
             var menuItem = addToCollectionsToolStripMenuItem;
-            addToCollectionsToolStripMenuItem.Tag = this.explorePane.MyCollections;
+            addToCollectionsToolStripMenuItem.Tag = explorePane.MyCollections;
 
             CreatePickFolderMenu(menuItem);
         }
@@ -16897,7 +16871,7 @@ namespace TerraViewer
             foreach (var f in collections.Folder1)
             {
                 var tempMenu = new ToolStripMenuItem(f.Name);
-                tempMenu.Click += new EventHandler(AddTocollectionMenu_Click);
+                tempMenu.Click += AddTocollectionMenu_Click;
                 tempMenu.Tag = f;
                 menuItem.DropDownItems.Add(tempMenu);
                 CreatePickFolderMenu(tempMenu);
@@ -16911,15 +16885,15 @@ namespace TerraViewer
             }
         }
 
-        private void contextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void contextMenu_Opening(object sender, CancelEventArgs e)
         {
-            Earth3d.NoStealFocus = true;
+            NoStealFocus = true;
 
         }
 
         private void contextMenu_Closing(object sender, ToolStripDropDownClosingEventArgs e)
         {
-            Earth3d.NoStealFocus = false;
+            NoStealFocus = false;
         }
 
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
@@ -16971,7 +16945,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 IImageSet imageSet = null;
                 if (place.StudyImageset != null)
                 {
@@ -16984,9 +16958,9 @@ namespace TerraViewer
 
                 long totalBytes = 0;
                 long demBytes = 0;
-                var path = Properties.Settings.Default.CahceDirectory + @"Imagery\" + imageSet.ImageSetID.ToString();
+                var path = Properties.Settings.Default.CahceDirectory + @"Imagery\" + imageSet.ImageSetID;
 
-                var demPath = Properties.Settings.Default.CahceDirectory + @"dem\" + Math.Abs(imageSet.DemUrl != null ? imageSet.DemUrl.GetHashCode32() : 0).ToString();
+                var demPath = Properties.Settings.Default.CahceDirectory + @"dem\" + Math.Abs(imageSet.DemUrl != null ? imageSet.DemUrl.GetHashCode32() : 0);
 
                 Cursor.Current = Cursors.WaitCursor;
 
@@ -17004,7 +16978,7 @@ namespace TerraViewer
                 }
 
                 Cursor.Current = Cursors.Default;
-                UiTools.ShowMessageBox(String.Format(Language.GetLocalizedText(128, "The imageset was removed from cache and {0}MB was freed"), ((double)(totalBytes + demBytes) / 1024.0 / 1024.0).ToString("f")));
+                UiTools.ShowMessageBox(String.Format(Language.GetLocalizedText(128, "The imageset was removed from cache and {0}MB was freed"), ((totalBytes + demBytes) / 1024.0 / 1024.0).ToString("f")));
 
             }
             catch
@@ -17091,7 +17065,7 @@ namespace TerraViewer
                             {
                                 Properties.Settings.Default.SharedCacheServer = dialog.Language.Proxy;
                             }
-                            this.Close();
+                            Close();
                             break;
                         default:
                             break;
@@ -17130,7 +17104,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 IImageSet imageSet = null;
                 if (place.StudyImageset != null)
                 {
@@ -17141,7 +17115,7 @@ namespace TerraViewer
                     imageSet = place.BackgroundImageSet;
                 }
 
-                Earth3d.MainWindow.SetStudyImageset(imageSet, null);
+                MainWindow.SetStudyImageset(imageSet, null);
             }
             catch
             {
@@ -17154,7 +17128,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 IImageSet imageSet = null;
                 if (place.StudyImageset != null)
                 {
@@ -17167,7 +17141,7 @@ namespace TerraViewer
 
                 if (imageSet != null)
                 {
-                    this.CurrentImageSet = imageSet;
+                    CurrentImageSet = imageSet;
                 }
             }
             catch
@@ -17181,7 +17155,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 AddPlaceToStack(place, true);
                 ShowImageStack();
             }
@@ -17260,7 +17234,7 @@ namespace TerraViewer
 
         private void NEDSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), (FovAngle) < (1.0 / 60.0) ? (FovAngle).ToString() : (1.0 / 60.0).ToString());
+            var url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15), contextMenuTargetObject.Dec, (FovAngle) < (1.0 / 60.0) ? (FovAngle).ToString() : (1.0 / 60.0).ToString());
 
             RunVoSearch(url, null);
  
@@ -17335,7 +17309,7 @@ namespace TerraViewer
             }
         }
 
-        private void searchMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void searchMenu_Opening(object sender, CancelEventArgs e)
         {
 
         }
@@ -17351,7 +17325,7 @@ namespace TerraViewer
 
         private void sDSSSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var url = String.Format("http://casjobs.sdss.org/vo/dr5cone/sdssConeSearch.asmx/ConeSearch?ra={0}&dec={1}&sr={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), fovAngle.ToString());
+            var url = String.Format("http://casjobs.sdss.org/vo/dr5cone/sdssConeSearch.asmx/ConeSearch?ra={0}&dec={1}&sr={2}", (contextMenuTargetObject.RA * 15), contextMenuTargetObject.Dec, fovAngle);
 
             RunVoSearch(url, null);
         }
@@ -17452,7 +17426,7 @@ namespace TerraViewer
 
             GetRiftInfo(ref riftInfo);
             iod = (4 * ((riftInfo.HScreenSize / 4) - (riftInfo.LensSeparationDistance / 2)) / riftInfo.HScreenSize);
-            var aspect = (double)riftInfo.HResolution / (2.0 * (double)riftInfo.VResolution);
+            var aspect = riftInfo.HResolution / (2.0 * riftInfo.VResolution);
             riftFov = aspect * 2 * Math.Atan(riftInfo.VScreenSize / (2 * riftInfo.EyeToScreenDistance));
          
 
@@ -17527,7 +17501,7 @@ namespace TerraViewer
             if (contextMenuTargetObject.Classification == Classification.Unidentified)
             {
                 var url = "http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?in_csys=Equatorial&in_equinox=J2000.0&lon={0}d&lat={1}d&radius={2}&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&search_type=Near+Position+Search&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=Distance+to+search+center&of=pre_text&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
-                WebWindow.OpenUrl(String.Format(url, contextMenuTargetObject.RA, contextMenuTargetObject.Dec.ToString(),
+                WebWindow.OpenUrl(String.Format(url, contextMenuTargetObject.RA, contextMenuTargetObject.Dec,
                     (FovAngle * 60) < 1 ? (FovAngle * 60).ToString() : "1.0"), false);
             }
             else
@@ -17594,10 +17568,10 @@ namespace TerraViewer
 
         internal void SetBackgroundByName(string name)
         {
-            var target = Earth3d.MainWindow.ExplorerRoot;
+            var target = MainWindow.ExplorerRoot;
 
 
-            foreach (var set in Earth3d.ImageSets)
+            foreach (var set in ImageSets)
             {
                 if (set.Name.ToLower().Contains(name.ToLower()))
                 {
@@ -17643,11 +17617,11 @@ namespace TerraViewer
 
                     if (place.Name.ToLower().Contains(name.ToLower()))
                     {
-                        if (place.BackgroundImageSet != null && place.BackgroundImageSet.DataSetType != Earth3d.MainWindow.CurrentImageSet.DataSetType)
+                        if (place.BackgroundImageSet != null && place.BackgroundImageSet.DataSetType != MainWindow.CurrentImageSet.DataSetType)
                         {
                             continue;
                         }
-                        if (place.Classification == Classification.SolarSystem && Earth3d.MainWindow.CurrentImageSet.DataSetType == ImageSetType.SolarSystem)
+                        if (place.Classification == Classification.SolarSystem && MainWindow.CurrentImageSet.DataSetType == ImageSetType.SolarSystem)
                         {
                             CurrentImageSet = new ImageSetHelper(ImageSetType.SolarSystem, BandPass.Visible);
                         }
@@ -17663,7 +17637,7 @@ namespace TerraViewer
 
                         if (imageSet != null)
                         {
-                            this.CurrentImageSet = imageSet;
+                            CurrentImageSet = imageSet;
                         }
                         GotoTarget(place, false, false, true);
                         return true;
@@ -17677,7 +17651,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
 
                 if (place.Tag is FitsImage)
                 {
@@ -17803,9 +17777,9 @@ namespace TerraViewer
         {
             if (config.MultiChannelDome1 | ProjectorServer | config.MultiProjector | NoUi)
             {
-                this.TopMost = true;
-                this.Refresh();
-                this.TopMost = false;
+                TopMost = true;
+                Refresh();
+                TopMost = false;
             }
         }
 
@@ -17848,7 +17822,7 @@ namespace TerraViewer
                 var profile = "";
 
                 profile = wc.DownloadString("https://apis.live.net/v5.0//me?access_token=" + Connection.AccessToken);
-                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<UserObject>(profile);
+                var user = JsonConvert.DeserializeObject<UserObject>(profile);
   
                 //ready
              
@@ -17891,7 +17865,7 @@ namespace TerraViewer
                     tourProps.highlightReqFields();
                     if (tourProps.ShowDialog() == DialogResult.OK)
                     {
-                        Earth3d.MainWindow.Refresh();
+                        MainWindow.Refresh();
                     }
                 }
                 else
@@ -17962,7 +17936,7 @@ namespace TerraViewer
 
         }
 
-        private void communitiesMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void communitiesMenu_Opening(object sender, CancelEventArgs e)
         {
             updateLoginCredentialsMenuItem.Visible = Properties.Settings.Default.AdvancedCommunities;
         }
@@ -17983,7 +17957,7 @@ namespace TerraViewer
 
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 AddPlaceAsLayer(place, true);
             }
             catch
@@ -18020,7 +17994,7 @@ namespace TerraViewer
         private void multiChanelCalibrationToolStripMenuItem_Click(object sender, EventArgs e)
         {
            
-            var calibrate = new Callibration.Calibration();
+            var calibrate = new Calibration();
 
             calibrate.Show();
         }
@@ -18032,7 +18006,7 @@ namespace TerraViewer
 
             if (InvokeRequired)
             {
-                MethodInvoker ShowMeCall = Callibration.CalibrationScreen.ShowWindow;
+                MethodInvoker ShowMeCall = CalibrationScreen.ShowWindow;
                 try
                 {
                     Invoke(ShowMeCall);
@@ -18041,14 +18015,14 @@ namespace TerraViewer
             }
             else
             {
-                Callibration.CalibrationScreen.ShowWindow();
+                CalibrationScreen.ShowWindow();
             }
         }
 
         private void sendLayersToProjectorServersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveLayerSyncFile();
-            var command = "SYNCLAYERS," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1";
+            var command = "SYNCLAYERS," + MainWindow.Config.ClusterID + ",-1";
             NetControl.SendCommand(command);
         }
 
@@ -18073,7 +18047,7 @@ namespace TerraViewer
                 {
                     TourEdit.Tour.SaveToFile(Properties.Settings.Default.CahceDirectory + "\\tourSync.wtt", true, true);
 
-                    var command = "SYNCTOUR," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1";
+                    var command = "SYNCTOUR," + MainWindow.Config.ClusterID + ",-1";
                     NetControl.SendCommand(command);
                 }
             }
@@ -18091,7 +18065,7 @@ namespace TerraViewer
         private void renderToVideoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var videoDialog = new OutputTourToVideo();
-            videoDialog.Target = this.menuTabs.CurrentTour;
+            videoDialog.Target = menuTabs.CurrentTour;
 
 
             if (TourEdit != null)
@@ -18130,7 +18104,7 @@ namespace TerraViewer
 
                 if (trackerButton == null)
                 {
-                    trackerButton = Planets.LoadPlanetTexture(Properties.Resources.TrackerButton);
+                    trackerButton = Planets.LoadPlanetTexture(Resources.TrackerButton);
                 }
 
                 if (touchControl == null)
@@ -18146,7 +18120,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        touchControl = Planets.LoadPlanetTexture(Properties.Resources.TouchControls);
+                        touchControl = Planets.LoadPlanetTexture(Resources.TouchControls);
                     }
 
                     if (File.Exists(customImageFileNoHold))
@@ -18157,7 +18131,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        touchControlNoHold = Planets.LoadPlanetTexture(Properties.Resources.TouchControlsNoHold);
+                        touchControlNoHold = Planets.LoadPlanetTexture(Resources.TouchControlsNoHold);
                     }
 
                 }
@@ -18175,24 +18149,24 @@ namespace TerraViewer
                 TouchControlPoints[0].Tv = 0;
                 TouchControlPoints[0].Color = Color.FromArgb(64, 255, 255, 255);
 
-                TouchControlPoints[1].X = (float)(x + w);
-                TouchControlPoints[1].Y = (float)(y);
+                TouchControlPoints[1].X = x + w;
+                TouchControlPoints[1].Y = y;
                 TouchControlPoints[1].Tu = 1;
                 TouchControlPoints[1].Tv = 0;
                 TouchControlPoints[1].Color = Color.FromArgb(64, 255, 255, 255);
                 TouchControlPoints[1].Z = .9f;
                 TouchControlPoints[1].W = 1;
 
-                TouchControlPoints[2].X = (float)(x);
-                TouchControlPoints[2].Y = (float)(y + h);
+                TouchControlPoints[2].X = x;
+                TouchControlPoints[2].Y = y + h;
                 TouchControlPoints[2].Tu = 0;
                 TouchControlPoints[2].Tv = 1;
                 TouchControlPoints[2].Color = Color.FromArgb(64, 255, 255, 255);
                 TouchControlPoints[2].Z = .9f;
                 TouchControlPoints[2].W = 1;
 
-                TouchControlPoints[3].X = (float)(x + w);
-                TouchControlPoints[3].Y = (float)(y + h);
+                TouchControlPoints[3].X = x + w;
+                TouchControlPoints[3].Y = y + h;
                 TouchControlPoints[3].Tu = 1;
                 TouchControlPoints[3].Tv = 1;
                 TouchControlPoints[3].Color = Color.FromArgb(64, 255, 255, 255);
@@ -18201,11 +18175,11 @@ namespace TerraViewer
 
                 if (Friction)
                 {
-                    Sprite2d.DrawForScreen(RenderContext11, TouchControlPoints, 4, touchControlNoHold, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+                    Sprite2d.DrawForScreen(RenderContext11, TouchControlPoints, 4, touchControlNoHold, PrimitiveTopology.TriangleStrip);
                 }
                 else
                 {
-                    Sprite2d.DrawForScreen(RenderContext11, TouchControlPoints, 4, touchControl, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+                    Sprite2d.DrawForScreen(RenderContext11, TouchControlPoints, 4, touchControl, PrimitiveTopology.TriangleStrip);
                 }
 
                 if (!kioskControl)
@@ -18454,7 +18428,7 @@ namespace TerraViewer
 
         private void publishTourToCommunityToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Earth3d.IsLoggedIn)
+            if (IsLoggedIn)
             {
                 var filename = Path.GetTempFileName();
                 TourEdit.Tour.SaveToFile(filename, true, false);
@@ -18468,14 +18442,14 @@ namespace TerraViewer
         {
             MethodInvoker doIt = delegate
             {
-                Earth3d.MainWindow.RefreshCommunityLocal();
+                MainWindow.RefreshCommunityLocal();
             };
 
-            if (Earth3d.MainWindow.InvokeRequired)
+            if (MainWindow.InvokeRequired)
             {
                 try
                 {
-                    Earth3d.MainWindow.Invoke(doIt);
+                    MainWindow.Invoke(doIt);
                 }
                 catch
                 {
@@ -18576,7 +18550,7 @@ namespace TerraViewer
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(1043, "WorldWide Telescope must restart for new settings to take effect. Do you want to restart now?"), Language.GetLocalizedText(694, "Restart Now?"), MessageBoxButtons.YesNoCancel) == DialogResult.Yes)
             {
                 LanguageReboot = true;
-                this.Close();
+                Close();
             }
         }
 
@@ -19053,7 +19027,7 @@ namespace TerraViewer
                             {
                                 var cameraParams = new CameraParameters(45, 45, 300, 0, 0, 100);
 
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, false);
+                                MainWindow.GotoTarget(cameraParams, false, false);
 
                             }
                             break;
@@ -19061,7 +19035,7 @@ namespace TerraViewer
                             {
                                 var cameraParams = new CameraParameters(45, 45, 10000000000, 0, 0, 100);
 
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, false);
+                                MainWindow.GotoTarget(cameraParams, false, false);
 
                             }
                             break;
@@ -19069,7 +19043,7 @@ namespace TerraViewer
                             {
                                 var cameraParams = new CameraParameters(45, 45, 300000000000000, 0, 0, 100);
 
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, false);
+                                MainWindow.GotoTarget(cameraParams, false, false);
 
                             }
                             break;
@@ -19173,14 +19147,14 @@ namespace TerraViewer
                     case NavigationProperties.DomeTilt:
                         {
                             var val = double.Parse(value);
-                            Earth3d.MainWindow.Config.DomeTilt = (float)val;
+                            MainWindow.Config.DomeTilt = (float)val;
                         }
                         break;
 
                     case NavigationProperties.DomeAngle:
                         {
                             var val = double.Parse(value);
-                            Earth3d.MainWindow.Config.DomeAngle = (float)val;
+                            MainWindow.Config.DomeAngle = (float)val;
                         }
                         break;
 
@@ -19247,11 +19221,8 @@ namespace TerraViewer
                                 StudyOpacity = 100;
                                 return true.ToString();
                             }
-                            else
-                            {
-                                StudyOpacity = 0;
-                                return false.ToString();
-                            }
+                            StudyOpacity = 0;
+                            return false.ToString();
                         }
 
                     case NavigationProperties.FadeToBlack:
@@ -19352,11 +19323,8 @@ namespace TerraViewer
                             StudyOpacity = 100;
                             return true;
                         }
-                        else
-                        {
-                            StudyOpacity = 0;
-                            return false;
-                        }
+                        StudyOpacity = 0;
+                        return false;
                     }
 
                 case NavigationProperties.FadeToBlack:
@@ -19405,7 +19373,7 @@ namespace TerraViewer
             }
         }
 
-        private void settingsMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void settingsMenu_Opening(object sender, CancelEventArgs e)
         {
 
         }
@@ -19426,7 +19394,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 IImageSet imageSet = null;
                 if (place.StudyImageset != null)
                 {
@@ -19536,7 +19504,7 @@ namespace TerraViewer
         {
             try
             {
-                var place = (IPlace)contextMenuTargetObject;
+                var place = contextMenuTargetObject;
                 IImageSet imageSet = null;
                 if (place.StudyImageset != null)
                 {
@@ -19549,9 +19517,9 @@ namespace TerraViewer
 
                 long totalBytes = 0;
                 long demBytes = 0;
-                var path = Properties.Settings.Default.CahceDirectory + @"Imagery\" + imageSet.ImageSetID.ToString();
+                var path = Properties.Settings.Default.CahceDirectory + @"Imagery\" + imageSet.ImageSetID;
 
-                var demPath = Properties.Settings.Default.CahceDirectory + @"dem\" + Math.Abs(imageSet.DemUrl != null ? imageSet.DemUrl.GetHashCode32() : 0).ToString();
+                var demPath = Properties.Settings.Default.CahceDirectory + @"dem\" + Math.Abs(imageSet.DemUrl != null ? imageSet.DemUrl.GetHashCode32() : 0);
 
                 Cursor.Current = Cursors.WaitCursor;
 
@@ -19570,7 +19538,7 @@ namespace TerraViewer
                 }
 
                 Cursor.Current = Cursors.Default;
-                UiTools.ShowMessageBox(String.Format(Language.GetLocalizedText(1048, "The imageset uses {0}MB of disk space."), ((double)(totalBytes + demBytes) / 1024.0 / 1024.0).ToString("f")));
+                UiTools.ShowMessageBox(String.Format(Language.GetLocalizedText(1048, "The imageset uses {0}MB of disk space."), ((totalBytes + demBytes) / 1024.0 / 1024.0).ToString("f")));
 
             }
             catch
@@ -19763,14 +19731,14 @@ namespace TerraViewer
 
             var amount = ZoomFactor/10;
 
-            rect.North = Earth3d.MainWindow.viewCamera.Lat + amount;
-            rect.South = Earth3d.MainWindow.viewCamera.Lat - amount;
-            rect.West = Earth3d.MainWindow.viewCamera.Lng - amount;
-            rect.East = Earth3d.MainWindow.viewCamera.Lng + amount;
+            rect.North = MainWindow.viewCamera.Lat + amount;
+            rect.South = MainWindow.viewCamera.Lat - amount;
+            rect.West = MainWindow.viewCamera.Lng - amount;
+            rect.East = MainWindow.viewCamera.Lng + amount;
 
             var props = new ExportSTL();
             props.Rect = rect;
-            props.Owner = Earth3d.MainWindow;
+            props.Owner = MainWindow;
             props.Show();
         }
 

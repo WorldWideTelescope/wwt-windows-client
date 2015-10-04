@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
@@ -40,7 +35,7 @@ namespace TerraViewer
             {
                 if (target != null)
                 {
-                    timeEdit.Text = String.Format("{0:00}:{1:00.0}", (int)value.TotalMinutes, (double)value.Seconds + value.Milliseconds / 1000.0);
+                    timeEdit.Text = String.Format("{0:00}:{1:00.0}", (int)value.TotalMinutes, value.Seconds + value.Milliseconds / 1000.0);
                 }
             }
         }
@@ -67,7 +62,7 @@ namespace TerraViewer
             if (e.KeyCode == Keys.Enter)
             {
 
-                this.Close();
+                Close();
             }
         }
 
@@ -82,7 +77,7 @@ namespace TerraViewer
                     {
                         if (TimeText.TotalSeconds < target.Duration.TotalSeconds)
                         {
-                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1361, "Do you want to trim the timeline and delete keys past the new duration (Yes) or scale keys to the new duration (No)?"), Language.GetLocalizedText(1362, "Trim or scale timeline"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1361, "Do you want to trim the timeline and delete keys past the new duration (Yes) or scale keys to the new duration (No)?"), Language.GetLocalizedText(1362, "Trim or scale timeline"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1365, "Trim Timeline"), target.Owner));
                                 target.ExtendTimeline(target.Duration, TimeText);
@@ -95,7 +90,7 @@ namespace TerraViewer
                         }
                         else
                         {
-                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1364, "Do you want to extend the timeline (Yes) or scale it (No)?"), Language.GetLocalizedText(1363, "Extend or scale timeline"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(1364, "Do you want to extend the timeline (Yes) or scale it (No)?"), Language.GetLocalizedText(1363, "Extend or scale timeline"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1367, "Extend Timeline"), target.Owner));
                                 target.ExtendTimeline(target.Duration, TimeText);
@@ -122,7 +117,7 @@ namespace TerraViewer
 
         private void DurrationEditor_Deactivate(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void arrowDown_Pushed(object sender, EventArgs e)

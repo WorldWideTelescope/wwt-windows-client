@@ -1,13 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
 using System.IO;
-using System.IO.Compression;
-using System.Text;
+using SharpDX.Direct3D;
 
 namespace TerraViewer
 {
@@ -88,7 +82,7 @@ namespace TerraViewer
             renderContext.SetVertexBuffer(vertexBuffer);
             renderContext.SetIndexBuffer(indexBuffer);
             renderContext.PreDraw();
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             renderContext.devContext.DrawIndexed(6, 0, 0);
 
 
@@ -98,29 +92,29 @@ namespace TerraViewer
         {
             base.CleanUp(removeFromParent);
 
-            this.ImageData = null;
+            ImageData = null;
 
-            if (this.texture != null)
+            if (texture != null)
             {
-                this.texture.Dispose();
+                texture.Dispose();
                 GC.SuppressFinalize(texture);
-                this.texture = null;
+                texture = null;
             }
 
-            if (this.vertexBuffer != null)
+            if (vertexBuffer != null)
             {
                 try
                 {
-                    this.vertexBuffer.Dispose();
+                    vertexBuffer.Dispose();
                     GC.SuppressFinalize(vertexBuffer);
-                    this.vertexBuffer = null;
+                    vertexBuffer = null;
                 }
                 catch
                 {
                 }
             }
 
-            if (this.indexBuffer != null)
+            if (indexBuffer != null)
             {
                 try
                 {
@@ -139,14 +133,14 @@ namespace TerraViewer
         {
             base.CleanUpGeometryOnly(); 
             
-            if (this.vertexBuffer != null)
+            if (vertexBuffer != null)
             {
-                this.vertexBuffer.Dispose();
+                vertexBuffer.Dispose();
                 GC.SuppressFinalize(vertexBuffer);
-                this.vertexBuffer = null;
+                vertexBuffer = null;
             }
             
-            if (this.indexBuffer != null)
+            if (indexBuffer != null)
             {
                 indexBuffer.Dispose();
                 GC.SuppressFinalize(indexBuffer);
@@ -156,11 +150,11 @@ namespace TerraViewer
 
         public void SetTexture(Bitmap bmp)
         {
-            if (this.texture != null)
+            if (texture != null)
             {
-                this.texture.Dispose();
+                texture.Dispose();
                 GC.SuppressFinalize(texture);
-                this.texture = null;
+                texture = null;
             }
 
             texture = Texture11.FromBitmap(RenderContext11.PrepDevice, bmp);
@@ -179,7 +173,7 @@ namespace TerraViewer
                     {
                         var ms = new MemoryStream(ImageData);
 
-                        var old = this.texture;
+                        var old = texture;
 
                         texture = Texture11.FromStream(RenderContext11.PrepDevice, ms);
                         
@@ -228,7 +222,7 @@ namespace TerraViewer
                         }
                     }
                 }
-                if (this.texture == null)
+                if (texture == null)
                 {
                         if (dataset.WcsImage != null)
                         {
@@ -318,7 +312,7 @@ namespace TerraViewer
                 GetParameters();
                 vertexBuffer = new VertexBuffer11(typeof(PositionNormalTexturedX2), 4, RenderContext11.PrepDevice);
                 indexBuffer = new IndexBuffer11(typeof(short), 6, RenderContext11.PrepDevice);
-                this.OnCreateVertexBuffer(vertexBuffer);
+                OnCreateVertexBuffer(vertexBuffer);
 
             }
                 
@@ -338,7 +332,7 @@ namespace TerraViewer
         {
             lng = -lng;
 
-            var fac1 = (this.dataset.BaseTileDegrees*Height) / 2;
+            var fac1 = (dataset.BaseTileDegrees*Height) / 2;
             var factor = Math.Tan(fac1 * RC);
 
             return Vector3d.TransformCoordinate(new Vector3d(1f, (lat / fac1 * factor), (lng / fac1 * factor)), Matrix);

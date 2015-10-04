@@ -1,15 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Net;
+using System.Drawing.Text;
 using System.IO;
-using System.IO.Compression;
-using System.Text;
 using System.Xml;
-
+using SharpDX.Direct3D;
+using TerraViewer.Properties;
 
 
 namespace TerraViewer
@@ -113,7 +111,7 @@ namespace TerraViewer
             centerX -= 960;
             centerY -= 558;
 
-            if (this.Anchor == OverlayAnchor.Screen)
+            if (Anchor == OverlayAnchor.Screen)
             {
                 var point = new Vector3d(centerX + offsetX, centerY + offsetY, 1347);
 
@@ -159,7 +157,7 @@ namespace TerraViewer
 
                 UpdateRotation(); ;
 
-                Sprite2d.Draw(renderContext, points, points.Length, texture, TriangleStrip ? SharpDX.Direct3D.PrimitiveTopology.TriangleStrip : SharpDX.Direct3D.PrimitiveTopology.TriangleList);
+                Sprite2d.Draw(renderContext, points, points.Length, texture, TriangleStrip ? PrimitiveTopology.TriangleStrip : PrimitiveTopology.TriangleList);
             }
         }
 
@@ -322,33 +320,30 @@ namespace TerraViewer
         {
             if (animate && tweenFactor > .5f)
             {
-                return new double[] { endX, endY, endWidth, endHeight, endRotationAngle, endColor.R / 255.0, endColor.G / 255.0, endColor.B / 255.0, endColor.A / 255.0 };
+                return new[] { endX, endY, endWidth, endHeight, endRotationAngle, endColor.R / 255.0, endColor.G / 255.0, endColor.B / 255.0, endColor.A / 255.0 };
             }
-            else
-            {
-                return new double[] { x, y, width, height, rotationAngle, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0 };
-            }
+            return new[] { x, y, width, height, rotationAngle, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0 };
         }
 
         public virtual string[] GetParamNames()
         {
 
-            return new string[] { "Translate.X", "Translate.Y", "Size.Width", "Size.Height", "Rotation", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha" };
+            return new[] { "Translate.X", "Translate.Y", "Size.Width", "Size.Height", "Rotation", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha" };
         }
 
         public BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear , BaseTweenType.Linear, BaseTweenType.Linear};
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear , BaseTweenType.Linear, BaseTweenType.Linear};
         }
 
         public string GetIndentifier()
         {
-            return this.Id;
+            return Id;
         }
 
         public string GetName()
         {
-            return this.Name;
+            return Name;
         }
 
         public virtual void SetParams(double[] paramList)
@@ -398,15 +393,12 @@ namespace TerraViewer
         public float X
         {
             get
-            { 
+            {
                 if (animate)
                 {
                     return (x*(1-tweenFactor))+(endX*tweenFactor); 
                 }
-                else
-                {
-                    return x;
-                }
+                return x;
             }
             set
             {
@@ -441,10 +433,7 @@ namespace TerraViewer
                 {
                     return (y * (1 - tweenFactor)) + (endY * tweenFactor);
                 }
-                else
-                {
-                    return y;
-                }
+                return y;
             }
             set
             {
@@ -479,10 +468,7 @@ namespace TerraViewer
                 {
                     return (width * (1 - tweenFactor)) + (endWidth * tweenFactor);
                 }
-                else
-                {
-                    return width;
-                }
+                return width;
             }
             set
             {
@@ -524,10 +510,7 @@ namespace TerraViewer
                 {
                     return (height * (1 - tweenFactor)) + (endHeight * tweenFactor);
                 }
-                else
-                {
-                    return height;
-                }
+                return height;
             }
             set
             {
@@ -566,16 +549,13 @@ namespace TerraViewer
             {
                 if (animate)
                 {
-                    var red = (int)(((float)color.R * (1f - tweenFactor)) + ((float)endColor.R * tweenFactor));
-                    var green = (int)(((float)color.G * (1f - tweenFactor)) + ((float)endColor.G * tweenFactor));
-                    var blue = (int)(((float)color.B * (1f - tweenFactor)) + ((float)endColor.B * tweenFactor));
-                    var alpha = (int)(((float)color.A * (1f - tweenFactor)) + ((float)endColor.A * tweenFactor));
+                    var red = (int)((color.R * (1f - tweenFactor)) + (endColor.R * tweenFactor));
+                    var green = (int)((color.G * (1f - tweenFactor)) + (endColor.G * tweenFactor));
+                    var blue = (int)((color.B * (1f - tweenFactor)) + (endColor.B * tweenFactor));
+                    var alpha = (int)((color.A * (1f - tweenFactor)) + (endColor.A * tweenFactor));
                     return Color.FromArgb(Math.Max(0, Math.Min(255, alpha)), Math.Max(0, Math.Min(255, red)), Math.Max(0, Math.Min(255, green)), Math.Max(0, Math.Min(255, blue)));
                 }
-                else
-                {
-                    return color;
-                }
+                return color;
             }
             set
             {
@@ -607,12 +587,12 @@ namespace TerraViewer
         {
             get
             {
-                return (float)Color.A/255.0f;
+                return Color.A/255.0f;
             }
             set
             {
                 var col = Color;
-                this.Color = Color.FromArgb(Math.Min(255,(int)(value * 255f)), col.R, col.G, col.B);
+                Color = Color.FromArgb(Math.Min(255,(int)(value * 255f)), col.R, col.G, col.B);
                 opacity = value;
                 Version++;
             }
@@ -630,10 +610,7 @@ namespace TerraViewer
                 {
                     return (rotationAngle * (1 - tweenFactor)) + (endRotationAngle * tweenFactor);
                 }
-                else
-                {
-                    return rotationAngle;
-                }
+                return rotationAngle;
             }
             set
             {
@@ -662,7 +639,7 @@ namespace TerraViewer
 
         virtual public bool HitTest(PointF pntTest)
         {
-            var mat = new System.Drawing.Drawing2D.Matrix();
+            var mat = new Matrix();
             mat.RotateAt(-RotationAngle, new PointF(X , Y ));
 
             var tempPoints = new PointF[1];
@@ -706,11 +683,11 @@ namespace TerraViewer
         }
 
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter, bool saveKeys)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter, bool saveKeys)
         {
             xmlWriter.WriteStartElement("Overlay");
             xmlWriter.WriteAttributeString("Id", Id);
-            xmlWriter.WriteAttributeString("Type", this.GetType().FullName);
+            xmlWriter.WriteAttributeString("Type", GetType().FullName);
             xmlWriter.WriteAttributeString("Name", Name);
             xmlWriter.WriteAttributeString("X", x.ToString());
             xmlWriter.WriteAttributeString("Y", y.ToString());
@@ -734,7 +711,7 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("Anchor", anchor.ToString());
            
             
-            this.WriteOverlayProperties(xmlWriter);
+            WriteOverlayProperties(xmlWriter);
 
 
             if (AnimationTarget != null && saveKeys)
@@ -750,25 +727,25 @@ namespace TerraViewer
              throw new Exception("The method or operation is not implemented.");
         }
 
-        public virtual void WriteOverlayProperties(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void WriteOverlayProperties(XmlTextWriter xmlWriter)
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
 
-        internal static Overlay FromXml(TourStop owner, System.Xml.XmlNode overlay)
+        internal static Overlay FromXml(TourStop owner, XmlNode overlay)
         {
-            var overlayClassName = overlay.Attributes["Type"].Value.ToString();
+            var overlayClassName = overlay.Attributes["Type"].Value;
 
             var overLayType = Type.GetType(overlayClassName);
 
-            var newOverlay = (Overlay)System.Activator.CreateInstance(overLayType);
+            var newOverlay = (Overlay)Activator.CreateInstance(overLayType);
             newOverlay.owner = owner;
             newOverlay.FromXml(overlay);
             return newOverlay;
         }
 
-        private void FromXml(System.Xml.XmlNode node)
+        private void FromXml(XmlNode node)
         {
             
             Id = node.Attributes["Id"].Value;
@@ -821,20 +798,20 @@ namespace TerraViewer
                 AnimationTarget = new AnimationTarget(owner);
                 AnimationTarget.FromXml(node["KeyFrames"]);
                 AnimationTarget.Target = this;
-                AnimationTarget.TargetID = this.GetIndentifier();
+                AnimationTarget.TargetID = GetIndentifier();
             }
 
             InitializeFromXml(node);
         }
 
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
 
         }
 
         public override string ToString()
         {
-            return this.Name;
+            return Name;
         }   
     }
 
@@ -850,10 +827,10 @@ namespace TerraViewer
         
         public BitmapOverlay(TourStop owner, string filename)
         {
-            this.Owner = owner;
-            this.filename = Guid.NewGuid().ToString() + ".png";
+            Owner = owner;
+            this.filename = Guid.NewGuid() + ".png";
 
-            this.Name = filename.Substring(filename.LastIndexOf('\\') + 1);
+            Name = filename.Substring(filename.LastIndexOf('\\') + 1);
             File.Copy(filename, Owner.Owner.WorkingDirectory + this.filename);
 
             var bmp = new Bitmap(Owner.Owner.WorkingDirectory + this.filename);
@@ -869,11 +846,11 @@ namespace TerraViewer
 
         public BitmapOverlay( TourStop owner, Image image)
         {
-            this.Owner = owner;
+            Owner = owner;
             // to make directory and guid filename in tour temp dir.
-            this.filename = Guid.NewGuid().ToString()+".png";
+            filename = Guid.NewGuid()+".png";
 
-            this.Name = owner.GetNextDefaultName("Image");
+            Name = owner.GetNextDefaultName("Image");
             X = 0;
             Y = 0;
             image.Save(Owner.Owner.WorkingDirectory + filename, ImageFormat.Png);
@@ -885,15 +862,15 @@ namespace TerraViewer
         {
             var newBmpOverlay = new BitmapOverlay();
             newBmpOverlay.Owner = owner;
-            newBmpOverlay.filename = this.filename;
-            newBmpOverlay.X = this.X;
-            newBmpOverlay.Y = this.Y;
-            newBmpOverlay.Width = this.Width;
-            newBmpOverlay.Height = this.Height;
-            newBmpOverlay.Color = this.Color;
-            newBmpOverlay.Opacity = this.Opacity;
-            newBmpOverlay.RotationAngle = this.RotationAngle;
-            newBmpOverlay.Name = this.Name + " - Copy";
+            newBmpOverlay.filename = filename;
+            newBmpOverlay.X = X;
+            newBmpOverlay.Y = Y;
+            newBmpOverlay.Width = Width;
+            newBmpOverlay.Height = Height;
+            newBmpOverlay.Color = Color;
+            newBmpOverlay.Opacity = Opacity;
+            newBmpOverlay.RotationAngle = RotationAngle;
+            newBmpOverlay.Name = Name + " - Copy";
 
             return newBmpOverlay;
         }
@@ -923,7 +900,7 @@ namespace TerraViewer
             }
             catch
             {
-                texture = Texture11.FromBitmap(global::TerraViewer.Properties.Resources.BadImage);
+                texture = Texture11.FromBitmap(Resources.BadImage);
 
                 Width = texture.Width;
                 Height = texture.Height;
@@ -931,14 +908,14 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteOverlayProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteOverlayProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Bitmap");
             xmlWriter.WriteAttributeString("Filename", filename);
             xmlWriter.WriteEndElement();
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             XmlNode bitmap = node["Bitmap"];
             filename = bitmap.Attributes["Filename"].Value;
@@ -969,8 +946,8 @@ namespace TerraViewer
         }
         public TextOverlay(TextObject textObject)
         {
-            this.TextObject = textObject;
-            this.Name = textObject.Text.Split(new char[] {'\r','\n'})[0];
+            TextObject = textObject;
+            Name = textObject.Text.Split(new[] {'\r','\n'})[0];
             X = 0;
             Y = 0;
             
@@ -1046,9 +1023,9 @@ namespace TerraViewer
                 g.Clear(TextObject.BackgroundColor);
             }
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
             //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
             Brush textBrush = new SolidBrush(Color);
 
@@ -1067,7 +1044,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteOverlayProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteOverlayProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Text");
             TextObject.SaveToXml(xmlWriter);
@@ -1141,8 +1118,8 @@ namespace TerraViewer
         public ShapeOverlay( TourStop owner, ShapeType shapeType)
         {
             ShapeType = shapeType;
-            this.Owner = owner;
-            this.Name = owner.GetNextDefaultName(shapeType.ToString());
+            Owner = owner;
+            Name = owner.GetNextDefaultName(shapeType.ToString());
         }
 
         public override void AddFilesToCabinet(FileCabinet fc)
@@ -1192,7 +1169,7 @@ namespace TerraViewer
             var radius = Width / 2;
 
             //float length = (float)Math.Sqrt(Width * Width + Height * Height);
-            var length = (float)Width;
+            var length = Width;
             var segments = (int)(length / 12f) + 1;
             var radiansPerSegment = ((float)Math.PI * 2) / segments;
             if (points == null)
@@ -1203,12 +1180,12 @@ namespace TerraViewer
             for (var j = 0; j <= segments; j++)
             {
                 var i = j * 2;
-                points[i].Position = MakePosition(X, Y, (float)(((double)j / (double)segments) * (Width) - (Width / 2)), 6f, RotationAngle).Vector4;
+                points[i].Position = MakePosition(X, Y, (float)((j / (double)segments) * (Width) - (Width / 2)), 6f, RotationAngle).Vector4;
                 points[i].Tu = ((j) % 2);
                 points[i].Tv = 0;
                 points[i].Color = Color;
 
-                points[i + 1].Position = MakePosition(X, Y, (float)(((double)j / (double)segments) * (Width) - (Width / 2)), -6f, RotationAngle).Vector4;
+                points[i + 1].Position = MakePosition(X, Y, (float)((j / (double)segments) * (Width) - (Width / 2)), -6f, RotationAngle).Vector4;
                 points[i + 1].Tu = (j % 2);
                 points[i + 1].Tv = 1;
                 points[i + 1].Color = Color;
@@ -1221,7 +1198,7 @@ namespace TerraViewer
             var centerY = Y;
             var radius = Width / 2;
 
-            var length = (float)Width;
+            var length = Width;
             var segments = (int)(length / 12f) + 1;
             var segmentsHigh = (int)(Height / 12f) + 1;
 
@@ -1235,16 +1212,16 @@ namespace TerraViewer
                 var i = j * 2;
 
                 points[i].Position = MakePosition(centerX, centerY,
-                    (float)((double)j / (double)segments) * (Width) - (Width / 2),
-                    (float)((Height / 2)), RotationAngle).Vector4;
+                    (float)(j / (double)segments) * (Width) - (Width / 2),
+                    Height / 2, RotationAngle).Vector4;
                 points[i].Tu = ((j) % 2);
                 points[i].Tv = 0;
                 points[i].Color = Color;
 
 
                 points[i + 1].Position = MakePosition(centerX, centerY,
-                    (float)((double)j / (double)segments) * (Width) - (Width / 2),
-                    (float)((Height / 2) - 12f), RotationAngle).Vector4;
+                    (float)(j / (double)segments) * (Width) - (Width / 2),
+                    (Height / 2) - 12f, RotationAngle).Vector4;
                 points[i + 1].Tu = (j % 2);
                 points[i + 1].Tv = 1;
                 points[i + 1].Color = Color;
@@ -1253,8 +1230,8 @@ namespace TerraViewer
 
 
                 points[k].Position = MakePosition(centerX, centerY,
-                    (float)((double)j / (double)segments) * (Width) - (Width / 2),
-                    (float)(-(Height / 2)) + 12f, RotationAngle).Vector4;
+                    (float)(j / (double)segments) * (Width) - (Width / 2),
+                    -(Height / 2) + 12f, RotationAngle).Vector4;
  
                 points[k].Tu = ((j) % 2);
                 points[k].Tv = 0;
@@ -1262,8 +1239,8 @@ namespace TerraViewer
 
 
                 points[k+1].Position = MakePosition(centerX, centerY,
-                    (float)((double)j / (double)segments) * (Width) - (Width / 2),
-                    (float)(-(Height / 2)), RotationAngle).Vector4;
+                    (float)(j / (double)segments) * (Width) - (Width / 2),
+                    -(Height / 2), RotationAngle).Vector4;
  
                 points[k + 1].Tu = (j % 2);
                 points[k + 1].Tv = 1;
@@ -1276,7 +1253,7 @@ namespace TerraViewer
                 var top = ((segmentsHigh+1) * 2)+offset-2;
                 var i = j * 2 ;
 
-                points[top - i].Position = MakePosition(centerX, centerY, (float)(Width / 2), (float)(((double)j / (double)segmentsHigh) * (Height) - (Height / 2)), RotationAngle).Vector4;
+                points[top - i].Position = MakePosition(centerX, centerY, Width / 2, (float)((j / (double)segmentsHigh) * (Height) - (Height / 2)), RotationAngle).Vector4;
  
                 points[top-i].Tu = ((j) % 2);
                 points[top-i].Tv = 0;
@@ -1284,8 +1261,8 @@ namespace TerraViewer
 
 
                 points[top - i + 1].Position = MakePosition(centerX, centerY,
-                    (float)((Width / 2) - 12f),
-                    (float)(((double)j / (double)segmentsHigh) * Height - ((Height / 2))), RotationAngle).Vector4;
+                    (Width / 2) - 12f,
+                    (float)((j / (double)segmentsHigh) * Height - ((Height / 2))), RotationAngle).Vector4;
 
                 points[top-i + 1].Tu = (j % 2);
                 points[top-i + 1].Tv = 1;
@@ -1294,16 +1271,16 @@ namespace TerraViewer
                 var k = i + ((segments + 1) * 4) + ((segmentsHigh + 1) * 2);
 
                 points[k].Position = MakePosition(centerX, centerY,
-                                (float)(-(Width / 2) + 12),
-                                (float)(((double)j / (double)segmentsHigh) * (Height) - (Height / 2)), RotationAngle).Vector4;
+                                -(Width / 2) + 12,
+                                (float)((j / (double)segmentsHigh) * (Height) - (Height / 2)), RotationAngle).Vector4;
                 points[k].Tu = ((j) % 2);
                 points[k].Tv = 0;
                 points[k].Color = Color;
 
 
                 points[k + 1].Position = MakePosition(centerX, centerY,
-                               (float)(- (Width / 2)),
-                               (float)(((double)j / (double)segmentsHigh) * Height - ((Height / 2))), RotationAngle).Vector4;
+                               - (Width / 2),
+                               (float)((j / (double)segmentsHigh) * Height - ((Height / 2))), RotationAngle).Vector4;
                 points[k + 1].Tu = (j % 2);
                 points[k + 1].Tv = 1;
                 points[k + 1].Color = Color;
@@ -1490,7 +1467,7 @@ namespace TerraViewer
                     {
                         var bmp = new Bitmap(13, 10);
                         var g = Graphics.FromImage(bmp);
-                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        g.SmoothingMode = SmoothingMode.AntiAlias;
                         Brush brush = new SolidBrush(Color);
                         g.FillEllipse(brush, 1, 0, 10, 9);
                         g.Dispose();
@@ -1518,14 +1495,14 @@ namespace TerraViewer
             CleanUp();
         }
 
-        public override void WriteOverlayProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteOverlayProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Shape");
             xmlWriter.WriteAttributeString("ShapeType", shapeType.ToString());
             xmlWriter.WriteEndElement();
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             XmlNode shape = node["Shape"];
             shapeType = (ShapeType)Enum.Parse(typeof(ShapeType), shape.Attributes["ShapeType"].Value);
@@ -1703,9 +1680,9 @@ namespace TerraViewer
             isDesignTimeOnly = true;
             X = 0;
             Y = 0;
-            this.filename = Guid.NewGuid().ToString() + filename.Substring(filename.LastIndexOf("."));
-            this.Owner = owner;
-            this.Name = owner.GetNextDefaultName("Audio");
+            this.filename = Guid.NewGuid() + filename.Substring(filename.LastIndexOf("."));
+            Owner = owner;
+            Name = owner.GetNextDefaultName("Audio");
             File.Copy(filename, Owner.Owner.WorkingDirectory + this.filename);
         }
 
@@ -1715,7 +1692,7 @@ namespace TerraViewer
             {
 
                 audio = new AudioPlayer(Owner.Owner.WorkingDirectory + filename);
-                audio.PlaybackComplete += new EventHandler(audio_Ending);
+                audio.PlaybackComplete += audio_Ending;
             }
             catch
             {
@@ -1738,7 +1715,7 @@ namespace TerraViewer
             if (audio != null)
             {
                 audio.Stop();
-                audio.PlaybackComplete -= new EventHandler(audio_Ending);
+                audio.PlaybackComplete -= audio_Ending;
                 audio.Dispose();
                 audio = null;
             }
@@ -1753,7 +1730,7 @@ namespace TerraViewer
             set { trackType = value; }
         }
 
-        public override void WriteOverlayProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteOverlayProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Audio");
             xmlWriter.WriteAttributeString("Filename", filename);
@@ -1768,7 +1745,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             XmlNode audio = node["Audio"];
             filename = audio.Attributes["Filename"].Value;
@@ -1851,7 +1828,7 @@ namespace TerraViewer
                     {
                         try
                         {
-                            var parts = frameSequence.Split(new char[] { ',' });
+                            var parts = frameSequence.Split(new[] { ',' });
                             foreach (var part in parts)
                             {
                                 var x = Convert.ToInt32(part.Trim());
@@ -1901,14 +1878,14 @@ namespace TerraViewer
 
         public FlipbookOverlay( TourStop owner, string filename)
         {
-            this.Owner = owner;
+            Owner = owner;
 
 
             var extension = filename.Substring(filename.LastIndexOf("."));
 
-            this.filename = Guid.NewGuid().ToString() + extension;
+            this.filename = Guid.NewGuid() + extension;
 
-            this.Name = filename.Substring(filename.LastIndexOf('\\') +1);
+            Name = filename.Substring(filename.LastIndexOf('\\') +1);
             File.Copy(filename, Owner.Owner.WorkingDirectory + this.filename);
 
             var bmp = new Bitmap(Owner.Owner.WorkingDirectory + this.filename);
@@ -1923,11 +1900,11 @@ namespace TerraViewer
 
         public FlipbookOverlay( TourStop owner, Image image)
         {
-            this.Owner = owner;
+            Owner = owner;
             // to make directory and guid filename in tour temp dir.
-            this.filename = Guid.NewGuid().ToString() + ".png";
+            filename = Guid.NewGuid() + ".png";
 
-            this.Name = owner.GetNextDefaultName("Image");
+            Name = owner.GetNextDefaultName("Image");
             X = 0;
             Y = 0;
             image.Save(Owner.Owner.WorkingDirectory + filename, ImageFormat.Png);
@@ -1940,21 +1917,21 @@ namespace TerraViewer
             //todo fix this
             var newFlipbookOverlay = new FlipbookOverlay();
             newFlipbookOverlay.Owner = owner;
-            newFlipbookOverlay.filename = this.filename;
-            newFlipbookOverlay.X = this.X;
-            newFlipbookOverlay.Y = this.Y;
-            newFlipbookOverlay.Width = this.Width;
-            newFlipbookOverlay.Height = this.Height;
-            newFlipbookOverlay.Color = this.Color;
-            newFlipbookOverlay.Opacity = this.Opacity;
-            newFlipbookOverlay.RotationAngle = this.RotationAngle;
-            newFlipbookOverlay.Name = this.Name + " - Copy";
-            newFlipbookOverlay.StartFrame = this.StartFrame;
-            newFlipbookOverlay.Frames = this.Frames;
-            newFlipbookOverlay.LoopType = this.LoopType;
-            newFlipbookOverlay.FrameSequence = this.FrameSequence;
-            newFlipbookOverlay.FramesX = this.FramesX;
-            newFlipbookOverlay.FramesY = this.FramesY;
+            newFlipbookOverlay.filename = filename;
+            newFlipbookOverlay.X = X;
+            newFlipbookOverlay.Y = Y;
+            newFlipbookOverlay.Width = Width;
+            newFlipbookOverlay.Height = Height;
+            newFlipbookOverlay.Color = Color;
+            newFlipbookOverlay.Opacity = Opacity;
+            newFlipbookOverlay.RotationAngle = RotationAngle;
+            newFlipbookOverlay.Name = Name + " - Copy";
+            newFlipbookOverlay.StartFrame = StartFrame;
+            newFlipbookOverlay.Frames = Frames;
+            newFlipbookOverlay.LoopType = LoopType;
+            newFlipbookOverlay.FrameSequence = FrameSequence;
+            newFlipbookOverlay.FramesX = FramesX;
+            newFlipbookOverlay.FramesY = FramesY;
 
             return newFlipbookOverlay;
         }
@@ -1986,7 +1963,7 @@ namespace TerraViewer
             }
             catch
             {
-                texture = Texture11.FromBitmap(global::TerraViewer.Properties.Resources.BadImage);
+                texture = Texture11.FromBitmap(Resources.BadImage);
                 {
                     Width = texture.Width;
                     Height = texture.Height;
@@ -1995,7 +1972,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteOverlayProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteOverlayProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Flipbook");
             xmlWriter.WriteAttributeString("Filename", filename);
@@ -2006,12 +1983,12 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("StartFrame", startFrame.ToString());
             if (!string.IsNullOrEmpty(frameSequence))
             {
-                xmlWriter.WriteAttributeString("FrameSequence", frameSequence.ToString());
+                xmlWriter.WriteAttributeString("FrameSequence", frameSequence);
             }
             xmlWriter.WriteEndElement();
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             XmlNode flipbook = node["Flipbook"];
             filename = flipbook.Attributes["Filename"].Value;
@@ -2083,7 +2060,7 @@ namespace TerraViewer
                         break;
                     case LoopTypes.UpDownOnce:
                         var temp = (int)Math.Min(ts.TotalSeconds * 24.0,frameCount *2 +1) + frameCount;
-                        currentFrame = Math.Abs((int)((temp) % (frameCount * 2 - 1)) - (frameCount - 1)) + startFrame;
+                        currentFrame = Math.Abs((temp) % (frameCount * 2 - 1) - (frameCount - 1)) + startFrame;
                         break;
                     case LoopTypes.Once:
                         currentFrame = Math.Min(frameCount - 1, (int)((ts.TotalSeconds * 24.0)));
@@ -2121,7 +2098,7 @@ namespace TerraViewer
             var cellWidth = 1f / framesX;
 
             var indexX = currentFrame % framesX;
-            var indexY = (int)(currentFrame / framesX);
+            var indexY = currentFrame / framesX;
 
             points[0].Position = MakePosition(X, Y, -(Width / 2), -(Height / 2), RotationAngle).Vector4;
             points[0].Tu = indexX * cellWidth;

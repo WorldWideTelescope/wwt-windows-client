@@ -1,12 +1,7 @@
 using System;
 using System.Collections;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;	
-using System.Threading;
-using System.Text;
+using System.IO;
 using System.Xml;
 namespace TerraViewer
 {
@@ -24,7 +19,7 @@ namespace TerraViewer
         }
 
 	    readonly string url;
-		System.Collections.ArrayList dataList;
+		ArrayList dataList;
         private bool sky;
 
         public bool Sky
@@ -61,14 +56,14 @@ namespace TerraViewer
             this.sky = sky;
             this.name = name;
 			this.url = url;
-            this.dataSetType = type;
+            dataSetType = type;
 		}
 
 		public ArrayList GetPlaceList()
 		{
 			if (dataList == null || CheckExpiration())
 			{
-                dataList = new System.Collections.ArrayList();
+                dataList = new ArrayList();
                 if (dataSetType == DataSetType.Place)
                 {
                     DataSetManager.DownloadFile(url, Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".txt", false, true);
@@ -140,7 +135,7 @@ namespace TerraViewer
         }
 		public override string ToString()
 		{
-			return this.name;
+			return name;
 		}
 
         #region IThumbnail Members

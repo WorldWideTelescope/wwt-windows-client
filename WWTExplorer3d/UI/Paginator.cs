@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using TerraViewer.Properties;
 
 namespace TerraViewer
 {
@@ -19,10 +16,10 @@ namespace TerraViewer
             InitializeComponent();
         }
 
-        readonly Bitmap leftArrow = global::TerraViewer.Properties.Resources.LeftArrow;
-        readonly Bitmap rightArrow = global::TerraViewer.Properties.Resources.RightArrow;
-        readonly Bitmap leftArrowDisabled = global::TerraViewer.Properties.Resources.LeftArrowDisabled;
-        readonly Bitmap rightArrowDisabled = global::TerraViewer.Properties.Resources.RightArrowDisabled;
+        readonly Bitmap leftArrow = Resources.LeftArrow;
+        readonly Bitmap rightArrow = Resources.RightArrow;
+        readonly Bitmap leftArrowDisabled = Resources.LeftArrowDisabled;
+        readonly Bitmap rightArrowDisabled = Resources.RightArrowDisabled;
    
         public event PageChangedEventHandler PageChanged;
 

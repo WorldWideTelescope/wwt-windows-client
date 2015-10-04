@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using TerraViewer.Properties;
 
 
 namespace TerraViewer
@@ -22,33 +19,33 @@ namespace TerraViewer
             
         }
 
-        readonly Bitmap layerButton = global::TerraViewer.Properties.Resources.layersButton;
-        readonly Bitmap layerButtonHover = global::TerraViewer.Properties.Resources.layersButtonHover;
+        readonly Bitmap layerButton = Resources.layersButton;
+        readonly Bitmap layerButtonHover = Resources.layersButtonHover;
 
         private void SetUiStrings()
         {
-            this.toolTips.SetToolTip(this.levelLabel, Language.GetLocalizedText(171, "Filed of view height in degrees : minutes : seconds of arc"));
-            this.toolTips.SetToolTip(this.ConstellationLabel, Language.GetLocalizedText(172, "Name of the constellation that the view center is in."));
-            this.toolTips.SetToolTip(this.queueProgressBar, Language.GetLocalizedText(173, "Download Progress"));
-            this.toolTips.SetToolTip(this.studyOpacity, Language.GetLocalizedText(174, "Crossfades background and foreground imagery"));
-            this.toolTips.SetToolTip(this.viewTarget, Language.GetLocalizedText(175, "Select the type of view, Sky, Earth, etc."));
-            this.toolTips.SetToolTip(this.ImageDataSetsCombo, Language.GetLocalizedText(176, "Select the imagery to display"));
-            this.toolTips.SetToolTip(this.FilterCombo, Language.GetLocalizedText(177, "Filters context results"));
-            this.toolTips.SetToolTip(this.contextResults, Language.GetLocalizedText(178, "Context Search - Shows interesting places in the current view."));
-            this.toolTips.SetToolTip(this.overview, Language.GetLocalizedText(179, "Constellation Overview"));
-            this.toolTips.SetToolTip(this.SkyBall, Language.GetLocalizedText(180, "Shows field of view relative to the celestial sphere"));
-            this.toolTips.SetToolTip(this.layerToggle, Language.GetLocalizedText(953, "Show/Hide Layer Manager"));
-            this.contextResults.AddText = Language.GetLocalizedText(161, "Add New Item");
-            this.contextResults.EmptyAddText = Language.GetLocalizedText(162, "No Results");
-            this.faderText.Text = Language.GetLocalizedText(181, "Image Crossfade");
-            this.trackingText.Text = Language.GetLocalizedText(182, "Tracking");
-            this.trackingLabel.Text = Language.GetLocalizedText(182, "Tracking");
-            this.label1.Text = Language.GetLocalizedText(155, "Imagery");
-            this.label2.Text = Language.GetLocalizedText(183, "Look At");
-            this.label3.Text = Language.GetLocalizedText(184, "Context Search Filter");
-            this.scaleText.Text = Language.GetLocalizedText(578, "Planet Size");
-            this.bigSizeLabel.Text = Language.GetLocalizedText(579, "Large");
-            this.actualSizeLabel.Text = Language.GetLocalizedText(580, "Actual");
+            toolTips.SetToolTip(levelLabel, Language.GetLocalizedText(171, "Filed of view height in degrees : minutes : seconds of arc"));
+            toolTips.SetToolTip(ConstellationLabel, Language.GetLocalizedText(172, "Name of the constellation that the view center is in."));
+            toolTips.SetToolTip(queueProgressBar, Language.GetLocalizedText(173, "Download Progress"));
+            toolTips.SetToolTip(studyOpacity, Language.GetLocalizedText(174, "Crossfades background and foreground imagery"));
+            toolTips.SetToolTip(viewTarget, Language.GetLocalizedText(175, "Select the type of view, Sky, Earth, etc."));
+            toolTips.SetToolTip(ImageDataSetsCombo, Language.GetLocalizedText(176, "Select the imagery to display"));
+            toolTips.SetToolTip(FilterCombo, Language.GetLocalizedText(177, "Filters context results"));
+            toolTips.SetToolTip(contextResults, Language.GetLocalizedText(178, "Context Search - Shows interesting places in the current view."));
+            toolTips.SetToolTip(overview, Language.GetLocalizedText(179, "Constellation Overview"));
+            toolTips.SetToolTip(SkyBall, Language.GetLocalizedText(180, "Shows field of view relative to the celestial sphere"));
+            toolTips.SetToolTip(layerToggle, Language.GetLocalizedText(953, "Show/Hide Layer Manager"));
+            contextResults.AddText = Language.GetLocalizedText(161, "Add New Item");
+            contextResults.EmptyAddText = Language.GetLocalizedText(162, "No Results");
+            faderText.Text = Language.GetLocalizedText(181, "Image Crossfade");
+            trackingText.Text = Language.GetLocalizedText(182, "Tracking");
+            trackingLabel.Text = Language.GetLocalizedText(182, "Tracking");
+            label1.Text = Language.GetLocalizedText(155, "Imagery");
+            label2.Text = Language.GetLocalizedText(183, "Look At");
+            label3.Text = Language.GetLocalizedText(184, "Context Search Filter");
+            scaleText.Text = Language.GetLocalizedText(578, "Planet Size");
+            bigSizeLabel.Text = Language.GetLocalizedText(579, "Large");
+            actualSizeLabel.Text = Language.GetLocalizedText(580, "Actual");
         }
         //protected override void OnPaintBackground(PaintEventArgs e)
         //{
@@ -136,10 +133,7 @@ namespace TerraViewer
                 {
                     return levelLabel.Text;
                 }
-                else
-                {
-                    return "00:00:00";
-                }
+                return "00:00:00";
             }
         }
 
@@ -183,11 +177,11 @@ namespace TerraViewer
                 return;
             }
             var change = false;
-            if (this.cornersLast != null)
+            if (cornersLast != null)
             {
                 for (var i = 0; i < 4; i++)
                 {
-                    if (this.cornersLast[i] != corners[i])
+                    if (cornersLast[i] != corners[i])
                     {
                         change = true;
                         break;
@@ -203,7 +197,7 @@ namespace TerraViewer
             {
                 return;
             }
-            this.cornersLast = corners;
+            cornersLast = corners;
             contextAreaChanged = true;
 
             overview.SetViewRect(corners);
@@ -238,7 +232,7 @@ namespace TerraViewer
             studyOpacity.Value = (int)Earth3d.MainWindow.StudyOpacity;
             UpdateVisibility(space);
 
-            var rect = this.RectangleToScreen(this.ClientRectangle);
+            var rect = RectangleToScreen(ClientRectangle);
             var inside = rect.Contains(Cursor.Position) || Earth3d.TouchKiosk || !(TourPlayer.Playing || Earth3d.FullScreen || Properties.Settings.Default.AutoHideContext);
 
             if (inside != fader.TargetState)
@@ -344,52 +338,52 @@ namespace TerraViewer
                 Timeline.Visible = true;
                 closeBox.Visible = true;
                 PushPin.Visible = true;
-                this.levelLabel.Visible = false;
-                this.ConstellationLabel.Visible = false;
-                this.queueProgressBar.Visible = false;
-                this.label1.Visible = false;
-                this.label2.Visible = false;
-                this.label3.Visible = false;
-                this.studyOpacity.Visible = false;
-                this.viewTarget.Visible = false;
-                this.ImageDataSetsCombo.Visible = false;
-                this.FilterCombo.Visible = false;
-                this.contextResults.Visible = false;
-                this.paginator1.Visible = false;
-                this.overview.Visible = false;
-                this.SkyBall.Visible = false;
-                this.layerToggle.Visible = false;
-                this.faderText.Visible = false;             
-                this.trackingText.Visible = false;
-                this.trackingLabel.Visible = false;
-                this.actualSizeLabel.Visible = false;
-                this.bigSizeLabel.Visible = false;
-                this.scaleText.Visible = false;
-                this.scaleLabel.Visible = false;
-                this.scaleButton.Visible = false;
-                this.solarSystemScaleTrackbar.Visible = false;
-                this.trackingTarget.Visible = false;
-                this.info.Visible = false;
+                levelLabel.Visible = false;
+                ConstellationLabel.Visible = false;
+                queueProgressBar.Visible = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                studyOpacity.Visible = false;
+                viewTarget.Visible = false;
+                ImageDataSetsCombo.Visible = false;
+                FilterCombo.Visible = false;
+                contextResults.Visible = false;
+                paginator1.Visible = false;
+                overview.Visible = false;
+                SkyBall.Visible = false;
+                layerToggle.Visible = false;
+                faderText.Visible = false;             
+                trackingText.Visible = false;
+                trackingLabel.Visible = false;
+                actualSizeLabel.Visible = false;
+                bigSizeLabel.Visible = false;
+                scaleText.Visible = false;
+                scaleLabel.Visible = false;
+                scaleButton.Visible = false;
+                solarSystemScaleTrackbar.Visible = false;
+                trackingTarget.Visible = false;
+                info.Visible = false;
             }
             else
             {
-                this.PushPin.Visible = false;
-                this.closeBox.Visible = false;
-                this.levelLabel.Visible = true;
-                this.ConstellationLabel.Visible = true;
-                this.queueProgressBar.Visible = true;
-                this.label1.Visible = true;
-                this.label2.Visible = true;
-                this.label3.Visible = true;
-                this.viewTarget.Visible = true;
-                this.ImageDataSetsCombo.Visible = true;
-                this.FilterCombo.Visible = true;
-                this.paginator1.Visible = true;
-                this.SkyBall.Visible = true;
-                this.layerToggle.Visible = true;
-                this.trackingText.Visible = true;
-                this.trackingTarget.Visible = true;
-                this.info.Visible = true;
+                PushPin.Visible = false;
+                closeBox.Visible = false;
+                levelLabel.Visible = true;
+                ConstellationLabel.Visible = true;
+                queueProgressBar.Visible = true;
+                label1.Visible = true;
+                label2.Visible = true;
+                label3.Visible = true;
+                viewTarget.Visible = true;
+                ImageDataSetsCombo.Visible = true;
+                FilterCombo.Visible = true;
+                paginator1.Visible = true;
+                SkyBall.Visible = true;
+                layerToggle.Visible = true;
+                trackingText.Visible = true;
+                trackingTarget.Visible = true;
+                info.Visible = true;
 
 
 
@@ -587,7 +581,7 @@ namespace TerraViewer
             overview.ThumbnailAllConstellations();
             FilterCombo.Filter = (Classification)Enum.Parse(typeof(Classification), Properties.Settings.Default.ContextSearchFilter, true);
             studyOpacity.Height = 23;
-            Earth3d.MainWindow.ImageSetChanged += new EventHandler(MainWindow_ImageSetChanged);
+            Earth3d.MainWindow.ImageSetChanged += MainWindow_ImageSetChanged;
             fader.TargetState = true;
             FadeTimer.Enabled = true;
             FadeTimer.Interval = 10;
@@ -600,11 +594,11 @@ namespace TerraViewer
                 SetLookAtTargetLocal(lookAt);
             };
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(doIt);
+                    Invoke(doIt);
                 }
                 catch
                 {
@@ -792,7 +786,7 @@ namespace TerraViewer
         {
             if (Earth3d.MainWindow.IsWindowOrChildFocused())
             {
-                this.Focus();
+                Focus();
             }
             if (e is IPlace || e is IImageSet)
             {
@@ -972,11 +966,11 @@ namespace TerraViewer
             {
                 if (Properties.Settings.Default.TranparentWindows)
                 {
-                    this.Visible = true;
+                    Visible = true;
                 }
                 else
                 {
-                    this.Visible = fader.TargetState;
+                    Visible = fader.TargetState;
                 }
                 FadeTimer.Enabled = true;
                 FadeTimer.Interval = 250;
@@ -1038,7 +1032,7 @@ namespace TerraViewer
             if (Earth3d.MainWindow.CurrentImageSet is IImageSet)
             {
                 //ObjectProperties.ShowNofinder((IImageSet)ImageDataSetsCombo.SelectedItem, Earth3d.MainWindow.PointToClient(Cursor.Position));
-                ObjectProperties.ShowNofinder((IImageSet)Earth3d.MainWindow.CurrentImageSet, Earth3d.MainWindow.PointToClient(Cursor.Position));
+                ObjectProperties.ShowNofinder(Earth3d.MainWindow.CurrentImageSet, Earth3d.MainWindow.PointToClient(Cursor.Position));
 
             }
         }
