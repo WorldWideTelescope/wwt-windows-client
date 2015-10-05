@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Threading;
-using System.Drawing;
 using System.Windows.Forms;
-
+using SharpDX;
 using Vector3 = SharpDX.Vector3;
 using Matrix = SharpDX.Matrix;
 
@@ -63,11 +61,11 @@ namespace TerraViewer
         private static void ReadFromBin()
         {
             MPCList = new List<CAAEllipticalObjectElements>();
-            string filename = Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin";
+            var filename = Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin";
             DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=mpcbin", filename, false, true);
-            FileStream fs = new FileStream(filename, FileMode.Open);
-            long len = fs.Length;
-            BinaryReader br = new BinaryReader(fs);
+            var fs = new FileStream(filename, FileMode.Open);
+            var len = fs.Length;
+            var br = new BinaryReader(fs);
             CAAEllipticalObjectElements ee;
             try
             {
@@ -86,9 +84,9 @@ namespace TerraViewer
 
         private static void WriteBinaryMPCData(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.Create);
-            BinaryWriter bw = new BinaryWriter(fs);
-            foreach (CAAEllipticalObjectElements ee in MPCList)
+            var fs = new FileStream(filename, FileMode.Create);
+            var bw = new BinaryWriter(fs);
+            foreach (var ee in MPCList)
             {
                 ee.WriteBin(bw);
             }
@@ -98,9 +96,9 @@ namespace TerraViewer
 
         public static double UnpackEpoch(string packed)
         {
-            int year = GetMappedDatePart(packed[0])*100+Convert.ToInt32(packed.Substring(1,2));
+            var year = GetMappedDatePart(packed[0])*100+Convert.ToInt32(packed.Substring(1,2));
 
-            DateTime date = new DateTime(year, GetMappedDatePart(packed[3]), GetMappedDatePart(packed[4]));
+            var date = new DateTime(year, GetMappedDatePart(packed[3]), GetMappedDatePart(packed[4]));
             return SpaceTimeController.UtcToJulian(date);
         }
 
@@ -110,21 +108,19 @@ namespace TerraViewer
             {
                 return (packed - '1') + 1;
             }
-            else
-            {
-                return (packed - 'A') + 10;
-            }
+            return (packed - 'A') + 10;
         }
-        static bool initBegun = false;
 
-        static BlendState[] mpcBlendStates = new BlendState[7];
+        static bool initBegun;
+
+        static readonly BlendState[] mpcBlendStates = new BlendState[7];
         // ** Begin 
         public static void DrawMPC3D(RenderContext11 renderContext, float opacity, Vector3d centerPoint)
         {
-            double zoom = Earth3d.MainWindow.ZoomFactor;
-            double distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
+            var zoom = Earth3d.MainWindow.ZoomFactor;
+            var distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
   
-            int alpha = Math.Min(255, Math.Max(0, (int)distAlpha));
+            var alpha = Math.Min(255, Math.Max(0, (int)distAlpha));
 
 
             if (alpha > 254)
@@ -136,14 +132,14 @@ namespace TerraViewer
             if (mpcVertexBuffer == null)
             {
 
-                for (int i = 0; i < 7; i++)
+                for (var i = 0; i < 7; i++)
                 {
                     mpcBlendStates[i] = new BlendState(false, 1000, 0);
                 }
 
                 if (!initBegun)
                 {
-                    MethodInvoker initDelegate = new MethodInvoker(StartInit);
+                    var initDelegate = new MethodInvoker(StartInit);
 
                     initDelegate.BeginInvoke(null, null);
                     initBegun = true;
@@ -158,13 +154,13 @@ namespace TerraViewer
             renderContext.setRasterizerState(TriangleCullMode.Off);
 
       
-            Matrix3d offset = Matrix3d.Translation(-centerPoint);
-            Matrix3d world = renderContext.World * offset;
-            Matrix matrixWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
+            var offset = Matrix3d.Translation(-centerPoint);
+            var world = renderContext.World * offset;
+            var matrixWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
             matrixWVP.Transpose();
 
 
-            Vector3 cam = Vector3.TransformCoordinate(renderContext.CameraPosition.Vector311, Matrix.Invert(renderContext.World.Matrix11));
+            var cam = Vector3.TransformCoordinate(renderContext.CameraPosition.Vector311, Matrix.Invert(renderContext.World.Matrix11));
 
   
 
@@ -173,7 +169,7 @@ namespace TerraViewer
 
             if (mpcVertexBuffer != null)
             {
-                for (int i = 0; i < 7; i++)
+                for (var i = 0; i < 7; i++)
                 {
                     mpcBlendStates[i].TargetState = ((Properties.Settings.Default.MinorPlanetsFilter & (int)Math.Pow(2, i)) != 0);
 
@@ -185,9 +181,9 @@ namespace TerraViewer
                             DownlevelKeplerPointSpriteShader11.Constants.Opacity = opacity * mpcBlendStates[i].Opacity;
                             DownlevelKeplerPointSpriteShader11.Constants.MM = 0;
                             DownlevelKeplerPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
-                            DownlevelKeplerPointSpriteShader11.Constants.Scale = new SharpDX.Vector2(100f, 100f);
-                            DownlevelKeplerPointSpriteShader11.Constants.ViewportScale = new SharpDX.Vector2(2f / renderContext.ViewPort.Width, 2f / renderContext.ViewPort.Height);
-                            DownlevelKeplerPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                            DownlevelKeplerPointSpriteShader11.Constants.Scale = new Vector2(100f, 100f);
+                            DownlevelKeplerPointSpriteShader11.Constants.ViewportScale = new Vector2(2f / renderContext.ViewPort.Width, 2f / renderContext.ViewPort.Height);
+                            DownlevelKeplerPointSpriteShader11.Constants.CameraPosition = new Vector4(cam, 1);
                             DownlevelKeplerPointSpriteShader11.Use(renderContext.devContext, mpcVertexBuffer[i].Instanced);
                         }
                         else
@@ -197,9 +193,9 @@ namespace TerraViewer
                             KeplerPointSpriteShader11.Constants.Opacity = opacity * mpcBlendStates[i].Opacity;
                             KeplerPointSpriteShader11.Constants.MM = 0;
                             KeplerPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
-                            KeplerPointSpriteShader11.Constants.Scale = new SharpDX.Vector2(100f, 100f);
-                            KeplerPointSpriteShader11.Constants.ViewportScale = new SharpDX.Vector2(2f / renderContext.ViewPort.Width, 2 / renderContext.ViewPort.Height);
-                            KeplerPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                            KeplerPointSpriteShader11.Constants.Scale = new Vector2(100f, 100f);
+                            KeplerPointSpriteShader11.Constants.ViewportScale = new Vector2(2f / renderContext.ViewPort.Width, 2 / renderContext.ViewPort.Height);
+                            KeplerPointSpriteShader11.Constants.CameraPosition = new Vector4(cam, 1);
                             KeplerPointSpriteShader11.Use(renderContext.devContext);
                         }
 
@@ -226,21 +222,21 @@ namespace TerraViewer
             {
                 if (mpcVertexBuffer == null)
                 {
-                    KeplerPointSpriteSet[] mpcVertexBufferTemp = new KeplerPointSpriteSet[7];
-                    MinorPlanets.ReadMPSCoreFile(@"c:\mpc\MPCORB.DAT");
+                    var mpcVertexBufferTemp = new KeplerPointSpriteSet[7];
+                    ReadMPSCoreFile(@"c:\mpc\MPCORB.DAT");
 
-                    mpcCount = MinorPlanets.MPCList.Count;
+                    mpcCount = MPCList.Count;
                     //KeplerVertexBuffer11 temp = new KeplerVertexBuffer11(mpcCount, RenderContext11.PrepDevice);
 
-                    List<KeplerVertex>[] lists = new List<KeplerVertex>[7];
-                    for (int i = 0; i < 7; i++)
+                    var lists = new List<KeplerVertex>[7];
+                    for (var i = 0; i < 7; i++)
                     {
                         lists[i] = new List<KeplerVertex>();
                     }
 
-                    foreach (CAAEllipticalObjectElements ee in MinorPlanets.MPCList)
+                    foreach (var ee in MPCList)
                     {
-                        int listID = 0;
+                        var listID = 0;
                         if (ee.a < 2.5)
                         {
                             listID = 0;
@@ -270,13 +266,13 @@ namespace TerraViewer
                             listID = 6;
                         }
 
-                        KeplerVertex vert = new KeplerVertex();
+                        var vert = new KeplerVertex();
                         vert.Fill(ee);
 
                         lists[listID].Add(vert);
                     }
 
-                    for (int i = 0; i < 7; i++)
+                    for (var i = 0; i < 7; i++)
                     {
                         mpcVertexBufferTemp[i] = new KeplerPointSpriteSet(RenderContext11.PrepDevice, lists[i].ToArray());
                     }
@@ -290,10 +286,10 @@ namespace TerraViewer
             }
         }
 
-        static Mutex MpcMutex = new Mutex();
+        static readonly Mutex MpcMutex = new Mutex();
 
-        static KeplerPointSpriteSet[] mpcVertexBuffer = null;
-        static int mpcCount = 0;
+        static KeplerPointSpriteSet[] mpcVertexBuffer;
+        static int mpcCount;
     }
 
 

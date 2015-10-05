@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using MIDI;
@@ -34,7 +32,7 @@ namespace TerraViewer
                 Directory.CreateDirectory(MidiMapPath);
             }
 
-            foreach(string filename in Directory.GetFiles(MidiMapPath,"*.wwtmm"))
+            foreach(var filename in Directory.GetFiles(MidiMapPath,"*.wwtmm"))
             {
                 LoadMap(filename, false);
             }
@@ -48,7 +46,7 @@ namespace TerraViewer
                 Directory.CreateDirectory(MidiMapPath);
             }
 
-            foreach (MidiMap map in Maps.Values)
+            foreach (var map in Maps.Values)
             {
                 if (map.Dirty)
                 {
@@ -60,8 +58,8 @@ namespace TerraViewer
 
         }
         
-        static int MidiInputCount = 0;
-        static int ConnectionCheckCount = 0;
+        static int MidiInputCount;
+        static int ConnectionCheckCount;
         public static void Heartbeat()
         {
          
@@ -82,11 +80,11 @@ namespace TerraViewer
 
         private static void ProcessAutoRepeats()
         {
-            foreach (MidiMap map in Maps.Values)
+            foreach (var map in Maps.Values)
             {
                 if (map.AutoRepeatList.Count > 0)
                 {
-                    foreach (ControlMap cm in map.AutoRepeatList)
+                    foreach (var cm in map.AutoRepeatList)
                     {
                         cm.DispatchMessage(MidiMessage.NoteOn, cm.Channel, cm.ID, 127);
                     }
@@ -96,7 +94,7 @@ namespace TerraViewer
 
         private static void ConnectionCheck()
         {
-            int count = MidiInput.Count;
+            var count = MidiInput.Count;
 
             if (count != MidiInputCount)
             {
@@ -107,25 +105,25 @@ namespace TerraViewer
 
         private static void UpdateDevices()
         {
-            int count = MidiInput.Count;
+            var count = MidiInput.Count;
             CloseAllConnections();
             
-            int index = 0;
-            foreach (string dev in MidiInput.GetDeviceList())
+            var index = 0;
+            foreach (var dev in MidiInput.GetDeviceList())
             {
                 if (Maps.ContainsKey(dev))
                 {
-                    MidiMap map = Maps[dev];
-                    int outIndex = MidiOutput.GetDeviceIdByName(dev);
+                    var map = Maps[dev];
+                    var outIndex = MidiOutput.GetDeviceIdByName(dev);
                     map.ConnectDevice(index, outIndex);
                 }
                 else
                 {
                     // Can't find map so create a new default map
-                    MidiMap map = new MidiMap();
+                    var map = new MidiMap();
                     map.Name = dev;
                     map.Dirty = true;
-                    int outIndex = MidiOutput.GetDeviceIdByName(dev);
+                    var outIndex = MidiOutput.GetDeviceIdByName(dev);
                     map.ConnectDevice(index, outIndex);
                     map.UpdateMapLinks();
                     Maps[map.Name] = map;
@@ -140,7 +138,7 @@ namespace TerraViewer
         private static void CloseAllConnections()
         {
             // Close Existing Connections
-            foreach (MidiMap map in Maps.Values)
+            foreach (var map in Maps.Values)
             {
                 map.CloseDevice();
             }
@@ -149,10 +147,10 @@ namespace TerraViewer
         
         public static void LoadMap(string filename, bool update)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(MidiMap));
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            var serializer = new XmlSerializer(typeof(MidiMap));
+            var fs = new FileStream(filename, FileMode.Open);
 
-            MidiMap map = (MidiMap)serializer.Deserialize(fs);
+            var map = (MidiMap)serializer.Deserialize(fs);
 
             Maps[map.Name] = map;
             map.Dirty = true;
@@ -168,8 +166,8 @@ namespace TerraViewer
 
         public static void SaveMap(MidiMap map, string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(MidiMap));
-            StreamWriter sw = new StreamWriter(filename);
+            var serializer = new XmlSerializer(typeof(MidiMap));
+            var sw = new StreamWriter(filename);
 
             serializer.Serialize(sw, map);
 
@@ -183,7 +181,7 @@ namespace TerraViewer
             {
                 if (string.IsNullOrEmpty(midiMapPath))
                 {
-                    midiMapPath = string.Format("{0}\\WWT MIDI Controller Maps\\", System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                    midiMapPath = string.Format("{0}\\WWT MIDI Controller Maps\\", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
                 }
                 return midiMapPath;
             }

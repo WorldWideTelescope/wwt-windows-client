@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System;
+
 //
 //Module : AADATE.CPP
 //Purpose: Implementation for the algorithms which convert between the Gregorian and Julian calendars and the Julian Day
@@ -89,7 +89,7 @@ public class CAACalendarDate
 public class  CAADate
 {
 //Enums
-  public enum DAY_OF_WEEK: int
+  public enum DAY_OF_WEEK
   {
 	SUNDAY = 0,
 	  MONDAY = 1,
@@ -125,39 +125,37 @@ public class  CAADate
 //Static Methods
   public static double DateToJD(int Year, int Month, double Day, bool bGregorianCalendar)
   {
-	int Y = Year;
-	int M = Month;
+	var Y = Year;
+	var M = Month;
 	if (M < 3)
 	{
 	  Y = Y - 1;
 	  M = M + 12;
 	}
-  
-	int A = 0;
-	int B = 0;
+
+      var B = 0;
 	if (bGregorianCalendar)
 	{
-	  A = (int)(Y / 100.0);
-	  B = 2 - A + (int)(A / 4.0);
+	    var A = (int)(Y / 100.0);
+	    B = 2 - A + (int)(A / 4.0);
 	}
-  
-	return (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + Day + B - 1524.5;
+
+      return (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + Day + B - 1524.5;
   }
   public static bool IsLeap(int Year, bool bGregorianCalendar)
   {
-	if (bGregorianCalendar)
+      if (bGregorianCalendar)
 	{
-	  if ((Year % 100) == 0)
-		return ((Year % 400) == 0) ? true : false;
-	  else
-		return ((Year % 4) == 0) ? true : false;
+	    if ((Year % 100) == 0)
+		return ((Year % 400) == 0);
+	    return ((Year % 4) == 0);
 	}
-	else
-	  return ((Year % 4) == 0) ? true : false;
+      return ((Year % 4) == 0);
   }
-  public static void DayOfYearToDayAndMonth(int DayOfYear, bool bLeap, ref int DayOfMonth, ref int Month)
+
+    public static void DayOfYearToDayAndMonth(int DayOfYear, bool bLeap, ref int DayOfMonth, ref int Month)
   {
-	int K = bLeap ? 1 : 2;
+	var K = bLeap ? 1 : 2;
   
 	Month = (int)(9*(K + DayOfYear)/275.0 + 0.98);
 	if (DayOfYear < 32)
@@ -167,12 +165,12 @@ public class  CAADate
   }
   public static CAACalendarDate JulianToGregorian(int Year, int Month, int Day)
   {
-	CAADate date = new CAADate(Year, Month, Day, false);
+	var date = new CAADate(Year, Month, Day, false);
 	date.SetInGregorianCalendar(true);
   
-	CAACalendarDate GregorianDate = new CAACalendarDate();
-	int Hour = 0;
-	int Minute = 0;
+	var GregorianDate = new CAACalendarDate();
+	var Hour = 0;
+	var Minute = 0;
 	double Second = 0;
 	date.Get(ref GregorianDate.Year, ref GregorianDate.Month, ref GregorianDate.Day, ref Hour, ref Minute, ref Second);
   
@@ -180,12 +178,12 @@ public class  CAADate
   }
   public static CAACalendarDate GregorianToJulian(int Year, int Month, int Day)
   {
-	CAADate date = new CAADate(Year, Month, Day, true);
+	var date = new CAADate(Year, Month, Day, true);
 	date.SetInGregorianCalendar(false);
   
-	CAACalendarDate JulianDate = new CAACalendarDate();
-	int Hour = 0;
-	int Minute = 0;
+	var JulianDate = new CAACalendarDate();
+	var Hour = 0;
+	var Minute = 0;
 	double Second = 0;
 	date.Get(ref JulianDate.Year, ref JulianDate.Month, ref JulianDate.Day, ref Hour, ref Minute, ref Second);
   
@@ -234,11 +232,11 @@ public class  CAADate
 //ORIGINAL LINE: int Day() const
 	public int Day()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	  return Day;
@@ -247,11 +245,11 @@ public class  CAADate
 //ORIGINAL LINE: int Month() const
 	public int Month()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	  return Month;
@@ -260,11 +258,11 @@ public class  CAADate
 //ORIGINAL LINE: int Year() const
 	public int Year()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	  return Year;
@@ -273,11 +271,11 @@ public class  CAADate
 //ORIGINAL LINE: int Hour() const
 	public int Hour()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	  return Hour;
@@ -286,11 +284,11 @@ public class  CAADate
 //ORIGINAL LINE: int Minute() const
 	public int Minute()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	  return Minute;
@@ -299,18 +297,18 @@ public class  CAADate
 //ORIGINAL LINE: double Second() const
 	public double Second()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	  return Second;
 	}
   public void Set(int Year, int Month, double Day, double Hour, double Minute, double Second, bool bGregorianCalendar)
   {
-	double dblDay = Day + (Hour/24) + (Minute/1440) + (Second / 86400);
+	var dblDay = Day + (Hour/24) + (Minute/1440) + (Second / 86400);
 	Set(DateToJD(Year, Month, dblDay, bGregorianCalendar), bGregorianCalendar);
   }
 	public void Set(double JD, bool bGregorianCalendar)
@@ -320,7 +318,7 @@ public class  CAADate
 	}
   public void SetInGregorianCalendar(bool bGregorianCalendar)
   {
-	bool bAfterPapalReform = (m_dblJulian >= 2299160.5);
+	var bAfterPapalReform = (m_dblJulian >= 2299160.5);
   
 
 	m_bGregorianCalendar = bGregorianCalendar && bAfterPapalReform;
@@ -331,10 +329,10 @@ public class  CAADate
 //ORIGINAL LINE: void Get(int& Year, int& Month, int& Day, int& Hour, int& Minute, double& Second) const
   public void Get(ref int Year, ref int Month, ref int Day, ref int Hour, ref int Minute, ref double Second)
   {
-	double JD = m_dblJulian + 0.5;
+	var JD = m_dblJulian + 0.5;
 	double tempZ=0;
-    double F = GlobalMembersStdafx.modf(JD, ref tempZ);
-	int Z = (int)(tempZ);
+    var F = GlobalMembersStdafx.modf(JD, ref tempZ);
+	var Z = (int)(tempZ);
 	int A;
   
 	if (m_bGregorianCalendar) //There is a difference here between the Meeus implementation and this one
@@ -347,18 +345,18 @@ public class  CAADate
 							  //reform in 1582. This is useful if you want to construct dates in countries
 							  //which did not immediately adapt the Gregorian calendar
 	{
-	  int alpha = (int)((Z - 1867216.25) / 36524.25);
-	  A = Z + 1 + alpha - (int)((int)alpha/4.0);
+	  var alpha = (int)((Z - 1867216.25) / 36524.25);
+	  A = Z + 1 + alpha - (int)(alpha/4.0);
 	}
 	else
 	  A = Z;
   
-	int B = A + 1524;
-	int C = (int)((B - 122.1) / 365.25);
-	int D = (int)(365.25 * C);
-	int E = (int)((B - D) / 30.6001);
+	var B = A + 1524;
+	var C = (int)((B - 122.1) / 365.25);
+	var D = (int)(365.25 * C);
+	var E = (int)((B - D) / 30.6001);
   
-	double dblDay = B - D - (int)(30.6001 * E) + F;
+	var dblDay = B - D - (int)(30.6001 * E) + F;
 	Day = (int)(dblDay);
   
 	if (E < 14)
@@ -378,7 +376,7 @@ public class  CAADate
   }
 //C++ TO C# CONVERTER WARNING: 'const' methods are not available in C#:
 //ORIGINAL LINE: CAADate::DAY_OF_WEEK DayOfWeek() const
-	public CAADate.DAY_OF_WEEK DayOfWeek()
+	public DAY_OF_WEEK DayOfWeek()
 	{
 	  return (DAY_OF_WEEK)(((int)(m_dblJulian + 1.5) % 7));
 	}
@@ -386,11 +384,11 @@ public class  CAADate
 //ORIGINAL LINE: double DayOfYear() const
   public double DayOfYear()
   {
-	int Year = 0;
-	int Month = 0;
-	int Day = 0;
-	int Hour = 0;
-	int Minute = 0;
+	var Year = 0;
+	var Month = 0;
+	var Day = 0;
+	var Hour = 0;
+	var Minute = 0;
 	double Second = 0;
 	Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
   
@@ -400,11 +398,11 @@ public class  CAADate
 //ORIGINAL LINE: int DaysInMonth() const
 	public int DaysInMonth()
 	{
-	  int Year = 0;
-	  int Month = 0;
-	  int Day = 0;
-	  int Hour = 0;
-	  int Minute = 0;
+	  var Year = 0;
+	  var Month = 0;
+	  var Day = 0;
+	  var Hour = 0;
+	  var Minute = 0;
 	  double Second = 0;
 	  Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	
@@ -414,18 +412,17 @@ public class  CAADate
 //ORIGINAL LINE: int DaysInYear() const
 	 public int DaysInYear()
 	 {
-	   int Year = 0;
-	   int Month = 0;
-	   int Day = 0;
-	   int Hour = 0;
-	   int Minute = 0;
+	   var Year = 0;
+	   var Month = 0;
+	   var Day = 0;
+	   var Hour = 0;
+	   var Minute = 0;
 	   double Second = 0;
 	   Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
 	 
 	   if (IsLeap(Year, m_bGregorianCalendar))
 		 return 366;
-	   else
-		 return 365;
+	     return 365;
 	 }
 //C++ TO C# CONVERTER WARNING: 'const' methods are not available in C#:
 //ORIGINAL LINE: bool Leap() const
@@ -443,19 +440,15 @@ public class  CAADate
 //ORIGINAL LINE: double FractionalYear() const
   public double FractionalYear()
   {
-	int Year = 0;
-	int Month = 0;
-	int Day = 0;
-	int Hour = 0;
-	int Minute = 0;
+	var Year = 0;
+	var Month = 0;
+	var Day = 0;
+	var Hour = 0;
+	var Minute = 0;
 	double Second = 0;
 	Get(ref Year, ref Month, ref Day, ref Hour, ref Minute, ref Second);
-  
-	int DaysInYear;
-	if (IsLeap(Year, m_bGregorianCalendar))
-	  DaysInYear = 366;
-	else
-	  DaysInYear = 365;
+
+      int DaysInYear = IsLeap(Year, m_bGregorianCalendar) ? 366 : 365;
   
 	return Year + ((m_dblJulian - DateToJD(Year, 1, 1, AfterPapalReform(Year, 1, 1))) / DaysInYear);
   }
@@ -468,8 +461,7 @@ public class  CAADate
   {
       if (@value >= 0)
           return (int)(@value);
-      else
-          return (int)(@value - 1);
+      return (int)(@value - 1);
   }
 }
 

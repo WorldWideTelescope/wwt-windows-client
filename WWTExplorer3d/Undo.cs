@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TerraViewer
 {
@@ -27,11 +25,8 @@ namespace TerraViewer
             {
                 return undoStack.Peek().ToString();
             }
-            else
-            {
-                //todo localize
-                return Language.GetLocalizedText(551, "Nothing to Undo");
-            }
+            //todo localize
+            return Language.GetLocalizedText(551, "Nothing to Undo");
         }
 
         public static string PeekRedoActionString()
@@ -40,10 +35,7 @@ namespace TerraViewer
             {
                 return redoStack.Peek().ToString();
             }
-            else
-            {
-                return "";
-            }
+            return "";
         }
 
         public static bool PeekAction()
@@ -58,7 +50,7 @@ namespace TerraViewer
 
         public static void StepBack()
         {
-            IUndoStep step = undoStack.Pop();
+            var step = undoStack.Pop();
 
             step.Undo();
 
@@ -67,7 +59,7 @@ namespace TerraViewer
        
         public static void StepForward()
         {
-            IUndoStep step = redoStack.Pop();
+            var step = redoStack.Pop();
 
             step.Redo();
 
@@ -75,11 +67,8 @@ namespace TerraViewer
         }
     }
 
-    public class UndoStep : TerraViewer.IUndoStep
+    public class UndoStep : IUndoStep
     {
-        public UndoStep()
-        {
-        }
         public void Undo()
         {
         }

@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using System.ComponentModel;
 using System.Configuration;
 
@@ -18,7 +17,7 @@ namespace TerraViewer
             {
                 if (targetState != state && auto)
                 {
-                    TimeSpan ts = SpaceTimeController.MetaNow.Subtract(switchedTime);
+                    var ts = SpaceTimeController.MetaNow.Subtract(switchedTime);
                     if (ts.TotalMilliseconds > delayTime)
                     {
                         state = targetState;
@@ -59,19 +58,19 @@ namespace TerraViewer
                 if (targetState != value)
                 {
                     
-                    TimeSpan ts = SpaceTimeController.MetaNow.Subtract(switchedTime);
+                    var ts = SpaceTimeController.MetaNow.Subtract(switchedTime);
                     switchedTime = SpaceTimeController.MetaNow;
                     if (ts.TotalMilliseconds < delayTime )
                     {
 
-                        switchedTime -= TimeSpan.FromMilliseconds(delayTime * (state ? 1f - opacity : 1f -opacity));
+                        switchedTime -= TimeSpan.FromMilliseconds(delayTime * (1f - opacity));
                         state = targetState;
                     }
 
                     if (!auto && opacity != 1f && opacity != 0)
                     {
 
-                        switchedTime -= TimeSpan.FromMilliseconds(delayTime * (state ? 1f - opacity : 1f - opacity));
+                        switchedTime -= TimeSpan.FromMilliseconds(delayTime * (1f - opacity));
                         state = targetState;
                     }
 
@@ -100,20 +99,11 @@ namespace TerraViewer
         {
             get
             {
-
                 if (auto)
                 {
-                    if (this == debugTarget)
-                    {
-                        if (opacity == 1)
-                        {
-                            int ttt = 0;
-                        }
-                    }
-
                     if (targetState != state)
                     {
-                        TimeSpan ts = SpaceTimeController.MetaNow.Subtract(switchedTime);
+                        var ts = SpaceTimeController.MetaNow.Subtract(switchedTime);
                         if (ts.TotalMilliseconds > delayTime)
                         {
                             state = targetState;
@@ -129,24 +119,14 @@ namespace TerraViewer
                     }
                     return state ? 1f : 0f;
                 }
-                else
-                {
-                    return state ? opacity : 0f;
-                }
+                return state ? opacity : 0f;
             }
             set
             {
 
                 if (opacity != value)
                 {
-                    if (this == debugTarget)
-                    {
-                        if (value == 1)
-                        {
-                            int ttt = 0;
-                        }
-                    }
-                    bool current = targetState;
+                    var current = targetState;
 
                     opacity = value;
                     auto = false;
@@ -171,7 +151,7 @@ namespace TerraViewer
         }
 
         DateTime switchedTime;
-        double delayTime = 0;
+        double delayTime;
 
         public double DelayTime
         {
@@ -184,7 +164,7 @@ namespace TerraViewer
             switchedTime = SpaceTimeController.MetaNow.Subtract(new TimeSpan(1, 0, 0));
             state = false;
             targetState = state;
-            this.delayTime = 2000;
+            delayTime = 2000;
         }
 
         public BlendState(bool initialState, double delayTime)
@@ -199,9 +179,9 @@ namespace TerraViewer
         public BlendState(bool initialState, double delayTime, float opacity)
         {
             switchedTime = SpaceTimeController.MetaNow.Subtract(new TimeSpan(1, 0, 0));
-            this.state = initialState;
+            state = initialState;
             this.opacity = opacity;
-            this.targetState = initialState;
+            targetState = initialState;
             this.delayTime = delayTime;
         }
 
@@ -214,9 +194,9 @@ namespace TerraViewer
 
         public static BlendState Parse(string val)
         {
-            string[] parts = ((string)val).Split(new char[] { ',' });
+            var parts = val.Split(new[] { ',' });
 
-            bool state = false;
+            var state = false;
             float opacity = 0;
             double delay = 2000;
             try
@@ -235,7 +215,7 @@ namespace TerraViewer
             catch
             {
             }
-            BlendState blendState = new BlendState(state, delay, opacity);
+            var blendState = new BlendState(state, delay, opacity);
             return blendState;
         }
     }
@@ -246,13 +226,13 @@ namespace TerraViewer
         {
             return sourceType == typeof(string);
         }   
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value is string)
             {
-                string[] parts = ((string)value).Split(new char[] { ',' });
+                var parts = ((string)value).Split(new[] { ',' });
 
-                bool state = false;
+                var state = false;
                 float opacity = 0;
                 double delay = 2000;
                 try
@@ -271,15 +251,14 @@ namespace TerraViewer
                 catch
                 {
                 }
-                BlendState blendState = new BlendState(state, delay, opacity);
-                blendState.SettingsOwned = true;
+                var blendState = new BlendState(state, delay, opacity) {SettingsOwned = true};
                 return blendState;
             }
 
             return base.ConvertFrom(context, culture, value);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(string))
             {

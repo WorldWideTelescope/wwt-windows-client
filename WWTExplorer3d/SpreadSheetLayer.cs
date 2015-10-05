@@ -2,14 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ShapefileTools;
 using System.Drawing;
-using System.Data;
 using System.IO;
 using System.Globalization;
 using System.Windows.Forms;
-using Microsoft.SqlServer.Types;
-using System.Data.SqlTypes;
 using System.Xml;
 using System.Net;
 
@@ -24,7 +20,7 @@ namespace TerraViewer
         {
         }
 
-        SpreadSheetLayerUI primaryUI = null;
+        SpreadSheetLayerUI primaryUI;
         public override LayerUI GetPrimaryUI()
         {
             if (primaryUI == null)
@@ -42,7 +38,7 @@ namespace TerraViewer
 
         public SpreadSheetLayer(string filename)
         {
-            string data = File.ReadAllText(filename);
+            var data = File.ReadAllText(filename);
             LoadFromString(data, false, false, false, true);
             ComputeDateDomainRange(-1, -1);
         }
@@ -65,7 +61,7 @@ namespace TerraViewer
         
 
 
-        bool dataDirty = false;
+        bool dataDirty;
         public SpreadSheetLayer(string data, bool something)
         {
             LoadFromString(data, false, false, false, true);
@@ -74,7 +70,7 @@ namespace TerraViewer
 
         public override bool DynamicUpdate()
         {
-            string data = GetDatafromFeed(DataSourceUrl);
+            var data = GetDatafromFeed(DataSourceUrl);
             if (data != null)
             {
                 UpadteData(data, false, true, true);
@@ -86,7 +82,7 @@ namespace TerraViewer
 
         private static string GetDatafromFeed(string url)
         {
-            string xml = ExecuteQuery(url);
+            var xml = ExecuteQuery(url);
 
             if (xml == null)
             {
@@ -96,21 +92,21 @@ namespace TerraViewer
             try
             {
 
-                XmlDocument xmlDoc = new XmlDocument();
-                XmlNamespaceManager xmlNsMgr = new XmlNamespaceManager(xmlDoc.NameTable);
+                var xmlDoc = new XmlDocument();
+                var xmlNsMgr = new XmlNamespaceManager(xmlDoc.NameTable);
                 xmlNsMgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
                 xmlNsMgr.AddNamespace("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
                 xmlNsMgr.AddNamespace("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
 
                 xmlDoc.LoadXml(xml);
-                XmlNodeList elements = xmlDoc.DocumentElement.SelectNodes("./atom:entry", xmlNsMgr);
-                StringBuilder sb = new StringBuilder();
+                var elements = xmlDoc.DocumentElement.SelectNodes("./atom:entry", xmlNsMgr);
+                var sb = new StringBuilder();
 
                 if (elements != null && elements.Count > 0)
                 {
                     // Add ODATA properties as first row
-                    XmlNodeList properties = elements[0].SelectSingleNode("./atom:content/m:properties", xmlNsMgr).ChildNodes;
-                    int columnCount = 1;
+                    var properties = elements[0].SelectSingleNode("./atom:content/m:properties", xmlNsMgr).ChildNodes;
+                    var columnCount = 1;
                     foreach (XmlNode property in properties)
                     {
                         if (columnCount != 1)
@@ -127,7 +123,7 @@ namespace TerraViewer
                     // Add ODATA property values from second row onwards
                     foreach (XmlNode element in elements)
                     {
-                        XmlNodeList propertyValues = element.SelectSingleNode("./atom:content/m:properties", xmlNsMgr).ChildNodes;
+                        var propertyValues = element.SelectSingleNode("./atom:content/m:properties", xmlNsMgr).ChildNodes;
                         // Reset Column Count
                         columnCount = 1;
                         foreach (XmlNode propertyValue in propertyValues)
@@ -158,12 +154,12 @@ namespace TerraViewer
             try
             {
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
+                var request = (HttpWebRequest)WebRequest.Create(new Uri(url));
                 request.Method = "GET";
                 request.Accept = "application/atom+xml, text/plain";
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (var response = (HttpWebResponse)request.GetResponse())
                 {
-                    using (StreamReader readStream = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("utf-8")))
+                    using (var readStream = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("utf-8")))
                     {
                         return readStream.ReadToEnd();
                     }
@@ -201,9 +197,9 @@ namespace TerraViewer
         {
             //if (string.IsNullOrEmpty(fileName))
             {
-                fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID,this.ID.ToString());
+                fileName = fc.TempDirectory + string.Format("{0}\\{1}.txt", fc.PackageID,ID);
             }
-            string dir = fileName.Substring(0, fileName.LastIndexOf("\\"));
+            var dir = fileName.Substring(0, fileName.LastIndexOf("\\"));
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
@@ -221,10 +217,10 @@ namespace TerraViewer
 
         public void GuessHeaderAssignments()
         {
-            int index = 0;
-            foreach (string headerName in table.Header)
+            var index = 0;
+            foreach (var headerName in table.Header)
             {
-                string name = headerName.ToLower();
+                var name = headerName.ToLower();
 
                 if (name.Contains("lat") && latColumn == -1)
                 {
@@ -335,17 +331,17 @@ namespace TerraViewer
             BeginRange = DateTime.MaxValue;
             EndRange = DateTime.MinValue;
 
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
                 try
                 {
                     if (columnStart > -1)
                     {
-                        bool sucsess = false;
-                        DateTime dateTimeStart = DateTime.MinValue;
+                        var sucsess = false;
+                        var dateTimeStart = DateTime.MinValue;
                         sucsess = TryParseDate(row[columnStart], out dateTimeStart);
 
-                        DateTime dateTimeEnd = DateTime.MinValue;
+                        var dateTimeEnd = DateTime.MinValue;
 
 
                         if (sucsess && dateTimeStart < BeginRange)
@@ -388,15 +384,15 @@ namespace TerraViewer
             beginRange = DateTime.MaxValue;
             endRange = DateTime.MinValue;
 
-            int count = 0;
+            var count = 0;
 
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
-                bool selected = Filters.Count == 0;
-                bool firstFilter = true;
-                foreach (FilterGraphTool fgt in Filters)
+                var selected = Filters.Count == 0;
+                var firstFilter = true;
+                foreach (var fgt in Filters)
                 {
-                    ColumnStats filter = fgt.Stats;
+                    var filter = fgt.Stats;
                     if (filter.Computed && (selected || firstFilter))
                     {
                         if (filter.IsSelected(row))
@@ -418,11 +414,11 @@ namespace TerraViewer
                     {
                         if (columnStart > -1)
                         {
-                            bool sucsess = false;
-                            DateTime dateTimeStart = DateTime.MinValue;
+                            var sucsess = false;
+                            var dateTimeStart = DateTime.MinValue;
                             sucsess = TryParseDate(row[columnStart], out dateTimeStart);
 
-                            DateTime dateTimeEnd = DateTime.MinValue;
+                            var dateTimeEnd = DateTime.MinValue;
 
 
                             if (sucsess && dateTimeStart < beginRange)
@@ -453,25 +449,25 @@ namespace TerraViewer
          
             
 
-            ColumnStats stats = new ColumnStats();
+            var stats = new ColumnStats();
             stats.Computed = true;
             stats.Buckets = 20;
             stats.TargetColumn = column;
             stats.DomainColumn = -1;
-            List<double> sortList = new List<double>();
+            var sortList = new List<double>();
             table.Lock();
             stats.Max = double.MinValue;
             stats.Min = double.MaxValue;
             if (column > -1)
             {
                 // First Pass - Basic statistics..
-                foreach (string[] row in table.Rows)
+                foreach (var row in table.Rows)
                 {
-                    bool selected = Filters.Count == 0;
-                    bool firstFilter = true;
-                    foreach (FilterGraphTool fgt in Filters)
+                    var selected = Filters.Count == 0;
+                    var firstFilter = true;
+                    foreach (var fgt in Filters)
                     {
-                        ColumnStats filter = fgt.Stats;
+                        var filter = fgt.Stats;
                         if (filter.Computed && (selected || firstFilter))
                         {
                             if (filter.IsSelected(row))
@@ -491,7 +487,7 @@ namespace TerraViewer
                         try
                         {
 
-                            bool sucsess = false;
+                            var sucsess = false;
                             double val = 0;
                             sucsess = double.TryParse(row[column], out val);
                             if (sucsess)
@@ -524,7 +520,7 @@ namespace TerraViewer
             {
                 stats.Average = stats.Sum / stats.Count;
                 sortList.Sort();
-                int midPoint = stats.Count / 2;
+                var midPoint = stats.Count / 2;
                 if (stats.Count % 2 == 0)
                 {
                     stats.Median = (sortList[midPoint] + sortList[midPoint + 1]) / 2;
@@ -538,14 +534,14 @@ namespace TerraViewer
 
                 stats.Histogram = new double[stats.Buckets];
 
-                foreach (double v in sortList)
+                foreach (var v in sortList)
                 {
-                    int bucket = (int)((v - stats.Min) / stats.BucketWidth);
+                    var bucket = (int)((v - stats.Min) / stats.BucketWidth);
                     stats.Histogram[Math.Min(stats.Buckets - 1, bucket)]++;
                 }
 
                 stats.Selected = new bool[stats.Buckets];
-                for (int i = 0; i < stats.Buckets; i++)
+                for (var i = 0; i < stats.Buckets; i++)
                 {
                     stats.Selected[i] = false;
                 }
@@ -567,7 +563,7 @@ namespace TerraViewer
         public ColumnStats GetDateHistogram(int column, DateFilter type)
         {
 
-            ColumnStats stats = new ColumnStats();
+            var stats = new ColumnStats();
             stats.Computed = true;
             stats.Buckets = 20;
             stats.TargetColumn = column;
@@ -582,12 +578,12 @@ namespace TerraViewer
                     ComputeDateRange(column, -1, out stats.BeginDate, out stats.EndDate);
                     stats.BeginDate = stats.BeginDate.Date;
                     stats.EndDate = stats.EndDate.Date;
-                    TimeSpan ts = stats.EndDate - stats.BeginDate;
+                    var ts = stats.EndDate - stats.BeginDate;
 
                     stats.Buckets = (int)(ts.TotalDays + 1);
                     stats.DomainValues = new string[stats.Buckets];
-                    DateTime now = stats.BeginDate;
-                    for(int i = 0; i < stats.Buckets; i++)
+                    var now = stats.BeginDate;
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i]=now.ToShortDateString();
                         now = now.AddDays(1);
@@ -598,7 +594,7 @@ namespace TerraViewer
                     stats.Buckets = 12;
                     stats.DomainValues = new string[stats.Buckets];
                     
-                    for(int i = 0; i < stats.Buckets; i++)
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = UiTools.GetMonthName(i, false);
                     }
@@ -607,7 +603,7 @@ namespace TerraViewer
                     stats.Buckets = 31;
                     stats.DomainValues = new string[stats.Buckets];
                     
-                    for(int i = 0; i < stats.Buckets; i++)
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = (i+1).ToString();
                     }
@@ -616,7 +612,7 @@ namespace TerraViewer
                     stats.Buckets = 7;
                     stats.DomainValues = new string[stats.Buckets];
                     
-                    for(int i = 0; i < stats.Buckets; i++)
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = UiTools.GetDayName(i, false);
                     }
@@ -624,7 +620,7 @@ namespace TerraViewer
                 case DateFilter.DayOfYear:
                     stats.Buckets = 366;
                     stats.DomainValues = new string[stats.Buckets];
-                    for (int i = 0; i < stats.Buckets; i++)
+                    for (var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = (i + 1).ToString();
                     }
@@ -633,7 +629,7 @@ namespace TerraViewer
                     stats.Buckets = 24;
                     stats.DomainValues = new string[stats.Buckets];
                     
-                    for(int i = 0; i < stats.Buckets; i++)
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = UiTools.GetHourName(i);
                     }
@@ -642,7 +638,7 @@ namespace TerraViewer
                     stats.Buckets = 60;
                     stats.DomainValues = new string[stats.Buckets];
                     
-                    for(int i = 0; i < stats.Buckets; i++)
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = i.ToString();
                     }
@@ -651,7 +647,7 @@ namespace TerraViewer
                     stats.Buckets = 60;
                     stats.DomainValues = new string[stats.Buckets];
                     
-                    for(int i = 0; i < stats.Buckets; i++)
+                    for(var i = 0; i < stats.Buckets; i++)
                     {
                         stats.DomainValues[i] = i.ToString();
                     }
@@ -664,13 +660,13 @@ namespace TerraViewer
             stats.BucketWidth = 1;
             stats.DateFilter = type;
             // First Pass - Basic statistics..
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
-                bool selected = Filters.Count == 0;
-                bool firstFilter = true;
-                foreach (FilterGraphTool fgt in Filters)
+                var selected = Filters.Count == 0;
+                var firstFilter = true;
+                foreach (var fgt in Filters)
                 {
-                    ColumnStats filter = fgt.Stats;
+                    var filter = fgt.Stats;
                     if (filter.Computed && (selected || firstFilter))
                     {
                         if (filter.IsSelected(row))
@@ -692,8 +688,8 @@ namespace TerraViewer
                         if (column > -1)
                         {
 
-                            DateTime date = ParseDate(row[column]);
-                            int bucket = 0;
+                            var date = ParseDate(row[column]);
+                            var bucket = 0;
                             switch (type)
                             {
                                 case DateFilter.Year:
@@ -738,7 +734,7 @@ namespace TerraViewer
             }
 
             stats.Selected = new bool[stats.Buckets];
-            for (int i = 0; i < stats.Buckets; i++)
+            for (var i = 0; i < stats.Buckets; i++)
             {
                 stats.Selected[i] = false;
             }
@@ -766,9 +762,9 @@ namespace TerraViewer
         public ColumnStats GetDomainValueBarChart(int domainColumn, int dataColumn, int denominatorColumn, StatTypes statType)
         {
             CheckState();
-            ColumnStats stats = new ColumnStats();
+            var stats = new ColumnStats();
             stats.Computed = true;
-            Dictionary<string, int> domainIdList = new Dictionary<string, int>();
+            var domainIdList = new Dictionary<string, int>();
             stats.DomainValues = GetDomainValues(domainColumn);
             stats.Buckets = stats.DomainValues.Length;
             stats.Histogram = new double[stats.Buckets];
@@ -777,14 +773,14 @@ namespace TerraViewer
             stats.DomainStatType = statType;
             stats.DemoninatorColumn = denominatorColumn;
 
-            List<double>[] sortLists = new List<double>[stats.Buckets];
-            double[] min = new double[stats.Buckets];
-            double[] max = new double[stats.Buckets];
-            double[] sum = new double[stats.Buckets];
-            double[] denominatorSum = new double[stats.Buckets];
+            var sortLists = new List<double>[stats.Buckets];
+            var min = new double[stats.Buckets];
+            var max = new double[stats.Buckets];
+            var sum = new double[stats.Buckets];
+            var denominatorSum = new double[stats.Buckets];
             stats.Selected = new bool[stats.Buckets];
 
-            for (int i = 0; i < stats.Buckets; i++)
+            for (var i = 0; i < stats.Buckets; i++)
             {
                 domainIdList.Add(stats.DomainValues[i], i);
                 max[i] = double.MinValue;
@@ -797,13 +793,13 @@ namespace TerraViewer
 
 
             // First Pass - Basic statistics..
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
-                bool selected = Filters.Count == 0;
-                bool firstFilter = true;
-                foreach (FilterGraphTool fgt in Filters)
+                var selected = Filters.Count == 0;
+                var firstFilter = true;
+                foreach (var fgt in Filters)
                 {
-                    ColumnStats filter = fgt.Stats;
+                    var filter = fgt.Stats;
                     if (filter.Computed && (selected || firstFilter))
                     {
                         if (filter.IsSelected(row))
@@ -824,9 +820,9 @@ namespace TerraViewer
                     {
                         if (dataColumn > -1)
                         {
-                            int domainID = domainIdList[row[domainColumn]];
+                            var domainID = domainIdList[row[domainColumn]];
 
-                            bool sucsess = false;
+                            var sucsess = false;
                             double val = 0;
                             sucsess = double.TryParse(row[dataColumn], out val);
                             if (sucsess)
@@ -873,14 +869,14 @@ namespace TerraViewer
 
             //2nd pass does not use the table anymore. working from sortList
 
-            for (int i = 0; i < stats.Buckets; i++)
+            for (var i = 0; i < stats.Buckets; i++)
             {
                 if (sortLists[i].Count > 0)
                 {
-                    double average = sum[i] / sortLists[i].Count;
+                    var average = sum[i] / sortLists[i].Count;
                     double median = 0;
                     sortLists[i].Sort();
-                    int midPoint = Math.Max(0, (sortLists[i].Count / 2) - 1);
+                    var midPoint = Math.Max(0, (sortLists[i].Count / 2) - 1);
 
                     try
                     {
@@ -925,7 +921,7 @@ namespace TerraViewer
                 }
             }
 
-            foreach (double j in stats.Histogram)
+            foreach (var j in stats.Histogram)
             {
                 if (stats.HistogramMax < j)
                 {
@@ -945,13 +941,13 @@ namespace TerraViewer
 
             double max = 0;
             table.Lock();
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
                 try
                 {
                     if (column > -1)
                     {
-                        bool sucsess = false;
+                        var sucsess = false;
                         double val = 0;
                         sucsess = double.TryParse(row[column], out val);
 
@@ -971,15 +967,15 @@ namespace TerraViewer
 
         public override string[] GetDomainValues(int column)
         {
-            List<string> domainValues = new List<string>();
+            var domainValues = new List<string>();
             table.Lock();
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
-                bool selected = Filters.Count == 0;
-                bool firstFilter = true;
-                foreach (FilterGraphTool fgt in Filters)
+                var selected = Filters.Count == 0;
+                var firstFilter = true;
+                foreach (var fgt in Filters)
                 {
-                    ColumnStats filter = fgt.Stats;
+                    var filter = fgt.Stats;
                     if (filter.Computed && (selected || firstFilter))
                     {
                         if (filter.IsSelected(row))
@@ -1018,7 +1014,7 @@ namespace TerraViewer
         }
 
 
-        int barChartBitmask = 0;
+        int barChartBitmask;
 
         public int BarChartBitmask
         {
@@ -1034,30 +1030,30 @@ namespace TerraViewer
                 return;
             }
 
-            Vector3d center = Coordinates.GeoTo3dDouble(lat, lng, 1);
-            Vector3d up = Coordinates.GeoTo3dDouble(lat + 90, lng, 1);
-            Vector3d right = Vector3d.Cross(center, up);
-            Vector3d upleft = Vector3d.Subtract(up, right);
+            var center = Coordinates.GeoTo3dDouble(lat, lng, 1);
+            var up = Coordinates.GeoTo3dDouble(lat + 90, lng, 1);
+            var right = Vector3d.Cross(center, up);
+            var upleft = Vector3d.Subtract(up, right);
             upleft.Normalize();
             upleft.Multiply(.0005);
 
-            Vector3d upright = Vector3d.Add(up, right);
+            var upright = Vector3d.Add(up, right);
             upright.Normalize();
             upright.Multiply(.0005);
 
-            Vector3d base1 = Vector3d.Add(center, upright);
-            Vector3d base2 = Vector3d.Add(center, upleft);
-            Vector3d base3 = Vector3d.Subtract(center, upleft);
-            Vector3d base4 = Vector3d.Subtract(center, upright);
+            var base1 = Vector3d.Add(center, upright);
+            var base2 = Vector3d.Add(center, upleft);
+            var base3 = Vector3d.Subtract(center, upleft);
+            var base4 = Vector3d.Subtract(center, upright);
 
 
             double currentBase = 1;
 
-            int colorIndex = 0;
+            var colorIndex = 0;
 
-            TriangleList targetList = triangleList2d;
+            var targetList = triangleList2d;
 
-            for (int col = 0; col < Header.Length; col++)
+            for (var col = 0; col < Header.Length; col++)
             {
                 if (((int)Math.Pow(2, col) & barChartBitmask) > 0)
                 {
@@ -1069,14 +1065,14 @@ namespace TerraViewer
                     }
                     alt = factor * alt;
 
-                    double alt2 = 1 + (factor * (alt + currentBase) / meanRadius);
+                    var alt2 = 1 + (factor * (alt + currentBase) / meanRadius);
 
 
 
-                    Vector3d top1 = base1;
-                    Vector3d top2 = base2;
-                    Vector3d top3 = base3;
-                    Vector3d top4 = base4;
+                    var top1 = base1;
+                    var top2 = base2;
+                    var top3 = base3;
+                    var top4 = base4;
                     top1.Normalize();
                     top2.Normalize();
                     top3.Normalize();
@@ -1087,7 +1083,7 @@ namespace TerraViewer
                     top3.Multiply(alt2);
                     top4.Multiply(alt2);
 
-                    Color currentColor = (colorIndex == 0) ? Color.FromArgb(192, color) : Color.FromArgb(128, Color.Yellow);
+                    var currentColor = (colorIndex == 0) ? Color.FromArgb(192, color) : Color.FromArgb(128, Color.Yellow);
                     targetList.AddQuad(top1, top2, top3, top4, currentColor, date);
                     // this.triangleList.AddQuad(top
 
@@ -1164,7 +1160,7 @@ namespace TerraViewer
                 lineList = new LineList();
             }
 
-            lineList.TimeSeries = this.timeSeries;
+            lineList.TimeSeries = timeSeries;
 
             if (lineList2d == null)
             {
@@ -1173,7 +1169,7 @@ namespace TerraViewer
 
             }
 
-            lineList.TimeSeries = this.timeSeries;
+            lineList.TimeSeries = timeSeries;
 
 
 
@@ -1188,30 +1184,30 @@ namespace TerraViewer
                 triangleList2d.DepthBuffered = false;
             }
 
-            List<TimeSeriesPointVertex> vertList = new List<TimeSeriesPointVertex>();
-            List<UInt32> indexList = new List<UInt32>();
-            TimeSeriesPointVertex lastItem = new TimeSeriesPointVertex();
+            var vertList = new List<TimeSeriesPointVertex>();
+            var indexList = new List<UInt32>();
+            var lastItem = new TimeSeriesPointVertex();
             positions.Clear();
             UInt32 currentIndex = 0;
 
-            Color color = Color.FromArgb((int)((float)Color.A ), Color); 
+            var color = Color.FromArgb((int)Color.A, Color); 
       
             // for space 3d
             ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
 
-            DateTime baseDate = new DateTime(2010,1,1,12,00,00);
+            var baseDate = new DateTime(2010,1,1,12,00,00);
 
 
-            foreach (FilterGraphTool fgt in Filters)
+            foreach (var fgt in Filters)
             {
-                ColumnStats filter = fgt.Stats;
+                var filter = fgt.Stats;
                 filter.SelectDomain.Clear();
                 if (filter.Computed)
                 {
                     if (filter.DomainColumn > -1)
                     {
-                        int i = 0;
-                        foreach (string domainValue in filter.DomainValues)
+                        var i = 0;
+                        foreach (var domainValue in filter.DomainValues)
                         {
                             if (filter.Selected[i])
                             {
@@ -1223,22 +1219,22 @@ namespace TerraViewer
                 }
             }
 
-            double mr = LayerManager.AllMaps[ReferenceFrame].Frame.MeanRadius;
+            var mr = LayerManager.AllMaps[ReferenceFrame].Frame.MeanRadius;
             if (mr != 0)
             {
                 meanRadius = mr;
             }
 
             
-            foreach (string[] row in table.Rows)
+            foreach (var row in table.Rows)
             {
                 try
                 {
-                    bool selected = false;
-                    bool firstFilter = true;
-                    foreach (FilterGraphTool fgt in Filters)
+                    var selected = false;
+                    var firstFilter = true;
+                    foreach (var fgt in Filters)
                     {
-                        ColumnStats filter = fgt.Stats;
+                        var filter = fgt.Stats;
                         if (filter.Computed && (selected || firstFilter))
                         {
                             if (filter.IsSelected(row))
@@ -1254,7 +1250,7 @@ namespace TerraViewer
                         }
                     }
 
-                    if (geometryColumn > -1 || (this.CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((this.CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
+                    if (geometryColumn > -1 || (CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
                     {
                         double Xcoord = 0;
                         double Ycoord = 0;
@@ -1263,7 +1259,7 @@ namespace TerraViewer
                         double alt = 1;
                         double altitude = 0;
                         double distParces = 0;
-                        double factor = GetScaleFactor(AltUnit, 1);
+                        var factor = GetScaleFactor(AltUnit, 1);
                         if (altColumn == -1 || AltType == AltTypes.SeaLevel || bufferIsFlat)
                         {
                             alt = 1;
@@ -1324,21 +1320,21 @@ namespace TerraViewer
                             }
                             if (!astronomical)
                             {
-                                double offset = EGM96Geoid.Height(Ycoord, Xcoord);
+                                var offset = EGM96Geoid.Height(Ycoord, Xcoord);
 
                                 altitude += offset;
                                 alt += offset / meanRadius;
                             }
-                            Vector3d pos = Coordinates.GeoTo3dDouble(Ycoord, Xcoord, alt);
+                            var pos = Coordinates.GeoTo3dDouble(Ycoord, Xcoord, alt);
 
                             lastItem.Position = pos.Vector311;
 
                             positions.Add(lastItem.Position);
 
                         }
-                        else if (this.CoordinatesType == CoordinatesTypes.Rectangular)
+                        else if (CoordinatesType == CoordinatesTypes.Rectangular)
                         {
-                            double xyzScale = GetScaleFactor(CartesianScale, CartesianCustomScale) / meanRadius;
+                            var xyzScale = GetScaleFactor(CartesianScale, CartesianCustomScale) / meanRadius;
 
                             if (ZAxisColumn > -1)
                             {
@@ -1460,17 +1456,17 @@ namespace TerraViewer
                         }
                         else
                         {
-                            lastItem.PointSize = (float)1;
+                            lastItem.PointSize = 1;
                         }
                         if (PlotType == PlotTypes.Point)
                         {
-                            lastItem.PointSize = (float)1;
+                            lastItem.PointSize = 1;
                         }
 
 
                         if (startDateColumn > -1)
                         {
-                            DateTime dateTime = ParseDate(row[startDateColumn]);
+                            var dateTime = ParseDate(row[startDateColumn]);
                             lastItem.Tu = (float)(SpaceTimeController.UtcToJulian(dateTime) - SpaceTimeController.UtcToJulian(baseDate));
 
                             if (endDateColumn > -1)
@@ -1485,7 +1481,7 @@ namespace TerraViewer
                             }
                         }
 
-                        if ((this.CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((this.CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
+                        if ((CoordinatesType == CoordinatesTypes.Spherical && (lngColumn > -1 && latColumn > -1)) || ((CoordinatesType == CoordinatesTypes.Rectangular) && (XAxisColumn > -1 && YAxisColumn > -1)))
                         {
                             vertList.Add(lastItem);
                             if (barChartBitmask != 0)
@@ -1528,7 +1524,7 @@ namespace TerraViewer
 
             gs = gs.Trim();
 
-            int index = gs.IndexOf('(');
+            var index = gs.IndexOf('(');
 
             if (index < 0)
             {
@@ -1539,17 +1535,17 @@ namespace TerraViewer
             {
                 return;
             }
-            string commandPart = gs.Substring(0, index ).Trim();
+            var commandPart = gs.Substring(0, index ).Trim();
 
-            string parens = gs.Substring(index);
+            var parens = gs.Substring(index);
 
-            string[] parts = commandPart.Split(new char[] { ' ' });
+            var parts = commandPart.Split(new[] { ' ' });
 
             string command = null;
             string mods = null;
             if (parts.Length > 0)
             {
-                foreach (string item in parts)
+                foreach (var item in parts)
                 {
                     if (string.IsNullOrEmpty(command))
                     {
@@ -1584,8 +1580,8 @@ namespace TerraViewer
                 case "geometrycollection":
                     {
                          parens = parens.Substring(1, parens.Length - 2);
-                         string[] shapes = UiTools.SplitString(parens, ',');
-                         foreach (string shape in shapes)
+                         var shapes = UiTools.SplitString(parens, ',');
+                         foreach (var shape in shapes)
                          {
                              ParseGeometry(shape, lineColor, polyColor, alt, date);
                          }
@@ -1616,30 +1612,30 @@ namespace TerraViewer
             {
                 parens = parens.Substring(1, parens.Length - 2);
 
-                string[] parts = UiTools.SplitString(parens, ',');
+                var parts = UiTools.SplitString(parens, ',');
 
                 if (textBatch == null)
                 {
                     textBatch = new Text3dBatch();
                 }
 
-                string text = parts[0];
+                var text = parts[0];
                 double rawSize = float.Parse(parts[1].Trim());
-                float textSize = (float)(.00012f * rawSize);
+                var textSize = (float)(.00012f * rawSize);
 
                 // Test to compare angle vs est angle.
                 //double textAngle = 2 * Math.Tan(((rawSize/180)*Math.PI) /2);
 
 
-                string[] lla = parts[2].Trim().Split(new char[] { ' ' });
+                var lla = parts[2].Trim().Split(new[] { ' ' });
 
-                double lat = double.Parse(lla[1]);
-                double lng = double.Parse(lla[0]);
+                var lat = double.Parse(lla[1]);
+                var lng = double.Parse(lla[0]);
                 if (astronomical && bufferIsFlat)
                 {
                     lng -= 180;
                 }
-                double altitude = alt == 0 ? 1 : alt;
+                var altitude = alt == 0 ? 1 : alt;
 
 
                 if (lla.Length > 2)
@@ -1662,8 +1658,8 @@ namespace TerraViewer
                     textSize = (float)(textSize * altitude);
 
                 }
-                Vector3d location = Coordinates.GeoTo3dDouble(lat, lng, altitude);
-                Vector3d up = Coordinates.GeoTo3dDouble(lat + 90, lng, 1);
+                var location = Coordinates.GeoTo3dDouble(lat, lng, altitude);
+                var up = Coordinates.GeoTo3dDouble(lat + 90, lng, 1);
 
                 double rotation = 0;
                 double tilt = 0;
@@ -1671,7 +1667,7 @@ namespace TerraViewer
 
                 if (parts.Length > 3)
                 {
-                    string[] rtb = parts[3].Trim().Split(new char[] { ' ' });
+                    var rtb = parts[3].Trim().Split(new[] { ' ' });
                     rotation = double.Parse(rtb[0]);
                     if (rtb.Length > 1)
                     {
@@ -1685,7 +1681,7 @@ namespace TerraViewer
                 }
 
 
-                Text3d text3d = new Text3d(location, up, text, astronomical ? 1 : -1, textSize);
+                var text3d = new Text3d(location, up, text, astronomical ? 1 : -1, textSize);
                 text3d.Color = polyColor;
                 text3d.Rotation = rotation;
                 text3d.Tilt = tilt;
@@ -1710,10 +1706,10 @@ namespace TerraViewer
             // string the top level of parens
             parens = parens.Substring(1, parens.Length - 2);
 
-            string[] shapes = UiTools.SplitString(parens, ',');
-            foreach (string shape in shapes)
+            var shapes = UiTools.SplitString(parens, ',');
+            foreach (var shape in shapes)
             {
-                KmlLineList lineList = new KmlLineList();
+                var lineList = new KmlLineList();
                 lineList.Astronomical = astronomical;
                 lineList.MeanRadius = meanRadius;
                 lineList.ParseWkt(shape, mods, alt, date);
@@ -1740,10 +1736,10 @@ namespace TerraViewer
                 // string the top level of parens
                 parens = parens.Substring(1, parens.Length - 2);
             }
-            string[] shapes = UiTools.SplitString(parens, ',');
-            foreach (string shape in shapes)
+            var shapes = UiTools.SplitString(parens, ',');
+            foreach (var shape in shapes)
             {
-                KmlLineList lineList = new KmlLineList();
+                var lineList = new KmlLineList();
                 lineList.Astronomical = astronomical;
                 lineList.MeanRadius = meanRadius;
 
@@ -1758,11 +1754,11 @@ namespace TerraViewer
 
         private string[] SplitShapes(string shapes)
         {
-            List<string> shapeList = new List<string>();
+            var shapeList = new List<string>();
 
-            int nesting = 0;
+            var nesting = 0;
 
-            int current = 0;
+            var current = 0;
             while (current < shapes.Length)
             {
                 if (shapes[current] == '(')
@@ -1778,25 +1774,25 @@ namespace TerraViewer
         {
 
             //todo can we save this work for later?
-            List<Vector3d> vertexList = new List<Vector3d>();
-            List<Vector3d> vertexListGround = new List<Vector3d>();
+            var vertexList = new List<Vector3d>();
+            var vertexListGround = new List<Vector3d>();
 
             //todo list 
             // We need to Wrap Around for complete polygone
             // we aldo need to do intereor
             //todo space? using RA/DEC
-            for (int i = 0; i < (geo.PointList.Count); i++)
+            for (var i = 0; i < (geo.PointList.Count); i++)
             {
                 vertexList.Add(Coordinates.GeoTo3dDouble(geo.PointList[i].Lat, geo.PointList[i].Lng, 1 + (geo.PointList[i].Alt / meanRadius)));
                 vertexListGround.Add(Coordinates.GeoTo3dDouble(geo.PointList[i].Lat, geo.PointList[i].Lng, 1));
             }
 
 
-            for (int i = 0; i < (geo.PointList.Count - 1); i++)
+            for (var i = 0; i < (geo.PointList.Count - 1); i++)
             {
                 if (sky)
                 {
-                    this.lineList2d.AddLine
+                    lineList2d.AddLine
                         (Coordinates.RADecTo3d(-(180.0 - geo.PointList[i].Lng) / 15 , geo.PointList[i].Lat,1), Coordinates.RADecTo3d(-(180.0 - geo.PointList[i + 1].Lng) / 15 , geo.PointList[i + 1].Lat,1), lineColor, date);
                 }
                 else
@@ -1804,35 +1800,35 @@ namespace TerraViewer
                     if (extrude)
                     {
 
-                        this.triangleList.AddQuad(vertexList[i], vertexList[i + 1], vertexListGround[i], vertexListGround[i + 1], polyColor, date);
+                        triangleList.AddQuad(vertexList[i], vertexList[i + 1], vertexListGround[i], vertexListGround[i + 1], polyColor, date);
 
                     }
                     if (lineWidth > 0)
                     {
                         if (extrude)
                         {
-                            this.lineList.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
+                            lineList.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
                         }
                         else
                         {
-                            this.lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
+                            lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
                         }
                         if (extrude)
                         {
-                            this.lineList.AddLine(vertexListGround[i], vertexListGround[i + 1], lineColor, date);
-                            this.lineList.AddLine(vertexList[i], vertexListGround[i], lineColor, date);
-                            this.lineList.AddLine(vertexList[i + 1], vertexListGround[i + 1], lineColor, date);
+                            lineList.AddLine(vertexListGround[i], vertexListGround[i + 1], lineColor, date);
+                            lineList.AddLine(vertexList[i], vertexListGround[i], lineColor, date);
+                            lineList.AddLine(vertexList[i + 1], vertexListGround[i + 1], lineColor, date);
                         }
                     }
                 }
             }
             if (fill)
             {
-                List<int> indexes = Glu.TesselateSimplePolyB(vertexList);
+                var indexes = Glu.TesselateSimplePolyB(vertexList);
 
-                for (int i = 0; i < indexes.Count; i += 3)
+                for (var i = 0; i < indexes.Count; i += 3)
                 {
-                    this.triangleList.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date);
+                    triangleList.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date);
                 }
             }
         }
@@ -1841,36 +1837,36 @@ namespace TerraViewer
         {
 
             //todo can we save this work for later?
-            List<Vector3d> vertexList = new List<Vector3d>();
+            var vertexList = new List<Vector3d>();
 
-            for (int i = 0; i < (geo.PointList.Count); i++)
+            for (var i = 0; i < (geo.PointList.Count); i++)
             {
                 vertexList.Add(Coordinates.GeoTo3dDouble(geo.PointList[i].Lat, geo.PointList[i].Lng, 1 + (geo.PointList[i].Alt / meanRadius)));
             }
 
 
-            for (int i = 0; i < (geo.PointList.Count - 1); i++)
+            for (var i = 0; i < (geo.PointList.Count - 1); i++)
             {
                 if (sky)
                 {
-                    this.lineList2d.AddLine
+                    lineList2d.AddLine
                         (Coordinates.RADecTo3d(-(180.0 - geo.PointList[i].Lng) / 15, geo.PointList[i].Lat, 1), Coordinates.RADecTo3d(-(180.0 - geo.PointList[i + 1].Lng) / 15, geo.PointList[i + 1].Lat, 1), lineColor, date);
                 }
                 else
                 {
                     if (lineWidth > 0)
                     {
-                        this.lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
+                        lineList2d.AddLine(vertexList[i], vertexList[i + 1], lineColor, date);
                     }
                 }
             }
             if (fill)
             {
-                List<int> indexes = Glu.TesselateSimplePoly(vertexList);
+                var indexes = Glu.TesselateSimplePoly(vertexList);
 
-                for (int i = 0; i < indexes.Count; i += 3)
+                for (var i = 0; i < indexes.Count; i += 3)
                 {
-                    this.triangleList2d.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date, 2);
+                    triangleList2d.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, date, 2);
                 }
             }
         }
@@ -1880,9 +1876,9 @@ namespace TerraViewer
         {
             try
             {
-                int val = 0;
+                var val = 0;
 
-                bool match = int.TryParse(colorText, System.Globalization.NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out val);
+                var match = int.TryParse(colorText, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out val);
 
 
                 if (match)
@@ -1895,8 +1891,8 @@ namespace TerraViewer
             }
             try
             {
-                float opacity = 1.0f;
-                int pos = colorText.IndexOf("%");
+                var opacity = 1.0f;
+                var pos = colorText.IndexOf("%");
                 if (pos > -1)
                 {
                     float opa = 0;
@@ -1908,7 +1904,7 @@ namespace TerraViewer
                     colorText = colorText.Substring(pos+1);
                 }
 
-                Color foundColor = Color.FromName(colorText.Replace(" ",""));
+                var foundColor = Color.FromName(colorText.Replace(" ",""));
 
                 foundColor = Color.FromArgb((int)Math.Min(255, Math.Max(0, opacity * 255)), foundColor);
 
@@ -1926,7 +1922,7 @@ namespace TerraViewer
 
         public static DateTime ParseDate(string date)
         {
-            DateTime dt = DateTime.Now;
+            var dt = DateTime.Now;
             if (!DateTime.TryParse(date, out dt))
             {
                 double excelDate = 0;
@@ -1947,7 +1943,7 @@ namespace TerraViewer
 
         private static bool TryParseDate(string date, out DateTime outDate)
         {
-            DateTime dt = DateTime.MinValue;
+            var dt = DateTime.MinValue;
 
             if (date.Contains(",") && date.Contains("UTC"))
             {
@@ -2028,20 +2024,20 @@ namespace TerraViewer
 
         public override IPlace FindClosest(Coordinates target, float distance, IPlace defaultPlace, bool astronomical)
         {
-            Vector3d searchPoint = Coordinates.GeoTo3dDouble(target.Lat,target.Lng);
+            var searchPoint = Coordinates.GeoTo3dDouble(target.Lat,target.Lng);
            
             //searchPoint = -searchPoint;
             Vector3d dist;
             if (defaultPlace != null)
             {
-                Vector3d testPoint = Coordinates.RADecTo3d(defaultPlace.RA, -defaultPlace.Dec, -1.0);
+                var testPoint = Coordinates.RADecTo3d(defaultPlace.RA, -defaultPlace.Dec, -1.0);
                 dist = searchPoint - testPoint;
                 distance = (float)dist.Length();
             }
 
-            int closestItem = -1;
-            int index = 0;
-            foreach (Vector3 point in positions)
+            var closestItem = -1;
+            var index = 0;
+            foreach (var point in positions)
             {
                 dist = searchPoint - new Vector3d(point);
                 if (dist.Length() < distance)
@@ -2058,14 +2054,14 @@ namespace TerraViewer
                 return defaultPlace;
             }
 
-            Coordinates pnt = Coordinates.CartesianToSpherical2(positions[closestItem]);
+            var pnt = Coordinates.CartesianToSpherical2(positions[closestItem]);
 
-            string name = "";
+            var name = "";
             try
             {
-                if (this.nameColumn > -1)
+                if (nameColumn > -1)
                 {
-                    name = table.Rows[closestItem][this.nameColumn];
+                    name = table.Rows[closestItem][nameColumn];
                     if (nameColumn == startDateColumn || nameColumn == endDateColumn)
                     {
                         name = ParseDate(name).ToString("u");
@@ -2088,12 +2084,12 @@ namespace TerraViewer
                 }
 
             }
-            TourPlace place = new TourPlace(name, pnt.Lat, pnt.Lng, Classification.Unidentified, "", ImageSetType.Earth, -1);
+            var place = new TourPlace(name, pnt.Lat, pnt.Lng, Classification.Unidentified, "", ImageSetType.Earth, -1);
 
-            Dictionary<String, String> rowData = new Dictionary<string, string>();
-            for (int i = 0; i < table.Header.GetLength(0); i++)
+            var rowData = new Dictionary<string, string>();
+            for (var i = 0; i < table.Header.GetLength(0); i++)
             {
-                string colValue = table.Rows[closestItem][i];
+                var colValue = table.Rows[closestItem][i];
                 if (i == startDateColumn || i == endDateColumn)
                 {
                     colValue = ParseDate(colValue).ToString("u");
@@ -2105,7 +2101,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    rowData.Add("Column" + i.ToString(), colValue);
+                    rowData.Add("Column" + i, colValue);
                 }
             }
             place.Tag = rowData;
@@ -2140,7 +2136,7 @@ namespace TerraViewer
 
             if (astronomical && lngColumn > -1)
             {
-                double max = GetMaxValue(lngColumn);
+                var max = GetMaxValue(lngColumn);
                 if (max > 24)
                 {
                     RaUnits = RAUnits.Degrees;
@@ -2161,23 +2157,23 @@ namespace TerraViewer
             {
                 return;
             }
-            int columnToUse = startDateColumn;
+            var columnToUse = startDateColumn;
             if (endDateColumn > -1)
             {
                 columnToUse = endDateColumn;
             }
 
-            DateTime threasholdTime = SpaceTimeController.Now;
-            TimeSpan ts = TimeSpan.FromDays(decay);
+            var threasholdTime = SpaceTimeController.Now;
+            var ts = TimeSpan.FromDays(decay);
             threasholdTime -= ts;
 
-            int count = table.Rows.Count;
-            for (int i = 0; i < count; i++)
+            var count = table.Rows.Count;
+            for (var i = 0; i < count; i++)
             {
                 try
                 {
-                    string[] row = table.Rows[i];
-                    DateTime colDate = Convert.ToDateTime(row[columnToUse]);
+                    var row = table.Rows[i];
+                    var colDate = Convert.ToDateTime(row[columnToUse]);
                     if (colDate < threasholdTime)
                     {
                         table.Rows.RemoveAt(i);
@@ -2200,7 +2196,7 @@ namespace TerraViewer
                 return false;
             }
             table.Lock();
-            bool bVal = base.Draw(renderContext, opacity, flat);
+            var bVal = base.Draw(renderContext, opacity, flat);
             table.Unlock();
             return bVal;
 
@@ -2268,7 +2264,7 @@ namespace TerraViewer
                 return true;
             }
 
-            int bucket = Math.Min(this.Buckets - 1,(int)((value - this.Min) / this.BucketWidth));
+            var bucket = Math.Min(Buckets - 1,(int)((value - Min) / BucketWidth));
 
             return Selected[bucket];
  
@@ -2289,15 +2285,12 @@ namespace TerraViewer
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                else if (DateFilter != DateFilter.None)
+                if (DateFilter != DateFilter.None)
                 {
-                    DateTime date = SpreadSheetLayer.ParseDate(row[TargetColumn]);
-                    int bucket = 0;
+                    var date = SpreadSheetLayer.ParseDate(row[TargetColumn]);
+                    var bucket = 0;
                     switch (DateFilter)
                     {
                         case DateFilter.Year:
@@ -2333,7 +2326,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    bool sucsess = false;
+                    var sucsess = false;
                     double val = 0;
                     double denominator = 0;
 
@@ -2343,9 +2336,9 @@ namespace TerraViewer
                         return false;
                     }
 
-                    if (this.DomainStatType == StatTypes.Ratio)
+                    if (DomainStatType == StatTypes.Ratio)
                     {
-                        sucsess = double.TryParse(row[this.DemoninatorColumn], out denominator);
+                        sucsess = double.TryParse(row[DemoninatorColumn], out denominator);
                         if (!sucsess)
                         {
                             return false;
@@ -2353,11 +2346,10 @@ namespace TerraViewer
                         val = val / denominator;
                     }
 
-                    int bucket = Math.Max(0, Math.Min(this.Buckets - 1, (int)((val - this.Min) / this.BucketWidth)));
+                    var bucket = Math.Max(0, Math.Min(Buckets - 1, (int)((val - Min) / BucketWidth)));
 
                     return Selected[bucket];
                 }
-                
             }
             catch
             {
@@ -2367,9 +2359,9 @@ namespace TerraViewer
 
         public void Sort(int sortType)
         {
-            List<BarValue> sortList = new List<BarValue>();
+            var sortList = new List<BarValue>();
 
-            for (int i = 0; i < Buckets; i++)
+            for (var i = 0; i < Buckets; i++)
             {
                 sortList.Add(new BarValue(DomainValues[i], Histogram[i], Selected[i]));
             }
@@ -2390,8 +2382,8 @@ namespace TerraViewer
                     break;
             }
 
-            int index = 0;
-            foreach (BarValue bar in sortList)
+            var index = 0;
+            foreach (var bar in sortList)
             {
                 DomainValues[index] = bar.Name;
                 Histogram[index] = bar.Value;
@@ -2439,20 +2431,20 @@ namespace TerraViewer
 
         public override List<LayerUITreeNode> GetTreeNodes()
         {
-            List<LayerUITreeNode> nodes = new List<LayerUITreeNode>();
+            var nodes = new List<LayerUITreeNode>();
            
 
                 if (Layer.Filters.Count > 0)
                 {
-                    foreach (FilterGraphTool fgt in Layer.Filters)
+                    foreach (var fgt in Layer.Filters)
                     {
-                        LayerUITreeNode node = new LayerUITreeNode();
+                        var node = new LayerUITreeNode();
                         node.Name = fgt.Title;
                         node.Tag = fgt;
                         node.Checked = fgt == Earth3d.MainWindow.UiController;
-                        node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
-                        node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
-                        node.NodeActivated += new LayerUITreeNodeActivatedDelegate(node_NodeActivated);
+                        node.NodeSelected += node_NodeSelected;
+                        node.NodeChecked += node_NodeChecked;
+                        node.NodeActivated += node_NodeActivated;
                         nodes.Add(node);
                     }
                 }
@@ -2481,7 +2473,7 @@ namespace TerraViewer
 
         public override List<LayerUIMenuItem> GetNodeContextMenu(LayerUITreeNode node)
         {
-            List<LayerUIMenuItem> items = new List<LayerUIMenuItem>();
+            var items = new List<LayerUIMenuItem>();
 
             //LayerUIMenuItem ColorMenu = new LayerUIMenuItem();
             //ColorMenu.Name = "Color";

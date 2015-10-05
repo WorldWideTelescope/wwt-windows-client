@@ -58,32 +58,32 @@ public class  CAASaturnRings
   public static CAASaturnRingDetails Calculate(double JD)
   {
 	//What will be the return value
-	CAASaturnRingDetails details = new CAASaturnRingDetails();
+	var details = new CAASaturnRingDetails();
   
-	double T = (JD - 2451545) / 36525;
-	double T2 = T *T;
+	var T = (JD - 2451545) / 36525;
+	var T2 = T *T;
   
 	//Step 1. Calculate the inclination of the plane of the ring and the longitude of the ascending node referred to the ecliptic and mean equinox of the date
-	double i = 28.075216 - 0.012998 *T + 0.000004 *T2;
-	double irad = CAACoordinateTransformation.DegreesToRadians(i);
-	double omega = 169.508470 + 1.394681 *T + 0.000412 *T2;
-	double omegarad = CAACoordinateTransformation.DegreesToRadians(omega);
+	var i = 28.075216 - 0.012998 *T + 0.000004 *T2;
+	var irad = CAACoordinateTransformation.DegreesToRadians(i);
+	var omega = 169.508470 + 1.394681 *T + 0.000412 *T2;
+	var omegarad = CAACoordinateTransformation.DegreesToRadians(omega);
   
 	//Step 2. Calculate the heliocentric longitude, latitude and radius vector of the Earth in the FK5 system
-	double l0 = CAAEarth.EclipticLongitude(JD);
-	double b0 = CAAEarth.EclipticLatitude(JD);
+	var l0 = CAAEarth.EclipticLongitude(JD);
+	var b0 = CAAEarth.EclipticLatitude(JD);
 	l0 += CAAFK5.CorrectionInLongitude(l0, b0, JD);
-	double l0rad = CAACoordinateTransformation.DegreesToRadians(l0);
+	var l0rad = CAACoordinateTransformation.DegreesToRadians(l0);
 	b0 += CAAFK5.CorrectionInLatitude(l0, JD);
-	double b0rad = CAACoordinateTransformation.DegreesToRadians(b0);
-	double R = CAAEarth.RadiusVector(JD);
+	var b0rad = CAACoordinateTransformation.DegreesToRadians(b0);
+	var R = CAAEarth.RadiusVector(JD);
   
 	//Step 3. Calculate the corresponding coordinates l,b,r for Saturn but for the instance t-lightraveltime
 	double DELTA = 9;
 	double PreviousEarthLightTravelTime = 0;
-	double EarthLightTravelTime = CAAElliptical.DistanceToLightTime(DELTA);
-	double JD1 = JD - EarthLightTravelTime;
-	bool bIterate = true;
+	var EarthLightTravelTime = CAAElliptical.DistanceToLightTime(DELTA);
+	var JD1 = JD - EarthLightTravelTime;
+	var bIterate = true;
 	double x = 0;
 	double y = 0;
 	double z = 0;
@@ -98,8 +98,8 @@ public class  CAASaturnRings
 	  l += CAAFK5.CorrectionInLongitude(l, b, JD1);
 	  b += CAAFK5.CorrectionInLatitude(l, JD1);
   
-	  double lrad = CAACoordinateTransformation.DegreesToRadians(l);
-	  double brad = CAACoordinateTransformation.DegreesToRadians(b);
+	  var lrad = CAACoordinateTransformation.DegreesToRadians(l);
+	  var brad = CAACoordinateTransformation.DegreesToRadians(b);
 	  r = CAASaturn.RadiusVector(JD1);
   
 	  //Step 4
@@ -119,8 +119,8 @@ public class  CAASaturnRings
 	}
   
 	//Step 5. Calculate Saturn's geocentric Longitude and Latitude
-	double lambda = Math.Atan2(y, x);
-	double beta = Math.Atan2(z, Math.Sqrt(x *x + y *y));
+	var lambda = Math.Atan2(y, x);
+	var beta = Math.Atan2(z, Math.Sqrt(x *x + y *y));
   
 	//Step 6. Calculate B, a and b
 	details.B = Math.Asin(Math.Sin(irad)*Math.Cos(beta)*Math.Sin(lambda - omegarad) - Math.Cos(irad)*Math.Sin(beta));
@@ -129,28 +129,28 @@ public class  CAASaturnRings
 	details.B = CAACoordinateTransformation.RadiansToDegrees(details.B);
   
 	//Step 7. Calculate the longitude of the ascending node of Saturn's orbit
-	double N = 113.6655 + 0.8771 *T;
-	double Nrad = CAACoordinateTransformation.DegreesToRadians(N);
-	double ldash = l - 0.01759/r;
-	double ldashrad = CAACoordinateTransformation.DegreesToRadians(ldash);
-	double bdash = b - 0.000764 *Math.Cos(ldashrad - Nrad)/r;
-	double bdashrad = CAACoordinateTransformation.DegreesToRadians(bdash);
+	var N = 113.6655 + 0.8771 *T;
+	var Nrad = CAACoordinateTransformation.DegreesToRadians(N);
+	var ldash = l - 0.01759/r;
+	var ldashrad = CAACoordinateTransformation.DegreesToRadians(ldash);
+	var bdash = b - 0.000764 *Math.Cos(ldashrad - Nrad)/r;
+	var bdashrad = CAACoordinateTransformation.DegreesToRadians(bdash);
   
 	//Step 8. Calculate Bdash
 	details.Bdash = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sin(irad)*Math.Cos(bdashrad)*Math.Sin(ldashrad - omegarad) - Math.Cos(irad)*Math.Sin(bdashrad)));
   
 	//Step 9. Calculate DeltaU
-	double U1 = Math.Atan2(Math.Sin(irad)*Math.Sin(bdashrad) + Math.Cos(irad)*Math.Cos(bdashrad)*Math.Sin(ldashrad - omegarad), Math.Cos(bdashrad)*Math.Cos(ldashrad - omegarad));
-	double U2 = Math.Atan2(Math.Sin(irad)*Math.Sin(beta) + Math.Cos(irad)*Math.Cos(beta)*Math.Sin(lambda - omegarad), Math.Cos(beta)*Math.Cos(lambda - omegarad));
+	var U1 = Math.Atan2(Math.Sin(irad)*Math.Sin(bdashrad) + Math.Cos(irad)*Math.Cos(bdashrad)*Math.Sin(ldashrad - omegarad), Math.Cos(bdashrad)*Math.Cos(ldashrad - omegarad));
+	var U2 = Math.Atan2(Math.Sin(irad)*Math.Sin(beta) + Math.Cos(irad)*Math.Cos(beta)*Math.Sin(lambda - omegarad), Math.Cos(beta)*Math.Cos(lambda - omegarad));
 	details.DeltaU = CAACoordinateTransformation.RadiansToDegrees(Math.Abs(U1 - U2));
   
 	//Step 10. Calculate the Nutations
-	double Obliquity = CAANutation.TrueObliquityOfEcliptic(JD);
-	double NutationInLongitude = CAANutation.NutationInLongitude(JD);
+	var Obliquity = CAANutation.TrueObliquityOfEcliptic(JD);
+	var NutationInLongitude = CAANutation.NutationInLongitude(JD);
   
 	//Step 11. Calculate the Ecliptical longitude and latitude of the northern pole of the ring plane
-	double lambda0 = omega - 90;
-	double beta0 = 90 - i;
+	var lambda0 = omega - 90;
+	var beta0 = 90 - i;
   
 	//Step 12. Correct lambda and beta for the aberration of Saturn
 	lambda += CAACoordinateTransformation.DegreesToRadians(0.005693 *Math.Cos(l0rad - lambda)/Math.Cos(beta));
@@ -166,12 +166,12 @@ public class  CAASaturnRings
   
 	//Step 14. Convert to equatorial coordinates
 	beta = CAACoordinateTransformation.RadiansToDegrees(beta);
-	CAA2DCoordinate GeocentricEclipticSaturn = CAACoordinateTransformation.Ecliptic2Equatorial(lambda, beta, Obliquity);
-	double alpha = CAACoordinateTransformation.HoursToRadians(GeocentricEclipticSaturn.X);
-	double delta = CAACoordinateTransformation.DegreesToRadians(GeocentricEclipticSaturn.Y);
-	CAA2DCoordinate GeocentricEclipticNorthPole = CAACoordinateTransformation.Ecliptic2Equatorial(lambda0, beta0, Obliquity);
-	double alpha0 = CAACoordinateTransformation.HoursToRadians(GeocentricEclipticNorthPole.X);
-	double delta0 = CAACoordinateTransformation.DegreesToRadians(GeocentricEclipticNorthPole.Y);
+	var GeocentricEclipticSaturn = CAACoordinateTransformation.Ecliptic2Equatorial(lambda, beta, Obliquity);
+	var alpha = CAACoordinateTransformation.HoursToRadians(GeocentricEclipticSaturn.X);
+	var delta = CAACoordinateTransformation.DegreesToRadians(GeocentricEclipticSaturn.Y);
+	var GeocentricEclipticNorthPole = CAACoordinateTransformation.Ecliptic2Equatorial(lambda0, beta0, Obliquity);
+	var alpha0 = CAACoordinateTransformation.HoursToRadians(GeocentricEclipticNorthPole.X);
+	var delta0 = CAACoordinateTransformation.DegreesToRadians(GeocentricEclipticNorthPole.Y);
   
 	//Step 15. Calculate the Position angle
 	details.P = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(Math.Cos(delta0)*Math.Sin(alpha0 - alpha), Math.Sin(delta0)*Math.Cos(delta) - Math.Cos(delta0)*Math.Sin(delta)*Math.Cos(alpha0 - alpha)));

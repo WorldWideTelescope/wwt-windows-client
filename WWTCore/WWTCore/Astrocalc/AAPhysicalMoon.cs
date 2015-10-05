@@ -80,7 +80,7 @@ public class  CAAPhysicalMoon
 	double Lambda=0;
 	double Beta=0;
 	double epsilon=0;
-	CAA2DCoordinate Equatorial = new CAA2DCoordinate();
+	var Equatorial = new CAA2DCoordinate();
 	return CalculateHelper(JD, ref Lambda, ref Beta, ref epsilon, ref Equatorial);
   }
   public static CAAPhysicalMoonDetails CalculateTopocentric(double JD, double Longitude, double Latitude)
@@ -92,26 +92,26 @@ public class  CAAPhysicalMoon
 	double Lambda=0;
 	double Beta=0;
 	double epsilon=0;
-	CAA2DCoordinate Equatorial = new CAA2DCoordinate();
-	CAAPhysicalMoonDetails details = CalculateHelper(JD, ref Lambda, ref Beta, ref epsilon, ref Equatorial);
+	var Equatorial = new CAA2DCoordinate();
+	var details = CalculateHelper(JD, ref Lambda, ref Beta, ref epsilon, ref Equatorial);
   
-	double R = CAAMoon.RadiusVector(JD);
-	double pi = CAAMoon.RadiusVectorToHorizontalParallax(R);
-	double Alpha = CAACoordinateTransformation.HoursToRadians(Equatorial.X);
-	double Delta = CAACoordinateTransformation.DegreesToRadians(Equatorial.Y);
+	var R = CAAMoon.RadiusVector(JD);
+	var pi = CAAMoon.RadiusVectorToHorizontalParallax(R);
+	var Alpha = CAACoordinateTransformation.HoursToRadians(Equatorial.X);
+	var Delta = CAACoordinateTransformation.DegreesToRadians(Equatorial.Y);
   
-	double AST = CAASidereal.ApparentGreenwichSiderealTime(JD);
-	double H = CAACoordinateTransformation.HoursToRadians(AST) - Longitude - Alpha;
+	var AST = CAASidereal.ApparentGreenwichSiderealTime(JD);
+	var H = CAACoordinateTransformation.HoursToRadians(AST) - Longitude - Alpha;
   
-	double Q = Math.Atan2(Math.Cos(Latitude)*Math.Sin(H), Math.Cos(Delta)*Math.Sin(Latitude) - Math.Sin(Delta)*Math.Cos(Latitude)*Math.Cos(H));
-	double Z = Math.Acos(Math.Sin(Delta)*Math.Sin(Latitude) + Math.Cos(Delta)*Math.Cos(Latitude)*Math.Cos(H));
-	double pidash = pi*(Math.Sin(Z) + 0.0084 *Math.Sin(2 *Z));
+	var Q = Math.Atan2(Math.Cos(Latitude)*Math.Sin(H), Math.Cos(Delta)*Math.Sin(Latitude) - Math.Sin(Delta)*Math.Cos(Latitude)*Math.Cos(H));
+	var Z = Math.Acos(Math.Sin(Delta)*Math.Sin(Latitude) + Math.Cos(Delta)*Math.Cos(Latitude)*Math.Cos(H));
+	var pidash = pi*(Math.Sin(Z) + 0.0084 *Math.Sin(2 *Z));
   
-	double Prad = CAACoordinateTransformation.DegreesToRadians(details.P);
+	var Prad = CAACoordinateTransformation.DegreesToRadians(details.P);
   
-	double DeltaL = -pidash *Math.Sin(Q - Prad)/Math.Cos(CAACoordinateTransformation.DegreesToRadians(details.b));
+	var DeltaL = -pidash *Math.Sin(Q - Prad)/Math.Cos(CAACoordinateTransformation.DegreesToRadians(details.b));
 	details.l += DeltaL;
-	double DeltaB = pidash *Math.Cos(Q - Prad);
+	var DeltaB = pidash *Math.Cos(Q - Prad);
 	details.b += DeltaB;
 	details.P += DeltaL *Math.Sin(CAACoordinateTransformation.DegreesToRadians(details.b)) - pidash *Math.Sin(Q)*Math.Tan(Delta);
   
@@ -119,17 +119,17 @@ public class  CAAPhysicalMoon
   }
   public static CAASelenographicMoonDetails CalculateSelenographicPositionOfSun(double JD)
   {
-	double R = CAAEarth.RadiusVector(JD)*149597970;
-	double Delta = CAAMoon.RadiusVector(JD);
-	double lambda0 = CAASun.ApparentEclipticLongitude(JD);
-	double lambda = CAAMoon.EclipticLongitude(JD);
-	double beta = CAAMoon.EclipticLatitude(JD);
+	var R = CAAEarth.RadiusVector(JD)*149597970;
+	var Delta = CAAMoon.RadiusVector(JD);
+	var lambda0 = CAASun.ApparentEclipticLongitude(JD);
+	var lambda = CAAMoon.EclipticLongitude(JD);
+	var beta = CAAMoon.EclipticLatitude(JD);
   
-	double lambdah = CAACoordinateTransformation.MapTo0To360Range(lambda0 + 180 + Delta/R *57.296 *Math.Cos(CAACoordinateTransformation.DegreesToRadians(beta))*Math.Sin(CAACoordinateTransformation.DegreesToRadians(lambda0 - lambda)));
-	double betah = Delta/R *beta;
+	var lambdah = CAACoordinateTransformation.MapTo0To360Range(lambda0 + 180 + Delta/R *57.296 *Math.Cos(CAACoordinateTransformation.DegreesToRadians(beta))*Math.Sin(CAACoordinateTransformation.DegreesToRadians(lambda0 - lambda)));
+	var betah = Delta/R *beta;
   
 	//What will be the return value
-	CAASelenographicMoonDetails details = new CAASelenographicMoonDetails();
+	var details = new CAASelenographicMoonDetails();
   
 	//Calculate the optical libration
 	double omega=0;
@@ -152,7 +152,7 @@ public class  CAAPhysicalMoon
   public static double AltitudeOfSun(double JD, double Longitude, double Latitude)
   {
 	//Calculate the selenographic details
-	CAASelenographicMoonDetails selenographicDetails = CalculateSelenographicPositionOfSun(JD);
+	var selenographicDetails = CalculateSelenographicPositionOfSun(JD);
   
 	//convert to radians
 	Latitude = CAACoordinateTransformation.DegreesToRadians(Latitude);
@@ -173,13 +173,13 @@ public class  CAAPhysicalMoon
 
   protected static double SunriseSunsetHelper(double JD, double Longitude, double Latitude, bool bSunrise)
   {
-	double JDResult = JD;
-	double Latituderad = CAACoordinateTransformation.DegreesToRadians(Latitude);
+	var JDResult = JD;
+	var Latituderad = CAACoordinateTransformation.DegreesToRadians(Latitude);
 	double h;
 	do
 	{
 	  h = AltitudeOfSun(JDResult, Longitude, Latitude);
-	  double DeltaJD = h/(12.19075 *Math.Cos(Latituderad));
+	  var DeltaJD = h/(12.19075 *Math.Cos(Latituderad));
 	  if (bSunrise)
 		JDResult -= DeltaJD;
 	  else
@@ -192,7 +192,7 @@ public class  CAAPhysicalMoon
   protected static CAAPhysicalMoonDetails CalculateHelper(double JD, ref double Lambda, ref double Beta, ref double epsilon, ref CAA2DCoordinate Equatorial)
   {
 	//What will be the return value
-	CAAPhysicalMoonDetails details = new CAAPhysicalMoonDetails();
+	var details = new CAAPhysicalMoonDetails();
   
 	//Calculate the initial quantities
 	Lambda = CAAMoon.EclipticLongitude(JD);
@@ -205,22 +205,22 @@ public class  CAAPhysicalMoon
 	double I=0;
 	double rho=0;
 	CalculateOpticalLibration(JD, Lambda, Beta, ref details.ldash, ref details.bdash, ref details.ldash2, ref details.bdash2, ref epsilon, ref omega, ref DeltaU, ref sigma, ref I, ref rho);
-	double epsilonrad = CAACoordinateTransformation.DegreesToRadians(epsilon);
+	var epsilonrad = CAACoordinateTransformation.DegreesToRadians(epsilon);
   
 	//Calculate the total libration
 	details.l = details.ldash + details.ldash2;
 	details.b = details.bdash + details.bdash2;
-	double b = CAACoordinateTransformation.DegreesToRadians(details.b);
+	var b = CAACoordinateTransformation.DegreesToRadians(details.b);
   
 	//Calculate the position angle
-	double V = omega + DeltaU + CAACoordinateTransformation.DegreesToRadians(sigma)/Math.Sin(I);
-	double I_rho = I + CAACoordinateTransformation.DegreesToRadians(rho);
-	double X = Math.Sin(I_rho)*Math.Sin(V);
-	double Y = Math.Sin(I_rho)*Math.Cos(V)*Math.Cos(epsilonrad) - Math.Cos(I_rho)*Math.Sin(epsilonrad);
-	double w = Math.Atan2(X, Y);
+	var V = omega + DeltaU + CAACoordinateTransformation.DegreesToRadians(sigma)/Math.Sin(I);
+	var I_rho = I + CAACoordinateTransformation.DegreesToRadians(rho);
+	var X = Math.Sin(I_rho)*Math.Sin(V);
+	var Y = Math.Sin(I_rho)*Math.Cos(V)*Math.Cos(epsilonrad) - Math.Cos(I_rho)*Math.Sin(epsilonrad);
+	var w = Math.Atan2(X, Y);
   
 	Equatorial = CAACoordinateTransformation.Ecliptic2Equatorial(Lambda, Beta, epsilon);
-	double Alpha = CAACoordinateTransformation.HoursToRadians(Equatorial.X);
+	var Alpha = CAACoordinateTransformation.HoursToRadians(Equatorial.X);
   
 	details.P = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sqrt(X *X + Y *Y)*Math.Cos(Alpha - w)/(Math.Cos(b))));
   
@@ -232,42 +232,42 @@ public class  CAAPhysicalMoon
   protected static void CalculateOpticalLibration(double JD, double Lambda, double Beta, ref double ldash, ref double bdash, ref double ldash2, ref double bdash2, ref double epsilon, ref double omega, ref double DeltaU, ref double sigma, ref double I, ref double rho)
   {
 	//Calculate the initial quantities
-	double Lambdarad = CAACoordinateTransformation.DegreesToRadians(Lambda);
-	double Betarad = CAACoordinateTransformation.DegreesToRadians(Beta);
+	var Lambdarad = CAACoordinateTransformation.DegreesToRadians(Lambda);
+	var Betarad = CAACoordinateTransformation.DegreesToRadians(Beta);
 	I = CAACoordinateTransformation.DegreesToRadians(1.54242);
 	DeltaU = CAACoordinateTransformation.DegreesToRadians(CAANutation.NutationInLongitude(JD)/3600);
-	double F = CAACoordinateTransformation.DegreesToRadians(CAAMoon.ArgumentOfLatitude(JD));
+	var F = CAACoordinateTransformation.DegreesToRadians(CAAMoon.ArgumentOfLatitude(JD));
 	omega = CAACoordinateTransformation.DegreesToRadians(CAAMoon.MeanLongitudeAscendingNode(JD));
 	epsilon = CAANutation.MeanObliquityOfEcliptic(JD) + CAANutation.NutationInObliquity(JD)/3600;
   
 	//Calculate the optical librations
-	double W = Lambdarad - DeltaU/3600 - omega;
-	double A = Math.Atan2(Math.Sin(W)*Math.Cos(Betarad)*Math.Cos(I) - Math.Sin(Betarad)*Math.Sin(I), Math.Cos(W)*Math.Cos(Betarad));
+	var W = Lambdarad - DeltaU/3600 - omega;
+	var A = Math.Atan2(Math.Sin(W)*Math.Cos(Betarad)*Math.Cos(I) - Math.Sin(Betarad)*Math.Sin(I), Math.Cos(W)*Math.Cos(Betarad));
 	ldash = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(A) - CAACoordinateTransformation.RadiansToDegrees(F));
 	if (ldash > 180)
 	  ldash -= 360;
 	bdash = Math.Asin(-Math.Sin(W)*Math.Cos(Betarad)*Math.Sin(I) - Math.Sin(Betarad)*Math.Cos(I));
   
 	//Calculate the physical librations
-	double T = (JD - 2451545.0)/36525;
-	double K1 = 119.75 + 131.849 *T;
+	var T = (JD - 2451545.0)/36525;
+	var K1 = 119.75 + 131.849 *T;
 	K1 = CAACoordinateTransformation.DegreesToRadians(K1);
-	double K2 = 72.56 + 20.186 *T;
+	var K2 = 72.56 + 20.186 *T;
 	K2 = CAACoordinateTransformation.DegreesToRadians(K2);
   
-	double M = CAAEarth.SunMeanAnomaly(JD);
+	var M = CAAEarth.SunMeanAnomaly(JD);
 	M = CAACoordinateTransformation.DegreesToRadians(M);
-	double Mdash = CAAMoon.MeanAnomaly(JD);
+	var Mdash = CAAMoon.MeanAnomaly(JD);
 	Mdash = CAACoordinateTransformation.DegreesToRadians(Mdash);
-	double D = CAAMoon.MeanElongation(JD);
+	var D = CAAMoon.MeanElongation(JD);
 	D = CAACoordinateTransformation.DegreesToRadians(D);
-	double E = CAAEarth.Eccentricity(JD);
+	var E = CAAEarth.Eccentricity(JD);
   
 	rho = -0.02752 *Math.Cos(Mdash) + -0.02245 *Math.Sin(F) + 0.00684 *Math.Cos(Mdash - 2 *F) + -0.00293 *Math.Cos(2 *F) + -0.00085 *Math.Cos(2 *F - 2 *D) + -0.00054 *Math.Cos(Mdash - 2 *D) + -0.00020 *Math.Sin(Mdash + F) + -0.00020 *Math.Cos(Mdash + 2 *F) + -0.00020 *Math.Cos(Mdash - F) + 0.00014 *Math.Cos(Mdash + 2 *F - 2 *D);
   
 	sigma = -0.02816 *Math.Sin(Mdash) + 0.02244 *Math.Cos(F) + -0.00682 *Math.Sin(Mdash - 2 *F) + -0.00279 *Math.Sin(2 *F) + -0.00083 *Math.Sin(2 *F - 2 *D) + 0.00069 *Math.Sin(Mdash - 2 *D) + 0.00040 *Math.Cos(Mdash + F) + -0.00025 *Math.Sin(2 *Mdash) + -0.00023 *Math.Sin(Mdash + 2 *F) + 0.00020 *Math.Cos(Mdash - F) + 0.00019 *Math.Sin(Mdash - F) + 0.00013 *Math.Sin(Mdash + 2 *F - 2 *D) + -0.00010 *Math.Cos(Mdash - 3 *F);
   
-	double tau = 0.02520 *E *Math.Sin(M) + 0.00473 *Math.Sin(2 *Mdash - 2 *F) + -0.00467 *Math.Sin(Mdash) + 0.00396 *Math.Sin(K1) + 0.00276 *Math.Sin(2 *Mdash - 2 *D) + 0.00196 *Math.Sin(omega) + -0.00183 *Math.Cos(Mdash - F) + 0.00115 *Math.Sin(Mdash - 2 *D) + -0.00096 *Math.Sin(Mdash - D) + 0.00046 *Math.Sin(2 *F - 2 *D) + -0.00039 *Math.Sin(Mdash - F) + -0.00032 *Math.Sin(Mdash - M - D) + 0.00027 *Math.Sin(2 *Mdash - M - 2 *D) + 0.00023 *Math.Sin(K2) + -0.00014 *Math.Sin(2 *D) + 0.00014 *Math.Cos(2 *Mdash - 2 *F) + -0.00012 *Math.Sin(Mdash - 2 *F) + -0.00012 *Math.Sin(2 *Mdash) + 0.00011 *Math.Sin(2 *Mdash - 2 *M - 2 *D);
+	var tau = 0.02520 *E *Math.Sin(M) + 0.00473 *Math.Sin(2 *Mdash - 2 *F) + -0.00467 *Math.Sin(Mdash) + 0.00396 *Math.Sin(K1) + 0.00276 *Math.Sin(2 *Mdash - 2 *D) + 0.00196 *Math.Sin(omega) + -0.00183 *Math.Cos(Mdash - F) + 0.00115 *Math.Sin(Mdash - 2 *D) + -0.00096 *Math.Sin(Mdash - D) + 0.00046 *Math.Sin(2 *F - 2 *D) + -0.00039 *Math.Sin(Mdash - F) + -0.00032 *Math.Sin(Mdash - M - D) + 0.00027 *Math.Sin(2 *Mdash - M - 2 *D) + 0.00023 *Math.Sin(K2) + -0.00014 *Math.Sin(2 *D) + 0.00014 *Math.Cos(2 *Mdash - 2 *F) + -0.00012 *Math.Sin(Mdash - 2 *F) + -0.00012 *Math.Sin(2 *Mdash) + 0.00011 *Math.Sin(2 *Mdash - 2 *M - 2 *D);
   
 	ldash2 = -tau + (rho *Math.Cos(A) + sigma *Math.Sin(A))*Math.Tan(bdash);
 	bdash = CAACoordinateTransformation.RadiansToDegrees(bdash);

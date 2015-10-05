@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
-using System.Runtime.InteropServices;
-
 
 
 namespace TerraViewer
@@ -58,7 +54,7 @@ namespace TerraViewer
     class AscomTelescope : IDisposable
     {
         object objScopeLateBound;
-		Type objTypeScope;
+        readonly Type objTypeScope;
 
 
         public AscomTelescope(string telescopeID)
@@ -72,12 +68,10 @@ namespace TerraViewer
 
         public static string ChooseTelescope(string telescopeID)
         {
-            object objChooserLateBound;
-		    Type objTypeChooser;
-            objTypeChooser = Type.GetTypeFromProgID("ASCOM.Utilities.Chooser");
+            Type objTypeChooser = Type.GetTypeFromProgID("ASCOM.Utilities.Chooser");
 			
 			// Create an instance of the serial object
-            objChooserLateBound = Activator.CreateInstance(objTypeChooser);
+            object objChooserLateBound = Activator.CreateInstance(objTypeChooser);
 
             return (string)objTypeChooser.InvokeMember("Choose",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
@@ -90,11 +84,9 @@ namespace TerraViewer
         {
             try
             {
-                object objChooserLateBound;
-                Type objTypeChooser;
-                objTypeChooser = Type.GetTypeFromProgID("ASCOM.Utilities.Chooser");
+                Type objTypeChooser = Type.GetTypeFromProgID("ASCOM.Utilities.Chooser");
                 // Create an instance of the serial object
-                objChooserLateBound = Activator.CreateInstance(objTypeChooser);
+                object objChooserLateBound = Activator.CreateInstance(objTypeChooser);
                 objTypeChooser.InvokeMember("DeviceType",
                 BindingFlags.Default | BindingFlags.SetProperty,
                 null, objChooserLateBound, new object[] { "Telescope" });
@@ -372,10 +364,9 @@ namespace TerraViewer
         {
             get
             {
-                bool Connected;
-                Connected = (bool)objTypeScope.InvokeMember("Connected", BindingFlags.Default | BindingFlags.GetProperty,
+                var connected = (bool)objTypeScope.InvokeMember("Connected", BindingFlags.Default | BindingFlags.GetProperty,
                     null, objScopeLateBound, new object[] { });
-                return Connected;
+                return connected;
             }
             set
             {
@@ -418,10 +409,10 @@ namespace TerraViewer
             }
         }
 
-        public PierSide DestinationSideOfPier(double RightAscension, double Declination)
+        public PierSide DestinationSideOfPier(double rightAscension, double declination)
         {
             return (PierSide)objTypeScope.InvokeMember("DestinationSideOfPier", BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] {RightAscension, Declination});
+                    null, objScopeLateBound, new object[] {rightAscension, declination});
         }
 
         public bool DoesRefraction
@@ -555,7 +546,7 @@ namespace TerraViewer
         {
             get
             {
-                return (double)objTypeScope.InvokeMember("RightAscension", BindingFlags.Default | BindingFlags.GetProperty,
+                return (double)objTypeScope.InvokeMember("rightAscension", BindingFlags.Default | BindingFlags.GetProperty,
                     null, objScopeLateBound, new object[] { });
             }
         }
@@ -664,57 +655,39 @@ namespace TerraViewer
             }
         }
 
-        public void SlewToAltAz(double Azimuth, double Altitude)
+        public void SlewToAltAz(double azimuth, double altitude)
         {
             objTypeScope.InvokeMember("SlewToAltAz",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
-                null, objScopeLateBound, new object[] { Azimuth, Altitude });
+                null, objScopeLateBound, new object[] { azimuth, altitude });
         }
 
-        public void SlewToAltAzAsync(double Azimuth, double Altitude)
+        public void SlewToAltAzAsync(double azimuth, double altitude)
         {
             objTypeScope.InvokeMember("SlewToAltAzAsync",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
-                null, objScopeLateBound, new object[] { Azimuth, Altitude });
+                null, objScopeLateBound, new object[] { azimuth, altitude });
         }
 
-        public void SlewToCoordinates(double RightAscension, double Declination)
+        public void SlewToCoordinates(double rightAscension, double declination)
         {
-            try
-            {
-                objTypeScope.InvokeMember("SlewToCoordinates",
-                    BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] { RightAscension, Declination });
-            }
-            catch
-            {
-            }
+            Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("SlewToCoordinates",
+                BindingFlags.Default | BindingFlags.InvokeMethod,
+                null, objScopeLateBound, new object[] {rightAscension, declination}));
         }
 
-        public void SlewToCoordinatesAsync(double RightAscension, double Declination)
+        public void SlewToCoordinatesAsync(double rightAscension, double declination)
         {
-            try
-            {
-                objTypeScope.InvokeMember("SlewToCoordinatesAsync",
-                    BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] { RightAscension, Declination });
-            }
-            catch
-            {
-            }
+            Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("SlewToCoordinatesAsync",
+                BindingFlags.Default | BindingFlags.InvokeMethod,
+                null, objScopeLateBound, new object[] {rightAscension, declination}));
         }
 
         public void SlewToTarget()
         {
-            try
-            {
-                objTypeScope.InvokeMember("SlewToTarget",
-                    BindingFlags.Default | BindingFlags.InvokeMethod,
-                    null, objScopeLateBound, new object[] { });
-            }
-            catch
-            {
-            }
+            Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("SlewToTarget",
+                BindingFlags.Default | BindingFlags.InvokeMethod,
+                null, objScopeLateBound, new object[] {}));
         }
 
         public void SlewToTargetAsync()
@@ -733,18 +706,18 @@ namespace TerraViewer
             }
         }
 
-        public void SyncToAltAz(double Azimuth, double Altitude)
+        public void SyncToAltAz(double azimuth, double altitude)
         {
             objTypeScope.InvokeMember("SyncToAltAz",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
-                null, objScopeLateBound, new object[] { Azimuth, Altitude });
+                null, objScopeLateBound, new object[] { azimuth, altitude });
         }
 
-        public void SyncToCoordinates(double RightAscension, double Declination)
+        public void SyncToCoordinates(double rightAscension, double declination)
         {
             objTypeScope.InvokeMember("SyncToCoordinates",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
-                null, objScopeLateBound, new object[] { RightAscension, Declination });
+                null, objScopeLateBound, new object[] { rightAscension, declination });
         }
 
         public void SyncToTarget()
@@ -798,15 +771,7 @@ namespace TerraViewer
             }
             set
             {
-                try
-                {
-
-                    objTypeScope.InvokeMember("Tracking", BindingFlags.Default | BindingFlags.SetProperty,
-                        null, objScopeLateBound, new object[] { value });
-                }
-                catch
-                {
-                }
+                Patterns.ActIgnoringExceptions(() => objTypeScope.InvokeMember("Tracking", BindingFlags.Default | BindingFlags.SetProperty, null, objScopeLateBound, new object[] {value}));
             }
         }
 
@@ -861,7 +826,7 @@ namespace TerraViewer
 
         public void Dispose()
         {
-            if (this.objScopeLateBound != null)
+            if (objScopeLateBound != null)
             {
                 objScopeLateBound = null;
             }

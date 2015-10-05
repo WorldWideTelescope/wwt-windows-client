@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
 using System.IO;
-using System.IO.Compression;
-using System.Text;
+using SharpDX;
+using SharpDX.Direct3D;
+using TerraViewer.Properties;
 
 namespace TerraViewer 
 {
@@ -17,7 +14,7 @@ namespace TerraViewer
             this.level = level;
             this.x = x;
             this.y = y;
-            this.dataset = Imageimageset;
+            dataset = Imageimageset;
             InViewFrustum = true;
         }
 
@@ -68,7 +65,7 @@ namespace TerraViewer
             //string filename = Properties.Settings.Default.CahceDirectory + @"data\hip.txt";
             
             //DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?Q=hip", filename, false, true);
-            StreamReader sr = new StreamReader(this.FileName);
+            var sr = new StreamReader(FileName);
             string line;
             Star star;
             while (sr.Peek() >= 0)
@@ -80,9 +77,9 @@ namespace TerraViewer
             }
             sr.Close();
         }
-        PositionColorSizeVertexBuffer11 starVertexBuffer = null;
-        int starCount = 0;
-        Texture11 starProfile = null;
+        PositionColorSizeVertexBuffer11 starVertexBuffer;
+        int starCount;
+        Texture11 starProfile;
         public override bool IsTileInFrustum(PlaneD[] frustum)
         {
             return true;
@@ -102,21 +99,21 @@ namespace TerraViewer
 
             if (starVertexBuffer == null)
             {
-                starProfile = Texture11.FromBitmap( Properties.Resources.StarProfile);
+                starProfile = Texture11.FromBitmap( Resources.StarProfile);
   
-                int count = stars.Count;
-                int index = 0;
+                var count = stars.Count;
+                var index = 0;
                 starCount = count;
 
                 starVertexBuffer = new PositionColorSizeVertexBuffer11(count, RenderContext11.PrepDevice);
 
-                PositionColorSize[] points = (PositionColorSize[])starVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-                foreach (Star star in stars)
+                var points = (PositionColorSize[])starVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+                foreach (var star in stars)
                 {
-                    Vector3d pos = Coordinates.RADecTo3d(star.RA + 12, star.Dec, 1f);
+                    var pos = Coordinates.RADecTo3d(star.RA + 12, star.Dec, 1f);
                     points[index].Position = pos.Vector3;
                     points[index].Color = star.Col;
-                    double radDec = (.5) / Math.Pow(1.6, star.Magnitude);
+                    var radDec = (.5) / Math.Pow(1.6, star.Magnitude);
                     points[index].size = (float)radDec;
                     index++;
                 }
@@ -127,21 +124,21 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Additive;
             renderContext.DepthStencilMode = DepthStencilMode.Off;
             renderContext.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mvp.Transpose();
             PointSpriteShader11.WVPMatrix = mvp;
-            PointSpriteShader11.Color = SharpDX.Color.White;
+            PointSpriteShader11.Color = Color.White;
 
-            float adjustedScale = (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
+            var adjustedScale = (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
 
-            PointSpriteShader11.ViewportScale = new SharpDX.Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
-            PointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);
+            PointSpriteShader11.ViewportScale = new Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
+            PointSpriteShader11.PointScaleFactors = new Vector3(0.0f, 0.0f, 10000.0f);
             PointSpriteShader11.Use(renderContext.Device.ImmediateContext);
 
             renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, starProfile.ResourceView);
 
       
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
             renderContext.devContext.Draw(starCount, 0);
 
             renderContext.Device.ImmediateContext.GeometryShader.Set(null);

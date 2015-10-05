@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 
 namespace WwtDataUtils
 {
@@ -38,9 +37,9 @@ namespace WwtDataUtils
     {
         int x;
         int y;
-        FastBitmap fastBitmap;
+        readonly FastBitmap fastBitmap;
         PixelData* pCurrentPixel;
-        bool locked;
+        readonly bool locked;
 
         public FastBitmapEnumerator(FastBitmap fastBitmap)
         {
@@ -71,12 +70,9 @@ namespace WwtDataUtils
                 {
                     return false;
                 }
-                else
-                {
-                    x = 0;
-                    pCurrentPixel = fastBitmap[0, y];
-                    //Debug.WriteLine(String.Format("{0}", pCurrentPixel - fastBitmap[0, 0]));
-                }
+                x = 0;
+                pCurrentPixel = fastBitmap[0, y];
+                //Debug.WriteLine(String.Format("{0}", pCurrentPixel - fastBitmap[0, 0]));
             }
             return true;
         }
@@ -97,11 +93,11 @@ namespace WwtDataUtils
     /// </summary>
     public unsafe class FastBitmap
     {
-        Bitmap bitmap;
+        readonly Bitmap bitmap;
 
         // three elements used for MakeGreyUnsafe
         int width;
-        BitmapData bitmapData = null;
+        BitmapData bitmapData;
         Byte* pBase = null;
         PixelData* pCurrentPixel = null;
         int xLocation;
@@ -117,8 +113,8 @@ namespace WwtDataUtils
         {
             this.bitmap = bitmap;
 
-            GraphicsUnit unit = GraphicsUnit.Pixel;
-            RectangleF bounds = bitmap.GetBounds(ref unit);
+            var unit = GraphicsUnit.Pixel;
+            var bounds = bitmap.GetBounds(ref unit);
 
             size = new Point((int)bounds.Width, (int)bounds.Height);
         }
@@ -174,7 +170,7 @@ namespace WwtDataUtils
         /// <returns>The next pixel, or null if done</returns>
         public PixelData* GetNextPixel()
         {
-            PixelData* pReturnPixel = pCurrentPixel;
+            var pReturnPixel = pCurrentPixel;
             if (xLocation == size.X)
             {
                 xLocation = 0;
@@ -184,10 +180,7 @@ namespace WwtDataUtils
                     UnlockBitmap();
                     return null;
                 }
-                else
-                {
-                    pCurrentPixel = this[0, yLocation];
-                }
+                pCurrentPixel = this[0, yLocation];
             }
             else
             {
@@ -225,9 +218,9 @@ namespace WwtDataUtils
         /// </summary>
         public void LockBitmap()
         {
-            GraphicsUnit unit = GraphicsUnit.Pixel;
-            RectangleF boundsF = bitmap.GetBounds(ref unit);
-            Rectangle bounds = new Rectangle((int)boundsF.X,
+            var unit = GraphicsUnit.Pixel;
+            var boundsF = bitmap.GetBounds(ref unit);
+            var bounds = new Rectangle((int)boundsF.X,
                 (int)boundsF.Y,
                 (int)boundsF.Width,
                 (int)boundsF.Height);
@@ -251,9 +244,9 @@ namespace WwtDataUtils
 
         public void LockBitmapRgb()
         {
-            GraphicsUnit unit = GraphicsUnit.Pixel;
-            RectangleF boundsF = bitmap.GetBounds(ref unit);
-            Rectangle bounds = new Rectangle((int)boundsF.X,
+            var unit = GraphicsUnit.Pixel;
+            var boundsF = bitmap.GetBounds(ref unit);
+            var bounds = new Rectangle((int)boundsF.X,
                 (int)boundsF.Y,
                 (int)boundsF.Width,
                 (int)boundsF.Height);
@@ -287,21 +280,21 @@ namespace WwtDataUtils
 
         public PixelData GetFilteredPixel(double xd, double yd)
         {
-            int x = (int)(xd);
+            var x = (int)(xd);
 
-            double xr = xd - (double)x;
+            var xr = xd - x;
 
-            int y = (int)(yd);
+            var y = (int)(yd);
 
-            double yr = yd - (double)y;
+            var yr = yd - y;
 
             if (x < 0 || x > (bitmap.Width - 1) || y < 0 || y > (bitmap.Height - 1))
             {
                 return new PixelData();
             }
 
-            int stepX = 1;
-            int stepY = 1;
+            var stepX = 1;
+            var stepY = 1;
 
             if (x == bitmap.Width - 1)
             {
@@ -312,21 +305,21 @@ namespace WwtDataUtils
                 stepY = 0;
             }
 
-            PixelData* tl = this[x, y];
-            PixelData* tr = this[x + stepX, y];
-            PixelData* bl = this[x, y + stepY];
-            PixelData* br = this[x + stepX, y + stepY];
+            var tl = this[x, y];
+            var tr = this[x + stepX, y];
+            var bl = this[x, y + stepY];
+            var br = this[x + stepX, y + stepY];
 
             PixelData result;
 
-            result.alpha = (byte)((((((double)tl->alpha * (1.0 - xr)) + ((double)tr->alpha * xr))) * (1.0 - yr)) +
-                             (((((double)bl->alpha * (1.0 - xr)) + ((double)br->alpha * xr))) * yr));
-            result.red = (byte)((((((double)tl->red * (1.0 - xr)) + ((double)tr->red * xr))) * (1.0 - yr)) +
-                             (((((double)bl->red * (1.0 - xr)) + ((double)br->red * xr))) * yr));
-            result.green = (byte)((((((double)tl->green * (1.0 - xr)) + ((double)tr->green * xr))) * (1.0 - yr)) +
-                             (((((double)bl->green * (1.0 - xr)) + ((double)br->green * xr))) * yr));
-            result.blue = (byte)((((((double)tl->blue * (1.0 - xr)) + ((double)tr->blue * xr))) * (1.0 - yr)) +
-                             (((((double)bl->blue * (1.0 - xr)) + ((double)br->blue * xr))) * yr));
+            result.alpha = (byte)(((((tl->alpha * (1.0 - xr)) + (tr->alpha * xr))) * (1.0 - yr)) +
+                             ((((bl->alpha * (1.0 - xr)) + (br->alpha * xr))) * yr));
+            result.red = (byte)(((((tl->red * (1.0 - xr)) + (tr->red * xr))) * (1.0 - yr)) +
+                             ((((bl->red * (1.0 - xr)) + (br->red * xr))) * yr));
+            result.green = (byte)(((((tl->green * (1.0 - xr)) + (tr->green * xr))) * (1.0 - yr)) +
+                             ((((bl->green * (1.0 - xr)) + (br->green * xr))) * yr));
+            result.blue = (byte)(((((tl->blue * (1.0 - xr)) + (tr->blue * xr))) * (1.0 - yr)) +
+                             ((((bl->blue * (1.0 - xr)) + (br->blue * xr))) * yr));
 
 
             return result;

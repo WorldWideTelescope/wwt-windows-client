@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -15,7 +12,7 @@ namespace TerraViewer
         #region IScriptable Members
         ScriptableProperty[] IScriptable.GetProperties()
         {
-            List<ScriptableProperty> props = new List<ScriptableProperty>();
+            var props = new List<ScriptableProperty>();
 
             props.Add(new ScriptableProperty("Opacity", ScriptablePropertyTypes.BlendState, ScriptablePropertyScale.Linear, 0, 1, true));
             props.Add(new ScriptableProperty("Heading", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -180, +180, false));
@@ -41,7 +38,7 @@ namespace TerraViewer
                 }
                 try
                 {
-                    LayerActions action = (LayerActions)Enum.Parse(typeof(LayerActions), name, true);
+                    var action = (LayerActions)Enum.Parse(typeof(LayerActions), name, true);
 
                     switch (action)
                     {
@@ -65,10 +62,10 @@ namespace TerraViewer
             {
                 if (LayerManager.CurrentSelection is LayerMap)
                 {
-                    LayerMap map = LayerManager.CurrentSelection as LayerMap;
+                    var map = LayerManager.CurrentSelection as LayerMap;
                     if (map.Frame.reference == ReferenceFrames.Custom)
                     {
-                        ReferenceFrame frame = map.Frame;
+                        var frame = map.Frame;
                         double val;
                         if (name.ToLower() == "scale")
                         {
@@ -82,7 +79,7 @@ namespace TerraViewer
                         if (name.ToLower().StartsWith("translate."))
                         {
                             val = double.Parse(value);
-                            Vector3d translate = frame.translation;
+                            var translate = frame.translation;
                             switch (name.ToLower())
                             {
                                 case "translate.x":
@@ -113,10 +110,10 @@ namespace TerraViewer
 
                     //Earth3d.MainWindow.Invoke(doIt);
 
-                    Layer layer = LayerManager.CurrentSelection as Layer;
+                    var layer = LayerManager.CurrentSelection as Layer;
                     if ( layer is Object3dLayer)
                     {
-                        Object3dLayer object3d = layer as Object3dLayer;
+                        var object3d = layer as Object3dLayer;
                         double val;
                         if (name.ToLower() == "scale")
                         {
@@ -130,7 +127,7 @@ namespace TerraViewer
                         if (name.ToLower().StartsWith("translate."))
                         {
                             val = double.Parse(value);
-                            Vector3d translate = object3d.Translate;
+                            var translate = object3d.Translate;
                             switch (name.ToLower())
                             {
                                 case "translate.x":
@@ -164,7 +161,7 @@ namespace TerraViewer
                 {
                     if (LayerManager.CurrentSelection is Layer)
                     {
-                        Layer layer = LayerManager.CurrentSelection as Layer;
+                        var layer = LayerManager.CurrentSelection as Layer;
 
                         return layer.GetProp(name);
                     }
@@ -185,7 +182,7 @@ namespace TerraViewer
 
             if (LayerManager.CurrentSelection is Layer)
             {
-                Layer layer = LayerManager.CurrentSelection as Layer;
+                var layer = LayerManager.CurrentSelection as Layer;
 
                 if (name == "Opacity")
                 {
@@ -195,11 +192,8 @@ namespace TerraViewer
                             layer.Opacity = 100;
                             return true;
                         }
-                        else
-                        {
-                            layer.Opacity = 0;
-                            return false;
-                        }
+                        layer.Opacity = 0;
+                        return false;
                     }
                 }
             }

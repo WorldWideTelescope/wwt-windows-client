@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace TerraViewer
+﻿namespace TerraViewer
 {
     public class SettingsAnimator : IAnimatable
     {
-        StockSkyOverlayTypes settingsType = StockSkyOverlayTypes.AltAzGrid;
+        readonly StockSkyOverlayTypes settingsType = StockSkyOverlayTypes.AltAzGrid;
 
-        double currentValue = 0;
+        double currentValue;
 
         public double CurrentValue
         {
@@ -26,7 +21,7 @@ namespace TerraViewer
             set { filter = value; }
         }
 
-        bool constant = false;
+        bool constant;
 
         public bool Constant
         {
@@ -44,7 +39,7 @@ namespace TerraViewer
         public SettingsAnimator(StockSkyOverlayTypes type)
         {
             settingsType = type;
-            SettingParameter sp = Settings.Ambient.GetSetting(settingsType);
+            var sp = Settings.Ambient.GetSetting(settingsType);
             constant = sp.EdgeTrigger;
 
             if (sp.Filter != null)
@@ -55,16 +50,13 @@ namespace TerraViewer
 
         public double[] GetParams()
         {
-            SettingParameter sp = Settings.Ambient.GetSetting(settingsType);
+            var sp = Settings.Ambient.GetSetting(settingsType);
             if (sp.Filter == null)
             {
-                return new double[] { sp.Opacity };
+                return new[] { sp.Opacity };
             }
-            else
-            {
-                filter.SetBits(sp.Filter.GetBits());
-                return new double[] { sp.Opacity, filter.Bits[0], filter.Bits[1], filter.Bits[2] };
-            }
+            filter.SetBits(sp.Filter.GetBits());
+            return new[] { sp.Opacity, filter.Bits[0], filter.Bits[1], filter.Bits[2] };
         }
 
         public string[] GetParamNames()
@@ -73,17 +65,11 @@ namespace TerraViewer
             {
                 if (constant)
                 {
-                    return new string[] { "Visible" };
+                    return new[] { "Visible" };
                 }
-                else
-                {
-                    return new string[] { "Opacity" };
-                }
+                return new[] { "Opacity" };
             }
-            else
-            {
-                return new string[] { "Opacity", "Filter1", "Filter2", "Filter3" };
-            }
+            return new[] { "Opacity", "Filter1", "Filter2", "Filter3" };
         }
 
         public BaseTweenType[] GetParamTypes()
@@ -92,18 +78,11 @@ namespace TerraViewer
             {
                 if (constant)
                 {
-                    return new BaseTweenType[] { BaseTweenType.Constant };
+                    return new[] { BaseTweenType.Constant };
                 }
-                else
-                {
-                    return new BaseTweenType[] { BaseTweenType.Linear };
-                }
-
+                return new[] { BaseTweenType.Linear };
             }
-            else
-            {
-                return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Constant, BaseTweenType.Constant, BaseTweenType.Constant };
-            }
+            return new[] { BaseTweenType.Linear, BaseTweenType.Constant, BaseTweenType.Constant, BaseTweenType.Constant };
         }
 
         public void SetParams(double[] paramList)

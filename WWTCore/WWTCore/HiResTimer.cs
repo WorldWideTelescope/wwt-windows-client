@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 namespace TerraViewer
 {
 
     public class HiResTimer
     {
-        static private bool isPerfCounterSupported = false;
-        static private Int64 frequency = 0;
+        static private readonly bool isPerfCounterSupported;
+        static private readonly Int64 frequency;
 
         // Windows CE native library with QueryPerformanceCounter().
         private const string lib = "kernel32.dll";
@@ -25,7 +23,7 @@ namespace TerraViewer
             // returned by Environment.TickCount.
             // A return value of 0 indicates that the performance counter is
             // not supported.
-            int returnVal = QueryPerformanceFrequency(ref frequency);
+            var returnVal = QueryPerformanceFrequency(ref frequency);
 
             if (returnVal != 0 && frequency != 1000)
             {
@@ -60,11 +58,8 @@ namespace TerraViewer
                     QueryPerformanceCounter(ref tickCount);
                     return tickCount;
                 }
-                else
-                {
-                    // Otherwise, use Environment.TickCount.
-                    return (Int64)Environment.TickCount;
-                }
+                // Otherwise, use Environment.TickCount.
+                return Environment.TickCount;
             }
         }
     }

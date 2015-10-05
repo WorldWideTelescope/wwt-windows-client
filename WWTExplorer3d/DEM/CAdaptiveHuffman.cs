@@ -12,7 +12,8 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 {
@@ -35,8 +36,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 			internal static readonly int[]  gSecondDisc = { 0,0,0,0, 0,0, 1,0, 0,0, 0,0,1 };
 
 			// Huffman lookup tables
-			internal static readonly short[] g4HuffLookupTable =
-			  new short[] { 19,19,19,19,27,27,27,27,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0 };
+			internal static readonly short[] g4HuffLookupTable = { 19,19,19,19,27,27,27,27,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0 };
 
 			internal static readonly short[][] g5HuffLookupTable = { 
 			  new short[] { 28,28,36,36,19,19,19,19,10,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0 },
@@ -78,9 +78,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 
 			internal static readonly int[] g7DeltaTable = { 1,0,-1,-1,-1,-1,-1 };
 
-			internal static readonly int[] g8DeltaTable = { -1,0,1,1,-1,0,1,1 };
-
-			internal static readonly int[] g9DeltaTable = { 2,2,1,1,-1,-2,-2,-2,-3 };
+		    internal static readonly int[] g9DeltaTable = { 2,2,1,1,-1,-2,-2,-2,-3 };
 
 			internal static readonly int[] g12DeltaTable = {
 				1, 1, 1, 1, 1, 0, 0,-1, 2, 1, 0, 0,
@@ -120,7 +118,7 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				throw new ArgumentOutOfRangeException("iNSymbols", "iNSymbols = " + iNSymbols);
 			}
 
-			this.m_iNSymbols = iNSymbols;
+			m_iNSymbols = iNSymbols;
 
 			m_pDelta = null;
 			m_iDiscriminant = m_iUpperBound = m_iLowerBound = 0;
@@ -141,13 +139,14 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 				bitIO.GetBit16((uint)(iSymbol & ((1 << Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
 			}
 
-			int iSymbolHuff = iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
+			var iSymbolHuff = iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
 
 			if (iSymbolHuff < 0)
 			{
 				iSymbolHuff = iSymbol;
 				while ((iSymbolHuff = m_pHuffman.m_hufDecTable[iSymbolHuff + Constant.SIGN_BIT[2] + bitIO.GetBit16(1)]) < 0)
-					;
+				{
+				}
 			}
 			return iSymbolHuff;
 		}
@@ -158,9 +157,9 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		internal int GetHuffShort(SimpleBitIO bitIO)
 		{
 			int iSymbol = m_pHuffman.m_hufDecTable[bitIO.PeekBit16(Constant.HUFFMAN_DECODE_ROOT_BITS)];
-			System.Diagnostics.Debug.Assert(iSymbol >= 0);
+			Debug.Assert(iSymbol >= 0);
 
-			bitIO.GetBit16((uint)(iSymbol & ((1 << (byte)Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
+			bitIO.GetBit16((uint)(iSymbol & ((1 << Constant.HUFFMAN_DECODE_ROOT_BITS_LOG) - 1)));
 			return iSymbol >> Constant.HUFFMAN_DECODE_ROOT_BITS_LOG;
 		}
 
@@ -168,10 +167,10 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 		/**********************************************************************
 		  Adapt fixed length codes based on discriminant
 		**********************************************************************/
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		internal void AdaptDiscriminant()
 		{
-			bool bChange = false;
+			var bChange = false;
 
 			if (!m_bInitialize)
 			{
@@ -226,9 +225,9 @@ namespace Microsoft.Maps.ElevationAdjustmentService.HDPhoto
 					m_iDiscriminant1 = Constant.THRESHOLD * Constant.MEMORY;
 				}
 
-			int t = m_iTableIndex;
-			System.Diagnostics.Debug.Assert(t >= 0);
-			System.Diagnostics.Debug.Assert(t < Constant.gMaxTables[m_iNSymbols]);
+			var t = m_iTableIndex;
+			Debug.Assert(t >= 0);
+			Debug.Assert(t < Constant.gMaxTables[m_iNSymbols]);
 
 			m_iLowerBound = (t == 0) ? (-1 << 31) : -Constant.THRESHOLD;
 			m_iUpperBound = (t == Constant.gMaxTables[m_iNSymbols] - 1) ? (1 << 30) : Constant.THRESHOLD;

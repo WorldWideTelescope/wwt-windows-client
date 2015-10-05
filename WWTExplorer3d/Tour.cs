@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 using System.Net;
+using TerraViewer.Properties;
 
 
 namespace TerraViewer
@@ -12,7 +15,7 @@ namespace TerraViewer
     public enum UserLevel { Beginner, Intermediate, Advanced, Educator, Professional };
     public class TourDocument : IDisposable
     {
-        int tourDirty = 0;
+        int tourDirty;
         public bool TourDirty
         {
             get { return tourDirty > 0; }
@@ -41,7 +44,7 @@ namespace TerraViewer
             {
                 if (String.IsNullOrEmpty(workingDirectory))
                 {
-                    workingDirectory = TourDocument.BaseWorkingDirectory + id.ToString() + @"\";
+                    workingDirectory = BaseWorkingDirectory + id + @"\";
                 }
 
                 if (!Directory.Exists(workingDirectory))
@@ -67,9 +70,9 @@ namespace TerraViewer
 
         public static TourDocument FromFile(string filename, bool forEdit)
         {
-            FileCabinet cab = new FileCabinet(filename, BaseWorkingDirectory);
+            var cab = new FileCabinet(filename, BaseWorkingDirectory);
             cab.Extract();
-            TourDocument newTour =  TourDocument.FromXml(cab.MasterFile);
+            var newTour =  FromXml(cab.MasterFile);
             if (forEdit)
             {
                 newTour.SaveFileName = filename;
@@ -80,13 +83,13 @@ namespace TerraViewer
 
         public void MergeTour(string filename)
         {
-            FileCabinet cab = new FileCabinet(filename, BaseWorkingDirectory);
+            var cab = new FileCabinet(filename, BaseWorkingDirectory);
             cab.Extract(false, WorkingDirectory);
 
             MergeTourStopsFromXml(cab.MasterFile);
         }
 
-        string saveFileName = null;
+        string saveFileName;
 
         public string SaveFileName
         {
@@ -101,7 +104,7 @@ namespace TerraViewer
 
         public bool IsTimelineTour()
         {
-            foreach (TourStop stop in TourStops)
+            foreach (var stop in TourStops)
             {
                 if (stop.KeyFramed)
                 {
@@ -114,7 +117,7 @@ namespace TerraViewer
 
         public bool IsWebCompatible()
         {
-            foreach (TourStop stop in TourStops)
+            foreach (var stop in TourStops)
             {
                 if (stop.Target.BackgroundImageSet.DataSetType == ImageSetType.SolarSystem)
                 {
@@ -129,18 +132,18 @@ namespace TerraViewer
         public static TourDocument FromXml(string filename)
         {
 
-            TourDocument newTour = new TourDocument();
+            var newTour = new TourDocument();
             newTour.filename = filename;
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.Load(filename);
 
 
             XmlNode root = doc["Tour"];
 
 
-            newTour.id = root.Attributes["ID"].Value.ToString();
-            newTour.Title = root.Attributes["Title"].Value.ToString();
-            newTour.Author = root.Attributes["Author"].Value.ToString();
+            newTour.id = root.Attributes["ID"].Value;
+            newTour.Title = root.Attributes["Title"].Value;
+            newTour.Author = root.Attributes["Author"].Value;
 
             if (root.Attributes["Descirption"] != null)
             {
@@ -172,12 +175,12 @@ namespace TerraViewer
                 newTour.DomeMode = bool.Parse(root.Attributes["DomeMode"].Value);
             }
 
-            newTour.organizationUrl = root.Attributes["OrganizationUrl"].Value.ToString();
-            newTour.level = (UserLevel)Enum.Parse(typeof(UserLevel), root.Attributes["UserLevel"].Value.ToString());
-            newTour.type = (Classification)Enum.Parse(typeof(Classification), root.Attributes["Classification"].Value.ToString());
-            newTour.taxonomy = root.Attributes["Taxonomy"].Value.ToString();
+            newTour.organizationUrl = root.Attributes["OrganizationUrl"].Value;
+            newTour.level = (UserLevel)Enum.Parse(typeof(UserLevel), root.Attributes["UserLevel"].Value);
+            newTour.type = (Classification)Enum.Parse(typeof(Classification), root.Attributes["Classification"].Value);
+            newTour.taxonomy = root.Attributes["Taxonomy"].Value;
 
-            bool timeLineTour = false;
+            var timeLineTour = false;
             if (root.Attributes["TimeLineTour"] != null)
             {
                 timeLineTour = bool.Parse(root.Attributes["TimeLineTour"].Value);
@@ -207,11 +210,11 @@ namespace TerraViewer
             {
                 foreach (XmlNode frame in Frames)
                 {
-                    ReferenceFrame newFrame = new ReferenceFrame();
+                    var newFrame = new ReferenceFrame();
                     newFrame.InitializeFromXml(frame);
                     if (!LayerManager.AllMaps.ContainsKey(newFrame.Name))
                     {
-                        LayerMap map = new LayerMap(newFrame.Name, ReferenceFrames.Custom);
+                        var map = new LayerMap(newFrame.Name, ReferenceFrames.Custom);
                         map.Frame = newFrame;
                         map.LoadedFromTour = true;
                         LayerManager.AllMaps.Add(newFrame.Name, map);
@@ -227,8 +230,8 @@ namespace TerraViewer
             {
                 foreach (XmlNode layer in Layers)
                 {
-                    Layer newLayer = Layer.FromXml(layer, true);
-                    string fileName = newTour.WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
+                    var newLayer = Layer.FromXml(layer, true);
+                    var fileName = newTour.WorkingDirectory + string.Format("{0}.txt", newLayer.ID);
 
                     // Overwite ISS layer if in a tour using the authored ISS details
                     if (LayerManager.LayerList.ContainsKey(newLayer.ID) && newLayer.ID == ISSLayer.ISSGuid)
@@ -241,7 +244,7 @@ namespace TerraViewer
                     {
                         if (!newTour.CollisionChecked)
                         {
-                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 newTour.OverWrite = true;
                             }
@@ -283,14 +286,14 @@ namespace TerraViewer
         public void MergeTourStopsFromXml(string filename)
         {
 
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.Load(filename);
 
 
             XmlNode root = doc["Tour"];
 
 
-            bool timeLineTour = false;
+            var timeLineTour = false;
             if (root.Attributes["TimeLineTour"] != null)
             {
                 timeLineTour = bool.Parse(root.Attributes["TimeLineTour"].Value);
@@ -320,11 +323,11 @@ namespace TerraViewer
             {
                 foreach (XmlNode frame in Frames)
                 {
-                    ReferenceFrame newFrame = new ReferenceFrame();
+                    var newFrame = new ReferenceFrame();
                     newFrame.InitializeFromXml(frame);
                     if (!LayerManager.AllMaps.ContainsKey(newFrame.Name))
                     {
-                        LayerMap map = new LayerMap(newFrame.Name, ReferenceFrames.Custom);
+                        var map = new LayerMap(newFrame.Name, ReferenceFrames.Custom);
                         map.Frame = newFrame;
                         LayerManager.AllMaps.Add(newFrame.Name, map);
                     }
@@ -341,8 +344,8 @@ namespace TerraViewer
             {
                 foreach (XmlNode layer in Layers)
                 {
-                    Layer newLayer = Layer.FromXml(layer, true);
-                    string fileName = WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
+                    var newLayer = Layer.FromXml(layer, true);
+                    var fileName = WorkingDirectory + string.Format("{0}.txt", newLayer.ID);
 
                     newLayer.LoadData(fileName);
                     LayerManager.Add(newLayer, false);
@@ -365,7 +368,7 @@ namespace TerraViewer
         {
             get
             {
-                return Properties.Settings.Default.CahceDirectory + @"Temp\" + id.ToString() + "\\" + id.ToString() + ".wwtxml";
+                return Properties.Settings.Default.CahceDirectory + @"Temp\" + id + "\\" + id + ".wwtxml";
             }
         }
 
@@ -382,13 +385,13 @@ namespace TerraViewer
                 // Try with title first cleaned for filename
                 if (String.IsNullOrEmpty(filename) && UiTools.CleanFileName(title) != null)
                 {
-                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + UiTools.CleanFileName(this.title) + ".wwtxml";
+                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + UiTools.CleanFileName(title) + ".wwtxml";
                 }
 
                 //Use a guid if the Title is only non-legal characters or is empty
                 if (String.IsNullOrEmpty(filename))
                 {
-                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + id.ToString() + ".wwtxml";
+                    filename = Properties.Settings.Default.CahceDirectory + @"Temp\" + id + ".wwtxml";
                 }
                 outFile = filename;
             }
@@ -403,52 +406,52 @@ namespace TerraViewer
 
             if (authorImage != null)
             {
-                UiTools.SaveBitmap(authorImage,AuthorThumbnailFilename,System.Drawing.Imaging.ImageFormat.Png);
+                UiTools.SaveBitmap(authorImage,AuthorThumbnailFilename,ImageFormat.Png);
             }
 
         }
 
         internal void WriteTourXML(string outFile)
         {
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(outFile, System.Text.Encoding.UTF8))
+            using (var xmlWriter = new XmlTextWriter(outFile, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("Tour");
 
-                xmlWriter.WriteAttributeString("ID", this.id);
-                xmlWriter.WriteAttributeString("Title", this.title);
-                xmlWriter.WriteAttributeString("Descirption", this.Description);
-                xmlWriter.WriteAttributeString("Description", this.Description);
-                xmlWriter.WriteAttributeString("RunTime", this.RunTime.TotalSeconds.ToString());
-                xmlWriter.WriteAttributeString("Author", this.author);
-                xmlWriter.WriteAttributeString("AuthorEmail", this.authorEmail);
-                xmlWriter.WriteAttributeString("OrganizationUrl", this.organizationUrl);
-                xmlWriter.WriteAttributeString("OrganizationName", this.OrgName);
-                xmlWriter.WriteAttributeString("Keywords", this.Keywords);
+                xmlWriter.WriteAttributeString("ID", id);
+                xmlWriter.WriteAttributeString("Title", title);
+                xmlWriter.WriteAttributeString("Descirption", Description);
+                xmlWriter.WriteAttributeString("Description", Description);
+                xmlWriter.WriteAttributeString("RunTime", RunTime.TotalSeconds.ToString());
+                xmlWriter.WriteAttributeString("Author", author);
+                xmlWriter.WriteAttributeString("AuthorEmail", authorEmail);
+                xmlWriter.WriteAttributeString("OrganizationUrl", organizationUrl);
+                xmlWriter.WriteAttributeString("OrganizationName", OrgName);
+                xmlWriter.WriteAttributeString("Keywords", Keywords);
                 xmlWriter.WriteAttributeString("UserLevel", level.ToString());
                 xmlWriter.WriteAttributeString("Classification", type.ToString());
-                xmlWriter.WriteAttributeString("Taxonomy", taxonomy.ToString());
+                xmlWriter.WriteAttributeString("Taxonomy", taxonomy);
                 xmlWriter.WriteAttributeString("DomeMode", DomeMode.ToString());
-                bool timeLineTour = IsTimelineTour();
+                var timeLineTour = IsTimelineTour();
                 xmlWriter.WriteAttributeString("TimeLineTour", timeLineTour.ToString());
 
                 if (timeLineTour)
                 {
                     xmlWriter.WriteStartElement("TimeLineTourStops");
-                    foreach (TourStop stop in TourStops)
+                    foreach (var stop in TourStops)
                     {
                         stop.SaveToXml(xmlWriter, true);
                     }
                     xmlWriter.WriteEndElement();
 
-                    xmlWriter.WriteRaw(Properties.Resources.UpdateRequired);
+                    xmlWriter.WriteRaw(Resources.UpdateRequired);
 
                 }           
                 else
                 {
                     xmlWriter.WriteStartElement("TourStops");
-                    foreach (TourStop stop in TourStops)
+                    foreach (var stop in TourStops)
                     {
                         stop.SaveToXml(xmlWriter, true);
                     }
@@ -456,13 +459,13 @@ namespace TerraViewer
                 }
 
 
-                List<Guid> masterList = CreateLayerMasterList();
+                var masterList = CreateLayerMasterList();
 
                 // This will now save and sync emtpy frames...
-                List<ReferenceFrame> referencedFrames = GetReferenceFrameList();
+                var referencedFrames = GetReferenceFrameList();
 
                 xmlWriter.WriteStartElement("ReferenceFrames");
-                foreach (ReferenceFrame item in referencedFrames)
+                foreach (var item in referencedFrames)
                 {
                     item.SaveToXml(xmlWriter);
                 }
@@ -470,11 +473,11 @@ namespace TerraViewer
 
 
                 xmlWriter.WriteStartElement("Layers");
-                foreach (Guid id in masterList)
+                foreach (var t in masterList)
                 {
-                    if (LayerManager.LayerList.ContainsKey(id))
+                    if (LayerManager.LayerList.ContainsKey(t))
                     {
-                        LayerManager.LayerList[id].SaveToXml(xmlWriter);
+                        LayerManager.LayerList[t].SaveToXml(xmlWriter);
                     }
                 }
                 xmlWriter.WriteEndElement();
@@ -489,13 +492,13 @@ namespace TerraViewer
         private List<ReferenceFrame> GetReferenceFrameList(List<Guid> masterList)
         {
             
-            List<ReferenceFrame> list = new List<ReferenceFrame>();
+            var list = new List<ReferenceFrame>();
 
-            foreach (Guid id in masterList)
+            foreach (var id in masterList)
             {
                 if (LayerManager.LayerList.ContainsKey(id))
                 {
-                    string frame = LayerManager.LayerList[id].ReferenceFrame;
+                    var frame = LayerManager.LayerList[id].ReferenceFrame;
 
                     while (!string.IsNullOrEmpty(frame))
                     {
@@ -518,9 +521,9 @@ namespace TerraViewer
 
         private List<ReferenceFrame> GetReferenceFrameList()
         {
-            List<ReferenceFrame> list = new List<ReferenceFrame>();
+            var list = new List<ReferenceFrame>();
 
-            foreach (LayerMap lm in LayerManager.AllMaps.Values)
+            foreach (var lm in LayerManager.AllMaps.Values)
             {
                 if ((lm.Frame.Reference == ReferenceFrames.Custom || lm.Frame.Reference == ReferenceFrames.Identity) && !list.Contains(lm.Frame) && lm.Frame.SystemGenerated == false)
                 {
@@ -533,10 +536,10 @@ namespace TerraViewer
 
         private List<Guid> CreateLayerMasterList()
         {
-            List<Guid> masterList = new List<Guid>();
-            foreach (TourStop stop in TourStops)
+            var masterList = new List<Guid>();
+            foreach (var stop in TourStops)
             {
-                foreach (Guid id in stop.Layers.Keys)
+                foreach (var id in stop.Layers.Keys)
                 {
                     if (!masterList.Contains(id))
                     {
@@ -568,10 +571,7 @@ namespace TerraViewer
                 {
                     return tourStops[representativeThumbnailTourstop].TourStopThumbnailFilename;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }        
 
@@ -616,58 +616,58 @@ namespace TerraViewer
 
         public string GetXmlSubmitString()
         {
-            using (StringWriter sw = new StringWriter())
+            using (var sw = new StringWriter())
             {
-                using (XmlTextWriter xmlWriter = new XmlTextWriter(sw))
+                using (var xmlWriter = new XmlTextWriter(sw))
                 {
                     xmlWriter.Formatting = Formatting.Indented;
                     xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-16'");
                     xmlWriter.WriteStartElement("ImportTourRequest");
                     xmlWriter.WriteStartElement("Tour");
-                    xmlWriter.WriteElementString("TourGUID", this.id);
-                    xmlWriter.WriteElementString("Title", this.title);
-                    xmlWriter.WriteElementString("Description", this.description);
-                    xmlWriter.WriteElementString("AttributesAndCredits", this.attributesAndCredits);
+                    xmlWriter.WriteElementString("TourGUID", id);
+                    xmlWriter.WriteElementString("Title", title);
+                    xmlWriter.WriteElementString("Description", description);
+                    xmlWriter.WriteElementString("AttributesAndCredits", attributesAndCredits);
                     xmlWriter.WriteStartElement("Author");
-                    xmlWriter.WriteElementString("Name", this.author);
-                    xmlWriter.WriteElementString("EMailAddr", this.authorEmail);
-                    xmlWriter.WriteElementString("URL", this.authorUrl);
-                    xmlWriter.WriteElementString("OtherEmails", this.authorEmailOther);
-                    xmlWriter.WriteElementString("ContactPhone", this.authorPhone);
-                    xmlWriter.WriteElementString("ContactText", this.authorContactText);
+                    xmlWriter.WriteElementString("Name", author);
+                    xmlWriter.WriteElementString("EMailAddr", authorEmail);
+                    xmlWriter.WriteElementString("URL", authorUrl);
+                    xmlWriter.WriteElementString("OtherEmails", authorEmailOther);
+                    xmlWriter.WriteElementString("ContactPhone", authorPhone);
+                    xmlWriter.WriteElementString("ContactText", authorContactText);
                     xmlWriter.WriteStartElement("Organization");
-                    xmlWriter.WriteElementString("OrgName", this.orgName);
-                    xmlWriter.WriteElementString("URL", this.organizationUrl);
+                    xmlWriter.WriteElementString("OrgName", orgName);
+                    xmlWriter.WriteElementString("URL", organizationUrl);
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteStartElement("Keywords");
-                    foreach (string keyword in this.Keywords.Split(new char[] {';'}))
+                    foreach (var keyword in Keywords.Split(new[] {';'}))
                     {
                         xmlWriter.WriteElementString("Keyword", keyword);
                     }
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteStartElement("AstroObjects");
-                    foreach (string obj in this.Objects.Split(new char[] {';'}))
+                    foreach (var obj in Objects.Split(new[] {';'}))
                     {
                         xmlWriter.WriteElementString("AstroObject", obj);
                     }
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteStartElement("ImageTaxonomyHierarchy");
-                    foreach (string node in this.Taxonomy.Split(new char[] {';'}))
+                    foreach (var node in Taxonomy.Split(new[] {';'}))
                     {
                         xmlWriter.WriteElementString("ITH_Node", node);
                     }
                     xmlWriter.WriteEndElement();
 
                     xmlWriter.WriteStartElement("ExplicitTourLinks");
-                    foreach (string guid in this.ExplicitTourLinks)
+                    foreach (var guid in ExplicitTourLinks)
                     {
                         xmlWriter.WriteElementString("TourGUID", guid);
                     }
                     xmlWriter.WriteEndElement();
-                    xmlWriter.WriteElementString("LengthInSecs", ((int)(this.runTime.TotalSeconds+.9)).ToString());
+                    xmlWriter.WriteElementString("LengthInSecs", ((int)(runTime.TotalSeconds+.9)).ToString());
 
                     xmlWriter.WriteEndElement();
                     xmlWriter.WriteEndElement();
@@ -689,11 +689,11 @@ namespace TerraViewer
             GC.Collect();
             SaveToXml(false);
 
-            FileCabinet fc = new FileCabinet(saveFilename, BaseWorkingDirectory);
-            fc.PackageID = this.Id;
+            var fc = new FileCabinet(saveFilename, BaseWorkingDirectory);
+            fc.PackageID = Id;
             if (!tempFile)
             {
-                this.saveFileName = saveFilename;
+                saveFileName = saveFilename;
             }
 
             fc.AddFile(filename);
@@ -703,14 +703,14 @@ namespace TerraViewer
                 fc.AddFile(WorkingDirectory + "Author.Png");
             }
 
-            foreach (TourStop stop in TourStops)
+            foreach (var stop in TourStops)
             {
                 stop.AddFilesToCabinet(fc, excludeAudio);
             }
 
-            List<Guid> masterList = CreateLayerMasterList();
+            var masterList = CreateLayerMasterList();
 
-            foreach (Guid id in masterList)
+            foreach (var id in masterList)
             {
                 if (LayerManager.LayerList.ContainsKey(id))
                 {
@@ -742,8 +742,8 @@ namespace TerraViewer
             }
         }
 
-        TimeSpan runTime = new TimeSpan();
-        int lastDirtyCheck = 0;
+        TimeSpan runTime;
+        int lastDirtyCheck;
 
         public TimeSpan RunTime
         {
@@ -977,7 +977,7 @@ namespace TerraViewer
                 TourDirty = true;
             }
         }
-        bool editMode = false;
+        bool editMode;
 
         public bool EditMode
         {
@@ -1077,10 +1077,10 @@ namespace TerraViewer
 
         private TimeSpan CalculateRunTime()
         {
-            double totalTime = 0.0;
-            for (int i = 0; i < tourStops.Count; i++)
+            var totalTime = 0.0;
+            for (var i = 0; i < tourStops.Count; i++)
             {
-                totalTime += (double)(tourStops[i].Duration.TotalMilliseconds / 1000);
+                totalTime += tourStops[i].Duration.TotalMilliseconds / 1000;
                 if (i > 0)
                 {
                     switch (tourStops[i].Transition)
@@ -1089,8 +1089,8 @@ namespace TerraViewer
                             if (tourStops[i].Target.BackgroundImageSet == null || (tourStops[i - 1].Target.BackgroundImageSet.DataSetType == tourStops[i].Target.BackgroundImageSet.DataSetType
                                 && ((tourStops[i - 1].Target.BackgroundImageSet.DataSetType != ImageSetType.SolarSystem) || (tourStops[i - 1].Target.Target == tourStops[i].Target.Target))))
                             {
-                                CameraParameters start = tourStops[i - 1].EndTarget == null ? tourStops[i - 1].Target.CamParams : tourStops[i - 1].EndTarget.CamParams;
-                                ViewMoverSlew slew = new ViewMoverSlew(start, tourStops[i].Target.CamParams);
+                                var start = tourStops[i - 1].EndTarget == null ? tourStops[i - 1].Target.CamParams : tourStops[i - 1].EndTarget.CamParams;
+                                var slew = new ViewMoverSlew(start, tourStops[i].Target.CamParams);
                                 totalTime += slew.MoveTime;
                             }
                             break;
@@ -1114,20 +1114,20 @@ namespace TerraViewer
             {
                 return 0;
             }
-            double totalTime = 0.0;
-            for (int i = 0; i < index; i++)
+            var totalTime = 0.0;
+            for (var i = 0; i < index; i++)
             {
-                totalTime += (double)(tourStops[i].Duration.TotalMilliseconds / 1000);
+                totalTime += tourStops[i].Duration.TotalMilliseconds / 1000;
                 if (i > 0)
                 {
                     switch (tourStops[i].Transition)
                     {
                         case TransitionType.Slew:
-                            CameraParameters start = tourStops[i - 1].EndTarget == null ? tourStops[i - 1].Target.CamParams : tourStops[i - 1].EndTarget.CamParams;
+                            var start = tourStops[i - 1].EndTarget == null ? tourStops[i - 1].Target.CamParams : tourStops[i - 1].EndTarget.CamParams;
                             if (tourStops[i - 1].Target.BackgroundImageSet.DataSetType == tourStops[i].Target.BackgroundImageSet.DataSetType
                                 && ((tourStops[i - 1].Target.BackgroundImageSet.DataSetType != ImageSetType.SolarSystem) || (tourStops[i - 1].Target.Target == tourStops[i].Target.Target)))
                             {
-                                ViewMoverSlew slew = new ViewMoverSlew(start, tourStops[i].Target.CamParams);
+                                var slew = new ViewMoverSlew(start, tourStops[i].Target.CamParams);
                                 totalTime += slew.MoveTime;
                             }
                             break;
@@ -1152,8 +1152,8 @@ namespace TerraViewer
             {
                 return 0;
             }
-            double totalTime = 0.0;
-            for (int i = 0; i < index; i++)
+            var totalTime = 0.0;
+            for (var i = 0; i < index; i++)
             {
                 if (tourStops[i].MasterSlide)
                 {
@@ -1161,17 +1161,17 @@ namespace TerraViewer
                     masterOut = tourStops[i];
                 }
 
-                totalTime += (double)(tourStops[i].Duration.TotalMilliseconds / 1000);
+                totalTime += tourStops[i].Duration.TotalMilliseconds / 1000;
                 if (i > 0 && !tourStops[i].MasterSlide)
                 {
                     switch (tourStops[i].Transition)
                     {
                         case TransitionType.Slew:
-                            CameraParameters start = tourStops[i - 1].EndTarget == null ? tourStops[i - 1].Target.CamParams : tourStops[i - 1].EndTarget.CamParams;
+                            var start = tourStops[i - 1].EndTarget == null ? tourStops[i - 1].Target.CamParams : tourStops[i - 1].EndTarget.CamParams;
                             if (tourStops[i - 1].Target.BackgroundImageSet.DataSetType == tourStops[i].Target.BackgroundImageSet.DataSetType
                                 && ((tourStops[i - 1].Target.BackgroundImageSet.DataSetType != ImageSetType.SolarSystem) || (tourStops[i - 1].Target.Target == tourStops[i].Target.Target)))
                             {
-                                ViewMoverSlew slew = new ViewMoverSlew(start, tourStops[i].Target.CamParams);
+                                var slew = new ViewMoverSlew(start, tourStops[i].Target.CamParams);
                                 totalTime += slew.MoveTime;
                             }
                             break;
@@ -1191,8 +1191,8 @@ namespace TerraViewer
 
         public TourStop GetMasterSlideForIndex(int index)
         {
-            int master = -1;
-            for (int i = 0; i < index; i++)
+            var master = -1;
+            for (var i = 0; i < index; i++)
             {
                 if (tourStops[i].MasterSlide)
                 {
@@ -1214,8 +1214,8 @@ namespace TerraViewer
                 return currentTourstopIndex++;
             }
 
-            int index = 0;
-            foreach (TourStop stop in tourStops)
+            var index = 0;
+            foreach (var stop in tourStops)
             {
                 if (stop.Id == id)
                 {
@@ -1228,13 +1228,13 @@ namespace TerraViewer
 
         public void CleanUp()
         {
-            foreach (TourStop stop in TourStops)
+            foreach (var stop in TourStops)
             {
                 stop.CleanUp();
             }
             if (textureList != null)
             {
-                foreach (Texture11 texture in textureList.Values)
+                foreach (var texture in textureList.Values)
                 {
                     texture.Dispose();
                     GC.SuppressFinalize(texture);
@@ -1267,8 +1267,8 @@ namespace TerraViewer
                 // Synce Layers
                 try
                 {
-                    string dir = Path.GetDirectoryName(filename);
-                    string name = Path.GetFileName(filename);
+                    var dir = Path.GetDirectoryName(filename);
+                    var name = Path.GetFileName(filename);
                     if (!Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
@@ -1276,9 +1276,9 @@ namespace TerraViewer
 
                     if (!File.Exists(filename))
                     {
-                        WebClient client = new WebClient();
-                        string url = string.Format("http://{0}:5050/Configuration/images/tour/{1}", NetControl.MasterAddress, name);
-                        Byte[] data = client.DownloadData(url);
+                        var client = new WebClient();
+                        var url = string.Format("http://{0}:5050/Configuration/images/tour/{1}", NetControl.MasterAddress, name);
+                        var data = client.DownloadData(url);
                         File.WriteAllBytes(filename, data);
                     }
                 }
@@ -1314,15 +1314,12 @@ namespace TerraViewer
                 {
                     return TourStops[currentTourstopIndex];
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             set
             {
-                int i = 0;
-                foreach (TourStop stop in TourStops)
+                var i = 0;
+                foreach (var stop in TourStops)
 	            {
                     if (stop == value)
                     {
@@ -1350,10 +1347,10 @@ namespace TerraViewer
             {
                 if (!DontCleanUpTempFiles)
                 {
-                    DirectoryInfo di = new DirectoryInfo(workingDirectory);
+                    var di = new DirectoryInfo(workingDirectory);
                     if (di.Exists)
                     {
-                        foreach (FileInfo fi in di.GetFiles())
+                        foreach (var fi in di.GetFiles())
                         {
                             File.Delete(fi.FullName);
                         }
@@ -1375,15 +1372,15 @@ namespace TerraViewer
             try
             {
 
-                DirectoryInfo di = new DirectoryInfo(Properties.Settings.Default.CahceDirectory + @"Temp\");
+                var di = new DirectoryInfo(Properties.Settings.Default.CahceDirectory + @"Temp\");
                 if (di.Exists)
                 {
-                    foreach (FileInfo fi in di.GetFiles())
+                    foreach (var fi in di.GetFiles())
                     {
                         File.Delete(fi.FullName);
                     }
 
-                    foreach (DirectoryInfo childDir in di.GetDirectories())
+                    foreach (var childDir in di.GetDirectories())
                     {
                         try
                         {
@@ -1415,16 +1412,16 @@ namespace TerraViewer
 
         internal byte[] GetSlideListXML()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            XmlWriter xw = XmlWriter.Create(sb);
+            var xw = XmlWriter.Create(sb);
 
             xw.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
             xw.WriteStartElement("SlideList");
 
 
-            int index = 0;
-            foreach (TourStop ts in this.tourStops)
+            var index = 0;
+            foreach (var ts in tourStops)
             {
                 xw.WriteStartElement("Slide");
                 xw.WriteElementString("Index", (index++).ToString());
@@ -1442,9 +1439,9 @@ namespace TerraViewer
 
         internal static byte[] GetEmptySlideListXML()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            XmlWriter xw = XmlWriter.Create(sb);
+            var xw = XmlWriter.Create(sb);
 
             xw.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
             xw.WriteStartElement("SlideList");
@@ -1465,12 +1462,12 @@ namespace TerraViewer
             return Encoding.UTF8.GetBytes(sb.ToString());
         }
     }
-    public class UndoTourSlidelistChange : TerraViewer.IUndoStep
+    public class UndoTourSlidelistChange : IUndoStep
     {
         List<TourStop> undoList;
         List<TourStop> redoList;
 
-        int currentIndex = 0;
+        readonly int currentIndex;
         string actionText = "";
 
         public string ActionText
@@ -1478,12 +1475,13 @@ namespace TerraViewer
             get { return actionText; }
             set { actionText = value; }
         }
-        TourDocument targetTour = null;
+
+        readonly TourDocument targetTour;
         public UndoTourSlidelistChange(string text, TourDocument tour)
         {
             undoList = new List<TourStop>();
 
-            for (int i = 0; i < tour.TourStops.Count; i++)
+            for (var i = 0; i < tour.TourStops.Count; i++)
             {
                 undoList.Add(tour.TourStops[i]);
             }
@@ -1518,7 +1516,7 @@ namespace TerraViewer
         }
     }
 
-    public class UndoTourPropertiesChange : TerraViewer.IUndoStep
+    public class UndoTourPropertiesChange : IUndoStep
     {
 
         string actionText = "";
@@ -1528,18 +1526,19 @@ namespace TerraViewer
             get { return actionText; }
             set { actionText = value; }
         }
-        TourDocument targetTour = null;
-        string undoTitle;
-        string undoAuthor;
-        string undoAuthorEmail;
-        string undoDescription;
-        Bitmap undoAuthorImage;
-        string undoOrganizationUrl;
-        string undoOrgName;
-        string undoKeywords;
-        string undoTaxonomy;
-        bool undoDomeMode;
-        UserLevel undoLevel;
+
+        readonly TourDocument targetTour;
+        readonly string undoTitle;
+        readonly string undoAuthor;
+        readonly string undoAuthorEmail;
+        readonly string undoDescription;
+        readonly Bitmap undoAuthorImage;
+        readonly string undoOrganizationUrl;
+        readonly string undoOrgName;
+        readonly string undoKeywords;
+        readonly string undoTaxonomy;
+        readonly bool undoDomeMode;
+        readonly UserLevel undoLevel;
         string redoTitle;
         string redoAuthor;
         string redoAuthorEmail;

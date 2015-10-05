@@ -37,7 +37,7 @@ public class  CAAGlobe
 	{
 	  GeographicalLatitude = CAACoordinateTransformation.DegreesToRadians(GeographicalLatitude);
 	
-	  double U = Math.Atan(0.99664719 * Math.Tan(GeographicalLatitude));
+	  var U = Math.Atan(0.99664719 * Math.Tan(GeographicalLatitude));
 	  return 0.99664719 * Math.Sin(U) + (Height/6378149 * Math.Sin(GeographicalLatitude));
 	}
 	public static double RhoCosThetaPrime(double GeographicalLatitude, double Height)
@@ -45,7 +45,7 @@ public class  CAAGlobe
 	  //Convert from degress to radians
 	  GeographicalLatitude = CAACoordinateTransformation.DegreesToRadians(GeographicalLatitude);
 	
-	  double U = Math.Atan(0.99664719 * Math.Tan(GeographicalLatitude));
+	  var U = Math.Atan(0.99664719 * Math.Tan(GeographicalLatitude));
 	  return Math.Cos(U) + (Height/6378149 * Math.Cos(GeographicalLatitude));
 	}
 	public static double RadiusOfParallelOfLatitude(double GeographicalLatitude)
@@ -53,7 +53,7 @@ public class  CAAGlobe
 	  //Convert from degress to radians
 	  GeographicalLatitude = CAACoordinateTransformation.DegreesToRadians(GeographicalLatitude);
 	
-	  double sinGeo = Math.Sin(GeographicalLatitude);
+	  var sinGeo = Math.Sin(GeographicalLatitude);
 	  return (6378.14 * Math.Cos(GeographicalLatitude)) / (Math.Sqrt(1 - 0.0066943847614084 *sinGeo *sinGeo));
 	}
 	public static double RadiusOfCurvature(double GeographicalLatitude)
@@ -61,7 +61,7 @@ public class  CAAGlobe
 	  //Convert from degress to radians
 	  GeographicalLatitude = CAACoordinateTransformation.DegreesToRadians(GeographicalLatitude);
 	
-	  double sinGeo = Math.Sin(GeographicalLatitude);
+	  var sinGeo = Math.Sin(GeographicalLatitude);
 	  return (6378.14 * (1 - 0.0066943847614084)) / Math.Pow((1 - 0.0066943847614084 * sinGeo * sinGeo), 1.5);
 	}
 	public static double DistanceBetweenPoints(double GeographicalLatitude1, double GeographicalLongitude1, double GeographicalLatitude2, double GeographicalLongitude2)
@@ -72,23 +72,23 @@ public class  CAAGlobe
 	  GeographicalLongitude1 = CAACoordinateTransformation.DegreesToRadians(GeographicalLongitude1);
 	  GeographicalLongitude2 = CAACoordinateTransformation.DegreesToRadians(GeographicalLongitude2);
 	
-	  double F = (GeographicalLatitude1 + GeographicalLatitude2) / 2;
-	  double G = (GeographicalLatitude1 - GeographicalLatitude2) / 2;
-	  double lambda = (GeographicalLongitude1 - GeographicalLongitude2) / 2;
-	  double sinG = Math.Sin(G);
-	  double cosG = Math.Cos(G);
-	  double cosF = Math.Cos(F);
-	  double sinF = Math.Sin(F);
-	  double sinLambda = Math.Sin(lambda);
-	  double cosLambda = Math.Cos(lambda);
-	  double S = (sinG *sinG *cosLambda *cosLambda) + (cosF *cosF *sinLambda *sinLambda);
-	  double C = (cosG *cosG *cosLambda *cosLambda) + (sinF *sinF *sinLambda *sinLambda);
-	  double w = Math.Atan(Math.Sqrt(S/C));
-	  double R = Math.Sqrt(S *C)/w;
-	  double D = 2 *w *6378.14;
-	  double Hprime = (3 *R - 1) / (2 *C);
-	  double Hprime2 = (3 *R + 1) / (2 *S);
-	  double f = 0.0033528131778969144060323814696721;
+	  var F = (GeographicalLatitude1 + GeographicalLatitude2) / 2;
+	  var G = (GeographicalLatitude1 - GeographicalLatitude2) / 2;
+	  var lambda = (GeographicalLongitude1 - GeographicalLongitude2) / 2;
+	  var sinG = Math.Sin(G);
+	  var cosG = Math.Cos(G);
+	  var cosF = Math.Cos(F);
+	  var sinF = Math.Sin(F);
+	  var sinLambda = Math.Sin(lambda);
+	  var cosLambda = Math.Cos(lambda);
+	  var S = (sinG *sinG *cosLambda *cosLambda) + (cosF *cosF *sinLambda *sinLambda);
+	  var C = (cosG *cosG *cosLambda *cosLambda) + (sinF *sinF *sinLambda *sinLambda);
+	  var w = Math.Atan(Math.Sqrt(S/C));
+	  var R = Math.Sqrt(S *C)/w;
+	  var D = 2 *w *6378.14;
+	  var Hprime = (3 *R - 1) / (2 *C);
+	  var Hprime2 = (3 *R + 1) / (2 *S);
+	  const double f = 0.0033528131778969144060323814696721;
 	
 	  return D * (1 + (f *Hprime *sinF *sinF *cosG *cosG) - (f *Hprime2 *cosF *cosF *sinG *sinG));
 	}

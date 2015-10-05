@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.Win32;
 
 // Drawn heavily from Emma Burrows codeproject sample
 // which closely follows the C++ MS WM_INPUT sample.
@@ -247,7 +246,7 @@ namespace SpaceNavigator
         {
             public ButtonMask(byte b1, byte b2, byte b3, byte b4)
             {
-                this.mask = (System.UInt32)(b1 + (b2 << 8) + (b3 << 16) + (b4 << 24));
+                mask = (UInt32)(b1 + (b2 << 8) + (b3 << 16) + (b4 << 24));
             }
 
             public UInt32 Mask
@@ -261,7 +260,7 @@ namespace SpaceNavigator
                 get { return mask; }
             }
 
-            private System.UInt32 mask;
+            private UInt32 mask;
         }
 
         /// <summary>
@@ -277,9 +276,9 @@ namespace SpaceNavigator
             }
             public TranslationVector(byte xl, byte xh, byte yl, byte yh, byte zl, byte zh)
             {
-                this.x = (int)(xl + (System.Int16)((System.Int16)xh << 8));
-                this.y = (int)(yl + (System.Int16)((System.Int16)yh << 8));
-                this.z = (int)(zl + (System.Int16)((System.Int16)zh << 8));
+                x = xl + (Int16)(xh << 8);
+                y = yl + (Int16)(yh << 8);
+                z = zl + (Int16)(zh << 8);
             }
 
             public int X
@@ -316,9 +315,9 @@ namespace SpaceNavigator
             }
             public RotationVector(byte xl, byte xh, byte yl, byte yh, byte zl, byte zh)
             {
-                this.x = (int)(xl + (System.Int16)((System.Int16)xh << 8));
-                this.y = (int)(yl + (System.Int16)((System.Int16)yh << 8));
-                this.z = (int)(zl + (System.Int16)((System.Int16)zh << 8));
+                x = xl + (Int16)(xh << 8);
+                y = yl + (Int16)(yh << 8);
+                z = zl + (Int16)(zh << 8);
             }
 
             public int X
@@ -469,7 +468,7 @@ namespace SpaceNavigator
         /// <param name="hwnd">Handle of the window listening for key presses</param>
         public _3DxMouse(IntPtr hwnd)
         {
-            RAWINPUTDEVICE[] rid = new RAWINPUTDEVICE[1];
+            var rid = new RAWINPUTDEVICE[1];
 
             rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
             rid[0].usUsage = HID_USAGE_GENERIC_MULTIAXIS_CONTROLLER;
@@ -495,20 +494,20 @@ namespace SpaceNavigator
         public int EnumerateDevices()
         {
 
-            int NumberOfDevices = 0;
+            var NumberOfDevices = 0;
             uint deviceCount = 0;
-            int dwSize = (Marshal.SizeOf(typeof(RAWINPUTDEVICELIST)));
+            var dwSize = (Marshal.SizeOf(typeof(RAWINPUTDEVICELIST)));
 
             if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, (uint)dwSize) == 0)
             {
-                IntPtr pRawInputDeviceList = Marshal.AllocHGlobal((int)(dwSize * deviceCount));
+                var pRawInputDeviceList = Marshal.AllocHGlobal((int)(dwSize * deviceCount));
                 GetRawInputDeviceList(pRawInputDeviceList, ref deviceCount, (uint)dwSize);
 
-                for (int i = 0; i < deviceCount; i++)
+                for (var i = 0; i < deviceCount; i++)
                 {
                     uint pcbSize = 0;
 
-                    RAWINPUTDEVICELIST rid = (RAWINPUTDEVICELIST)Marshal.PtrToStructure(
+                    var rid = (RAWINPUTDEVICELIST)Marshal.PtrToStructure(
                                                new IntPtr((pRawInputDeviceList.ToInt32() + (dwSize * i))),
                                                typeof(RAWINPUTDEVICELIST));
 
@@ -516,24 +515,24 @@ namespace SpaceNavigator
 
                     if (pcbSize > 0)
                     {
-                        IntPtr pData = Marshal.AllocHGlobal((int)pcbSize);
+                        var pData = Marshal.AllocHGlobal((int)pcbSize);
                         GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICENAME, pData, ref pcbSize);
-                        string deviceName = Marshal.PtrToStringAnsi(pData);
+                        var deviceName = Marshal.PtrToStringAnsi(pData);
 
                         //If the device is identified as a HID device with usagePage 1, usage 8,
                         //create a DeviceInfo object to store information about it
                         if (rid.dwType == RIM_TYPEHID)
                         {
-                            DeviceInfo dInfo = new DeviceInfo();
+                            var dInfo = new DeviceInfo();
 
                             // Create an object to set the size in the struct.  Then marshall it to a ptr to pass to RI.
-                            RID_DEVICE_INFO_HID hidInfo = new RID_DEVICE_INFO_HID();
-                            int dwHidInfoSize = Marshal.SizeOf(hidInfo);
+                            var hidInfo = new RID_DEVICE_INFO_HID();
+                            var dwHidInfoSize = Marshal.SizeOf(hidInfo);
                             hidInfo.cbSize = dwHidInfoSize;
-                            IntPtr pHIDData = Marshal.AllocHGlobal(dwHidInfoSize);
+                            var pHIDData = Marshal.AllocHGlobal(dwHidInfoSize);
                             Marshal.StructureToPtr(hidInfo, pHIDData, true);
 
-                            uint uHidInfoSize = (uint)dwHidInfoSize;
+                            var uHidInfoSize = (uint)dwHidInfoSize;
 
                             GetRawInputDeviceInfo(rid.hDevice, RIDI_DEVICEINFO, pHIDData, ref uHidInfoSize);
 
@@ -562,10 +561,7 @@ namespace SpaceNavigator
                 Marshal.FreeHGlobal(pRawInputDeviceList);
                 return NumberOfDevices;
             }
-            else
-            {
-                throw new ApplicationException("Error!");
-            }
+            throw new ApplicationException("Error!");
         }
 
         private bool Is3DxDevice(RID_DEVICE_INFO_HID hidInfo)
@@ -596,7 +592,7 @@ namespace SpaceNavigator
                              ref dwSize,
                              (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER)));
 
-            IntPtr headerBuffer = Marshal.AllocHGlobal((int)dwSize);
+            var headerBuffer = Marshal.AllocHGlobal((int)dwSize);
             try
             {
                 // Check that buffer points to something, and if so,
@@ -610,7 +606,7 @@ namespace SpaceNavigator
                                      (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER))) == dwSize)
                 {
 
-                    RAWINPUTHEADER header = (RAWINPUTHEADER)Marshal.PtrToStructure(headerBuffer, typeof(RAWINPUTHEADER));
+                    var header = (RAWINPUTHEADER)Marshal.PtrToStructure(headerBuffer, typeof(RAWINPUTHEADER));
                     if (header.dwType == RIM_TYPEHID)
                     {
                         DeviceInfo dInfo = null;
@@ -627,9 +623,9 @@ namespace SpaceNavigator
                         }
 
                         // The header tells us the size of the actual event
-                        IntPtr eventBuffer = Marshal.AllocHGlobal(header.dwSize);
+                        var eventBuffer = Marshal.AllocHGlobal(header.dwSize);
 
-                        uint eventSize = (uint)header.dwSize;
+                        var eventSize = (uint)header.dwSize;
                         if (eventBuffer != IntPtr.Zero &&
                             GetRawInputData(message.LParam,
                                             RID_INPUT,
@@ -637,22 +633,22 @@ namespace SpaceNavigator
                                             ref eventSize,
                                             (uint)Marshal.SizeOf(typeof(RAWINPUTHEADER))) == header.dwSize)
                         {
-                            RAW3DMOUSE_EVENTTYPE eventType = (RAW3DMOUSE_EVENTTYPE)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSE_EVENTTYPE));
+                            var eventType = (RAW3DMOUSE_EVENTTYPE)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSE_EVENTTYPE));
                             switch (eventType.eventType)
                             {
                                 case (byte)RAW3DxMouseEventType.TranslationVector:
                                     if (header.dwSize == Marshal.SizeOf(typeof(RAWINPUTHEADER)) + SIZEOF_STANDARD_REPORT)  // standard length T report
                                     {
-                                        RAW3DMOUSEMOTION_T t = (RAW3DMOUSEMOTION_T)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEMOTION_T));
-                                        TranslationVector tv = new TranslationVector(t.X_lb, t.X_hb, t.Y_lb, t.Y_hb, t.Z_lb, t.Z_hb);
+                                        var t = (RAW3DMOUSEMOTION_T)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEMOTION_T));
+                                        var tv = new TranslationVector(t.X_lb, t.X_hb, t.Y_lb, t.Y_hb, t.Z_lb, t.Z_hb);
                                         // Console.Write("Motion Event = {0} {1} {2}", tv.X, tv.Y, tv.Z);
                                         MotionEvent(this, new MotionEventArgs(dInfo, tv));
                                     }
                                     else // "High Speed" firmware version includes both T and R vector in the same report
                                     {
-                                        RAW3DMOUSEMOTION_TR_COMBINED tr = (RAW3DMOUSEMOTION_TR_COMBINED)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEMOTION_TR_COMBINED));
-                                        TranslationVector tv = new TranslationVector(tr.X_lb, tr.X_hb, tr.Y_lb, tr.Y_hb, tr.Z_lb, tr.Z_hb);
-                                        RotationVector rv = new RotationVector(tr.RX_lb, tr.RX_hb, tr.RY_lb, tr.RY_hb, tr.RZ_lb, tr.RZ_hb);
+                                        var tr = (RAW3DMOUSEMOTION_TR_COMBINED)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEMOTION_TR_COMBINED));
+                                        var tv = new TranslationVector(tr.X_lb, tr.X_hb, tr.Y_lb, tr.Y_hb, tr.Z_lb, tr.Z_hb);
+                                        var rv = new RotationVector(tr.RX_lb, tr.RX_hb, tr.RY_lb, tr.RY_hb, tr.RZ_lb, tr.RZ_hb);
                                         // Console.WriteLine("6DOF Motion Event = {0} {1} {2} {3} {4} {5}", tv.X, tv.Y, tv.Z, rv.X, rv.Y, rv.Z);
                                         MotionEvent(this, new MotionEventArgs(dInfo, tv, rv));
                                     }
@@ -660,16 +656,16 @@ namespace SpaceNavigator
 
                                 case (byte)RAW3DxMouseEventType.RotationVector:
                                     {
-                                        RAW3DMOUSEMOTION_R r = (RAW3DMOUSEMOTION_R)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEMOTION_R));
-                                        RotationVector rv = new RotationVector(r.X_lb, r.X_hb, r.Y_lb, r.Y_hb, r.Z_lb, r.Z_hb);
+                                        var r = (RAW3DMOUSEMOTION_R)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEMOTION_R));
+                                        var rv = new RotationVector(r.X_lb, r.X_hb, r.Y_lb, r.Y_hb, r.Z_lb, r.Z_hb);
                                         // Console.WriteLine(" {0} {1} {2}", rv.X, rv.Y, rv.Z);
                                         MotionEvent(this, new MotionEventArgs(dInfo, rv));
                                     }
                                     break;
 
                                 case (byte)RAW3DxMouseEventType.ButtonReport:
-                                    RAW3DMOUSEBUTTONS b = (RAW3DMOUSEBUTTONS)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEBUTTONS));
-                                    ButtonMask bm = new ButtonMask(b.b1, b.b2, b.b3, b.b4);
+                                    var b = (RAW3DMOUSEBUTTONS)Marshal.PtrToStructure(new IntPtr(eventBuffer.ToInt32() + Marshal.SizeOf(typeof(RAWINPUTHEADER))), typeof(RAW3DMOUSEBUTTONS));
+                                    var bm = new ButtonMask(b.b1, b.b2, b.b3, b.b4);
                                     Console.WriteLine("raw.buttons = {0:X}", bm.Pressed);
                                     ButtonEvent(this, new ButtonEventArgs(dInfo, bm));
                                     break;

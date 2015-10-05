@@ -1,18 +1,10 @@
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-
-using System.Text;
 
 namespace TerraViewer
 {
     public class EquirectangularTile : Tile
     {
-        bool topDown = true;
+        readonly bool topDown = true;
         protected void ComputeBoundingSphere(Tile parent)
         {
             if (!topDown)
@@ -20,20 +12,20 @@ namespace TerraViewer
                 ComputeBoundingSphereBottomsUp(parent);
                 return;
             }
-            double tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
-            double latMin = (90 - (((double)this.y) * tileDegrees));
-            double latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
-            double lngMin = (((double)this.x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (90 - (y * tileDegrees));
+            var latMax = (90 - ((y + 1) * tileDegrees));
+            var lngMin = ((x * tileDegrees) - 180.0);
+            var lngMax = (((x + 1) * tileDegrees) - 180.0);
 
-            double latCenter = (latMin + latMax) / 2.0;
-            double lngCenter = (lngMin + lngMax) / 2.0;
+            var latCenter = (latMin + latMax) / 2.0;
+            var lngCenter = (lngMin + lngMax) / 2.0;
 
 
             if (level == 12 || level == 19)
             {
-                Vector3d temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
+                var temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
                 localCenter = new Vector3d(temp.X, temp.Y, temp.Z);
             }
             else if (level > 12)
@@ -41,35 +33,35 @@ namespace TerraViewer
                 localCenter = parent.localCenter;
             }
 
-            this.sphereCenter = GeoTo3d(latCenter, lngCenter, false);
+            sphereCenter = GeoTo3d(latCenter, lngCenter, false);
             TopLeft = GeoTo3dWithAltitude(latMin, lngMin, false);
             BottomRight = GeoTo3dWithAltitude(latMax, lngMax, false);
             TopRight = GeoTo3dWithAltitude(latMin, lngMax, false);
             BottomLeft = GeoTo3dWithAltitude(latMax, lngMin, false);
 
-            Vector3d distVect = GeoTo3d(latMin, lngMin, false);
+            var distVect = GeoTo3d(latMin, lngMin, false);
             distVect.Subtract(sphereCenter);
-            this.sphereRadius = distVect.Length();
+            sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
         }
 
 
         protected void ComputeBoundingSphereBottomsUp(Tile parent)
         {
-            double tileDegrees = (double)this.dataset.BaseTileDegrees / ((double)Math.Pow(2, this.level));
+            var tileDegrees = dataset.BaseTileDegrees / Math.Pow(2, level);
 
 
-            double latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
-            double latMax = (-90 + (((double)this.y) * tileDegrees));
-            double lngMin = (((double)this.x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
+            var latMin = (-90 + ((y + 1) * tileDegrees));
+            var latMax = (-90 + (y * tileDegrees));
+            var lngMin = ((x * tileDegrees) - 180.0);
+            var lngMax = (((x + 1) * tileDegrees) - 180.0);
 
-            double latCenter = (latMin + latMax) / 2.0;
-            double lngCenter = (lngMin + lngMax) / 2.0;
+            var latCenter = (latMin + latMax) / 2.0;
+            var lngCenter = (lngMin + lngMax) / 2.0;
 
             if (level == 12 || level == 19)
             {
-                Vector3d temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
+                var temp = Coordinates.GeoTo3dDouble(latCenter, lngCenter);
                 localCenter = new Vector3d(temp.X, temp.Y, temp.Z);
             }
             else if (level > 12)
@@ -77,21 +69,21 @@ namespace TerraViewer
                 localCenter = parent.localCenter;
             }
 
-            this.sphereCenter = GeoTo3d(latCenter, lngCenter, false);
+            sphereCenter = GeoTo3d(latCenter, lngCenter, false);
 
             TopLeft = GeoTo3dWithAltitude(latMin, lngMin, false);
             BottomRight = GeoTo3dWithAltitude(latMax, lngMax, false);
             TopRight = GeoTo3dWithAltitude(latMin, lngMax, false);
             BottomLeft = GeoTo3dWithAltitude(latMax, lngMin, false);
-            Vector3d distVect = TopLeft;
+            var distVect = TopLeft;
             distVect.Subtract(sphereCenter);
-            this.sphereRadius = distVect.Length();
+            sphereRadius = distVect.Length();
             tileDegrees = lngMax - lngMin;
         }
 
         public override void OnCreateVertexBuffer(VertexBuffer11 vb)
 		{
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 indexBuffer[i] = new IndexBuffer11(typeof(short), ((SubDivisions / 2) * (SubDivisions / 2) * 6), RenderContext11.PrepDevice);
             }
@@ -102,17 +94,16 @@ namespace TerraViewer
                     OnCreateVertexBufferBottomsUp(vb);
                     return;
                 }
-                double lat, lng;
 
-                int index = 0;
-                double tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+                int index;
+                var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
-                double latMin = (90 - (((double)this.y) * tileDegrees));
-                double latMax = (90 - (((double)(this.y + 1)) * tileDegrees));
-                double lngMin = (((double)this.x * tileDegrees) - 180.0);
-                double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
-                double tileDegreesX = lngMax - lngMin;
-                double tileDegreesY = latMax - latMin;
+                var latMin = (90 - (this.y * tileDegrees));
+                var latMax = (90 - ((this.y + 1) * tileDegrees));
+                var lngMin = ((this.x * tileDegrees) - 180.0);
+                var lngMax = (((this.x + 1) * tileDegrees) - 180.0);
+                var tileDegreesX = lngMax - lngMin;
+                var tileDegreesY = latMax - latMin;
 
                 //bugbug altitude broken
                 TopLeft = GeoTo3dWithAltitude(latMin, lngMin, false);
@@ -123,12 +114,13 @@ namespace TerraViewer
 
                  
                 // Create a vertex buffer 
-                PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+                var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
                 int x, y;
 
-                float textureStep = 1.0f / SubDivisions;
+                var textureStep = 1.0f / SubDivisions;
                 for (y = 0; y <= SubDivisions; y++)
                 {
+                    double lat;
                     if (y != SubDivisions)
                     {
                         lat = latMin + (textureStep * tileDegreesY * y);
@@ -139,7 +131,7 @@ namespace TerraViewer
                     }
                     for (x = 0; x <= SubDivisions; x++)
                     {
-
+                        double lng;
                         if (x != SubDivisions)
                         {
                             lng = lngMin + (textureStep * tileDegreesX * x);
@@ -161,17 +153,17 @@ namespace TerraViewer
                 vb.Unlock();
                 TriangleCount = (SubDivisions) * (SubDivisions) * 2;
 
-                int quarterDivisions = SubDivisions / 2;
-                int part = 0;
-                for (int y2 = 0; y2 < 2; y2++)
+                var quarterDivisions = SubDivisions / 2;
+                var part = 0;
+                for (var y2 = 0; y2 < 2; y2++)
                 {
-                    for (int x2 = 0; x2 < 2; x2++)
+                    for (var x2 = 0; x2 < 2; x2++)
                     {
-                        short[] indexArray = (short[])this.indexBuffer[part].Lock();
+                        var indexArray = (short[])indexBuffer[part].Lock();
                         index = 0;
-                        for (int y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
+                        for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                         {
-                            for (int x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
+                            for (var x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
                             {
                                 //index = ((y1 * quarterDivisions * 6) + 6 * x1);
                                 // First triangle in quad
@@ -186,7 +178,7 @@ namespace TerraViewer
                                 index += 6;
                             }
                         }
-                        this.indexBuffer[part].Unlock();
+                        indexBuffer[part].Unlock();
                         part++;
                     }
                 }
@@ -201,22 +193,22 @@ namespace TerraViewer
 
             double lat, lng;
 
-            int index = 0;
-            double tileDegrees = this.dataset.BaseTileDegrees / (Math.Pow(2, this.level));
+            var index = 0;
+            var tileDegrees = dataset.BaseTileDegrees / (Math.Pow(2, level));
 
 
-            double latMin = (-90 + (((double)(this.y + 1)) * tileDegrees));
-            double latMax = (-90 + (((double)this.y) * tileDegrees));
-            double lngMin = (((double)this.x * tileDegrees) - 180.0);
-            double lngMax = ((((double)(this.x + 1)) * tileDegrees) - 180.0);
-            double tileDegreesX = lngMax - lngMin;
-            double tileDegreesY = latMax - latMin;
+            var latMin = (-90 + ((this.y + 1) * tileDegrees));
+            var latMax = (-90 + (this.y * tileDegrees));
+            var lngMin = ((this.x * tileDegrees) - 180.0);
+            var lngMax = (((this.x + 1) * tileDegrees) - 180.0);
+            var tileDegreesX = lngMax - lngMin;
+            var tileDegreesY = latMax - latMin;
             
             // Create a vertex buffer 
-            PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
             int x, y;
 
-            float textureStep = 1.0f / SubDivisions;
+            var textureStep = 1.0f / SubDivisions;
             for (y = 0; y <= SubDivisions; y++)
             {
                 if (y != SubDivisions)
@@ -251,17 +243,17 @@ namespace TerraViewer
             vb.Unlock();
             TriangleCount = (SubDivisions) * (SubDivisions) * 2;
 
-            int quarterDivisions = SubDivisions / 2;
-            int part = 0;
-            for (int y2 = 0; y2 < 2; y2++)
+            var quarterDivisions = SubDivisions / 2;
+            var part = 0;
+            for (var y2 = 0; y2 < 2; y2++)
             {
-                for (int x2 = 0; x2 < 2; x2++)
+                for (var x2 = 0; x2 < 2; x2++)
                 {
-                    short[] indexArray = (short[])this.indexBuffer[part].Lock();
+                    var indexArray = (short[])indexBuffer[part].Lock();
                     index = 0;
-                    for (int y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
+                    for (var y1 = (quarterDivisions * y2); y1 < (quarterDivisions * (y2 + 1)); y1++)
                     {
-                        for (int x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
+                        for (var x1 = (quarterDivisions * x2); x1 < (quarterDivisions * (x2 + 1)); x1++)
                         {
                             //index = ((y1 * quarterDivisions * 6) + 6 * x1);
                             // First triangle in quad
@@ -276,7 +268,7 @@ namespace TerraViewer
                             index += 6;
                         }
                     }
-                    this.indexBuffer[part].Unlock();
+                    indexBuffer[part].Unlock();
                     part++;
                 }
             }
@@ -290,10 +282,10 @@ namespace TerraViewer
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;     
+            topDown = !dataset.BottomsUp;     
             ComputeBoundingSphere(parent);
             VertexCount = ((SubDivisions + 1) * (SubDivisions + 1));
-            insideOut = this.Dataset.DataSetType == ImageSetType.Sky || this.Dataset.DataSetType == ImageSetType.Panorama;
+            insideOut = Dataset.DataSetType == ImageSetType.Sky || Dataset.DataSetType == ImageSetType.Panorama;
 
         }
 

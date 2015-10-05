@@ -98,12 +98,12 @@ public class  CAAParabolic
   
   public static double CalculateBarkers(double W)
   {
-	double S = W / 3;
-	bool bRecalc = true;
+	var S = W / 3;
+	var bRecalc = true;
 	while (bRecalc)
 	{
-	  double S2 = S *S;
-	  double NextS = (2 *S2 *S + W) / (3 * (S2 + 1));
+	  var S2 = S *S;
+	  var NextS = (2 *S2 *S + W) / (3 * (S2 + 1));
   
 	  //Prepare for the next loop around
 	  bRecalc = (Math.Abs(NextS - S) > 0.000001);
@@ -114,49 +114,49 @@ public class  CAAParabolic
   }
   public static CAAParabolicObjectDetails Calculate(double JD, CAAParabolicObjectElements elements)
   {
-	double Epsilon = CAANutation.MeanObliquityOfEcliptic(elements.JDEquinox);
+	var Epsilon = CAANutation.MeanObliquityOfEcliptic(elements.JDEquinox);
   
-	double JD0 = JD;
+	var JD0 = JD;
   
 	//What will be the return value
-	CAAParabolicObjectDetails details = new CAAParabolicObjectDetails();
+	var details = new CAAParabolicObjectDetails();
   
 	Epsilon = CAACoordinateTransformation.DegreesToRadians(Epsilon);
-	double omega = CAACoordinateTransformation.DegreesToRadians(elements.omega);
-	double w = CAACoordinateTransformation.DegreesToRadians(elements.w);
-	double i = CAACoordinateTransformation.DegreesToRadians(elements.i);
+	var omega = CAACoordinateTransformation.DegreesToRadians(elements.omega);
+	var w = CAACoordinateTransformation.DegreesToRadians(elements.w);
+	var i = CAACoordinateTransformation.DegreesToRadians(elements.i);
   
-	double sinEpsilon = Math.Sin(Epsilon);
-	double cosEpsilon = Math.Cos(Epsilon);
-	double sinOmega = Math.Sin(omega);
-	double cosOmega = Math.Cos(omega);
-	double cosi = Math.Cos(i);
-	double sini = Math.Sin(i);
+	var sinEpsilon = Math.Sin(Epsilon);
+	var cosEpsilon = Math.Cos(Epsilon);
+	var sinOmega = Math.Sin(omega);
+	var cosOmega = Math.Cos(omega);
+	var cosi = Math.Cos(i);
+	var sini = Math.Sin(i);
   
-	double F = cosOmega;
-	double G = sinOmega * cosEpsilon;
-	double H = sinOmega * sinEpsilon;
-	double P = -sinOmega * cosi;
-	double Q = cosOmega *cosi *cosEpsilon - sini *sinEpsilon;
-	double R = cosOmega *cosi *sinEpsilon + sini *cosEpsilon;
-	double a = Math.Sqrt(F *F + P *P);
-	double b = Math.Sqrt(G *G + Q *Q);
-	double c = Math.Sqrt(H *H + R *R);
-	double A = Math.Atan2(F, P);
-	double B = Math.Atan2(G, Q);
-	double C = Math.Atan2(H, R);
+	var F = cosOmega;
+	var G = sinOmega * cosEpsilon;
+	var H = sinOmega * sinEpsilon;
+	var P = -sinOmega * cosi;
+	var Q = cosOmega *cosi *cosEpsilon - sini *sinEpsilon;
+	var R = cosOmega *cosi *sinEpsilon + sini *cosEpsilon;
+	var a = Math.Sqrt(F *F + P *P);
+	var b = Math.Sqrt(G *G + Q *Q);
+	var c = Math.Sqrt(H *H + R *R);
+	var A = Math.Atan2(F, P);
+	var B = Math.Atan2(G, Q);
+	var C = Math.Atan2(H, R);
   
-	CAA3DCoordinate SunCoord = CAASun.EquatorialRectangularCoordinatesAnyEquinox(JD, elements.JDEquinox);
+	var SunCoord = CAASun.EquatorialRectangularCoordinatesAnyEquinox(JD, elements.JDEquinox);
   
-	for (int j =0; j<2; j++)
+	for (var j =0; j<2; j++)
 	{
-	  double W = 0.03649116245/(elements.q * Math.Sqrt(elements.q)) * (JD0 - elements.T);
-	  double s = CalculateBarkers(W);
-	  double v = 2 *Math.Atan(s);
-	  double r = elements.q * (1 + s *s);
-	  double x = r * a * Math.Sin(A + w + v);
-	  double y = r * b * Math.Sin(B + w + v);
-	  double z = r * c * Math.Sin(C + w + v);
+	  var W = 0.03649116245/(elements.q * Math.Sqrt(elements.q)) * (JD0 - elements.T);
+	  var s = CalculateBarkers(W);
+	  var v = 2 *Math.Atan(s);
+	  var r = elements.q * (1 + s *s);
+	  var x = r * a * Math.Sin(A + w + v);
+	  var y = r * b * Math.Sin(B + w + v);
+	  var z = r * c * Math.Sin(C + w + v);
   
 	  if (j == 0)
 	  {
@@ -165,9 +165,9 @@ public class  CAAParabolic
 		details.HeliocentricRectangularEquatorial.Z = z;
   
 		//Calculate the heliocentric ecliptic coordinates also
-		double u = omega + v;
-		double cosu = Math.Cos(u);
-		double sinu = Math.Sin(u);
+		var u = omega + v;
+		var cosu = Math.Cos(u);
+		var sinu = Math.Sin(u);
   
 		details.HeliocentricRectangularEcliptical.X = r * (cosOmega *cosu - sinOmega *sinu *cosi);
 		details.HeliocentricRectangularEcliptical.Y = r * (sinOmega *cosu + cosOmega *sinu *cosi);
@@ -179,15 +179,15 @@ public class  CAAParabolic
 		details.HeliocentricEclipticLatitude = CAACoordinateTransformation.RadiansToDegrees(details.HeliocentricEclipticLatitude);
 	  }
   
-	  double psi = SunCoord.X + x;
-	  double nu = SunCoord.Y + y;
-	  double sigma = SunCoord.Z + z;
+	  var psi = SunCoord.X + x;
+	  var nu = SunCoord.Y + y;
+	  var sigma = SunCoord.Z + z;
   
-	  double Alpha = Math.Atan2(nu, psi);
+	  var Alpha = Math.Atan2(nu, psi);
 	  Alpha = CAACoordinateTransformation.RadiansToDegrees(Alpha);
-	  double Delta = Math.Atan2(sigma, Math.Sqrt(psi *psi + nu *nu));
+	  var Delta = Math.Atan2(sigma, Math.Sqrt(psi *psi + nu *nu));
 	  Delta = CAACoordinateTransformation.RadiansToDegrees(Delta);
-	  double Distance = Math.Sqrt(psi *psi + nu *nu + sigma *sigma);
+	  var Distance = Math.Sqrt(psi *psi + nu *nu + sigma *sigma);
   
 	  if (j == 0)
 	  {
@@ -203,7 +203,7 @@ public class  CAAParabolic
 		details.AstrometricGeocentricDistance = Distance;
 		details.AstrometricGeocentricLightTime = CAAElliptical.DistanceToLightTime(Distance);
   
-		double RES = Math.Sqrt(SunCoord.X *SunCoord.X + SunCoord.Y *SunCoord.Y + SunCoord.Z *SunCoord.Z);
+		var RES = Math.Sqrt(SunCoord.X *SunCoord.X + SunCoord.Y *SunCoord.Y + SunCoord.Z *SunCoord.Z);
   
 		details.Elongation = CAACoordinateTransformation.RadiansToDegrees(Math.Acos((RES *RES + Distance *Distance - r *r) / (2 * RES * Distance)));
 		details.PhaseAngle = CAACoordinateTransformation.RadiansToDegrees(Math.Acos((r *r + Distance *Distance - RES *RES) / (2 * r * Distance)));

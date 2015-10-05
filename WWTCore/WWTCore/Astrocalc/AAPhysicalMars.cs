@@ -61,43 +61,42 @@ public class  CAAPhysicalMars
   public static CAAPhysicalMarsDetails Calculate(double JD)
   {
 	//What will be the return value
-	CAAPhysicalMarsDetails details = new CAAPhysicalMarsDetails();
+	var details = new CAAPhysicalMarsDetails();
   
 	//Step 1
-	double T = (JD - 2451545) / 36525;
-	double Lambda0 = 352.9065 + 1.17330 *T;
-	double Lambda0rad = CAACoordinateTransformation.DegreesToRadians(Lambda0);
-	double Beta0 = 63.2818 - 0.00394 *T;
-	double Beta0rad = CAACoordinateTransformation.DegreesToRadians(Beta0);
+	var T = (JD - 2451545) / 36525;
+	var Lambda0 = 352.9065 + 1.17330 *T;
+	var Lambda0rad = CAACoordinateTransformation.DegreesToRadians(Lambda0);
+	var Beta0 = 63.2818 - 0.00394 *T;
+	var Beta0rad = CAACoordinateTransformation.DegreesToRadians(Beta0);
   
 	//Step 2
-	double l0 = CAAEarth.EclipticLongitude(JD);
-	double l0rad = CAACoordinateTransformation.DegreesToRadians(l0);
-	double b0 = CAAEarth.EclipticLatitude(JD);
-	double b0rad = CAACoordinateTransformation.DegreesToRadians(b0);
-	double R = CAAEarth.RadiusVector(JD);
+	var l0 = CAAEarth.EclipticLongitude(JD);
+	var l0rad = CAACoordinateTransformation.DegreesToRadians(l0);
+	var b0 = CAAEarth.EclipticLatitude(JD);
+	var b0rad = CAACoordinateTransformation.DegreesToRadians(b0);
+	var R = CAAEarth.RadiusVector(JD);
   
 	double PreviousLightTravelTime = 0;
 	double LightTravelTime = 0;
 	double x = 0;
 	double y = 0;
 	double z = 0;
-	bool bIterate = true;
+	var bIterate = true;
 	double DELTA = 0;
 	double l = 0;
 	double lrad = 0;
 	double b = 0;
-	double brad = 0;
-	double r = 0;
+      double r = 0;
 	while (bIterate)
 	{
-	  double JD2 = JD - LightTravelTime;
+	  var JD2 = JD - LightTravelTime;
   
 	  //Step 3
 	  l = CAAMars.EclipticLongitude(JD2);
 	  lrad = CAACoordinateTransformation.DegreesToRadians(l);
 	  b = CAAMars.EclipticLatitude(JD2);
-	  brad = CAACoordinateTransformation.DegreesToRadians(b);
+	  double brad = CAACoordinateTransformation.DegreesToRadians(b);
 	  r = CAAMars.RadiusVector(JD2);
   
 	  //Step 4
@@ -114,51 +113,51 @@ public class  CAAPhysicalMars
 	}
   
 	//Step 5
-	double lambdarad = Math.Atan2(y, x);
-	double lambda = CAACoordinateTransformation.RadiansToDegrees(lambdarad);
-	double betarad = Math.Atan2(z, Math.Sqrt(x *x + y *y));
-	double beta = CAACoordinateTransformation.RadiansToDegrees(betarad);
+	var lambdarad = Math.Atan2(y, x);
+	var lambda = CAACoordinateTransformation.RadiansToDegrees(lambdarad);
+	var betarad = Math.Atan2(z, Math.Sqrt(x *x + y *y));
+	var beta = CAACoordinateTransformation.RadiansToDegrees(betarad);
   
 	//Step 6
 	details.DE = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(-Math.Sin(Beta0rad)*Math.Sin(betarad) - Math.Cos(Beta0rad)*Math.Cos(betarad)*Math.Cos(Lambda0rad - lambdarad)));
   
 	//Step 7
-	double N = 49.5581 + 0.7721 *T;
-	double Nrad = CAACoordinateTransformation.DegreesToRadians(N);
+	var N = 49.5581 + 0.7721 *T;
+	var Nrad = CAACoordinateTransformation.DegreesToRadians(N);
   
-	double ldash = l - 0.00697/r;
-	double ldashrad = CAACoordinateTransformation.DegreesToRadians(ldash);
-	double bdash = b - 0.000225*(Math.Cos(lrad - Nrad)/r);
-	double bdashrad = CAACoordinateTransformation.DegreesToRadians(bdash);
+	var ldash = l - 0.00697/r;
+	var ldashrad = CAACoordinateTransformation.DegreesToRadians(ldash);
+	var bdash = b - 0.000225*(Math.Cos(lrad - Nrad)/r);
+	var bdashrad = CAACoordinateTransformation.DegreesToRadians(bdash);
   
 	//Step 8
 	details.DS = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(-Math.Sin(Beta0rad)*Math.Sin(bdashrad) - Math.Cos(Beta0rad)*Math.Cos(bdashrad)*Math.Cos(Lambda0rad - ldashrad)));
   
 	//Step 9
-	double W = CAACoordinateTransformation.MapTo0To360Range(11.504 + 350.89200025*(JD - LightTravelTime - 2433282.5));
+	var W = CAACoordinateTransformation.MapTo0To360Range(11.504 + 350.89200025*(JD - LightTravelTime - 2433282.5));
   
 	//Step 10
-	double e0 = CAANutation.MeanObliquityOfEcliptic(JD);
-	double e0rad = CAACoordinateTransformation.DegreesToRadians(e0);
-	CAA2DCoordinate PoleEquatorial = CAACoordinateTransformation.Ecliptic2Equatorial(Lambda0, Beta0, e0);
-	double alpha0rad = CAACoordinateTransformation.HoursToRadians(PoleEquatorial.X);
-	double delta0rad = CAACoordinateTransformation.DegreesToRadians(PoleEquatorial.Y);
+	var e0 = CAANutation.MeanObliquityOfEcliptic(JD);
+	var e0rad = CAACoordinateTransformation.DegreesToRadians(e0);
+	var PoleEquatorial = CAACoordinateTransformation.Ecliptic2Equatorial(Lambda0, Beta0, e0);
+	var alpha0rad = CAACoordinateTransformation.HoursToRadians(PoleEquatorial.X);
+	var delta0rad = CAACoordinateTransformation.DegreesToRadians(PoleEquatorial.Y);
   
 	//Step 11
-	double u = y *Math.Cos(e0rad) - z *Math.Sin(e0rad);
-	double v = y *Math.Sin(e0rad) + z *Math.Cos(e0rad);
-	double alpharad = Math.Atan2(u, x);
-	double alpha = CAACoordinateTransformation.RadiansToHours(alpharad);
-	double deltarad = Math.Atan2(v, Math.Sqrt(x *x + u *u));
-	double delta = CAACoordinateTransformation.RadiansToDegrees(deltarad);
-	double xi = Math.Atan2(Math.Sin(delta0rad)*Math.Cos(deltarad)*Math.Cos(alpha0rad - alpharad) - Math.Sin(deltarad)*Math.Cos(delta0rad), Math.Cos(deltarad)*Math.Sin(alpha0rad - alpharad));
+	var u = y *Math.Cos(e0rad) - z *Math.Sin(e0rad);
+	var v = y *Math.Sin(e0rad) + z *Math.Cos(e0rad);
+	var alpharad = Math.Atan2(u, x);
+	var alpha = CAACoordinateTransformation.RadiansToHours(alpharad);
+	var deltarad = Math.Atan2(v, Math.Sqrt(x *x + u *u));
+	var delta = CAACoordinateTransformation.RadiansToDegrees(deltarad);
+	var xi = Math.Atan2(Math.Sin(delta0rad)*Math.Cos(deltarad)*Math.Cos(alpha0rad - alpharad) - Math.Sin(deltarad)*Math.Cos(delta0rad), Math.Cos(deltarad)*Math.Sin(alpha0rad - alpharad));
   
 	//Step 12
 	details.w = CAACoordinateTransformation.MapTo0To360Range(W - CAACoordinateTransformation.RadiansToDegrees(xi));
   
 	//Step 13
-	double NutationInLongitude = CAANutation.NutationInLongitude(JD);
-	double NutationInObliquity = CAANutation.NutationInObliquity(JD);
+	var NutationInLongitude = CAANutation.NutationInLongitude(JD);
+	var NutationInObliquity = CAANutation.NutationInObliquity(JD);
   
 	//Step 14
 	lambda += 0.005693 *Math.Cos(l0rad - lambdarad)/Math.Cos(betarad);
@@ -173,20 +172,20 @@ public class  CAAPhysicalMars
 	e0rad = CAACoordinateTransformation.DegreesToRadians(e0rad);
   
 	//Step 16
-	CAA2DCoordinate ApparentPoleEquatorial = CAACoordinateTransformation.Ecliptic2Equatorial(Lambda0, Beta0, e0);
-	double alpha0dash = CAACoordinateTransformation.HoursToRadians(ApparentPoleEquatorial.X);
-	double delta0dash = CAACoordinateTransformation.DegreesToRadians(ApparentPoleEquatorial.Y);
-	CAA2DCoordinate ApparentMars = CAACoordinateTransformation.Ecliptic2Equatorial(lambda, beta, e0);
-	double alphadash = CAACoordinateTransformation.HoursToRadians(ApparentMars.X);
-	double deltadash = CAACoordinateTransformation.DegreesToRadians(ApparentMars.Y);
+	var ApparentPoleEquatorial = CAACoordinateTransformation.Ecliptic2Equatorial(Lambda0, Beta0, e0);
+	var alpha0dash = CAACoordinateTransformation.HoursToRadians(ApparentPoleEquatorial.X);
+	var delta0dash = CAACoordinateTransformation.DegreesToRadians(ApparentPoleEquatorial.Y);
+	var ApparentMars = CAACoordinateTransformation.Ecliptic2Equatorial(lambda, beta, e0);
+	var alphadash = CAACoordinateTransformation.HoursToRadians(ApparentMars.X);
+	var deltadash = CAACoordinateTransformation.DegreesToRadians(ApparentMars.Y);
   
 	//Step 17
 	details.P = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(Math.Cos(delta0dash)*Math.Sin(alpha0dash - alphadash), Math.Sin(delta0dash)*Math.Cos(deltadash) - Math.Cos(delta0dash)*Math.Sin(deltadash)*Math.Cos(alpha0dash - alphadash))));
   
 	//Step 18
-	double SunLambda = CAASun.GeometricEclipticLongitude(JD);
-	double SunBeta = CAASun.GeometricEclipticLatitude(JD);
-	CAA2DCoordinate SunEquatorial = CAACoordinateTransformation.Ecliptic2Equatorial(SunLambda, SunBeta, e0);
+	var SunLambda = CAASun.GeometricEclipticLongitude(JD);
+	var SunBeta = CAASun.GeometricEclipticLatitude(JD);
+	var SunEquatorial = CAACoordinateTransformation.Ecliptic2Equatorial(SunLambda, SunBeta, e0);
 	details.X = CAAMoonIlluminatedFraction.PositionAngle(SunEquatorial.X, SunEquatorial.Y, alpha, delta);
   
 	//Step 19

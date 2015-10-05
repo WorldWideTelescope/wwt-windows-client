@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -9,54 +6,57 @@ namespace TerraViewer
     {
         static public DialogResult ShowWizard(TimeSeriesLayer layer)
         {
-            WizardPropsBinding props = GetPropsObject();
+            var props = GetPropsObject();
             props.Data = layer;
 
-            props.UpdateTabVisibility += new UpdateTabDelegate(props_UpdateTabVisibility);
+            props.UpdateTabVisibility += props_UpdateTabVisibility;
 
-            WizardShell shell = new WizardShell(props);
+            var shell = new WizardShell(props);
 
             return shell.ShowDialog();
         }
 
         static void props_UpdateTabVisibility(object sender, object e)
         {
-            WizardPropsBinding props = e as WizardPropsBinding;
-            TimeSeriesLayer layer = props.Data as TimeSeriesLayer;
-
-            switch (layer.CoordinatesType)
+            var props = e as WizardPropsBinding;
+            if (props != null)
             {
-                case TimeSeriesLayer.CoordinatesTypes.Spherical:
-                    props.UpdateVisible(typeof(DataWizardCoordinates), true);
-                    props.UpdateVisible(typeof(DataWizardCartesian), false);
-                    props.UpdateVisible(typeof(DataWizardOrbits), false);
+                var layer = props.Data as TimeSeriesLayer;
 
-                    break;
-                case TimeSeriesLayer.CoordinatesTypes.Rectangular:
-                    props.UpdateVisible(typeof(DataWizardCoordinates), false);
-                    props.UpdateVisible(typeof(DataWizardCartesian), true);
-                    props.UpdateVisible(typeof(DataWizardOrbits), false);
-                    break;
-                case TimeSeriesLayer.CoordinatesTypes.Orbital:
-                    props.UpdateVisible(typeof(DataWizardCoordinates), false);
-                    props.UpdateVisible(typeof(DataWizardCartesian), false);
-                    props.UpdateVisible(typeof(DataWizardOrbits), true);
-                    break;
-                default:
-                    break;
+                if (layer != null)
+                {
+                    switch (layer.CoordinatesType)
+                    {
+                        case TimeSeriesLayer.CoordinatesTypes.Spherical:
+                            props.UpdateVisible(typeof (DataWizardCoordinates), true);
+                            props.UpdateVisible(typeof (DataWizardCartesian), false);
+                            props.UpdateVisible(typeof (DataWizardOrbits), false);
+
+                            break;
+                        case TimeSeriesLayer.CoordinatesTypes.Rectangular:
+                            props.UpdateVisible(typeof (DataWizardCoordinates), false);
+                            props.UpdateVisible(typeof (DataWizardCartesian), true);
+                            props.UpdateVisible(typeof (DataWizardOrbits), false);
+                            break;
+                        case TimeSeriesLayer.CoordinatesTypes.Orbital:
+                            props.UpdateVisible(typeof (DataWizardCoordinates), false);
+                            props.UpdateVisible(typeof (DataWizardCartesian), false);
+                            props.UpdateVisible(typeof (DataWizardOrbits), true);
+                            break;
+                    }
+                }
             }
-
         }
 
 
         
         static public DialogResult ShowPropertiesSheet(TimeSeriesLayer layer)
         {
-            WizardPropsBinding props = GetPropsObject();
+            var props = GetPropsObject();
             props.Data = layer;
 
-            PropsShell shell = new PropsShell(props);
-            props.UpdateTabVisibility += new UpdateTabDelegate(props_UpdateTabVisibility);
+            var shell = new PropsShell(props);
+            props.UpdateTabVisibility += props_UpdateTabVisibility;
 
             return shell.ShowDialog();
         }

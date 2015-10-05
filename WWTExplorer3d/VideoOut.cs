@@ -19,17 +19,128 @@ namespace TerraViewer
                              dwQuality, dwSampleSize, rect_left, rect_top,
                              rect_right, rect_bottom, dwEditCount, dwFormatChangeCount;
 
-            public UInt16 szName0, szName1, szName2, szName3, szName4, szName5,
-                             szName6, szName7, szName8, szName9, szName10, szName11,
-                             szName12, szName13, szName14, szName15, szName16, szName17,
-                             szName18, szName19, szName20, szName21, szName22, szName23,
-                             szName24, szName25, szName26, szName27, szName28, szName29,
-                             szName30, szName31, szName32, szName33, szName34, szName35,
-                             szName36, szName37, szName38, szName39, szName40, szName41,
-                             szName42, szName43, szName44, szName45, szName46, szName47,
-                             szName48, szName49, szName50, szName51, szName52, szName53,
-                             szName54, szName55, szName56, szName57, szName58, szName59,
-                             szName60, szName61, szName62, szName63;
+            public UInt16 szName0, szName1;
+
+            public readonly UInt16 szName2;
+
+            public readonly UInt16 szName3;
+
+            public readonly UInt16 szName4;
+
+            public readonly UInt16 szName5;
+
+            public readonly UInt16 szName6;
+
+            public readonly UInt16 szName7;
+
+            public readonly UInt16 szName8;
+
+            public readonly UInt16 szName9;
+
+            public readonly UInt16 szName10;
+
+            public readonly UInt16 szName11;
+
+            public readonly UInt16 szName12;
+
+            public readonly UInt16 szName13;
+
+            public readonly UInt16 szName14;
+
+            public readonly UInt16 szName15;
+
+            public readonly UInt16 szName16;
+
+            public readonly UInt16 szName17;
+
+            public readonly UInt16 szName18;
+
+            public readonly UInt16 szName19;
+
+            public readonly UInt16 szName20;
+
+            public readonly UInt16 szName21;
+
+            public readonly UInt16 szName22;
+
+            public readonly UInt16 szName23;
+
+            public readonly UInt16 szName24;
+
+            public readonly UInt16 szName25;
+
+            public readonly UInt16 szName26;
+
+            public readonly UInt16 szName27;
+
+            public readonly UInt16 szName28;
+
+            public readonly UInt16 szName29;
+
+            public readonly UInt16 szName30;
+
+            public readonly UInt16 szName31;
+
+            public readonly UInt16 szName32;
+
+            public readonly UInt16 szName33;
+
+            public readonly UInt16 szName34;
+
+            public readonly UInt16 szName35;
+
+            public readonly UInt16 szName36;
+
+            public readonly UInt16 szName37;
+
+            public readonly UInt16 szName38;
+
+            public readonly UInt16 szName39;
+
+            public readonly UInt16 szName40;
+
+            public readonly UInt16 szName41;
+
+            public readonly UInt16 szName42;
+
+            public readonly UInt16 szName43;
+
+            public readonly UInt16 szName44;
+
+            public readonly UInt16 szName45;
+
+            public readonly UInt16 szName46;
+
+            public readonly UInt16 szName47;
+
+            public readonly UInt16 szName48;
+
+            public readonly UInt16 szName49;
+
+            public readonly UInt16 szName50;
+
+            public readonly UInt16 szName51;
+
+            public readonly UInt16 szName52;
+
+            public readonly UInt16 szName53;
+
+            public readonly UInt16 szName54;
+
+            public readonly UInt16 szName55;
+
+            public readonly UInt16 szName56;
+
+            public readonly UInt16 szName57;
+
+            public readonly UInt16 szName58;
+
+            public readonly UInt16 szName59;
+
+            public readonly UInt16 szName60;
+            public readonly UInt16 szName61;
+            public readonly UInt16 szName62;
+            public readonly UInt16 szName63;
         }
         // vfw.h
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -86,7 +197,7 @@ namespace TerraViewer
                 return err_msg;
             }
             private const Int32 AVIERR_BADPARAM = -2147205018;
-            private string err_msg;
+            private readonly string err_msg;
         }
 
         public Bitmap Open(string fileName, UInt32 frameRate, int width, int height)
@@ -95,11 +206,11 @@ namespace TerraViewer
             width_ = (UInt32)width;
             height_ = (UInt32)height;
             bmp_ = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-            BitmapData bmpDat = bmp_.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            var bmpDat = bmp_.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             stride_ = (UInt32)bmpDat.Stride;
             bmp_.UnlockBits(bmpDat);
             AVIFileInit();
-            int hr = AVIFileOpenW(ref pfile_, fileName, 4097 /* OF_WRITE | OF_CREATE (winbase.h) */, 0);
+            var hr = AVIFileOpenW(ref pfile_, fileName, 4097 /* OF_WRITE | OF_CREATE (winbase.h) */, 0);
             if (hr != 0)
             {
                 throw new AviException("error for AVIFileOpenW");
@@ -114,10 +225,10 @@ namespace TerraViewer
         public void AddFrame()
         {
 
-            BitmapData bmpDat = bmp_.LockBits(
+            var bmpDat = bmp_.LockBits(
               new Rectangle(0, 0, (int)width_, (int)height_), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
-            int hr = AVIStreamWrite(psCompressed_, count_, 1,
+            var hr = AVIStreamWrite(psCompressed_, count_, 1,
                bmpDat.Scan0, // pointer to data
                (Int32)(stride_ * height_),
                0, // 16 = AVIIF_KEYFRAMe
@@ -147,7 +258,7 @@ namespace TerraViewer
 
         private void CreateStream()
         {
-            AVISTREAMINFOW strhdr = new AVISTREAMINFOW();
+            var strhdr = new AVISTREAMINFOW();
             strhdr.fccType = fccType_;
             strhdr.fccHandler = fccHandler_;
             strhdr.dwFlags = 0;
@@ -171,7 +282,7 @@ namespace TerraViewer
             strhdr.szName0 = 0;
             strhdr.szName1 = 0;
 
-            int hr = AVIFileCreateStream(pfile_, out ps_, ref strhdr);
+            var hr = AVIFileCreateStream(pfile_, out ps_, ref strhdr);
 
             if (hr != 0)
             {
@@ -181,7 +292,7 @@ namespace TerraViewer
 
         unsafe private void SetOptions()
         {
-            AVICOMPRESSOPTIONS opts = new AVICOMPRESSOPTIONS();
+            var opts = new AVICOMPRESSOPTIONS();
             opts.fccType = 0; //fccType_;
             opts.fccHandler = 0;//fccHandler_;
             opts.dwKeyFrameEvery = 0;
@@ -194,11 +305,11 @@ namespace TerraViewer
             opts.cbParms = 0;
             opts.dwInterleaveEvery = 0;
 
-            AVICOMPRESSOPTIONS* p = &opts;
-            AVICOMPRESSOPTIONS** pp = &p;
+            var p = &opts;
+            var pp = &p;
 
-            IntPtr x = ps_;
-            IntPtr* ptr_ps = &x;
+            var x = ps_;
+            var ptr_ps = &x;
 
             AVISaveOptions(0, 0, 1, ptr_ps, pp);
 
@@ -206,13 +317,13 @@ namespace TerraViewer
 
             // TODO: AVISaveOptionsFree(...)
 
-            int hr = AVIMakeCompressedStream(out psCompressed_, ps_, ref opts, 0);
+            var hr = AVIMakeCompressedStream(out psCompressed_, ps_, ref opts, 0);
             if (hr != 0)
             {
                 throw new AviException("AVIMakeCompressedStream");
             }
 
-            BITMAPINFOHEADER bi = new BITMAPINFOHEADER();
+            var bi = new BITMAPINFOHEADER();
             bi.biSize = 40;
             bi.biWidth = (Int32)width_;
             bi.biHeight = -(Int32)height_;
@@ -268,14 +379,14 @@ namespace TerraViewer
         [DllImport("avifil32.dll")]
         private static extern void AVIFileExit();
 
-        private int pfile_ = 0;
+        private int pfile_;
         private IntPtr ps_ = new IntPtr(0);
         private IntPtr psCompressed_ = new IntPtr(0);
-        private UInt32 frameRate_ = 0;
-        private int count_ = 0;
-        private UInt32 width_ = 0;
-        private UInt32 stride_ = 0;
-        private UInt32 height_ = 0;
+        private UInt32 frameRate_;
+        private int count_;
+        private UInt32 width_;
+        private UInt32 stride_;
+        private UInt32 height_;
         private UInt32 fccType_ = 1935960438;  // vids
         private UInt32 fccHandler_ = 808810089;// IV50
         //1145656899;  // CVID

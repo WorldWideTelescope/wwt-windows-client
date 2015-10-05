@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
 using System.IO;
-using SharpDX;
 
 
 namespace TerraViewer
@@ -23,23 +20,23 @@ namespace TerraViewer
             {
                 if (!loading)
                 {
-                    Matrix3d worldView = renderContext.World * renderContext.View;
-                    Vector3d v = worldView.Transform(Vector3d.Empty);
-                    double scaleFactor = Math.Sqrt(worldView.M11 * worldView.M11 + worldView.M22 * worldView.M22 + worldView.M33 * worldView.M33) / 1;
-                    double dist = v.Length();
-                    double radius = scaleFactor;
+                    var worldView = renderContext.World * renderContext.View;
+                    var v = worldView.Transform(Vector3d.Empty);
+                    var scaleFactor = Math.Sqrt(worldView.M11 * worldView.M11 + worldView.M22 * worldView.M22 + worldView.M33 * worldView.M33) / 1;
+                    var dist = v.Length();
+                    var radius = scaleFactor;
 
                     // Calculate pixelsPerUnit which is the number of pixels covered
                     // by an object 1 AU at the distance of the planet center from
                     // the camera. This calculation works regardless of the projection
                     // type.
-                    int viewportHeight = (int)renderContext.ViewPort.Height;
-                    double p11 = renderContext.Projection.M11;
-                    double p34 = renderContext.Projection.M34;
-                    double p44 = renderContext.Projection.M44;
-                    double w = Math.Abs(p34) * dist + p44;
-                    float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
-                    float radiusInPixels = (float)(radius * pixelsPerUnit);
+                    var viewportHeight = (int)renderContext.ViewPort.Height;
+                    var p11 = renderContext.Projection.M11;
+                    var p34 = renderContext.Projection.M34;
+                    var p44 = renderContext.Projection.M44;
+                    var w = Math.Abs(p34) * dist + p44;
+                    var pixelsPerUnit = (float)(p11 / w) * viewportHeight;
+                    var radiusInPixels = (float)(radius * pixelsPerUnit);
                     if (radiusInPixels > 0.5f)
                     {
                         BackInitDelegate initBackground = LoadBackground;
@@ -88,16 +85,16 @@ namespace TerraViewer
 
         public static void CopyStream(Stream input, Stream output)
         {
-            byte[] buffer = new byte[8192];
+            var buffer = new byte[8192];
             int len;
             while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
             {
                 output.Write(buffer, 0, len);
             }
         }
-        static bool loading = false;
+        static bool loading;
 
-        static Object3d issmodel = null;
+        static Object3d issmodel;
         public static void LoadBackground()
         {
             if (loading)
@@ -106,8 +103,8 @@ namespace TerraViewer
             }
 
             loading = true;
-            string path = Properties.Settings.Default.CahceDirectory + @"\mdl\155\";
-            string filename = path + "mdl.zip";
+            var path = Properties.Settings.Default.CahceDirectory + @"\mdl\155\";
+            var filename = path + "mdl.zip";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -121,11 +118,11 @@ namespace TerraViewer
 
             using (Stream s = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                ZipArchive zip = new ZipArchive(s);
-                foreach (ZipEntry zFile in zip.Files)
+                var zip = new ZipArchive(s);
+                foreach (var zFile in zip.Files)
                 {
                     Stream output = File.Open(path+zFile.Filename, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-                    Stream input = zFile.GetFileStream();
+                    var input = zFile.GetFileStream();
                     CopyStream(input, output);
                     input.Close();
                     output.Close();
@@ -135,7 +132,7 @@ namespace TerraViewer
             filename = path + "mdl.3ds";
             if (File.Exists(filename))
             {
-                Object3d o3d = new Object3d(filename, true, false, true, System.Drawing.Color.White);
+                var o3d = new Object3d(filename, true, false, true, Color.White);
                 if (o3d != null)
                 {
                     o3d.ISSLayer = true;

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
+using System.Xml;
 
 namespace TerraViewer
 {
     public class AnimationTarget
     {
         public enum AnimationTargetTypes { Overlay, Layer, ReferenceFrame, StockSkyOverlay, Setting, Camera };
-        private IAnimatable target = null;
+        private IAnimatable target;
 
-        private TourStop owner;
+        private readonly TourStop owner;
 
         public AnimationTarget(TourStop owner)
         {
@@ -47,8 +48,6 @@ namespace TerraViewer
                             case AnimationTargetTypes.Setting:
                                 break;
                             case AnimationTargetTypes.Camera:
-                                break;
-                            default:
                                 break;
                         }
                     }
@@ -89,7 +88,7 @@ namespace TerraViewer
             {
                 return;
             }
-            int qt = KeyGroup.Quant(time);
+            var qt = KeyGroup.Quant(time);
 
             CurrentParameters = Target.GetParams();
             
@@ -102,17 +101,16 @@ namespace TerraViewer
             if (KeyFrames.Count != ParameterNames.Count)
             {
                 KeyFrames.Clear();
-                for (int i = 0; i < ParameterNames.Count; i++)
+                foreach (var t in ParameterNames)
                 {
-                    KeyGroup kf = new KeyGroup();
-                    kf.ParameterName = ParameterNames[i];
+                    var kf = new KeyGroup {ParameterName = t};
                     KeyFrames.Add(kf);
                 }
             }
 
-            for (int i = 0; i < ParameterNames.Count; i++)
+            for (var i = 0; i < ParameterNames.Count; i++)
             {
-                Key key = new Key(time, CurrentParameters[i], keyIn, ParameterTypes[i]);
+                var key = new Key(time, CurrentParameters[i], keyIn, ParameterTypes[i]);
                 if (KeyFrames[i].Keys.ContainsKey(qt))
                 {
                     KeyFrames[i].Keys[qt].Value = CurrentParameters[i];
@@ -131,7 +129,7 @@ namespace TerraViewer
             {
                 return;
             }
-            int qt = KeyGroup.Quant(time);
+            var qt = KeyGroup.Quant(time);
 
             CurrentParameters = Target.GetParams();
             ParameterNames.Clear();
@@ -143,17 +141,16 @@ namespace TerraViewer
             if (KeyFrames.Count != ParameterNames.Count)
             {
                 KeyFrames.Clear();
-                for (int i = 0; i < ParameterNames.Count; i++)
+                foreach (var name in ParameterNames)
                 {
-                    KeyGroup kf = new KeyGroup();
-                    kf.ParameterName = ParameterNames[i];
+                    var kf = new KeyGroup {ParameterName = name};
                     KeyFrames.Add(kf);
                 }
             }
 
             if (index < ParameterNames.Count)
             {
-                Key key = new Key(time, CurrentParameters[index], keyIn, ParameterTypes[index]);
+                var key = new Key(time, CurrentParameters[index], keyIn, ParameterTypes[index]);
                 if (KeyFrames[index].Keys.ContainsKey(qt))
                 {
                     KeyFrames[index].Keys[qt].Value = CurrentParameters[index];
@@ -178,7 +175,7 @@ namespace TerraViewer
                 CurrentParameters = new double[ParameterNames.Count];
             }
 
-            for (int i = 0; i < ParameterNames.Count; i++)
+            for (var i = 0; i < ParameterNames.Count; i++)
             {
                 CurrentParameters[i] = KeyFrames[i].Tween(tweenFactor);
             }
@@ -196,7 +193,7 @@ namespace TerraViewer
             return base.ToString();
         }
 
-        public void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public void SaveToXml(XmlTextWriter xmlWriter)
         {
             if (Target != null)
             {
@@ -207,14 +204,14 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("TargetID", TargetID);
             xmlWriter.WriteAttributeString("TargetType", TargetType.ToString());
             xmlWriter.WriteAttributeString("Expanded", Expanded.ToString());
-            foreach (KeyGroup keyFrames in KeyFrames)
+            foreach (var keyFrames in KeyFrames)
             {
                 keyFrames.SaveToXml(xmlWriter);
             }
             xmlWriter.WriteEndElement();
         }
 
-        public void SaveSelectedToXml(System.Xml.XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys)
+        public void SaveSelectedToXml(XmlTextWriter xmlWriter, Dictionary<string, VisibleKey> selectedKeys)
         {
             TargetID = Target.GetIndentifier();
 
@@ -222,8 +219,8 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("TargetID", TargetID);
             xmlWriter.WriteAttributeString("TargetType", TargetType.ToString());
             xmlWriter.WriteAttributeString("Expanded", Expanded.ToString());
-            int index = 0;
-            foreach (KeyGroup keyFrames in KeyFrames)
+            var index = 0;
+            foreach (var keyFrames in KeyFrames)
             {
                 keyFrames.SaveToXml(xmlWriter, selectedKeys, this, index);
                 index++;
@@ -231,7 +228,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public void FromXml(System.Xml.XmlNode node)
+        public void FromXml(XmlNode node)
         {
             TargetID = node.Attributes["TargetID"].Value;
             TargetType = (AnimationTargetTypes)Enum.Parse(typeof(AnimationTargetTypes), node.Attributes["TargetType"].Value, true);
@@ -240,34 +237,34 @@ namespace TerraViewer
                 Expanded = bool.Parse(node.Attributes["Expanded"].Value);
             }
 
-            foreach (System.Xml.XmlNode child in node.ChildNodes)
+            foreach (XmlNode child in node.ChildNodes)
             {
-                KeyGroup kf = new KeyGroup();
+                var kf = new KeyGroup();
                 kf.FromXml(child);
                 ParameterNames.Add(kf.ParameterName);
                 KeyFrames.Add(kf);
             }
         }
 
-        public void PasteFromXML(System.Xml.XmlNode node, bool atTime, double time)
+        public void PasteFromXML(XmlNode node, bool atTime, double time)
         {
-            foreach (System.Xml.XmlNode child in node.ChildNodes)
+            foreach (XmlNode child in node.ChildNodes)
             {
-                KeyGroup kf = new KeyGroup();
+                var kf = new KeyGroup();
                 kf.FromXml(child);
 
-                for (int i = 0; i < ParameterNames.Count; i++ )
+                for (var i = 0; i < ParameterNames.Count; i++ )
                 {
                     if (ParameterNames[i] == kf.ParameterName)
                     {
-                        foreach (Key key in kf.Keys.Values)
+                        foreach (var key in kf.Keys.Values)
                         {
                             if (atTime)
                             {
                                 key.Time = time;
                             }
 
-                            this.KeyFrames[i].AddKey(key);
+                            KeyFrames[i].AddKey(key);
                         }
                     }
                 }
@@ -296,7 +293,7 @@ namespace TerraViewer
 
         internal void ExtendTimeline(TimeSpan oldDuration, TimeSpan newDuration)
         {
-            for (int i = 0; i < ParameterNames.Count; i++)
+            for (var i = 0; i < ParameterNames.Count; i++)
             {
                 KeyFrames[i].ExtendTimeline(oldDuration, newDuration);
             }
@@ -304,22 +301,22 @@ namespace TerraViewer
 
         public AnimationTarget Clone(Overlay newTarget)
         {
-            StringBuilder sb = new StringBuilder();
-            using (System.IO.StringWriter textWriter = new System.IO.StringWriter(sb))
+            var sb = new StringBuilder();
+            using (var textWriter = new StringWriter(sb))
             {
-                using (System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(textWriter))
+                using (var writer = new XmlTextWriter(textWriter))
                 {
                     writer.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
 
-                    this.SaveToXml(writer);
+                    SaveToXml(writer);
                 }
             }
 
-            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(sb.ToString());
 
-            AnimationTarget at = new AnimationTarget(owner);
-            System.Xml.XmlNode node = doc["KeyFrames"];
+            var at = new AnimationTarget(owner);
+            XmlNode node = doc["KeyFrames"];
             at.FromXml(node);
             at.Target = newTarget;
             at.TargetID = newTarget.GetIndentifier();

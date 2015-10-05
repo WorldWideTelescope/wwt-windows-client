@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TerraViewer
@@ -49,7 +48,7 @@ namespace TerraViewer
             get { return name; }
             set { name = value; }
         }
-        private object tag = null;
+        private object tag;
 
         public object Tag
         {
@@ -57,7 +56,7 @@ namespace TerraViewer
             set { tag = value; }
         }
 
-        private bool isChecked = false;
+        private bool isChecked;
 
         public bool Checked
         {
@@ -84,7 +83,7 @@ namespace TerraViewer
             }
         }
 
-        List<LayerUIMenuItem> subMenus = null;
+        List<LayerUIMenuItem> subMenus;
         public List<LayerUIMenuItem> SubMenus
         {
             get
@@ -162,7 +161,7 @@ namespace TerraViewer
 
         public bool UiUpdating = false;
 
-        private LayerUITreeNode parent = null;
+        private LayerUITreeNode parent;
 
         public LayerUITreeNode Parent
         {
@@ -170,7 +169,7 @@ namespace TerraViewer
             set { parent = value; }
         }
 
-        private int level = 0;
+        private int level;
 
         public int Level
         {
@@ -235,7 +234,7 @@ namespace TerraViewer
             }
         }
 
-        private bool bold = false;
+        private bool bold;
 
         public bool Bold
         {
@@ -267,15 +266,15 @@ namespace TerraViewer
 
         public LayerUITreeNode Add(string name)
         {
-            LayerUITreeNode node = new LayerUITreeNode();
+            var node = new LayerUITreeNode();
             node.Name = name;
             node.Parent = this;
-            node.Level = this.Level + 1;
+            node.Level = Level + 1;
             Nodes.Add(node);
             return node;
         }
 
-        List<LayerUITreeNode> nodes = null;
+        List<LayerUITreeNode> nodes;
         public List<LayerUITreeNode> Nodes
         {
             get

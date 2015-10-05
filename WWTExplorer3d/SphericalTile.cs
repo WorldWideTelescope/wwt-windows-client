@@ -1,11 +1,4 @@
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.Text;
 
 
 namespace TerraViewer
@@ -15,8 +8,8 @@ namespace TerraViewer
         bool topDown = true;
         protected void ComputeBoundingSphere()
         {
-            this.sphereCenter = new Vector3d(0,0,0);
-            this.sphereRadius = 1.1f;
+            sphereCenter = new Vector3d(0,0,0);
+            sphereRadius = 1.1f;
         }
 
         const int subDivisionsX = 120;
@@ -28,7 +21,7 @@ namespace TerraViewer
 
             double lat, lng;
 
-            int index = 0;
+            var index = 0;
             //            double tileDegrees = 360;
 
             double latMin = 90;
@@ -37,11 +30,11 @@ namespace TerraViewer
             double lngMax = 180;
             
             // Create a vertex buffer 
-            PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
             int x1, y1;
 
-            double latDegrees = latMax - latMin;
-            double lngDegrees = lngMax - lngMin;
+            var latDegrees = latMax - latMin;
+            var lngDegrees = lngMax - lngMin;
 
             double textureStepX = 1.0f / subDivisionsX;
             double textureStepY = 1.0f / subDivisionsY;
@@ -50,7 +43,7 @@ namespace TerraViewer
 
                 if (y1 != subDivisionsY)
                 {
-                    lat = latMax - (textureStepY * latDegrees * (double)y1);
+                    lat = latMax - (textureStepY * latDegrees * y1);
                 }
                 else
                 {
@@ -61,7 +54,7 @@ namespace TerraViewer
                 {
                     if (x1 != subDivisionsX)
                     {
-                        lng = lngMin + (textureStepX * lngDegrees * (double)x1);
+                        lng = lngMin + (textureStepX * lngDegrees * x1);
                     }
                     else
                     {
@@ -72,7 +65,7 @@ namespace TerraViewer
                     verts[index].Normal = verts[index].Position;
                     if (domeMaster)
                     {
-                        double dist = (90-lat) / 180;
+                        var dist = (90-lat) / 180;
                         verts[index].Tu = (float)(.5 +Math.Sin((lng+180)/180*Math.PI)*dist);
                         verts[index].Tv = (float)(.5 + Math.Cos((lng+180) / 180 * Math.PI) * dist);
                     }
@@ -85,7 +78,7 @@ namespace TerraViewer
             }
             vb.Unlock();
             TriangleCount = (subDivisionsX) * (subDivisionsY) * 2;
-            short[] indexArray = (short[])this.indexBuffer[0].Lock();
+            var indexArray = (short[])indexBuffer[0].Lock();
 
             for (y1 = 0; y1 < subDivisionsY; y1++)
             {
@@ -106,7 +99,7 @@ namespace TerraViewer
                     }
                 }
             }
-            this.indexBuffer[0].Unlock();
+            indexBuffer[0].Unlock();
 		}
 
         public override bool IsTileInFrustum(PlaneD[] frustum)
@@ -141,27 +134,27 @@ namespace TerraViewer
 
             renderContext.SetIndexBuffer( indexBuffer[0]);
 
-            int partCount = this.TriangleCount;
+            var partCount = TriangleCount;
             TrianglesRendered += partCount;
 
             renderContext.devContext.DrawIndexed(indexBuffer[0].Count, 0, 0);
 
             return true;
         }
-        bool domeMaster = false;
+        bool domeMaster;
 
         public override bool CreateGeometry(RenderContext11 renderContext, bool uiThread)
         {
             if (texture == null)
             {
-                if (this.texture == null)
+                if (texture == null)
                 {
                     if (TextureReady)
                     {
 
                         texture = BufferPool11.GetTexture(FileName);
 
-                        double aspect = (double)texture.Width / (double)texture.Height;
+                        var aspect = texture.Width / (double)texture.Height;
 
                         if (aspect < 1.5)
                         {
@@ -199,7 +192,7 @@ namespace TerraViewer
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;     
+            topDown = !dataset.BottomsUp;     
             ComputeBoundingSphere();
             VertexCount = ((subDivisionsX + 1) * (subDivisionsY + 1));
         }

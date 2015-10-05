@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 
 
@@ -11,7 +11,7 @@ namespace TerraViewer
 {
     public class LayerContainer : IDisposable
     {
-        int tourDirty = 0;
+        int tourDirty;
         public bool TourDirty
         {
             get { return tourDirty > 0; }
@@ -45,7 +45,7 @@ namespace TerraViewer
             {
                 if (String.IsNullOrEmpty(workingDirectory))
                 {
-                    workingDirectory = LayerContainer.BaseWorkingDirectory + id.ToString() + @"\";
+                    workingDirectory = BaseWorkingDirectory + id + @"\";
                 }
 
                 if (!Directory.Exists(workingDirectory))
@@ -71,9 +71,9 @@ namespace TerraViewer
 
         public static LayerContainer FromFile(string filename, bool forEdit, string parentFrame, bool referenceFrameRightClick)
         {
-            FileCabinet cab = new FileCabinet(filename, BaseWorkingDirectory);
+            var cab = new FileCabinet(filename, BaseWorkingDirectory);
             cab.Extract();
-            LayerContainer newDoc = LayerContainer.FromXml(cab.MasterFile, parentFrame,  referenceFrameRightClick);
+            var newDoc = FromXml(cab.MasterFile, parentFrame,  referenceFrameRightClick);
             if (forEdit)
             {
                 newDoc.SaveFileName = filename;
@@ -82,7 +82,7 @@ namespace TerraViewer
             return newDoc;
         }
 
-        string saveFileName = null;
+        string saveFileName;
 
         public string SaveFileName
         {
@@ -94,17 +94,17 @@ namespace TerraViewer
         public bool CollisionChecked = false;
         public static LayerContainer FromXml(string filename, string parentFrame, bool referenceFrameRightClick)
         {
-            LayerContainer newDoc = new LayerContainer();
+            var newDoc = new LayerContainer();
             newDoc.filename = filename;
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.Load(filename);
 
             XmlNode root = doc["LayerContainer"];
-            newDoc.id = root.Attributes["ID"].Value.ToString();
+            newDoc.id = root.Attributes["ID"].Value;
 
             XmlNode Layers = root["Layers"];
 
-            bool loadAtNewParent = false;
+            var loadAtNewParent = false;
             if (!referenceFrameRightClick || Layers.ChildNodes.Count != 1)
             {
                 XmlNode Frames = root["ReferenceFrames"];
@@ -113,12 +113,12 @@ namespace TerraViewer
                 {
                     foreach (XmlNode frame in Frames)
                     {
-                        ReferenceFrame newFrame = new ReferenceFrame();
+                        var newFrame = new ReferenceFrame();
                         newFrame.InitializeFromXml(frame);
 
                         if (!LayerManager.AllMaps.ContainsKey(newFrame.Name))
                         {
-                            LayerMap map = new LayerMap(newFrame.Name, ReferenceFrames.Custom);
+                            var map = new LayerMap(newFrame.Name, ReferenceFrames.Custom);
                             map.Frame = newFrame;
                             LayerManager.AllMaps.Add(newFrame.Name, map);
                         }
@@ -137,15 +137,15 @@ namespace TerraViewer
             {
                 foreach (XmlNode layer in Layers)
                 {
-                    Layer newLayer = Layer.FromXml(layer, true);
-                    string fileName = newDoc.WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
+                    var newLayer = Layer.FromXml(layer, true);
+                    var fileName = newDoc.WorkingDirectory + string.Format("{0}.txt", newLayer.ID);
 
 
                     if (LayerManager.LayerList.ContainsKey(newLayer.ID) && newLayer.ID != ISSLayer.ISSGuid)
                     {
                         if (!newDoc.CollisionChecked)
                         {
-                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
                                 newDoc.OverWrite = true;
                             }
@@ -188,7 +188,7 @@ namespace TerraViewer
         {
             get
             {
-                return Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id.ToString() + "\\" + id.ToString() + ".wwtxml";
+                return Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id + "\\" + id + ".wwtxml";
             }
         }
 
@@ -205,7 +205,7 @@ namespace TerraViewer
                 //Use a guid if the Title is only non-legal characters or is empty
                 if (String.IsNullOrEmpty(filename))
                 {
-                    filename = Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id.ToString() + ".wwtxml";
+                    filename = Properties.Settings.Default.CahceDirectory + @"LayerTemp\" + id + ".wwtxml";
                 }
                 outFile = filename;
             }
@@ -216,12 +216,12 @@ namespace TerraViewer
                 
             }
 
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(outFile, System.Text.Encoding.UTF8))
+            using (var xmlWriter = new XmlTextWriter(outFile, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("LayerContainer");
-                xmlWriter.WriteAttributeString("ID", this.id);
+                xmlWriter.WriteAttributeString("ID", id);
               
                 List<Guid> masterList = null;
 
@@ -235,10 +235,10 @@ namespace TerraViewer
                 }
                
                 // This will now save and sync emtpy frames...
-                List<ReferenceFrame> referencedFrames = GetReferenceFrameList();
+                var referencedFrames = GetReferenceFrameList();
 
                 xmlWriter.WriteStartElement("ReferenceFrames");
-                foreach (ReferenceFrame item in referencedFrames)
+                foreach (var item in referencedFrames)
                 {
                     item.SaveToXml(xmlWriter);
                 }
@@ -246,11 +246,11 @@ namespace TerraViewer
 
 
                 xmlWriter.WriteStartElement("Layers");
-                foreach (Guid id in masterList)
+                foreach (var t in masterList)
                 {
-                    if (LayerManager.LayerList.ContainsKey(id))
+                    if (LayerManager.LayerList.ContainsKey(t))
                     {
-                        LayerManager.LayerList[id].SaveToXml(xmlWriter);
+                        LayerManager.LayerList[t].SaveToXml(xmlWriter);
                     }
                 }
                 xmlWriter.WriteEndElement();
@@ -265,13 +265,13 @@ namespace TerraViewer
         private List<ReferenceFrame> GetReferenceFrameList(List<Guid> masterList)
         {
             
-            List<ReferenceFrame> list = new List<ReferenceFrame>();
+            var list = new List<ReferenceFrame>();
 
-            foreach (Guid id in masterList)
+            foreach (var id in masterList)
             {
                 if (LayerManager.LayerList.ContainsKey(id))
                 {
-                    string frame = LayerManager.LayerList[id].ReferenceFrame;
+                    var frame = LayerManager.LayerList[id].ReferenceFrame;
 
                     while (!string.IsNullOrEmpty(frame))
                     {
@@ -294,9 +294,9 @@ namespace TerraViewer
 
         private List<ReferenceFrame> GetReferenceFrameList()
         {
-            List<ReferenceFrame> list = new List<ReferenceFrame>();
+            var list = new List<ReferenceFrame>();
 
-            foreach (LayerMap lm in LayerManager.AllMaps.Values)
+            foreach (var lm in LayerManager.AllMaps.Values)
             {
                 if ((lm.Frame.Reference == ReferenceFrames.Custom || lm.Frame.Reference == ReferenceFrames.Identity) && !list.Contains(lm.Frame) && lm.Frame.SystemGenerated == false)
                 {
@@ -310,9 +310,9 @@ namespace TerraViewer
 
         private List<Guid> CreateLayerMasterList()
         {
-            List<Guid> masterList = new List<Guid>();
+            var masterList = new List<Guid>();
 
-            foreach (Layer layer in LayerManager.LayerList.Values)
+            foreach (var layer in LayerManager.LayerList.Values)
             {
                 if (SoloGuid == Guid.Empty || SoloGuid == layer.ID)
                 {
@@ -325,12 +325,12 @@ namespace TerraViewer
 
         private List<Guid> CreateLayerMasterListFromFrame(string name)
         {
-            List<Guid> masterList = new List<Guid>();
+            var masterList = new List<Guid>();
 
-            LayerMap map = LayerManager.AllMaps[name];
+            var map = LayerManager.AllMaps[name];
             if (map != null)
             {
-                foreach (Layer layer in LayerManager.LayerList.Values)
+                foreach (var layer in LayerManager.LayerList.Values)
                 {
                     if (SoloGuid == Guid.Empty || SoloGuid == layer.ID)
                     {
@@ -343,12 +343,12 @@ namespace TerraViewer
 
         public void AddMaps(LayerMap map, List<Guid> list)
         {
-            foreach(Layer layer in map.Layers)
+            foreach(var layer in map.Layers)
             {
                 list.Add(layer.ID);
             }
 
-            foreach(LayerMap child in map.ChildMaps.Values)
+            foreach(var child in map.ChildMaps.Values)
             {
                 AddMaps(child,list);
             }
@@ -360,14 +360,14 @@ namespace TerraViewer
             GC.Collect();
             SaveToXml(false);
 
-            FileCabinet fc = new FileCabinet(saveFilename, BaseWorkingDirectory);
-            fc.PackageID = this.Id;
-            this.saveFileName = saveFilename;
+            var fc = new FileCabinet(saveFilename, BaseWorkingDirectory);
+            fc.PackageID = Id;
+            saveFileName = saveFilename;
             fc.AddFile(filename);
  
-            List<Guid> masterList = CreateLayerMasterList();
+            var masterList = CreateLayerMasterList();
 
-            string path = fc.TempDirectory + string.Format("{0}", fc.PackageID);
+            var path = fc.TempDirectory + string.Format("{0}", fc.PackageID);
 
             if (!Directory.Exists(path))
             {
@@ -376,7 +376,7 @@ namespace TerraViewer
 
 
 
-            foreach (Guid id in masterList)
+            foreach (var id in masterList)
             {
                 if (LayerManager.LayerList.ContainsKey(id))
                 {
@@ -414,10 +414,10 @@ namespace TerraViewer
             {
                 if (!DontCleanUpTempFiles)
                 {
-                    DirectoryInfo di = new DirectoryInfo(WorkingDirectory);
+                    var di = new DirectoryInfo(WorkingDirectory);
                     if (di.Exists)
                     {
-                        foreach (FileInfo fi in di.GetFiles())
+                        foreach (var fi in di.GetFiles())
                         {
                             File.Delete(fi.FullName);
                         }

@@ -11,12 +11,14 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MicrosoftInternal.AdvancedCollections
 {
-    public sealed class TreeDictionaryKeyValuePairEnumerator<TKey, TValue> : System.Collections.IDictionaryEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>, IEquatable<TreeDictionaryKeyValuePairEnumerator<TKey, TValue>>, IComparable<TreeDictionaryKeyValuePairEnumerator<TKey, TValue>>, IEquatable<TreeDictionaryKeyEnumerator<TKey, TValue>>, IComparable<TreeDictionaryKeyEnumerator<TKey, TValue>>, IEquatable<TreeDictionaryValueEnumerator<TKey, TValue>>, IComparable<TreeDictionaryValueEnumerator<TKey, TValue>>
+    public sealed class TreeDictionaryKeyValuePairEnumerator<TKey, TValue> : IDictionaryEnumerator, IEnumerator<KeyValuePair<TKey, TValue>>, IEquatable<TreeDictionaryKeyValuePairEnumerator<TKey, TValue>>, IComparable<TreeDictionaryKeyValuePairEnumerator<TKey, TValue>>, IEquatable<TreeDictionaryKeyEnumerator<TKey, TValue>>, IComparable<TreeDictionaryKeyEnumerator<TKey, TValue>>, IEquatable<TreeDictionaryValueEnumerator<TKey, TValue>>, IComparable<TreeDictionaryValueEnumerator<TKey, TValue>>
     {
         internal const uint IsStartingEnumeration = 0x80000000;
         internal const uint IsBeforeLowestBit = 0x40000000;
@@ -30,35 +32,35 @@ namespace MicrosoftInternal.AdvancedCollections
 
         public TreeDictionaryKeyValuePairEnumerator(TreeDictionaryKeyValuePairEnumerator<TKey, TValue> enumerator)
         {
-            this.comparer = enumerator.comparer;
-            this.loopbackNode = enumerator.loopbackNode;
-            this.node = enumerator.node;
-            this.isGoingDown = enumerator.isGoingDown;
-            this.statusBits = enumerator.statusBits;
+            comparer = enumerator.comparer;
+            loopbackNode = enumerator.loopbackNode;
+            node = enumerator.node;
+            isGoingDown = enumerator.isGoingDown;
+            statusBits = enumerator.statusBits;
         }
 
         public TreeDictionaryKeyValuePairEnumerator(TreeDictionaryKeyEnumerator<TKey, TValue> enumerator)
         {
-            this.comparer = enumerator.comparer;
-            this.loopbackNode = enumerator.loopbackNode;
-            this.node = enumerator.node;
-            this.isGoingDown = enumerator.isGoingDown;
-            this.statusBits = enumerator.statusBits;
+            comparer = enumerator.comparer;
+            loopbackNode = enumerator.loopbackNode;
+            node = enumerator.node;
+            isGoingDown = enumerator.isGoingDown;
+            statusBits = enumerator.statusBits;
         }
 
         public TreeDictionaryKeyValuePairEnumerator(TreeDictionaryValueEnumerator<TKey, TValue> enumerator)
         {
-            this.comparer = enumerator.comparer;
-            this.loopbackNode = enumerator.loopbackNode;
-            this.node = enumerator.node;
-            this.isGoingDown = enumerator.isGoingDown;
-            this.statusBits = enumerator.statusBits;
+            comparer = enumerator.comparer;
+            loopbackNode = enumerator.loopbackNode;
+            node = enumerator.node;
+            isGoingDown = enumerator.isGoingDown;
+            statusBits = enumerator.statusBits;
         }
 
         internal TreeDictionaryKeyValuePairEnumerator(TreeDictionary<TKey, TValue> tree, TreeDictionary<TKey, TValue>.TreeNode node, bool isGoingDown, uint statusBits)
         {
-            this.comparer = tree.Comparer;
-            this.loopbackNode = tree.loopbackNode;
+            comparer = tree.Comparer;
+            loopbackNode = tree.loopbackNode;
             this.node = node;
             this.isGoingDown = isGoingDown;
             this.statusBits = statusBits;
@@ -115,63 +117,57 @@ namespace MicrosoftInternal.AdvancedCollections
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502", Justification = "Complex for speed")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1502", Justification = "Complex for speed")]
         public int CompareTo(TreeDictionaryKeyValuePairEnumerator<TKey, TValue> other)
         {
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
             // has been deleted via the Clear() function
-            if(this.node.Parent == null || this.loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
+            if(node.Parent == null || loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
             {
                 throw new InvalidOperationException("This TreeDictionary node has been deleted");
             }
 
-            if(this.loopbackNode != other.loopbackNode)
+            if(loopbackNode != other.loopbackNode)
             {
                 throw new ArgumentException("Both enumerators must be created from the same TreeDictionary", "other");
             }
 
-            if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 if((other.statusBits & IsBeforeLowestBit) != 0)
                 {
                     return 0;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else if((other.statusBits & IsBeforeLowestBit) != 0)
+            if((other.statusBits & IsBeforeLowestBit) != 0)
             {
                 return 1;
             }
 
-            if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 if((other.statusBits & IsAfterHighestBit) != 0)
                 {
                     return 0;
                 }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
-            else if((other.statusBits & IsAfterHighestBit) != 0)
+            if((other.statusBits & IsAfterHighestBit) != 0)
             {
                 return -1;
             }
 
-            Debug.Assert((this.statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
-            Debug.Assert(this.node != this.loopbackNode && this.node != other.loopbackNode && other.node != this.loopbackNode && other.node != other.loopbackNode);
+            Debug.Assert((statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
+            Debug.Assert(node != loopbackNode && node != other.loopbackNode && other.node != loopbackNode && other.node != other.loopbackNode);
 
-            if(this.node == other.node)
+            if(node == other.node)
             {
                 return 0;
             }
 
-            int thisHeight = comparer.Compare(this.node.Key, other.node.Key);
+            var thisHeight = comparer.Compare(node.Key, other.node.Key);
 
             if(thisHeight != 0)
             {
@@ -179,28 +175,28 @@ namespace MicrosoftInternal.AdvancedCollections
             }
 
             thisHeight = 0;
-            TreeDictionary<TKey, TValue>.TreeNode node1 = this.node.Parent;
-            TreeDictionary<TKey, TValue>.TreeNode node2 = this.loopbackNode;
+            var node1 = node.Parent;
+            var node2 = loopbackNode;
 
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                 ++thisHeight;
                 node1 = node1.Parent;
             }
 
-            int otherHeight = 0;
+            var otherHeight = 0;
             node1 = other.node.Parent;
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                 ++otherHeight;
                 node1 = node1.Parent;
             }
 
-            node1 = this.node;
+            node1 = node;
             node2 = other.node;
-            int diff = thisHeight - otherHeight;
+            var diff = thisHeight - otherHeight;
 
             TreeDictionary<TKey, TValue>.TreeNode temp1 = null;
             TreeDictionary<TKey, TValue>.TreeNode temp2 = null;
@@ -209,7 +205,7 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 while(diff > 0)
                 {
-                    Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                    Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                     temp1 = node1;
                     node1 = node1.Parent;
                     --diff;
@@ -219,7 +215,7 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 while(diff < 0)
                 {
-                    Debug.Assert(node2 != this.loopbackNode && node2 != other.loopbackNode);
+                    Debug.Assert(node2 != loopbackNode && node2 != other.loopbackNode);
                     temp2 = node2;
                     node2 = node2.Parent;
                     ++diff;
@@ -228,7 +224,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode && node2 != this.loopbackNode && node2 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode && node2 != loopbackNode && node2 != other.loopbackNode);
 
                 temp1 = node1;
                 temp2 = node2;
@@ -243,81 +239,66 @@ namespace MicrosoftInternal.AdvancedCollections
                 {
                     return 1;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else
+            if(temp1 == node1)
             {
-                if(temp1 == node1)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
+                return -1;
             }
+            return 1;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502", Justification = "Complex for speed")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1502", Justification = "Complex for speed")]
         public int CompareTo(TreeDictionaryKeyEnumerator<TKey, TValue> other)
         {
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
             // has been deleted via the Clear() function
-            if(this.node.Parent == null || this.loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
+            if(node.Parent == null || loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
             {
                 throw new InvalidOperationException("This TreeDictionary node has been deleted");
             }
 
-            if(this.loopbackNode != other.loopbackNode)
+            if(loopbackNode != other.loopbackNode)
             {
                 throw new ArgumentException("Both enumerators must be created from the same TreeDictionary", "other");
             }
 
-            if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 if((other.statusBits & IsBeforeLowestBit) != 0)
                 {
                     return 0;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else if((other.statusBits & IsBeforeLowestBit) != 0)
+            if((other.statusBits & IsBeforeLowestBit) != 0)
             {
                 return 1;
             }
 
-            if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 if((other.statusBits & IsAfterHighestBit) != 0)
                 {
                     return 0;
                 }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
-            else if((other.statusBits & IsAfterHighestBit) != 0)
+            if((other.statusBits & IsAfterHighestBit) != 0)
             {
                 return -1;
             }
 
-            Debug.Assert((this.statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
-            Debug.Assert(this.node != this.loopbackNode && this.node != other.loopbackNode && other.node != this.loopbackNode && other.node != other.loopbackNode);
+            Debug.Assert((statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
+            Debug.Assert(node != loopbackNode && node != other.loopbackNode && other.node != loopbackNode && other.node != other.loopbackNode);
 
-            if(this.node == other.node)
+            if(node == other.node)
             {
                 return 0;
             }
 
-            int thisHeight = comparer.Compare(this.node.Key, other.node.Key);
+            var thisHeight = comparer.Compare(node.Key, other.node.Key);
 
             if(thisHeight != 0)
             {
@@ -325,28 +306,28 @@ namespace MicrosoftInternal.AdvancedCollections
             }
 
             thisHeight = 0;
-            TreeDictionary<TKey, TValue>.TreeNode node1 = this.node.Parent;
-            TreeDictionary<TKey, TValue>.TreeNode node2 = this.loopbackNode;
+            var node1 = node.Parent;
+            var node2 = loopbackNode;
 
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                 ++thisHeight;
                 node1 = node1.Parent;
             }
 
-            int otherHeight = 0;
+            var otherHeight = 0;
             node1 = other.node.Parent;
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                 ++otherHeight;
                 node1 = node1.Parent;
             }
 
-            node1 = this.node;
+            node1 = node;
             node2 = other.node;
-            int diff = thisHeight - otherHeight;
+            var diff = thisHeight - otherHeight;
 
             TreeDictionary<TKey, TValue>.TreeNode temp1 = null;
             TreeDictionary<TKey, TValue>.TreeNode temp2 = null;
@@ -355,7 +336,7 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 while(diff > 0)
                 {
-                    Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                    Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                     temp1 = node1;
                     node1 = node1.Parent;
                     --diff;
@@ -365,7 +346,7 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 while(diff < 0)
                 {
-                    Debug.Assert(node2 != this.loopbackNode && node2 != other.loopbackNode);
+                    Debug.Assert(node2 != loopbackNode && node2 != other.loopbackNode);
                     temp2 = node2;
                     node2 = node2.Parent;
                     ++diff;
@@ -374,7 +355,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode && node2 != this.loopbackNode && node2 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode && node2 != loopbackNode && node2 != other.loopbackNode);
 
                 temp1 = node1;
                 temp2 = node2;
@@ -389,81 +370,66 @@ namespace MicrosoftInternal.AdvancedCollections
                 {
                     return 1;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else
+            if(temp1 == node1)
             {
-                if(temp1 == node1)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
+                return -1;
             }
+            return 1;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502", Justification = "Complex for speed")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1502", Justification = "Complex for speed")]
         public int CompareTo(TreeDictionaryValueEnumerator<TKey, TValue> other)
         {
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
             // has been deleted via the Clear() function
-            if(this.node.Parent == null || this.loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
+            if(node.Parent == null || loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
             {
                 throw new InvalidOperationException("This TreeDictionary node has been deleted");
             }
 
-            if(this.loopbackNode != other.loopbackNode)
+            if(loopbackNode != other.loopbackNode)
             {
                 throw new ArgumentException("Both enumerators must be created from the same TreeDictionary", "other");
             }
 
-            if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 if((other.statusBits & IsBeforeLowestBit) != 0)
                 {
                     return 0;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else if((other.statusBits & IsBeforeLowestBit) != 0)
+            if((other.statusBits & IsBeforeLowestBit) != 0)
             {
                 return 1;
             }
 
-            if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 if((other.statusBits & IsAfterHighestBit) != 0)
                 {
                     return 0;
                 }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
-            else if((other.statusBits & IsAfterHighestBit) != 0)
+            if((other.statusBits & IsAfterHighestBit) != 0)
             {
                 return -1;
             }
 
-            Debug.Assert((this.statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
-            Debug.Assert(this.node != this.loopbackNode && this.node != other.loopbackNode && other.node != this.loopbackNode && other.node != other.loopbackNode);
+            Debug.Assert((statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
+            Debug.Assert(node != loopbackNode && node != other.loopbackNode && other.node != loopbackNode && other.node != other.loopbackNode);
 
-            if(this.node == other.node)
+            if(node == other.node)
             {
                 return 0;
             }
 
-            int thisHeight = comparer.Compare(this.node.Key, other.node.Key);
+            var thisHeight = comparer.Compare(node.Key, other.node.Key);
 
             if(thisHeight != 0)
             {
@@ -471,28 +437,28 @@ namespace MicrosoftInternal.AdvancedCollections
             }
 
             thisHeight = 0;
-            TreeDictionary<TKey, TValue>.TreeNode node1 = this.node.Parent;
-            TreeDictionary<TKey, TValue>.TreeNode node2 = this.loopbackNode;
+            var node1 = node.Parent;
+            var node2 = loopbackNode;
 
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                 ++thisHeight;
                 node1 = node1.Parent;
             }
 
-            int otherHeight = 0;
+            var otherHeight = 0;
             node1 = other.node.Parent;
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                 ++otherHeight;
                 node1 = node1.Parent;
             }
 
-            node1 = this.node;
+            node1 = node;
             node2 = other.node;
-            int diff = thisHeight - otherHeight;
+            var diff = thisHeight - otherHeight;
 
             TreeDictionary<TKey, TValue>.TreeNode temp1 = null;
             TreeDictionary<TKey, TValue>.TreeNode temp2 = null;
@@ -501,7 +467,7 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 while(diff > 0)
                 {
-                    Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode);
+                    Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode);
                     temp1 = node1;
                     node1 = node1.Parent;
                     --diff;
@@ -511,7 +477,7 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 while(diff < 0)
                 {
-                    Debug.Assert(node2 != this.loopbackNode && node2 != other.loopbackNode);
+                    Debug.Assert(node2 != loopbackNode && node2 != other.loopbackNode);
                     temp2 = node2;
                     node2 = node2.Parent;
                     ++diff;
@@ -520,7 +486,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
             while(node1 != node2)
             {
-                Debug.Assert(node1 != this.loopbackNode && node1 != other.loopbackNode && node2 != this.loopbackNode && node2 != other.loopbackNode);
+                Debug.Assert(node1 != loopbackNode && node1 != other.loopbackNode && node2 != loopbackNode && node2 != other.loopbackNode);
 
                 temp1 = node1;
                 temp2 = node2;
@@ -535,22 +501,13 @@ namespace MicrosoftInternal.AdvancedCollections
                 {
                     return 1;
                 }
-                else
-                {
-                    return -1;
-                }
+                return -1;
             }
-            else
+            if(temp1 == node1)
             {
-                if(temp1 == node1)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
+                return -1;
             }
+            return 1;
         }
 
         public override bool Equals(object obj)
@@ -560,17 +517,17 @@ namespace MicrosoftInternal.AdvancedCollections
                 return false;
             }
 
-            TreeDictionaryKeyValuePairEnumerator<TKey, TValue> otherKeyValuePair = obj as TreeDictionaryKeyValuePairEnumerator<TKey, TValue>;
+            var otherKeyValuePair = obj as TreeDictionaryKeyValuePairEnumerator<TKey, TValue>;
             if(otherKeyValuePair != null)
-                return this.Equals(otherKeyValuePair);
+                return Equals(otherKeyValuePair);
 
-            TreeDictionaryKeyEnumerator<TKey, TValue> otherKey = obj as TreeDictionaryKeyEnumerator<TKey, TValue>;
+            var otherKey = obj as TreeDictionaryKeyEnumerator<TKey, TValue>;
             if(otherKey != null)
-                return this.Equals(otherKey);
+                return Equals(otherKey);
 
-            TreeDictionaryValueEnumerator<TKey, TValue> otherValue = obj as TreeDictionaryValueEnumerator<TKey, TValue>;
+            var otherValue = obj as TreeDictionaryValueEnumerator<TKey, TValue>;
             if(otherValue != null)
-                return this.Equals(otherValue);
+                return Equals(otherValue);
 
             return false;
         }
@@ -580,51 +537,45 @@ namespace MicrosoftInternal.AdvancedCollections
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
             // has been deleted via the Clear() function
-            if(this.node.Parent == null || this.loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
+            if(node.Parent == null || loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
             {
                 throw new InvalidOperationException("This TreeDictionary node has been deleted");
             }
 
-            if(this.loopbackNode != other.loopbackNode)
+            if(loopbackNode != other.loopbackNode)
             {
                 throw new ArgumentException("Both enumerators must be created from the same TreeDictionary", "other");
             }
 
-            if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 if((other.statusBits & IsBeforeLowestBit) != 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 return false;
             }
 
-            if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 if((other.statusBits & IsAfterHighestBit) != 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 return false;
             }
 
-            Debug.Assert((this.statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
+            Debug.Assert((statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
 
-            if(this.node != other.node)
+            if(node != other.node)
                 return false;
 
             return true;
@@ -635,51 +586,45 @@ namespace MicrosoftInternal.AdvancedCollections
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
             // has been deleted via the Clear() function
-            if(this.node.Parent == null || this.loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
+            if(node.Parent == null || loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
             {
                 throw new InvalidOperationException("This TreeDictionary node has been deleted");
             }
 
-            if(this.loopbackNode != other.loopbackNode)
+            if(loopbackNode != other.loopbackNode)
             {
                 throw new ArgumentException("Both enumerators must be created from the same TreeDictionary", "other");
             }
 
-            if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 if((other.statusBits & IsBeforeLowestBit) != 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 return false;
             }
 
-            if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 if((other.statusBits & IsAfterHighestBit) != 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 return false;
             }
 
-            Debug.Assert((this.statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
+            Debug.Assert((statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
 
-            if(this.node != other.node)
+            if(node != other.node)
                 return false;
 
             return true;
@@ -690,51 +635,45 @@ namespace MicrosoftInternal.AdvancedCollections
             // if this node has been set to null, then it has been deleted
             // if the loopbackNode has been set to red (which is an invalid state in the red-black tree, then the entire tree
             // has been deleted via the Clear() function
-            if(this.node.Parent == null || this.loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
+            if(node.Parent == null || loopbackNode.IsRed || other.node.Parent == null || other.loopbackNode.IsRed)
             {
                 throw new InvalidOperationException("This TreeDictionary node has been deleted");
             }
 
-            if(this.loopbackNode != other.loopbackNode)
+            if(loopbackNode != other.loopbackNode)
             {
                 throw new ArgumentException("Both enumerators must be created from the same TreeDictionary", "other");
             }
 
-            if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 if((other.statusBits & IsBeforeLowestBit) != 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if((this.statusBits & IsBeforeLowestBit) != 0)
+            if((statusBits & IsBeforeLowestBit) != 0)
             {
                 return false;
             }
 
-            if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 if((other.statusBits & IsAfterHighestBit) != 0)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if((this.statusBits & IsAfterHighestBit) != 0)
+            if((statusBits & IsAfterHighestBit) != 0)
             {
                 return false;
             }
 
-            Debug.Assert((this.statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
+            Debug.Assert((statusBits & IsStartingEnumeration) == 0 && (other.statusBits & IsStartingEnumeration) == 0);
 
-            if(this.node != other.node)
+            if(node != other.node)
                 return false;
 
             return true;
@@ -746,16 +685,13 @@ namespace MicrosoftInternal.AdvancedCollections
             {
                 return node.Key.GetHashCode();
             }
-            else
-            {
-                return (int)(statusBits & (~IsStartingEnumeration));
-            }
+            return (int)(statusBits & (~IsStartingEnumeration));
         }
 
         public bool MoveNext()
         {
-            TreeDictionary<TKey, TValue>.TreeNode currentNode = node;
-            TreeDictionary<TKey, TValue>.TreeNode localLoopbackNode = loopbackNode;
+            var currentNode = node;
+            var localLoopbackNode = loopbackNode;
             TreeDictionary<TKey, TValue>.TreeNode nextNode;
 
             // if this node has been set to null, then it has been deleted
@@ -787,90 +723,60 @@ namespace MicrosoftInternal.AdvancedCollections
                                     currentNode = nextNode;
                                     continue;
                                 }
-                                else
-                                {
-                                    node = nextNode;
-                                    return true;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            statusBits = IsAfterHighestBit;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        currentNode = nextNode;
-                        while(true)
-                        {
-                            nextNode = currentNode.Left;
-                            if(nextNode != localLoopbackNode)
-                            {
-                                currentNode = nextNode;
-                                continue;
-                            }
-                            else
-                            {
-                                node = currentNode;
+                                node = nextNode;
                                 return true;
                             }
                         }
+                        statusBits = IsAfterHighestBit;
+                        return false;
+                    }
+                    currentNode = nextNode;
+                    while(true)
+                    {
+                        nextNode = currentNode.Left;
+                        if(nextNode != localLoopbackNode)
+                        {
+                            currentNode = nextNode;
+                            continue;
+                        }
+                        node = currentNode;
+                        return true;
                     }
                 }
-                else
+                nextNode = currentNode.Left;
+                if(nextNode == localLoopbackNode)
                 {
-                    nextNode = currentNode.Left;
-                    if(nextNode == localLoopbackNode)
+                    if(currentNode != localLoopbackNode.Left)
                     {
-                        if(currentNode != localLoopbackNode.Left)
-                        {
-                            while(true)
-                            {
-                                nextNode = currentNode.Parent;
-                                if(nextNode.Right != currentNode)
-                                {
-                                    currentNode = nextNode;
-                                    continue;
-                                }
-                                else
-                                {
-                                    node = nextNode;
-                                    return true;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            statusBits = IsBeforeLowestBit;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        currentNode = nextNode;
                         while(true)
                         {
-                            nextNode = currentNode.Right;
-                            if(nextNode != localLoopbackNode)
+                            nextNode = currentNode.Parent;
+                            if(nextNode.Right != currentNode)
                             {
                                 currentNode = nextNode;
                                 continue;
                             }
-                            else
-                            {
-                                node = currentNode;
-                                return true;
-                            }
+                            node = nextNode;
+                            return true;
                         }
                     }
+                    statusBits = IsBeforeLowestBit;
+                    return false;
+                }
+                currentNode = nextNode;
+                while(true)
+                {
+                    nextNode = currentNode.Right;
+                    if(nextNode != localLoopbackNode)
+                    {
+                        currentNode = nextNode;
+                        continue;
+                    }
+                    node = currentNode;
+                    return true;
                 }
             }
-            else
-            {
-                return HandleStatus();
-            }
+            return HandleStatus();
         }
 
         public void Reset()
@@ -887,15 +793,15 @@ namespace MicrosoftInternal.AdvancedCollections
 
         #region explicit interface for IDictionaryEnumerator
 
-        System.Collections.DictionaryEntry System.Collections.IDictionaryEnumerator.Entry
+        DictionaryEntry IDictionaryEnumerator.Entry
         {
             get
             {
-                return new System.Collections.DictionaryEntry(Current.Key, Current.Value);
+                return new DictionaryEntry(Current.Key, Current.Value);
             }
         }
 
-        object System.Collections.IDictionaryEnumerator.Key
+        object IDictionaryEnumerator.Key
         {
             get
             {
@@ -903,7 +809,7 @@ namespace MicrosoftInternal.AdvancedCollections
             }
         }
 
-        object System.Collections.IDictionaryEnumerator.Value
+        object IDictionaryEnumerator.Value
         {
             get
             {
@@ -916,7 +822,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         #region explicit interface for IEnumerable
 
-        object System.Collections.IEnumerator.Current
+        object IEnumerator.Current
         {
             get
             {
@@ -928,7 +834,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         #region explicit interface for IDisposable
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063", Justification = "The IDisposable interface is created only for compatability with IEnumerable.  We don't want to expose it as public")]
+        [SuppressMessage("Microsoft.Design", "CA1063", Justification = "The IDisposable interface is created only for compatability with IEnumerable.  We don't want to expose it as public")]
         void IDisposable.Dispose()
         {
         }
@@ -939,7 +845,7 @@ namespace MicrosoftInternal.AdvancedCollections
 
         private bool HandleStatus()
         {
-            uint status = statusBits;
+            var status = statusBits;
             TreeDictionary<TKey, TValue>.TreeNode currentNode;
             if(!isGoingDown)
             {
@@ -951,76 +857,49 @@ namespace MicrosoftInternal.AdvancedCollections
                         statusBits = IsAfterHighestBit;
                         return false;
                     }
-                    else
-                    {
-                        node = currentNode;
-                        statusBits = 0;
-                        return true;
-                    }
+                    node = currentNode;
+                    statusBits = 0;
+                    return true;
                 }
-                else
+                if((status & IsAfterHighestBit) == 0)
                 {
-                    if((status & IsAfterHighestBit) == 0)
-                    {
-                        Debug.Assert(node != loopbackNode);
-                        Debug.Assert((status & IsStartingEnumeration) != 0);
-                        statusBits = 0;
-                        return true;
-                    }
-                    else
-                    {
-                        if((status & IsStartingEnumeration) != 0)
-                        {
-                            statusBits = IsAfterHighestBit;
-                            return false;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("TreeDictionaryKeyValuePairEnumerator<TKey, TValue>.MoveNext() cannot go past the end of the tree");
-                        }
-                    }
+                    Debug.Assert(node != loopbackNode);
+                    Debug.Assert((status & IsStartingEnumeration) != 0);
+                    statusBits = 0;
+                    return true;
                 }
+                if((status & IsStartingEnumeration) != 0)
+                {
+                    statusBits = IsAfterHighestBit;
+                    return false;
+                }
+                throw new InvalidOperationException("TreeDictionaryKeyValuePairEnumerator<TKey, TValue>.MoveNext() cannot go past the end of the tree");
             }
-            else
+            if((status & IsAfterHighestBit) != 0)
             {
-                if((status & IsAfterHighestBit) != 0)
+                currentNode = loopbackNode.Right;
+                if(currentNode == loopbackNode)
                 {
-                    currentNode = loopbackNode.Right;
-                    if(currentNode == loopbackNode)
-                    {
-                        statusBits = IsBeforeLowestBit;
-                        return false;
-                    }
-                    else
-                    {
-                        node = currentNode;
-                        statusBits = 0;
-                        return true;
-                    }
+                    statusBits = IsBeforeLowestBit;
+                    return false;
                 }
-                else
-                {
-                    if((status & IsBeforeLowestBit) == 0)
-                    {
-                        Debug.Assert(node != loopbackNode);
-                        Debug.Assert((status & IsStartingEnumeration) != 0);
-                        statusBits = 0;
-                        return true;
-                    }
-                    else
-                    {
-                        if((status & IsStartingEnumeration) != 0)
-                        {
-                            statusBits = IsBeforeLowestBit;
-                            return false;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("TreeDictionaryKeyValuePairEnumerator<TKey, TValue>.MoveNext() cannot go past the beginning of the tree");
-                        }
-                    }
-                }
+                node = currentNode;
+                statusBits = 0;
+                return true;
             }
+            if((status & IsBeforeLowestBit) == 0)
+            {
+                Debug.Assert(node != loopbackNode);
+                Debug.Assert((status & IsStartingEnumeration) != 0);
+                statusBits = 0;
+                return true;
+            }
+            if((status & IsStartingEnumeration) != 0)
+            {
+                statusBits = IsBeforeLowestBit;
+                return false;
+            }
+            throw new InvalidOperationException("TreeDictionaryKeyValuePairEnumerator<TKey, TValue>.MoveNext() cannot go past the beginning of the tree");
         }
 
         #endregion

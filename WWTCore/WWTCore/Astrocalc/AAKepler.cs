@@ -42,7 +42,7 @@ public class  CAAKepler
   {
 	//Convert from degrees to radians
 	M = CAACoordinateTransformation.DegreesToRadians(M);
-	double PI = CAACoordinateTransformation.PI();
+	var PI = CAACoordinateTransformation.PI();
   
 	double F = 1;
 	if (M < 0)
@@ -57,11 +57,11 @@ public class  CAAKepler
 	if (M > PI)
 	  M = 2 *PI - M;
   
-	double E = PI / 2;
-	double scale = PI / 4;
-	for (int i =0; i<nIterations; i++)
+	var E = PI / 2;
+	var scale = PI / 4;
+	for (var i =0; i<nIterations; i++)
 	{
-	  double R = E - e *Math.Sin(E);
+	  var R = E - e *Math.Sin(E);
 	  if (M > R)
 		E += scale;
 	  else

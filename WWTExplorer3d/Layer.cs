@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 
 namespace TerraViewer
@@ -171,7 +169,7 @@ namespace TerraViewer
 
         public virtual double[] GetParams()
         {
-            double[] paramList = new double[5];
+            var paramList = new double[5];
             paramList[0] = color.R/255;
             paramList[1] = color.G/255;
             paramList[2] = color.B/255;
@@ -184,12 +182,12 @@ namespace TerraViewer
 
         public virtual string[] GetParamNames()
         {
-            return new string[] { "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
+            return new[] { "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
         }
 
         public virtual BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
         }
 
         public virtual void SetParams(double[] paramList)
@@ -253,12 +251,12 @@ namespace TerraViewer
 
         public bool SetProp(string name, string value)
         {
-            Type thisType = this.GetType();
-            PropertyInfo pi = thisType.GetProperty(name);
-            bool safeToSet = false;
-            Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var thisType = GetType();
+            var pi = thisType.GetProperty(name);
+            var safeToSet = false;
+            var layerPropType = typeof(LayerProperty);
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var var in attributes)
             {
                 if (var.GetType() == layerPropType)
                 {
@@ -294,7 +292,7 @@ namespace TerraViewer
 
         public bool SetProps(string xml)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(xml);
 
 
@@ -318,12 +316,12 @@ namespace TerraViewer
 
         public string GetProp(string name)
         {
-            Type thisType = this.GetType();
-            PropertyInfo pi = thisType.GetProperty(name);
-            bool safeToGet = false;
-            Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var thisType = GetType();
+            var pi = thisType.GetProperty(name);
+            var safeToGet = false;
+            var layerPropType = typeof(LayerProperty);
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var var in attributes)
             {
                 if (var.GetType() == layerPropType)
                 {
@@ -343,28 +341,28 @@ namespace TerraViewer
 
         public string GetProps()
         {
-            MemoryStream ms = new MemoryStream();
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
+            var ms = new MemoryStream();
+            using (var xmlWriter = new XmlTextWriter(ms, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("LayerApi");
                 xmlWriter.WriteElementString("Status", "Success");
                 xmlWriter.WriteStartElement("Layer");
-                xmlWriter.WriteAttributeString("Class", this.GetType().ToString().Replace("TerraViewer.",""));
+                xmlWriter.WriteAttributeString("Class", GetType().ToString().Replace("TerraViewer.",""));
 
 
-                Type thisType = this.GetType();
-                PropertyInfo[] properties = thisType.GetProperties();
+                var thisType = GetType();
+                var properties = thisType.GetProperties();
 
-                Type layerPropType = typeof(LayerProperty);
+                var layerPropType = typeof(LayerProperty);
 
-                foreach (PropertyInfo pi in properties)
+                foreach (var pi in properties)
                 {
-                    bool safeToGet = false;
+                    var safeToGet = false;
 
-                    object[] attributes = pi.GetCustomAttributes(false);
-                    foreach (object var in attributes)
+                    var attributes = pi.GetCustomAttributes(false);
+                    foreach (var var in attributes)
                     {
                         if (var.GetType() == layerPropType)
                         {
@@ -384,7 +382,7 @@ namespace TerraViewer
                 xmlWriter.Close();
 
             }
-            byte[] data = ms.GetBuffer();
+            var data = ms.GetBuffer();
             return Encoding.UTF8.GetString(data);
 
         }
@@ -417,12 +415,12 @@ namespace TerraViewer
         {
             get
             {
-                SavedColor saveCol = new SavedColor(color.ToArgb());
+                var saveCol = new SavedColor(color.ToArgb());
                 return saveCol.Save();
             }
             set
             {
-                Color newVal = SavedColor.Load(value);
+                var newVal = SavedColor.Load(value);
 
                 if (color != newVal)
                 {
@@ -468,11 +466,11 @@ namespace TerraViewer
         }
 
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Layer");
             xmlWriter.WriteAttributeString("Id", ID.ToString());
-            xmlWriter.WriteAttributeString("Type", this.GetType().FullName);
+            xmlWriter.WriteAttributeString("Type", GetType().FullName);
             xmlWriter.WriteAttributeString("Name", Name);
             xmlWriter.WriteAttributeString("ReferenceFrame", referenceFrame);
             xmlWriter.WriteAttributeString("Color", SavedColor.Save(color));
@@ -482,27 +480,27 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("FadeSpan", FadeSpan.ToString());
             xmlWriter.WriteAttributeString("FadeType", FadeType.ToString());
 
-            this.WriteLayerProperties(xmlWriter);
+            WriteLayerProperties(xmlWriter);
 
             xmlWriter.WriteEndElement();
         }
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
 
         }    
         
-        internal static Layer FromXml(System.Xml.XmlNode layerNode, bool someFlag)
+        internal static Layer FromXml(XmlNode layerNode, bool someFlag)
         {
-            string layerClassName = layerNode.Attributes["Type"].Value.ToString();
+            var layerClassName = layerNode.Attributes["Type"].Value;
 
-            Type overLayType = Type.GetType(layerClassName);
+            var overLayType = Type.GetType(layerClassName);
 
-            Layer newLayer = (Layer)System.Activator.CreateInstance(overLayType);
+            var newLayer = (Layer)Activator.CreateInstance(overLayType);
             newLayer.FromXml(layerNode);
             return newLayer;
         }
 
-        private void FromXml(System.Xml.XmlNode node)
+        private void FromXml(XmlNode node)
         {
             ID = new Guid(node.Attributes["Id"].Value);
             Name = node.Attributes["Name"].Value;
@@ -545,7 +543,7 @@ namespace TerraViewer
             return;
         }
 
-        public virtual void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             return;
         }
@@ -594,13 +592,8 @@ namespace TerraViewer
         public Bitmap CustomMarker = null;
 
     }
-    [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Method)]
-    public class LayerProperty : System.Attribute
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
+    public class LayerProperty : Attribute
     {
-
-        public LayerProperty()
-        {
-
-        }
     }
 }

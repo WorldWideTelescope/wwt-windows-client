@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 using SharpDX;
+using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using System.Drawing;
+using Color = System.Drawing.Color;
+
 namespace TerraViewer
 {
     public class Sprite2d
@@ -13,18 +13,18 @@ namespace TerraViewer
         static Buffer VertexBuffer;
         static VertexBufferBinding VertexBufferBinding;
 
-        public static void Draw(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, SharpDX.Direct3D.PrimitiveTopology primitiveType)
+        public static void Draw(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, PrimitiveTopology primitiveType)
         {
             if (VertexBuffer == null)
             {
-                VertexBuffer = new Buffer(renderContext.Device, System.Runtime.InteropServices.Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, System.Runtime.InteropServices.Marshal.SizeOf(points[0]));
-                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, System.Runtime.InteropServices.Marshal.SizeOf((points[0])), 0);
+                VertexBuffer = new Buffer(renderContext.Device, Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, Marshal.SizeOf(points[0]));
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, Marshal.SizeOf((points[0])), 0);
 
             }
             renderContext.devContext.InputAssembler.PrimitiveTopology = primitiveType;
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             WarpOutputShader.MatWVP = mat;
@@ -32,7 +32,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);
@@ -47,12 +47,12 @@ namespace TerraViewer
             renderContext.devContext.Draw(count, 0);
         }
 
-        public static void DrawForScreen(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, SharpDX.Direct3D.PrimitiveTopology primitiveType)
+        public static void DrawForScreen(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, PrimitiveTopology primitiveType)
         {
             if (VertexBuffer == null)
             {
-                VertexBuffer = new Buffer(renderContext.Device, System.Runtime.InteropServices.Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, System.Runtime.InteropServices.Marshal.SizeOf(points[0]));
-                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, System.Runtime.InteropServices.Marshal.SizeOf((points[0])), 0);
+                VertexBuffer = new Buffer(renderContext.Device, Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, Marshal.SizeOf(points[0]));
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, Marshal.SizeOf((points[0])), 0);
 
             }
 
@@ -60,10 +60,10 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
 
-            SharpDX.Matrix mat =
-                SharpDX.Matrix.Translation(-renderContext.ViewPort.Width / 2, -renderContext.ViewPort.Height / 2, 0) *
-                SharpDX.Matrix.Scaling(1f, -1f, 1f)
-            * SharpDX.Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
+            var mat =
+                Matrix.Translation(-renderContext.ViewPort.Width / 2, -renderContext.ViewPort.Height / 2, 0) *
+                Matrix.Scaling(1f, -1f, 1f)
+            * Matrix.OrthoLH(renderContext.ViewPort.Width, renderContext.ViewPort.Height, 1, -1);
             mat.Transpose();
 
             WarpOutputShader.MatWVP = mat;
@@ -71,7 +71,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);
@@ -86,20 +86,20 @@ namespace TerraViewer
             renderContext.devContext.Draw(count, 0);
         }
 
-        static PositionColoredTextured[] cornerPoints = new PositionColoredTextured[4];
+        static readonly PositionColoredTextured[] cornerPoints = new PositionColoredTextured[4];
 
         static Matrix3d domeMatrix = Matrix3d.Identity;
 
         public static Vector3d MakePosition(float centerX, float centerY, float offsetX, float offsetY, float angle)
         {
 
-                Vector3d point = new Vector3d(centerX + offsetX, centerY + offsetY, 1);
+                var point = new Vector3d(centerX + offsetX, centerY + offsetY, 1);
 
                 return point;
 
         }
 
-        public static void Draw2D(RenderContext11 renderContext, Texture11 srcTexture, SizeF size, PointF rotationCenter, float rotationAngle, PointF position, System.Drawing.Color color)
+        public static void Draw2D(RenderContext11 renderContext, Texture11 srcTexture, SizeF size, PointF rotationCenter, float rotationAngle, PointF position, Color color)
         {
 
             cornerPoints[0].Position = MakePosition(position.X, position.Y, -size.Width / 2, -size.Height / 2, rotationAngle).Vector4;
@@ -126,7 +126,7 @@ namespace TerraViewer
 
             renderContext.setRasterizerState(TriangleCullMode.Off);
             renderContext.DepthStencilMode = DepthStencilMode.Off;
-            DrawForScreen(renderContext, cornerPoints, 4, srcTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+            DrawForScreen(renderContext, cornerPoints, 4, srcTexture, PrimitiveTopology.TriangleStrip);
 
         }
 
@@ -134,12 +134,12 @@ namespace TerraViewer
         {
             if (VertexBuffer == null)
             {
-                VertexBuffer = new Buffer(renderContext.Device, System.Runtime.InteropServices.Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, System.Runtime.InteropServices.Marshal.SizeOf(points[0]));
-                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, System.Runtime.InteropServices.Marshal.SizeOf((points[0])), 0);
+                VertexBuffer = new Buffer(renderContext.Device, Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, Marshal.SizeOf(points[0]));
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, Marshal.SizeOf((points[0])), 0);
 
             }
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = triangleStrip ? SharpDX.Direct3D.PrimitiveTopology.TriangleStrip : SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = triangleStrip ? PrimitiveTopology.TriangleStrip : PrimitiveTopology.TriangleList;
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
             
@@ -150,7 +150,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);
@@ -164,12 +164,12 @@ namespace TerraViewer
         {
             if (VertexBuffer == null)
             {
-                VertexBuffer = new Buffer(renderContext.Device, System.Runtime.InteropServices.Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, System.Runtime.InteropServices.Marshal.SizeOf(points[0]));
-                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, System.Runtime.InteropServices.Marshal.SizeOf((points[0])), 0);
+                VertexBuffer = new Buffer(renderContext.Device, Marshal.SizeOf(points[0]) * 2500, ResourceUsage.Dynamic, BindFlags.VertexBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, Marshal.SizeOf(points[0]));
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, Marshal.SizeOf((points[0])), 0);
 
             }
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = strip ? SharpDX.Direct3D.PrimitiveTopology.LineStrip : SharpDX.Direct3D.PrimitiveTopology.LineList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = strip ? PrimitiveTopology.LineStrip : PrimitiveTopology.LineList;
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
 
@@ -180,7 +180,7 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
-            DataBox box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            var box = renderContext.devContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(box.DataPointer, points, 0, count);
 
             renderContext.devContext.UnmapSubresource(VertexBuffer, 0);

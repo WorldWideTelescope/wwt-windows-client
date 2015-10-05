@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -13,7 +10,7 @@ namespace TerraViewer
         #region IScriptable Members
         ScriptableProperty[] IScriptable.GetProperties()
         {
-            List<ScriptableProperty> props = new List<ScriptableProperty>();
+            var props = new List<ScriptableProperty>();
             props.Add(new ScriptableProperty("Latitude", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -90, 90, false));
             props.Add(new ScriptableProperty("Longitude", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -180, 180, false));
             props.Add(new ScriptableProperty("Altitude", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, 0, 1000, false));
@@ -40,7 +37,7 @@ namespace TerraViewer
                 }
                 try
                 {
-                    LayerActions action = (LayerActions)Enum.Parse(typeof(LayerActions), name, true);
+                    var action = (LayerActions)Enum.Parse(typeof(LayerActions), name, true);
 
                     switch (action)
                     {
@@ -64,10 +61,10 @@ namespace TerraViewer
             {
                 if (LayerManager.CurrentSelection is LayerMap)
                 {
-                    LayerMap map = LayerManager.CurrentSelection as LayerMap;
+                    var map = LayerManager.CurrentSelection as LayerMap;
                     if ( map.Frame.reference == ReferenceFrames.Custom)
                     {
-                        ReferenceFrame frame = map.Frame;
+                        var frame = map.Frame;
                         double val;
                         if (name.ToLower() == "scale")
                         {
@@ -81,7 +78,7 @@ namespace TerraViewer
                         if (name.ToLower().StartsWith("translate."))
                         {
                             val = double.Parse(value);
-                            Vector3d translate = frame.translation;
+                            var translate = frame.translation;
                             switch (name.ToLower())
                             {
                                 case "translate.x":
@@ -116,7 +113,7 @@ namespace TerraViewer
                 {
                     if (LayerManager.CurrentSelection is Layer)
                     {
-                        Layer layer = LayerManager.CurrentSelection as Layer;
+                        var layer = LayerManager.CurrentSelection as Layer;
 
                         return layer.GetProp(name);
                     }
@@ -137,7 +134,7 @@ namespace TerraViewer
 
             if (LayerManager.CurrentSelection is Layer)
             {
-                Layer layer = LayerManager.CurrentSelection as Layer;
+                var layer = LayerManager.CurrentSelection as Layer;
 
                 if (name == "Opacity")
                 {
@@ -147,11 +144,8 @@ namespace TerraViewer
                             layer.Opacity = 100;
                             return true;
                         }
-                        else
-                        {
-                            layer.Opacity = 0;
-                            return false;
-                        }
+                        layer.Opacity = 0;
+                        return false;
                     }
                 }
             }

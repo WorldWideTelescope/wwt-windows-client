@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 
 namespace TerraViewer
@@ -54,11 +53,11 @@ namespace TerraViewer
         public PlanetShaderKey(PlanetSurfaceStyle style, bool hasAtmosphere, int eclipseShadowCount)
         {
             this.style = style;
-            this.flags = hasAtmosphere ? ShaderFlags.Atmosphere : ShaderFlags.None;
+            flags = hasAtmosphere ? ShaderFlags.Atmosphere : ShaderFlags.None;
             this.eclipseShadowCount = eclipseShadowCount;
-            this.overlayTextureCount = 0;
-            this.lightCount = 1;
-            this.textures = SurfaceProperty.Diffuse;
+            overlayTextureCount = 0;
+            lightCount = 1;
+            textures = SurfaceProperty.Diffuse;
         }
 
         public bool hasTexture(SurfaceProperty p)
@@ -155,7 +154,7 @@ namespace TerraViewer
         {
             const int m = 756065179; // a big prime
 
-            int hash = k.style.GetHashCode();
+            var hash = k.style.GetHashCode();
             hash = m * hash + k.eclipseShadowCount;
             hash = m * hash + k.overlayTextureCount;
             hash = m * hash + k.lightCount;

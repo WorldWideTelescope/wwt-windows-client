@@ -224,10 +224,11 @@
     <Compile Include="Authentication\OAuthTicket.cs" />
     <Compile Include="Authentication\UserObject.cs" />
     <Compile Include="CoverageMap.cs" />
-    <Compile Include="ExportSTL.cs">
+    <Compile Include="DataMessageFilter.cs" />
+    <Compile Include="UI\Forms\ExportSTL.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ExportSTL.Designer.cs">
+    <Compile Include="UI\Forms\ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -236,49 +237,49 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ReferenceFrameScripting.cs" />
-    <Compile Include="3dWIndow.cs">
+    <Compile Include="UI\Forms\3dWIndow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="About.cs">
+    <Compile Include="UI\Forms\About.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="AnimationTarget.cs" />
-    <Compile Include="ArrowButton.cs">
+    <Compile Include="UI\ArrowButton.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ArrowButton.Designer.cs">
+    <Compile Include="UI\ArrowButton.Designer.cs">
       <DependentUpon>ArrowButton.cs</DependentUpon>
     </Compile>
     <Compile Include="AscomTelescope.cs" />
     <Compile Include="AudioPlayer.cs" />
-    <Compile Include="AudioProperties.cs">
+    <Compile Include="UI\Forms\AudioProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AudioProperties.Designer.cs">
+    <Compile Include="UI\Forms\AudioProperties.Designer.cs">
       <DependentUpon>AudioProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="AudioTrack.cs">
+    <Compile Include="UI\AudioTrack.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="AudioTrack.Designer.cs">
+    <Compile Include="UI\AudioTrack.Designer.cs">
       <DependentUpon>AudioTrack.cs</DependentUpon>
     </Compile>
-    <Compile Include="ButtonGroupControl.cs">
+    <Compile Include="UI\ButtonGroupControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ButtonGroupControl.Designer.cs">
+    <Compile Include="UI\ButtonGroupControl.Designer.cs">
       <DependentUpon>ButtonGroupControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ButtonProperties.cs">
+    <Compile Include="UI\Forms\ButtonProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ButtonProperties.Designer.cs">
+    <Compile Include="UI\Forms\ButtonProperties.Designer.cs">
       <DependentUpon>ButtonProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="CacheTilePyramid.cs">
+    <Compile Include="UI\Forms\CacheTilePyramid.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CacheTilePyramid.Designer.cs">
+    <Compile Include="UI\Forms\CacheTilePyramid.Designer.cs">
       <DependentUpon>CacheTilePyramid.cs</DependentUpon>
     </Compile>
     <Compile Include="Callibration\Calibration.cs">
@@ -327,10 +328,10 @@
     <Compile Include="Callibration\SolveAlignment.cs" />
     <Compile Include="Callibration\WarpMapper.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="CurveEditor.cs">
+    <Compile Include="UI\CurveEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CurveEditor.Designer.cs">
+    <Compile Include="UI\CurveEditor.Designer.cs">
       <DependentUpon>CurveEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GridLayer.cs" />
@@ -338,113 +339,115 @@
     <Compile Include="ISSLayer.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="KeyGroup.cs" />
-    <Compile Include="KeyProperties.cs">
+    <Compile Include="UI\Forms\KeyProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="KeyProperties.Designer.cs">
+    <Compile Include="UI\Forms\KeyProperties.Designer.cs">
       <DependentUpon>KeyProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="LayerScripting.cs" />
-    <Compile Include="OverlayList.cs">
+    <Compile Include="UI\Forms\OverlayList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OverlayList.Designer.cs">
+    <Compile Include="UI\Forms\OverlayList.Designer.cs">
       <DependentUpon>OverlayList.cs</DependentUpon>
     </Compile>
     <Compile Include="PointSpriteSet.cs" />
     <Compile Include="Reticle.cs" />
+    <Compile Include="RiftInfo.cs" />
     <Compile Include="SettingsAnimator.cs" />
     <Compile Include="SpaceNavigator\3DxMouse.cs" />
+    <Compile Include="SphereTest.cs" />
     <Compile Include="Sprite2d.cs" />
-    <Compile Include="ClearCache.cs">
+    <Compile Include="UI\Forms\ClearCache.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ClearCache.Designer.cs">
+    <Compile Include="UI\Forms\ClearCache.Designer.cs">
       <DependentUpon>ClearCache.cs</DependentUpon>
     </Compile>
-    <Compile Include="ClientNodeList.cs">
+    <Compile Include="UI\Forms\ClientNodeList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ClientNodeList.Designer.cs">
+    <Compile Include="UI\Forms\ClientNodeList.Designer.cs">
       <DependentUpon>ClientNodeList.cs</DependentUpon>
     </Compile>
-    <Compile Include="ConstellationFigureEditor.cs">
+    <Compile Include="UI\Forms\ConstellationFigureEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ConstellationFigureEditor.Designer.cs">
+    <Compile Include="UI\Forms\ConstellationFigureEditor.Designer.cs">
       <DependentUpon>ConstellationFigureEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControllerProperties.cs">
+    <Compile Include="UI\Forms\ControllerProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControllerProperties.Designer.cs">
+    <Compile Include="UI\Forms\ControllerProperties.Designer.cs">
       <DependentUpon>ControllerProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="DataWizard.cs" />
-    <Compile Include="DataWizardCartesian.cs">
+    <Compile Include="UI\Wizards\DataWizardCartesian.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardCartesian.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardCartesian.Designer.cs">
       <DependentUpon>DataWizardCartesian.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardColorMap.cs">
+    <Compile Include="UI\Wizards\DataWizardColorMap.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardColorMap.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardColorMap.Designer.cs">
       <DependentUpon>DataWizardColorMap.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardCoordinates.cs">
+    <Compile Include="UI\Wizards\DataWizardCoordinates.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardCoordinates.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardCoordinates.Designer.cs">
       <DependentUpon>DataWizardCoordinates.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardDateTime.cs">
+    <Compile Include="UI\Wizards\DataWizardDateTime.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardDateTime.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardDateTime.Designer.cs">
       <DependentUpon>DataWizardDateTime.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardFinal.cs">
+    <Compile Include="UI\Wizards\DataWizardFinal.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardFinal.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardFinal.Designer.cs">
       <DependentUpon>DataWizardFinal.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardInfoPopup.cs">
+    <Compile Include="UI\Wizards\DataWizardInfoPopup.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardInfoPopup.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardInfoPopup.Designer.cs">
       <DependentUpon>DataWizardInfoPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardMarkers.cs">
+    <Compile Include="UI\Wizards\DataWizardMarkers.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardMarkers.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardMarkers.Designer.cs">
       <DependentUpon>DataWizardMarkers.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardOrbits.cs">
+    <Compile Include="UI\Wizards\DataWizardOrbits.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardOrbits.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardOrbits.Designer.cs">
       <DependentUpon>DataWizardOrbits.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardSize.cs">
+    <Compile Include="UI\Wizards\DataWizardSize.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardSize.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardSize.Designer.cs">
       <DependentUpon>DataWizardSize.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataWizardWelcome.cs">
+    <Compile Include="UI\Wizards\DataWizardWelcome.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataWizardWelcome.Designer.cs">
+    <Compile Include="UI\Wizards\DataWizardWelcome.Designer.cs">
       <DependentUpon>DataWizardWelcome.cs</DependentUpon>
     </Compile>
-    <Compile Include="DatePopup.cs">
+    <Compile Include="UI\Forms\DatePopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DatePopup.Designer.cs">
+    <Compile Include="UI\Forms\DatePopup.Designer.cs">
       <DependentUpon>DatePopup.cs</DependentUpon>
     </Compile>
     <Compile Include="DEM\AdaptiveModel.cs" />
@@ -459,118 +462,118 @@
     <Compile Include="DEM\HDPhotoDecoder.cs" />
     <Compile Include="DEM\PointerArray.cs" />
     <Compile Include="DEM\SimpleBitIO.cs" />
-    <Compile Include="DomePreviewPopup.cs">
+    <Compile Include="UI\Forms\DomePreviewPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DomePreviewPopup.Designer.cs">
+    <Compile Include="UI\Forms\DomePreviewPopup.Designer.cs">
       <DependentUpon>DomePreviewPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="DomeSetup.cs">
+    <Compile Include="UI\Forms\DomeSetup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DomeSetup.Designer.cs">
+    <Compile Include="UI\Forms\DomeSetup.Designer.cs">
       <DependentUpon>DomeSetup.cs</DependentUpon>
     </Compile>
-    <Compile Include="DragThumbnail.cs">
+    <Compile Include="UI\Forms\DragThumbnail.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DragThumbnail.Designer.cs">
+    <Compile Include="UI\Forms\DragThumbnail.Designer.cs">
       <DependentUpon>DragThumbnail.cs</DependentUpon>
     </Compile>
-    <Compile Include="DurrationEditor.cs">
+    <Compile Include="UI\Forms\DurrationEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DurrationEditor.Designer.cs">
+    <Compile Include="UI\Forms\DurrationEditor.Designer.cs">
       <DependentUpon>DurrationEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="egm96geoid.cs" />
     <Compile Include="EOCalls.cs" />
-    <Compile Include="EulaReader.cs">
+    <Compile Include="UI\Forms\EulaReader.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EulaReader.Designer.cs">
+    <Compile Include="UI\Forms\EulaReader.Designer.cs">
       <DependentUpon>EulaReader.cs</DependentUpon>
     </Compile>
     <Compile Include="FastBitmap.cs" />
     <Compile Include="FileCabnet.cs" />
-    <Compile Include="FileDownload.cs">
+    <Compile Include="UI\Forms\FileDownload.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FileDownload.Designer.cs">
+    <Compile Include="UI\Forms\FileDownload.Designer.cs">
       <DependentUpon>FileDownload.cs</DependentUpon>
     </Compile>
     <Compile Include="FilterGraphTool.cs" />
     <Compile Include="FitsImage.cs" />
-    <Compile Include="FlipbookSetup.cs">
+    <Compile Include="UI\Forms\FlipbookSetup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FlipbookSetup.Designer.cs">
+    <Compile Include="UI\Forms\FlipbookSetup.Designer.cs">
       <DependentUpon>FlipbookSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="Folder.cs" />
-    <Compile Include="FolderBrowser.cs">
+    <Compile Include="UI\Forms\FolderBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FolderBrowser.Designer.cs">
+    <Compile Include="UI\Forms\FolderBrowser.Designer.cs">
       <DependentUpon>FolderBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Folder_Metadata.cs" />
     <Compile Include="FrameWizard.cs" />
-    <Compile Include="FrameWizardCartisian.cs">
+    <Compile Include="UI\Wizards\FrameWizardCartisian.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardCartisian.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardCartisian.Designer.cs">
       <DependentUpon>FrameWizardCartisian.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrameWizardFinal.cs">
+    <Compile Include="UI\Wizards\FrameWizardFinal.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardFinal.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardFinal.Designer.cs">
       <DependentUpon>FrameWizardFinal.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrameWizardMain.cs">
+    <Compile Include="UI\Wizards\FrameWizardMain.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardMain.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardMain.Designer.cs">
       <DependentUpon>FrameWizardMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrameWizardOrbital.cs">
+    <Compile Include="UI\Wizards\FrameWizardOrbital.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardOrbital.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardOrbital.Designer.cs">
       <DependentUpon>FrameWizardOrbital.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrameWizardPosition.cs">
+    <Compile Include="UI\Wizards\FrameWizardPosition.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardPosition.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardPosition.Designer.cs">
       <DependentUpon>FrameWizardPosition.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrameWizardTrajectory.cs">
+    <Compile Include="UI\Wizards\FrameWizardTrajectory.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardTrajectory.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardTrajectory.Designer.cs">
       <DependentUpon>FrameWizardTrajectory.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrameWizardWelcome.cs">
+    <Compile Include="UI\Wizards\FrameWizardWelcome.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FrameWizardWelcome.Designer.cs">
+    <Compile Include="UI\Wizards\FrameWizardWelcome.Designer.cs">
       <DependentUpon>FrameWizardWelcome.cs</DependentUpon>
     </Compile>
     <Compile Include="Glu.cs" />
-    <Compile Include="GreatCircleProperties.cs">
+    <Compile Include="UI\Forms\GreatCircleProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GreatCircleProperties.Designer.cs">
+    <Compile Include="UI\Forms\GreatCircleProperties.Designer.cs">
       <DependentUpon>GreatCircleProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="GreatCirlceRouteLayer.cs" />
     <Compile Include="GroundOverlayLayer.cs" />
-    <Compile Include="GroundOverlayProperties.cs">
+    <Compile Include="UI\Forms\GroundOverlayProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GroundOverlayProperties.Designer.cs">
+    <Compile Include="UI\Forms\GroundOverlayProperties.Designer.cs">
       <DependentUpon>GroundOverlayProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="HTTPClientStatus.cs" />
@@ -583,73 +586,73 @@
     <Compile Include="HTTPLayerApi.cs" />
     <Compile Include="ImageSetLayer.cs" />
     <Compile Include="ITimeSeriesDescription.cs" />
-    <Compile Include="KeyFramer.cs">
+    <Compile Include="UI\Forms\KeyFramer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="KeyFramer.Designer.cs">
+    <Compile Include="UI\Forms\KeyFramer.Designer.cs">
       <DependentUpon>KeyFramer.cs</DependentUpon>
     </Compile>
-    <Compile Include="KioskTitleBar.cs">
+    <Compile Include="UI\KioskTitleBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="KioskTitleBar.Designer.cs">
+    <Compile Include="UI\KioskTitleBar.Designer.cs">
       <DependentUpon>KioskTitleBar.cs</DependentUpon>
     </Compile>
     <Compile Include="KmlLayer.cs" />
     <Compile Include="LayerContainer.cs" />
-    <Compile Include="LayerLifetimeProperties.cs">
+    <Compile Include="UI\Forms\LayerLifetimeProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LayerLifetimeProperties.Designer.cs">
+    <Compile Include="UI\Forms\LayerLifetimeProperties.Designer.cs">
       <DependentUpon>LayerLifetimeProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="LayerUI.cs" />
-    <Compile Include="LocationSearch.cs">
+    <Compile Include="UI\Forms\LocationSearch.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LocationSearch.designer.cs">
+    <Compile Include="UI\Forms\LocationSearch.designer.cs">
       <DependentUpon>LocationSearch.cs</DependentUpon>
     </Compile>
     <Compile Include="MidiIO.cs" />
     <Compile Include="MidiMap.cs" />
     <Compile Include="MidiMapManager.cs" />
-    <Compile Include="MidiSetup.cs">
+    <Compile Include="UI\Forms\MidiSetup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MidiSetup.Designer.cs">
+    <Compile Include="UI\Forms\MidiSetup.Designer.cs">
       <DependentUpon>MidiSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="MinorPlanets.cs" />
-    <Compile Include="NewBinding.cs">
+    <Compile Include="UI\Forms\NewBinding.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NewBinding.Designer.cs">
+    <Compile Include="UI\Forms\NewBinding.Designer.cs">
       <DependentUpon>NewBinding.cs</DependentUpon>
     </Compile>
-    <Compile Include="Object3dProperties.cs">
+    <Compile Include="UI\Forms\Object3dProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Object3dProperties.Designer.cs">
+    <Compile Include="UI\Forms\Object3dProperties.Designer.cs">
       <DependentUpon>Object3dProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="OpacityPopup.cs">
+    <Compile Include="UI\Forms\OpacityPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OpacityPopup.Designer.cs">
+    <Compile Include="UI\Forms\OpacityPopup.Designer.cs">
       <DependentUpon>OpacityPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="Orbit.cs" />
     <Compile Include="OrbitLayer.cs" />
-    <Compile Include="OutputTourToVideo.cs">
+    <Compile Include="UI\Forms\OutputTourToVideo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OutputTourToVideo.Designer.cs">
+    <Compile Include="UI\Forms\OutputTourToVideo.Designer.cs">
       <DependentUpon>OutputTourToVideo.cs</DependentUpon>
     </Compile>
-    <Compile Include="OverlayProperties.cs">
+    <Compile Include="UI\Forms\OverlayProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OverlayProperties.Designer.cs">
+    <Compile Include="UI\Forms\OverlayProperties.Designer.cs">
       <DependentUpon>OverlayProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Callibration\ProjectionTransformEditor.cs">
@@ -658,99 +661,99 @@
     <Compile Include="Callibration\ProjectionTransformEditor.Designer.cs">
       <DependentUpon>ProjectionTransformEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProgressPopup.cs">
+    <Compile Include="UI\Forms\ProgressPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProgressPopup.Designer.cs">
+    <Compile Include="UI\Forms\ProgressPopup.Designer.cs">
       <DependentUpon>ProgressPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="PropPage.cs">
+    <Compile Include="UI\PropPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropsShell.cs">
+    <Compile Include="UI\Forms\PropsShell.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PropsShell.Designer.cs">
+    <Compile Include="UI\Forms\PropsShell.Designer.cs">
       <DependentUpon>PropsShell.cs</DependentUpon>
     </Compile>
     <Compile Include="PushPin.cs" />
-    <Compile Include="PushPinPickerPopup.cs">
+    <Compile Include="UI\Forms\PushPinPickerPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PushPinPickerPopup.Designer.cs">
+    <Compile Include="UI\Forms\PushPinPickerPopup.Designer.cs">
       <DependentUpon>PushPinPickerPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="ReferenceFrame.cs" />
-    <Compile Include="RemoteAccessControl.cs">
+    <Compile Include="UI\Forms\RemoteAccessControl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RemoteAccessControl.Designer.cs">
+    <Compile Include="UI\Forms\RemoteAccessControl.Designer.cs">
       <DependentUpon>RemoteAccessControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="RenderProgress.cs">
+    <Compile Include="UI\Forms\RenderProgress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RenderProgress.Designer.cs">
+    <Compile Include="UI\Forms\RenderProgress.Designer.cs">
       <DependentUpon>RenderProgress.cs</DependentUpon>
     </Compile>
-    <Compile Include="ScreenBroadcast.cs">
+    <Compile Include="UI\Forms\ScreenBroadcast.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ScreenBroadcast.Designer.cs">
+    <Compile Include="UI\Forms\ScreenBroadcast.Designer.cs">
       <DependentUpon>ScreenBroadcast.cs</DependentUpon>
     </Compile>
     <Compile Include="ScriptActions.cs" />
     <Compile Include="SkyOverlays.cs" />
     <Compile Include="SkyText.cs" />
-    <Compile Include="Tab.cs">
+    <Compile Include="UI\Tab.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tab.Designer.cs">
+    <Compile Include="UI\Tab.Designer.cs">
       <DependentUpon>Tab.cs</DependentUpon>
     </Compile>
     <Compile Include="Table.cs" />
-    <Compile Include="TimeLine.cs">
+    <Compile Include="UI\TimeLine.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TimeLine.Designer.cs">
+    <Compile Include="UI\TimeLine.Designer.cs">
       <DependentUpon>TimeLine.cs</DependentUpon>
     </Compile>
     <Compile Include="TimeSeriesLayer.cs" />
     <Compile Include="ToastTools.cs" />
-    <Compile Include="TrackButton.cs">
+    <Compile Include="UI\TrackButton.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TrackButton.Designer.cs">
+    <Compile Include="UI\TrackButton.Designer.cs">
       <DependentUpon>TrackButton.cs</DependentUpon>
     </Compile>
-    <Compile Include="TransitionPicker.cs">
+    <Compile Include="UI\TransitionPicker.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TransitionPicker.Designer.cs">
+    <Compile Include="UI\TransitionPicker.Designer.cs">
       <DependentUpon>TransitionPicker.cs</DependentUpon>
     </Compile>
-    <Compile Include="TransitionsPopup.cs">
+    <Compile Include="UI\Forms\TransitionsPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TransitionsPopup.Designer.cs">
+    <Compile Include="UI\Forms\TransitionsPopup.Designer.cs">
       <DependentUpon>TransitionsPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="VisibleKey.cs" />
     <Compile Include="VoTableLayer.cs" />
     <Compile Include="WizardPropsBinding.cs" />
-    <Compile Include="WizardShell.cs">
+    <Compile Include="UI\Forms\WizardShell.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WizardShell.Designer.cs">
+    <Compile Include="UI\Forms\WizardShell.Designer.cs">
       <DependentUpon>WizardShell.cs</DependentUpon>
     </Compile>
     <Compile Include="GameController.cs" />
     <Compile Include="Grids.cs" />
     <Compile Include="Handlers.cs" />
-    <Compile Include="Histogram.cs">
+    <Compile Include="UI\Forms\Histogram.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Histogram.Designer.cs">
+    <Compile Include="UI\Forms\Histogram.Designer.cs">
       <DependentUpon>Histogram.cs</DependentUpon>
     </Compile>
     <Compile Include="HTTPCrossDomain.cs" />
@@ -758,22 +761,22 @@
     <Compile Include="HttpUtility.cs" />
     <Compile Include="IImageSet.cs" />
     <Compile Include="ImageAlignmentUI.cs" />
-    <Compile Include="ImageAlignPopup.cs">
+    <Compile Include="UI\Forms\ImageAlignPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImageAlignPopup.Designer.cs">
+    <Compile Include="UI\Forms\ImageAlignPopup.Designer.cs">
       <DependentUpon>ImageAlignPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageProperties.cs">
+    <Compile Include="UI\Forms\ImageProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImageProperties.Designer.cs">
+    <Compile Include="UI\Forms\ImageProperties.Designer.cs">
       <DependentUpon>ImageProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageStack.cs">
+    <Compile Include="UI\Forms\ImageStack.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImageStack.Designer.cs">
+    <Compile Include="UI\Forms\ImageStack.Designer.cs">
       <DependentUpon>ImageStack.cs</DependentUpon>
     </Compile>
     <Compile Include="IPlace.cs" />
@@ -782,23 +785,23 @@
     <Compile Include="IUndoStep.cs" />
     <Compile Include="IViewMover.cs" />
     <Compile Include="Layer.cs" />
-    <Compile Include="LayerManager.cs">
+    <Compile Include="UI\Forms\LayerManager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LayerManager.Designer.cs">
+    <Compile Include="UI\Forms\LayerManager.Designer.cs">
       <DependentUpon>LayerManager.cs</DependentUpon>
     </Compile>
     <Compile Include="Object3d.cs" />
-    <Compile Include="RenderHost.cs">
+    <Compile Include="UI\Forms\RenderHost.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RenderHost.Designer.cs">
+    <Compile Include="UI\Forms\RenderHost.Designer.cs">
       <DependentUpon>RenderHost.cs</DependentUpon>
     </Compile>
-    <Compile Include="SelectLink.cs">
+    <Compile Include="UI\Forms\SelectLink.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SelectLink.Designer.cs">
+    <Compile Include="UI\Forms\SelectLink.Designer.cs">
       <DependentUpon>SelectLink.cs</DependentUpon>
     </Compile>
     <Compile Include="ShapeFileRenderer.cs" />
@@ -806,122 +809,122 @@
     <Compile Include="Shapefile\Shape.cs" />
     <Compile Include="Shapefile\ShapeFile.cs" />
     <Compile Include="SpreadSheetLayer.cs" />
-    <Compile Include="SpreadSheetProperties.cs">
+    <Compile Include="UI\Forms\SpreadSheetProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SpreadSheetProperties.Designer.cs">
+    <Compile Include="UI\Forms\SpreadSheetProperties.Designer.cs">
       <DependentUpon>SpreadSheetProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="WcsImage.cs" />
-    <Compile Include="JoystickHelp.cs">
+    <Compile Include="UI\Forms\JoystickHelp.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="JoystickHelp.Designer.cs">
+    <Compile Include="UI\Forms\JoystickHelp.Designer.cs">
       <DependentUpon>JoystickHelp.cs</DependentUpon>
     </Compile>
     <Compile Include="KmlObject.cs" />
     <Compile Include="Language.cs" />
-    <Compile Include="LanguageSelect.cs">
+    <Compile Include="UI\Forms\LanguageSelect.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LanguageSelect.Designer.cs">
+    <Compile Include="UI\Forms\LanguageSelect.Designer.cs">
       <DependentUpon>LanguageSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="MyCollections.cs" />
-    <Compile Include="ObjectProperties.cs">
+    <Compile Include="UI\Forms\ObjectProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ObjectProperties.Designer.cs">
+    <Compile Include="UI\Forms\ObjectProperties.Designer.cs">
       <DependentUpon>ObjectProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="PlaceEditor.cs">
+    <Compile Include="UI\Forms\PlaceEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PlaceEditor.Designer.cs">
+    <Compile Include="UI\Forms\PlaceEditor.Designer.cs">
       <DependentUpon>PlaceEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Planets.cs" />
     <Compile Include="PlotTile.cs" />
-    <Compile Include="PopupTextEditor.cs">
+    <Compile Include="UI\Forms\PopupTextEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PopupTextEditor.Designer.cs">
+    <Compile Include="UI\Forms\PopupTextEditor.Designer.cs">
       <DependentUpon>PopupTextEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="PopupVolume.cs">
+    <Compile Include="UI\Forms\PopupVolume.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PopupVolume.Designer.cs">
+    <Compile Include="UI\Forms\PopupVolume.Designer.cs">
       <DependentUpon>PopupVolume.cs</DependentUpon>
     </Compile>
-    <Compile Include="RenderTarget.cs">
+    <Compile Include="UI\RenderTarget.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="RenderTarget.Designer.cs">
+    <Compile Include="UI\RenderTarget.Designer.cs">
       <DependentUpon>RenderTarget.cs</DependentUpon>
     </Compile>
     <Compile Include="Samp.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="SettingsTab.cs">
+    <Compile Include="UI\Forms\SettingsTab.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettingsTab.Designer.cs">
+    <Compile Include="UI\Forms\SettingsTab.Designer.cs">
       <DependentUpon>SettingsTab.cs</DependentUpon>
     </Compile>
-    <Compile Include="SimbadSearch.cs">
+    <Compile Include="UI\Forms\SimbadSearch.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SimbadSearch.Designer.cs">
+    <Compile Include="UI\Forms\SimbadSearch.Designer.cs">
       <DependentUpon>SimbadSearch.cs</DependentUpon>
     </Compile>
-    <Compile Include="SimpleInput.cs">
+    <Compile Include="UI\Forms\SimpleInput.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SimpleInput.Designer.cs">
+    <Compile Include="UI\Forms\SimpleInput.Designer.cs">
       <DependentUpon>SimpleInput.cs</DependentUpon>
     </Compile>
     <Compile Include="SphericalTile.cs" />
-    <Compile Include="Communities.cs">
+    <Compile Include="UI\Forms\Communities.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Communities.Designer.cs">
+    <Compile Include="UI\Forms\Communities.Designer.cs">
       <DependentUpon>Communities.cs</DependentUpon>
     </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="Constellations.cs" />
     <Compile Include="ContextSearch.cs" />
-    <Compile Include="ObjectPopup.cs">
+    <Compile Include="UI\Forms\ObjectPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ObjectPopup.Designer.cs">
+    <Compile Include="UI\Forms\ObjectPopup.Designer.cs">
       <DependentUpon>ObjectPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="ToastTile.cs" />
     <Compile Include="Overlay.cs" />
-    <Compile Include="PopupColorPicker.cs">
+    <Compile Include="UI\Forms\PopupColorPicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PopupColorPicker.Designer.cs">
+    <Compile Include="UI\Forms\PopupColorPicker.Designer.cs">
       <DependentUpon>PopupColorPicker.cs</DependentUpon>
     </Compile>
     <Compile Include="SavedColor.cs" />
     <Compile Include="Selection.cs" />
-    <Compile Include="TaxonomyTree.cs">
+    <Compile Include="UI\Forms\TaxonomyTree.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TaxonomyTree.Designer.cs">
+    <Compile Include="UI\Forms\TaxonomyTree.Designer.cs">
       <DependentUpon>TaxonomyTree.cs</DependentUpon>
     </Compile>
-    <Compile Include="TelescopeTab.cs">
+    <Compile Include="UI\Forms\TelescopeTab.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TelescopeTab.Designer.cs">
+    <Compile Include="UI\Forms\TelescopeTab.Designer.cs">
       <DependentUpon>TelescopeTab.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextEditor.cs">
+    <Compile Include="UI\Forms\TextEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextEditor.Designer.cs">
+    <Compile Include="UI\Forms\TextEditor.Designer.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="TextObject.cs" />
@@ -930,79 +933,79 @@
     <Compile Include="TourEditor.cs" />
     <Compile Include="TourPlayer.cs">
     </Compile>
-    <Compile Include="TourPopup.cs">
+    <Compile Include="UI\Forms\TourPopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TourPopup.Designer.cs">
+    <Compile Include="UI\Forms\TourPopup.Designer.cs">
       <DependentUpon>TourPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="TourStopList.cs">
+    <Compile Include="UI\TourStopList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TourStopList.Designer.cs">
+    <Compile Include="UI\TourStopList.Designer.cs">
       <DependentUpon>TourStopList.cs</DependentUpon>
     </Compile>
-    <Compile Include="MenuTabs.cs">
+    <Compile Include="UI\MenuTabs.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MenuTabs.Designer.cs">
+    <Compile Include="UI\MenuTabs.Designer.cs">
       <DependentUpon>MenuTabs.cs</DependentUpon>
     </Compile>
-    <Compile Include="TourEdit.cs">
+    <Compile Include="UI\Forms\TourEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TourEdit.Designer.cs">
+    <Compile Include="UI\Forms\TourEdit.Designer.cs">
       <DependentUpon>TourEdit.cs</DependentUpon>
     </Compile>
     <Compile Include="Dataset.cs" />
     <Compile Include="DataSetManager.cs" />
-    <Compile Include="DebugBitmap.cs">
+    <Compile Include="UI\Forms\DebugBitmap.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DebugBitmap.Designer.cs">
+    <Compile Include="UI\Forms\DebugBitmap.Designer.cs">
       <DependentUpon>DebugBitmap.cs</DependentUpon>
     </Compile>
-    <Compile Include="DropDownList.cs">
+    <Compile Include="UI\Forms\DropDownList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DropDownList.Designer.cs">
+    <Compile Include="UI\Forms\DropDownList.Designer.cs">
       <DependentUpon>DropDownList.cs</DependentUpon>
     </Compile>
     <Compile Include="EquirectangularTile.cs" />
     <Compile Include="FieldOfView.cs" />
-    <Compile Include="FieldOfViewSetup.cs">
+    <Compile Include="UI\Forms\FieldOfViewSetup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FieldOfViewSetup.Designer.cs">
+    <Compile Include="UI\Forms\FieldOfViewSetup.Designer.cs">
       <DependentUpon>FieldOfViewSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="Imager.cs" />
     <Compile Include="Label.cs" />
-    <Compile Include="Overview.cs">
+    <Compile Include="UI\Overview.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Overview.Designer.cs">
+    <Compile Include="UI\Overview.Designer.cs">
       <DependentUpon>Overview.cs</DependentUpon>
     </Compile>
-    <Compile Include="Paginator.cs">
+    <Compile Include="UI\Paginator.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Paginator.Designer.cs">
+    <Compile Include="UI\Paginator.Designer.cs">
       <DependentUpon>Paginator.cs</DependentUpon>
     </Compile>
-    <Compile Include="PinUp.cs">
+    <Compile Include="UI\PinUp.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PinUp.Designer.cs">
+    <Compile Include="UI\PinUp.Designer.cs">
       <DependentUpon>PinUp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Search.cs">
+    <Compile Include="UI\Forms\Search.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Search.Designer.cs">
+    <Compile Include="UI\Forms\Search.Designer.cs">
       <DependentUpon>Search.cs</DependentUpon>
     </Compile>
-    <Compile Include="LocationSetup.cs">
+    <Compile Include="UI\Forms\LocationSetup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ImageSet.cs" />
@@ -1018,49 +1021,49 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Queue List.cs">
+    <Compile Include="UI\Forms\Queue List.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SkyBall.cs">
+    <Compile Include="UI\SkyBall.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SkyBall.designer.cs">
+    <Compile Include="UI\SkyBall.designer.cs">
       <DependentUpon>SkyBall.cs</DependentUpon>
     </Compile>
     <Compile Include="SkyImage.cs" />
-    <Compile Include="Splash.cs">
+    <Compile Include="UI\Forms\Splash.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Splash.Designer.cs">
+    <Compile Include="UI\Forms\Splash.Designer.cs">
       <DependentUpon>Splash.cs</DependentUpon>
     </Compile>
-    <Compile Include="TabForm.cs">
+    <Compile Include="UI\Forms\TabForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TabForm.Designer.cs">
+    <Compile Include="UI\Forms\TabForm.Designer.cs">
       <DependentUpon>TabForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TangentTile.cs" />
     <Compile Include="Telescope.cs" />
-    <Compile Include="ContextPanel.cs">
+    <Compile Include="UI\Forms\ContextPanel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ContextPanel.Designer.cs">
+    <Compile Include="UI\Forms\ContextPanel.Designer.cs">
       <DependentUpon>ContextPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="ThumbnailList.cs">
+    <Compile Include="UI\ThumbnailList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ThumbnailList.Designer.cs">
+    <Compile Include="UI\ThumbnailList.Designer.cs">
       <DependentUpon>ThumbnailList.cs</DependentUpon>
     </Compile>
     <Compile Include="Tile.cs" />
     <Compile Include="TileCache.cs" />
     <Compile Include="Tour.cs" />
-    <Compile Include="TourProperties.cs">
+    <Compile Include="UI\Forms\TourProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TourProperties.Designer.cs">
+    <Compile Include="UI\Forms\TourProperties.Designer.cs">
       <DependentUpon>TourProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="TourStop.cs" />
@@ -1072,39 +1075,39 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Undo.cs" />
-    <Compile Include="UserRating.cs">
+    <Compile Include="UI\UserRating.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserRating.Designer.cs">
+    <Compile Include="UI\UserRating.Designer.cs">
       <DependentUpon>UserRating.cs</DependentUpon>
     </Compile>
     <Compile Include="VampWCSImageReader.cs" />
     <Compile Include="VideoOut.cs" />
-    <Compile Include="View.cs">
+    <Compile Include="UI\Forms\View.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="View.Designer.cs">
+    <Compile Include="UI\Forms\View.Designer.cs">
       <DependentUpon>View.cs</DependentUpon>
     </Compile>
     <Compile Include="ViewMover.cs">
     </Compile>
-    <Compile Include="VORegistryBrowser.cs">
+    <Compile Include="UI\Forms\VORegistryBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VORegistryBrowser.Designer.cs">
+    <Compile Include="UI\Forms\VORegistryBrowser.Designer.cs">
       <DependentUpon>VORegistryBrowser.cs</DependentUpon>
     </Compile>
-    <Compile Include="VORegistryProperties.cs">
+    <Compile Include="UI\Forms\VORegistryProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VORegistryProperties.Designer.cs">
+    <Compile Include="UI\Forms\VORegistryProperties.Designer.cs">
       <DependentUpon>VORegistryProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="VOTable.cs" />
-    <Compile Include="VOTableViewer.cs">
+    <Compile Include="UI\Forms\VOTableViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VOTableViewer.Designer.cs">
+    <Compile Include="UI\Forms\VOTableViewer.Designer.cs">
       <DependentUpon>VOTableViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="WcsFitter.cs" />
@@ -1129,147 +1132,147 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="WebServer.cs" />
-    <Compile Include="WebWindow.cs">
+    <Compile Include="UI\Forms\WebWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WebWindow.Designer.cs">
+    <Compile Include="UI\Forms\WebWindow.Designer.cs">
       <DependentUpon>WebWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Welcome.cs">
+    <Compile Include="UI\Forms\Welcome.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Welcome.Designer.cs">
+    <Compile Include="UI\Forms\Welcome.Designer.cs">
       <DependentUpon>Welcome.cs</DependentUpon>
     </Compile>
     <Compile Include="wms.cs" />
     <Compile Include="WmsLayer.cs" />
-    <Compile Include="WmsLayerWizard.cs">
+    <Compile Include="UI\Forms\WmsLayerWizard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WmsLayerWizard.Designer.cs">
+    <Compile Include="UI\Forms\WmsLayerWizard.Designer.cs">
       <DependentUpon>WmsLayerWizard.cs</DependentUpon>
     </Compile>
     <Compile Include="WmsTiledService.cs" />
-    <Compile Include="WwtButton.cs">
+    <Compile Include="UI\WwtButton.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="WwtButton.Designer.cs">
+    <Compile Include="UI\WwtButton.Designer.cs">
       <DependentUpon>WwtButton.cs</DependentUpon>
     </Compile>
-    <Compile Include="WWTCheckbox.cs">
+    <Compile Include="UI\WWTCheckbox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="WWTCheckbox.Designer.cs">
+    <Compile Include="UI\WWTCheckbox.Designer.cs">
       <DependentUpon>WWTCheckbox.cs</DependentUpon>
     </Compile>
-    <Compile Include="WwtCombo.cs">
+    <Compile Include="UI\WwtCombo.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="WwtCombo.Designer.cs">
+    <Compile Include="UI\WwtCombo.Designer.cs">
       <DependentUpon>WwtCombo.cs</DependentUpon>
     </Compile>
-    <Compile Include="WwtTrackBar.cs">
+    <Compile Include="UI\WwtTrackBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="WwtTrackBar.Designer.cs">
+    <Compile Include="UI\WwtTrackBar.Designer.cs">
       <DependentUpon>WwtTrackBar.cs</DependentUpon>
     </Compile>
-    <Compile Include="WwtUpDown.cs">
+    <Compile Include="UI\WwtUpDown.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="WwtUpDown.Designer.cs">
+    <Compile Include="UI\WwtUpDown.Designer.cs">
       <DependentUpon>WwtUpDown.cs</DependentUpon>
     </Compile>
-    <Compile Include="XBoxConfig.cs">
+    <Compile Include="UI\Forms\XBoxConfig.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="XBoxConfig.Designer.cs">
+    <Compile Include="UI\Forms\XBoxConfig.Designer.cs">
       <DependentUpon>XBoxConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="ZipArchive.cs" />
-    <EmbeddedResource Include="About.resx">
+    <EmbeddedResource Include="UI\Forms\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="AudioProperties.resx">
+    <EmbeddedResource Include="UI\Forms\AudioProperties.resx">
       <DependentUpon>AudioProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ButtonGroupControl.resx">
+    <EmbeddedResource Include="UI\ButtonGroupControl.resx">
       <DependentUpon>ButtonGroupControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ButtonProperties.resx">
+    <EmbeddedResource Include="UI\Forms\ButtonProperties.resx">
       <DependentUpon>ButtonProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CacheTilePyramid.resx">
+    <EmbeddedResource Include="UI\Forms\CacheTilePyramid.resx">
       <DependentUpon>CacheTilePyramid.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ClientNodeList.resx">
+    <EmbeddedResource Include="UI\Forms\ClientNodeList.resx">
       <DependentUpon>ClientNodeList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Communities.resx">
+    <EmbeddedResource Include="UI\Forms\Communities.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Communities.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControllerProperties.resx">
+    <EmbeddedResource Include="UI\Forms\ControllerProperties.resx">
       <DependentUpon>ControllerProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CurveEditor.resx">
+    <EmbeddedResource Include="UI\CurveEditor.resx">
       <DependentUpon>CurveEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DebugBitmap.resx">
+    <EmbeddedResource Include="UI\Forms\DebugBitmap.resx">
       <DependentUpon>DebugBitmap.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="DomePreviewPopup.resx">
+    <EmbeddedResource Include="UI\Forms\DomePreviewPopup.resx">
       <DependentUpon>DomePreviewPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DropDownList.resx">
+    <EmbeddedResource Include="UI\Forms\DropDownList.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DropDownList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EulaReader.resx">
+    <EmbeddedResource Include="UI\Forms\EulaReader.resx">
       <DependentUpon>EulaReader.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ExportSTL.resx">
+    <EmbeddedResource Include="UI\Forms\ExportSTL.resx">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FieldOfViewSetup.resx">
+    <EmbeddedResource Include="UI\Forms\FieldOfViewSetup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FieldOfViewSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GreatCircleProperties.resx">
+    <EmbeddedResource Include="UI\Forms\GreatCircleProperties.resx">
       <DependentUpon>GreatCircleProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="KeyFramer.resx">
+    <EmbeddedResource Include="UI\Forms\KeyFramer.resx">
       <DependentUpon>KeyFramer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="KeyProperties.resx">
+    <EmbeddedResource Include="UI\Forms\KeyProperties.resx">
       <DependentUpon>KeyProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LocationSearch.resx">
+    <EmbeddedResource Include="UI\Forms\LocationSearch.resx">
       <DependentUpon>LocationSearch.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MidiSetup.resx">
+    <EmbeddedResource Include="UI\Forms\MidiSetup.resx">
       <DependentUpon>MidiSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NewBinding.resx">
+    <EmbeddedResource Include="UI\Forms\NewBinding.resx">
       <DependentUpon>NewBinding.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OverlayList.resx">
+    <EmbeddedResource Include="UI\Forms\OverlayList.resx">
       <DependentUpon>OverlayList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OverlayProperties.resx">
+    <EmbeddedResource Include="UI\Forms\OverlayProperties.resx">
       <DependentUpon>OverlayProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Overview.resx">
+    <EmbeddedResource Include="UI\Overview.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Overview.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Paginator.resx">
+    <EmbeddedResource Include="UI\Paginator.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Paginator.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PinUp.resx">
+    <EmbeddedResource Include="UI\PinUp.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PinUp.cs</DependentUpon>
     </EmbeddedResource>
@@ -1278,59 +1281,59 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Search.resx">
+    <EmbeddedResource Include="UI\Forms\Search.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Search.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LocationSetup.resx">
+    <EmbeddedResource Include="UI\Forms\LocationSetup.resx">
       <DependentUpon>LocationSetup.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Queue List.resx">
+    <EmbeddedResource Include="UI\Forms\Queue List.resx">
       <DependentUpon>Queue List.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="SkyBall.resx">
+    <EmbeddedResource Include="UI\SkyBall.resx">
       <DependentUpon>SkyBall.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Splash.resx">
+    <EmbeddedResource Include="UI\Forms\Splash.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Splash.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ContextPanel.resx">
+    <EmbeddedResource Include="UI\Forms\ContextPanel.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ContextPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TabForm.resx">
+    <EmbeddedResource Include="UI\Forms\TabForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TabForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ThumbnailList.resx">
+    <EmbeddedResource Include="UI\ThumbnailList.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ThumbnailList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TimeLine.resx">
+    <EmbeddedResource Include="UI\TimeLine.resx">
       <DependentUpon>TimeLine.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TrackButton.resx">
+    <EmbeddedResource Include="UI\TrackButton.resx">
       <DependentUpon>TrackButton.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TransitionPicker.resx">
+    <EmbeddedResource Include="UI\TransitionPicker.resx">
       <DependentUpon>TransitionPicker.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TransitionsPopup.resx">
+    <EmbeddedResource Include="UI\Forms\TransitionsPopup.resx">
       <DependentUpon>TransitionsPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WwtButton.resx">
+    <EmbeddedResource Include="UI\WwtButton.resx">
       <SubType>Designer</SubType>
       <DependentUpon>WwtButton.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WwtCombo.resx">
+    <EmbeddedResource Include="UI\WwtCombo.resx">
       <SubType>Designer</SubType>
       <DependentUpon>WwtCombo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="XBoxConfig.resx">
+    <EmbeddedResource Include="UI\Forms\XBoxConfig.resx">
       <DependentUpon>XBoxConfig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
@@ -1402,7 +1405,7 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MenuTabs.resx">
+    <EmbeddedResource Include="UI\MenuTabs.resx">
       <DependentUpon>MenuTabs.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -1465,37 +1468,37 @@
     <None Include="resources\ThumbBackgroundHover.png" />
     <None Include="resources\thumbBackgroundWide.png" />
     <None Include="resources\ThumbBackgroundWideHover.png" />
-    <EmbeddedResource Include="TourProperties.resx">
+    <EmbeddedResource Include="UI\Forms\TourProperties.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TourProperties.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="resources\Unidentified.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="PopupColorPicker.resx">
+    <EmbeddedResource Include="UI\Forms\PopupColorPicker.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PopupColorPicker.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TaxonomyTree.resx">
+    <EmbeddedResource Include="UI\Forms\TaxonomyTree.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TaxonomyTree.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TextEditor.resx">
+    <EmbeddedResource Include="UI\Forms\TextEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TextEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TourEdit.resx">
+    <EmbeddedResource Include="UI\Forms\TourEdit.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TourEdit.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TourStopList.resx">
+    <EmbeddedResource Include="UI\TourStopList.resx">
       <DependentUpon>TourStopList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="resources\tourHover.png" />
     <None Include="resources\tourSelected.png" />
     <None Include="resources\tourSelectedHover.png" />
-    <EmbeddedResource Include="WebWindow.resx">
+    <EmbeddedResource Include="UI\Forms\WebWindow.resx">
       <SubType>Designer</SubType>
       <DependentUpon>WebWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -1594,120 +1597,120 @@
     <None Include="resources\ColorPickerHex.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="3dWIndow.resx">
+    <EmbeddedResource Include="UI\Forms\3dWIndow.resx">
       <DependentUpon>3dWIndow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ArrowButton.resx">
+    <EmbeddedResource Include="UI\ArrowButton.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ArrowButton.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AudioTrack.resx">
+    <EmbeddedResource Include="UI\AudioTrack.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AudioTrack.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ClearCache.resx">
+    <EmbeddedResource Include="UI\Forms\ClearCache.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ClearCache.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ConstellationFigureEditor.resx">
+    <EmbeddedResource Include="UI\Forms\ConstellationFigureEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ConstellationFigureEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DatePopup.resx">
+    <EmbeddedResource Include="UI\Forms\DatePopup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DatePopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DragThumbnail.resx">
+    <EmbeddedResource Include="UI\Forms\DragThumbnail.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DragThumbnail.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DurrationEditor.resx">
+    <EmbeddedResource Include="UI\Forms\DurrationEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DurrationEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FileDownload.resx">
+    <EmbeddedResource Include="UI\Forms\FileDownload.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FileDownload.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FolderBrowser.resx">
+    <EmbeddedResource Include="UI\Forms\FolderBrowser.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FolderBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageProperties.resx">
+    <EmbeddedResource Include="UI\Forms\ImageProperties.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ImageProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="JoystickHelp.resx">
+    <EmbeddedResource Include="UI\Forms\JoystickHelp.resx">
       <SubType>Designer</SubType>
       <DependentUpon>JoystickHelp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ObjectPopup.resx">
+    <EmbeddedResource Include="UI\Forms\ObjectPopup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ObjectPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ObjectProperties.resx">
+    <EmbeddedResource Include="UI\Forms\ObjectProperties.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ObjectProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PlaceEditor.resx">
+    <EmbeddedResource Include="UI\Forms\PlaceEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PlaceEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PopupTextEditor.resx">
+    <EmbeddedResource Include="UI\Forms\PopupTextEditor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PopupTextEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PopupVolume.resx">
+    <EmbeddedResource Include="UI\Forms\PopupVolume.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PopupVolume.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Resources\Selhand.bmp" />
-    <EmbeddedResource Include="RenderTarget.resx">
+    <EmbeddedResource Include="UI\RenderTarget.resx">
       <SubType>Designer</SubType>
       <DependentUpon>RenderTarget.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SettingsTab.resx">
+    <EmbeddedResource Include="UI\Forms\SettingsTab.resx">
       <SubType>Designer</SubType>
       <DependentUpon>SettingsTab.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SimbadSearch.resx">
+    <EmbeddedResource Include="UI\Forms\SimbadSearch.resx">
       <SubType>Designer</SubType>
       <DependentUpon>SimbadSearch.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SimpleInput.resx">
+    <EmbeddedResource Include="UI\Forms\SimpleInput.resx">
       <SubType>Designer</SubType>
       <DependentUpon>SimpleInput.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TelescopeTab.resx">
+    <EmbeddedResource Include="UI\Forms\TelescopeTab.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TelescopeTab.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TourPopup.resx">
+    <EmbeddedResource Include="UI\Forms\TourPopup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TourPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserRating.resx">
+    <EmbeddedResource Include="UI\UserRating.resx">
       <SubType>Designer</SubType>
       <DependentUpon>UserRating.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="View.resx">
+    <EmbeddedResource Include="UI\Forms\View.resx">
       <SubType>Designer</SubType>
       <DependentUpon>View.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Welcome.resx">
+    <EmbeddedResource Include="UI\Forms\Welcome.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Welcome.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WWTCheckbox.resx">
+    <EmbeddedResource Include="UI\WWTCheckbox.resx">
       <SubType>Designer</SubType>
       <DependentUpon>WWTCheckbox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WwtTrackBar.resx">
+    <EmbeddedResource Include="UI\WwtTrackBar.resx">
       <SubType>Designer</SubType>
       <DependentUpon>WwtTrackBar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WwtUpDown.resx">
+    <EmbeddedResource Include="UI\WwtUpDown.resx">
       <SubType>Designer</SubType>
       <DependentUpon>WwtUpDown.cs</DependentUpon>
     </EmbeddedResource>
@@ -1889,42 +1892,42 @@
     <None Include="Resources\StarProfile.png" />
     <None Include="Resources\xBoxController.png" />
     <None Include="Resources\xbox.png" />
-    <EmbeddedResource Include="DomeSetup.resx">
+    <EmbeddedResource Include="UI\Forms\DomeSetup.resx">
       <DependentUpon>DomeSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FlipbookSetup.resx">
+    <EmbeddedResource Include="UI\Forms\FlipbookSetup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FlipbookSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Histogram.resx">
+    <EmbeddedResource Include="UI\Forms\Histogram.resx">
       <DependentUpon>Histogram.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageAlignPopup.resx">
+    <EmbeddedResource Include="UI\Forms\ImageAlignPopup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ImageAlignPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageStack.resx">
+    <EmbeddedResource Include="UI\Forms\ImageStack.resx">
       <DependentUpon>ImageStack.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LanguageSelect.resx">
+    <EmbeddedResource Include="UI\Forms\LanguageSelect.resx">
       <SubType>Designer</SubType>
       <DependentUpon>LanguageSelect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PunchIn.png" />
     <EmbeddedResource Include="Resources\PunchInOutBlock.png" />
     <EmbeddedResource Include="Resources\PunchOut.png" />
-    <EmbeddedResource Include="SelectLink.resx">
+    <EmbeddedResource Include="UI\Forms\SelectLink.resx">
       <DependentUpon>SelectLink.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VORegistryBrowser.resx">
+    <EmbeddedResource Include="UI\Forms\VORegistryBrowser.resx">
       <SubType>Designer</SubType>
       <DependentUpon>VORegistryBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VORegistryProperties.resx">
+    <EmbeddedResource Include="UI\Forms\VORegistryProperties.resx">
       <SubType>Designer</SubType>
       <DependentUpon>VORegistryProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VOTableViewer.resx">
+    <EmbeddedResource Include="UI\Forms\VOTableViewer.resx">
       <DependentUpon>VOTableViewer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -2294,103 +2297,103 @@
     <EmbeddedResource Include="Cosmos\gal_0253.jpg" />
     <EmbeddedResource Include="Cosmos\gal_0254.jpg" />
     <EmbeddedResource Include="Cosmos\gal_0255.jpg" />
-    <EmbeddedResource Include="DataWizardCartesian.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardCartesian.resx">
       <DependentUpon>DataWizardCartesian.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardColorMap.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardColorMap.resx">
       <DependentUpon>DataWizardColorMap.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardCoordinates.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardCoordinates.resx">
       <DependentUpon>DataWizardCoordinates.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardDateTime.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardDateTime.resx">
       <DependentUpon>DataWizardDateTime.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardFinal.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardFinal.resx">
       <DependentUpon>DataWizardFinal.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardInfoPopup.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardInfoPopup.resx">
       <DependentUpon>DataWizardInfoPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardMarkers.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardMarkers.resx">
       <DependentUpon>DataWizardMarkers.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardOrbits.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardOrbits.resx">
       <DependentUpon>DataWizardOrbits.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardSize.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardSize.resx">
       <DependentUpon>DataWizardSize.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DataWizardWelcome.resx">
+    <EmbeddedResource Include="UI\Wizards\DataWizardWelcome.resx">
       <DependentUpon>DataWizardWelcome.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrameWizardCartisian.resx">
+    <EmbeddedResource Include="UI\Wizards\FrameWizardCartisian.resx">
       <DependentUpon>FrameWizardCartisian.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrameWizardMain.resx">
+    <EmbeddedResource Include="UI\Wizards\FrameWizardMain.resx">
       <DependentUpon>FrameWizardMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrameWizardOrbital.resx">
+    <EmbeddedResource Include="UI\Wizards\FrameWizardOrbital.resx">
       <DependentUpon>FrameWizardOrbital.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrameWizardPosition.resx">
+    <EmbeddedResource Include="UI\Wizards\FrameWizardPosition.resx">
       <DependentUpon>FrameWizardPosition.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrameWizardTrajectory.resx">
+    <EmbeddedResource Include="UI\Wizards\FrameWizardTrajectory.resx">
       <DependentUpon>FrameWizardTrajectory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrameWizardWelcome.resx">
+    <EmbeddedResource Include="UI\Wizards\FrameWizardWelcome.resx">
       <DependentUpon>FrameWizardWelcome.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GroundOverlayProperties.resx">
+    <EmbeddedResource Include="UI\Forms\GroundOverlayProperties.resx">
       <DependentUpon>GroundOverlayProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="KioskTitleBar.resx">
+    <EmbeddedResource Include="UI\KioskTitleBar.resx">
       <DependentUpon>KioskTitleBar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LayerLifetimeProperties.resx">
+    <EmbeddedResource Include="UI\Forms\LayerLifetimeProperties.resx">
       <DependentUpon>LayerLifetimeProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Object3dProperties.resx">
+    <EmbeddedResource Include="UI\Forms\Object3dProperties.resx">
       <DependentUpon>Object3dProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OpacityPopup.resx">
+    <EmbeddedResource Include="UI\Forms\OpacityPopup.resx">
       <DependentUpon>OpacityPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Callibration\ProjectionTransformEditor.resx">
       <DependentUpon>ProjectionTransformEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OutputTourToVideo.resx">
+    <EmbeddedResource Include="UI\Forms\OutputTourToVideo.resx">
       <DependentUpon>OutputTourToVideo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProgressPopup.resx">
+    <EmbeddedResource Include="UI\Forms\ProgressPopup.resx">
       <DependentUpon>ProgressPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropsShell.resx">
+    <EmbeddedResource Include="UI\Forms\PropsShell.resx">
       <DependentUpon>PropsShell.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PushPinPickerPopup.resx">
+    <EmbeddedResource Include="UI\Forms\PushPinPickerPopup.resx">
       <DependentUpon>PushPinPickerPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="RenderProgress.resx">
+    <EmbeddedResource Include="UI\Forms\RenderProgress.resx">
       <DependentUpon>RenderProgress.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tab.resx">
+    <EmbeddedResource Include="UI\Tab.resx">
       <DependentUpon>Tab.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WizardShell.resx">
+    <EmbeddedResource Include="UI\Forms\WizardShell.resx">
       <DependentUpon>WizardShell.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LayerManager.resx">
+    <EmbeddedResource Include="UI\Forms\LayerManager.resx">
       <DependentUpon>LayerManager.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="RenderHost.resx">
+    <EmbeddedResource Include="UI\Forms\RenderHost.resx">
       <DependentUpon>RenderHost.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SpreadSheetProperties.resx">
+    <EmbeddedResource Include="UI\Forms\SpreadSheetProperties.resx">
       <DependentUpon>SpreadSheetProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WmsLayerWizard.resx">
+    <EmbeddedResource Include="UI\Forms\WmsLayerWizard.resx">
       <DependentUpon>WmsLayerWizard.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Resources\earthsMapSpec.jpg" />
@@ -2441,10 +2444,10 @@
     <None Include="resources\FolderUp.png" />
     <None Include="Resources\TouchControls.png" />
     <None Include="Resources\DomeOutline.png" />
-    <EmbeddedResource Include="RemoteAccessControl.resx">
+    <EmbeddedResource Include="UI\Forms\RemoteAccessControl.resx">
       <DependentUpon>RemoteAccessControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ScreenBroadcast.resx">
+    <EmbeddedResource Include="UI\Forms\ScreenBroadcast.resx">
       <DependentUpon>ScreenBroadcast.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WW15MGH.DAC" />
@@ -2459,6 +2462,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WTT.Patterns\WTT.Common.csproj">
+      <Project>{92DC6CE2-C2C0-4E1A-AEDA-91EE945B9413}</Project>
+      <Name>WTT.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WWTCore\WWTCore\WWTCore.csproj">
       <Project>{6c205caa-423d-48b8-813b-e586e105c71b}</Project>
       <Name>WWTCore</Name>

@@ -6,8 +6,6 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compression
@@ -17,7 +15,7 @@ namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compre
 	/// </summary>
     public class BitWriter
     {
-		Stream stream;
+	    readonly Stream stream;
 
 		/// <summary>
 		/// Constructor.
@@ -77,7 +75,7 @@ namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compre
 	/// </summary>
     public class BitReader
     {
-		Stream stream;
+	    readonly Stream stream;
 
 		/// <summary>
 		/// Constructor.
@@ -99,14 +97,14 @@ namespace Microsoft.MapPoint.Data.VirtualEarthTileDataStore.ElevationData.Compre
         {
             if (bitCount == 0)
             {
-				int nextByte = stream.ReadByte();
+				var nextByte = stream.ReadByte();
 				if (nextByte == -1)
 					throw new EndOfStreamException();
 				bitBuffer = (byte) nextByte;
                 bitCount = 8;
             }
 
-            bool bit = bitBuffer >= 128;
+            var bit = bitBuffer >= 128;
             bitBuffer <<= 1;
             bitCount--;
 

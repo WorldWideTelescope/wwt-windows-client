@@ -54,48 +54,47 @@ public class  CAAEclipticalElements
   
   public static CAAEclipticalElementDetails Calculate(double i0, double w0, double omega0, double JD0, double JD)
   {
-	double T = (JD0 - 2451545.0) / 36525;
-	double Tsquared = T *T;
-	double t = (JD - JD0) / 36525;
-	double tsquared = t *t;
-	double tcubed = tsquared * t;
+	var T = (JD0 - 2451545.0) / 36525;
+	var Tsquared = T *T;
+	var t = (JD - JD0) / 36525;
+	var tsquared = t *t;
+	var tcubed = tsquared * t;
   
 	//Now convert to radians
-	double i0rad = CAACoordinateTransformation.DegreesToRadians(i0);
-	double omega0rad = CAACoordinateTransformation.DegreesToRadians(omega0);
+	var i0rad = CAACoordinateTransformation.DegreesToRadians(i0);
+	var omega0rad = CAACoordinateTransformation.DegreesToRadians(omega0);
   
-	double eta = (47.0029 - 0.06603 *T + 0.000598 *Tsquared)*t + (-0.03302 + 0.000598 *T)*tsquared + 0.00006 *tcubed;
+	var eta = (47.0029 - 0.06603 *T + 0.000598 *Tsquared)*t + (-0.03302 + 0.000598 *T)*tsquared + 0.00006 *tcubed;
 	eta = CAACoordinateTransformation.DegreesToRadians(CAACoordinateTransformation.DMSToDegrees(0, 0, eta));
   
-	double pi = 174.876384 *3600 + 3289.4789 *T + 0.60622 *Tsquared - (869.8089 + 0.50491 *T)*t + 0.03536 *tsquared;
+	var pi = 174.876384 *3600 + 3289.4789 *T + 0.60622 *Tsquared - (869.8089 + 0.50491 *T)*t + 0.03536 *tsquared;
 	pi = CAACoordinateTransformation.DegreesToRadians(CAACoordinateTransformation.DMSToDegrees(0, 0, pi));
   
-	double p = (5029.0966 + 2.22226 *T - 0.000042 *Tsquared)*t + (1.11113 - 0.000042 *T)*tsquared - 0.000006 *tcubed;
+	var p = (5029.0966 + 2.22226 *T - 0.000042 *Tsquared)*t + (1.11113 - 0.000042 *T)*tsquared - 0.000006 *tcubed;
 	p = CAACoordinateTransformation.DegreesToRadians(CAACoordinateTransformation.DMSToDegrees(0, 0, p));
   
-	double sini0rad = Math.Sin(i0rad);
-	double cosi0rad = Math.Cos(i0rad);
-	double sinomega0rad_pi = Math.Sin(omega0rad - pi);
-	double cosomega0rad_pi = Math.Cos(omega0rad - pi);
-	double sineta = Math.Sin(eta);
-	double coseta = Math.Cos(eta);
-	double A = sini0rad *sinomega0rad_pi;
-	double B = -sineta *cosi0rad + coseta *sini0rad *cosomega0rad_pi;
-	double irad = Math.Asin(Math.Sqrt(A *A + B *B));
+	var sini0rad = Math.Sin(i0rad);
+	var cosi0rad = Math.Cos(i0rad);
+	var sinomega0rad_pi = Math.Sin(omega0rad - pi);
+	var cosomega0rad_pi = Math.Cos(omega0rad - pi);
+	var sineta = Math.Sin(eta);
+	var coseta = Math.Cos(eta);
+	var A = sini0rad *sinomega0rad_pi;
+	var B = -sineta *cosi0rad + coseta *sini0rad *cosomega0rad_pi;
+	var irad = Math.Asin(Math.Sqrt(A *A + B *B));
   
-	CAAEclipticalElementDetails details = new CAAEclipticalElementDetails();
-  
-	details.i = CAACoordinateTransformation.RadiansToDegrees(irad);
-	double cosi = cosi0rad *coseta + sini0rad *sineta *cosomega0rad_pi;
+	var details = new CAAEclipticalElementDetails {i = CAACoordinateTransformation.RadiansToDegrees(irad)};
+
+      var cosi = cosi0rad *coseta + sini0rad *sineta *cosomega0rad_pi;
 	if (cosi < 0)
 	  details.i = 180 - details.i;
   
-	double phi = pi + p;
+	var phi = pi + p;
 	details.omega = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(A, B) + phi));
   
 	A = -sineta *sinomega0rad_pi;
 	B = sini0rad *coseta - cosi0rad *sineta *cosomega0rad_pi;
-	double deltaw = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(A, B));
+	var deltaw = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(A, B));
 	details.w = CAACoordinateTransformation.MapTo0To360Range(w0 + deltaw);
   
 	return details;
@@ -103,26 +102,28 @@ public class  CAAEclipticalElements
   public static CAAEclipticalElementDetails FK4B1950ToFK5J2000(double i0, double w0, double omega0)
   {
 	//convert to radians
-	double L = CAACoordinateTransformation.DegreesToRadians(5.19856209);
-	double J = CAACoordinateTransformation.DegreesToRadians(0.00651966);
-	double i0rad = CAACoordinateTransformation.DegreesToRadians(i0);
-	double omega0rad = CAACoordinateTransformation.DegreesToRadians(omega0);
-	double sini0rad = Math.Sin(i0rad);
-	double cosi0rad = Math.Cos(i0rad);
+	var L = CAACoordinateTransformation.DegreesToRadians(5.19856209);
+	var J = CAACoordinateTransformation.DegreesToRadians(0.00651966);
+	var i0rad = CAACoordinateTransformation.DegreesToRadians(i0);
+	var omega0rad = CAACoordinateTransformation.DegreesToRadians(omega0);
+	var sini0rad = Math.Sin(i0rad);
+	var cosi0rad = Math.Cos(i0rad);
   
 	//Calculate some values used later
-	double cosJ = Math.Cos(J);
-	double sinJ = Math.Sin(J);
-	double W = L + omega0rad;
-	double cosW = Math.Cos(W);
-	double sinW = Math.Sin(W);
-	double A = sinJ *sinW;
-	double B = sini0rad *cosJ + cosi0rad *sinJ *cosW;
+	var cosJ = Math.Cos(J);
+	var sinJ = Math.Sin(J);
+	var W = L + omega0rad;
+	var cosW = Math.Cos(W);
+	var sinW = Math.Sin(W);
+	var A = sinJ *sinW;
+	var B = sini0rad *cosJ + cosi0rad *sinJ *cosW;
   
 	//Calculate the values
-	CAAEclipticalElementDetails details = new CAAEclipticalElementDetails();
-	details.i = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sqrt(A *A + B *B)));
-	double cosi = cosi0rad *cosJ - sini0rad *sinJ *cosW;
+	var details = new CAAEclipticalElementDetails
+	{
+	    i = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sqrt(A*A + B*B)))
+	};
+      var cosi = cosi0rad *cosJ - sini0rad *sinJ *cosW;
 	if (cosi < 0)
 	  details.i = 180 - details.i;
   

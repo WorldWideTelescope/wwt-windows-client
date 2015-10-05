@@ -48,36 +48,36 @@ public class  CAAEaster
   
   public static CAAEasterDetails Calculate(int nYear, bool GregorianCalendar)
   {
-	CAAEasterDetails details = new CAAEasterDetails();
+	var details = new CAAEasterDetails();
   
 	if (GregorianCalendar)
 	{
-	  int a = nYear % 19;
-	  int b = nYear / 100;
-	  int c = nYear % 100;
-	  int d = b / 4;
-	  int e = b % 4;
-	  int f = (b+8) / 25;
-	  int g = (b - f + 1) / 3;
-	  int h = (19 *a + b - d - g + 15) % 30;
-	  int i = c / 4;
-	  int k = c % 4;
-	  int l = (32 + 2 *e + 2 *i - h -k) % 7;
-	  int m = (a + 11 *h +22 *l) / 451;
-	  int n = (h + l - 7 *m + 114) / 31;
-	  int p = (h + l - 7 *m + 114) % 31;
+	  var a = nYear % 19;
+	  var b = nYear / 100;
+	  var c = nYear % 100;
+	  var d = b / 4;
+	  var e = b % 4;
+	  var f = (b+8) / 25;
+	  var g = (b - f + 1) / 3;
+	  var h = (19 *a + b - d - g + 15) % 30;
+	  var i = c / 4;
+	  var k = c % 4;
+	  var l = (32 + 2 *e + 2 *i - h -k) % 7;
+	  var m = (a + 11 *h +22 *l) / 451;
+	  var n = (h + l - 7 *m + 114) / 31;
+	  var p = (h + l - 7 *m + 114) % 31;
 	  details.Month = n;
 	  details.Day = p + 1;
 	}
 	else
 	{
-	  int a = nYear % 4;
-	  int b = nYear % 7;
-	  int c = nYear % 19;
-	  int d = (19 *c + 15) % 30;
-	  int e = (2 *a + 4 *b - d + 34) % 7;
-	  int f = (d + e + 114) / 31;
-	  int g = (d + e + 114) % 31;
+	  var a = nYear % 4;
+	  var b = nYear % 7;
+	  var c = nYear % 19;
+	  var d = (19 *c + 15) % 30;
+	  var e = (2 *a + 4 *b - d + 34) % 7;
+	  var f = (d + e + 114) / 31;
+	  var g = (d + e + 114) % 31;
 	  details.Month = f;
 	  details.Day = g + 1;
 	}

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MicrosoftAccount.WindowsForms;
 
-namespace MSAuth
+namespace TerraViewer.Authentication
 {
     public class OAuthTicket : IAuthenticationInfo
     {

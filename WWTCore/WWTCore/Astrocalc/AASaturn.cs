@@ -80,50 +80,50 @@ public class  CAASaturn
   
   public static double EclipticLongitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate L0
-    int nL0Coefficients = GlobalMembersStdafx.g_L0SaturnCoefficients.Length;
+    var nL0Coefficients = GlobalMembersStdafx.g_L0SaturnCoefficients.Length;
 	double L0 = 0;
 	int i;
 	for (i =0; i<nL0Coefficients; i++)
 	  L0 += GlobalMembersStdafx.g_L0SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L0SaturnCoefficients[i].B + GlobalMembersStdafx.g_L0SaturnCoefficients[i].C *rho);
   
 	//Calculate L1
-	int nL1Coefficients = GlobalMembersStdafx.g_L1SaturnCoefficients.Length;
+	var nL1Coefficients = GlobalMembersStdafx.g_L1SaturnCoefficients.Length;
 	double L1 = 0;
 	for (i =0; i<nL1Coefficients; i++)
 	  L1 += GlobalMembersStdafx.g_L1SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L1SaturnCoefficients[i].B + GlobalMembersStdafx.g_L1SaturnCoefficients[i].C *rho);
   
 	//Calculate L2
-	int nL2Coefficients = GlobalMembersStdafx.g_L2SaturnCoefficients.Length;
+	var nL2Coefficients = GlobalMembersStdafx.g_L2SaturnCoefficients.Length;
 	double L2 = 0;
 	for (i =0; i<nL2Coefficients; i++)
 	  L2 += GlobalMembersStdafx.g_L2SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L2SaturnCoefficients[i].B + GlobalMembersStdafx.g_L2SaturnCoefficients[i].C *rho);
   
 	//Calculate L3
-	int nL3Coefficients = GlobalMembersStdafx.g_L3SaturnCoefficients.Length;
+	var nL3Coefficients = GlobalMembersStdafx.g_L3SaturnCoefficients.Length;
 	double L3 = 0;
 	for (i =0; i<nL3Coefficients; i++)
 	  L3 += GlobalMembersStdafx.g_L3SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L3SaturnCoefficients[i].B + GlobalMembersStdafx.g_L3SaturnCoefficients[i].C *rho);
   
 	//Calculate L4
-	int nL4Coefficients = GlobalMembersStdafx.g_L4SaturnCoefficients.Length;
+	var nL4Coefficients = GlobalMembersStdafx.g_L4SaturnCoefficients.Length;
 	double L4 = 0;
 	for (i =0; i<nL4Coefficients; i++)
 	  L4 += GlobalMembersStdafx.g_L4SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L4SaturnCoefficients[i].B + GlobalMembersStdafx.g_L4SaturnCoefficients[i].C *rho);
   
 	//Calculate L5
-	int nL5Coefficients = GlobalMembersStdafx.g_L5SaturnCoefficients.Length;
+	var nL5Coefficients = GlobalMembersStdafx.g_L5SaturnCoefficients.Length;
 	double L5 = 0;
 	for (i =0; i<nL5Coefficients; i++)
 	  L5 += GlobalMembersStdafx.g_L5SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L5SaturnCoefficients[i].B + GlobalMembersStdafx.g_L5SaturnCoefficients[i].C *rho);
   
-	double @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4 + L5 *rho5) / 100000000;
+	var @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4 + L5 *rho5) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(@value));
@@ -131,50 +131,50 @@ public class  CAASaturn
   }
   public static double EclipticLatitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate B0
-    int nB0Coefficients = GlobalMembersStdafx.g_B0SaturnCoefficients.Length;
+    var nB0Coefficients = GlobalMembersStdafx.g_B0SaturnCoefficients.Length;
 	double B0 = 0;
 	int i;
 	for (i =0; i<nB0Coefficients; i++)
 	  B0 += GlobalMembersStdafx.g_B0SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B0SaturnCoefficients[i].B + GlobalMembersStdafx.g_B0SaturnCoefficients[i].C *rho);
   
 	//Calculate B1
-	int nB1Coefficients = GlobalMembersStdafx.g_B1SaturnCoefficients.Length;
+	var nB1Coefficients = GlobalMembersStdafx.g_B1SaturnCoefficients.Length;
 	double B1 = 0;
 	for (i =0; i<nB1Coefficients; i++)
 	  B1 += GlobalMembersStdafx.g_B1SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B1SaturnCoefficients[i].B + GlobalMembersStdafx.g_B1SaturnCoefficients[i].C *rho);
   
 	//Calculate B2
-	int nB2Coefficients = GlobalMembersStdafx.g_B2SaturnCoefficients.Length;
+	var nB2Coefficients = GlobalMembersStdafx.g_B2SaturnCoefficients.Length;
 	double B2 = 0;
 	for (i =0; i<nB2Coefficients; i++)
 	  B2 += GlobalMembersStdafx.g_B2SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B2SaturnCoefficients[i].B + GlobalMembersStdafx.g_B2SaturnCoefficients[i].C *rho);
   
 	//Calculate B3
-	int nB3Coefficients = GlobalMembersStdafx.g_B3SaturnCoefficients.Length;
+	var nB3Coefficients = GlobalMembersStdafx.g_B3SaturnCoefficients.Length;
 	double B3 = 0;
 	for (i =0; i<nB3Coefficients; i++)
 	  B3 += GlobalMembersStdafx.g_B3SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B3SaturnCoefficients[i].B + GlobalMembersStdafx.g_B3SaturnCoefficients[i].C *rho);
   
 	//Calculate B4
-	int nB4Coefficients = GlobalMembersStdafx.g_B4SaturnCoefficients.Length;
+	var nB4Coefficients = GlobalMembersStdafx.g_B4SaturnCoefficients.Length;
 	double B4 = 0;
 	for (i =0; i<nB4Coefficients; i++)
 	  B4 += GlobalMembersStdafx.g_B4SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B4SaturnCoefficients[i].B + GlobalMembersStdafx.g_B4SaturnCoefficients[i].C *rho);
   
 	//Calculate B5
-	int nB5Coefficients = GlobalMembersStdafx.g_B5SaturnCoefficients.Length;
+	var nB5Coefficients = GlobalMembersStdafx.g_B5SaturnCoefficients.Length;
 	double B5 = 0;
 	for (i =0; i<nB5Coefficients; i++)
 	  B5 += GlobalMembersStdafx.g_B5SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B5SaturnCoefficients[i].B + GlobalMembersStdafx.g_B5SaturnCoefficients[i].C *rho);
   
-	double @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4 + B5 *rho5) / 100000000;
+	var @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4 + B5 *rho5) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.RadiansToDegrees(@value);
@@ -182,45 +182,45 @@ public class  CAASaturn
   }
   public static double RadiusVector(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate R0
-    int nR0Coefficients = GlobalMembersStdafx.g_R0SaturnCoefficients.Length;
+    var nR0Coefficients = GlobalMembersStdafx.g_R0SaturnCoefficients.Length;
 	double R0 = 0;
 	int i;
 	for (i =0; i<nR0Coefficients; i++)
 	  R0 += GlobalMembersStdafx.g_R0SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R0SaturnCoefficients[i].B + GlobalMembersStdafx.g_R0SaturnCoefficients[i].C *rho);
   
 	//Calculate R1
-	int nR1Coefficients = GlobalMembersStdafx.g_R1SaturnCoefficients.Length;
+	var nR1Coefficients = GlobalMembersStdafx.g_R1SaturnCoefficients.Length;
 	double R1 = 0;
 	for (i =0; i<nR1Coefficients; i++)
 	  R1 += GlobalMembersStdafx.g_R1SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R1SaturnCoefficients[i].B + GlobalMembersStdafx.g_R1SaturnCoefficients[i].C *rho);
   
 	//Calculate R2
-	int nR2Coefficients = GlobalMembersStdafx.g_R2SaturnCoefficients.Length;
+	var nR2Coefficients = GlobalMembersStdafx.g_R2SaturnCoefficients.Length;
 	double R2 = 0;
 	for (i =0; i<nR2Coefficients; i++)
 	  R2 += GlobalMembersStdafx.g_R2SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R2SaturnCoefficients[i].B + GlobalMembersStdafx.g_R2SaturnCoefficients[i].C *rho);
   
 	//Calculate R3
-	int nR3Coefficients = GlobalMembersStdafx.g_R3SaturnCoefficients.Length;
+	var nR3Coefficients = GlobalMembersStdafx.g_R3SaturnCoefficients.Length;
 	double R3 = 0;
 	for (i =0; i<nR3Coefficients; i++)
 	  R3 += GlobalMembersStdafx.g_R3SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R3SaturnCoefficients[i].B + GlobalMembersStdafx.g_R3SaturnCoefficients[i].C *rho);
   
 	//Calculate R4
-	int nR4Coefficients = GlobalMembersStdafx.g_R4SaturnCoefficients.Length;
+	var nR4Coefficients = GlobalMembersStdafx.g_R4SaturnCoefficients.Length;
 	double R4 = 0;
 	for (i =0; i<nR4Coefficients; i++)
 	  R4 += GlobalMembersStdafx.g_R4SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R4SaturnCoefficients[i].B + GlobalMembersStdafx.g_R4SaturnCoefficients[i].C *rho);
   
 	//Calculate R5
-	int nR5Coefficients = GlobalMembersStdafx.g_R5SaturnCoefficients.Length;
+	var nR5Coefficients = GlobalMembersStdafx.g_R5SaturnCoefficients.Length;
 	double R5 = 0;
 	for (i =0; i<nR5Coefficients; i++)
 	  R5 += GlobalMembersStdafx.g_R5SaturnCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R5SaturnCoefficients[i].B + GlobalMembersStdafx.g_R5SaturnCoefficients[i].C *rho);

@@ -41,35 +41,35 @@ public class  CAAMoonMaxDeclinations
   public static double MeanGreatestDeclination(double k, bool bNortherly)
   {
 	//convert from K to T
-	double T = k/1336.86;
-	double T2 = T *T;
-	double T3 = T2 *T;
+	var T = k/1336.86;
+	var T2 = T *T;
+	var T3 = T2 *T;
   
-	double @value = bNortherly ? 2451562.5897 : 2451548.9289;
+	var @value = bNortherly ? 2451562.5897 : 2451548.9289;
 	return @value + 27.321582247 *k + 0.000119804 *T2 - 0.000000141 *T3;
   }
   public static double MeanGreatestDeclinationValue(double k)
   {
 	//convert from K to T
-	double T = k/1336.86;
+	var T = k/1336.86;
 	return 23.6961 - 0.013004 *T;
   }
   public static double TrueGreatestDeclination(double k, bool bNortherly)
   {
 	//convert from K to T
-	double T = k/1336.86;
-	double T2 = T *T;
-	double T3 = T2 *T;
+	var T = k/1336.86;
+	var T2 = T *T;
+	var T3 = T2 *T;
   
-	double D = bNortherly ? 152.2029 : 345.6676;
+	var D = bNortherly ? 152.2029 : 345.6676;
 	D = CAACoordinateTransformation.MapTo0To360Range(D + 333.0705546 *k - 0.0004214 *T2 + 0.00000011 *T3);
-	double M = bNortherly ? 14.8591 : 1.3951;
+	var M = bNortherly ? 14.8591 : 1.3951;
 	M = CAACoordinateTransformation.MapTo0To360Range(M + 26.9281592 *k - 0.0000355 *T2 - 0.00000010 *T3);
-	double Mdash = bNortherly ? 4.6881 : 186.2100;
+	var Mdash = bNortherly ? 4.6881 : 186.2100;
 	Mdash = CAACoordinateTransformation.MapTo0To360Range(Mdash + 356.9562794 *k + 0.0103066 *T2 + 0.00001251 *T3);
-	double F = bNortherly ? 325.8867 : 145.1633;
+	var F = bNortherly ? 325.8867 : 145.1633;
 	F = CAACoordinateTransformation.MapTo0To360Range(F + 1.4467807 *k - 0.0020690 *T2 - 0.00000215 *T3);
-	double E = 1 - 0.002516 *T - 0.0000074 *T2;
+	var E = 1 - 0.002516 *T - 0.0000074 *T2;
   
 	//convert to radians
 	D = CAACoordinateTransformation.DegreesToRadians(D);
@@ -93,19 +93,19 @@ public class  CAAMoonMaxDeclinations
   public static double TrueGreatestDeclinationValue(double k, bool bNortherly)
   {
 	//convert from K to T
-	double T = k/1336.86;
-	double T2 = T *T;
-	double T3 = T2 *T;
+	var T = k/1336.86;
+	var T2 = T *T;
+	var T3 = T2 *T;
   
-	double D = bNortherly ? 152.2029 : 345.6676;
+	var D = bNortherly ? 152.2029 : 345.6676;
 	D = CAACoordinateTransformation.MapTo0To360Range(D + 333.0705546 *k - 0.0004214 *T2 + 0.00000011 *T3);
-	double M = bNortherly ? 14.8591 : 1.3951;
+	var M = bNortherly ? 14.8591 : 1.3951;
 	M = CAACoordinateTransformation.MapTo0To360Range(M + 26.9281592 *k - 0.0000355 *T2 - 0.00000010 *T3);
-	double Mdash = bNortherly ? 4.6881 : 186.2100;
+	var Mdash = bNortherly ? 4.6881 : 186.2100;
 	Mdash = CAACoordinateTransformation.MapTo0To360Range(Mdash + 356.9562794 *k + 0.0103066 *T2 + 0.00001251 *T3);
-	double F = bNortherly ? 325.8867 : 145.1633;
+	var F = bNortherly ? 325.8867 : 145.1633;
 	F = CAACoordinateTransformation.MapTo0To360Range(F + 1.4467807 *k - 0.0020690 *T2 - 0.00000215 *T3);
-	double E = 1 - 0.002516 *T - 0.0000074 *T2;
+	var E = 1 - 0.002516 *T - 0.0000074 *T2;
   
 	//convert to radians
 	D = CAACoordinateTransformation.DegreesToRadians(D);

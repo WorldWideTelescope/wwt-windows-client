@@ -78,50 +78,50 @@ public class  CAAMercury
   
   public static double EclipticLongitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate L0
-    int nL0Coefficients = GlobalMembersStdafx.g_L0MercuryCoefficients.Length;
+    var nL0Coefficients = GlobalMembersStdafx.g_L0MercuryCoefficients.Length;
 	double L0 = 0;
 	int i;
 	for (i =0; i<nL0Coefficients; i++)
 	  L0 += GlobalMembersStdafx.g_L0MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L0MercuryCoefficients[i].B + GlobalMembersStdafx.g_L0MercuryCoefficients[i].C *rho);
   
 	//Calculate L1
-	int nL1Coefficients = GlobalMembersStdafx.g_L1MercuryCoefficients.Length;
+	var nL1Coefficients = GlobalMembersStdafx.g_L1MercuryCoefficients.Length;
 	double L1 = 0;
 	for (i =0; i<nL1Coefficients; i++)
 	  L1 += GlobalMembersStdafx.g_L1MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L1MercuryCoefficients[i].B + GlobalMembersStdafx.g_L1MercuryCoefficients[i].C *rho);
   
 	//Calculate L2
-	int nL2Coefficients = GlobalMembersStdafx.g_L2MercuryCoefficients.Length;
+	var nL2Coefficients = GlobalMembersStdafx.g_L2MercuryCoefficients.Length;
 	double L2 = 0;
 	for (i =0; i<nL2Coefficients; i++)
 	  L2 += GlobalMembersStdafx.g_L2MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L2MercuryCoefficients[i].B + GlobalMembersStdafx.g_L2MercuryCoefficients[i].C *rho);
   
 	//Calculate L3
-	int nL3Coefficients = GlobalMembersStdafx.g_L3MercuryCoefficients.Length;
+	var nL3Coefficients = GlobalMembersStdafx.g_L3MercuryCoefficients.Length;
 	double L3 = 0;
 	for (i =0; i<nL3Coefficients; i++)
 	  L3 += GlobalMembersStdafx.g_L3MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L3MercuryCoefficients[i].B + GlobalMembersStdafx.g_L3MercuryCoefficients[i].C *rho);
   
 	//Calculate L4
-	int nL4Coefficients = GlobalMembersStdafx.g_L4MercuryCoefficients.Length;
+	var nL4Coefficients = GlobalMembersStdafx.g_L4MercuryCoefficients.Length;
 	double L4 = 0;
 	for (i =0; i<nL4Coefficients; i++)
 	  L4 += GlobalMembersStdafx.g_L4MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L4MercuryCoefficients[i].B + GlobalMembersStdafx.g_L4MercuryCoefficients[i].C *rho);
   
 	//Calculate L5
-	int nL5Coefficients = GlobalMembersStdafx.g_L5MercuryCoefficients.Length;
+	var nL5Coefficients = GlobalMembersStdafx.g_L5MercuryCoefficients.Length;
 	double L5 = 0;
 	for (i =0; i<nL5Coefficients; i++)
 	  L5 += GlobalMembersStdafx.g_L5MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L5MercuryCoefficients[i].B + GlobalMembersStdafx.g_L5MercuryCoefficients[i].C *rho);
   
-	double @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4 + L5 *rho5) / 100000000;
+	var @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4 + L5 *rho5) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(@value));
@@ -129,43 +129,43 @@ public class  CAAMercury
   }
   public static double EclipticLatitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
   
 	//Calculate B0
-	int nB0Coefficients = GlobalMembersStdafx.g_B0MercuryCoefficients.Length;
+	var nB0Coefficients = GlobalMembersStdafx.g_B0MercuryCoefficients.Length;
 	double B0 = 0;
 	int i;
 	for (i =0; i<nB0Coefficients; i++)
 	  B0 += GlobalMembersStdafx.g_B0MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B0MercuryCoefficients[i].B + GlobalMembersStdafx.g_B0MercuryCoefficients[i].C *rho);
   
 	//Calculate B1
-	int nB1Coefficients = GlobalMembersStdafx.g_B1MercuryCoefficients.Length;
+	var nB1Coefficients = GlobalMembersStdafx.g_B1MercuryCoefficients.Length;
 	double B1 = 0;
 	for (i =0; i<nB1Coefficients; i++)
 	  B1 += GlobalMembersStdafx.g_B1MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B1MercuryCoefficients[i].B + GlobalMembersStdafx.g_B1MercuryCoefficients[i].C *rho);
   
 	//Calculate B2
-	int nB2Coefficients = GlobalMembersStdafx.g_B2MercuryCoefficients.Length;
+	var nB2Coefficients = GlobalMembersStdafx.g_B2MercuryCoefficients.Length;
 	double B2 = 0;
 	for (i =0; i<nB2Coefficients; i++)
 	  B2 += GlobalMembersStdafx.g_B2MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B2MercuryCoefficients[i].B + GlobalMembersStdafx.g_B2MercuryCoefficients[i].C *rho);
   
 	//Calculate B3
-	int nB3Coefficients = GlobalMembersStdafx.g_B3MercuryCoefficients.Length;
+	var nB3Coefficients = GlobalMembersStdafx.g_B3MercuryCoefficients.Length;
 	double B3 = 0;
 	for (i =0; i<nB3Coefficients; i++)
 	  B3 += GlobalMembersStdafx.g_B3MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B3MercuryCoefficients[i].B + GlobalMembersStdafx.g_B3MercuryCoefficients[i].C *rho);
   
 	//Calculate B4
-    int nB4Coefficients = GlobalMembersStdafx.g_B4MercuryCoefficients.Length;
+    var nB4Coefficients = GlobalMembersStdafx.g_B4MercuryCoefficients.Length;
 	double B4 = 0;
 	for (i =0; i<nB4Coefficients; i++)
 	  B4 += GlobalMembersStdafx.g_B4MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B4MercuryCoefficients[i].B + GlobalMembersStdafx.g_B4MercuryCoefficients[i].C *rho);
   
-	double @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4) / 100000000;
+	var @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.RadiansToDegrees(@value);
@@ -173,31 +173,31 @@ public class  CAAMercury
   }
   public static double RadiusVector(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
   
 	//Calculate R0
-	int nR0Coefficients = GlobalMembersStdafx.g_R0MercuryCoefficients.Length;
+	var nR0Coefficients = GlobalMembersStdafx.g_R0MercuryCoefficients.Length;
 	double R0 = 0;
 	int i;
 	for (i =0; i<nR0Coefficients; i++)
 	  R0 += GlobalMembersStdafx.g_R0MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R0MercuryCoefficients[i].B + GlobalMembersStdafx.g_R0MercuryCoefficients[i].C *rho);
   
 	//Calculate R1
-	int nR1Coefficients = GlobalMembersStdafx.g_R1MercuryCoefficients.Length;
+	var nR1Coefficients = GlobalMembersStdafx.g_R1MercuryCoefficients.Length;
 	double R1 = 0;
 	for (i =0; i<nR1Coefficients; i++)
 	  R1 += GlobalMembersStdafx.g_R1MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R1MercuryCoefficients[i].B + GlobalMembersStdafx.g_R1MercuryCoefficients[i].C *rho);
   
 	//Calculate R2
-	int nR2Coefficients = GlobalMembersStdafx.g_R2MercuryCoefficients.Length;
+	var nR2Coefficients = GlobalMembersStdafx.g_R2MercuryCoefficients.Length;
 	double R2 = 0;
 	for (i =0; i<nR2Coefficients; i++)
 	  R2 += GlobalMembersStdafx.g_R2MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R2MercuryCoefficients[i].B + GlobalMembersStdafx.g_R2MercuryCoefficients[i].C *rho);
   
 	//Calculate R3
-    int nR3Coefficients = GlobalMembersStdafx.g_R3MercuryCoefficients.Length;
+    var nR3Coefficients = GlobalMembersStdafx.g_R3MercuryCoefficients.Length;
 	double R3 = 0;
 	for (i =0; i<nR3Coefficients; i++)
 	  R3 += GlobalMembersStdafx.g_R3MercuryCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R3MercuryCoefficients[i].B + GlobalMembersStdafx.g_R3MercuryCoefficients[i].C *rho);

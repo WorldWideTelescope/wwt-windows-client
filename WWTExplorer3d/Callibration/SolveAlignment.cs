@@ -1,37 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using Solver;
 
 namespace TerraViewer.Callibration
 {
     class SolveAlignment
     {
-
-        List<Parameter> regressionParameters = new List<Parameter>();
+        readonly List<Parameter> regressionParameters = new List<Parameter>();
 
         // independent parameter
-        Parameter ParmeterIndex = new Parameter(0);
+        readonly Parameter ParmeterIndex = new Parameter(0);
 
-        List<SolverFunction> SolveList = new List<SolverFunction>();
+        readonly List<SolverFunction> SolveList = new List<SolverFunction>();
         public List<SolveProjector> projectors = new List<SolveProjector>();
 
 
-        LevenbergMarquardt lm = null;
+        LevenbergMarquardt lm;
 
         public void SetupSolve(CalibrationInfo ci, bool useConstraints, bool radialDistortion)
         {
 
-            foreach (ProjectorEntry pe in ci.Projectors)
+            foreach (var pe in ci.Projectors)
             {
-                SolveProjector sp = new SolveProjector(pe, ci.DomeSize, ci.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, ScreenTypes.Spherical, ci.ScreenType == ScreenTypes.FishEye ? SolveParameters.FishEye : (SolveParameters)ci.SolveParameters);
-                sp.RadialDistorion = radialDistortion;
+                var sp = new SolveProjector(pe, ci.DomeSize, ci.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, ScreenTypes.Spherical, ci.ScreenType == ScreenTypes.FishEye ? SolveParameters.FishEye : (SolveParameters)ci.SolveParameters)
+                {
+                    RadialDistorion = radialDistortion
+                };
                 projectors.Add(sp);
 
                 if (useConstraints)
                 {
-                    foreach (GroundTruthPoint gt in pe.Constraints)
+                    foreach (var gt in pe.Constraints)
                     {
                         SolveList.Add(new Constraint(sp, gt));
                     }
@@ -40,34 +39,31 @@ namespace TerraViewer.Callibration
               
             }
 
-            foreach (Edge edge in ci.Edges)
+            foreach (var edge in ci.Edges)
             {
-                foreach (EdgePoint pnt in edge.Points)
+                foreach (var pnt in edge.Points)
                 {
                     SolveList.Add( new Coorespondence(projectors[edge.Left-1],projectors[edge.Right-1],pnt));
                 }
             }
 
 
-            foreach (SolveProjector sp in projectors)
+            foreach (var sp in projectors)
             {
                 regressionParameters.AddRange(sp.Parameters);
             }
 
 
-            int count = SolveList.Count;
-            double[,] data = new double[2, count];
-            for (int i = 0; i < count; i++)
+            var count = SolveList.Count;
+            var data = new double[2, count];
+            for (var i = 0; i < count; i++)
             {
                 data[0, i] = i;
                 data[1, i] = 0;
             }
-            Parameter[] observed = new Parameter[] { ParmeterIndex };
+            var observed = new[] { ParmeterIndex };
 
-            lm = new LevenbergMarquardt(new functionDelegate(SolveFunction), regressionParameters.ToArray(), observed, data);
-
-
-
+            lm = new LevenbergMarquardt(SolveFunction, regressionParameters.ToArray(), observed, data);
         }
 
         public double Iterate()
@@ -78,14 +74,10 @@ namespace TerraViewer.Callibration
 
         public double SolveFunction()
         {
-            SolverFunction func = SolveList[(int)ParmeterIndex];
+            var func = SolveList[(int)ParmeterIndex];
 
             return func.Calculate();
         }
-     
-
-
-      
     }
 
     class SolverFunction
@@ -98,10 +90,10 @@ namespace TerraViewer.Callibration
 
     class Coorespondence : SolverFunction
     {
-        SolveProjector left;
-        SolveProjector right;
+        readonly SolveProjector left;
+        readonly SolveProjector right;
 
-        EdgePoint point;
+        readonly EdgePoint point;
 
         public Coorespondence(SolveProjector left, SolveProjector right, EdgePoint point)
         {
@@ -112,20 +104,20 @@ namespace TerraViewer.Callibration
 
         public override double Calculate()
         {
-            Vector2d resultLeft = left.GetCoordinatesForScreenPoint(point.Left.X, point.Left.Y);
-            Vector2d resultRight = right.GetCoordinatesForScreenPoint(point.Right.X, point.Right.Y);
+            var resultLeft = left.GetCoordinatesForScreenPoint(point.Left.X, point.Left.Y);
+            var resultRight = right.GetCoordinatesForScreenPoint(point.Right.X, point.Right.Y);
 
 
 
-            double dist =  resultLeft.Distance3d(resultRight)*100*point.Left.Weight;
+            var dist =  resultLeft.Distance3d(resultRight)*100*point.Left.Weight;
             return dist;
         }
     }
 
     class Constraint : SolverFunction
     {
-        SolveProjector projector;
-        GroundTruthPoint point = new GroundTruthPoint();
+        readonly SolveProjector projector;
+        readonly GroundTruthPoint point = new GroundTruthPoint();
         public Constraint(SolveProjector projector, GroundTruthPoint point)
         {
             this.projector = projector;
@@ -134,29 +126,28 @@ namespace TerraViewer.Callibration
 
         public override double Calculate()
         {
-            Vector2d result = projector.GetCoordinatesForScreenPoint(point.X, point.Y);
+            var result = projector.GetCoordinatesForScreenPoint(point.X, point.Y);
 
             switch (point.AxisType)
             {
                 case AxisTypes.Alt:
                     {
-                        double dist = (result.Y - point.Alt) * 100 * point.Weight;
+                        var dist = (result.Y - point.Alt) * 100 * point.Weight;
                         return dist;
                     } 
                 case AxisTypes.Az:
                     {
 
-                        double dist = (result.X - (-point.Az + 270)) * 100 * point.Weight;
+                        var dist = (result.X - (-point.Az + 270)) * 100 * point.Weight;
                         return dist;
                     } 
                 case AxisTypes.Both:
                     {
-                        Vector2d test = new Vector2d(-point.Az + 270, point.Alt);
-                        double dist = result.Distance3d(test) * 100 * point.Weight;
+                        var test = new Vector2d(-point.Az + 270, point.Alt);
+                        var dist = result.Distance3d(test) * 100 * point.Weight;
                         return dist;
-                    } 
+                    }
 
-                case AxisTypes.Edge:
                 default:
                     return 0;
             }
@@ -170,36 +161,35 @@ namespace TerraViewer.Callibration
 
     class SolveProjector
     {
-        Parameter Fov = new Parameter();
-        Parameter Aspect = new Parameter();
-        Parameter OffsetX = new Parameter();
-        Parameter OffsetY = new Parameter();
-        Parameter Pitch = new Parameter();
-        Parameter Heading = new Parameter();
-        Parameter Roll = new Parameter();
-        Parameter X = new Parameter();
-        Parameter Y = new Parameter();
-        Parameter Z = new Parameter();
+        readonly Parameter Fov = new Parameter();
+        readonly Parameter Aspect = new Parameter();
+        readonly Parameter OffsetX = new Parameter();
+        readonly Parameter OffsetY = new Parameter();
+        readonly Parameter Pitch = new Parameter();
+        readonly Parameter Heading = new Parameter();
+        readonly Parameter Roll = new Parameter();
+        readonly Parameter X = new Parameter();
+        readonly Parameter Y = new Parameter();
+        readonly Parameter Z = new Parameter();
 
-        Parameter RadialCenterX = new Parameter();
-        Parameter RadialCenterY = new Parameter();
-        Parameter RadialAmountX = new Parameter();
-        Parameter RadialAmountY = new Parameter();
+        readonly Parameter RadialCenterX = new Parameter();
+        readonly Parameter RadialCenterY = new Parameter();
+        readonly Parameter RadialAmountX = new Parameter();
+        readonly Parameter RadialAmountY = new Parameter();
 
 
+        readonly int width;
+        readonly int height;
 
-        int width = 0;
-        int height = 0;
+        readonly double sphereRadius = 1;
 
-        double sphereRadius = 1;
-
-        ScreenTypes screenType = ScreenTypes.Cylindrical;
-        SolveParameters solveParameters = SolveParameters.Default;
-        ProjectionType projectionType = ProjectionType.View;
+        readonly ScreenTypes screenType = ScreenTypes.Cylindrical;
+        readonly SolveParameters solveParameters = SolveParameters.Default;
+        readonly ProjectionType projectionType = ProjectionType.View;
         public SolveProjector(ProjectorEntry pe, double radius, ProjectionType type, ScreenTypes tranformType, SolveParameters solveParameters)
         {
-            this.projectionType = type;
-            this.screenType = tranformType;
+            projectionType = type;
+            screenType = tranformType;
             this.solveParameters = solveParameters;
 
             switch (type)
@@ -263,8 +253,6 @@ namespace TerraViewer.Callibration
                         Z.Value = pe.SolvedTransform.Z;
                     }
                     break;
-                default:
-                    break;
             }
 
            
@@ -279,15 +267,17 @@ namespace TerraViewer.Callibration
         {
             get
             {
-                Projection proj = new Projection();
-                proj.FOV = Fov;
-                proj.Aspect = Aspect;
-                proj.XOffset = OffsetX;
-                proj.YOffset = OffsetY;
-                proj.RadialCenterX = RadialCenterX;
-                proj.RadialCenterY = RadialCenterY;
-                proj.RadialAmountX = RadialAmountX;
-                proj.RadialAmountY = RadialAmountY;
+                var proj = new Projection
+                {
+                    FOV = Fov,
+                    Aspect = Aspect,
+                    XOffset = OffsetX,
+                    YOffset = OffsetY,
+                    RadialCenterX = RadialCenterX,
+                    RadialCenterY = RadialCenterY,
+                    RadialAmountX = RadialAmountX,
+                    RadialAmountY = RadialAmountY
+                };
 
                 return proj;
             }
@@ -298,14 +288,7 @@ namespace TerraViewer.Callibration
         {
             get
             {
-                Transform trans = new Transform();
-                trans.Heading = Heading;
-                trans.Pitch = Pitch;
-                trans.Roll = Roll;
-                trans.X = -X;
-                trans.Z = Z;
-                trans.Y = Y;
-                return trans;
+                return new Transform {Heading = Heading, Pitch = Pitch, Roll = Roll, X = -X, Z = Z, Y = Y};
             }
         }
 
@@ -314,7 +297,7 @@ namespace TerraViewer.Callibration
         public Matrix3d CamMatrix; 
         public double near = .1;
         public double far = 100;
-        private double lastVals = 0;
+        private double lastVals;
 
         public bool RadialDistorion = false;
 
@@ -322,7 +305,6 @@ namespace TerraViewer.Callibration
         {
 
             if (Fov + Aspect + OffsetX + OffsetY + Pitch + Heading + Roll + X + Y + Z + RadialAmountX + RadialAmountY + RadialCenterX + RadialCenterY != lastVals)
-            // if (true)
             {
                 if (projectionType != ProjectionType.FishEye)
                 {
@@ -354,9 +336,9 @@ namespace TerraViewer.Callibration
             v.X = (((2.0f * ptCursor.X) / backBufferWidth) - 1) / ProjMatrix.M11;
             v.Y = -(((2.0f * ptCursor.Y) / backBufferHeight) - 1) / ProjMatrix.M22;
             v.Z = 1.0f;
-            Matrix3d mInit = TranMatrix;
+            var mInit = TranMatrix;
 
-            Matrix3d m = Matrix3d.Invert(mInit);
+            var m = Matrix3d.Invert(mInit);
 
             // Transform the screen space pick ray into 3D space
             vPickRayDir.X = v.X * m.M11 + v.Y * m.M21 + v.Z * m.M31;
@@ -370,7 +352,7 @@ namespace TerraViewer.Callibration
             vPickRayOrig.Y = m.M42;
             vPickRayOrig.Z = m.M43;
 
-            // Calculate the origin as intersection with near frustum
+            // Calculate the origin as intersection with nearValue frustum
 
             vPickRayOrig.X += vPickRayDir.X * near;
             vPickRayOrig.Y += vPickRayDir.Y * near;
@@ -380,14 +362,14 @@ namespace TerraViewer.Callibration
 
         public void TransformPickPointToWorldSpaceFishEye(Vector2d ptCursor, int backBufferWidth, int backBufferHeight, out Vector3d vPickRayOrig, out Vector3d vPickRayDir)
         {
-            Vector2d point = new Vector2d((((ptCursor.X / backBufferWidth) - .5) - OffsetX) / (Fov/Aspect),
+            var point = new Vector2d((((ptCursor.X / backBufferWidth) - .5) - OffsetX) / (Fov/Aspect),
                                 (((ptCursor.Y / backBufferHeight) - .5) - OffsetY) / Fov);
 
-            Vector2d altAz = GetAltAzFromPoint(point);
+            var altAz = GetAltAzFromPoint(point);
 
-            Vector3d pnt3d = Coordinates.GeoTo3dDouble(altAz.Y, altAz.X);
+            var pnt3d = Coordinates.GeoTo3dDouble(altAz.Y, altAz.X);
 
-            Matrix3d matInv = TranMatrix;
+            var matInv = TranMatrix;
             matInv.Invert();
 
             pnt3d = Vector3d.TransformCoordinate(pnt3d, TranMatrix);
@@ -404,54 +386,19 @@ namespace TerraViewer.Callibration
 
         Vector2d GetAltAzFromPoint(Vector2d point)
         {
-            double alt = 0;
-            double az = 0;
+            var x = point.X ;
+            var y = point.Y ;
+            var dist = Math.Sqrt(x * x + y * y);
 
-            double x = point.X ;
-            double y = point.Y ;
-            double dist = Math.Sqrt(x * x + y * y);
-
-            alt = 90 - ( dist / .5) * 90;
-            az = ((Math.Atan2(y, x) / Math.PI * 180) + 630) % 360;
+            var alt = 90 - ( dist / .5) * 90;
+            var az = ((Math.Atan2(y, x) / Math.PI * 180) + 630) % 360;
             return new Vector2d(az, alt);
         }
 
-        Vector2d GetPointFromAltAz(Vector2d point)
-        {
-            Vector2d retPoint = new Vector2d();
-            point.X += 90;
-            retPoint.X =  Math.Cos(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * .5;
-            retPoint.Y =  Math.Sin(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * .5;
-            return retPoint;
-        }
-        
-
-        //public Matrix3d MakeProjection(double near, double far, double fov, double aspect, double offsetX, double offsetY)
-        //{
-        //    fov = fov / 180 * Math.PI;
-
-        //    double left = (-Math.Tan(fov / 2.0f * aspect) - offsetX) * near;
-        //   // double right2 = near * 2 / (1 / Math.Tan(fov/2))*aspect / 2;
-        //    double right = (Math.Tan(fov / 2.0f * aspect) - offsetX) * near;
-        //    double top = (Math.Tan(fov / 2.0f) + offsetY) * near;
-        //    double bottom = (-Math.Tan(fov / 2.0f) + offsetY) * near;
-
-        //    return Matrix3d.PerspectiveOffCenterLH(left, right, bottom, top, near, far);
-        //}
-       // const double RC = Math.PI / 180;
-        public Matrix3d MakeProjection(double near, double far, double  fov, double aspectRatio, double offaxisX, double offaxisY)
+        public Matrix3d MakeProjection(double nearValue, double farValue, double  fov, double aspectRatio, double offaxisX, double offaxisY)
         {
             fov = fov / 180 * Math.PI;
-            //double left =   (-Math.Tan(fov / 2.0f * aspectRatio) - offaxisX) * near;
-            //double right =  ( Math.Tan(fov / 2.0f * aspectRatio) - offaxisX) * near;
-            //double top =    ( Math.Tan(fov / 2.0f) + offaxisY) * near;
-            //double bottom = (-Math.Tan(fov / 2.0f) + offaxisY) * near;
-
-       
-
-            //return Matrix3d.PerspectiveOffCenterLH(left, right, bottom, top, near, far);
-
-            return Matrix3d.PerspectiveFovLH(fov, aspectRatio, near, far);
+            return Matrix3d.PerspectiveFovLH(fov, aspectRatio, nearValue, farValue);
         }
         protected const double RC = (Math.PI / 180.0);
 
@@ -460,7 +407,7 @@ namespace TerraViewer.Callibration
             if (projectionType == ProjectionType.FishEye)
             {
 
-                Matrix3d mat = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), new Vector3d(0, -1, 0), new Vector3d(
+                var mat = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), new Vector3d(0, -1, 0), new Vector3d(
                     -1, 0, 0))
                     * Matrix3d.RotationY(heading * RC)
                     * Matrix3d.RotationX(pitch * RC)
@@ -474,7 +421,7 @@ namespace TerraViewer.Callibration
             else
             {
 
-                Matrix3d mat = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), new Vector3d(0, 0, -1), new Vector3d(0, 1, 0))
+                var mat = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), new Vector3d(0, 0, -1), new Vector3d(0, 1, 0))
                     * Matrix3d.Translation(new Vector3d(x, y, z))
                     * Matrix3d.RotationY(heading * RC)
                     * Matrix3d.RotationX(pitch * RC)
@@ -492,20 +439,20 @@ namespace TerraViewer.Callibration
             {
 
                 MakeMatrixes();
-                Vector3d pnt3d = Coordinates.GeoTo3dDouble(pnt.Y, pnt.X, sphereRadius);
-                Vector3d pntOut = TranMatrix.Transform(pnt3d);
-                Coordinates cord = Coordinates.CartesianToSpherical(pntOut);
-                Vector2d pntOut2d = new Vector2d(cord.Lng, cord.Lat);
+                var pnt3d = Coordinates.GeoTo3dDouble(pnt.Y, pnt.X, sphereRadius);
+                var pntOut = TranMatrix.Transform(pnt3d);
+                var cord = Coordinates.CartesianToSpherical(pntOut);
+                var pntOut2d = new Vector2d(cord.Lng, cord.Lat);
 
                 return pntOut2d;
             }
             else
             {
                 MakeMatrixes();
-                Vector3d pnt3d = Coordinates.GeoTo3dDouble(pnt.Y, pnt.X, sphereRadius);
-                Vector3d pntOut = CamMatrix.Transform(pnt3d);
+                var pnt3d = Coordinates.GeoTo3dDouble(pnt.Y, pnt.X, sphereRadius);
+                var pntOut = CamMatrix.Transform(pnt3d);
 
-                Vector2d pntOut2d = new Vector2d(pntOut.X, pntOut.Y);
+                var pntOut2d = new Vector2d(pntOut.X, pntOut.Y);
                 if (RadialDistorion)
                 {
                     pntOut2d = ProjectRadialWarp(new Vector2d(pntOut.X, pntOut.Y));
@@ -520,20 +467,15 @@ namespace TerraViewer.Callibration
             if (projectionType == ProjectionType.FishEye)
             {
                 MakeMatrixes();
-                Vector2d result = new Vector2d(0, 0);
+                Vector2d result;
                 Vector3d PickRayOrig;
                 Vector3d PickRayDir;
-                Vector2d pt = new Vector2d(x, y);
-
-                //if (RadialDistorion)
-                //{
-                //    pt = UnprojectRadialWarp(pt);
-                //}
+                var pt = new Vector2d(x, y);
 
                 TransformPickPointToWorldSpaceFishEye(pt, width, height, out PickRayOrig, out PickRayDir);
 
 
-                SphereIntersectRay(PickRayOrig, PickRayDir, this.sphereRadius, out result);
+                SphereIntersectRay(PickRayOrig, PickRayDir, sphereRadius, out result);
 
 
                 return result;
@@ -541,10 +483,10 @@ namespace TerraViewer.Callibration
             else
             {
                 MakeMatrixes();
-                Vector2d result = new Vector2d(0, 0);
+                Vector2d result;
                 Vector3d PickRayOrig;
                 Vector3d PickRayDir;
-                Vector2d pt = new Vector2d(x, y);
+                var pt = new Vector2d(x, y);
 
                 if (RadialDistorion)
                 {
@@ -555,11 +497,11 @@ namespace TerraViewer.Callibration
 
                 if (screenType == ScreenTypes.Cylindrical)
                 {
-                    CylinderIntersectRay(PickRayOrig, PickRayDir, this.sphereRadius, out result);
+                    CylinderIntersectRay(PickRayOrig, PickRayDir, sphereRadius, out result);
                 }
                 else
                 {
-                    SphereIntersectRay(PickRayOrig, PickRayDir, this.sphereRadius, out result);
+                    SphereIntersectRay(PickRayOrig, PickRayDir, sphereRadius, out result);
                 }
 
                 return result;
@@ -568,62 +510,61 @@ namespace TerraViewer.Callibration
 
         public Vector2d UnprojectRadialWarp(Vector2d point)
         {
-            double x = (2 * (point.X) - (width + RadialCenterX * 2)) / width;
-            double y = (2 * (point.Y) - (height + RadialCenterY * 2)) / height;
-            double r = x * x + y * y;
-            double x5 = x / (1 - RadialAmountX * r);
-            double y5 = y / (1 - RadialAmountY * r);
-            double x4 = x / (1 - RadialAmountX * (x5 * x5 + y5 * y5));
-            double y4 = y / (1 - RadialAmountY * (x5 * x5 + y5 * y5));
-            double x3 = x / (1 - RadialAmountX * (x4 * x4 + y4 * y4));
-            double y3 = y / (1 - RadialAmountY * (x4 * x4 + y4 * y4));
-            double x2 = x / (1 - RadialAmountX * (x3 * x3 + y3 * y3));
-            double y2 = y / (1 - RadialAmountY * (x3 * x3 + y3 * y3));
-            double i2 = (x2 + 1) * width / 2 + RadialCenterX;
-            double j2 = (y2 + 1) * height / 2 + RadialCenterY;
+            var x = (2 * (point.X) - (width + RadialCenterX * 2)) / width;
+            var y = (2 * (point.Y) - (height + RadialCenterY * 2)) / height;
+            var r = x * x + y * y;
+            var x5 = x / (1 - RadialAmountX * r);
+            var y5 = y / (1 - RadialAmountY * r);
+            var x4 = x / (1 - RadialAmountX * (x5 * x5 + y5 * y5));
+            var y4 = y / (1 - RadialAmountY * (x5 * x5 + y5 * y5));
+            var x3 = x / (1 - RadialAmountX * (x4 * x4 + y4 * y4));
+            var y3 = y / (1 - RadialAmountY * (x4 * x4 + y4 * y4));
+            var x2 = x / (1 - RadialAmountX * (x3 * x3 + y3 * y3));
+            var y2 = y / (1 - RadialAmountY * (x3 * x3 + y3 * y3));
+            var i2 = (x2 + 1) * width / 2 + RadialCenterX;
+            var j2 = (y2 + 1) * height / 2 + RadialCenterY;
             return new Vector2d(i2, j2);
         }
 
         public Vector2d ProjectRadialWarp(Vector2d point)
         {
-            double x = (2 * (point.X) - (width + RadialCenterX * 2)) / width;
-            double y = (2 * (point.Y) - (height + RadialCenterY * 2)) / height;
-            double r = x * x + y * y;
+            var x = (2 * (point.X) - (width + RadialCenterX * 2)) / width;
+            var y = (2 * (point.Y) - (height + RadialCenterY * 2)) / height;
+            var r = x * x + y * y;
 
-            double x2 = x * (1 - RadialAmountX * r);
-            double y2 = y * (1 - RadialAmountY * r);
-            double i2 = (x2 + 1) * width / 2 + RadialCenterX;
-            double j2 = (y2 + 1) * height / 2 + RadialCenterY;
+            var x2 = x * (1 - RadialAmountX * r);
+            var y2 = y * (1 - RadialAmountY * r);
+            var i2 = (x2 + 1) * width / 2 + RadialCenterX;
+            var j2 = (y2 + 1) * height / 2 + RadialCenterY;
             return new Vector2d(i2, j2);
         }
 
         public Vector2d GetCoordinatesForProjector()
         {
             MakeMatrixes();
-            Vector2d result = new Vector2d(0, 0);
             Vector3d PickRayOrig;
             Vector3d PickRayDir;
-            Vector2d pt = new Vector2d(960,540);
+            var pt = new Vector2d(960,540);
             TransformPickPointToWorldSpace(pt, width, height, out PickRayOrig, out PickRayDir);
 
-            result = Vector2d.CartesianToSpherical2(PickRayOrig);
+            var result = Vector2d.CartesianToSpherical2(PickRayOrig);
 
             return result;
         }
 
         // for interor points only
-        public bool SphereIntersectRay(Vector3d pickRayOrig, Vector3d pickRayDir, double sphereRadius, out Vector2d pointCoordinate)
+        public bool SphereIntersectRay(Vector3d pickRayOrig, Vector3d pickRayDir, double sphereRadiusValue, out Vector2d pointCoordinate)
         {
             // bool SpherePrimitive::intersect(const Ray& ray, double* t)
             pointCoordinate = new Vector2d(0, 0);
-            double r = sphereRadius;
+            var r = sphereRadiusValue;
             //Compute A, B and C coefficients
-            double a = Vector3d.Dot(pickRayDir, pickRayDir);
-            double b = 2 * Vector3d.Dot(pickRayDir, pickRayOrig);
-            double c = Vector3d.Dot(pickRayOrig, pickRayOrig) - (r * r);
+            var a = Vector3d.Dot(pickRayDir, pickRayDir);
+            var b = 2 * Vector3d.Dot(pickRayDir, pickRayOrig);
+            var c = Vector3d.Dot(pickRayOrig, pickRayOrig) - (r * r);
 
             //Find discriminant
-            double disc = b * b - 4 * a * c;
+            var disc = b * b - 4 * a * c;
 
             // if discriminant is negative there are no real roots, so return 
             // false as ray misses sphere
@@ -633,7 +574,7 @@ namespace TerraViewer.Callibration
             }
 
             // compute q as described above
-            double distSqrt = Math.Sqrt(disc);
+            var distSqrt = Math.Sqrt(disc);
             double q;
             if (b < 0)
             {
@@ -645,14 +586,14 @@ namespace TerraViewer.Callibration
             }
 
             // compute t0 and t1
-            double t0 = q / a;
-            double t1 = c / q;
+            var t0 = q / a;
+            var t1 = c / q;
 
             // make sure t0 is smaller than t1
             if (t0 > t1)
             {
                 // if t0 is bigger than t1 swap them around
-                double temp = t0;
+                var temp = t0;
                 t0 = t1;
                 t1 = temp;
             }
@@ -663,7 +604,7 @@ namespace TerraViewer.Callibration
             {
                 return false;
             }
-            double t = 0;
+            double t;
             // if t0 is less than zero, the intersection point is at t1
             if (t0 < 0)
             {
@@ -675,7 +616,7 @@ namespace TerraViewer.Callibration
                 t = t1;
             }
 
-            Vector3d point = Vector3d.Scale(pickRayDir, t);
+            var point = Vector3d.Scale(pickRayDir, t);
 
             point.Add(pickRayOrig);
 
@@ -691,14 +632,13 @@ namespace TerraViewer.Callibration
         public bool CylinderIntersectRay(Vector3d pickRayOrig, Vector3d pickRayDir, double cylinderRadius, out Vector2d pointCoordinate)
         {
             pointCoordinate = new Vector2d(0, 0);
-            double r = cylinderRadius;
             //Compute A, B and C coefficients
-            double a = (pickRayDir.X * pickRayDir.X) + (pickRayDir.Z * pickRayDir.Z);
-            double b = 2 * (pickRayOrig.X * pickRayDir.X) + 2 * (pickRayOrig.Z * pickRayDir.Z);
-            double c = (pickRayOrig.X * pickRayOrig.X) + (pickRayOrig.Z * pickRayOrig.Z) - (cylinderRadius*cylinderRadius);
+            var a = (pickRayDir.X * pickRayDir.X) + (pickRayDir.Z * pickRayDir.Z);
+            var b = 2 * (pickRayOrig.X * pickRayDir.X) + 2 * (pickRayOrig.Z * pickRayDir.Z);
+            var c = (pickRayOrig.X * pickRayOrig.X) + (pickRayOrig.Z * pickRayOrig.Z) - (cylinderRadius*cylinderRadius);
 
             //Find discriminant
-            double disc = b * b - 4 * a * c;
+            var disc = b * b - 4 * a * c;
 
             // if discriminant is negative there are no real roots, so return 
             // false as ray misses sphere
@@ -708,7 +648,7 @@ namespace TerraViewer.Callibration
             }
 
             // compute q as described above
-            double distSqrt = Math.Sqrt(disc);
+            var distSqrt = Math.Sqrt(disc);
             double q;
             if (b < 0)
             {
@@ -720,14 +660,14 @@ namespace TerraViewer.Callibration
             }
 
             // compute t0 and t1
-            double t0 = q / a;
-            double t1 = c / q;
+            var t0 = q / a;
+            var t1 = c / q;
 
             // make sure t0 is smaller than t1
             if (t0 > t1)
             {
                 // if t0 is bigger than t1 swap them around
-                double temp = t0;
+                var temp = t0;
                 t0 = t1;
                 t1 = temp;
             }
@@ -738,7 +678,7 @@ namespace TerraViewer.Callibration
             {
                 return false;
             }
-            double t = 0;
+            double t;
             // if t0 is less than zero, the intersection point is at t1
             if (t0 < 0)
             {
@@ -750,7 +690,7 @@ namespace TerraViewer.Callibration
                 t = t1;
             }
 
-            Vector3d point = Vector3d.Scale(pickRayDir, t);
+            var point = Vector3d.Scale(pickRayDir, t);
 
             point.Add(pickRayOrig);
 
@@ -773,7 +713,7 @@ namespace TerraViewer.Callibration
                 //{
                 //    paramList = new Parameter[8];
                 //}
-                List<Parameter> paramList = new List<Parameter>();
+                var paramList = new List<Parameter>();
 
                 if ((solveParameters & SolveParameters.Fov) == SolveParameters.Fov)
                 {
@@ -832,10 +772,6 @@ namespace TerraViewer.Callibration
                     RadialAmountY.Value = 0;
                 }
 
-                //paramList[10] = RadialCenterX;
-                //paramList[11] = RadialCenterY;
-                //paramList[12] = OffsetX;
-                // paramList[13] = OffsetY;
                 return paramList.ToArray();
             }
         }

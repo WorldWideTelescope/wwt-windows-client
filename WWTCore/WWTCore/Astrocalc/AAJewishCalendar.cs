@@ -45,19 +45,19 @@ public class  CAAJewishCalendar
   public static CAACalendarDate DateOfPesach(int Year, bool bGregorianCalendar)
   {
 	//What will be the return value
-	CAACalendarDate Pesach = new CAACalendarDate();
+	var Pesach = new CAACalendarDate();
   
-	int C = CAADate.INT(Year / 100.0);
-	int S = CAADate.INT((3 *C - 5) / 4.0);
+	var C = CAADate.INT(Year / 100.0);
+	var S = CAADate.INT((3 *C - 5) / 4.0);
 	if (bGregorianCalendar == false)
 	  S = 0;
-	int A = Year + 3760;
-	int a = (12 *Year + 12) % 19;
-	int b = Year % 4;
-	double Q = -1.904412361576 + 1.554241796621 *a + 0.25 *b - 0.003177794022 *Year + S;
-	int INTQ = CAADate.INT(Q);
-	int j = (INTQ + 3 *Year + 5 *b+ 2 - S) % 7;
-	double r = Q - INTQ;
+	var A = Year + 3760;
+	var a = (12 *Year + 12) % 19;
+	var b = Year % 4;
+	var Q = -1.904412361576 + 1.554241796621 *a + 0.25 *b - 0.003177794022 *Year + S;
+	var INTQ = CAADate.INT(Q);
+	var j = (INTQ + 3 *Year + 5 *b+ 2 - S) % 7;
+	var r = Q - INTQ;
   
 	if ((j == 2) || (j == 4) || (j == 6))
 	  Pesach.Day = INTQ + 23;
@@ -82,22 +82,22 @@ public class  CAAJewishCalendar
   }
   public static bool IsLeap(int Year)
   {
-	int ymod19 = Year % 19;
+	var ymod19 = Year % 19;
   
 	return (ymod19 == 0) || (ymod19 == 3) || (ymod19 == 6) || (ymod19 == 8) || (ymod19 == 11) || (ymod19 == 14) || (ymod19 == 17);
   }
   public static int DaysInYear(int Year)
   {
 	//Find the previous civil year corresponding to the specified jewish year
-	int CivilYear = Year - 3761;
+	var CivilYear = Year - 3761;
   
 	//Find the date of the next Jewish Year in that civil year
-	CAACalendarDate CurrentPesach = DateOfPesach(CivilYear);
-	bool bGregorian = CAADate.AfterPapalReform(CivilYear, CurrentPesach.Month, CurrentPesach.Day);
-	CAADate CurrentYear = new CAADate(CivilYear, CurrentPesach.Month, CurrentPesach.Day, bGregorian);
+	var CurrentPesach = DateOfPesach(CivilYear);
+	var bGregorian = CAADate.AfterPapalReform(CivilYear, CurrentPesach.Month, CurrentPesach.Day);
+	var CurrentYear = new CAADate(CivilYear, CurrentPesach.Month, CurrentPesach.Day, bGregorian);
   
-	CAACalendarDate NextPesach = DateOfPesach(CivilYear+1);
-	CAADate NextYear = new CAADate(CivilYear+1, NextPesach.Month, NextPesach.Day, bGregorian);
+	var NextPesach = DateOfPesach(CivilYear+1);
+	var NextYear = new CAADate(CivilYear+1, NextPesach.Month, NextPesach.Day, bGregorian);
   
 	return (int)(NextYear - CurrentYear);
   }

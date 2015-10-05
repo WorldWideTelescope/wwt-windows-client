@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TerraViewer
 {
     class MyCollections : IThumbnail
     {
-        string name;
+        readonly string name;
         public MyCollections(string name)
         {
             this.name = name;
@@ -19,8 +18,8 @@ namespace TerraViewer
         {
             get { return name; }
         }
-        Bitmap thumbnail = null;
-        public System.Drawing.Bitmap ThumbNail
+        Bitmap thumbnail;
+        public Bitmap ThumbNail
         {
             get
             {
@@ -32,7 +31,7 @@ namespace TerraViewer
             }
         }
         Rectangle rect;
-        public System.Drawing.Rectangle Bounds
+        public Rectangle Bounds
         {
             get
             {
@@ -66,7 +65,8 @@ namespace TerraViewer
         {
             get { return true; }
         }
-        List<Object> children = new List<Object>();
+
+        readonly List<Object> children = new List<Object>();
         public object[] Children
         {
             get { return children.ToArray(); }

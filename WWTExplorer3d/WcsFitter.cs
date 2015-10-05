@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Solver;
 using TerraViewer.Callibration;
 
@@ -8,11 +7,10 @@ namespace TerraViewer
 {
     class WcsFitter
     {
+        readonly double width;
+        readonly double height;
 
-        double width;
-        double height;
-
-        List<CorresponencePoint> Points = new List<CorresponencePoint>();
+        readonly List<CorresponencePoint> Points = new List<CorresponencePoint>();
 
         public WcsFitter(double width, double height)
         {
@@ -33,60 +31,60 @@ namespace TerraViewer
 
         private WcsSolution Solve(CorresponencePoint a, CorresponencePoint b)
         {
-            WcsSolution s = new WcsSolution();
-            Vector2d center = new Vector2d(width / 2, height / 2);
-            Vector2d temp = a.Image - b.Image;
-            double imageLength = temp.Length;
-            double angularSperation = CAAAngularSeparation.Separation(a.Celestial.RA, a.Celestial.Dec, b.Celestial.RA, b.Celestial.Dec);
+            var s = new WcsSolution();
+            var center = new Vector2d(width / 2, height / 2);
+            var temp = a.Image - b.Image;
+            var imageLength = temp.Length;
+            var angularSperation = CAAAngularSeparation.Separation(a.Celestial.RA, a.Celestial.Dec, b.Celestial.RA, b.Celestial.Dec);
 
             // Degrees per pixel
             s.Scale = angularSperation / imageLength;
-            double imageRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
+            var imageRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
 
             temp = center - b.Image;
 
-            double centerRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
+            var centerRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
 
             s.OffsetX = width / 2;
             s.OfsetY = height / 2;
 
-            Coordinates cent = a.Celestial;
+            var cent = a.Celestial;
 
-            int iters = 4;
+            var iters = 4;
 
             while (iters-- > 0)
             {
 
                 // Calculate Center
-                Vector2d tanA = Coordinates.RaDecToTan(cent, a.Celestial);
-                Vector2d tanB = Coordinates.RaDecToTan(cent, b.Celestial);
+                var tanA = Coordinates.RaDecToTan(cent, a.Celestial);
+                var tanB = Coordinates.RaDecToTan(cent, b.Celestial);
 
                 temp = tanA - tanB;
-                double tanLength = temp.Length;
+                var tanLength = temp.Length;
 
 
                 s.Scale = (tanLength/Math.PI*180) / imageLength;
 
-                double tanRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
+                var tanRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
 
-                double tRotRad = -((imageRotation - tanRotation) / 180 * Math.PI);
+                var tRotRad = -((imageRotation - tanRotation) / 180 * Math.PI);
 
-                Vector2d centerDistA = center - a.Image;
-                double centerRotaionA = Math.Atan2(centerDistA.X, centerDistA.Y);
+                var centerDistA = center - a.Image;
+                var centerRotaionA = Math.Atan2(centerDistA.X, centerDistA.Y);
 
-                double ratio = tanLength / imageLength;
+                var ratio = tanLength / imageLength;
 
-                double tanCx = tanA.X + Math.Sin(centerRotaionA + tRotRad) * ratio * centerDistA.Length;
-                double tanCy = tanA.Y + Math.Cos(centerRotaionA + tRotRad) * ratio * centerDistA.Length;
+                var tanCx = tanA.X + Math.Sin(centerRotaionA + tRotRad) * ratio * centerDistA.Length;
+                var tanCy = tanA.Y + Math.Cos(centerRotaionA + tRotRad) * ratio * centerDistA.Length;
 
-                Vector2d result = Coordinates.TanToRaDec(cent, new Vector2d(tanCx, tanCy));
+                var result = Coordinates.TanToRaDec(cent, new Vector2d(tanCx, tanCy));
                 s.CenterX = result.X;
                 s.CenterY = result.Y;
 
                 cent = Coordinates.FromRaDec(result.X, result.Y);
             }
 
-            double positionAngle = CAAAngularSeparation.PositionAngle(s.CenterX, s.CenterY, b.Celestial.RA, b.Celestial.Dec);
+            var positionAngle = CAAAngularSeparation.PositionAngle(s.CenterX, s.CenterY, b.Celestial.RA, b.Celestial.Dec);
             s.Rotation = -((centerRotation - positionAngle));
 
 
@@ -96,31 +94,31 @@ namespace TerraViewer
             return s;
         }
 
-        List<Parameter> regressionParameters = new List<Parameter>();
+        readonly List<Parameter> regressionParameters = new List<Parameter>();
 
         // independent parameter
-        Parameter ParmeterIndex = new Parameter(0);
+        readonly Parameter ParmeterIndex = new Parameter(0);
 
-        List<SolverFunction> SolveList = new List<SolverFunction>();
+        readonly List<SolverFunction> SolveList = new List<SolverFunction>();
 
-        LevenbergMarquardt lm = null;
+        LevenbergMarquardt lm;
 
         private WcsSolution SolveLM()
         {
             
-            Vector2d temp = Points[0].Image - Points[1].Image;
-            double imageLength = temp.Length;
-            double angularSperation = CAAAngularSeparation.Separation(Points[0].Celestial.RA, Points[0].Celestial.Dec, Points[1].Celestial.RA, Points[1].Celestial.Dec);
+            var temp = Points[0].Image - Points[1].Image;
+            var imageLength = temp.Length;
+            var angularSperation = CAAAngularSeparation.Separation(Points[0].Celestial.RA, Points[0].Celestial.Dec, Points[1].Celestial.RA, Points[1].Celestial.Dec);
 
             // Degrees per pixel
-            double scale = angularSperation / imageLength;
+            var scale = angularSperation / imageLength;
 
-            WcsSolution sinit = Solve(Points[0], Points[1]);
+            var sinit = Solve(Points[0], Points[1]);
 
 
-            TanSolver ts = new TanSolver(sinit.CenterX, sinit.CenterY, sinit.Rotation-180, sinit.Scale);
+            var ts = new TanSolver(sinit.CenterX, sinit.CenterY, sinit.Rotation-180, sinit.Scale);
 
-            foreach (CorresponencePoint cp in Points)
+            foreach (var cp in Points)
             {
                 SolveList.Add(new CoorespondenceSolver(ts, cp, width, height));
             }
@@ -128,23 +126,23 @@ namespace TerraViewer
 
             regressionParameters.AddRange(ts.Parameters);
 
-            int count = SolveList.Count;
-            double[,] data = new double[2, count];
-            for (int i = 0; i < count; i++)
+            var count = SolveList.Count;
+            var data = new double[2, count];
+            for (var i = 0; i < count; i++)
             {
                 data[0, i] = i;
                 data[1, i] = 0;
             }
-            Parameter[] observed = new Parameter[] { ParmeterIndex };
+            var observed = new[] { ParmeterIndex };
 
-            lm = new LevenbergMarquardt(new functionDelegate(SolveFunction), regressionParameters.ToArray(), observed, data);
+            lm = new LevenbergMarquardt(SolveFunction, regressionParameters.ToArray(), observed, data);
 
-            for (int d = 0; d < 50; d++)
+            for (var d = 0; d < 50; d++)
             {
                 lm.Iterate();
             }
 
-            WcsSolution s = ts.GetSolution();
+            var s = ts.GetSolution();
             s.OffsetX = width / 2;
             s.OfsetY = height / 2;
            
@@ -154,7 +152,7 @@ namespace TerraViewer
 
         public double SolveFunction()
         {
-            SolverFunction func = SolveList[(int)ParmeterIndex];
+            var func = SolveList[(int)ParmeterIndex];
 
             return func.Calculate();
         }
@@ -176,7 +174,7 @@ namespace TerraViewer
 
             public WcsSolution GetSolution()
             {
-                WcsSolution s = new WcsSolution();
+                var s = new WcsSolution();
 
                 s.CenterX = RA;
                 s.CenterY = Dec;
@@ -191,19 +189,19 @@ namespace TerraViewer
             public Coordinates Project(Vector2d point, double width, double height)
             {
              
-                double lat = point.Y;
-                double lng = point.X;
+                var lat = point.Y;
+                var lng = point.X;
                 lng = -lng;
-                Matrix3d matrix = Matrix3d.Identity;
+                var matrix = Matrix3d.Identity;
                 matrix.Multiply(Matrix3d.RotationX((((Rotation-180)) / 180f * Math.PI)));
                 matrix.Multiply(Matrix3d.RotationZ(((Dec) / 180f * Math.PI)));
                 matrix.Multiply(Matrix3d.RotationY((((360 - RA*15) + 180) / 180f * Math.PI)));
 
                 //lng = -lng;
-                double fac1 = (Scale*height) / 2;
-                double factor = Math.Tan(fac1 * RC);
+                var fac1 = (Scale*height) / 2;
+                var factor = Math.Tan(fac1 * RC);
 
-                Vector3d retPoint = Vector3d.TransformCoordinate(new Vector3d(1f, (lat / fac1 * factor), (lng / fac1 * factor)), matrix);
+                var retPoint = Vector3d.TransformCoordinate(new Vector3d(1f, (lat / fac1 * factor), (lng / fac1 * factor)), matrix);
                 retPoint.Normalize();
                 return Coordinates.CartesianToSpherical2(retPoint);
             }
@@ -213,7 +211,7 @@ namespace TerraViewer
             {
                 get
                 {
-                    List<Parameter> paramList = new List<Parameter>();
+                    var paramList = new List<Parameter>();
 
                     paramList.Add(RA);
                     paramList.Add(Dec);
@@ -228,9 +226,9 @@ namespace TerraViewer
         class CoorespondenceSolver : SolverFunction
         {
             CorresponencePoint point;
-            TanSolver ts;
-            double width = 0;
-            double height = 0;
+            readonly TanSolver ts;
+            readonly double width;
+            readonly double height;
 
             public CoorespondenceSolver(TanSolver tanSolver, CorresponencePoint point, double width, double height)
             {
@@ -242,43 +240,43 @@ namespace TerraViewer
 
             public override double Calculate()
             {
-                Coordinates pnt = ts.Project(new Vector2d(-(point.Image.X - width / 2) * ts.Scale, (point.Image.Y - height / 2) * ts.Scale), width, height);
+                var pnt = ts.Project(new Vector2d(-(point.Image.X - width / 2) * ts.Scale, (point.Image.Y - height / 2) * ts.Scale), width, height);
 
-                Vector3d vect1 = Coordinates.RADecTo3dDouble(point.Celestial,1);
-                Vector3d Vect2 = Coordinates.RADecTo3dDouble(pnt,1);
+                var vect1 = Coordinates.RADecTo3dDouble(point.Celestial,1);
+                var Vect2 = Coordinates.RADecTo3dDouble(pnt,1);
 
-                Vector3d vect3 = vect1 - Vect2;
+                var vect3 = vect1 - Vect2;
                 return vect3.Length();
             }
         }
 
         private WcsSolution SolveOld(CorresponencePoint a, CorresponencePoint b)
         {
-            WcsSolution s = new WcsSolution();
-            Vector2d center = new Vector2d(width / 2, height / 2);
-            Vector2d temp = a.Image - b.Image;
-            double imageLength = temp.Length;
-            double angularSperation = CAAAngularSeparation.Separation(a.Celestial.RA, a.Celestial.Dec, b.Celestial.RA, b.Celestial.Dec);
+            var s = new WcsSolution();
+            var center = new Vector2d(width / 2, height / 2);
+            var temp = a.Image - b.Image;
+            var imageLength = temp.Length;
+            var angularSperation = CAAAngularSeparation.Separation(a.Celestial.RA, a.Celestial.Dec, b.Celestial.RA, b.Celestial.Dec);
 
             // Degrees per pixel
             s.Scale = angularSperation / imageLength;
-            double imageRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
-            double positionAngle = CAAAngularSeparation.PositionAngle(a.Celestial.RA, a.Celestial.Dec, b.Celestial.RA, b.Celestial.Dec);
+            var imageRotation = Math.Atan2(temp.X, temp.Y) / Math.PI * 180;
+            var positionAngle = CAAAngularSeparation.PositionAngle(a.Celestial.RA, a.Celestial.Dec, b.Celestial.RA, b.Celestial.Dec);
             //          Earth3d.MainWindow.Text = "pa:" + positionAngle.ToString() + ", imrot:" + imageRotation.ToString() + ", scale:" + s.Scale.ToString();
             s.Rotation = -((imageRotation - positionAngle));
-            double rotationRads = s.Rotation / 180 * Math.PI;
+            var rotationRads = s.Rotation / 180 * Math.PI;
             s.OffsetX = width / 2;
             s.OfsetY = height / 2;
 
             // Calculate center point
-            Vector2d centerDistA = center - a.Image;
-            Vector2d centerDistB = center - b.Image;
-            double centerRotaionA = Math.Atan2(centerDistA.X, centerDistA.Y);
-            double centerRotaionB = Math.Atan2(centerDistB.X, centerDistB.Y);
-            double raA = a.Celestial.RA + (Math.Sin(centerRotaionA + rotationRads) * s.Scale / 15 * centerDistA.Length / Math.Cos(a.Celestial.Dec / 180 * Math.PI));
-            double raB = b.Celestial.RA + (Math.Sin(centerRotaionB + rotationRads) * s.Scale / 15 * centerDistB.Length / Math.Cos(b.Celestial.Dec / 180 * Math.PI));
-            double decA = a.Celestial.Dec + (Math.Cos(centerRotaionA + rotationRads) * s.Scale * centerDistA.Length);
-            double decB = b.Celestial.Dec + (Math.Cos(centerRotaionB + rotationRads) * s.Scale * centerDistB.Length);
+            var centerDistA = center - a.Image;
+            var centerDistB = center - b.Image;
+            var centerRotaionA = Math.Atan2(centerDistA.X, centerDistA.Y);
+            var centerRotaionB = Math.Atan2(centerDistB.X, centerDistB.Y);
+            var raA = a.Celestial.RA + (Math.Sin(centerRotaionA + rotationRads) * s.Scale / 15 * centerDistA.Length / Math.Cos(a.Celestial.Dec / 180 * Math.PI));
+            var raB = b.Celestial.RA + (Math.Sin(centerRotaionB + rotationRads) * s.Scale / 15 * centerDistB.Length / Math.Cos(b.Celestial.Dec / 180 * Math.PI));
+            var decA = a.Celestial.Dec + (Math.Cos(centerRotaionA + rotationRads) * s.Scale * centerDistA.Length);
+            var decB = b.Celestial.Dec + (Math.Cos(centerRotaionB + rotationRads) * s.Scale * centerDistB.Length);
 
             s.CenterX = (raA + raB) / 2;
             s.CenterY = (decA + decB) / 2;

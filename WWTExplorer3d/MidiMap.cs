@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using MIDI;
 using System.IO;
@@ -13,19 +11,19 @@ namespace TerraViewer
     [XmlRoot("MIDIMap")]
     public class MidiMap
     {
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool Dirty = false;
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool Connected;
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public MidiInput InputDevice;
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public MidiOutput OutputDevice;
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public List<ControlMap> AutoRepeatList = new List<ControlMap>();
 
         [XmlAttribute("Name")]
@@ -42,7 +40,7 @@ namespace TerraViewer
             InputDevice = new MidiInput();
             if (InputDevice.Open(index))
             {
-                InputDevice.MessageReceived += new MidiMessageReceived(InputDevice_MessageReceived);
+                InputDevice.MessageReceived += InputDevice_MessageReceived;
                 InputDevice.Start();
                 Connected = true;
             }
@@ -82,7 +80,7 @@ namespace TerraViewer
 
         public void UpdateMapLinks()
         {
-            foreach (ControlMap map in ControlMaps)
+            foreach (var map in ControlMaps)
             {
                 map.Owner = this;
                 map.BindingA.Parent = map;
@@ -142,7 +140,7 @@ namespace TerraViewer
     [XmlRoot("XboxMap")]
     public class XboxMap
     {
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool Dirty = false;
 
         [XmlAttribute("Name")]
@@ -156,7 +154,7 @@ namespace TerraViewer
 
         public void UpdateMapLinks()
         {
-            foreach (ControlMap map in ControlMaps)
+            foreach (var map in ControlMaps)
             {
                 map.Owner = this;
                 map.BindingA.Parent = map;
@@ -180,7 +178,7 @@ namespace TerraViewer
     [Serializable]
     public class ControlMap
     {
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public object Owner = null;
 
         [XmlAttribute("Name")]
@@ -216,7 +214,7 @@ namespace TerraViewer
         [XmlAttribute("Height")]
         public float Height = .1f;    
         
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool KeyDown = false;
 
         [XmlElement("BindingA")]
@@ -225,7 +223,7 @@ namespace TerraViewer
         [XmlElement("BindingB")]
         public ControlBinding BindingB = new ControlBinding();
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public Rectangle Bounds
         {
             get
@@ -242,7 +240,7 @@ namespace TerraViewer
 
         internal bool DispatchMessage(MidiMessage message, int channel, int key, int value)
         {
-            bool currentVal = false;
+            var currentVal = false;
 
             if (ControlType == ControlType.KeyPress && (message == MidiMessage.NoteOff || value == 0))
             {
@@ -251,20 +249,20 @@ namespace TerraViewer
                 return currentVal;
             }
 
-            if (ControlType == TerraViewer.ControlType.KeyUpDown && (message == MidiMessage.NoteOff || value == 0))
+            if (ControlType == ControlType.KeyUpDown && (message == MidiMessage.NoteOff || value == 0))
             {
                 currentVal = BindingB.DispatchMessage(message, channel, key, value);
                 KeyDown = false;
                 return currentVal;
             }
 
-            if (ControlType == TerraViewer.ControlType.Jog && (message == MidiMessage.Control && value < 64))
+            if (ControlType == ControlType.Jog && (message == MidiMessage.Control && value < 64))
             {
                 currentVal = BindingA.DispatchMessage(message, channel, key, value);
                 return currentVal;
             }
 
-            if (ControlType == TerraViewer.ControlType.Jog && (message == MidiMessage.Control && value > 63))
+            if (ControlType == ControlType.Jog && (message == MidiMessage.Control && value > 63))
             {
                 currentVal = BindingB.DispatchMessage(message, channel, key, value);
                 return currentVal;
@@ -284,7 +282,7 @@ namespace TerraViewer
     [Serializable]
     public class ControlBinding
     {
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public ControlMap Parent = null;
 
         [XmlAttribute("HandlerType")]
@@ -316,11 +314,11 @@ namespace TerraViewer
 
         internal bool DispatchMessage(MidiMessage message, int channel, int key, double value)
         {
-            bool currentVal = false;
+            var currentVal = false;
 
-            double normalizedValue = (double)value / 127.0;
-            double scaledValue = Min + (Max - Min) * normalizedValue;
-            int scaledValueInt = (int)scaledValue;
+            var normalizedValue = value / 127.0;
+            var scaledValue = Min + (Max - Min) * normalizedValue;
+            var scaledValueInt = (int)scaledValue;
 
             IScriptable scriptInterface = null;
             switch (TargetType)
@@ -368,7 +366,7 @@ namespace TerraViewer
                         scriptInterface.SetProperty(PropertyName, Integer ? scaledValueInt.ToString() : scaledValue.ToString());
                         break;
                     case BindingType.SetValue:
-                        scriptInterface.SetProperty(PropertyName, Value.ToString());
+                        scriptInterface.SetProperty(PropertyName, Value);
                         break;
                     default:
                         break;
@@ -421,12 +419,12 @@ namespace TerraViewer
                             break;
                         case BindingType.Toggle:
                         case BindingType.SyncValue:
-                            string val = scriptInterface.GetProperty(PropertyName);
+                            var val = scriptInterface.GetProperty(PropertyName);
                             if (!string.IsNullOrEmpty(val))
                             {
                                 value = double.Parse(val);
                                 value = (value - Min) / (Max - Min);
-                                value = (double)value * 127.0;
+                                value = value * 127.0;
                                 return value;
                             }
                             return 0;
@@ -449,14 +447,11 @@ namespace TerraViewer
 
         public override string ToString()
         {
-            if (BindingType == TerraViewer.BindingType.SetValue && !string.IsNullOrEmpty(Value))
+            if (BindingType == BindingType.SetValue && !string.IsNullOrEmpty(Value))
             {
-                 return TargetType.ToString() + "." + BindingType.ToString() + "." + PropertyName + " = " + Value.ToString();
+                 return TargetType + "." + BindingType + "." + PropertyName + " = " + Value;
             }
-            else
-            {
-                return TargetType.ToString() + "." + BindingType.ToString() + "." + PropertyName;
-            }
+            return TargetType + "." + BindingType + "." + PropertyName;
         }
     }
 
@@ -464,10 +459,10 @@ namespace TerraViewer
     [XmlRoot("ButtonGroup")]
     public class ButtonGroup
     {
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool Dirty = false;
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public string LoadFilename = "";
 
         [XmlAttribute("Name")]
@@ -490,14 +485,14 @@ namespace TerraViewer
 
         public static ButtonGroup FromFile(string filename)
         {
-            ButtonGroup group = new ButtonGroup();
+            var group = new ButtonGroup();
 
             if (File.Exists(filename))
             {
                 try
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(ButtonGroup));
-                    FileStream fs = new FileStream(filename, FileMode.Open);
+                    var serializer = new XmlSerializer(typeof(ButtonGroup));
+                    var fs = new FileStream(filename, FileMode.Open);
 
                     group = (ButtonGroup)serializer.Deserialize(fs);
                    
@@ -521,8 +516,8 @@ namespace TerraViewer
 
         public void Save(string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ButtonGroup));
-            StreamWriter sw = new StreamWriter(filename);
+            var serializer = new XmlSerializer(typeof(ButtonGroup));
+            var sw = new StreamWriter(filename);
 
             serializer.Serialize(sw, this);
 

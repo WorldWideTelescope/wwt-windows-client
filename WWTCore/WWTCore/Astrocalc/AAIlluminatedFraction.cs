@@ -57,7 +57,7 @@ public class  CAAIlluminatedFraction
 	//Convert from degrees to radians
 	B = CAACoordinateTransformation.DegreesToRadians(B);
 	L = CAACoordinateTransformation.DegreesToRadians(L);
-	double cosB = Math.Cos(B);
+	var cosB = Math.Cos(B);
   
 	//Return the result
 	return CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(Math.Acos((x *cosB *Math.Cos(L) + y *cosB *Math.Sin(L) + z *Math.Sin(B)) / Delta)));
@@ -76,7 +76,7 @@ public class  CAAIlluminatedFraction
   }
   public static double MercuryMagnitudeMuller(double r, double Delta, double i)
   {
-	double I_50 = i - 50;
+	var I_50 = i - 50;
 	return 1.16 + 5 *Math.Log10(r *Delta) + 0.02838 *I_50 + 0.0001023 *I_50 *I_50;
   }
   public static double VenusMagnitudeMuller(double r, double Delta, double i)
@@ -95,7 +95,7 @@ public class  CAAIlluminatedFraction
   {
 	//Convert from degrees to radians
 	B = CAACoordinateTransformation.DegreesToRadians(B);
-	double sinB = Math.Sin(B);
+	var sinB = Math.Sin(B);
   
 	return -8.68 + 5 *Math.Log10(r *Delta) + 0.044 *Math.Abs(DeltaU) - 2.60 *Math.Sin(Math.Abs(B)) + 1.25 *sinB *sinB;
   }
@@ -109,15 +109,15 @@ public class  CAAIlluminatedFraction
   }
   public static double MercuryMagnitudeAA(double r, double Delta, double i)
   {
-	double i2 = i *i;
-	double i3 = i2 *i;
+	var i2 = i *i;
+	var i3 = i2 *i;
   
 	return -0.42 + 5 *Math.Log10(r *Delta) + 0.0380 *i - 0.000273 *i2 + 0.000002 *i3;
   }
   public static double VenusMagnitudeAA(double r, double Delta, double i)
   {
-	double i2 = i *i;
-	double i3 = i2 *i;
+	var i2 = i *i;
+	var i3 = i2 *i;
   
 	return -4.40 + 5 *Math.Log10(r *Delta) + 0.0009 *i + 0.000239 *i2 - 0.00000065 *i3;
   }
@@ -133,7 +133,7 @@ public class  CAAIlluminatedFraction
   {
 	//Convert from degrees to radians
 	B = CAACoordinateTransformation.DegreesToRadians(B);
-	double sinB = Math.Sin(B);
+	var sinB = Math.Sin(B);
   
 	return -8.88 + 5 *Math.Log10(r *Delta) + 0.044 *Math.Abs(DeltaU) - 2.60 *Math.Sin(Math.Abs(B)) + 1.25 *sinB *sinB;
   }

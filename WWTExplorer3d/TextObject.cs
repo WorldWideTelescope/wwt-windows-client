@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -39,7 +36,7 @@ namespace TerraViewer
         {
             get
             {
-                FontStyle style = (Bold ? FontStyle.Bold : FontStyle.Regular) | (Italic ? FontStyle.Italic : FontStyle.Regular );
+                var style = (Bold ? FontStyle.Bold : FontStyle.Regular) | (Italic ? FontStyle.Italic : FontStyle.Regular );
 
                 return new Font(FontName, FontSize, style);
 
@@ -54,7 +51,7 @@ namespace TerraViewer
             return Text;
         }
 
-        internal void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        internal void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("TextObject");
             xmlWriter.WriteAttributeString("Bold", Bold.ToString());
@@ -66,13 +63,13 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("BackgroundColor", SavedColor.Save(BackgroundColor));
             xmlWriter.WriteAttributeString("BorderStyle", BorderStyle.ToString());
 
-            xmlWriter.WriteString(this.Text);
+            xmlWriter.WriteString(Text);
             xmlWriter.WriteEndElement();
         }
 
-        internal static TextObject FromXml(System.Xml.XmlNode node)
+        internal static TextObject FromXml(XmlNode node)
         {
-            TextObject newTextObject = new TextObject();
+            var newTextObject = new TextObject();
             newTextObject.Text = node.InnerText;
             newTextObject.BorderStyle = TextBorderStyle.None;
             newTextObject.Bold = Convert.ToBoolean(node.Attributes["Bold"].Value);

@@ -80,9 +80,11 @@ public class  CAACoordinateTransformation
 	Delta = DegreesToRadians(Delta);
 	Epsilon = DegreesToRadians(Epsilon);
   
-	CAA2DCoordinate Ecliptic = new CAA2DCoordinate();
-	Ecliptic.X = RadiansToDegrees(Math.Atan2(Math.Sin(Alpha)*Math.Cos(Epsilon) + Math.Tan(Delta)*Math.Sin(Epsilon), Math.Cos(Alpha)));
-	if (Ecliptic.X < 0)
+	var Ecliptic = new CAA2DCoordinate
+	{
+	    X = RadiansToDegrees(Math.Atan2(Math.Sin(Alpha)*Math.Cos(Epsilon) + Math.Tan(Delta)*Math.Sin(Epsilon), Math.Cos(Alpha)))
+	};
+      if (Ecliptic.X < 0)
 	  Ecliptic.X += 360;
 	Ecliptic.Y = RadiansToDegrees(Math.Asin(Math.Sin(Delta)*Math.Cos(Epsilon) - Math.Cos(Delta)*Math.Sin(Epsilon)*Math.Sin(Alpha)));
   
@@ -94,9 +96,13 @@ public class  CAACoordinateTransformation
 	  Beta = DegreesToRadians(Beta);
 	  Epsilon = DegreesToRadians(Epsilon);
 	
-	  CAA2DCoordinate Equatorial = new CAA2DCoordinate();
-	  Equatorial.X = RadiansToHours(Math.Atan2(Math.Sin(Lambda)*Math.Cos(Epsilon) - Math.Tan(Beta)*Math.Sin(Epsilon), Math.Cos(Lambda)));
-	  if (Equatorial.X < 0)
+	  var Equatorial = new CAA2DCoordinate
+	  {
+	      X =
+	          RadiansToHours(Math.Atan2(Math.Sin(Lambda)*Math.Cos(Epsilon) - Math.Tan(Beta)*Math.Sin(Epsilon),
+	              Math.Cos(Lambda)))
+	  };
+	    if (Equatorial.X < 0)
 		Equatorial.X += 24;
 	  Equatorial.Y = RadiansToDegrees(Math.Asin(Math.Sin(Beta)*Math.Cos(Epsilon) + Math.Cos(Beta)*Math.Sin(Epsilon)*Math.Sin(Lambda)));
 	
@@ -108,9 +114,13 @@ public class  CAACoordinateTransformation
 	  Delta = DegreesToRadians(Delta);
 	  Latitude = DegreesToRadians(Latitude);
 	
-	  CAA2DCoordinate Horizontal = new CAA2DCoordinate();
-	  Horizontal.X = RadiansToDegrees(Math.Atan2(Math.Sin(LocalHourAngle), Math.Cos(LocalHourAngle)*Math.Sin(Latitude) - Math.Tan(Delta)*Math.Cos(Latitude)));
-	  if (Horizontal.X < 0)
+	  var Horizontal = new CAA2DCoordinate
+	  {
+	      X =
+	          RadiansToDegrees(Math.Atan2(Math.Sin(LocalHourAngle),
+	              Math.Cos(LocalHourAngle)*Math.Sin(Latitude) - Math.Tan(Delta)*Math.Cos(Latitude)))
+	  };
+	    if (Horizontal.X < 0)
 		Horizontal.X += 360;
 	  Horizontal.Y = RadiansToDegrees(Math.Asin(Math.Sin(Latitude)*Math.Sin(Delta) + Math.Cos(Latitude)*Math.Cos(Delta)*Math.Cos(LocalHourAngle)));
 	
@@ -123,9 +133,13 @@ public class  CAACoordinateTransformation
 	  Altitude = DegreesToRadians(Altitude);
 	  Latitude = DegreesToRadians(Latitude);
 	
-	  CAA2DCoordinate Equatorial = new CAA2DCoordinate();
-	  Equatorial.X = RadiansToHours(Math.Atan2(Math.Sin(Azimuth), Math.Cos(Azimuth)*Math.Sin(Latitude) + Math.Tan(Altitude)*Math.Cos(Latitude)));
-	  if (Equatorial.X < 0)
+	  var Equatorial = new CAA2DCoordinate
+	  {
+	      X =
+	          RadiansToHours(Math.Atan2(Math.Sin(Azimuth),
+	              Math.Cos(Azimuth)*Math.Sin(Latitude) + Math.Tan(Altitude)*Math.Cos(Latitude)))
+	  };
+	    if (Equatorial.X < 0)
 		Equatorial.X += 24;
 	  Equatorial.Y = RadiansToDegrees(Math.Asin(Math.Sin(Latitude)*Math.Sin(Altitude) - Math.Cos(Latitude)*Math.Cos(Altitude)*Math.Cos(Azimuth)));
 	
@@ -137,9 +151,13 @@ public class  CAACoordinateTransformation
 	  Alpha = DegreesToRadians(Alpha);
 	  Delta = DegreesToRadians(Delta);
 	
-	  CAA2DCoordinate Galactic = new CAA2DCoordinate();
-	  Galactic.X = RadiansToDegrees(Math.Atan2(Math.Sin(Alpha), Math.Cos(Alpha)*Math.Sin(DegreesToRadians(27.4)) - Math.Tan(Delta)*Math.Cos(DegreesToRadians(27.4))));
-	  Galactic.X = 303 - Galactic.X;
+	  var Galactic = new CAA2DCoordinate
+	  {
+	      X =
+	          RadiansToDegrees(Math.Atan2(Math.Sin(Alpha),
+	              Math.Cos(Alpha)*Math.Sin(DegreesToRadians(27.4)) - Math.Tan(Delta)*Math.Cos(DegreesToRadians(27.4))))
+	  };
+	    Galactic.X = 303 - Galactic.X;
 	  if (Galactic.X >= 360)
 		Galactic.X -= 360;
 	  Galactic.Y = RadiansToDegrees(Math.Asin(Math.Sin(Delta)*Math.Sin(DegreesToRadians(27.4)) + Math.Cos(Delta)*Math.Cos(DegreesToRadians(27.4))*Math.Cos(Alpha)));
@@ -152,9 +170,13 @@ public class  CAACoordinateTransformation
 	  l = DegreesToRadians(l);
 	  b = DegreesToRadians(b);
 	
-	  CAA2DCoordinate Equatorial = new CAA2DCoordinate();
-	  Equatorial.X = RadiansToDegrees(Math.Atan2(Math.Sin(l), Math.Cos(l)*Math.Sin(DegreesToRadians(27.4)) - Math.Tan(b)*Math.Cos(DegreesToRadians(27.4))));
-	  Equatorial.X += 12.25;
+	  var Equatorial = new CAA2DCoordinate
+	  {
+	      X =
+	          RadiansToDegrees(Math.Atan2(Math.Sin(l),
+	              Math.Cos(l)*Math.Sin(DegreesToRadians(27.4)) - Math.Tan(b)*Math.Cos(DegreesToRadians(27.4))))
+	  };
+	    Equatorial.X += 12.25;
 	  if (Equatorial.X < 0)
 		Equatorial.X += 360;
 	  Equatorial.X = DegreesToHours(Equatorial.X);
@@ -227,7 +249,6 @@ public class  CAACoordinateTransformation
   
 	if (bPositive)
 	  return Degrees + Minutes/60 + Seconds/3600;
-	else
-	  return -Degrees - Minutes/60 - Seconds/3600;
+      return -Degrees - Minutes/60 - Seconds/3600;
   }
 }

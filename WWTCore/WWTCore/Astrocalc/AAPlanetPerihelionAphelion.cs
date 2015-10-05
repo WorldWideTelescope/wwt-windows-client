@@ -43,7 +43,7 @@ public class  CAAPlanetPerihelionAphelion
   }
   public static double MercuryAphelion(int k)
   {
-	double kdash = k + 0.5;
+	var kdash = k + 0.5;
 	return 2451590.257 + 87.96934963 *kdash;
   }
 
@@ -54,13 +54,13 @@ public class  CAAPlanetPerihelionAphelion
   public static double VenusPerihelion(int k)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
+	var ksquared = kdash * kdash;
 	return 2451738.233 + 224.7008188 *kdash - 0.0000000327 *ksquared;
   }
   public static double VenusAphelion(int k)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
 	return 2451738.233 + 224.7008188 *kdash - 0.0000000327 *ksquared;
   }
 
@@ -77,21 +77,21 @@ public class  CAAPlanetPerihelionAphelion
   public static double EarthPerihelion(int k, bool bBarycentric)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
-	double JD = 2451547.507 + 365.2596358 *kdash + 0.0000000156 *ksquared;
+	var ksquared = kdash * kdash;
+	var JD = 2451547.507 + 365.2596358 *kdash + 0.0000000156 *ksquared;
   
 	if (!bBarycentric)
 	{
 	  //Apply the corrections
-	  double A1 = CAACoordinateTransformation.MapTo0To360Range(328.41 + 132.788585 *k);
+	  var A1 = CAACoordinateTransformation.MapTo0To360Range(328.41 + 132.788585 *k);
 	  A1 = CAACoordinateTransformation.DegreesToRadians(A1);
-	  double A2 = CAACoordinateTransformation.MapTo0To360Range(316.13 + 584.903153 *k);
+	  var A2 = CAACoordinateTransformation.MapTo0To360Range(316.13 + 584.903153 *k);
 	  A2 = CAACoordinateTransformation.DegreesToRadians(A2);
-	  double A3 = CAACoordinateTransformation.MapTo0To360Range(346.20 + 450.380738 *k);
+	  var A3 = CAACoordinateTransformation.MapTo0To360Range(346.20 + 450.380738 *k);
 	  A3 = CAACoordinateTransformation.DegreesToRadians(A3);
-	  double A4 = CAACoordinateTransformation.MapTo0To360Range(136.95 + 659.306737 *k);
+	  var A4 = CAACoordinateTransformation.MapTo0To360Range(136.95 + 659.306737 *k);
 	  A4 = CAACoordinateTransformation.DegreesToRadians(A4);
-	  double A5 = CAACoordinateTransformation.MapTo0To360Range(249.52 + 329.653368 *k);
+	  var A5 = CAACoordinateTransformation.MapTo0To360Range(249.52 + 329.653368 *k);
 	  A5 = CAACoordinateTransformation.DegreesToRadians(A5);
   
 	  JD += 1.278 *Math.Sin(A1);
@@ -111,22 +111,22 @@ public class  CAAPlanetPerihelionAphelion
 //ORIGINAL LINE: static double EarthAphelion(int k, bool bBarycentric = false)
   public static double EarthAphelion(int k, bool bBarycentric)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
-	double JD = 2451547.507 + 365.2596358 *kdash + 0.0000000156 *ksquared;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
+	var JD = 2451547.507 + 365.2596358 *kdash + 0.0000000156 *ksquared;
   
 	if (!bBarycentric)
 	{
 	  //Apply the corrections
-	  double A1 = CAACoordinateTransformation.MapTo0To360Range(328.41 + 132.788585 *k);
+	  var A1 = CAACoordinateTransformation.MapTo0To360Range(328.41 + 132.788585 *k);
 	  A1 = CAACoordinateTransformation.DegreesToRadians(A1);
-	  double A2 = CAACoordinateTransformation.MapTo0To360Range(316.13 + 584.903153 *k);
+	  var A2 = CAACoordinateTransformation.MapTo0To360Range(316.13 + 584.903153 *k);
 	  A2 = CAACoordinateTransformation.DegreesToRadians(A2);
-	  double A3 = CAACoordinateTransformation.MapTo0To360Range(346.20 + 450.380738 *k);
+	  var A3 = CAACoordinateTransformation.MapTo0To360Range(346.20 + 450.380738 *k);
 	  A3 = CAACoordinateTransformation.DegreesToRadians(A3);
-	  double A4 = CAACoordinateTransformation.MapTo0To360Range(136.95 + 659.306737 *k);
+	  var A4 = CAACoordinateTransformation.MapTo0To360Range(136.95 + 659.306737 *k);
 	  A4 = CAACoordinateTransformation.DegreesToRadians(A4);
-	  double A5 = CAACoordinateTransformation.MapTo0To360Range(249.52 + 329.653368 *k);
+	  var A5 = CAACoordinateTransformation.MapTo0To360Range(249.52 + 329.653368 *k);
 	  A5 = CAACoordinateTransformation.DegreesToRadians(A5);
   
 	  JD -= 1.352 *Math.Sin(A1);
@@ -146,13 +146,13 @@ public class  CAAPlanetPerihelionAphelion
   public static double MarsPerihelion(int k)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
+	var ksquared = kdash * kdash;
 	return 2452195.026 + 686.9957857 *kdash - 0.0000001187 *ksquared;
   }
   public static double MarsAphelion(int k)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
 	return 2452195.026 + 686.9957857 *kdash - 0.0000001187 *ksquared;
   }
 
@@ -163,13 +163,13 @@ public class  CAAPlanetPerihelionAphelion
   public static double JupiterPerihelion(int k)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
+	var ksquared = kdash * kdash;
 	return 2455636.936 + 4332.897065 *kdash + 0.0001367 *ksquared;
   }
   public static double JupiterAphelion(int k)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
 	return 2455636.936 + 4332.897065 *kdash + 0.0001367 *ksquared;
   }
 
@@ -180,13 +180,13 @@ public class  CAAPlanetPerihelionAphelion
   public static double SaturnPerihelion(int k)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
+	var ksquared = kdash * kdash;
 	return 2452830.12 + 10764.21676 *kdash + 0.000827 *ksquared;
   }
   public static double SaturnAphelion(int k)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
 	return 2452830.12 + 10764.21676 *kdash + 0.000827 *ksquared;
   }
 
@@ -197,13 +197,13 @@ public class  CAAPlanetPerihelionAphelion
   public static double UranusPerihelion(int k)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
+	var ksquared = kdash * kdash;
 	return 2470213.5 + 30694.8767 *kdash - 0.00541 *ksquared;
   }
   public static double UranusAphelion(int k)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
 	return 2470213.5 + 30694.8767 *kdash - 0.00541 *ksquared;
   }
 
@@ -214,13 +214,13 @@ public class  CAAPlanetPerihelionAphelion
   public static double NeptunePerihelion(int k)
   {
 	double kdash = k;
-	double ksquared = kdash * kdash;
+	var ksquared = kdash * kdash;
 	return 2468895.1 + 60190.33 *kdash + 0.03429 *ksquared;
   }
   public static double NeptuneAphelion(int k)
   {
-	double kdash = k + 0.5;
-	double ksquared = kdash * kdash;
+	var kdash = k + 0.5;
+	var ksquared = kdash * kdash;
 	return 2468895.1 + 60190.33 *kdash + 0.03429 *ksquared;
   }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using SharpDX;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;
 using System.Xml;
@@ -46,12 +48,12 @@ namespace TerraViewer
             }
 
 
-            Color col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
+            var col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
 
 
             SimpleGeometryShader11.Color = col;
 
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             SimpleGeometryShader11.WVPMatrix = mat;
@@ -59,8 +61,8 @@ namespace TerraViewer
 
             renderContext.setRasterizerState(TriangleCullMode.CullCounterClockwise);
 
-            BlendMode bm = renderContext.BlendMode;
-            DepthStencilMode dm = renderContext.DepthStencilMode;
+            var bm = renderContext.BlendMode;
+            var dm = renderContext.DepthStencilMode;
             //renderContext.DepthStencilMode = DepthStencilMode.ZReadOnly;
             renderContext.BlendMode = BlendMode.Alpha;
 
@@ -70,7 +72,7 @@ namespace TerraViewer
             // Debug to get Glyhph textures and caches
             //SharpDX.Direct3D11.Texture2D.ToFile(renderContext.devContext, glyphCache.Texture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, "c:\\temp\\texture2.png");
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
  
             renderContext.SetVertexBuffer(vertexBuffer);
 
@@ -88,7 +90,7 @@ namespace TerraViewer
  
         GlyphCache glyphCache;
 
-        TextObject TextObject = new TextObject();
+        TextObject TextObject;
         PositionColorTexturedVertexBuffer11 vertexBuffer;
         public void PrepareBatch()
         {
@@ -98,9 +100,9 @@ namespace TerraViewer
             }
             // Add All Glyphs
 
-            foreach (Text3d t3d in Items)
+            foreach (var t3d in Items)
             {
-                foreach (char c in t3d.Text)
+                foreach (var c in t3d.Text)
                 {
                     glyphCache.AddGlyph(c);
                 }
@@ -109,53 +111,53 @@ namespace TerraViewer
             // Calculate Metrics
 
             TextObject.Text = "";
-            TextObject.FontSize = (float)Height*.50f;
+            TextObject.FontSize = Height*.50f;
 
-            System.Drawing.Font font = TextObject.Font;
-            StringFormat sf = new StringFormat();
+            var font = TextObject.Font;
+            var sf = new StringFormat();
             sf.Alignment = StringAlignment.Near;
 
-            Bitmap bmp = new Bitmap(20, 20);
-            Graphics g = Graphics.FromImage(bmp);
+            var bmp = new Bitmap(20, 20);
+            var g = Graphics.FromImage(bmp);
             // Create Index Buffers
 
-            List<PositionColoredTextured> verts = new List<PositionColoredTextured>();
-            foreach (Text3d t3d in Items)
+            var verts = new List<PositionColoredTextured>();
+            foreach (var t3d in Items)
             {
-                String text = t3d.Text;
-                SizeF size = g.MeasureString(text, font);
+                var text = t3d.Text;
+                var size = g.MeasureString(text, font);
 
-                float factor = .6666f;
+                var factor = .6666f;
                 t3d.width = size.Width * (float)t3d.scale * factor;
                 t3d.height = size.Height * (float)t3d.scale * factor;
                 float left = 0;
                 
-                int charsLeft = text.Length;
-                int index = 0;
+                var charsLeft = text.Length;
+                var index = 0;
                 // SetMeasurableCharacterRanges has a limit of 32 items per call;
                 while (charsLeft > 0)
                 {
-                    int charsNow = Math.Min(32, charsLeft);
+                    var charsNow = Math.Min(32, charsLeft);
                     charsLeft -= charsNow;
 
-                    CharacterRange[] ranges = new CharacterRange[charsNow];
-                    for (int i = 0; i < charsNow; i++)
+                    var ranges = new CharacterRange[charsNow];
+                    for (var i = 0; i < charsNow; i++)
                     {
                         ranges[i] = new CharacterRange(i + index, 1);
                     }
 
                     sf.SetMeasurableCharacterRanges(ranges);
 
-                    Region[] reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
+                    var reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
 
 
 
-                    float fntAdjust = font.Size / 128f;
-                    for (int i = 0; i < (charsNow); i++)
+                    var fntAdjust = font.Size / 128f;
+                    for (var i = 0; i < (charsNow); i++)
                     {
-                        GlyphItem item = glyphCache.GetGlyphItem(text[i+index]);
-                        RectangleF rectf = reg[i].GetBounds(g);
-                        RectangleF position = new RectangleF(rectf.Left * (float)t3d.scale * factor, rectf.Top * (float)t3d.scale * factor, rectf.Width * (float)t3d.scale * factor, rectf.Height * (float)t3d.scale * factor);
+                        var item = glyphCache.GetGlyphItem(text[i+index]);
+                        var rectf = reg[i].GetBounds(g);
+                        var position = new RectangleF(rectf.Left * (float)t3d.scale * factor, rectf.Top * (float)t3d.scale * factor, rectf.Width * (float)t3d.scale * factor, rectf.Height * (float)t3d.scale * factor);
 
                         position = new RectangleF(left * (float)t3d.scale * factor, 0 * (float)t3d.scale * factor, item.Extents.Width * fntAdjust * (float)t3d.scale * factor, item.Extents.Height * fntAdjust * (float)t3d.scale * factor);
                         left += item.Extents.Width * fntAdjust;
@@ -174,9 +176,9 @@ namespace TerraViewer
             vertCount = verts.Count;
             vertexBuffer = new PositionColorTexturedVertexBuffer11(vertCount, RenderContext11.PrepDevice);
 
-            PositionColoredTextured[] vertBuf = (PositionColoredTextured[])vertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var vertBuf = (PositionColoredTextured[])vertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
 
-            for (int i = 0; i < vertCount; i++)
+            for (var i = 0; i < vertCount; i++)
             {
                 vertBuf[i] = verts[i];
             }
@@ -185,7 +187,7 @@ namespace TerraViewer
 
             glyphVersion = glyphCache.Version;
         }
-        int vertCount = 0;
+        int vertCount;
 
         public void CleanUp()
         {
@@ -253,7 +255,7 @@ namespace TerraViewer
         }
         int glyphVersion = -1;
 
-        private static SharpDX.Direct3D11.InputLayout layout = null;
+        private static InputLayout layout;
 
         public void Draw(RenderContext11 renderContext, float Opacity, Color drawColor)
         {
@@ -267,17 +269,17 @@ namespace TerraViewer
 
             renderContext.SetupBasicEffect(BasicEffect.TextureColorOpacity, Opacity, drawColor);
             renderContext.MainTexture = glyphCache.Texture;
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             renderContext.PreDraw();
 
 
             if (layout == null)
             {
-                layout = new SharpDX.Direct3D11.InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
+                layout = new InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       12, 0),
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("TEXCOORD", 0, Format.R32G32_Float,       12, 0),
                            });
             }
             renderContext.Device.ImmediateContext.InputAssembler.InputLayout = layout;
@@ -291,7 +293,7 @@ namespace TerraViewer
 
         GlyphCache glyphCache;
 
-        TextObject TextObject = new TextObject();
+        TextObject TextObject;
         PositionTexturedVertexBuffer11 vertexBuffer;
         public void PrepareBatch()
         {
@@ -301,9 +303,9 @@ namespace TerraViewer
             }
             // Add All Glyphs
 
-            foreach (Text2d t3d in Items)
+            foreach (var t3d in Items)
             {
-                foreach (char c in t3d.Text)
+                foreach (var c in t3d.Text)
                 {
                     glyphCache.AddGlyph(c);
                 }
@@ -312,52 +314,52 @@ namespace TerraViewer
             // Calculate Metrics
 
             TextObject.Text = "";
-            TextObject.FontSize = (float)Height * .50f;
+            TextObject.FontSize = Height * .50f;
 
-            System.Drawing.Font font = TextObject.Font;
-            StringFormat sf = new StringFormat();
+            var font = TextObject.Font;
+            var sf = new StringFormat();
             sf.Alignment = StringAlignment.Near;
 
-            Bitmap bmp = new Bitmap(20, 20);
-            Graphics g = Graphics.FromImage(bmp);
+            var bmp = new Bitmap(20, 20);
+            var g = Graphics.FromImage(bmp);
             // Create Index Buffers
 
-            List<PositionTextured> verts = new List<PositionTextured>();
-            foreach (Text2d t2d in Items)
+            var verts = new List<PositionTextured>();
+            foreach (var t2d in Items)
             {
-                String text = t2d.Text;
-                SizeF size = g.MeasureString(text, font);
+                var text = t2d.Text;
+                var size = g.MeasureString(text, font);
 
                 float factor = 1;
                 t2d.width = size.Width  * factor;
                 t2d.height = size.Height *  factor;
 
-                int charsLeft = text.Length;
-                int index = 0;
+                var charsLeft = text.Length;
+                var index = 0;
                 // SetMeasurableCharacterRanges has a limit of 32 items per call;
                 while (charsLeft > 0)
                 {
-                    int charsNow = Math.Min(32, charsLeft);
+                    var charsNow = Math.Min(32, charsLeft);
                     charsLeft -= charsNow;
 
-                    CharacterRange[] ranges = new CharacterRange[charsNow];
-                    for (int i = 0; i < charsNow; i++)
+                    var ranges = new CharacterRange[charsNow];
+                    for (var i = 0; i < charsNow; i++)
                     {
                         ranges[i] = new CharacterRange(i + index, 1);
                     }
 
                     sf.SetMeasurableCharacterRanges(ranges);
 
-                    Region[] reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
+                    var reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
 
 
 
-                    for (int i = 0; i < (charsNow); i++)
+                    for (var i = 0; i < (charsNow); i++)
                     {
-                        GlyphItem item = glyphCache.GetGlyphItem(text[i + index]);
-                        RectangleF rectf = reg[i].GetBounds(g);
-                        RectangleF position = new RectangleF(rectf.Left  * factor, rectf.Top *  factor, rectf.Width *  factor, rectf.Height * factor);
-                        SizeF sizef = new SizeF(item.Size.Width  * factor, item.Size.Height *  factor);
+                        var item = glyphCache.GetGlyphItem(text[i + index]);
+                        var rectf = reg[i].GetBounds(g);
+                        var position = new RectangleF(rectf.Left  * factor, rectf.Top *  factor, rectf.Width *  factor, rectf.Height * factor);
+                        var sizef = new SizeF(item.Size.Width  * factor, item.Size.Height *  factor);
 
                         t2d.AddGlyphPoints(verts, item.Size, position, item.UVRect);
                     }
@@ -374,9 +376,9 @@ namespace TerraViewer
             vertCount = verts.Count;
             vertexBuffer = new PositionTexturedVertexBuffer11(vertCount, RenderContext11.PrepDevice);
 
-            PositionTextured[] vertBuf = (PositionTextured[])vertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+            var vertBuf = (PositionTextured[])vertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
 
-            for (int i = 0; i < vertCount; i++)
+            for (var i = 0; i < vertCount; i++)
             {
                 vertBuf[i] = verts[i];
             }
@@ -385,7 +387,7 @@ namespace TerraViewer
 
             glyphVersion = glyphCache.Version;
         }
-        int vertCount = 0;
+        int vertCount;
 
 
         #region IDisposable Members
@@ -440,7 +442,7 @@ namespace TerraViewer
         {
 
             xmlWriter.WriteStartElement("GlyphItem");
-            xmlWriter.WriteAttributeString("Glyph", new String(new char[] {Glyph}));
+            xmlWriter.WriteAttributeString("Glyph", new String(new[] {Glyph}));
             xmlWriter.WriteAttributeString("UVTop", UVRect.Top.ToString());
             xmlWriter.WriteAttributeString("UVLeft", UVRect.Left.ToString());
             xmlWriter.WriteAttributeString("UVWidth", UVRect.Width.ToString());
@@ -464,7 +466,7 @@ namespace TerraViewer
 
     public class GlyphCache : IDisposable
     {
-        static Dictionary<int, GlyphCache> caches = new Dictionary<int, GlyphCache>();
+        static readonly Dictionary<int, GlyphCache> caches = new Dictionary<int, GlyphCache>();
 
         static public GlyphCache GetCache(int height)
         {
@@ -477,7 +479,7 @@ namespace TerraViewer
 
         static public void CleanUpAll()
         {
-            foreach(GlyphCache cache in caches.Values)
+            foreach(var cache in caches.Values)
             {
                 cache.CleanUp();
             }
@@ -531,7 +533,7 @@ namespace TerraViewer
             CalcOrMake(true);
         }
 
-        Dictionary<char, GlyphItem> GlyphItems = new Dictionary<char, GlyphItem>();
+        readonly Dictionary<char, GlyphItem> GlyphItems = new Dictionary<char, GlyphItem>();
 
         public GlyphItem GetGlyphItem(char glyph)
         {
@@ -559,7 +561,7 @@ namespace TerraViewer
                 gridSize *= 2;
             }
 
-            int cellSize = 2;
+            var cellSize = 2;
 
             while (cellSize < cellHeight)
             {
@@ -567,14 +569,14 @@ namespace TerraViewer
             }
             cellHeight = cellSize;
 
-            int textureSize = cellHeight * gridSize;
+            var textureSize = cellHeight * gridSize;
 
             TextObject.Text = "";
-            TextObject.FontSize = (float)cellHeight * .50f;
+            TextObject.FontSize = cellHeight * .50f;
 
 
-            System.Drawing.Font font = TextObject.Font;
-            StringFormat sf = new StringFormat();
+            var font = TextObject.Font;
+            var sf = new StringFormat();
             sf.Alignment = StringAlignment.Near;
 
             Bitmap bmp;
@@ -587,30 +589,30 @@ namespace TerraViewer
                 bmp = new Bitmap(20, 20);
             }
 
-            Graphics g = Graphics.FromImage(bmp);
+            var g = Graphics.FromImage(bmp);
 
-            int count = 0;
+            var count = 0;
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
 
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
 
-            CharacterRange[] ranges = new CharacterRange[1];
+            var ranges = new CharacterRange[1];
             ranges[0] = new CharacterRange(0, 1);
 
             sf.SetMeasurableCharacterRanges(ranges);
 
 
 
-            foreach (GlyphItem item in GlyphItems.Values)
+            foreach (var item in GlyphItems.Values)
             {
-                int x = (int)(count % gridSize) * cellHeight;
-                int y = (int)(count / gridSize) * cellHeight;
-                string text = new string(item.Glyph, 1);
+                var x = count % gridSize * cellHeight;
+                var y = count / gridSize * cellHeight;
+                var text = new string(item.Glyph, 1);
                 item.Size = g.MeasureString(text, font);
-                Region[] reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), item.Size), sf);
-                RectangleF rectf = reg[0].GetBounds(g);
+                var reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), item.Size), sf);
+                var rectf = reg[0].GetBounds(g);
                 item.Extents = new SizeF(rectf.Width, rectf.Height);
 
                 if (item.Extents.Width == 0)
@@ -655,7 +657,7 @@ namespace TerraViewer
 
         bool dirty = true;
         bool textureDirty = true;
-        int version = 0;
+        int version;
 
         public int Version
         {
@@ -669,7 +671,7 @@ namespace TerraViewer
         {
             if (!GlyphItems.ContainsKey(glyph))
             {
-                GlyphItem item = new GlyphItem(glyph);
+                var item = new GlyphItem(glyph);
                 GlyphItems.Add(glyph, item);
                 dirty = true;
                 textureDirty = true;
@@ -686,9 +688,9 @@ namespace TerraViewer
         public void SaveToXML(string filename)
         {
 
-            XmlWriter xmlWriter = XmlWriter.Create(filename);
+            var xmlWriter = XmlWriter.Create(filename);
             xmlWriter.WriteStartElement("GlyphItem");
-            foreach (GlyphItem item in GlyphItems.Values)
+            foreach (var item in GlyphItems.Values)
             {
                 item.SaveToXml(xmlWriter);
             }
@@ -755,7 +757,7 @@ namespace TerraViewer
         public double Tilt = 0;
         public double Bank = 0;
         Matrix3d rtbMat;
-        bool matInit = false;
+        bool matInit;
 
         public Color Color = Color.White;
         public bool sky = true;
@@ -778,16 +780,16 @@ namespace TerraViewer
 
         public void AddGlyphPoints(List<PositionColoredTextured> pointList, SizeF size, RectangleF position, RectangleF uv)
         {
-            PositionColoredTextured[] points = new PositionColoredTextured[6];
+            var points = new PositionColoredTextured[6];
 
-            Vector3d left = Vector3d.Cross(center, up);
-            Vector3d right = Vector3d.Cross(up, center);
+            var left = Vector3d.Cross(center, up);
+            var right = Vector3d.Cross(up, center);
 
             left.Normalize();
             right.Normalize();
             up.Normalize();
 
-            Vector3d upTan = Vector3d.Cross(center, right);
+            var upTan = Vector3d.Cross(center, right);
 
             upTan.Normalize();
 
@@ -802,11 +804,11 @@ namespace TerraViewer
                 right.Multiply(position.Right * 2);
             }
 
-            Vector3d top = upTan;
-            Vector3d bottom = -upTan;
+            var top = upTan;
+            var bottom = -upTan;
             top.Multiply(height-position.Top*2);
             bottom.Multiply(height-((height*2)-position.Bottom*2));
-            Vector3d ul = center;
+            var ul = center;
             ul.Add(top);
             if (sky)
             {
@@ -816,7 +818,7 @@ namespace TerraViewer
             {
                 ul.Subtract(left);
             }
-            Vector3d ur = center;
+            var ur = center;
             ur.Add(top);
             if (sky)
             {
@@ -826,7 +828,7 @@ namespace TerraViewer
             {
                 ur.Subtract(right);
             }
-            Vector3d ll = center;
+            var ll = center;
             if (sky)
             {
                 ll.Add(left);
@@ -838,7 +840,7 @@ namespace TerraViewer
 
             ll.Add(bottom);
 
-            Vector3d lr = center;
+            var lr = center;
             if (sky)
             {
                 lr.Add(right);
@@ -883,17 +885,17 @@ namespace TerraViewer
             {
                 if (!matInit)
                 {
-                    Matrix3d lookAt = Matrix3d.LookAtLH(center, new Vector3d(0, 0, 0), up);
-                    Matrix3d lookAtInv = lookAt;
+                    var lookAt = Matrix3d.LookAtLH(center, new Vector3d(0, 0, 0), up);
+                    var lookAtInv = lookAt;
                     lookAtInv.Invert();
 
                     rtbMat = lookAt * Matrix3d.RotationZ(-Rotation / 180 * Math.PI) * Matrix3d.RotationX(-Tilt / 180 * Math.PI) * Matrix3d.RotationY(-Bank / 180 * Math.PI) * lookAtInv;
                     //todo make this true after debug
                     matInit = false;
                 }
-                for (int i = 0; i < 6; i++)
+                for (var i = 0; i < 6; i++)
                 {
-                    Vector3d pos = points[i].Pos3d;
+                    var pos = points[i].Pos3d;
                     pos.TransformCoordinate(rtbMat);
                     points[i].Pos3d = pos;
                 }
@@ -911,9 +913,9 @@ namespace TerraViewer
 
         }
 
-        System.Drawing.Rectangle rect;
+        Rectangle rect;
 
-        public Text2d(System.Drawing.Rectangle drawRect, string text, float fontsize)
+        public Text2d(Rectangle drawRect, string text, float fontsize)
         {
             Text = text;
             rect = drawRect;
@@ -930,13 +932,13 @@ namespace TerraViewer
 
         public void AddGlyphPoints(List<PositionTextured> pointList, SizeF size, RectangleF position, RectangleF uv)
         {
-            PositionTextured[] points = new PositionTextured[6];
+            var points = new PositionTextured[6];
 
-            Vector3d ul = new Vector3d(position.Left+rect.Left, position.Top+rect.Top, .9f);
-            Vector3d ur = new Vector3d(position.Right+rect.Left, position.Top+rect.Top, .9f);
+            var ul = new Vector3d(position.Left+rect.Left, position.Top+rect.Top, .9f);
+            var ur = new Vector3d(position.Right+rect.Left, position.Top+rect.Top, .9f);
 
-            Vector3d ll = new Vector3d(position.Left+rect.Left, position.Bottom+rect.Top, .9f);
-            Vector3d lr = new Vector3d(position.Right+rect.Left, position.Bottom+rect.Top, .9f);
+            var ll = new Vector3d(position.Left+rect.Left, position.Bottom+rect.Top, .9f);
+            var lr = new Vector3d(position.Right+rect.Left, position.Bottom+rect.Top, .9f);
 
             points[0].Position = ul;
             points[0].Tu = uv.Left;

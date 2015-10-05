@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 //using System.Linq;
+using System.Linq;
 using System.Text;
 using System.IO;
 using System.Drawing;
@@ -15,14 +16,14 @@ namespace TerraViewer
     public enum DataTypes  { Byte, Int16, Int32, Float, Double, None};
     public class FitsImage : WcsImage
     {
-        Dictionary<String, String> header = new Dictionary<string, string>();
+        readonly Dictionary<String, String> header = new Dictionary<string, string>();
 
         public FitsImage(string file)
         {
-            this.Filename = file;
+            Filename = file;
             Stream stream = File.OpenRead(file);
 
-            bool gZip = IsGzip(stream);
+            var gZip = IsGzip(stream);
             stream.Seek(0, SeekOrigin.Begin);
             if (gZip)
             {
@@ -48,41 +49,38 @@ namespace TerraViewer
 
         public int lastMin = 0;
         public int lastMax = 255;
-        bool color = false;
+        bool color;
 
         public static bool IsGzip(Stream stream)
         {
-            BinaryReader br = new BinaryReader(stream);
-            byte[] line = br.ReadBytes(2);
+            var br = new BinaryReader(stream);
+            var line = br.ReadBytes(2);
 
             if (line[0] == 31 && line[1] == 139)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public void ParseHeader(Stream stream)
         {
 
-            BinaryReader br = new BinaryReader(stream);
+            var br = new BinaryReader(stream);
 
-            bool foundEnd = false;
+            var foundEnd = false;
             while (!foundEnd)
             {
-                for (int i = 0; i < 36; i++)
+                for (var i = 0; i < 36; i++)
                 {
-                    byte[] line = br.ReadBytes(80);
+                    var line = br.ReadBytes(80);
 
                     if (!foundEnd)
                     {
-                        string data = new string(Encoding.UTF8.GetChars(line));
+                        var data = new string(Encoding.UTF8.GetChars(line));
                         //string data = new string(line);
-                        string keyword = data.Substring(0, 8).TrimEnd();
-                        string[] values = data.Substring(10).Split(new char[] { '/' });
+                        var keyword = data.Substring(0, 8).TrimEnd();
+                        var values = data.Substring(10).Split(new[] { '/' });
 
                         if (keyword.ToUpper() == "END")
                         {
@@ -121,39 +119,39 @@ namespace TerraViewer
 
             AxisSize = new int[NumAxis];
             
-            for (int axis = 0; axis < NumAxis; axis++)
+            for (var axis = 0; axis < NumAxis; axis++)
             {
                 AxisSize[axis] = Convert.ToInt32(header[string.Format("NAXIS{0}",axis+1)]);
                 BufferSize *= AxisSize[axis];
             }
 
-            int bitsPix = Convert.ToInt32(header["BITPIX"]);
+            var bitsPix = Convert.ToInt32(header["BITPIX"]);
 
             
             switch (bitsPix)
             {
                 case 8:
-                    this.DataType = DataTypes.Byte;
+                    DataType = DataTypes.Byte;
                     InitDataBytes(br);
                     break;
                 case 16:
-                    this.DataType = DataTypes.Int16;
+                    DataType = DataTypes.Int16;
                     InitDataShort(br);
                     break;
                 case 32:
-                    this.DataType = DataTypes.Int32;
+                    DataType = DataTypes.Int32;
                     InitDataInt(br);
                     break;
                 case -32:
-                    this.DataType = DataTypes.Float;
+                    DataType = DataTypes.Float;
                     InitDataFloat(br);
                     break;
                 case -64:
-                    this.DataType = DataTypes.Double;
+                    DataType = DataTypes.Double;
                     InitDataDouble(br);
                     break;
                 default:
-                    this.DataType = DataTypes.None;
+                    DataType = DataTypes.None;
                     break;
             }
 
@@ -169,7 +167,7 @@ namespace TerraViewer
                 sizeX = Width = AxisSize[0];
                 sizeY = Height = AxisSize[1];
                 ComputeWcs();
-                Histogram = ComputeHistogram(256, out this.HistogramMaxCount);
+                Histogram = ComputeHistogram(256, out HistogramMaxCount);
             }
         }
 
@@ -203,8 +201,8 @@ namespace TerraViewer
                     hasPixel = true;
                 }
             }
-            bool galactic = false;
-            bool tan = false;
+            var galactic = false;
+            var tan = false;
 
             if (header.ContainsKey("CTYPE1"))
             {
@@ -231,7 +229,7 @@ namespace TerraViewer
 
             if (!tan)
             {
-                throw new System.Exception("Only TAN projected images are supported: ");
+                throw new Exception("Only TAN projected images are supported: ");
             }
 
             hasSize = true;
@@ -249,7 +247,7 @@ namespace TerraViewer
 
             if (galactic)
             {
-                double[] result = Earth3d.GalactictoJ2000(centerX, centerY);
+                var result = Earth3d.GalactictoJ2000(centerX, centerY);
                 centerX = result[0];
                 centerY = result[1];
             }
@@ -279,14 +277,14 @@ namespace TerraViewer
 
         public Bitmap GetHistogramBitmap(int max)
         {
-            Bitmap bmp = new Bitmap(Histogram.Length, 150);
-            Graphics g = Graphics.FromImage(bmp);
+            var bmp = new Bitmap(Histogram.Length, 150);
+            var g = Graphics.FromImage(bmp);
             g.Clear(Color.FromArgb(68, 82, 105));
-            Pen pen = new Pen(Color.FromArgb(127, 137, 157));
-            double logMax = Math.Log(HistogramMaxCount);
-            for (int i = 0; i < Histogram.Length; i++)
+            var pen = new Pen(Color.FromArgb(127, 137, 157));
+            var logMax = Math.Log(HistogramMaxCount);
+            for (var i = 0; i < Histogram.Length; i++)
             {
-                double height = Math.Log(Histogram[i])/logMax;
+                var height = Math.Log(Histogram[i])/logMax;
                 if (height < 0)
                 {
                     height = 0;
@@ -304,7 +302,7 @@ namespace TerraViewer
 
         public int[] ComputeHistogram(int count, out int maxCount)
         {
-            int [] histogram = new int[count];
+            var histogram = new int[count];
 
             switch (DataType)
             {
@@ -323,29 +321,19 @@ namespace TerraViewer
                 case DataTypes.Double:
                     ComputeHistogramDouble(histogram);
                     break;
-                case DataTypes.None:
-                default:
-                    break;
             }
-            int maxCounter = 1;
-            foreach (int val in histogram)
-            {
-                if (val > maxCounter)
-                {
-                    maxCounter = val;
-                }
-            }
+            var maxCounter = histogram.Concat(new[] {1}).Max();
             maxCount = maxCounter;
             return histogram;
         }
 
         private void ComputeHistogramDouble(int [] histogram)
         {
-            int buckets = histogram.Length;
-            double[] buf = (double[])DataBuffer;
-            double factor = (MaxVal - MinVal) / buckets;
+            var buckets = histogram.Length;
+            var buf = (double[])DataBuffer;
+            var factor = (MaxVal - MinVal) / buckets;
 
-            foreach (double val in buf)
+            foreach (var val in buf)
             {
                 if (!double.IsNaN(val))
                 {
@@ -356,11 +344,11 @@ namespace TerraViewer
 
         private void ComputeHistogramFloat(int [] histogram)
         {
-            int buckets = histogram.Length;
-            float[] buf = (float[])DataBuffer;
-            double factor = (MaxVal - MinVal) / buckets;
+            var buckets = histogram.Length;
+            var buf = (float[])DataBuffer;
+            var factor = (MaxVal - MinVal) / buckets;
 
-            foreach (float val in buf)
+            foreach (var val in buf)
             {
                 if (!float.IsNaN(val))
                 {
@@ -371,11 +359,11 @@ namespace TerraViewer
 
         private void ComputeHistogramInt32(int [] histogram)
         {
-            int buckets = histogram.Length;
-            Int32[] buf = (Int32[])DataBuffer;
-            double factor = (MaxVal - MinVal) / buckets;
+            var buckets = histogram.Length;
+            var buf = (Int32[])DataBuffer;
+            var factor = (MaxVal - MinVal) / buckets;
 
-            foreach (Int32 val in buf)
+            foreach (var val in buf)
             {
                 histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
             }
@@ -385,11 +373,11 @@ namespace TerraViewer
 
         private void ComputeHistogramInt16(int [] histogram)
         {
-            int buckets = histogram.Length;
-            short[] buf = (short[])DataBuffer;
-            double factor = (MaxVal - MinVal) / buckets;
+            var buckets = histogram.Length;
+            var buf = (short[])DataBuffer;
+            var factor = (MaxVal - MinVal) / buckets;
 
-            foreach (Int16 val in buf)
+            foreach (var val in buf)
             {
                 histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
             }
@@ -397,11 +385,11 @@ namespace TerraViewer
 
         private void ComputeHistogramByte(int [] histogram)
         {
-            int buckets = histogram.Length;
-            Byte[] buf = (Byte[])DataBuffer;
-            double factor = (MaxVal - MinVal) / buckets;
+            var buckets = histogram.Length;
+            var buf = (Byte[])DataBuffer;
+            var factor = (MaxVal - MinVal) / buckets;
 
-            foreach (Byte val in buf)
+            foreach (var val in buf)
             {
                 histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
             }
@@ -412,107 +400,89 @@ namespace TerraViewer
 
         private void InitDataBytes(BinaryReader br)
         {
-            byte[] buffer = new byte[BufferSize];
+            var buffer = new byte[BufferSize];
             DataBuffer = buffer;
-            for (int i = 0; i < BufferSize; i++)
+            for (var i = 0; i < BufferSize; i++)
             {
                 buffer[i] = br.ReadByte();
-                if (MinVal > (double)buffer[i])
+                if (MinVal > buffer[i])
                 {
-                    MinVal = (double)buffer[i];
+                    MinVal = buffer[i];
                 }
-                if (MaxVal < (double)buffer[i])
+                if (MaxVal < buffer[i])
                 {
-                    MaxVal = (double)buffer[i];
+                    MaxVal = buffer[i];
                 }
             }
         }
 
         private void InitDataShort(BinaryReader br)
         {
-            short[] buffer =  new Int16[BufferSize];
+            var buffer =  new Int16[BufferSize];
             DataBuffer = buffer;
-            for (int i = 0; i < BufferSize; i++)
+            for (var i = 0; i < BufferSize; i++)
             {
-                buffer[i] = (short)((br.ReadSByte() * 256) + (short)br.ReadByte());
-                if (MinVal > (double)buffer[i])
+                buffer[i] = (short)((br.ReadSByte() * 256) + br.ReadByte());
+                if (MinVal > buffer[i])
                 {
-                    MinVal = (double)buffer[i];
+                    MinVal = buffer[i];
                 }
-                if (MaxVal < (double)buffer[i])
+                if (MaxVal < buffer[i])
                 {
-                    MaxVal = (double)buffer[i];
-                }
-            }
-        }
-
-        private void InitDataUnsignedShort(BinaryReader br)
-        {
-            int[] buffer = new int[BufferSize];
-            DataBuffer = buffer;
-            for (int i = 0; i < BufferSize; i++)
-            {
-                buffer[i] = (int)((((short)br.ReadSByte()* 256) + (short)br.ReadByte() ) + 32768);
-                if (MinVal > (double)buffer[i])
-                {
-                    MinVal = (double)buffer[i];
-                }
-                if (MaxVal < (double)buffer[i])
-                {
-                    MaxVal = (double)buffer[i];
+                    MaxVal = buffer[i];
                 }
             }
         }
 
         private void InitDataInt(BinaryReader br)
         {
-            int[] buffer = new int[BufferSize];
+            var buffer = new int[BufferSize];
             DataBuffer = buffer;
-            for (int i = 0; i < BufferSize; i++)
+            for (var i = 0; i < BufferSize; i++)
             {
                 buffer[i] = (br.ReadSByte() << 24) + (br.ReadSByte() << 16) + (br.ReadSByte()  << 8) + br.ReadByte();
-                if (MinVal > (double)buffer[i])
+                if (MinVal > buffer[i])
                 {
-                    MinVal = (double)buffer[i];
+                    MinVal = buffer[i];
                 }
-                if (MaxVal < (double)buffer[i])
+                if (MaxVal < buffer[i])
                 {
-                    MaxVal = (double)buffer[i];
+                    MaxVal = buffer[i];
                 }
             }
         }
 
         private void InitDataFloat(BinaryReader br)
         {
-            float[] buffer = new float[BufferSize];
+            var buffer = new float[BufferSize];
             DataBuffer = buffer;
-            Byte[] part = new Byte[4];
-            for (int i = 0; i < BufferSize; i++)
+            var part = new Byte[4];
+            for (var i = 0; i < BufferSize; i++)
             {
                 part[3] = br.ReadByte();
                 part[2] = br.ReadByte();
                 part[1] = br.ReadByte();
                 part[0] = br.ReadByte();
 
-                buffer[i] = System.BitConverter.ToSingle(part, 0);
+                buffer[i] = BitConverter.ToSingle(part, 0);
 
-                if (MinVal > (double)buffer[i])
+                if (MinVal > buffer[i])
                 {
-                    MinVal = (double)buffer[i];
+                    MinVal = buffer[i];
                 }
-                if (MaxVal < (double)buffer[i])
+                if (MaxVal < buffer[i])
                 {
-                    MaxVal = (double)buffer[i];
+                    MaxVal = buffer[i];
                 }
             }
         }
 
         private void InitDataDouble(BinaryReader br)
         {
-            double[] buffer = new double[BufferSize];
-            Byte[] part = new Byte[8];
+            var buffer = new double[BufferSize];
+            var part = new Byte[8];
             DataBuffer = buffer;
-            for (int i = 0; i < BufferSize; i++)
+            for (var i = 0; i < BufferSize; i++)
             {
                 part[7] = br.ReadByte();
                 part[6] = br.ReadByte();
@@ -522,15 +492,15 @@ namespace TerraViewer
                 part[2] = br.ReadByte();
                 part[1] = br.ReadByte();
                 part[0] = br.ReadByte();
-                buffer[i] = System.BitConverter.ToDouble(part, 0);
+                buffer[i] = BitConverter.ToDouble(part, 0);
 
-                if (MinVal > (double)buffer[i])
+                if (MinVal > buffer[i])
                 {
-                    MinVal = (double)buffer[i];
+                    MinVal = buffer[i];
                 }
-                if (MaxVal < (double)buffer[i])
+                if (MaxVal < buffer[i])
                 {
-                    MaxVal = (double)buffer[i];
+                    MaxVal = buffer[i];
                 }
             }
         }
@@ -558,7 +528,6 @@ namespace TerraViewer
 
             switch (scaleType)
             {
-                default:
                 case ScaleTypes.Linear:
                     scale = new ScaleLinear(min, max);
                     break;
@@ -573,6 +542,10 @@ namespace TerraViewer
                     break;
                 case ScaleTypes.HistogramEqualization:
                     scale = new HistogramEqualization(this, min, max);
+                    break;
+                default:
+                    // use linear otherwise
+                    scale = new ScaleLinear(min, max);
                     break;
             }
            
@@ -590,8 +563,8 @@ namespace TerraViewer
                         return GetBitmapFloat(min, max, scale);
                     case DataTypes.Double:
                         return GetBitmapDouble(min, max, scale);
-                    case DataTypes.None:
                     default:
+                        // case DataTypes.None:
                         return new Bitmap(100, 100);
                 }
             }
@@ -603,28 +576,27 @@ namespace TerraViewer
 
         private Bitmap GetBitmapByte(double min, double max, ScaleMap scale)
         {
-            byte[] buf = (byte[])DataBuffer;
-            double factor = max - min;
-            int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
-            Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
-            FastBitmap fastBmp = new FastBitmap(bmp);
+            var buf = (byte[])DataBuffer;
+            var stride = AxisSize[0];
+            var page = AxisSize[0] * AxisSize[1];
+            var bmp = new Bitmap(AxisSize[0], AxisSize[1]);
+            var fastBmp = new FastBitmap(bmp);
 
             fastBmp.LockBitmap();
             unsafe
             {
-                for (int y = 0; y < AxisSize[1]; y++)
+                for (var y = 0; y < AxisSize[1]; y++)
                 {
-                    int indexY = ((AxisSize[1] - 1) - y);
-                    PixelData* pData = fastBmp[0, y];
-                    for (int x = 0; x < AxisSize[0]; x++)
+                    var indexY = ((AxisSize[1] - 1) - y);
+                    var pData = fastBmp[0, y];
+                    for (var x = 0; x < AxisSize[0]; x++)
                     {
                         if (color)
                         {
                             int datR = buf[(x + indexY * stride)];
                             int datG = buf[(x + indexY * stride) + page];
                             int datB = buf[(x + indexY * stride) + page * 2];
-                            if (ContainsBlanks && (double)datR == BlankValue)
+                            if (ContainsBlanks && datR == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
@@ -639,13 +611,13 @@ namespace TerraViewer
                         else
                         {
                             int dataValue = buf[x + indexY * stride];
-                            if (ContainsBlanks && (double)dataValue == BlankValue)
+                            if (ContainsBlanks && dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
                             else
                             {
-                                Byte val = scale.Map(dataValue);
+                                var val = scale.Map(dataValue);
 
                                 *pData++ = new PixelData(val, val, val, 255);
                             }
@@ -659,28 +631,27 @@ namespace TerraViewer
 
         private Bitmap GetBitmapDouble(double min, double max, ScaleMap scale)
         {
-            double[] buf = (double[])DataBuffer;
-            double factor = max - min;
-            int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
-            Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
-            FastBitmap fastBmp = new FastBitmap(bmp);
+            var buf = (double[])DataBuffer;
+            var stride = AxisSize[0];
+            var page = AxisSize[0] * AxisSize[1];
+            var bmp = new Bitmap(AxisSize[0], AxisSize[1]);
+            var fastBmp = new FastBitmap(bmp);
 
             fastBmp.LockBitmap();
             unsafe
             {
-                for (int y = 0; y < AxisSize[1]; y++)
+                for (var y = 0; y < AxisSize[1]; y++)
                 {
-                    int indexY = ((AxisSize[1] - 1) - y);
-                    PixelData* pData = fastBmp[0, y];
-                    for (int x = 0; x < AxisSize[0]; x++)
+                    var indexY = ((AxisSize[1] - 1) - y);
+                    var pData = fastBmp[0, y];
+                    for (var x = 0; x < AxisSize[0]; x++)
                     {
                         if (color)
                         {
-                            double datR = buf[(x + indexY * stride)];
-                            double datG = buf[(x + indexY * stride) + page];
-                            double datB = buf[(x + indexY * stride) + page * 2];
-                            if (ContainsBlanks && (double)datR == BlankValue)
+                            var datR = buf[(x + indexY * stride)];
+                            var datG = buf[(x + indexY * stride) + page];
+                            var datB = buf[(x + indexY * stride) + page * 2];
+                            if (ContainsBlanks && datR == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
@@ -694,14 +665,14 @@ namespace TerraViewer
                         }
                         else
                         {
-                            double dataValue = buf[x + indexY * stride];
-                            if (ContainsBlanks && (double)dataValue == BlankValue)
+                            var dataValue = buf[x + indexY * stride];
+                            if (ContainsBlanks && dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
                             else
                             {
-                                Byte val = scale.Map(dataValue);
+                                var val = scale.Map(dataValue);
                                 *pData++ = new PixelData(val, val, val, 255);
                             }
                         }
@@ -714,28 +685,27 @@ namespace TerraViewer
 
         private Bitmap GetBitmapFloat(double min, double max, ScaleMap scale)
         {
-            float[] buf = (float[])DataBuffer;
-            double factor = max - min;
-            int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
-            Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
-            FastBitmap fastBmp = new FastBitmap(bmp);
+            var buf = (float[])DataBuffer;
+            var stride = AxisSize[0];
+            var page = AxisSize[0] * AxisSize[1];
+            var bmp = new Bitmap(AxisSize[0], AxisSize[1]);
+            var fastBmp = new FastBitmap(bmp);
 
             fastBmp.LockBitmap();
             unsafe
             {
-                for (int y = 0; y < AxisSize[1]; y++)
+                for (var y = 0; y < AxisSize[1]; y++)
                 {
-                    int indexY = ((AxisSize[1] - 1) - y);
-                    PixelData* pData = fastBmp[0, y];
-                    for (int x = 0; x < AxisSize[0]; x++)
+                    var indexY = ((AxisSize[1] - 1) - y);
+                    var pData = fastBmp[0, y];
+                    for (var x = 0; x < AxisSize[0]; x++)
                     {
                         if (color)
                         {
                             double datR = buf[(x + indexY * stride)];
                             double datG = buf[(x + indexY * stride) + page];
                             double datB = buf[(x + indexY * stride) + page * 2];
-                            if (ContainsBlanks && (double)datR == BlankValue)
+                            if (ContainsBlanks && datR == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
@@ -750,13 +720,13 @@ namespace TerraViewer
                         else
                         {
                             double dataValue = buf[x + indexY * stride];
-                            if (ContainsBlanks && (double)dataValue == BlankValue)
+                            if (ContainsBlanks && dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
                             else
                             {
-                                Byte val = scale.Map(dataValue);
+                                var val = scale.Map(dataValue);
                                 *pData++ = new PixelData(val, val, val, 255);
                             }
                         }
@@ -769,28 +739,27 @@ namespace TerraViewer
 
         private Bitmap GetBitmapInt(double min, double max, ScaleMap scale)
         {
-            int[] buf = (int[])DataBuffer;
-            double factor = max - min;
-            int stride = AxisSize[0];
-            int page = AxisSize[0]*AxisSize[1];
-            Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
-            FastBitmap fastBmp = new FastBitmap(bmp);
+            var buf = (int[])DataBuffer;
+            var stride = AxisSize[0];
+            var page = AxisSize[0]*AxisSize[1];
+            var bmp = new Bitmap(AxisSize[0], AxisSize[1]);
+            var fastBmp = new FastBitmap(bmp);
 
             fastBmp.LockBitmap();
             unsafe
             {
-                for (int y = 0; y < AxisSize[1]; y++)
+                for (var y = 0; y < AxisSize[1]; y++)
                 {
-                    int indexY = ((AxisSize[1] - 1) - y);
-                    PixelData* pData = fastBmp[0, y];
-                    for (int x = 0; x < AxisSize[0]; x++)
+                    var indexY = ((AxisSize[1] - 1) - y);
+                    var pData = fastBmp[0, y];
+                    for (var x = 0; x < AxisSize[0]; x++)
                     {
                         if (color)
                         {
-                            int datR = buf[(x + indexY * stride)];
-                            int datG = buf[(x + indexY * stride) + page];
-                            int datB = buf[(x + indexY * stride) + page * 2];
-                            if (ContainsBlanks && (double)datR == BlankValue)
+                            var datR = buf[(x + indexY * stride)];
+                            var datG = buf[(x + indexY * stride) + page];
+                            var datB = buf[(x + indexY * stride) + page * 2];
+                            if (ContainsBlanks && datR == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
@@ -804,14 +773,14 @@ namespace TerraViewer
                         }
                         else
                         {
-                            int dataValue = buf[x + indexY * stride];
-                            if (ContainsBlanks && (double)dataValue == BlankValue)
+                            var dataValue = buf[x + indexY * stride];
+                            if (ContainsBlanks && dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
                             else
                             {
-                                Byte val = scale.Map(dataValue);
+                                var val = scale.Map(dataValue);
                                 *pData++ = new PixelData(val, val, val, 255);
                             }
                         }
@@ -825,28 +794,27 @@ namespace TerraViewer
         public Bitmap GetBitmapShort(double min, double max, ScaleMap scale)
         {
 
-            short[] buf = (short[])DataBuffer;
-            double factor = max - min;
-            int stride = AxisSize[0];
-            int page = AxisSize[0]*AxisSize[1];
-            Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
-            FastBitmap fastBmp = new FastBitmap(bmp);
+            var buf = (short[])DataBuffer;
+            var stride = AxisSize[0];
+            var page = AxisSize[0]*AxisSize[1];
+            var bmp = new Bitmap(AxisSize[0], AxisSize[1]);
+            var fastBmp = new FastBitmap(bmp);
 
             fastBmp.LockBitmap();
             unsafe
             {
-                for (int y = 0; y < AxisSize[1]; y++)
+                for (var y = 0; y < AxisSize[1]; y++)
                 {
-                    int indexY = ((AxisSize[1] - 1) - y);
-                    PixelData* pData = fastBmp[0, y];
-                    for (int x = 0; x < AxisSize[0]; x++)
+                    var indexY = ((AxisSize[1] - 1) - y);
+                    var pData = fastBmp[0, y];
+                    for (var x = 0; x < AxisSize[0]; x++)
                     {
                         if (color)
                         {
                             int datR = buf[(x + indexY * stride)];
                             int datG = buf[(x + indexY * stride)+page];
                             int datB = buf[(x + indexY * stride)+page*2];
-                            if (ContainsBlanks && (double)datR == BlankValue)
+                            if (ContainsBlanks && datR == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
@@ -861,13 +829,13 @@ namespace TerraViewer
                         else
                         {
                             int dataValue = buf[x + indexY * stride];
-                            if (ContainsBlanks && (double)dataValue == BlankValue)
+                            if (ContainsBlanks && dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
                             }
                             else
                             {
-                                Byte val = scale.Map(dataValue);
+                                var val = scale.Map(dataValue);
                                 *pData++ = new PixelData(val, val, val, 255);
                             }
                         }
@@ -888,111 +856,100 @@ namespace TerraViewer
 
     public class ScaleLinear : ScaleMap
     {
-        double min;
-        double max;
-        double factor;
-        double logFactor;
+        readonly double minimum;
+        readonly double factor;
+
         public ScaleLinear(double min, double max)
         {
-            this.min = min;
-            this.max = max;
-            factor = max - min;
+            this.minimum = min;
+            this.factor = max - min;
         }
 
         public override byte Map(double val)
         {
-            return (Byte)Math.Min(255, Math.Max(0, (int)((double)(val - min) / factor * 255)));
+            return (Byte)Math.Min(255, Math.Max(0, (int)((val - this.minimum) / factor * 255)));
         }
     }
 
     public class ScaleLog : ScaleMap
     {
-        double min;
-        double max;
-        double factor;
-        double logFactor;
+        readonly double min;
+        readonly double factor;
+        readonly double logFactor;
         public ScaleLog(double min, double max)
         {
             this.min = min;
-            this.max = max;
             factor = max - min;
             logFactor = 255 / Math.Log(255);
         }
 
         public override byte Map(double val)
         {
-            return (Byte)Math.Min(255, Math.Max(0, (int)((double)Math.Log((val - min) / factor * 255) * logFactor)));
+            return (Byte)Math.Min(255, Math.Max(0, (int)(Math.Log((val - min) / factor * 255) * logFactor)));
         }
     }
 
     public class ScalePow : ScaleMap
     {
-        double min;
-        double max;
-        double factor;
-        double powFactor;
+        readonly double min;
+        readonly double factor;
+        readonly double powFactor;
         public ScalePow(double min, double max)
         {
             this.min = min;
-            this.max = max;
             factor = max - min;
             powFactor = 255 / Math.Pow(255, 2);
         }
 
         public override byte Map(double val)
         {
-            return (Byte)Math.Min(255, Math.Max(0, (int)((double)Math.Pow((val - min) / factor * 255, 2) * powFactor)));
+            return (Byte)Math.Min(255, Math.Max(0, (int)(Math.Pow((val - min) / factor * 255, 2) * powFactor)));
         }
     }
 
     public class ScaleSqrt : ScaleMap
     {
-        double min;
-        double max;
-        double factor;
-        double sqrtFactor;
+        readonly double min;
+        readonly double factor;
+        readonly double sqrtFactor;
         public ScaleSqrt(double min, double max)
         {
             this.min = min;
-            this.max = max;
             factor = max - min;
             sqrtFactor = 255 / Math.Sqrt(255);
         }
 
         public override byte Map(double val)
         {
-            return (Byte)Math.Min(255, Math.Max(0, (int)((double)Math.Sqrt((val - min) / factor * 255) * sqrtFactor)));
+            return (Byte)Math.Min(255, Math.Max(0, (int)(Math.Sqrt((val - min) / factor * 255) * sqrtFactor)));
         }
     }
 
     public class HistogramEqualization : ScaleMap
     {
-        double min;
-        double max;
-        double factor;
-        int[] Histogram;
-        int maxHistogramValue = 1;
-        Byte[] lookup ;
+        readonly double min;
+        readonly double factor;
+        readonly Byte[] lookup ;
         const int buckets = 10000;
         public HistogramEqualization(FitsImage image, double min, double max)
         {
+            int maxHistogramValue;
             this.min = min;
-            this.max = max;
             factor = max - min;
-            Histogram = image.ComputeHistogram(buckets, out maxHistogramValue);
+            int[] histogram = image.ComputeHistogram(buckets, out maxHistogramValue);
             lookup = new Byte[buckets];
-            int totalCounts = image.Width*image.Height;
-            int sum = 0;
-            for(int i = 0;i< buckets;i++)
+            var totalCounts = image.Width*image.Height;
+            var sum = 0;
+            for(var i = 0;i< buckets;i++)
             {
-                sum+=Histogram[i];
+                sum+=histogram[i];
                 lookup[i]=(Byte)(Math.Min(255,((sum*255.0))/totalCounts)+.5);
             }
         }
 
         public override byte Map(double val)
         {
-            return (Byte)lookup[Math.Min(buckets-1, Math.Max(0, (int)((double)(val - min) / factor * (buckets-1.0))))];
+            return lookup[Math.Min(buckets-1, Math.Max(0, (int)((val - min) / factor * (buckets-1.0))))];
         }
     }
 }

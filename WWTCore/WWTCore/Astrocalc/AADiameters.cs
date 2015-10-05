@@ -70,7 +70,7 @@ public class  CAADiameters
   }
   public static double ApparentSaturnPolarSemidiameterA(double Delta, double B)
   {
-	double cosB = Math.Cos(CAACoordinateTransformation.DegreesToRadians(B));
+	var cosB = Math.Cos(CAACoordinateTransformation.DegreesToRadians(B));
 	return SaturnPolarSemidiameterA(Delta)*Math.Sqrt(1 - 0.199197 *cosB *cosB);
   }
   public static double UranusSemidiameterA(double Delta)
@@ -111,7 +111,7 @@ public class  CAADiameters
   }
   public static double ApparentSaturnPolarSemidiameterB(double Delta, double B)
   {
-	double cosB = Math.Cos(CAACoordinateTransformation.DegreesToRadians(B));
+	var cosB = Math.Cos(CAACoordinateTransformation.DegreesToRadians(B));
 	return SaturnPolarSemidiameterB(Delta)*Math.Sqrt(1 - 0.203800 *cosB *cosB);
   }
   public static double UranusSemidiameterB(double Delta)
@@ -136,18 +136,18 @@ public class  CAADiameters
 	H = CAACoordinateTransformation.HoursToRadians(H);
 	Delta = CAACoordinateTransformation.DegreesToRadians(Delta);
   
-	double pi = Math.Asin(6378.14/DistanceDelta);
-	double A = Math.Cos(Delta)*Math.Sin(H);
-	double B = Math.Cos(Delta)*Math.Cos(H) - CAAGlobe.RhoCosThetaPrime(Latitude, Height)*Math.Sin(pi);
-	double C = Math.Sin(Delta) - CAAGlobe.RhoSinThetaPrime(Latitude, Height)*Math.Sin(pi);
-	double q = Math.Sqrt(A *A + B *B + C *C);
+	var pi = Math.Asin(6378.14/DistanceDelta);
+	var A = Math.Cos(Delta)*Math.Sin(H);
+	var B = Math.Cos(Delta)*Math.Cos(H) - CAAGlobe.RhoCosThetaPrime(Latitude, Height)*Math.Sin(pi);
+	var C = Math.Sin(Delta) - CAAGlobe.RhoSinThetaPrime(Latitude, Height)*Math.Sin(pi);
+	var q = Math.Sqrt(A *A + B *B + C *C);
   
-	double s = CAACoordinateTransformation.DegreesToRadians(GeocentricMoonSemidiameter(DistanceDelta)/3600);
+	var s = CAACoordinateTransformation.DegreesToRadians(GeocentricMoonSemidiameter(DistanceDelta)/3600);
 	return CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sin(s)/q))*3600;
   }
   public static double AsteroidDiameter(double H, double A)
   {
-	double x = 3.12 - H/5 - 0.217147 *Math.Log(A);
+	var x = 3.12 - H/5 - 0.217147 *Math.Log(A);
 	return Math.Pow(10.0, x);
   }
   public static double ApparentAsteroidDiameter(double Delta, double d)

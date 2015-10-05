@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TerraViewer
 {
@@ -8,9 +6,9 @@ namespace TerraViewer
     {
         public Camera( string manufacturer, string name, string url)
         {
-            this.Manufacturer = manufacturer;
-            this.Name = name;
-            this.Url = url;
+            Manufacturer = manufacturer;
+            Name = name;
+            Url = url;
             Chips = new List<Imager>();
         }
         public override string ToString()

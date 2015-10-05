@@ -48,10 +48,10 @@ public class  CAADynamicalTime
   public static double DeltaT(double JD)
   {
 	//Construct a CAADate from the julian day
-	CAADate date = new CAADate(JD, CAADate.AfterPapalReform(JD));
+	var date = new CAADate(JD, CAADate.AfterPapalReform(JD));
   
-	double y = date.FractionalYear();
-	double T = (y - 2000) / 100;
+	var y = date.FractionalYear();
+	var T = (y - 2000) / 100;
   
 	double Delta;
 	if (y < 948)
@@ -60,7 +60,7 @@ public class  CAADynamicalTime
 	  Delta = 102 + (102 *T) + (25.3 *T *T);
 	else if (y < 1998)
 	{
-	  int Index = (int)((y - 1620) / 2);
+	  var Index = (int)((y - 1620) / 2);
       Debug.Assert(Index < GlobalMembersStdafx.DeltaTTable.Length);
   
 	  y = y / 2 - Index - 810;
@@ -68,7 +68,7 @@ public class  CAADynamicalTime
 	}
 	else if (y <= 2000)
 	{
-	  int nLookupSize = GlobalMembersStdafx.DeltaTTable.Length;
+	  var nLookupSize = GlobalMembersStdafx.DeltaTTable.Length;
 	  Delta = GlobalMembersStdafx.DeltaTTable[nLookupSize-1];
 	}
 	else if (y < 2100)

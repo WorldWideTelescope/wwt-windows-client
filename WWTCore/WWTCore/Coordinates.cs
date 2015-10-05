@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using SharpDX;
 
 namespace TerraViewer
@@ -34,13 +32,13 @@ namespace TerraViewer
 
         static public Vector3 GalacticTo3d(double l, double b)
         {
-            double[] result = GalactictoJ2000(l, b);
+            var result = GalactictoJ2000(l, b);
             return RADecTo3d(result[0]/15+12, result[1]);
         }
 
         static public Vector3d GalacticTo3dDouble(double l, double b)
         {
-            double[] result = GalactictoJ2000(l, b);
+            var result = GalactictoJ2000(l, b);
             return RADecTo3d(result[0]/15+12, result[1], 1);
         }
 
@@ -88,9 +86,9 @@ namespace TerraViewer
 
             if (x != 0 || y != 0)
             {
-                double re = (1 + Math.Sin(Math.Abs(standardLat) / 180 * Math.PI)) * EarthRadius / scale;
-                double rere = re * re;
-                double c1 = 180 / Math.PI;
+                var re = (1 + Math.Sin(Math.Abs(standardLat) / 180 * Math.PI)) * EarthRadius / scale;
+                var rere = re * re;
+                var c1 = 180 / Math.PI;
 
                 if (x == 0)
                 {
@@ -116,7 +114,7 @@ namespace TerraViewer
                 //    lng += 360;
                 //}
 
-                double len = (x * x) + (y * y);
+                var len = (x * x) + (y * y);
                 lat = (rere - len) / (rere + len);
                 lat = Math.Asin(lat) * c1;
 
@@ -127,7 +125,7 @@ namespace TerraViewer
                     meridean = -meridean;
                 }
             }
-            return Coordinates.GeoTo3dDouble(lat, 90 + lng + meridean, radius);
+            return GeoTo3dDouble(lat, 90 + lng + meridean, radius);
         }
 
         static public Vector2d RaDecToTan(Coordinates center, Coordinates point)
@@ -137,16 +135,16 @@ namespace TerraViewer
 
         static public Vector2d RaDecToTan(Vector2d center, Vector2d point)
         {
-            double lambda = point.X / 12 * Math.PI;
-            double phi = point.Y / 180 * Math.PI;
-            double lcenter = center.X / 12 * Math.PI;
-            double pCenter = center.Y / 180 * Math.PI;
+            var lambda = point.X / 12 * Math.PI;
+            var phi = point.Y / 180 * Math.PI;
+            var lcenter = center.X / 12 * Math.PI;
+            var pCenter = center.Y / 180 * Math.PI;
 
 
-            double cosc = Math.Sin(pCenter) * Math.Sin(phi) + Math.Cos(pCenter) * Math.Cos(phi) * Math.Cos(lambda - lcenter);
+            var cosc = Math.Sin(pCenter) * Math.Sin(phi) + Math.Cos(pCenter) * Math.Cos(phi) * Math.Cos(lambda - lcenter);
 
-            double x = Math.Cos(phi) * Math.Sin(lambda - lcenter) / cosc;
-            double y = (Math.Cos(pCenter) * Math.Sin(phi) - Math.Sin(pCenter) * Math.Cos(phi) * Math.Cos(lambda - lcenter)) / cosc;
+            var x = Math.Cos(phi) * Math.Sin(lambda - lcenter) / cosc;
+            var y = (Math.Cos(pCenter) * Math.Sin(phi) - Math.Sin(pCenter) * Math.Cos(phi) * Math.Cos(lambda - lcenter)) / cosc;
 
             return new Vector2d(x, y);
         }
@@ -158,17 +156,17 @@ namespace TerraViewer
 
         static public Vector2d TanToRaDec(Vector2d center, Vector2d point)
         {
-            double x = point.X;
-            double y = point.Y;
-            double lcenter = center.X / 12 * Math.PI;
-            double pCenter = center.Y / 180 * Math.PI;
+            var x = point.X;
+            var y = point.Y;
+            var lcenter = center.X / 12 * Math.PI;
+            var pCenter = center.Y / 180 * Math.PI;
 
-            double p = Math.Sqrt(x * x + y * y);
-            double c = Math.Atan(p);
+            var p = Math.Sqrt(x * x + y * y);
+            var c = Math.Atan(p);
 
-            double phi = Math.Asin(Math.Cos(c) * Math.Sin(pCenter) + y * Math.Sin(c) * Math.Cos(pCenter) / p);
+            var phi = Math.Asin(Math.Cos(c) * Math.Sin(pCenter) + y * Math.Sin(c) * Math.Cos(pCenter) / p);
 
-            double lambda = lcenter + Math.Atan2(x * Math.Sin(c), (p * Math.Cos(pCenter) * Math.Cos(c) - y * Math.Sin(pCenter) * Math.Sin(c)));
+            var lambda = lcenter + Math.Atan2(x * Math.Sin(c), (p * Math.Cos(pCenter) * Math.Cos(c) - y * Math.Sin(pCenter) * Math.Sin(c)));
 
             return new Vector2d(lambda / Math.PI * 12, phi / Math.PI * 180);
         }
@@ -177,20 +175,20 @@ namespace TerraViewer
         static public Coordinates EquitorialToHorizon4(Coordinates equitorial, Coordinates location, DateTime utc)
         {
  
-            double lon = location.Lng;
+            var lon = location.Lng;
 
 
 
   
-            double hour = utc.Hour + utc.Minute / 60.00 + utc.Second / 3600.0;
+            var hour = utc.Hour + utc.Minute / 60.00 + utc.Second / 3600.0;
 
 
-            double day = utc.Day + hour / 24.0;
+            var day = utc.Day + hour / 24.0;
 
-            double fullDays = Math.Floor(day);
+            var fullDays = Math.Floor(day);
 
-            int month = utc.Month;
-            int year = utc.Year;
+            var month = utc.Month;
+            var year = utc.Year;
             if (month < 3)
             {
                 year--;
@@ -209,17 +207,17 @@ namespace TerraViewer
             }
 
 
-            double julianDay = Math.Floor(365.25 * year) + Math.Floor(30.6001 * (month + 1)) + fullDays + 1720994.5 + gr;
+            var julianDay = Math.Floor(365.25 * year) + Math.Floor(30.6001 * (month + 1)) + fullDays + 1720994.5 + gr;
 
-            double julianDay2 = julianDay + hour / 24;
-            double t = (julianDay - 2415020) / 36525;
-            double ss = 6.6460656 + 2400.051 * t + 0.00002581 * t * t;
-            double st = (ss / 24 - Math.Floor(ss / 24)) * 24;
-            double gsth = Math.Floor(st);
-            double gstm = Math.Floor((st - Math.Floor(st)) * 60);
-            double gsts = ((st - Math.Floor(st)) * 60 - gstm) * 60;
+            var julianDay2 = julianDay + hour / 24;
+            var t = (julianDay - 2415020) / 36525;
+            var ss = 6.6460656 + 2400.051 * t + 0.00002581 * t * t;
+            var st = (ss / 24 - Math.Floor(ss / 24)) * 24;
+            var gsth = Math.Floor(st);
+            var gstm = Math.Floor((st - Math.Floor(st)) * 60);
+            var gsts = ((st - Math.Floor(st)) * 60 - gstm) * 60;
 
-            double sa = st + (day - Math.Floor(day)) * 24 * 1.002737908;
+            var sa = st + (day - Math.Floor(day)) * 24 * 1.002737908;
 
             sa = sa + (lon/15);
 
@@ -232,9 +230,9 @@ namespace TerraViewer
             {
                 sa-=24;
             }
-            double tsh = Math.Floor(sa);
-            double tsm = Math.Floor((sa - Math.Floor(sa)) * 60);
-            double tss = ((sa - Math.Floor(sa)) * 60 - tsm) * 60;
+            var tsh = Math.Floor(sa);
+            var tsm = Math.Floor((sa - Math.Floor(sa)) * 60);
+            var tss = ((sa - Math.Floor(sa)) * 60 - tsm) * 60;
 
             return new Coordinates(0,0);
 
@@ -242,55 +240,55 @@ namespace TerraViewer
 
         public double Distance(Coordinates pointB)
         {
-            double y = this.Lat;
-            double x = this.Lng * Math.Cos(y * RC);
-            double y1 = pointB.Lat;
-            double x1 = pointB.Lng * Math.Cos(y1 * RC);
+            var y = Lat;
+            var x = Lng * Math.Cos(y * RC);
+            var y1 = pointB.Lat;
+            var x1 = pointB.Lng * Math.Cos(y1 * RC);
             return Math.Sqrt((y - y1) * (y - y1) + (x - x1) * (x - x1));
         }
 
         public double Distance3d(Coordinates pointB)
         {
-            Vector3d pnt1 = Coordinates.GeoTo3dDouble(pointB.Lat, pointB.Lng);
-            Vector3d pnt2 = Coordinates.GeoTo3dDouble(this.Lat, this.Lng);
+            var pnt1 = GeoTo3dDouble(pointB.Lat, pointB.Lng);
+            var pnt2 = GeoTo3dDouble(Lat, Lng);
 
-            Vector3d pntDiff = pnt1 - pnt2;
+            var pntDiff = pnt1 - pnt2;
 
             return pntDiff.Length() / RC;
         }
 
         public double Angle(Coordinates pointB)
         {
-            double y = this.Lat;
-            double x = this.Lng * Math.Cos(y * RC);
-            double y1 = pointB.Lat;
-            double x1 = pointB.Lng * Math.Cos(y1 * RC);
+            var y = Lat;
+            var x = Lng * Math.Cos(y * RC);
+            var y1 = pointB.Lat;
+            var x1 = pointB.Lng * Math.Cos(y1 * RC);
             return Math.Atan2((y1 - y), (x1 - x));
         }
 
         static public Coordinates EquitorialToHorizon(Coordinates equitorial, Coordinates location, DateTime utc)
         {
-            double hourAngle = MstFromUTC2(utc, location.Lng) - (equitorial.RA * 15);
+            var hourAngle = MstFromUTC2(utc, location.Lng) - (equitorial.RA * 15);
 
             if (hourAngle < 0)
             {
                 hourAngle += 360.00;
             }
 
-            double ha = hourAngle * RC;
-            double dec = equitorial.Dec * RC;
-            double lat = (location.Lat) * RC;
+            var ha = hourAngle * RC;
+            var dec = equitorial.Dec * RC;
+            var lat = (location.Lat) * RC;
 
-            double sinAlt = Math.Sin(dec) * Math.Sin(lat) + Math.Cos(dec) * Math.Cos(lat) * Math.Cos(ha);
+            var sinAlt = Math.Sin(dec) * Math.Sin(lat) + Math.Cos(dec) * Math.Cos(lat) * Math.Cos(ha);
 
-            double altitude = Math.Asin(sinAlt);
+            var altitude = Math.Asin(sinAlt);
 
-            double cosAzimith = (Math.Sin(dec) - Math.Sin(altitude)*Math.Sin(lat))/(Math.Cos(altitude)*Math.Cos(lat));
-            double azimuth = Math.Acos(cosAzimith);
+            var cosAzimith = (Math.Sin(dec) - Math.Sin(altitude)*Math.Sin(lat))/(Math.Cos(altitude)*Math.Cos(lat));
+            var azimuth = Math.Acos(cosAzimith);
 
 
 
-            Coordinates altAz = new Coordinates(azimuth,altitude);
+            var altAz = new Coordinates(azimuth,altitude);
             if (Math.Sin(ha) > 0)
             {
                 altAz.Az = (360 - altAz.Az);
@@ -300,13 +298,13 @@ namespace TerraViewer
 
         static public Coordinates HorizonToEquitorial(Coordinates altAz, Coordinates location, DateTime utc)
         {
-            double hourAngle = MstFromUTC2(utc, location.Lng);// -(equitorial.RA * 15);
+            var hourAngle = MstFromUTC2(utc, location.Lng);// -(equitorial.RA * 15);
 
             double haLocal;
             double declination;
             AltAzToRaDec(altAz.Alt * RC, altAz.Az * RC, out haLocal, out declination, location.Lat * RC);
 
-            double ha = (haLocal / RC);
+            var ha = (haLocal / RC);
 
             hourAngle += ha;
 
@@ -319,7 +317,7 @@ namespace TerraViewer
                 hourAngle -= 360;
             }
 
-            return Coordinates.FromRaDec(hourAngle / 15, declination / RC);
+            return FromRaDec(hourAngle / 15, declination / RC);
         }
         static void AltAzToRaDec(double Altitude, double Azimuth, out double hrAngle, out double dec, double Latitude)
         {
@@ -348,7 +346,7 @@ namespace TerraViewer
                 az = .00000000001;
             } 
             double sin_dec;
-            double cos_lat = Math.Cos(lat);
+            var cos_lat = Math.Cos(lat);
 
             if (alt > Math.PI / 2.0)
             {
@@ -370,10 +368,10 @@ namespace TerraViewer
             }
             else
             {
-                double cos_lat_cos_dec = (cos_lat * Math.Cos(dec));
-                double sin_alt_sinLat_sin_dec = Math.Sin(alt) - Math.Sin(lat) * sin_dec;
+                var cos_lat_cos_dec = (cos_lat * Math.Cos(dec));
+                var sin_alt_sinLat_sin_dec = Math.Sin(alt) - Math.Sin(lat) * sin_dec;
 
-                double acosTarget = sin_alt_sinLat_sin_dec / cos_lat_cos_dec;
+                var acosTarget = sin_alt_sinLat_sin_dec / cos_lat_cos_dec;
                 double temp = 0;
                 if (Math.Abs(acosTarget) < 1.1)
                 {
@@ -410,12 +408,12 @@ namespace TerraViewer
         public static double MstFromUTC2(DateTime utc, double lng)
         {
 
-            int year = utc.Year;
-            int month = utc.Month;
-            int day = utc.Day;
-            int hour = utc.Hour;
-            int minute = utc.Minute;
-            double second = utc.Second + utc.Millisecond/1000.0;
+            var year = utc.Year;
+            var month = utc.Month;
+            var day = utc.Day;
+            var hour = utc.Hour;
+            var minute = utc.Minute;
+            var second = utc.Second + utc.Millisecond/1000.0;
 
             if (month == 1 || month == 2)
             {
@@ -433,10 +431,10 @@ namespace TerraViewer
             //double jd = c+day+e+f-1524.5;
 
 
-            int a = (int)(year / 100);
-            int b = 2 - a + (int)Math.Floor((double)(a / 4.0));
-            int c = (int)Math.Floor(365.25 * year);
-            int d = (int)Math.Floor(30.6001 * (month + 1));
+            var a = year / 100;
+            var b = 2 - a + (int)Math.Floor(a / 4.0);
+            var c = (int)Math.Floor(365.25 * year);
+            var d = (int)Math.Floor(30.6001 * (month + 1));
 
             double julianDays;
             double jd2;
@@ -500,17 +498,13 @@ namespace TerraViewer
                     ascention = 0;
                 }
 
-                double lng = ascention / RC;
+                var lng = ascention / RC;
 
                 if (lng <= 180)
                 {
                     return lng;
                 }
-                else
-                {
-                    return (-180 + (180 - lng));
-                }
-
+                return (-180 + (180 - lng));
             }
             //todo This was broken check callers to see what effect it had.
             set 
@@ -563,18 +557,18 @@ namespace TerraViewer
             double ascention;
             double declination;
 
-            double radius = Math.Sqrt((double)vector.X * (double)vector.X + (double)vector.Y * (double)vector.Y + (double)vector.Z * (double)vector.Z);
-            double XZ = Math.Sqrt((double)vector.X * (double)vector.X + (double)vector.Z * (double)vector.Z);
+            var radius = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            var XZ = Math.Sqrt(vector.X * vector.X + vector.Z * vector.Z);
 
-            declination = Math.Asin((double)vector.Y / radius);
+            declination = Math.Asin(vector.Y / radius);
 
             if (0 < vector.X)
             {
-                ascention = Math.Asin((double)vector.Z / XZ);
+                ascention = Math.Asin(vector.Z / XZ);
             }
             else if (0 > vector.X)
             {
-                ascention = Math.PI - Math.Asin((double)vector.Z / XZ);
+                ascention = Math.PI - Math.Asin(vector.Z / XZ);
             }
             else
             {
@@ -592,18 +586,18 @@ namespace TerraViewer
             double ascention;
             double declination;
 
-            double radius = Math.Sqrt((double)vector.X * (double)vector.X + (double)vector.Y * (double)vector.Y + (double)vector.Z * (double)vector.Z);
-            double XZ = Math.Sqrt((double)vector.X * (double)vector.X + (double)vector.Z * (double)vector.Z);
+            var radius = Math.Sqrt(vector.X * (double)vector.X + vector.Y * (double)vector.Y + vector.Z * (double)vector.Z);
+            var XZ = Math.Sqrt(vector.X * (double)vector.X + vector.Z * (double)vector.Z);
 
-            declination = Math.Asin((double)vector.Y / radius);
+            declination = Math.Asin(vector.Y / radius);
 
             if (0 < vector.X)
             {
-                ascention = Math.Asin((double)vector.Z / XZ);
+                ascention = Math.Asin(vector.Z / XZ);
             }
             else if (0 > vector.X)
             {
-                ascention = Math.PI - Math.Asin((double)vector.Z / XZ);
+                ascention = Math.PI - Math.Asin(vector.Z / XZ);
             }
             else
             {
@@ -630,13 +624,13 @@ namespace TerraViewer
 
             double altitude;
 
-            double sEccentricity2 = FL * (2.0 - FL);
+            var sEccentricity2 = FL * (2.0 - FL);
 
             double sinLat;     // cache for sin of latitude
             double cosLat;     // cache for cos of latitude
             double curvature;  // latitude dependent curvature
-            double radiusXY = Math.Sqrt(point.X * point.X + point.Y * point.Y); // (invariant)
-            double opp = point.Z;   // opposite length of latitude (invariant)
+            var radiusXY = Math.Sqrt(point.X * point.X + point.Y * point.Y); // (invariant)
+            var opp = point.Z;   // opposite length of latitude (invariant)
             double adj;        // adjacent length of latitude
             double hypInv;     // inverse hypotenuse length of latitude
 
@@ -755,7 +749,7 @@ namespace TerraViewer
 
         static public Vector3d XyzToGeo2(Vector3d point)
         {
-            double A = SemiMajorAxis;
+            var A = SemiMajorAxis;
             double B;
             double d;
             double e;
@@ -766,9 +760,9 @@ namespace TerraViewer
             double r;
             double t;
             double v;
-            double x = point.X;
-            double y = point.Y;
-            double z = point.Z;
+            var x = point.X;
+            var y = point.Y;
+            var z = point.Z;
             double zlong;
 
             double lat;
@@ -845,9 +839,9 @@ namespace TerraViewer
 
         static public Vector2d CartesianToLatLng(Vector3d vector)
         {
-            double rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-            double longitude = Math.Atan2(vector.Z, vector.X);
-            double latitude = Math.Asin(vector.Y / rho);
+            var rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            var longitude = Math.Atan2(vector.Z, vector.X);
+            var latitude = Math.Asin(vector.Y / rho);
 
             return new Vector2d(longitude * 180 / Math.PI, latitude * 180 / Math.PI);
 
@@ -855,9 +849,9 @@ namespace TerraViewer
 
         static public Coordinates CartesianToSpherical2(Vector3 vector)
         {
-		    double rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-		    double longitude = Math.Atan2(vector.Z, vector.X);
-		    double latitude = Math.Asin(vector.Y / rho);
+		    var rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+		    var longitude = Math.Atan2(vector.Z, vector.X);
+		    var latitude = Math.Asin(vector.Y / rho);
 
             return new Coordinates(longitude, latitude);
 
@@ -866,9 +860,9 @@ namespace TerraViewer
 
         static public Coordinates CartesianToSpherical2(Vector3d vector)
         {
-		    double rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-		    double longitude = Math.Atan2(vector.Z, vector.X);
-		    double latitude = Math.Asin(vector.Y / rho);
+		    var rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+		    var longitude = Math.Atan2(vector.Z, vector.X);
+		    var latitude = Math.Asin(vector.Y / rho);
 
             return new Coordinates(longitude, latitude);
 
@@ -876,9 +870,9 @@ namespace TerraViewer
 
         static public Coordinates CartesianToSpherical3(Vector3d vector)
         {
-		    double rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-		    double longitude = Math.Atan2(vector.Z, vector.X);
-		    double latitude = Math.Asin(vector.Y / rho);
+		    var rho = Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+		    var longitude = Math.Atan2(vector.Z, vector.X);
+		    var latitude = Math.Asin(vector.Y / rho);
 
             return new Coordinates(longitude, latitude);
 
@@ -895,18 +889,15 @@ namespace TerraViewer
                     return "";
                 }
                 angle += (Math.Sign(angle) * .0001388888888889);
-                int degrees = (int)angle;
-                double minutes = (((angle - (double)(int)angle) * 60));
-                double seconds = ((minutes - ((int)minutes)) * 60);
+                var degrees = (int)angle;
+                var minutes = (((angle - (int)angle) * 60));
+                var seconds = ((minutes - ((int)minutes)) * 60);
                 if (sign)
                 {
-                    string signString = angle > 0 ? "+" : "-";
+                    var signString = angle > 0 ? "+" : "-";
                     return String.Format("{3}{0:00;00}:{1:00}:{2:00}", degrees, Math.Abs((int)minutes), Math.Abs((int)seconds), signString);
                 }
-                else
-                {
-                    return String.Format("{0:00}:{1:00}:{2:00}", degrees, Math.Abs((int)minutes), Math.Abs((int)seconds));
-                }
+                return String.Format("{0:00}:{1:00}:{2:00}", degrees, Math.Abs((int)minutes), Math.Abs((int)seconds));
             }
             catch
             {
@@ -922,10 +913,10 @@ namespace TerraViewer
                     return "";
                 }
                 angle += (Math.Sign(angle) * .0001388888888889);
-                int degrees = Math.Abs((int)angle);
-                double minutes = (((angle - (double)(int)angle) * 60));
-                double seconds = ((minutes - ((int)minutes)) * 60);
-                string sign = angle < 0 ? "-" : "";
+                var degrees = Math.Abs((int)angle);
+                var minutes = (((angle - (int)angle) * 60));
+                var seconds = ((minutes - ((int)minutes)) * 60);
+                var sign = angle < 0 ? "-" : "";
                 return String.Format("{3}{0:00}:{1:00}:{2:00}", Math.Abs(degrees), Math.Abs((int)minutes), Math.Abs((int)seconds), sign);
             }
             catch
@@ -942,10 +933,10 @@ namespace TerraViewer
                     return "";
                 }
                 angle += (Math.Sign(angle) * .0001388888888889);
-                int degrees = Math.Abs((int)angle);
-                double minutes = (((angle - (double)(int)angle) * 60));
-                double seconds = ((minutes - ((int)minutes)) * 60);
-                string sign = angle < 0 ? "-" : "";
+                var degrees = Math.Abs((int)angle);
+                var minutes = (((angle - (int)angle) * 60));
+                var seconds = ((minutes - ((int)minutes)) * 60);
+                var sign = angle < 0 ? "-" : "";
                 return String.Format("{3}{0:00} : {1:00} : {2:00}", degrees, Math.Abs((int)minutes), Math.Abs((int)seconds),sign);
             }
             catch
@@ -962,9 +953,9 @@ namespace TerraViewer
                     return "";
                 }
                 angle += (Math.Sign(angle) * .0001388888888889);
-                int degrees = (int)angle;
-                double minutes = (((angle - (double)(int)angle) * 60));
-                double seconds = ((minutes - ((int)minutes)) * 60);
+                var degrees = (int)angle;
+                var minutes = (((angle - (int)angle) * 60));
+                var seconds = ((minutes - ((int)minutes)) * 60);
                 return String.Format("{0:00}h{1:00}m{2:00}s", degrees, Math.Abs((int)minutes), Math.Abs((int)seconds));
             }
             catch
@@ -987,7 +978,7 @@ namespace TerraViewer
             {
                 degrees = false;
             }
-            double ra = Parse(data) / (degrees ? 15 : 1);
+            var ra = Parse(data) / (degrees ? 15 : 1);
 
             return Math.Max(Math.Min(ra, 24.00), 0);
 
@@ -999,7 +990,7 @@ namespace TerraViewer
 
             data = data.Trim().ToLower();
 
-            bool degrees = false;
+            var degrees = false;
             if (data.Contains("d") || data.Contains("°"))
             {
                 degrees = true;
@@ -1011,13 +1002,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("h ", "h").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
                 double val = 0;
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' }) > -1)
+                if (data.IndexOfAny(new[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' }) > -1)
                 {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
+                    var parts = data.Split(new[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1078,13 +1069,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
                 double val = 0;
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'm', 's', '\'', '\"', '°' }) > -1)
+                if (data.IndexOfAny(new[] { ':', ' ', 'd', 'm', 's', '\'', '\"', '°' }) > -1)
                 {
                     double degrees = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'm', 's', '\'', '\"', '°' });
+                    var parts = data.Split(new[] { ':', ' ', 'd', 'm', 's', '\'', '\"', '°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1133,7 +1124,7 @@ namespace TerraViewer
 
         static public double ParseDec(string data)
         {
-            double dec = Parse(data);
+            var dec = Parse(data);
             return Math.Max(Math.Min(dec, 90.00), -90);
             
         }
@@ -1146,13 +1137,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("h ", "h").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
 
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' }) > -1)
+                if (data.IndexOfAny(new[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' }) > -1)
                 {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
+                    var parts = data.Split(new[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1182,12 +1173,12 @@ namespace TerraViewer
                         sign = 1;
                     }
 
-                    double val = sign * (hours + minutes / 60 + seconds / 3600);
+                    var val = sign * (hours + minutes / 60 + seconds / 3600);
                     return (val >= -90 && val <= 90);
                 } 
                 else
                 {
-                    double val = Convert.ToDouble(data);
+                    var val = Convert.ToDouble(data);
                     return (val >= -90 && val <= 90);
 
                 }
@@ -1206,13 +1197,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("h ", "h").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
 
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"','°' }) > -1)
+                if (data.IndexOfAny(new[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"','°' }) > -1)
                 {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
+                    var parts = data.Split(new[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1248,15 +1239,11 @@ namespace TerraViewer
 
                     return sign * (hours + minutes / 60 + seconds / 3600);
                 }
-                else
-                {
-                    bool sucsess = false;
-                    double val =0;
-                    sucsess = double.TryParse(data, out val);
+                var sucsess = false;
+                double val =0;
+                sucsess = double.TryParse(data, out val);
 
-                    return val;
-
-                }
+                return val;
             }
             catch
             {
@@ -1280,8 +1267,8 @@ namespace TerraViewer
             {
                 return false;
             }
-            Coordinates that = (Coordinates)obj;
-            return (this.ascention == that.ascention && this.declination == that.declination);
+            var that = (Coordinates)obj;
+            return (ascention == that.ascention && declination == that.declination);
         }
 
         public static bool operator != (Coordinates one, Coordinates two)
@@ -1290,11 +1277,9 @@ namespace TerraViewer
             {
                 return false;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
+
         public override int GetHashCode()
         {
             return ascention.GetHashCode() ^ declination.GetHashCode();
@@ -1362,16 +1347,16 @@ namespace TerraViewer
 
         public static double MeanObliquityOfEcliptic(double JD)
         {
-            double U = (JD - 2451545) / 3652500;
-            double Usquared = U*U;
-            double Ucubed = Usquared*U;
-            double U4 = Ucubed*U;
-            double U5 = U4*U;
-            double U6 = U5*U;
-            double U7 = U6*U;
-            double U8 = U7*U;
-            double U9 = U8*U;
-            double U10 = U9*U;
+            var U = (JD - 2451545) / 3652500;
+            var Usquared = U*U;
+            var Ucubed = Usquared*U;
+            var U4 = Ucubed*U;
+            var U5 = U4*U;
+            var U6 = U5*U;
+            var U7 = U6*U;
+            var U8 = U7*U;
+            var U9 = U8*U;
+            var U10 = U9*U;
 
 
             return DMSToDegrees(23, 26, 21.448)  - DMSToDegrees(0, 0, 4680.93) * U
@@ -1386,29 +1371,29 @@ namespace TerraViewer
                                                + DMSToDegrees(0, 0, 2.45) * U10;
         }
 
-        static double[][] RotationMatrix = null;
+        static double[][] RotationMatrix;
 
         public static double[] J2000toGalactic(double J2000RA, double J2000DEC)
         {
-            double[] J2000pos = new double[] { Math.Cos(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000DEC / 180.0 * Math.PI) };
+            var J2000pos = new[] { Math.Cos(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000DEC / 180.0 * Math.PI) };
 
             if (RotationMatrix == null)
             {
                 RotationMatrix = new double[3][];
-                RotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
-                RotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
-                RotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
+                RotationMatrix[0] = new[] { -.0548755604, -.8734370902, -.4838350155 };
+                RotationMatrix[1] = new[] { .4941094279, -.4448296300, .7469822445 };
+                RotationMatrix[2] = new[] { -.8676661490, -.1980763734, .4559837762 };
             }
 
 
 
-            double[] Galacticpos = new double[3];
-            for (int i = 0; i < 3; i++)
+            var Galacticpos = new double[3];
+            for (var i = 0; i < 3; i++)
             {
                 Galacticpos[i] = J2000pos[0] * RotationMatrix[i][0] + J2000pos[1] * RotationMatrix[i][1] + J2000pos[2] * RotationMatrix[i][2];
             }
 
-            double GalacticL2 = Math.Atan2(Galacticpos[1], Galacticpos[0]);
+            var GalacticL2 = Math.Atan2(Galacticpos[1], Galacticpos[0]);
             if (GalacticL2 < 0)
             {
                 GalacticL2 = GalacticL2 + 2 * Math.PI;
@@ -1418,9 +1403,9 @@ namespace TerraViewer
                 GalacticL2 = GalacticL2 - 2 * Math.PI;
             }
 
-            double GalacticB2 = Math.Atan2(Galacticpos[2], Math.Sqrt(Galacticpos[0] * Galacticpos[0] + Galacticpos[1] * Galacticpos[1]));
+            var GalacticB2 = Math.Atan2(Galacticpos[2], Math.Sqrt(Galacticpos[0] * Galacticpos[0] + Galacticpos[1] * Galacticpos[1]));
 
-            return new double[] { GalacticL2 / Math.PI * 180.0, GalacticB2 / Math.PI * 180.0 };
+            return new[] { GalacticL2 / Math.PI * 180.0, GalacticB2 / Math.PI * 180.0 };
         }
 
 
@@ -1428,22 +1413,22 @@ namespace TerraViewer
 
         public static double[] GalactictoJ2000(double GalacticL2, double GalacticB2)
         {
-            double[] Galacticpos = new double[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
+            var Galacticpos = new[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
             if (RotationMatrix == null)
             {
                 RotationMatrix = new double[3][];
-                RotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
-                RotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
-                RotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
+                RotationMatrix[0] = new[] { -.0548755604, -.8734370902, -.4838350155 };
+                RotationMatrix[1] = new[] { .4941094279, -.4448296300, .7469822445 };
+                RotationMatrix[2] = new[] { -.8676661490, -.1980763734, .4559837762 };
             }
 
-            double[] J2000pos = new double[3];
-            for (int i = 0; i < 3; i++)
+            var J2000pos = new double[3];
+            for (var i = 0; i < 3; i++)
             {
                 J2000pos[i] = Galacticpos[0] * RotationMatrix[0][i] + Galacticpos[1] * RotationMatrix[1][i] + Galacticpos[2] * RotationMatrix[2][i];
             }
 
-            double J2000RA = Math.Atan2(J2000pos[1], J2000pos[0]);
+            var J2000RA = Math.Atan2(J2000pos[1], J2000pos[0]);
             if (J2000RA < 0)
             {
                 J2000RA = J2000RA + 2 * Math.PI;
@@ -1453,9 +1438,9 @@ namespace TerraViewer
                 J2000RA = J2000RA - 2 * Math.PI;
             }
 
-            double J2000DEC = Math.Atan2(J2000pos[2], Math.Sqrt(J2000pos[0] * J2000pos[0] + J2000pos[1] * J2000pos[1]));
+            var J2000DEC = Math.Atan2(J2000pos[2], Math.Sqrt(J2000pos[0] * J2000pos[0] + J2000pos[1] * J2000pos[1]));
 
-            return new double[] { J2000RA / Math.PI * 180.0, J2000DEC / Math.PI * 180.0 };
+            return new[] { J2000RA / Math.PI * 180.0, J2000DEC / Math.PI * 180.0 };
 
         }
     }

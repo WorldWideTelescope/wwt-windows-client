@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
+using System.Windows.Forms;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D;
 using SharpDX;
 using SharpDX.DXGI;
-using Buffer = SharpDX.Direct3D11.Buffer;
 using Device = SharpDX.Direct3D11.Device;
-using MapFlags = SharpDX.Direct3D11.MapFlags;
 using System.IO;
+using Color = System.Drawing.Color;
 
 
 namespace TerraViewer
@@ -41,9 +39,9 @@ namespace TerraViewer
 
     public struct Material
     {
-        public System.Drawing.Color Diffuse;
-        public System.Drawing.Color Ambient;
-        public System.Drawing.Color Specular;
+        public Color Diffuse;
+        public Color Ambient;
+        public Color Specular;
         public float SpecularSharpness;
         public float Opacity;
         public bool Default;
@@ -52,7 +50,7 @@ namespace TerraViewer
     public class RenderContext11 : IDisposable
     {
         public static int MultiSampleCount = 4;
-        public static SharpDX.DXGI.Format DefaultDepthStencilFormat = Format.D24_UNorm_S8_UInt;
+        public static Format DefaultDepthStencilFormat = Format.D24_UNorm_S8_UInt;
 
         SwapChainDescription desc;
         private Device device;
@@ -71,8 +69,8 @@ namespace TerraViewer
         }
 
         public DeviceContext devContext;
-        SwapChain swapChain;
-        Factory factory;
+        readonly SwapChain swapChain;
+        readonly Factory factory;
         Texture2D backBuffer;
         RenderTargetView renderView;
         SamplerState sampler;
@@ -115,20 +113,20 @@ namespace TerraViewer
         public static bool Downlevel = false;
         public static bool sRGB = false;
 
-        public static SharpDX.DXGI.Format DefaultColorFormat
+        public static Format DefaultColorFormat
         {
             get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
         }
 
-        public static SharpDX.DXGI.Format DefaultTextureFormat
+        public static Format DefaultTextureFormat
         {
             get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
         }
 
-        public RenderContext11(System.Windows.Forms.Control control)
+        public RenderContext11(Control control)
         {
 
-            bool failed = true;
+            var failed = true;
             while (failed)
             {
                 try
@@ -165,7 +163,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        throw new System.Exception("DX Init failed");
+                        throw new Exception("DX Init failed");
                     }
                     failed = true;
                 }
@@ -263,7 +261,7 @@ namespace TerraViewer
             initializeStates();
         }
 
-        Device1 dv1 = null;
+        readonly Device1 dv1;
 
         public void SetLatency(int frames)
         {
@@ -330,14 +328,14 @@ namespace TerraViewer
 
         public Bitmap GetScreenBitmap()
         {
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
             if (MultiSampleCount != 1)
             {
 
-                Texture2D tex2 = new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
+                var tex2 = new Texture2D(PrepDevice, new Texture2DDescription()
                 {
-                    Format = RenderContext11.DefaultColorFormat,
+                    Format = DefaultColorFormat,
                     ArraySize = 1,
                     MipLevels = 1,
                     Width = (int)ViewPort.Width,
@@ -349,7 +347,7 @@ namespace TerraViewer
                     OptionFlags = ResourceOptionFlags.None
                 });
 
-                devContext.ResolveSubresource(backBuffer, 0, tex2, 0, RenderContext11.DefaultColorFormat);
+                devContext.ResolveSubresource(backBuffer, 0, tex2, 0, DefaultColorFormat);
                 Texture2D.ToStream(devContext, tex2, ImageFileFormat.Png, ms);
                 tex2.Dispose();
                 GC.SuppressFinalize(tex2);
@@ -361,7 +359,7 @@ namespace TerraViewer
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            Bitmap bmp = new Bitmap(ms);
+            var bmp = new Bitmap(ms);
 
             ms.Close();
             ms.Dispose();
@@ -371,9 +369,9 @@ namespace TerraViewer
 
         public Texture11 GetScreenTexture()
         {
-            Texture2D tex2 = new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
+            var tex2 = new Texture2D(PrepDevice, new Texture2DDescription()
             {
-                Format = RenderContext11.DefaultColorFormat,
+                Format = DefaultColorFormat,
                 ArraySize = 1,
                 MipLevels = 1,
                 Width = (int)ViewPort.Width,
@@ -385,7 +383,7 @@ namespace TerraViewer
                 OptionFlags = ResourceOptionFlags.None
             });
 
-            devContext.ResolveSubresource(backBuffer, 0, tex2, 0, RenderContext11.DefaultColorFormat);
+            devContext.ResolveSubresource(backBuffer, 0, tex2, 0, DefaultColorFormat);
 
             return new Texture11(tex2);
 
@@ -409,7 +407,7 @@ namespace TerraViewer
             }
         }
 
-        public void Resize(System.Windows.Forms.Control control)
+        public void Resize(Control control)
         {
             if (control.ClientSize.Width * control.ClientSize.Height == 0)
             {
@@ -605,7 +603,7 @@ namespace TerraViewer
             set { nominalRadius = value; }
         }
 
-        Texture11 mainTexture = null;
+        Texture11 mainTexture;
         public Texture11 MainTexture
         {
             get { return mainTexture; }
@@ -634,7 +632,7 @@ namespace TerraViewer
         bool shadowStateDirty = true;
         bool textureStateDirty = true;
         bool frustumDirty = true;
-        PlaneD[] frustum = new PlaneD[6];
+        readonly PlaneD[] frustum = new PlaneD[6];
 
         public PlaneD[] Frustum
         {
@@ -650,8 +648,8 @@ namespace TerraViewer
 
         public Vector3d CameraPosition;
 
-        private System.Drawing.Color ambientLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color AmbientLightColor
+        private Color ambientLightColor = Color.Black;
+        public Color AmbientLightColor
         {
             get
             {
@@ -665,8 +663,8 @@ namespace TerraViewer
             }
         }
 
-        private System.Drawing.Color hemiLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color HemisphereLightColor
+        private Color hemiLightColor = Color.Black;
+        public Color HemisphereLightColor
         {
             get
             {
@@ -696,8 +694,8 @@ namespace TerraViewer
         }
 
 
-        private System.Drawing.Color sunlightColor = System.Drawing.Color.White;
-        public System.Drawing.Color SunlightColor
+        private Color sunlightColor = Color.White;
+        public Color SunlightColor
         {
             get
             {
@@ -726,8 +724,8 @@ namespace TerraViewer
             }
         }
 
-        private System.Drawing.Color reflectedLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color ReflectedLightColor
+        private Color reflectedLightColor = Color.Black;
+        public Color ReflectedLightColor
         {
             get
             {
@@ -760,7 +758,7 @@ namespace TerraViewer
         }
 
         // Radius of a planet casting a shadow; zero when there's no shadow
-        private double occludingPlanetRadius = 0.0;
+        private double occludingPlanetRadius;
         public double OccludingPlanetRadius
         {
             get
@@ -811,7 +809,7 @@ namespace TerraViewer
             }
         }
 
-        private bool twoSidedLighting = false;
+        private bool twoSidedLighting;
         public bool TwoSidedLighting
         {
             get
@@ -847,7 +845,7 @@ namespace TerraViewer
             }
         }
 
-        private Matrix[] eclipseShadowMatrices = new Matrix[PlanetShader11.MaxEclipseShadows];
+        private readonly Matrix[] eclipseShadowMatrices = new Matrix[PlanetShader11.MaxEclipseShadows];
         public void SetEclipseShadowMatrix(int shadowIndex, Matrix m)
         {
             eclipseShadowMatrices[shadowIndex] = m;
@@ -871,12 +869,6 @@ namespace TerraViewer
                     {
                         shader.use(Device.ImmediateContext);
                     }
-                    else
-                    {
-                        // TODO DX11
-                        //Device.VertexShader = null;
-                        //Device.PixelShader = null;
-                    }
 
                     transformStateDirty = true;
                     lightingStateDirty = true;
@@ -898,17 +890,17 @@ namespace TerraViewer
 
         private void updateShaderTransformLightingConstants()
         {
-            bool updateRequired = transformStateDirty || lightingStateDirty || shadowStateDirty;
+            var updateRequired = transformStateDirty || lightingStateDirty || shadowStateDirty;
 
             if (shader != null && updateRequired)
             {
-                Matrix3d invWorld = World;
+                var invWorld = World;
                 invWorld.Invert();
 
                 // Transform the sun position from world coordinates to planet-fixed coordinates
                 // It's OK to use single-precision here because we're ultimately just interested
                 // in the direction to the Sun.
-                Vector3 sunDirectionObj = fromDouble(Vector3d.TransformCoordinate(sunPosition, invWorld));
+                var sunDirectionObj = fromDouble(Vector3d.TransformCoordinate(sunPosition, invWorld));
                 if (sunDirectionObj.Length() > 0)
                 {
                     sunDirectionObj.Normalize();
@@ -920,7 +912,7 @@ namespace TerraViewer
 
                 if (shader.Key.lightCount > 1)
                 {
-                    Vector3 reflectedDirectionObj = fromDouble(Vector3d.TransformCoordinate(reflectedLightPosition, invWorld));
+                    var reflectedDirectionObj = fromDouble(Vector3d.TransformCoordinate(reflectedLightPosition, invWorld));
                     if (reflectedDirectionObj.Length() > 0)
                     {
                         reflectedDirectionObj.Normalize();
@@ -929,7 +921,7 @@ namespace TerraViewer
                     shader.SetLightDirection(1, reflectedDirectionObj);
                 }
 
-                Vector3 hemiLightUpObj = fromDouble(Vector3d.TransformCoordinate(hemiLightUp, invWorld));
+                var hemiLightUpObj = fromDouble(Vector3d.TransformCoordinate(hemiLightUp, invWorld));
                 hemiLightUpObj.Normalize();
                 shader.HemiLightUpDirection = hemiLightUpObj;
 
@@ -955,19 +947,19 @@ ambientLightColor.B / 255.0f);
 
                 if (transformStateDirty)
                 {
-                    Matrix3d worldViewMatrix = World * View;
+                    var worldViewMatrix = World * View;
                     shader.WorldViewMatrix = worldViewMatrix.Matrix;
 
                     // Set the combined world/view/projection matrix in the shader
-                    Matrix wvp = (worldViewMatrix * Projection).Matrix;
+                    var wvp = (worldViewMatrix * Projection).Matrix;
                     shader.WVPMatrix = wvp;
 
                     // For view-dependent lighting (e.g. specular), we need the position of the camera
                     // in the planet-fixed coordinate system.
-                    Matrix3d invWorldView = worldViewMatrix;
+                    var invWorldView = worldViewMatrix;
                     invWorldView.Invert();
 
-                    Vector3d cameraPositionObj = Vector3d.TransformCoordinate(new Vector3d(0.0, 0.0, 0.0), invWorldView);
+                    var cameraPositionObj = Vector3d.TransformCoordinate(new Vector3d(0.0, 0.0, 0.0), invWorldView);
                     shader.CameraPosition = cameraPositionObj.Vector3;
 
                     shader.AtmosphereCenter = localCenter.Vector3;
@@ -975,7 +967,7 @@ ambientLightColor.B / 255.0f);
 
                 if (shadowStateDirty)
                 {
-                    for (int shadowIndex = 0; shadowIndex < PlanetShader11.MaxEclipseShadows; ++shadowIndex)
+                    for (var shadowIndex = 0; shadowIndex < PlanetShader11.MaxEclipseShadows; ++shadowIndex)
                     {
                         shader.SetEclipseShadowMatrix(shadowIndex, eclipseShadowMatrices[shadowIndex]);
                     }
@@ -1053,7 +1045,7 @@ ambientLightColor.B / 255.0f);
             frustum[5].D = projection.M44 - projection.M43;
 
             // Normalize planes 
-            for (int i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 frustum[i].Normalize();
             }
@@ -1061,9 +1053,9 @@ ambientLightColor.B / 255.0f);
 
         public void MakeFrustum()
         {
-            Matrix3d viewProjection = World * View * Projection;
+            var viewProjection = World * View * Projection;
 
-            Matrix3d inverseWorld = World;
+            var inverseWorld = World;
             inverseWorld.Invert();
 
             ComputeFrustum(viewProjection, frustum);
@@ -1075,8 +1067,8 @@ ambientLightColor.B / 255.0f);
         // current lighting environment.
         public void SetMaterial(Material material, Texture11 diffuseTex, Texture11 specularTex, Texture11 normalMap, float opacity)
         {
-            PlanetSurfaceStyle surfaceStyle = PlanetSurfaceStyle.Diffuse;
-            if (material.Specular != System.Drawing.Color.Black)
+            var surfaceStyle = PlanetSurfaceStyle.Diffuse;
+            if (material.Specular != Color.Black)
             {
                 surfaceStyle = PlanetSurfaceStyle.Specular;
             }
@@ -1087,8 +1079,8 @@ ambientLightColor.B / 255.0f);
                 surfaceStyle = PlanetSurfaceStyle.Emissive;
             }
 
-            PlanetShaderKey key = new PlanetShaderKey(surfaceStyle, false, 0);
-            if (reflectedLightColor != System.Drawing.Color.Black)
+            var key = new PlanetShaderKey(surfaceStyle, false, 0);
+            if (reflectedLightColor != Color.Black)
             {
                 key.lightCount = 2;
             }
@@ -1150,7 +1142,7 @@ ambientLightColor.B / 255.0f);
             Device.ImmediateContext.PixelShader.Set(null);
         }
 
-        public void SetupBasicEffect(BasicEffect e, float opacity, System.Drawing.Color color)
+        public void SetupBasicEffect(BasicEffect e, float opacity, Color color)
         {
             Vector4 correctedColor;
             if (sRGB)
@@ -1173,7 +1165,7 @@ ambientLightColor.B / 255.0f);
             {
                 case BasicEffect.TextureOnly:
                     {
-                        PlanetShaderKey key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
+                        var key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
                         SetupPlanetSurfaceEffect(key, opacity);
                         Shader.DiffuseColor = new Vector4(1.0f, 1.0f, 1.0f, opacity);
                     }
@@ -1181,7 +1173,7 @@ ambientLightColor.B / 255.0f);
 
                 case BasicEffect.ColorOnly:
                     {
-                        PlanetShaderKey key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
+                        var key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
                         key.textures = 0;
                         SetupPlanetSurfaceEffect(key, opacity);
                         Shader.DiffuseColor = correctedColor;
@@ -1190,7 +1182,7 @@ ambientLightColor.B / 255.0f);
 
                 case BasicEffect.TextureColorOpacity:
                     {
-                        PlanetShaderKey key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
+                        var key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
                         SetupPlanetSurfaceEffect(key, opacity);
                         Shader.DiffuseColor = correctedColor;
                     }
@@ -1198,7 +1190,7 @@ ambientLightColor.B / 255.0f);
 
                 case BasicEffect.ColoredText:
                     {
-                        PlanetShaderKey key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
+                        var key = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
                         key.AlphaTexture = true;
                         SetupPlanetSurfaceEffect(key, opacity);
                         Shader.DiffuseColor = correctedColor;
@@ -1214,7 +1206,7 @@ ambientLightColor.B / 255.0f);
 
         private PlanetShader11 SetupPlanetSurfaceEffectShader(PlanetShaderKey key, float opacity)
         {
-            PlanetShader11 shader = PlanetShader11.GetPlanetShader(Device, key);
+            var shader = PlanetShader11.GetPlanetShader(Device, key);
 
             // If we've got a shader, make it active on the device and set the
             // shader constants.
@@ -1223,24 +1215,24 @@ ambientLightColor.B / 255.0f);
                 shader.use(Device.ImmediateContext);
 
                 // Set the combined world/view/projection matrix in the shader
-                Matrix3d worldMatrix = World;
-                Matrix3d viewMatrix = View;
+                var worldMatrix = World;
+                var viewMatrix = View;
 
-                Matrix wvp = (worldMatrix * viewMatrix * Projection).Matrix;
+                var wvp = (worldMatrix * viewMatrix * Projection).Matrix;
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
-                Matrix3d invWorld = worldMatrix;
+                var invWorld = worldMatrix;
                 invWorld.Invert();
 
                 // For view-dependent lighting (e.g. specular), we need the position of the camera
                 // in the planet-fixed coordinate system.
-                Matrix3d worldViewMatrix = worldMatrix * viewMatrix;
-                Matrix3d invWorldView = worldViewMatrix;
+                var worldViewMatrix = worldMatrix * viewMatrix;
+                var invWorldView = worldViewMatrix;
                 invWorldView.Invert();
                 shader.WorldViewMatrix = worldViewMatrix.Matrix;
 
-                Vector3d cameraPositionObj = Vector3d.TransformCoordinate(new Vector3d(0.0, 0.0, 0.0), invWorldView);
+                var cameraPositionObj = Vector3d.TransformCoordinate(new Vector3d(0.0, 0.0, 0.0), invWorldView);
                 shader.CameraPosition = cameraPositionObj.Vector3;
             }
 
@@ -1261,9 +1253,9 @@ ambientLightColor.B / 255.0f);
         {
             if (MultiSampleCount != 1)
             {
-                Texture2D tex2 = new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
+                var tex2 = new Texture2D(PrepDevice, new Texture2DDescription()
                 {
-                    Format = RenderContext11.DefaultColorFormat,
+                    Format = DefaultColorFormat,
                     ArraySize = 1,
                     MipLevels = 1,
                     Width = (int)ViewPort.Width,
@@ -1275,7 +1267,7 @@ ambientLightColor.B / 255.0f);
                     OptionFlags = ResourceOptionFlags.None
                 });
 
-                devContext.ResolveSubresource(backBuffer, 0, tex2, 0, RenderContext11.DefaultColorFormat);
+                devContext.ResolveSubresource(backBuffer, 0, tex2, 0, DefaultColorFormat);
 
                 Texture2D.ToFile(devContext, tex2, format, filename);
                 tex2.Dispose();
@@ -1382,7 +1374,7 @@ ambientLightColor.B / 255.0f);
         {
             standardBlendStates = new SharpDX.Direct3D11.BlendState[6];
 
-            BlendStateDescription templateDesc = new BlendStateDescription();
+            var templateDesc = new BlendStateDescription();
             templateDesc.AlphaToCoverageEnable = false;
             templateDesc.IndependentBlendEnable = false;
             templateDesc.RenderTarget[0] = new RenderTargetBlendDescription
@@ -1433,13 +1425,13 @@ ambientLightColor.B / 255.0f);
 
         private void initializeDepthStencilStates()
         {
-            standardDepthStencilStates = new SharpDX.Direct3D11.DepthStencilState[4];
+            standardDepthStencilStates = new DepthStencilState[4];
 
-            DepthStencilStateDescription templateDesc = new DepthStencilStateDescription
+            var templateDesc = new DepthStencilStateDescription
             {
                 IsDepthEnabled = false,
                 DepthComparison = Comparison.Never,
-                DepthWriteMask = SharpDX.Direct3D11.DepthWriteMask.Zero,
+                DepthWriteMask = DepthWriteMask.Zero,
                 IsStencilEnabled = false
             };
 
@@ -1459,12 +1451,12 @@ ambientLightColor.B / 255.0f);
 
         private void initializeRasterizerStates()
         {
-            standardRasterizerStates = new SharpDX.Direct3D11.RasterizerState[4];
+            standardRasterizerStates = new RasterizerState[4];
 
-            RasterizerStateDescription templateDesc = new RasterizerStateDescription
+            var templateDesc = new RasterizerStateDescription
             {
-                FillMode = SharpDX.Direct3D11.FillMode.Solid,
-                CullMode = SharpDX.Direct3D11.CullMode.Back,
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.Back,
                 IsFrontCounterClockwise = false,
                 DepthBias = 0,
                 DepthBiasClamp = 0.0f,
@@ -1496,7 +1488,7 @@ ambientLightColor.B / 255.0f);
 
         private void initializeSamplerStates()
         {
-            SamplerStateDescription templateDesc = new SamplerStateDescription
+            var templateDesc = new SamplerStateDescription
             {
                 AddressU = TextureAddressMode.Wrap,
                 AddressV = TextureAddressMode.Wrap,
@@ -1526,7 +1518,7 @@ ambientLightColor.B / 255.0f);
             templateDesc.AddressU = TextureAddressMode.Border;
             templateDesc.AddressV = TextureAddressMode.Border;
             templateDesc.AddressW = TextureAddressMode.Border;
-            templateDesc.BorderColor = new SharpDX.Color4(0.0f, 0.0f, 0.0f, 0.0f);
+            templateDesc.BorderColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
             transparentBorderSampler = new SamplerState(device, templateDesc);
 
             // Set up standard samplers

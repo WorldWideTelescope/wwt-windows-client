@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Xml;
 using System.Threading;
@@ -10,8 +7,8 @@ namespace TerraViewer
 {
     class CoverageMap
     {
-        static List<CoverageItem> map = new List<CoverageItem>();
-        static Mutex storeMutex = new Mutex();
+        static readonly List<CoverageItem> map = new List<CoverageItem>();
+        static readonly Mutex storeMutex = new Mutex();
 
         public static int GetCoverage(string id)
         {
@@ -20,7 +17,7 @@ namespace TerraViewer
                 return 0;
             }
 
-            int level = id.Length;
+            var level = id.Length;
 
             if (level < 10)
             {
@@ -31,7 +28,7 @@ namespace TerraViewer
             {
                 storeMutex.WaitOne();
 
-                foreach (CoverageItem item in map)
+                foreach (var item in map)
                 {
                     if (id.StartsWith(item.Prefix))
                     {
@@ -54,24 +51,24 @@ namespace TerraViewer
 
         static int DownloadCoverage(string id)
         {
-            WebClient Client = new WebClient();
+            var Client = new WebClient();
             Client.Headers.Add("User-Agent", "Win8Microsoft.BingMaps.3DControl/2.214.2315.0 (;;;;x64 Windows RT)");
             try
             {
-                string xml = Client.DownloadString(string.Format("http://ak.t{0}.tiles.virtualearth.net/tiles/coverage?g=2536&imagetype=mtx&quadkey={1}", id.Substring(id.Length - 1, 1), id));
+                var xml = Client.DownloadString(string.Format("http://ak.t{0}.tiles.virtualearth.net/tiles/coverage?g=2536&imagetype=mtx&quadkey={1}", id.Substring(id.Length - 1, 1), id));
 
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.LoadXml(xml);
 
                 XmlNode root = doc["CoverageInfo"];
 
 
-                string prefix = root.Attributes["Prefix"].Value;
-                int max = int.Parse(root.Attributes["MaxZoom"].Value);
-                int min = int.Parse(root.Attributes["MinZoom"].Value);
-                int gen = int.Parse(root.Attributes["Generation"].Value);
+                var prefix = root.Attributes["Prefix"].Value;
+                var max = int.Parse(root.Attributes["MaxZoom"].Value);
+                var min = int.Parse(root.Attributes["MinZoom"].Value);
+                var gen = int.Parse(root.Attributes["Generation"].Value);
 
-                foreach (CoverageItem item in map)
+                foreach (var item in map)
                 {
                     if (item.MaxZoom == max && item.MinZoom == min && item.Generation == gen && item.Prefix == prefix)
                     {

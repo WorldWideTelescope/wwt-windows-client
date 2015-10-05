@@ -79,50 +79,50 @@ public class  CAAJupiter
   
   public static double EclipticLongitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate L0
-	int nL0Coefficients = GlobalMembersStdafx.g_L0JupiterCoefficients.Length;
+	var nL0Coefficients = GlobalMembersStdafx.g_L0JupiterCoefficients.Length;
 	double L0 = 0;
 	int i;
 	for (i =0; i<nL0Coefficients; i++)
 	  L0 += GlobalMembersStdafx.g_L0JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L0JupiterCoefficients[i].B + GlobalMembersStdafx.g_L0JupiterCoefficients[i].C *rho);
   
 	//Calculate L1
-	int nL1Coefficients = GlobalMembersStdafx.g_L1JupiterCoefficients.Length;
+	var nL1Coefficients = GlobalMembersStdafx.g_L1JupiterCoefficients.Length;
 	double L1 = 0;
 	for (i =0; i<nL1Coefficients; i++)
 	  L1 += GlobalMembersStdafx.g_L1JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L1JupiterCoefficients[i].B + GlobalMembersStdafx.g_L1JupiterCoefficients[i].C *rho);
   
 	//Calculate L2
-	int nL2Coefficients = GlobalMembersStdafx.g_L2JupiterCoefficients.Length;
+	var nL2Coefficients = GlobalMembersStdafx.g_L2JupiterCoefficients.Length;
 	double L2 = 0;
 	for (i =0; i<nL2Coefficients; i++)
 	  L2 += GlobalMembersStdafx.g_L2JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L2JupiterCoefficients[i].B + GlobalMembersStdafx.g_L2JupiterCoefficients[i].C *rho);
   
 	//Calculate L3
-	int nL3Coefficients = GlobalMembersStdafx.g_L3JupiterCoefficients.Length;
+	var nL3Coefficients = GlobalMembersStdafx.g_L3JupiterCoefficients.Length;
 	double L3 = 0;
 	for (i =0; i<nL3Coefficients; i++)
 	  L3 += GlobalMembersStdafx.g_L3JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L3JupiterCoefficients[i].B + GlobalMembersStdafx.g_L3JupiterCoefficients[i].C *rho);
   
 	//Calculate L4
-	int nL4Coefficients = GlobalMembersStdafx.g_L4JupiterCoefficients.Length;
+	var nL4Coefficients = GlobalMembersStdafx.g_L4JupiterCoefficients.Length;
 	double L4 = 0;
 	for (i =0; i<nL4Coefficients; i++)
 	  L4 += GlobalMembersStdafx.g_L4JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L4JupiterCoefficients[i].B + GlobalMembersStdafx.g_L4JupiterCoefficients[i].C *rho);
   
 	//Calculate L5
-    int nL5Coefficients = GlobalMembersStdafx.g_L5JupiterCoefficients.Length;
+    var nL5Coefficients = GlobalMembersStdafx.g_L5JupiterCoefficients.Length;
 	double L5 = 0;
 	for (i =0; i<nL5Coefficients; i++)
 	  L5 += GlobalMembersStdafx.g_L5JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_L5JupiterCoefficients[i].B + GlobalMembersStdafx.g_L5JupiterCoefficients[i].C *rho);
   
-	double @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4 + L5 *rho5) / 100000000;
+	var @value = (L0 + L1 *rho + L2 *rhosquared + L3 *rhocubed + L4 *rho4 + L5 *rho5) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(@value));
@@ -130,50 +130,50 @@ public class  CAAJupiter
   }
   public static double EclipticLatitude(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate B0
-	int nB0Coefficients = GlobalMembersStdafx.g_B0JupiterCoefficients.Length;
+	var nB0Coefficients = GlobalMembersStdafx.g_B0JupiterCoefficients.Length;
 	double B0 = 0;
 	int i;
 	for (i =0; i<nB0Coefficients; i++)
 	  B0 += GlobalMembersStdafx.g_B0JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B0JupiterCoefficients[i].B + GlobalMembersStdafx.g_B0JupiterCoefficients[i].C *rho);
   
 	//Calculate B1
-	int nB1Coefficients = GlobalMembersStdafx.g_B1JupiterCoefficients.Length;
+	var nB1Coefficients = GlobalMembersStdafx.g_B1JupiterCoefficients.Length;
 	double B1 = 0;
 	for (i =0; i<nB1Coefficients; i++)
 	  B1 += GlobalMembersStdafx.g_B1JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B1JupiterCoefficients[i].B + GlobalMembersStdafx.g_B1JupiterCoefficients[i].C *rho);
   
 	//Calculate B2
-	int nB2Coefficients = GlobalMembersStdafx.g_B2JupiterCoefficients.Length;
+	var nB2Coefficients = GlobalMembersStdafx.g_B2JupiterCoefficients.Length;
 	double B2 = 0;
 	for (i =0; i<nB2Coefficients; i++)
 	  B2 += GlobalMembersStdafx.g_B2JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B2JupiterCoefficients[i].B + GlobalMembersStdafx.g_B2JupiterCoefficients[i].C *rho);
   
 	//Calculate B3
-	int nB3Coefficients = GlobalMembersStdafx.g_B3JupiterCoefficients.Length;
+	var nB3Coefficients = GlobalMembersStdafx.g_B3JupiterCoefficients.Length;
 	double B3 = 0;
 	for (i =0; i<nB3Coefficients; i++)
 	  B3 += GlobalMembersStdafx.g_B3JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B3JupiterCoefficients[i].B + GlobalMembersStdafx.g_B3JupiterCoefficients[i].C *rho);
   
 	//Calculate B4
-	int nB4Coefficients = GlobalMembersStdafx.g_B4JupiterCoefficients.Length;
+	var nB4Coefficients = GlobalMembersStdafx.g_B4JupiterCoefficients.Length;
 	double B4 = 0;
 	for (i =0; i<nB4Coefficients; i++)
 	  B4 += GlobalMembersStdafx.g_B4JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B4JupiterCoefficients[i].B + GlobalMembersStdafx.g_B4JupiterCoefficients[i].C *rho);
   
 	//Calculate B5
-    int nB5Coefficients = GlobalMembersStdafx.g_B5JupiterCoefficients.Length;
+    var nB5Coefficients = GlobalMembersStdafx.g_B5JupiterCoefficients.Length;
 	double B5 = 0;
 	for (i =0; i<nB5Coefficients; i++)
 	  B5 += GlobalMembersStdafx.g_B5JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_B5JupiterCoefficients[i].B + GlobalMembersStdafx.g_B5JupiterCoefficients[i].C *rho);
   
-	double @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4 + B5 *rho5) / 100000000;
+	var @value = (B0 + B1 *rho + B2 *rhosquared + B3 *rhocubed + B4 *rho4 + B5 *rho5) / 100000000;
   
 	//convert results back to degrees
 	@value = CAACoordinateTransformation.RadiansToDegrees(@value);
@@ -181,45 +181,45 @@ public class  CAAJupiter
   }
   public static double RadiusVector(double JD)
   {
-	double rho = (JD - 2451545) / 365250;
-	double rhosquared = rho *rho;
-	double rhocubed = rhosquared *rho;
-	double rho4 = rhocubed *rho;
-	double rho5 = rho4 *rho;
+	var rho = (JD - 2451545) / 365250;
+	var rhosquared = rho *rho;
+	var rhocubed = rhosquared *rho;
+	var rho4 = rhocubed *rho;
+	var rho5 = rho4 *rho;
   
 	//Calculate R0
-	int nR0Coefficients = GlobalMembersStdafx.g_R0JupiterCoefficients.Length;
+	var nR0Coefficients = GlobalMembersStdafx.g_R0JupiterCoefficients.Length;
 	double R0 = 0;
 	int i;
 	for (i =0; i<nR0Coefficients; i++)
 	  R0 += GlobalMembersStdafx.g_R0JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R0JupiterCoefficients[i].B + GlobalMembersStdafx.g_R0JupiterCoefficients[i].C *rho);
   
 	//Calculate R1
-	int nR1Coefficients = GlobalMembersStdafx.g_R1JupiterCoefficients.Length;
+	var nR1Coefficients = GlobalMembersStdafx.g_R1JupiterCoefficients.Length;
 	double R1 = 0;
 	for (i =0; i<nR1Coefficients; i++)
 	  R1 += GlobalMembersStdafx.g_R1JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R1JupiterCoefficients[i].B + GlobalMembersStdafx.g_R1JupiterCoefficients[i].C *rho);
   
 	//Calculate R2
-	int nR2Coefficients = GlobalMembersStdafx.g_R2JupiterCoefficients.Length;
+	var nR2Coefficients = GlobalMembersStdafx.g_R2JupiterCoefficients.Length;
 	double R2 = 0;
 	for (i =0; i<nR2Coefficients; i++)
 	  R2 += GlobalMembersStdafx.g_R2JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R2JupiterCoefficients[i].B + GlobalMembersStdafx.g_R2JupiterCoefficients[i].C *rho);
   
 	//Calculate R3
-	int nR3Coefficients = GlobalMembersStdafx.g_R3JupiterCoefficients.Length;
+	var nR3Coefficients = GlobalMembersStdafx.g_R3JupiterCoefficients.Length;
 	double R3 = 0;
 	for (i =0; i<nR3Coefficients; i++)
 	  R3 += GlobalMembersStdafx.g_R3JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R3JupiterCoefficients[i].B + GlobalMembersStdafx.g_R3JupiterCoefficients[i].C *rho);
   
 	//Calculate R4
-	int nR4Coefficients = GlobalMembersStdafx.g_R4JupiterCoefficients.Length;
+	var nR4Coefficients = GlobalMembersStdafx.g_R4JupiterCoefficients.Length;
 	double R4 = 0;
 	for (i =0; i<nR4Coefficients; i++)
 	  R4 += GlobalMembersStdafx.g_R4JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R4JupiterCoefficients[i].B + GlobalMembersStdafx.g_R4JupiterCoefficients[i].C *rho);
   
   //Calculate R5
-    int nR5Coefficients = GlobalMembersStdafx.g_R5JupiterCoefficients.Length;
+    var nR5Coefficients = GlobalMembersStdafx.g_R5JupiterCoefficients.Length;
 	double R5 = 0;
 	for (i =0; i<nR5Coefficients; i++)
 	  R5 += GlobalMembersStdafx.g_R5JupiterCoefficients[i].A * Math.Cos(GlobalMembersStdafx.g_R5JupiterCoefficients[i].B + GlobalMembersStdafx.g_R5JupiterCoefficients[i].C *rho);

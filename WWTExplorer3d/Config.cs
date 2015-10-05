@@ -1,10 +1,10 @@
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.IO;
-using System.Windows.Forms;
+using SharpDX;
+
 namespace TerraViewer
 {
 
@@ -44,8 +44,8 @@ namespace TerraViewer
         public string DistortionGrid;
         public bool MultiProjector = false;
         public bool MatrixValid = false;
-        private bool MultiChannelDome = false;
-        private bool multiChannelGlobe = false;
+        private bool MultiChannelDome;
+        private bool multiChannelGlobe;
 
         public bool MultiChannelDome1
         {
@@ -125,44 +125,42 @@ namespace TerraViewer
 
         public void ReadFromXML(string path)
         {
-            XmlDocument doc;
-
             if (!File.Exists(path))
             {
                 return;
             }
             try
             {
-                doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.Load(path);
 
-                XmlNode deviceConfigNode = doc.FirstChild.NextSibling;
-                XmlNode config = deviceConfigNode.FirstChild;
-                XmlNode deviceNode = config.FirstChild;
+                var deviceConfigNode = doc.FirstChild.NextSibling;
+                var config = deviceConfigNode.FirstChild;
+                var deviceNode = config.FirstChild;
 
-                MonitorCountX = Convert.ToInt32(deviceNode.Attributes["MonitorCountX"].Value.ToString());
-                MonitorCountY = Convert.ToInt32(deviceNode.Attributes["MonitorCountY"].Value.ToString());
-                MonitorX = Convert.ToInt32(deviceNode.Attributes["MonitorX"].Value.ToString());
-                MonitorY = Convert.ToInt32(deviceNode.Attributes["MonitorY"].Value.ToString());
-                Master = Convert.ToBoolean(deviceNode.Attributes["Master"].Value.ToString());
+                MonitorCountX = Convert.ToInt32(deviceNode.Attributes["MonitorCountX"].Value);
+                MonitorCountY = Convert.ToInt32(deviceNode.Attributes["MonitorCountY"].Value);
+                MonitorX = Convert.ToInt32(deviceNode.Attributes["MonitorX"].Value);
+                MonitorY = Convert.ToInt32(deviceNode.Attributes["MonitorY"].Value);
+                Master = Convert.ToBoolean(deviceNode.Attributes["Master"].Value);
 
                 if (deviceNode.Attributes["Width"] != null)
                 {
-                    Width = Convert.ToInt32(deviceNode.Attributes["Width"].Value.ToString());
+                    Width = Convert.ToInt32(deviceNode.Attributes["Width"].Value);
                 }
                 if (deviceNode.Attributes["Height"] != null)
                 {
-                    Height = Convert.ToInt32(deviceNode.Attributes["Height"].Value.ToString());
+                    Height = Convert.ToInt32(deviceNode.Attributes["Height"].Value);
                 }
 
                 if (deviceNode.Attributes["NodeID"] != null)
                 {
-                    NodeID = Convert.ToInt32(deviceNode.Attributes["NodeID"].Value.ToString());
+                    NodeID = Convert.ToInt32(deviceNode.Attributes["NodeID"].Value);
                 }
 
                 if (deviceNode.Attributes["ClusterID"] != null)
                 {
-                    ClusterID = Convert.ToInt32(deviceNode.Attributes["ClusterID"].Value.ToString());
+                    ClusterID = Convert.ToInt32(deviceNode.Attributes["ClusterID"].Value);
                 }
 
                 if (deviceNode.Attributes["NodeDiplayName"] != null)
@@ -172,90 +170,85 @@ namespace TerraViewer
 
                 if (deviceNode.Attributes["Bezel"] != null)
                 {
-                    Bezel = Convert.ToDouble(deviceNode.Attributes["Bezel"].Value.ToString());
+                    Bezel = Convert.ToDouble(deviceNode.Attributes["Bezel"].Value);
                 }
 
                 if (deviceNode.Attributes["Heading"] != null)
                 {
-                    Heading = Convert.ToSingle(deviceNode.Attributes["Heading"].Value.ToString());
+                    Heading = Convert.ToSingle(deviceNode.Attributes["Heading"].Value);
                 }
 
                 if (deviceNode.Attributes["Pitch"] != null)
                 {
-                    Pitch = Convert.ToSingle(deviceNode.Attributes["Pitch"].Value.ToString());
+                    Pitch = Convert.ToSingle(deviceNode.Attributes["Pitch"].Value);
                 }
 
                 if (deviceNode.Attributes["Roll"] != null)
                 {
-                    Roll = Convert.ToSingle(deviceNode.Attributes["Roll"].Value.ToString());
+                    Roll = Convert.ToSingle(deviceNode.Attributes["Roll"].Value);
                 }
 
                 if (deviceNode.Attributes["UpFov"] != null)
                 {
-                    UpFov = Convert.ToSingle(deviceNode.Attributes["UpFov"].Value.ToString());
+                    UpFov = Convert.ToSingle(deviceNode.Attributes["UpFov"].Value);
                 }
 
                 if (deviceNode.Attributes["DownFov"] != null)
                 {
-                    DownFov = Convert.ToSingle(deviceNode.Attributes["DownFov"].Value.ToString());
+                    DownFov = Convert.ToSingle(deviceNode.Attributes["DownFov"].Value);
                 }
 
                 if (deviceNode.Attributes["DomeTilt"] != null)
                 {
-                    DomeTilt = Convert.ToSingle(deviceNode.Attributes["DomeTilt"].Value.ToString());
+                    DomeTilt = Convert.ToSingle(deviceNode.Attributes["DomeTilt"].Value);
                 }
 
                 if (deviceNode.Attributes["DomeAngle"] != null)
                 {
-                    DomeAngle = Convert.ToSingle(deviceNode.Attributes["DomeAngle"].Value.ToString());
+                    DomeAngle = Convert.ToSingle(deviceNode.Attributes["DomeAngle"].Value);
                 }
 
                 if (deviceNode.Attributes["DiffTilt"] != null)
                 {
-                    DiffTilt = Convert.ToSingle(deviceNode.Attributes["DiffTilt"].Value.ToString());
+                    DiffTilt = Convert.ToSingle(deviceNode.Attributes["DiffTilt"].Value);
                 }
 
                 if (deviceNode.Attributes["Aspect"] != null)
                 {
-                    Aspect = Convert.ToSingle(deviceNode.Attributes["Aspect"].Value.ToString());
+                    Aspect = Convert.ToSingle(deviceNode.Attributes["Aspect"].Value);
                 }
 
                 if (deviceNode.Attributes["MultiChannelDome"] != null)
                 {
-                    MultiChannelDome = Convert.ToBoolean(deviceNode.Attributes["MultiChannelDome"].Value.ToString());
+                    MultiChannelDome = Convert.ToBoolean(deviceNode.Attributes["MultiChannelDome"].Value);
                 }
 
                 if (deviceNode.Attributes["MultiChannelGlobe"] != null)
                 {
-                    MultiChannelGlobe = Convert.ToBoolean(deviceNode.Attributes["MultiChannelGlobe"].Value.ToString());
+                    MultiChannelGlobe = Convert.ToBoolean(deviceNode.Attributes["MultiChannelGlobe"].Value);
                 }
 
                 if (deviceNode.Attributes["ConfigFile"] != null)
                 {
-                    ConfigFile = deviceNode.Attributes["ConfigFile"].Value.ToString();
+                    ConfigFile = deviceNode.Attributes["ConfigFile"].Value;
                     ParseConfigFile();
                 }
 
                 if (deviceNode.Attributes["BlendFile"] != null)
                 {
-                    BlendFile = deviceNode.Attributes["BlendFile"].Value.ToString();
+                    BlendFile = deviceNode.Attributes["BlendFile"].Value;
                 }
 
                 if (deviceNode.Attributes["DistortionGrid"] != null)
                 {
-                    DistortionGrid = deviceNode.Attributes["DistortionGrid"].Value.ToString();
+                    DistortionGrid = deviceNode.Attributes["DistortionGrid"].Value;
                 }
 
                 MultiProjector = !(String.IsNullOrEmpty(ConfigFile) || String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
-               // UseDistrotionAndBlend = !( String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
-               // MultiProjector = true;
             }
             catch
             {
             }
-
-
-            return;
         }
         
         public Matrix3d ViewMatrix = Matrix3d.Identity;
@@ -267,18 +260,18 @@ namespace TerraViewer
                 return;
             }
 
-            string[] configFileData = File.ReadAllLines(ConfigFile);
-            for (int i=0; i < configFileData.Length; i++)
+            var configFileData = File.ReadAllLines(ConfigFile);
+            for (var i=0; i < configFileData.Length; i++)
             {
                 configFileData[i] = configFileData[i].Trim();
             }
 
             
-            for (int i=0; i < configFileData.Length; i++)
+            foreach (string t in configFileData)
             {
-                if (configFileData[i].StartsWith("Frustum"))
+                if (t.StartsWith("Frustum"))
                 {
-                    string[] frustParts = configFileData[i].Split( new char[] {' ',';'});
+                    var frustParts = t.Split( new[] {' ',';'});
                     if (frustParts.Length == 8)
                     {
                         Left = Convert.ToSingle(frustParts[1]);
@@ -290,21 +283,19 @@ namespace TerraViewer
                     }
                 }
 
-                if (configFileData[i].StartsWith("Rotate"))
+                if (t.StartsWith("Rotate"))
                 {
-                    string[] frustParts = configFileData[i].Split(new char[] { ' ',';' });
-                    float angle = 0;
-                    float x = 0;
-                    float y = 0;
-                    float z = 0;
+                    var frustParts = t.Split(new[] { ' ',';' });
                     if (frustParts.Length == 6)
                     {
-                        angle = (float)(Convert.ToDouble(frustParts[1])/180*Math.PI);
-                        x = Convert.ToSingle(frustParts[2]);
-                        y = Convert.ToSingle(frustParts[3]);
-                        z = Convert.ToSingle(frustParts[4]);
-                        Matrix3d mat = new Matrix3d();
-                        mat.Matrix11 = SharpDX.Matrix.RotationAxis(new SharpDX.Vector3(x, y, z), angle);
+                        var angle = (float)(Convert.ToDouble(frustParts[1])/180*Math.PI);
+                        var x = Convert.ToSingle(frustParts[2]);
+                        var y = Convert.ToSingle(frustParts[3]);
+                        var z = Convert.ToSingle(frustParts[4]);
+                        var mat = new Matrix3d
+                        {
+                            Matrix11 = Matrix.RotationAxis(new Vector3(x, y, z), angle)
+                        };
                         ViewMatrix = mat * ViewMatrix;
                     }
                 }
@@ -314,28 +305,28 @@ namespace TerraViewer
 
         }
 
-        string saveFilename = @"c:\wwtconfig\config.xml";
+        readonly string saveFilename = @"c:\wwtconfig\config.xml";
 
         public bool SaveToXml()
         {
             try
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
                 sb.Append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
                 sb.Append("<DeviceConfig>\r\n");
                 {
                     sb.Append("<Config>\r\n");
                     sb.Append(String.Format("<Device ClusterID=\"{21}\" NodeID=\"{19}\" NodeDiplayName=\"{20}\" MonitorCountX=\"{0}\" MonitorCountY=\"{1}\" MonitorX=\"{2}\" MonitorY=\"{3}\" Master=\"{4}\" Width=\"{5}\" Height=\"{6}\" Bezel=\"{7}\" ConfigFile=\"{8}\" BlendFile=\"{9}\" DistortionGrid=\"{10}\" Heading=\"{11}\" Pitch=\"{12}\" Roll=\"{13}\" UpFov=\"{14}\" DownFov=\"{15}\" MultiChannelDome=\"{16}\" DomeTilt=\"{17}\" Aspect=\"{18}\" DiffTilt=\"{22}\" MultiChannelGlobe=\"{23}\" DomeAngle=\"{24}\"></Device>\r\n",
-                        MonitorCountX.ToString(), MonitorCountY.ToString(), MonitorX, MonitorY, Master.ToString(), Width.ToString(), Height.ToString(), Bezel.ToString(), ConfigFile, BlendFile, DistortionGrid, Heading, Pitch, Roll, UpFov, DownFov, MultiChannelDome.ToString(), DomeTilt, Aspect, NodeID.ToString(), NodeDiplayName, ClusterID.ToString(), DiffTilt.ToString(), MultiChannelGlobe.ToString(), DomeAngle.ToString()));
+                        MonitorCountX, MonitorCountY, MonitorX, MonitorY, Master, Width, Height, Bezel, ConfigFile, BlendFile, DistortionGrid, Heading, Pitch, Roll, UpFov, DownFov, MultiChannelDome, DomeTilt, Aspect, NodeID, NodeDiplayName, ClusterID, DiffTilt, MultiChannelGlobe, DomeAngle));
                     sb.Append("</Config>\r\n");
                 }
                 sb.Append("</DeviceConfig>\r\n");
 
                 // Create the file.
-                using (FileStream fs = File.Create(saveFilename))
+                using (var fs = File.Create(saveFilename))
                 {
-                    Byte[] info =
+                    var info =
                         new UTF8Encoding(true).GetBytes(sb.ToString());
 
                     fs.Write(info, 0, info.Length);

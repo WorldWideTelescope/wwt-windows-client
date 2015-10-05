@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-
-using System.IO;
-
+using System.Xml;
+using TerraViewer.Properties;
 using Vector3 = SharpDX.Vector3;
-using Matrix = SharpDX.Matrix;
 
 namespace TerraViewer
 {
-    class KmlLayer : Layer, TerraViewer.ITimeSeriesDescription
+    class KmlLayer : Layer, ITimeSeriesDescription
     {
         public KmlRoot root = null;
-        static Texture11 star = null;
-        KmlLayerUI primaryUI = null;
+        static Texture11 star;
+        KmlLayerUI primaryUI;
         public override LayerUI GetPrimaryUI()
         {
             if (primaryUI == null)
@@ -29,13 +26,13 @@ namespace TerraViewer
             {
                 if (star == null)
                 {
-                    star = Texture11.FromBitmap( Properties.Resources.icon_rating_star_large_on, 0);
+                    star = Texture11.FromBitmap( Resources.icon_rating_star_large_on, 0);
                 }
-                return KmlLayer.star; 
+                return star; 
             }
         }
-        private TriangleList triangles = new TriangleList();
-        private LineList lines = new LineList();
+        private readonly TriangleList triangles = new TriangleList();
+        private readonly LineList lines = new LineList();
 
         bool retainedVisualsDirty = true;
 
@@ -80,11 +77,11 @@ namespace TerraViewer
         {
             base.AddFilesToCabinet(fc);
         }
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             base.WriteLayerProperties(xmlWriter);
         }
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             base.InitializeFromXml(node);
         }
@@ -99,7 +96,7 @@ namespace TerraViewer
 
             if (root.children != null)
             {
-                foreach (KmlFeature child in root.children)
+                foreach (var child in root.children)
                 {
                     AddFeatureToDisplay(child, false);
                 }
@@ -108,7 +105,7 @@ namespace TerraViewer
         }
         private void AddFeatureToDisplay(KmlFeature feature, bool sky)
         {
-            KmlDocument doc = feature as KmlDocument;
+            var doc = feature as KmlDocument;
             if (doc != null)
             {
                 sky = doc.sky;
@@ -119,11 +116,11 @@ namespace TerraViewer
                 {
                     return;
                 }
-                else if (feature is KmlPlacemark)
+                if (feature is KmlPlacemark)
                 {
-                    KmlPlacemark placemark = (KmlPlacemark)feature;
-                    KmlStyle style = placemark.Style.GetStyle(placemark.Selected);
-                    Color lineColor = Color.White;
+                    var placemark = (KmlPlacemark)feature;
+                    var style = placemark.Style.GetStyle(placemark.Selected);
+                    var lineColor = Color.White;
                     if (style != null)
                     {
                         lineColor = style.LineStyle.Color;
@@ -135,12 +132,12 @@ namespace TerraViewer
                     }
                     else if (placemark.geometry is KmlMultiGeometry)
                     {
-                        KmlMultiGeometry geo = (KmlMultiGeometry)placemark.geometry;
+                        var geo = (KmlMultiGeometry)placemark.geometry;
                         AddMultiGeometry(sky, placemark, (float)style.LineStyle.Width, style.PolyStyle.Color, lineColor, geo);
                     }
                     else if (placemark.geometry is KmlPolygon)
                     {
-                        KmlPolygon geo = (KmlPolygon)placemark.geometry;
+                        var geo = (KmlPolygon)placemark.geometry;
                         if (geo.OuterBoundary != null)
                         {
                             AddLines(sky, geo.OuterBoundary as KmlLineList, (float)style.LineStyle.Width, style.PolyStyle.Color, lineColor, geo.extrude);
@@ -149,14 +146,14 @@ namespace TerraViewer
                     }
                     else if (placemark.geometry is KmlLineString)
                     {
-                        KmlLineString geo = (KmlLineString)placemark.geometry;
+                        var geo = (KmlLineString)placemark.geometry;
 
-                        List<Vector3d> vertexList = new List<Vector3d>();
-                        for (int i = 0; i < (geo.PointList.Count); i++)
+                        var vertexList = new List<Vector3d>();
+                        for (var i = 0; i < (geo.PointList.Count); i++)
                         {
                             vertexList.Add(Coordinates.GeoTo3dDouble(geo.PointList[i].Lat, geo.PointList[i].Lng, 1 + (geo.PointList[i].Alt / geo.MeanRadius)));
                         }
-                        for (int i = 0; i < (geo.PointList.Count - 1); i++)
+                        for (var i = 0; i < (geo.PointList.Count - 1); i++)
                         {
                             if (sky)
                             {
@@ -185,11 +182,11 @@ namespace TerraViewer
             {
                 if (feature is KmlContainer)
                 {
-                    KmlContainer container = (KmlContainer)feature;
+                    var container = (KmlContainer)feature;
                     if (container.children != null)
                     {
 
-                        foreach (KmlFeature child in container.children)
+                        foreach (var child in container.children)
                         {
                             AddFeatureToDisplay(child, sky);
                         }
@@ -199,10 +196,10 @@ namespace TerraViewer
                 {
                     if (feature is KmlNetworkLink)
                     {
-                        KmlNetworkLink netLink = (KmlNetworkLink)feature;
+                        var netLink = (KmlNetworkLink)feature;
                         if (netLink.LinkRoot != null)
                         {
-                            foreach (KmlFeature child in netLink.LinkRoot.children)
+                            foreach (var child in netLink.LinkRoot.children)
                             {
                                 AddFeatureToDisplay(child, sky);
                             }
@@ -219,11 +216,11 @@ namespace TerraViewer
         private void AddMultiGeometry(bool sky, KmlPlacemark placemark, float width, Color polyColor, Color lineColor, KmlMultiGeometry geo)
         {
 
-            foreach (KmlGeometry childGeo in geo.Children)
+            foreach (var childGeo in geo.Children)
             {
                 if (childGeo is KmlPoint)
                 {
-                    KmlPoint point = (KmlPoint)childGeo;
+                    var point = (KmlPoint)childGeo;
 
                     placemark.Point = (KmlPoint)childGeo;
                     AddPlacemark(placemark);
@@ -235,7 +232,7 @@ namespace TerraViewer
                 }
                 else if (childGeo is KmlPolygon)
                 {
-                    KmlPolygon child = (KmlPolygon)childGeo;
+                    var child = (KmlPolygon)childGeo;
                     if (child.OuterBoundary != null)
                     {
                         AddLines(sky, child.OuterBoundary as KmlLineList, width, polyColor, lineColor, child.extrude);
@@ -252,8 +249,8 @@ namespace TerraViewer
         private void AddLines(bool sky, KmlLineList geo, float lineWidth, Color polyColor, Color lineColor, bool extrude)
         {
             //todo can we save this work for later?
-            List<Vector3d> vertexList = new List<Vector3d>();
-            List<Vector3d> vertexListGround = new List<Vector3d>();
+            var vertexList = new List<Vector3d>();
+            var vertexListGround = new List<Vector3d>();
 
             //todo list 
             // We need to Wrap Around for complete polygone
@@ -262,14 +259,14 @@ namespace TerraViewer
 
 
 
-            for (int i = 0; i < (geo.PointList.Count); i++)
+            for (var i = 0; i < (geo.PointList.Count); i++)
             {
                 vertexList.Add(Coordinates.GeoTo3dDouble(geo.PointList[i].Lat, geo.PointList[i].Lng, 1 + (geo.PointList[i].Alt / geo.MeanRadius)));
                 vertexListGround.Add(Coordinates.GeoTo3dDouble(geo.PointList[i].Lat, geo.PointList[i].Lng, 1));
             }
 
 
-            for (int i = 0; i < (geo.PointList.Count - 1); i++)
+            for (var i = 0; i < (geo.PointList.Count - 1); i++)
             {
                 if (sky)
                 {
@@ -298,9 +295,9 @@ namespace TerraViewer
                 }
             }
 
-            List<int> indexes = Glu.TesselateSimplePoly(vertexList);
+            var indexes = Glu.TesselateSimplePoly(vertexList);
 
-            for (int i = 0; i < indexes.Count; i += 3)
+            for (var i = 0; i < indexes.Count; i += 3)
             {
                 triangles.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, new Dates());
             }
@@ -321,7 +318,7 @@ namespace TerraViewer
                 return;
             }
 
-            foreach (KmlPlacemark placemark in Placemarks)
+            foreach (var placemark in Placemarks)
             {
                 if (placemark.Selected)
                 {
@@ -336,19 +333,19 @@ namespace TerraViewer
         }
 
 
-        List<KmlPlacemark> Placemarks = new List<KmlPlacemark>();
+        readonly List<KmlPlacemark> Placemarks = new List<KmlPlacemark>();
         public static Int64 TicksAtLastSelect = HiResTimer.TickCount;
 
         public bool ActiveSelection = false;
         override public bool HoverCheckScreenSpace(Point cursor)
         {
-            bool found = false;
+            var found = false;
 
-            bool refresh = false;
+            var refresh = false;
             ActiveSelection = false;
             try
             {
-                foreach (KmlPlacemark placemark in Placemarks)
+                foreach (var placemark in Placemarks)
                 {
                     if (placemark.Selected)
                     {
@@ -363,7 +360,7 @@ namespace TerraViewer
                     }
                 }
 
-                foreach (KmlPlacemark placemark in Placemarks)
+                foreach (var placemark in Placemarks)
                 {
                     if (placemark.hitTestRect.Contains(cursor))
                     {
@@ -399,9 +396,9 @@ namespace TerraViewer
                 return false;
             }
 
-            bool found = false;
+            var found = false;
 
-            foreach (KmlPlacemark placemark in Placemarks)
+            foreach (var placemark in Placemarks)
             {
                 if (placemark.Selected)
                 {
@@ -421,26 +418,26 @@ namespace TerraViewer
         public void DrawPlaceMarks()
         {
            // todo11 port this Maybe instancing later?
-            Matrix projection = Earth3d.MainWindow.RenderContext11.Projection.Matrix11;
-            Matrix view = Earth3d.MainWindow.RenderContext11.View.Matrix11;
-            Matrix world = Earth3d.MainWindow.RenderContext11.World.Matrix11;
-            Matrix3d worldD = Earth3d.MainWindow.RenderContext11.World;
-            Matrix wvp = (world * view * projection);
+            var projection = Earth3d.MainWindow.RenderContext11.Projection.Matrix11;
+            var view = Earth3d.MainWindow.RenderContext11.View.Matrix11;
+            var world = Earth3d.MainWindow.RenderContext11.World.Matrix11;
+            var worldD = Earth3d.MainWindow.RenderContext11.World;
+            var wvp = (world * view * projection);
             try
             {
-                Vector3 center = new Vector3(0f, 0f, 0);
+                var center = new Vector3(0f, 0f, 0);
 
-                foreach (KmlPlacemark placemark in Placemarks)
+                foreach (var placemark in Placemarks)
                 {
                     if (placemark.ShouldDisplay())
                     {
-                        SharpDX.Direct3D11.Viewport vp = Earth3d.MainWindow.RenderContext11.ViewPort;
-                        double alt = placemark.Point.altitude + EGM96Geoid.Height(placemark.Point.latitude, placemark.Point.longitude);
-                        Vector3d point3d = Coordinates.GeoTo3dDouble(placemark.Point.latitude, placemark.Point.longitude, 1 + (alt / Earth3d.MainWindow.RenderContext11.NominalRadius));
-                        Vector3 point = Vector3.Project(point3d.Vector311, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height, 0, 1, wvp);
+                        var vp = Earth3d.MainWindow.RenderContext11.ViewPort;
+                        var alt = placemark.Point.altitude + EGM96Geoid.Height(placemark.Point.latitude, placemark.Point.longitude);
+                        var point3d = Coordinates.GeoTo3dDouble(placemark.Point.latitude, placemark.Point.longitude, 1 + (alt / Earth3d.MainWindow.RenderContext11.NominalRadius));
+                        var point = Vector3.Project(point3d.Vector311, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height, 0, 1, wvp);
                         // point.Z = 1;
-                        KmlStyle style = placemark.Style.GetStyle(placemark.Selected);
-                        Texture11 texture = style.IconStyle.Icon.Texture;
+                        var style = placemark.Style.GetStyle(placemark.Selected);
+                        var texture = style.IconStyle.Icon.Texture;
 
                         if (String.IsNullOrEmpty(style.IconStyle.Icon.Href))
                         {
@@ -452,31 +449,31 @@ namespace TerraViewer
                         if (placemark.Selected)
                         {
                             double ticks = HiResTimer.TickCount;
-                            double elapsedSeconds = ((double)(ticks - TicksAtLastSelect)) / HiResTimer.Frequency;
+                            var elapsedSeconds = (ticks - TicksAtLastSelect) / HiResTimer.Frequency;
                             sizeFactor = 1 + .3 * (Math.Sin(elapsedSeconds * 15) * Math.Max(0, (1 - elapsedSeconds)));
                         }
 
                         point3d.TransformCoordinate(worldD);
-                        Vector3d dist = Earth3d.MainWindow.RenderContext11.CameraPosition - point3d;
-                        double distance = dist.Length() * Earth3d.MainWindow.RenderContext11.NominalRadius;
+                        var dist = Earth3d.MainWindow.RenderContext11.CameraPosition - point3d;
+                        var distance = dist.Length() * Earth3d.MainWindow.RenderContext11.NominalRadius;
                         dist.Normalize();
-                        double dot = Vector3d.Dot(point3d, dist);
+                        var dot = Vector3d.Dot(point3d, dist);
                         // if (dot > -.2)
                         {
-                            double baseSize = Math.Min(40, 25 * ((2 * Math.Atan(.5 * (5884764 / distance))) / .7853)) * sizeFactor;
-                            float size = (float)baseSize * style.IconStyle.Scale;
+                            var baseSize = Math.Min(40, 25 * ((2 * Math.Atan(.5 * (5884764 / distance))) / .7853)) * sizeFactor;
+                            var size = (float)baseSize * style.IconStyle.Scale;
                             //todo fix this with real centers and offset by KML data
                             placemark.hitTestRect = new Rectangle((int)(point.X - (size / 2)), (int)(point.Y - (size / 2)), (int)(size + .5), (int)(size + .5));
                             if (texture != null)
                             {
-                                center = new Vector3((float)texture.Width / 2f, (float)texture.Height / 2f, 0);
+                                center = new Vector3(texture.Width / 2f, texture.Height / 2f, 0);
 
                                 Sprite2d.Draw2D(Earth3d.MainWindow.RenderContext11, texture, new SizeF(size, size), new PointF(center.X, center.Y), (float)(style.IconStyle.Heading * Math.PI / 180f), new PointF(point.X, point.Y), Color.White);
                             }
 
                             if (style.LabelStyle.Color.A > 0 && style.LabelStyle.Scale > 0)
                             {
-                                Rectangle recttext = new Rectangle((int)(point.X + (size / 2) + 10), (int)(point.Y - (size / 2)), 1000, 100);
+                                var recttext = new Rectangle((int)(point.X + (size / 2) + 10), (int)(point.Y - (size / 2)), 1000, 100);
                                 //todo11 Earth3d.MainWindow.labelFont.DrawText(null, placemark.Name, recttext, DrawTextFormat.NoClip, style.LabelStyle.Color);
                             }
                         }
@@ -490,7 +487,7 @@ namespace TerraViewer
 
         }
 
-        List<KmlGroundOverlay> GroundOverlays = new List<KmlGroundOverlay>();
+        readonly List<KmlGroundOverlay> GroundOverlays = new List<KmlGroundOverlay>();
 
         public void ClearGroundOverlays()
         {
@@ -504,7 +501,7 @@ namespace TerraViewer
 
         public void SetupGroundOverlays(RenderContext11 renderContext)
         {
-            foreach (KmlGroundOverlay overlay in GroundOverlays)
+            foreach (var overlay in GroundOverlays)
             {
                 if (Earth3d.MainWindow.KmlMarkers != null)
                 {
@@ -523,7 +520,7 @@ namespace TerraViewer
             ScreenOverlays.Clear();
         }
 
-        List<KmlScreenOverlay> ScreenOverlays = new List<KmlScreenOverlay>();
+        readonly List<KmlScreenOverlay> ScreenOverlays = new List<KmlScreenOverlay>();
         public void AddScreenOverlay(KmlScreenOverlay overlay)
         {
             ScreenOverlays.Add(overlay);
@@ -532,17 +529,17 @@ namespace TerraViewer
 
         public void DrawScreenOverlays(RenderContext11 renderContext)
         {
-            foreach (KmlScreenOverlay overlay in ScreenOverlays)
+            foreach (var overlay in ScreenOverlays)
             {
 
-                Texture11 texture = overlay.Icon.Texture;
+                var texture = overlay.Icon.Texture;
 
                 if (texture != null)
                 {
-                    PointF center = new PointF();
-                    PointF screen = new PointF();
+                    var center = new PointF();
+                    var screen = new PointF();
 
-                    SizeF size = new SizeF();
+                    var size = new SizeF();
 
                     if (overlay.RotationSpot.UnitsX == KmlPixelUnits.Fraction)
                     {
@@ -555,9 +552,9 @@ namespace TerraViewer
                         center.Y = overlay.RotationSpot.Y * texture.Height;
                     }
 
-                    Rectangle clientRect = Earth3d.MainWindow.ClearClientArea;
+                    var clientRect = Earth3d.MainWindow.ClearClientArea;
 
-                    Size clientSize = clientRect.Size;
+                    var clientSize = clientRect.Size;
 
                     if (overlay.ScreenSpot.UnitsX == KmlPixelUnits.Fraction)
                     {
@@ -687,7 +684,7 @@ namespace TerraViewer
 
     class KmlLayerUI : LayerUI
     {
-        private KmlLayer layer = null;
+        private readonly KmlLayer layer;
 
         public KmlLayerUI(KmlLayer layer)
         {
@@ -702,7 +699,7 @@ namespace TerraViewer
         public override List<LayerUITreeNode> GetTreeNodes()
         {
 
-            LayerUITreeNode parent = new LayerUITreeNode();
+            var parent = new LayerUITreeNode();
 
             AddRootToTree(layer.root, parent);
 
@@ -713,7 +710,7 @@ namespace TerraViewer
         {
             if (root.children != null)
             {
-                foreach (KmlFeature child in root.children)
+                foreach (var child in root.children)
                 {
                     AddFeatureToTree(child, node);
                 }
@@ -723,13 +720,13 @@ namespace TerraViewer
         private void AddFeatureToTree(KmlFeature feature, LayerUITreeNode parent)
         {
             feature.Dirty = false;
-            string text = feature.Name;
+            var text = feature.Name;
 
             //if (!string.IsNullOrEmpty(feature.description))
             //{
             //    text += Environment.NewLine + feature.description;
             //}
-            bool bold = false;
+            var bold = false;
             if (text.Contains("<b>"))
             {
                 bold = true;
@@ -744,10 +741,10 @@ namespace TerraViewer
                 node.Tag = feature;
                 node.Checked = feature.visibility;
                 node.Opened = feature.open;
-                node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
-                node.NodeUpdated += new LayerUITreeNodeUpdatedDelegate(node_NodeUpdated);
-                node.NodeActivated += new LayerUITreeNodeActivatedDelegate(node_NodeActivated);
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
+                node.NodeChecked += node_NodeChecked;
+                node.NodeUpdated += node_NodeUpdated;
+                node.NodeActivated += node_NodeActivated;
+                node.NodeSelected += node_NodeSelected;
                 if (bold)
                 {
                     node.Bold = true;
@@ -756,13 +753,13 @@ namespace TerraViewer
 
             if (feature is KmlContainer)
             {
-                KmlContainer container = (KmlContainer)feature;
+                var container = (KmlContainer)feature;
                 if (container.children != null)
                 {
                     //  if (feature.Style.GetStyle(false).ListStyle.ListItemType != KmlListItemTypes.CheckHideChildren)
                     {
 
-                        foreach (KmlFeature child in container.children)
+                        foreach (var child in container.children)
                         {
                             AddFeatureToTree(child, node);
                         }
@@ -773,7 +770,7 @@ namespace TerraViewer
             {
                 if (feature is KmlNetworkLink)
                 {
-                    KmlNetworkLink netLink = (KmlNetworkLink)feature;
+                    var netLink = (KmlNetworkLink)feature;
                     if (netLink.LinkRoot != null)
                     {
                         AddRootToTree(netLink.LinkRoot, parent);
@@ -787,7 +784,7 @@ namespace TerraViewer
         {
             if (node != null)
             {
-                KmlPlacemark feature = node.Tag as KmlPlacemark;
+                var feature = node.Tag as KmlPlacemark;
 
                 if (feature != null)
                 {
@@ -802,7 +799,7 @@ namespace TerraViewer
         {
             if (node != null && node.Tag is KmlFeature)
             {
-                KmlFeature feature = (KmlFeature)node.Tag;
+                var feature = (KmlFeature)node.Tag;
                 if (feature.LookAt != null)
                 {
                     if (feature.sky)
@@ -816,10 +813,10 @@ namespace TerraViewer
                 }
                 else if (node.Tag is KmlPlacemark)
                 {
-                    KmlPlacemark placemark = (KmlPlacemark)node.Tag;
+                    var placemark = (KmlPlacemark)node.Tag;
                     if (placemark.geometry != null)
                     {
-                        KmlCoordinate point = placemark.geometry.GetCenterPoint();
+                        var point = placemark.geometry.GetCenterPoint();
                         if (placemark.sky)
                         {
                             Earth3d.MainWindow.GotoTarget(new TourPlace(placemark.Name, point.Lat, (point.Lng + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
@@ -853,17 +850,17 @@ namespace TerraViewer
         void node_NodeChecked(LayerUITreeNode node, bool newState)
         {
             layer.RetainedVisualsDirty = true;
-            KmlFeature item = node.Tag as KmlFeature;
+            var item = node.Tag as KmlFeature;
             if (item != null)
             {
-                KmlFeature feature = node.Tag as KmlFeature;
+                var feature = node.Tag as KmlFeature;
                 if (node.Tag is KmlFeature)
                 {
                     // todo wire up true selection
-                    bool selected = false;
+                    var selected = false;
 
-                    KmlFeature parent = node.Parent.Tag as KmlFeature;
-                    bool radioFolder = false;
+                    var parent = node.Parent.Tag as KmlFeature;
+                    var radioFolder = false;
 
 
                     radioFolder = parent == null ? false : parent.Style.GetStyle(selected).ListStyle.ListItemType == KmlListItemTypes.RadioFolder;
@@ -903,12 +900,12 @@ namespace TerraViewer
                         {
                             if (radioFolder)
                             {
-                                foreach (LayerUITreeNode sibling in node.Parent.Nodes)
+                                foreach (var sibling in node.Parent.Nodes)
                                 {
                                     if (sibling != node)
                                     {
                                         sibling.Checked = false;
-                                        KmlFeature siblingFeature = sibling.Tag as KmlFeature;
+                                        var siblingFeature = sibling.Tag as KmlFeature;
                                         if (siblingFeature != null)
                                         {
                                             siblingFeature.visibility = false;
@@ -925,10 +922,10 @@ namespace TerraViewer
         private static void CheckAllChildren(LayerUITreeNode node)
         {
             // deep check children
-            foreach (LayerUITreeNode child in node.Nodes)
+            foreach (var child in node.Nodes)
             {
                 child.Checked = true;
-                KmlFeature childFeature = child.Tag as KmlFeature;
+                var childFeature = child.Tag as KmlFeature;
                 if (childFeature != null)
                 {
                     childFeature.visibility = true;
@@ -952,13 +949,13 @@ namespace TerraViewer
         {
 
             //todo add sky support
-            CameraParameters camera = new CameraParameters();
+            var camera = new CameraParameters();
             camera.Lat = feature.LookAt.latitude;
             camera.Lng = feature.LookAt.longitude;
             camera.Rotation = feature.LookAt.heading / 180 * Math.PI;
             camera.Angle = -feature.LookAt.tilt / 180 * Math.PI;
             camera.Zoom = UiTools.MetersToZoom(feature.LookAt.range);
-            TourPlace p = new TourPlace(feature.Name, camera, Classification.Unidentified, "", ImageSetType.Earth, SolarSystemObjects.Earth);
+            var p = new TourPlace(feature.Name, camera, Classification.Unidentified, "", ImageSetType.Earth, SolarSystemObjects.Earth);
             Earth3d.MainWindow.GotoTarget(p, false, false, true);
         }
 

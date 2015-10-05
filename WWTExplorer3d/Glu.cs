@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 namespace TerraViewer
 {
@@ -62,25 +61,25 @@ namespace TerraViewer
         [DllImport(GLU_DLL)]
         public unsafe static extern byte* gluGetString(uint name);
         [DllImport(GLU_DLL)]
-        public unsafe static extern IntPtr gluNewTess();
+        public static extern IntPtr gluNewTess();
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluDeleteTess(IntPtr tess);
+        public static extern void gluDeleteTess(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessBeginPolygon(IntPtr tess, IntPtr polygon_data);
+        public static extern void gluTessBeginPolygon(IntPtr tess, IntPtr polygon_data);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessBeginContour(IntPtr tess);
+        public static extern void gluTessBeginContour(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessVertex(IntPtr tess, double[] coords, int data);
+        public static extern void gluTessVertex(IntPtr tess, double[] coords, int data);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessEndContour(IntPtr tess);
+        public static extern void gluTessEndContour(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessEndPolygon(IntPtr tess);
+        public static extern void gluTessEndPolygon(IntPtr tess);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessProperty(IntPtr tess, uint which, double valuex);
+        public static extern void gluTessProperty(IntPtr tess, uint which, double valuex);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessNormal(IntPtr tess, double x, double y, double z);
+        public static extern void gluTessNormal(IntPtr tess, double x, double y, double z);
         [DllImport(GLU_DLL)]
-        public unsafe static extern void gluTessCallback(IntPtr tess, uint which, Delegate fn);
+        public static extern void gluTessCallback(IntPtr tess, uint which, Delegate fn);
         [DllImport(GLU_DLL)]
         public unsafe static extern void gluGetTessProperty(IntPtr tess, uint which, double* valuex);
 
@@ -97,14 +96,14 @@ namespace TerraViewer
         public static event TessCallback ErrorEvent;
 
         static List<Vector3d> VertexList = new List<Vector3d>();
-        static List<int> TriangleListOut = new List<int>();
+        static readonly List<int> TriangleListOut = new List<int>();
 
 
-        public static unsafe List<int> TesselateSimplePolyB(List<Vector3d> inputList)
+        public static List<int> TesselateSimplePolyB(List<Vector3d> inputList)
         {
-            List<int> results = new List<int>();
+            var results = new List<int>();
 
-            Tessellator tess = new Tessellator();
+            var tess = new Tessellator();
 
             tess.Process(inputList, results);
 
@@ -124,7 +123,7 @@ namespace TerraViewer
             //VertexList.Add(new Vector3d(20,20,0));
 
 
-            IntPtr tess = gluNewTess();
+            var tess = gluNewTess();
 
             if (tess == null)
             {
@@ -132,12 +131,12 @@ namespace TerraViewer
             }
             // register the callbacks
 
-            BeginDataEvent = new TessCallback(BeginData);
-            EdgeFlagEvent = new TessCallback(EdgeFlag);
-            VertexEvent = new TessCallback(Vertex);
-            EndDataEvent = new TessEndData(EndData);
-            CombineEvent = new TessCombine(Combine);
-            ErrorEvent = new TessCallback(GLU_ErrorEvent);
+            BeginDataEvent = BeginData;
+            EdgeFlagEvent = EdgeFlag;
+            VertexEvent = Vertex;
+            EndDataEvent = EndData;
+            CombineEvent = Combine;
+            ErrorEvent = GLU_ErrorEvent;
 
             gluTessCallback(tess, GLU_TESS_BEGIN_DATA, BeginDataEvent);
             gluTessCallback(tess, GLU_TESS_EDGE_FLAG_DATA, EdgeFlagEvent);
@@ -149,10 +148,10 @@ namespace TerraViewer
             gluTessBeginPolygon(tess, IntPtr.Zero);
 
             gluTessBeginContour(tess);
-            for (int i = 0; i < VertexList.Count; i++)
+            for (var i = 0; i < VertexList.Count; i++)
             {
-                Vector3d v = VertexList[i];
-                gluTessVertex(tess, new double[] { v.X, v.Y, v.Z }, i);
+                var v = VertexList[i];
+                gluTessVertex(tess, new[] { v.X, v.Y, v.Z }, i);
             }
             gluTessEndContour(tess);
             gluTessEndPolygon(tess);
@@ -198,21 +197,19 @@ namespace TerraViewer
     {
         public static List<int> TesselateSimplePolyB(List<Vector3d> inputList)
         {
-            List<int> results = new List<int>();
+            var results = new List<int>();
 
-            Tessellator tess = new Tessellator();
+            var tess = new Tessellator();
 
             tess.Process(inputList, results);
 
             return results;
         }
 
-        const float EPSILON = 0.0000000001f;
-
         double Area(List<Vector2d> poly)
         {
 
-            int n = poly.Count;
+            var n = poly.Count;
 
             double A = 0.0f;
 
@@ -226,9 +223,9 @@ namespace TerraViewer
         {
             pntA.Normalize();
             pntB.Normalize();
-            Vector3d cross = Vector3d.Cross(pntA, pntB);
+            var cross = Vector3d.Cross(pntA, pntB);
 
-            double dot = Vector3d.Dot(cross, pntTest);
+            var dot = Vector3d.Dot(cross, pntTest);
 
             return dot > 0;
         }
@@ -290,9 +287,9 @@ namespace TerraViewer
             //Cy = poly[V[w]].Y;
 
 
-            Vector3d a = poly[V[u]];
-            Vector3d b = poly[V[v]];
-            Vector3d c = poly[V[w]];
+            var a = poly[V[u]];
+            var b = poly[V[v]];
+            var c = poly[V[w]];
             Vector3d P;
 
 
@@ -301,14 +298,14 @@ namespace TerraViewer
             //    return false;
             //}
 
-            Vector3d d = b-a;
+            var d = b-a;
             d.Normalize();
-            Vector3d e = b-c;
+            var e = b-c;
             c.Normalize();
 
-            Vector3d g= Vector3d.Cross(d,e);
+            var g= Vector3d.Cross(d,e);
 
-            Vector3d bn = b;
+            var bn = b;
             bn.Normalize();
 
             if (Vector3d.Dot(g, bn) > 0)
@@ -339,19 +336,19 @@ namespace TerraViewer
         {
             /* allocate and initialize list of Vertices in polygon */
 
-            int n = poly.Count;
+            var n = poly.Count;
             if (n < 3)
             {
                 return false;
             }
 
-            int[] V = new int[n];
+            var V = new int[n];
 
             /* we want a counter-clockwise polygon in V */
 
             //if (0.0f < Area(poly))
             //{
-                for (int v = 0; v < n; v++)
+                for (var v = 0; v < n; v++)
                 {
                     V[v] = v;
                 }
@@ -363,10 +360,10 @@ namespace TerraViewer
             //        V[v] = (n - 1) - v;
             //    }
             //}
-            int nv = n;
+            var nv = n;
 
             /*  remove nv-2 Vertices, creating 1 triangle every time */
-            int count = 2 * nv;   /* error detection */
+            var count = 2 * nv;   /* error detection */
 
             for (int m = 0, v = nv - 1; nv > 2; )
             {
@@ -378,7 +375,7 @@ namespace TerraViewer
                 }
 
                 /* three consecutive vertices in current polygon, <u,v,w> */
-                int u = v;
+                var u = v;
                 if (nv <= u)
                 {
                     u = 0;     /* previous */
@@ -390,7 +387,7 @@ namespace TerraViewer
                     v = 0;     /* new v    */
                 }
 
-                int w = v + 1;
+                var w = v + 1;
                 if (nv <= w)
                 {
                     w = 0;     /* next     */
@@ -430,19 +427,19 @@ namespace TerraViewer
         {
             /* allocate and initialize list of Vertices in polygon */
 
-            int n = poly.Count;
+            var n = poly.Count;
             if (n < 3)
             {
                 return false;
             }
 
-            int[] V = new int[n];
+            var V = new int[n];
 
             /* we want a counter-clockwise polygon in V */
 
             //if (0.0f < Area(poly))
             //{
-            for (int v = 0; v < n; v++)
+            for (var v = 0; v < n; v++)
             {
                 V[v] = v;
             }
@@ -454,10 +451,10 @@ namespace TerraViewer
             //    V[v] = (n - 1) - v;
             //}
             //}
-            int nv = n;
+            var nv = n;
 
             /*  remove nv-2 Vertices, creating 1 triangle every time */
-            int count = 2 * nv;   /* error detection */
+            var count = 2 * nv;   /* error detection */
 
             for (int m = 0, v = nv - 1; nv > 2; )
             {
@@ -469,7 +466,7 @@ namespace TerraViewer
                 }
 
                 /* three consecutive vertices in current polygon, <u,v,w> */
-                int u = v;
+                var u = v;
                 if (nv <= u)
                 {
                     u = 0;     /* previous */
@@ -481,7 +478,7 @@ namespace TerraViewer
                     v = 0;     /* new v    */
                 }
 
-                int w = v + 1;
+                var w = v + 1;
                 if (nv <= w)
                 {
                     w = 0;     /* next     */

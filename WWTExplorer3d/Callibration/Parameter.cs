@@ -35,7 +35,6 @@ namespace Solver
         private DerivativeStepType _derivativeStepType = DerivativeStepType.Relative;
 
         public Parameter()
-            : base()
         {
         }
 
@@ -106,7 +105,7 @@ namespace Solver
                 }
                 else
                 {
-                    if (_value != 0.0)
+                    if (!_value.Equals(0.0))
                     {
                         derivativeStepSize = _derivativeStep * Math.Abs(_value);
                     }
@@ -132,7 +131,7 @@ namespace Solver
 
         public override string ToString()
         {
-            return "Parameter: Value:" + Value.ToString() + " IsSolvedFor:" + _isSolvedFor.ToString();
+            return "Parameter: Value:" + Value + " IsSolvedFor:" + _isSolvedFor;
         }
     }
 
@@ -144,10 +143,6 @@ namespace Solver
 
     public class ParameterCollection : Collection<Parameter>
     {
-        public ParameterCollection()
-            : base()
-        {
-        }
     }
 
 }

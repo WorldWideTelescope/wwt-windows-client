@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
 using SharpDX;
-using SharpDX.DXGI;
-using SharpDX.Windows;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
 
 namespace TerraViewer
 {
@@ -25,9 +20,9 @@ namespace TerraViewer
 
         protected RenderStrategy renderStrategy;
 
-        int count;
+        readonly int count;
 
-        private Vector3 pointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);
+        private Vector3 pointScaleFactors = new Vector3(0.0f, 0.0f, 10000.0f);
 
         protected IVertexBuffer11 vertexBuffer;
         protected IVertexBuffer11 fallbackVertexBuffer;
@@ -36,7 +31,7 @@ namespace TerraViewer
 
         private Color4 tintColor = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
 
-        public AbstractSpriteSet(SharpDX.Direct3D11.Device device, System.Array points)
+        public AbstractSpriteSet(Device device, Array points)
         {
             if (RenderContext11.Downlevel)
             {
@@ -111,7 +106,7 @@ namespace TerraViewer
             }
         }
 
-        private void createAuxilliaryBuffers(SharpDX.Direct3D11.Device device)
+        private void createAuxilliaryBuffers(Device device)
         {
             if (renderStrategy == RenderStrategy.Instanced)
             {
@@ -124,9 +119,9 @@ namespace TerraViewer
             }
         }
 
-        private void createIndexBuffer(SharpDX.Direct3D11.Device device, int pointCount)
+        private void createIndexBuffer(Device device, int pointCount)
         {
-            uint[] indices = new uint[pointCount * 6];
+            var indices = new uint[pointCount * 6];
             for (uint i = 0; i < pointCount; ++i)
             {
                 indices[i * 6 + 0] = i * 4 + 0;
@@ -140,7 +135,7 @@ namespace TerraViewer
             indexBuffer = new IndexBuffer11(device, indices);
         }
 
-        private void createSpriteCornersBuffer(SharpDX.Direct3D11.Device device)
+        private void createSpriteCornersBuffer(Device device)
         {
             // Create the small buffer required when using instancing for point sprites
 
@@ -152,7 +147,7 @@ namespace TerraViewer
             spriteCornerVertexBuffer = new GenVertexBuffer<CompatibilityPointSpriteShader.CornerVertex>(device, corners);
         }
 
-        private void createSpriteCornersIndexBuffer(SharpDX.Direct3D11.Device device)
+        private void createSpriteCornersIndexBuffer(Device device)
         {
             uint[] indices = { 0, 1, 2, 0, 2, 3 };
             indexBuffer = new IndexBuffer11(device, indices);
@@ -167,14 +162,14 @@ namespace TerraViewer
             switch (renderStrategy)
             {
                 case RenderStrategy.GeometryShader:
-                    renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+                    renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
                     renderContext.SetVertexBuffer(0, vertexBuffer);
                     renderContext.devContext.Draw(count, 0);
                     renderContext.Device.ImmediateContext.GeometryShader.Set(null);
                     break;
 
                 case RenderStrategy.Instanced:
-                    renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+                    renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
                     renderContext.SetVertexBuffer(0, spriteCornerVertexBuffer);
                     renderContext.SetVertexBuffer(1, vertexBuffer);
                     renderContext.SetIndexBuffer(indexBuffer);
@@ -182,7 +177,7 @@ namespace TerraViewer
                     break;
 
                 case RenderStrategy.Fallback:
-                    renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+                    renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
                     renderContext.SetVertexBuffer(0, fallbackVertexBuffer);
                     renderContext.SetIndexBuffer(indexBuffer);
                     renderContext.devContext.DrawIndexed(count * 6, 0, 0);
@@ -200,7 +195,7 @@ namespace TerraViewer
             switch (renderStrategy)
             {
                 case RenderStrategy.GeometryShader:
-                    renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+                    renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
                     renderContext.SetVertexBuffer(0, vertexBuffer);
                     renderContext.SetIndexBuffer(indexBufferIn);
                     renderContext.devContext.DrawIndexed(count, 0, 0);
@@ -245,13 +240,13 @@ namespace TerraViewer
 
     public class PointSpriteSet : AbstractSpriteSet
     {
-        public PointSpriteSet(SharpDX.Direct3D11.Device device, PositionColorSize[] points) :
+        public PointSpriteSet(Device device, PositionColorSize[] points) :
             base(device, points)
         {
             createVertexBuffer(device, points);
         }
 
-        private void createVertexBuffer(SharpDX.Direct3D11.Device device, PositionColorSize[] points)
+        private void createVertexBuffer(Device device, PositionColorSize[] points)
         {
             if (renderStrategy == RenderStrategy.GeometryShader)
             {
@@ -266,8 +261,8 @@ namespace TerraViewer
                 const int verticesPerPoint = 4;
                 var expandedPoints = new CompatibilityPointSpriteShader.Vertex[points.Length * verticesPerPoint];
 
-                int index = 0;
-                foreach (PositionColorSize p in points)
+                var index = 0;
+                foreach (var p in points)
                 {
                     CompatibilityPointSpriteShader.Vertex xp;
                     xp.X = p.X;
@@ -314,8 +309,8 @@ namespace TerraViewer
                 {
                     const int verticesPerPoint = 4;
 
-                    int index = 0;
-                    foreach (PositionColorSize p in points)
+                    var index = 0;
+                    foreach (var p in points)
                     {
                         CompatibilityPointSpriteShader.Vertex xp;
                         xp.X = p.X;
@@ -345,19 +340,19 @@ namespace TerraViewer
 
         protected override void setupShader(RenderContext11 renderContext, Texture11 texture, float opacity)
         {
-            SharpDX.Matrix mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mvp.Transpose();
 
-            float aspectRatio = renderContext.ViewPort.Width / renderContext.ViewPort.Height;
+            var aspectRatio = renderContext.ViewPort.Width / renderContext.ViewPort.Height;
 
-            Color4 color = new Color4(TintColor.Red, TintColor.Green, TintColor.Blue, TintColor.Alpha * opacity);
+            var color = new Color4(TintColor.Red, TintColor.Green, TintColor.Blue, TintColor.Alpha * opacity);
 
             // Set up the shader
             if (renderStrategy == RenderStrategy.GeometryShader)
             {
                 PointSpriteShader11.WVPMatrix = mvp;
                 PointSpriteShader11.Color = color;
-                PointSpriteShader11.ViewportScale = new SharpDX.Vector2(1.0f, aspectRatio) * 0.001f;
+                PointSpriteShader11.ViewportScale = new Vector2(1.0f, aspectRatio) * 0.001f;
                 PointSpriteShader11.MinPointSize = MinPointSize;
                 PointSpriteShader11.PointScaleFactors = PointScaleFactors;
                 PointSpriteShader11.Use(renderContext.Device.ImmediateContext);
@@ -367,10 +362,10 @@ namespace TerraViewer
             {
                 CompatibilityPointSpriteShader.WVPMatrix = mvp;
                 CompatibilityPointSpriteShader.Color = color;
-                CompatibilityPointSpriteShader.ViewportScale = new SharpDX.Vector2(1.0f, aspectRatio) * 0.001f;
+                CompatibilityPointSpriteShader.ViewportScale = new Vector2(1.0f, aspectRatio) * 0.001f;
                 CompatibilityPointSpriteShader.PointScaleFactors = PointScaleFactors;
                 CompatibilityPointSpriteShader.MinPointSize = MinPointSize;
-                bool useInstancing = renderStrategy == RenderStrategy.Instanced;
+                var useInstancing = renderStrategy == RenderStrategy.Instanced;
                 CompatibilityPointSpriteShader.Use(renderContext.Device.ImmediateContext, useInstancing);
             }
 
@@ -382,13 +377,13 @@ namespace TerraViewer
 
     public class TimeSeriesPointSpriteSet : AbstractSpriteSet
     {
-        public TimeSeriesPointSpriteSet(SharpDX.Direct3D11.Device device, TimeSeriesPointVertex[] points) :
+        public TimeSeriesPointSpriteSet(Device device, TimeSeriesPointVertex[] points) :
             base(device, points)
         {
             createVertexBuffer(device, points);
         }
 
-        private void createVertexBuffer(SharpDX.Direct3D11.Device device, TimeSeriesPointVertex[] points)
+        private void createVertexBuffer(Device device, TimeSeriesPointVertex[] points)
         {
             if (renderStrategy == RenderStrategy.GeometryShader)
             {
@@ -403,8 +398,8 @@ namespace TerraViewer
                 const int verticesPerPoint = 4;
                 var expandedPoints = new DownlevelTimeSeriesPointSpriteShader.Vertex[points.Length * verticesPerPoint];
 
-                int index = 0;
-                foreach (TimeSeriesPointVertex p in points)
+                var index = 0;
+                foreach (var p in points)
                 {
                     DownlevelTimeSeriesPointSpriteShader.Vertex xp;
                     xp.Position = p.Position;
@@ -439,13 +434,13 @@ namespace TerraViewer
 
     public class KeplerPointSpriteSet : AbstractSpriteSet
     {
-        public KeplerPointSpriteSet(SharpDX.Direct3D11.Device device, KeplerVertex[] points) :
+        public KeplerPointSpriteSet(Device device, KeplerVertex[] points) :
             base(device, points)
         {
             createVertexBuffer(device, points);
         }
 
-        private void createVertexBuffer(SharpDX.Direct3D11.Device device, KeplerVertex[] points)
+        private void createVertexBuffer(Device device, KeplerVertex[] points)
         {
             if (renderStrategy == RenderStrategy.GeometryShader)
             {
@@ -460,8 +455,8 @@ namespace TerraViewer
                 const int verticesPerPoint = 4;
                 var expandedPoints = new KeplerVertex[points.Length * verticesPerPoint];
 
-                int index = 0;
-                foreach (KeplerVertex p in points)
+                var index = 0;
+                foreach (var p in points)
                 {
                     KeplerVertex xp;
                     xp = p;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace TerraViewer
+﻿namespace TerraViewer
 {
     class ToastTools
     {
@@ -21,7 +16,7 @@ namespace TerraViewer
 
         public object Tag = null;
 
-        ToastTools[] children = new ToastTools[4];
+        readonly ToastTools[] children = new ToastTools[4];
         
         public ToastTools(ToastTools parent, int level, int x, int y)
         {
@@ -40,8 +35,8 @@ namespace TerraViewer
         {
             if (children[id] == null)
             {
-                int x1 =0;
-                int y1 = 0;
+                var x1 =0;
+                var y1 = 0;
                 switch(id)
                 {
                     case 0:
@@ -68,7 +63,7 @@ namespace TerraViewer
             return children[id];
         }
 
-        ToastTools Parent = null;
+        readonly ToastTools Parent;
         private void InitializeGrids()
         {
 
@@ -81,8 +76,8 @@ namespace TerraViewer
                     return;
                 }
 
-                int xIndex = X % 2;
-                int yIndex = Y % 2;
+                var xIndex = X % 2;
+                var yIndex = Y % 2;
 
                 if (Level > 1)
                 {
@@ -194,8 +189,8 @@ namespace TerraViewer
 
         private PositionTexture Midpoint(PositionTexture positionNormalTextured, PositionTexture positionNormalTextured_2)
         {
-            Vector3d a1 = Vector3d.Lerp(positionNormalTextured.Position, positionNormalTextured_2.Position, .5f);
-            Vector2d a1uv = Vector2d.Lerp(new Vector2d(positionNormalTextured.Tu, positionNormalTextured.Tv), new Vector2d(positionNormalTextured_2.Tu, positionNormalTextured_2.Tv), .5f);
+            var a1 = Vector3d.Lerp(positionNormalTextured.Position, positionNormalTextured_2.Position, .5f);
+            var a1uv = Vector2d.Lerp(new Vector2d(positionNormalTextured.Tu, positionNormalTextured.Tv), new Vector2d(positionNormalTextured_2.Tu, positionNormalTextured_2.Tv), .5f);
 
             a1.Normalize();
             return new PositionTexture(a1, a1uv.X, a1uv.Y);
@@ -229,11 +224,11 @@ namespace TerraViewer
             }
 
 
-            Vector3d testPoint = Coordinates.GeoTo3dDouble(lat, lng);
-            bool top = IsLeftOfHalfSpace(TopLeft, TopRight, testPoint);
-            bool right = IsLeftOfHalfSpace(TopRight, BottomRight, testPoint);
-            bool bottom = IsLeftOfHalfSpace(BottomRight, BottomLeft, testPoint);
-            bool left = IsLeftOfHalfSpace(BottomLeft, TopLeft, testPoint);
+            var testPoint = Coordinates.GeoTo3dDouble(lat, lng);
+            var top = IsLeftOfHalfSpace(TopLeft, TopRight, testPoint);
+            var right = IsLeftOfHalfSpace(TopRight, BottomRight, testPoint);
+            var bottom = IsLeftOfHalfSpace(BottomRight, BottomLeft, testPoint);
+            var left = IsLeftOfHalfSpace(BottomLeft, TopLeft, testPoint);
 
             if (top && right && bottom && left)
             {
@@ -248,29 +243,29 @@ namespace TerraViewer
         {
             pntA.Normalize();
             pntB.Normalize();
-            Vector3d cross = Vector3d.Cross(pntA, pntB);
+            var cross = Vector3d.Cross(pntA, pntB);
 
-            double dot = Vector3d.Dot(cross, pntTest);
+            var dot = Vector3d.Dot(cross, pntTest);
 
             return dot > 0;
         }
 
-        static ToastTools root = new ToastTools(null, 0, 0, 0);
+        static readonly ToastTools root = new ToastTools(null, 0, 0, 0);
 
         public static ToastTools GetTileForLevelPoint(int targetLevel, double lat, double lng)
         {
 
-            int level = 0;
+            var level = 0;
 
-            ToastTools tile = root;
+            var tile = root;
 
 
             while (level < targetLevel+1)
             {
                 //iterate children
-                for (int i = 0; i < 4; i++ )
+                for (var i = 0; i < 4; i++ )
                 {
-                    ToastTools child = tile.GetChild(i);
+                    var child = tile.GetChild(i);
                     if (child != null)
                     {
                         if (child.IsPointInTile(lat, lng))

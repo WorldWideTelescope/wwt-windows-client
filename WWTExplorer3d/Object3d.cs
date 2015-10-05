@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Xml;
 using SharpDX;
-using SharpDX.Direct3D11;
 using System.Windows.Forms;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using Color = System.Drawing.Color;
+
 namespace TerraViewer
 {
     public class Object3dLayer : Layer , IUiController
     {
 
-        Object3dLayerUI primaryUI = null;
+        Object3dLayerUI primaryUI;
         public override LayerUI GetPrimaryUI()
         {
             if (primaryUI == null)
@@ -25,7 +28,7 @@ namespace TerraViewer
 
         public Object3d object3d;
 
-        double heading = 0;
+        double heading;
         bool flipV = true;
 
         [LayerProperty]
@@ -47,7 +50,7 @@ namespace TerraViewer
             }
         }
 
-        bool flipHandedness = false;
+        bool flipHandedness;
 
         [LayerProperty]
         public bool FlipHandedness
@@ -92,7 +95,7 @@ namespace TerraViewer
             }
         }
 
-        bool twoSidedGeometry = false;
+        bool twoSidedGeometry;
 
         [LayerProperty]
         public bool TwoSidedGeometry
@@ -121,7 +124,7 @@ namespace TerraViewer
                 }
             }
         }
-        double pitch = 0;
+        double pitch;
 
         [LayerProperty]
         public double Pitch
@@ -136,7 +139,7 @@ namespace TerraViewer
                 }
             }
         }
-        double roll = 0;
+        double roll;
 
         [LayerProperty]
         public double Roll
@@ -183,11 +186,7 @@ namespace TerraViewer
         }
 
 
-        public Object3dLayer()
-        {
-        }
-
-        int lightID = 0;
+        int lightID;
 
          [LayerProperty]
         public int LightID
@@ -198,7 +197,7 @@ namespace TerraViewer
 
 
 
-        bool dirty = false;
+        bool dirty;
         public override void CleanUp()
         {
             if (object3d != null)
@@ -221,7 +220,7 @@ namespace TerraViewer
 
         public bool ObjType = false;
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("FlipV", FlipV.ToString());
             xmlWriter.WriteAttributeString("FlipHandedness", FlipHandedness.ToString());
@@ -239,7 +238,7 @@ namespace TerraViewer
 
         public override double[] GetParams()
         {
-            double[] paramList = new double[14];
+            var paramList = new double[14];
             paramList[0] = heading;
             paramList[1] = pitch;
             paramList[2] = roll;
@@ -260,12 +259,12 @@ namespace TerraViewer
 
         public override string[] GetParamNames()
         {
-            return new string[] { "Heading", "Pitch", "Roll", "Scale.X", "Scale.Y", "Scale.Z", "Translate.X", "Translate.Y", "Translate.Z", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
+            return new[] { "Heading", "Pitch", "Roll", "Scale.X", "Scale.Y", "Scale.Z", "Translate.X", "Translate.Y", "Translate.Z", "Color.Red", "Color.Green", "Color.Blue", "Color.Alpha", "Opacity" };
         }
 
         public override BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
+            return new[] { BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Power, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear, BaseTweenType.Linear };
         }
 
         public override void SetParams(double[] paramList)
@@ -283,7 +282,7 @@ namespace TerraViewer
                 translate.Z = paramList[8];
 
                 Opacity = (float)paramList[13];
-                System.Drawing.Color color = System.Drawing.Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[9] * 255), (int)(paramList[10] * 255), (int)(paramList[11] * 255));
+                var color = Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[9] * 255), (int)(paramList[10] * 255), (int)(paramList[11] * 255));
                 Color = color;
 
             }
@@ -305,7 +304,7 @@ namespace TerraViewer
             return this as IUiController;
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             FlipV = Boolean.Parse(node.Attributes["FlipV"].Value);
 
@@ -357,10 +356,10 @@ namespace TerraViewer
             }
         }
 
-        static TriangleList TranslateUI = null;
-        static LineList TranslateUILines = null;
+        static TriangleList TranslateUI;
+        static LineList TranslateUILines;
 
-        static TriangleList ScaleUI = null;
+        static TriangleList ScaleUI;
 
         //public static SimpleLineList11 sketch = null;
         static void InitTranslateUI()
@@ -375,66 +374,66 @@ namespace TerraViewer
             TranslateUI.TimeSeries = false;
             TranslateUI.WriteZbuffer = false;
 
-            double twoPi = Math.PI * 2;
-            double step = twoPi / 45;
-            double rad = .05;
+            var twoPi = Math.PI * 2;
+            var step = twoPi / 45;
+            var rad = .05;
 
             // X
 
             for (double a = 0; a < twoPi; a += step)
             {
-                Vector3d pnt1 = new Vector3d(1 - rad * 4, 0, 0);
-                Vector3d pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
-                Vector3d pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Red, new Dates());
+                var pnt1 = new Vector3d(1 - rad * 4, 0, 0);
+                var pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
+                var pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Red, new Dates());
             }
             for (double a = 0; a < twoPi; a += step)
             {
-                Vector3d pnt1 = new Vector3d(1, 0, 0);
-                Vector3d pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
-                Vector3d pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                var pnt1 = new Vector3d(1, 0, 0);
+                var pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
+                var pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), System.Drawing.Color.Red);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), Color.Red);
 
             // Y
             for (double a = 0; a < twoPi; a += step)
             {
-                Vector3d pnt1 = new Vector3d(0, 1 - rad * 4, 0);
-                Vector3d pnt3 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
-                Vector3d pnt2 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Green, new Dates());
+                var pnt1 = new Vector3d(0, 1 - rad * 4, 0);
+                var pnt3 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
+                var pnt2 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Green, new Dates());
             }
 
             for (double a = 0; a < twoPi; a += step)
             {
-                Vector3d pnt1 = new Vector3d(0, 1, 0);
-                Vector3d pnt2 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
-                Vector3d pnt3 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), 255, Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                var pnt1 = new Vector3d(0, 1, 0);
+                var pnt2 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
+                var pnt3 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), 255, Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), System.Drawing.Color.Green);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), Color.Green);
 
             // Z
             for (double a = 0; a < twoPi; a += step)
             {
-                Vector3d pnt1 = new Vector3d(0, 0, 1 - rad * 4);
-                Vector3d pnt2 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
-                Vector3d pnt3 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Blue, new Dates());
+                var pnt1 = new Vector3d(0, 0, 1 - rad * 4);
+                var pnt2 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
+                var pnt3 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Blue, new Dates());
             }
 
             for (double a = 0; a < twoPi; a += step)
             {
-                Vector3d pnt1 = new Vector3d(0, 0, 1);
-                Vector3d pnt3 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
-                Vector3d pnt2 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128)), 255), new Dates());
+                var pnt1 = new Vector3d(0, 0, 1);
+                var pnt3 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
+                var pnt2 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128)), 255), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), System.Drawing.Color.Blue);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), Color.Blue);
             InitRotateUI();
             InitScaleUI();
         }
@@ -446,23 +445,23 @@ namespace TerraViewer
             ScaleUI.TimeSeries = false;
             ScaleUI.WriteZbuffer = false;
 
-            double twoPi = Math.PI * 2;
-            double step = twoPi / 45;
-            double rad = .05;
+            var twoPi = Math.PI * 2;
+            var step = twoPi / 45;
+            var rad = .05;
 
             // X
 
-            MakeCube(ScaleUI, new Vector3d(1 - rad * 2, 0, 0), rad * 2, System.Drawing.Color.Red);
-            MakeCube(ScaleUI, new Vector3d(0, 1 - rad * 2, 0), rad * 2, System.Drawing.Color.Green);
-            MakeCube(ScaleUI, new Vector3d(0, 0, 1 - rad * 2), rad * 2, System.Drawing.Color.Blue);
+            MakeCube(ScaleUI, new Vector3d(1 - rad * 2, 0, 0), rad * 2, Color.Red);
+            MakeCube(ScaleUI, new Vector3d(0, 1 - rad * 2, 0), rad * 2, Color.Green);
+            MakeCube(ScaleUI, new Vector3d(0, 0, 1 - rad * 2), rad * 2, Color.Blue);
 
         }
 
-        static void MakeCube(TriangleList tl, Vector3d center, double size, System.Drawing.Color color)
+        static void MakeCube(TriangleList tl, Vector3d center, double size, Color color)
         {
 
-            System.Drawing.Color dark = System.Drawing.Color.FromArgb((int)(color.R * .6), (color.G), (int)(color.B * .6));
-            System.Drawing.Color med = System.Drawing.Color.FromArgb((int)(color.R * .8), (int)(color.G * .8), (int)(color.B * .8));
+            var dark = Color.FromArgb((int)(color.R * .6), (color.G), (int)(color.B * .6));
+            var med = Color.FromArgb((int)(color.R * .8), (int)(color.G * .8), (int)(color.B * .8));
 
 
             tl.AddQuad(
@@ -510,7 +509,7 @@ namespace TerraViewer
 
         }
 
-        static TriangleList RotateUi = null;
+        static TriangleList RotateUi;
 
         static void InitRotateUI()
         {
@@ -519,20 +518,20 @@ namespace TerraViewer
             RotateUi.TimeSeries = false;
             RotateUi.WriteZbuffer = false;
 
-            double twoPi = Math.PI * 2;
-            double step = twoPi / 40;
-            double rad = .05;
-            int index = 0;
+            var twoPi = Math.PI * 2;
+            var step = twoPi / 40;
+            var rad = .05;
+            var index = 0;
 
             for (double a = 0; a < twoPi; a += step)
             {
-                bool start = (index % 10) == 0;
-                bool end = ((index + 1) % 10) == 0;
-                Vector3d pnt1 = new Vector3d(rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
-                Vector3d pnt2 = new Vector3d(-rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
-                Vector3d pnt3 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                Vector3d pnt4 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkRed), new Dates());
+                var start = (index % 10) == 0;
+                var end = ((index + 1) % 10) == 0;
+                var pnt1 = new Vector3d(rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
+                var pnt2 = new Vector3d(-rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
+                var pnt3 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
+                var pnt4 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.FromArgb(192, Color.DarkRed), new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -540,13 +539,13 @@ namespace TerraViewer
             index = 0;
             for (double a = 0; a < twoPi; a += step)
             {
-                bool start = (index % 10) == 0;
-                bool end = ((index + 1) % 10) == 0;
-                Vector3d pnt1 = new Vector3d(Math.Cos(a), Math.Sin(a), rad * (start ? 0 : (end ? 1.5 : 1)));
-                Vector3d pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), -rad * (start ? 0 : (end ? 1.5 : 1)));
-                Vector3d pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
-                Vector3d pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkBlue), new Dates());
+                var start = (index % 10) == 0;
+                var end = ((index + 1) % 10) == 0;
+                var pnt1 = new Vector3d(Math.Cos(a), Math.Sin(a), rad * (start ? 0 : (end ? 1.5 : 1)));
+                var pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), -rad * (start ? 0 : (end ? 1.5 : 1)));
+                var pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
+                var pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.FromArgb(192, Color.DarkBlue), new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -554,13 +553,13 @@ namespace TerraViewer
             index = 0;
             for (double a = 0; a < twoPi; a += step)
             {
-                bool start = (index % 10) == 0;
-                bool end = ((index + 1) % 10) == 0;
-                Vector3d pnt1 = new Vector3d(Math.Cos(a), rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
-                Vector3d pnt2 = new Vector3d(Math.Cos(a), -rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
-                Vector3d pnt3 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                Vector3d pnt4 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkGreen), new Dates());
+                var start = (index % 10) == 0;
+                var end = ((index + 1) % 10) == 0;
+                var pnt1 = new Vector3d(Math.Cos(a), rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
+                var pnt2 = new Vector3d(Math.Cos(a), -rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
+                var pnt3 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
+                var pnt4 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
+                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(192, Color.DarkGreen), new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -569,13 +568,13 @@ namespace TerraViewer
             index = 0;
             for (double a = 0; a < twoPi; a += step)
             {
-                bool start = (index % 10) == 0;
-                bool end = ((index + 1) % 10) == 0;
-                Vector3d pnt1 = new Vector3d(-rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
-                Vector3d pnt2 = new Vector3d(rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
-                Vector3d pnt3 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                Vector3d pnt4 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.Red, new Dates());
+                var start = (index % 10) == 0;
+                var end = ((index + 1) % 10) == 0;
+                var pnt1 = new Vector3d(-rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
+                var pnt2 = new Vector3d(rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
+                var pnt3 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
+                var pnt4 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.Red, new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -586,13 +585,13 @@ namespace TerraViewer
             index = 0;
             for (double a = 0; a < twoPi; a += step)
             {
-                bool start = (index % 10) == 0;
-                bool end = ((index + 1) % 10) == 0;
-                Vector3d pnt1 = new Vector3d(Math.Cos(a), Math.Sin(a), -rad * (start ? 0 : (end ? 1.5 : 1)));
-                Vector3d pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), rad * (start ? 0 : (end ? 1.5 : 1)));
-                Vector3d pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
-                Vector3d pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.Blue, new Dates());
+                var start = (index % 10) == 0;
+                var end = ((index + 1) % 10) == 0;
+                var pnt1 = new Vector3d(Math.Cos(a), Math.Sin(a), -rad * (start ? 0 : (end ? 1.5 : 1)));
+                var pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), rad * (start ? 0 : (end ? 1.5 : 1)));
+                var pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
+                var pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.Blue, new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
@@ -603,22 +602,22 @@ namespace TerraViewer
             index = 0;
             for (double a = 0; a < twoPi; a += step)
             {
-                bool start = (index % 10) == 0;
-                bool end = ((index + 1) % 10) == 0;
-                Vector3d pnt1 = new Vector3d(Math.Cos(a), -rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
-                Vector3d pnt2 = new Vector3d(Math.Cos(a), rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
-                Vector3d pnt3 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                Vector3d pnt4 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.Green, new Dates());
+                var start = (index % 10) == 0;
+                var end = ((index + 1) % 10) == 0;
+                var pnt1 = new Vector3d(Math.Cos(a), -rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
+                var pnt2 = new Vector3d(Math.Cos(a), rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
+                var pnt3 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
+                var pnt4 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
+                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.Green, new Dates());
                 //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
         }
         
 
-        Vector2d xHandle = new Vector2d();
-        Vector2d yHandle = new Vector2d();
-        Vector2d zHandle = new Vector2d();
+        Vector2d xHandle;
+        Vector2d yHandle;
+        Vector2d zHandle;
 
         Vector2d[] hprHandles = new Vector2d[6];
 
@@ -627,8 +626,8 @@ namespace TerraViewer
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
 
-            Matrix3d oldWorld = renderContext.World;
-            Matrix3d rotation = Matrix3d.RotationZ(-roll / 180f * Math.PI) * Matrix3d.RotationX(-pitch / 180f * Math.PI) * Matrix3d.RotationY(heading / 180f * Math.PI);
+            var oldWorld = renderContext.World;
+            var rotation = Matrix3d.RotationZ(-roll / 180f * Math.PI) * Matrix3d.RotationX(-pitch / 180f * Math.PI) * Matrix3d.RotationY(heading / 180f * Math.PI);
 
             renderContext.World = rotation * Matrix3d.Scaling(scale.X, scale.Y, scale.Z) * Matrix3d.Translation(translate) * oldWorld;
             renderContext.TwoSidedLighting = TwoSidedGeometry;
@@ -659,28 +658,28 @@ namespace TerraViewer
                     Planets.DrawPointPlanet(renderContext, new Vector3d(), 1, Color, false, 1.0f);
                 }
 
-                DepthStencilMode oldDepthMode = renderContext.DepthStencilMode = DepthStencilMode.Off;
+                var oldDepthMode = renderContext.DepthStencilMode = DepthStencilMode.Off;
                 renderContext.World = Matrix3d.Translation(translate) * oldWorld;
 
-                Matrix3d wvp = renderContext.World * renderContext.View * renderContext.Projection;
+                var wvp = renderContext.World * renderContext.View * renderContext.Projection;
 
-                Vector3d vc = new Vector3d(0, 0, 0);
-                Vector3d vc1 = new Vector3d(.001, 0, 0);
-                Vector3d vc2 = new Vector3d(0, .001, 0);
-                Vector3d vc3 = new Vector3d(0, 0, .001);
-                Vector3d vs = Vector3d.TransformCoordinate(vc, wvp);
-                Vector3d vs1 = Vector3d.TransformCoordinate(vc1, wvp);
-                Vector3d vs2 = Vector3d.TransformCoordinate(vc2, wvp);
-                Vector3d vs3 = Vector3d.TransformCoordinate(vc3, wvp);
+                var vc = new Vector3d(0, 0, 0);
+                var vc1 = new Vector3d(.001, 0, 0);
+                var vc2 = new Vector3d(0, .001, 0);
+                var vc3 = new Vector3d(0, 0, .001);
+                var vs = Vector3d.TransformCoordinate(vc, wvp);
+                var vs1 = Vector3d.TransformCoordinate(vc1, wvp);
+                var vs2 = Vector3d.TransformCoordinate(vc2, wvp);
+                var vs3 = Vector3d.TransformCoordinate(vc3, wvp);
 
-                Vector2d vsa = new Vector2d(vs.X, vs.Y);
-                Vector2d vsa1 = new Vector2d(vs1.X, vs1.Y) - vsa;
-                Vector2d vsa2 = new Vector2d(vs2.X, vs2.Y) - vsa;
-                Vector2d vsa3 = new Vector2d(vs3.X, vs3.Y) - vsa;
+                var vsa = new Vector2d(vs.X, vs.Y);
+                var vsa1 = new Vector2d(vs1.X, vs1.Y) - vsa;
+                var vsa2 = new Vector2d(vs2.X, vs2.Y) - vsa;
+                var vsa3 = new Vector2d(vs3.X, vs3.Y) - vsa;
 
                 uiScale = .0003 / Math.Sqrt((vsa1.Length * vsa1.Length + vsa2.Length * vsa2.Length + vsa3.Length * vsa3.Length));
 
-                Matrix3d matUIScale = Matrix3d.Scaling(uiScale, uiScale, uiScale);
+                var matUIScale = Matrix3d.Scaling(uiScale, uiScale, uiScale);
 
                 renderContext.World = matUIScale * renderContext.World;
 
@@ -710,9 +709,9 @@ namespace TerraViewer
 
                 }
 
-                bool showTranslate = Control.ModifierKeys != Keys.Control && Control.ModifierKeys != Keys.Shift;
-                bool showRotate = Control.ModifierKeys == Keys.Control;
-                bool showScale = Control.ModifierKeys == Keys.Shift;
+                var showTranslate = Control.ModifierKeys != Keys.Control && Control.ModifierKeys != Keys.Shift;
+                var showRotate = Control.ModifierKeys == Keys.Control;
+                var showScale = Control.ModifierKeys == Keys.Shift;
 
                 if (showTranslate)
                 {
@@ -741,7 +740,7 @@ namespace TerraViewer
                 {
                     wvp = renderContext.World * renderContext.View * renderContext.Projection;
 
-                    Vector3d[] hprPoints = new Vector3d[]
+                    var hprPoints = new Vector3d[]
                                     {
                                         new Vector3d(0,0,1),
                                         new Vector3d(0,0,-1),
@@ -751,9 +750,9 @@ namespace TerraViewer
                                         new Vector3d(1,0,0)
                                     };
                     hprHandles = new Vector2d[6];
-                    for (int i = 0; i < 6; i++)
+                    for (var i = 0; i < 6; i++)
                     {
-                        Vector3d vt = Vector3d.TransformCoordinate(hprPoints[i], wvp);
+                        var vt = Vector3d.TransformCoordinate(hprPoints[i], wvp);
                         hprHandles[i] = new Vector2d((vt.X + 1) * w / 2, h - ((vt.Y + 1) * h / 2));
                     }
 
@@ -782,14 +781,14 @@ namespace TerraViewer
         {
             if (object3d != null)
             {
-                string fName = object3d.Filename;
+                var fName = object3d.Filename;
 
-                bool copy = true;
+                var copy = true;
                 //bool copy = !fName.Contains(ID.ToString());
-                string ext = ObjType ? "obj" : "3ds";
-                string fileName = fc.TempDirectory + string.Format("{0}\\{1}.{2}", fc.PackageID, this.ID.ToString(), ext);
-                string path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
-                string path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
+                var ext = ObjType ? "obj" : "3ds";
+                var fileName = fc.TempDirectory + string.Format("{0}\\{1}.{2}", fc.PackageID, ID, ext);
+                var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
+                var path2 = fileName.Substring(0, fileName.LastIndexOf('\\') + 1);
 
                 if (copy)
                 {
@@ -802,13 +801,13 @@ namespace TerraViewer
                         File.Copy(fName, fileName);
                     }
 
-                    foreach (string meshfile in object3d.meshFilenames)
+                    foreach (var meshfile in object3d.meshFilenames)
                     {
                         if (!String.IsNullOrEmpty(meshfile))
                         {
-                            string textureFilename = fc.TempDirectory + string.Format("{0}\\{1}", fc.PackageID, meshfile);
-                            string mFilename = path + "\\" + meshfile;
-                            string newfilename = Object3d.FindFile(mFilename);
+                            var textureFilename = fc.TempDirectory + string.Format("{0}\\{1}", fc.PackageID, meshfile);
+                            var mFilename = path + "\\" + meshfile;
+                            var newfilename = Object3d.FindFile(mFilename);
                             if (string.IsNullOrEmpty(newfilename))
                             {
                                 newfilename = Object3d.FindFileFuzzy(mFilename);
@@ -829,11 +828,11 @@ namespace TerraViewer
                     fc.AddFile(fileName);
                 }
 
-                foreach (string meshfile in object3d.meshFilenames)
+                foreach (var meshfile in object3d.meshFilenames)
                 {
                     if (!string.IsNullOrEmpty(meshfile))
                     {
-                        string textureFilename = fc.TempDirectory + string.Format("{0}\\{1}", fc.PackageID, meshfile);
+                        var textureFilename = fc.TempDirectory + string.Format("{0}\\{1}", fc.PackageID, meshfile);
                         fc.AddFile(textureFilename);
                     }
                 }
@@ -868,7 +867,7 @@ namespace TerraViewer
             showEditUi = true;
             return ;
         }
-        bool showEditUi = false;
+        bool showEditUi;
         public void PreRender(Earth3d window)
         {
             showEditUi = true;
@@ -879,38 +878,38 @@ namespace TerraViewer
 
         Draging dragMode = Draging.None;
 
-        Point pntDown = new Point();
-        double valueOnDown = 0;
-        double valueOnDown2 = 0;
+        Point pntDown;
+        double valueOnDown;
+        double valueOnDown2;
 
         double hitDist = 20;
 
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             pntDown = e.Location;
 
-            Vector2d pnt = new Vector2d(e.X, e.Y);
+            var pnt = new Vector2d(e.X, e.Y);
 
             if (Control.ModifierKeys == Keys.Shift)
             {
                 if ((pnt - xHandle).Length < hitDist)
                 {
                     dragMode = Draging.Scale;
-                    valueOnDown = this.scale.X;
+                    valueOnDown = scale.X;
                     return true;
                 }
 
                 if ((pnt - yHandle).Length < hitDist)
                 {
                     dragMode = Draging.Scale;
-                    valueOnDown = this.scale.Y;
+                    valueOnDown = scale.Y;
                     return true;
                 }
 
                 if ((pnt - zHandle).Length < hitDist)
                 {
                     dragMode = Draging.Scale;
-                    valueOnDown = this.scale.Z;
+                    valueOnDown = scale.Z;
                     return true;
                 }
             }
@@ -919,26 +918,26 @@ namespace TerraViewer
                 if ((pnt - xHandle).Length < hitDist)
                 {
                     dragMode = Draging.X;
-                    valueOnDown = this.translate.X;
+                    valueOnDown = translate.X;
                     return true;
                 }
 
                 if ((pnt - yHandle).Length < hitDist)
                 {
                     dragMode = Draging.Y;
-                    valueOnDown = this.translate.Y;
+                    valueOnDown = translate.Y;
                     return true;
                 }
 
                 if ((pnt - zHandle).Length < hitDist)
                 {
                     dragMode = Draging.Z;
-                    valueOnDown = this.translate.Z;
+                    valueOnDown = translate.Z;
                     return true;
                 }
             }
 
-            for (int i = 0; i < hprHandles.Length; i++)
+            for (var i = 0; i < hprHandles.Length; i++)
             {
                 if ((pnt - hprHandles[i]).Length < hitDist)
                 {
@@ -946,33 +945,33 @@ namespace TerraViewer
                     {
                         case 0:
                             dragMode = Draging.HP;
-                            valueOnDown = this.heading;
-                            valueOnDown2 = this.pitch;
+                            valueOnDown = heading;
+                            valueOnDown2 = pitch;
                             return true;
                         case 1:
                             dragMode = Draging.HP1;
-                            valueOnDown = this.heading;
-                            valueOnDown2 = this.pitch;
+                            valueOnDown = heading;
+                            valueOnDown2 = pitch;
                             return true;
                         case 2:
                             dragMode = Draging.PR;
-                            valueOnDown = this.pitch;
-                            valueOnDown2 = this.roll;
+                            valueOnDown = pitch;
+                            valueOnDown2 = roll;
                             return true;
                         case 3:
                             dragMode = Draging.PR1;
-                            valueOnDown = this.pitch;
-                            valueOnDown2 = this.roll;
+                            valueOnDown = pitch;
+                            valueOnDown2 = roll;
                             return true;
                         case 4: 
                             dragMode = Draging.RH;
-                            valueOnDown = this.roll;
-                            valueOnDown2 = this.heading;
+                            valueOnDown = roll;
+                            valueOnDown2 = heading;
                             return true;
                         case 5:
                             dragMode = Draging.RH1;
-                            valueOnDown = this.roll;
-                            valueOnDown2 = this.heading;
+                            valueOnDown = roll;
+                            valueOnDown2 = heading;
                             return true;
                         default:
                             break;
@@ -983,7 +982,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             if (dragMode != Draging.None)
             {
@@ -994,10 +993,10 @@ namespace TerraViewer
             return false;
         }
 
-        bool lockPreferedAxis = false;
-        bool preferY = false;
+        bool lockPreferedAxis;
+        bool preferY;
 
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
 
             //pntDown = e.Location;
@@ -1046,40 +1045,40 @@ namespace TerraViewer
                     case Draging.None:
                         break;
                     case Draging.X:
-                        this.translate.X = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        translate.X = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.Y:
-                        this.translate.Y = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        translate.Y = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.Z:
-                        this.translate.Z = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        translate.Z = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.HP:
-                        this.heading = valueOnDown - distX / 4;
-                        this.pitch = valueOnDown2 + distY / 4;
+                        heading = valueOnDown - distX / 4;
+                        pitch = valueOnDown2 + distY / 4;
                         break;
                     case Draging.PR:
-                        this.pitch = valueOnDown + distY / 4;
-                        this.roll = valueOnDown2 - distX / 4;
+                        pitch = valueOnDown + distY / 4;
+                        roll = valueOnDown2 - distX / 4;
                         break;
                     case Draging.RH:
-                        this.roll = valueOnDown + distY / 4;
-                        this.heading = valueOnDown2 - distX / 4;
+                        roll = valueOnDown + distY / 4;
+                        heading = valueOnDown2 - distX / 4;
                         break;
                     case Draging.HP1:
-                        this.heading = valueOnDown - distX / 4;
-                        this.pitch = valueOnDown2 - distY / 4;
+                        heading = valueOnDown - distX / 4;
+                        pitch = valueOnDown2 - distY / 4;
                         break;
                     case Draging.PR1:
-                        this.pitch = valueOnDown + distY / 4;
-                        this.roll = valueOnDown2 + distX / 4;
+                        pitch = valueOnDown + distY / 4;
+                        roll = valueOnDown2 + distX / 4;
                         break;
                     case Draging.RH1:
-                        this.roll = valueOnDown - distY / 4;
-                        this.heading = valueOnDown2 - distX / 4;
+                        roll = valueOnDown - distY / 4;
+                        heading = valueOnDown2 - distX / 4;
                         break;
                     case Draging.Scale:
-                        this.scale.X = this.scale.Y = this.scale.Z = valueOnDown * Math.Pow(2, (dist / 100));
+                        scale.X = scale.Y = scale.Z = valueOnDown * Math.Pow(2, (dist / 100));
                         break;
                     default:
                         break;
@@ -1087,43 +1086,40 @@ namespace TerraViewer
                 FireChanged();
                 return true;
             }
-            else
+            var pnt = new Vector2d(e.X, e.Y);
+
+
+            if ((pnt - xHandle).Length < hitDist)
             {
-                Vector2d pnt = new Vector2d(e.X, e.Y);
+                Cursor.Current = Cursors.SizeAll;
+                return true;
+            }
 
+            if ((pnt - yHandle).Length < hitDist)
+            {
+                Cursor.Current = Cursors.SizeAll;
+                return true;
+            }
 
-                if ((pnt - xHandle).Length < hitDist)
+            if ((pnt - zHandle).Length < hitDist)
+            {
+                Cursor.Current = Cursors.SizeAll;
+                return true;
+            }
+
+            for (var i = 0; i < hprHandles.Length; i++)
+            {
+                if ((pnt - hprHandles[i]).Length < hitDist)
                 {
                     Cursor.Current = Cursors.SizeAll;
                     return true;
-                }
-
-                if ((pnt - yHandle).Length < hitDist)
-                {
-                    Cursor.Current = Cursors.SizeAll;
-                    return true;
-                }
-
-                if ((pnt - zHandle).Length < hitDist)
-                {
-                    Cursor.Current = Cursors.SizeAll;
-                    return true;
-                }
-
-                for (int i = 0; i < hprHandles.Length; i++)
-                {
-                    if ((pnt - hprHandles[i]).Length < hitDist)
-                    {
-                        Cursor.Current = Cursors.SizeAll;
-                        return true;
-                    }
                 }
             }
 
             return false;
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
 
 
@@ -1135,17 +1131,17 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
             return false;
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             return false;
         }
@@ -1194,10 +1190,10 @@ namespace TerraViewer
             this.vertices = vertices;
             this.indices = indices;
 
-            Vector3[] points = new Vector3[vertices.Length];
-            for (int i = 0; i < vertices.Length; ++i)
+            var points = new Vector3[vertices.Length];
+            for (var i = 0; i < vertices.Length; ++i)
                 points[i] = vertices[i].Position;
-            boundingSphere = SharpDX.BoundingSphere.FromPoints(points);
+            boundingSphere = BoundingSphere.FromPoints(points);
         }
 
         public Mesh(PositionNormalTextured[] vertices, int[] indices)
@@ -1205,15 +1201,15 @@ namespace TerraViewer
             this.vertices = vertices;
 
             this.indices = new uint[indices.Length];
-            for (int c = 0; c < indices.Length; c++)
+            for (var c = 0; c < indices.Length; c++)
             {
                 this.indices[c] = (uint)indices[c];
             }
 
-            Vector3[] points = new Vector3[vertices.Length];
-            for (int i = 0; i < vertices.Length; ++i)
+            var points = new Vector3[vertices.Length];
+            for (var i = 0; i < vertices.Length; ++i)
                 points[i] = vertices[i].Position;
-            boundingSphere = SharpDX.BoundingSphere.FromPoints(points);
+            boundingSphere = BoundingSphere.FromPoints(points);
         }
 
         // Create a mesh from vertices with tangents, for use with a normal map
@@ -1222,10 +1218,10 @@ namespace TerraViewer
             tangentVertices = vertices;
             this.indices = indices;
 
-            Vector3[] points = new Vector3[tangentVertices.Length];
-            for (int i = 0; i < tangentVertices.Length; ++i)
+            var points = new Vector3[tangentVertices.Length];
+            for (var i = 0; i < tangentVertices.Length; ++i)
                 points[i] = tangentVertices[i].Position;
-            boundingSphere = SharpDX.BoundingSphere.FromPoints(points);
+            boundingSphere = BoundingSphere.FromPoints(points);
         }
 
         //public void setMaterialGroups(Group[] groups)
@@ -1239,7 +1235,7 @@ namespace TerraViewer
         }
 
         // Convert the vertex data to a GPU vertex buffer
-        public void commitToDevice(SharpDX.Direct3D11.Device device)
+        public void commitToDevice(Device device)
         {
             if (vertices != null)
             {
@@ -1269,8 +1265,8 @@ namespace TerraViewer
                 renderContext.SetIndexBuffer(indexBuffer);
             }
 
-            SharpDX.Direct3D11.DeviceContext devContext = renderContext.Device.ImmediateContext;
-            devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            var devContext = renderContext.Device.ImmediateContext;
+            devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
         }
 
         public void drawSubset(RenderContext11 renderContext, int materialIndex)
@@ -1286,24 +1282,24 @@ namespace TerraViewer
                 vertexLayout = PlanetShader11.StandardVertexLayout.PositionNormalTexTangent;
             }
 
-            SharpDX.Direct3D11.DeviceContext devContext = renderContext.Device.ImmediateContext;
+            var devContext = renderContext.Device.ImmediateContext;
             devContext.InputAssembler.InputLayout = renderContext.Shader.inputLayout(vertexLayout);
 
 
             DrawHierarchy(objects, materialIndex, devContext, 0);
         }
 
-        private void DrawHierarchy(List<ObjectNode> nodes, int materialIndex, SharpDX.Direct3D11.DeviceContext devContext, int depth)
+        private void DrawHierarchy(List<ObjectNode> nodes, int materialIndex, DeviceContext devContext, int depth)
         {
             if (depth > 1212)
             {
                 return;
             }
-            foreach (ObjectNode node in nodes)
+            foreach (var node in nodes)
             {
                 if (node.DrawGroup != null && node.Enabled)
                 {
-                    foreach (Group group in node.DrawGroup)
+                    foreach (var group in node.DrawGroup)
                     {
                         if (group.materialIndex == materialIndex)
                         {
@@ -1328,11 +1324,11 @@ namespace TerraViewer
         private IndexBuffer11 indexBuffer;
 
         // Only one of these two will be non-null
-        private PositionNormalTextured[] vertices;
-        private PositionNormalTexturedTangent[] tangentVertices;
-        private uint[] indices;
+        private readonly PositionNormalTextured[] vertices;
+        private readonly PositionNormalTexturedTangent[] tangentVertices;
+        private readonly uint[] indices;
 
-        private BoundingSphere boundingSphere;
+        private readonly BoundingSphere boundingSphere;
 
         //Group[] attributeGroups;
         List<ObjectNode> objects;
@@ -1515,16 +1511,16 @@ namespace TerraViewer
         public bool FlipV = true;
         public bool Smooth = true;
         public string Filename;
-        Mesh mesh = null; // Our mesh object in sysmem
-        List<Material> meshMaterials = new List<Material>(); // Materials for our mesh
-        List<Texture11> meshTextures = new List<Texture11>(); // Textures for our mesh
-        List<Texture11> meshSpecularTextures = new List<Texture11>(); // Specular textures for our mesh
-        List<Texture11> meshNormalMaps = new List<Texture11>(); // Normal maps for our mesh
+        Mesh mesh; // Our mesh object in sysmem
+        readonly List<Material> meshMaterials = new List<Material>(); // Materials for our mesh
+        readonly List<Texture11> meshTextures = new List<Texture11>(); // Textures for our mesh
+        readonly List<Texture11> meshSpecularTextures = new List<Texture11>(); // Specular textures for our mesh
+        readonly List<Texture11> meshNormalMaps = new List<Texture11>(); // Normal maps for our mesh
         public List<String> meshFilenames = new List<string>(); // filenames for meshes
 
-        public System.Drawing.Color Color = System.Drawing.Color.White;
+        public Color Color = Color.White;
 
-        public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, System.Drawing.Color color)
+        public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, Color color)
         {
             Color = color;
             Smooth = smooth;
@@ -1572,30 +1568,27 @@ namespace TerraViewer
             {
                 return -1;
             }
-            else if (v0.X > v1.X)
+            if (v0.X > v1.X)
             {
                 return 1;
             }
-            else if (v0.Y < v1.Y)
+            if (v0.Y < v1.Y)
             {
                 return -1;
             }
-            else if (v0.Y > v1.Y)
+            if (v0.Y > v1.Y)
             {
                 return 1;
             }
-            else if (v0.Z < v1.Z)
+            if (v0.Z < v1.Z)
             {
                 return -1;
             }
-            else if (v0.Z > v1.Z)
+            if (v0.Z > v1.Z)
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
         private static int CompareVector(Vector2 v0, Vector2 v1)
@@ -1604,22 +1597,19 @@ namespace TerraViewer
             {
                 return -1;
             }
-            else if (v0.X > v1.X)
+            if (v0.X > v1.X)
             {
                 return 1;
             }
-            else if (v0.Y < v1.Y)
+            if (v0.Y < v1.Y)
             {
                 return -1;
             }
-            else if (v0.Y > v1.Y)
+            if (v0.Y > v1.Y)
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
 
@@ -1638,13 +1628,13 @@ namespace TerraViewer
                 return null;
             }
 
-            int vertexCount = vertexList.Count;
-            int triangleCount = indexList.Count / 3;
+            var vertexCount = vertexList.Count;
+            var triangleCount = indexList.Count / 3;
 
             // Create a list of vertices sorted by their positions. This will be used to
             // produce a list of vertices with unique positions.
-            List<VertexPosition> vertexPositions = new List<VertexPosition>();
-            for (int vertexIndex = 0; vertexIndex < vertexList.Count; ++vertexIndex)
+            var vertexPositions = new List<VertexPosition>();
+            for (var vertexIndex = 0; vertexIndex < vertexList.Count; ++vertexIndex)
             {
                 VertexPosition vp;
                 //todo11 this should be native..
@@ -1656,9 +1646,9 @@ namespace TerraViewer
             vertexPositions.Sort((v0, v1) => { return CompareVector3(v0.position, v1.position); });
 
             // vertexMap will map a vertex index to the index of a vertex with a unique position
-            int[] vertexMap = new int[vertexPositions.Count];
-            int uniqueVertexCount = 0;
-            for (int vertexIndex = 0; vertexIndex < vertexPositions.Count; vertexIndex++)
+            var vertexMap = new int[vertexPositions.Count];
+            var uniqueVertexCount = 0;
+            for (var vertexIndex = 0; vertexIndex < vertexPositions.Count; vertexIndex++)
             {
                 if (vertexIndex == 0 || CompareVector3(vertexPositions[vertexIndex].position, vertexPositions[vertexIndex - 1].position) != 0)
                 {
@@ -1667,18 +1657,18 @@ namespace TerraViewer
                 vertexMap[vertexPositions[vertexIndex].index] = uniqueVertexCount - 1;
             }
 
-            int[] vertexInstanceCounts = new int[uniqueVertexCount];
-            foreach (int vertexIndex in indexList)
+            var vertexInstanceCounts = new int[uniqueVertexCount];
+            foreach (var vertexIndex in indexList)
             {
-                int uniqueIndex = vertexMap[vertexIndex];
+                var uniqueIndex = vertexMap[vertexIndex];
                 vertexInstanceCounts[uniqueIndex]++;
             }
 
             // vertexInstances contains the list of faces each vertex is referenced in
-            int[][] vertexInstances = new int[uniqueVertexCount][];
-            for (int i = 0; i < uniqueVertexCount; ++i)
+            var vertexInstances = new int[uniqueVertexCount][];
+            for (var i = 0; i < uniqueVertexCount; ++i)
             {
-                int count = vertexInstanceCounts[i];
+                var count = vertexInstanceCounts[i];
                 if (count > 0)
                 {
                     vertexInstances[i] = new int[count];
@@ -1686,44 +1676,44 @@ namespace TerraViewer
             }
 
             // For each vertex, record all faces which include it
-            for (int i = 0; i < indexList.Count; ++i)
+            for (var i = 0; i < indexList.Count; ++i)
             {
-                int faceIndex = i / 3;
-                int uniqueIndex = vertexMap[indexList[i]];
+                var faceIndex = i / 3;
+                var uniqueIndex = vertexMap[indexList[i]];
                 vertexInstances[uniqueIndex][--vertexInstanceCounts[uniqueIndex]] = faceIndex;
             }
 
             // At this point, vertexInstanceCounts should contain nothing but zeroes
 
             // Compute normals for all faces
-            Vector3[] faceNormals = new Vector3[triangleCount];
-            for (int i = 0; i < triangleCount; ++i)
+            var faceNormals = new Vector3[triangleCount];
+            for (var i = 0; i < triangleCount; ++i)
             {
                 // The face normal is just the cross product of the two edge vectors
-                int i0 = indexList[i * 3 + 0];
-                int i1 = indexList[i * 3 + 1];
-                int i2 = indexList[i * 3 + 2];
-                Vector3 edge0 = vertexList[i1].Position - vertexList[i0].Position;
-                Vector3 edge1 = vertexList[i2].Position - vertexList[i1].Position;
+                var i0 = indexList[i * 3 + 0];
+                var i1 = indexList[i * 3 + 1];
+                var i2 = indexList[i * 3 + 2];
+                var edge0 = vertexList[i1].Position - vertexList[i0].Position;
+                var edge1 = vertexList[i2].Position - vertexList[i1].Position;
                 faceNormals[i] = Vector3.Cross(edge0, edge1);
 
                 faceNormals[i].Normalize();
             }
 
             // Finally, average the face normals
-            int newVertexCount = triangleCount * 3;
-            Vector3[] vertexNormals = new Vector3[newVertexCount];
-            float cosCreaseAngle = Math.Min(0.9999f, (float)Math.Cos(creaseAngleRad));
-            for (int i = 0; i < newVertexCount; ++i)
+            var newVertexCount = triangleCount * 3;
+            var vertexNormals = new Vector3[newVertexCount];
+            var cosCreaseAngle = Math.Min(0.9999f, (float)Math.Cos(creaseAngleRad));
+            for (var i = 0; i < newVertexCount; ++i)
             {
-                int vertexIndex = indexList[i];
-                int uniqueIndex = vertexMap[vertexIndex];
-                Vector3 faceNormal = faceNormals[i / 3];
+                var vertexIndex = indexList[i];
+                var uniqueIndex = vertexMap[vertexIndex];
+                var faceNormal = faceNormals[i / 3];
 
-                Vector3 sum = Vector3.Zero;
-                foreach (int faceIndex in vertexInstances[uniqueIndex])
+                var sum = Vector3.Zero;
+                foreach (var faceIndex in vertexInstances[uniqueIndex])
                 {
-                    Vector3 n = faceNormals[faceIndex];
+                    var n = faceNormals[faceIndex];
                     if (Vector3.Dot(faceNormal, n) > cosCreaseAngle)
                     {
                         sum += n;
@@ -1753,13 +1743,13 @@ namespace TerraViewer
                 return null;
             }
 
-            int vertexCount = vertexList.Count;
-            int triangleCount = indexList.Count / 3;
+            var vertexCount = vertexList.Count;
+            var triangleCount = indexList.Count / 3;
 
             // Create a list of vertices sorted by their positions. This will be used to
             // produce a list of vertices with unique positions.
-            List<VertexPosition> vertexPositions = new List<VertexPosition>();
-            for (int vertexIndex = 0; vertexIndex < vertexList.Count; ++vertexIndex)
+            var vertexPositions = new List<VertexPosition>();
+            for (var vertexIndex = 0; vertexIndex < vertexList.Count; ++vertexIndex)
             {
                 VertexPosition vp;
                 vp.position = vertexList[vertexIndex].Pos;
@@ -1770,9 +1760,9 @@ namespace TerraViewer
             vertexPositions.Sort((v0, v1) => { return CompareVector3(v0.position, v1.position); });
 
             // vertexMap will map a vertex index to the index of a vertex with a unique position
-            uint[] vertexMap = new uint[vertexPositions.Count];
-            int uniqueVertexCount = 0;
-            for (int vertexIndex = 0; vertexIndex < vertexPositions.Count; vertexIndex++)
+            var vertexMap = new uint[vertexPositions.Count];
+            var uniqueVertexCount = 0;
+            for (var vertexIndex = 0; vertexIndex < vertexPositions.Count; vertexIndex++)
             {
                 if (vertexIndex == 0 || CompareVector3(vertexPositions[vertexIndex].position, vertexPositions[vertexIndex - 1].position) != 0)
                 {
@@ -1781,18 +1771,18 @@ namespace TerraViewer
                 vertexMap[vertexPositions[vertexIndex].index] = (uint)(uniqueVertexCount - 1);
             }
 
-            int[] vertexInstanceCounts = new int[uniqueVertexCount];
+            var vertexInstanceCounts = new int[uniqueVertexCount];
             foreach (int vertexIndex in indexList)
             {
-                uint uniqueIndex = vertexMap[vertexIndex];
+                var uniqueIndex = vertexMap[vertexIndex];
                 vertexInstanceCounts[uniqueIndex]++;
             }
 
             // vertexInstances contains the list of faces each vertex is referenced in
-            int[][] vertexInstances = new int[uniqueVertexCount][];
-            for (int i = 0; i < uniqueVertexCount; ++i)
+            var vertexInstances = new int[uniqueVertexCount][];
+            for (var i = 0; i < uniqueVertexCount; ++i)
             {
-                int count = vertexInstanceCounts[i];
+                var count = vertexInstanceCounts[i];
                 if (count > 0)
                 {
                     vertexInstances[i] = new int[count];
@@ -1800,30 +1790,30 @@ namespace TerraViewer
             }
 
             // For each vertex, record all faces which include it
-            for (int i = 0; i < indexList.Count; ++i)
+            for (var i = 0; i < indexList.Count; ++i)
             {
-                int faceIndex = i / 3;
-                uint uniqueIndex = vertexMap[indexList[i]];
+                var faceIndex = i / 3;
+                var uniqueIndex = vertexMap[indexList[i]];
                 vertexInstances[uniqueIndex][--vertexInstanceCounts[uniqueIndex]] = faceIndex;
             }
 
             // At this point, vertexInstanceCounts should contain nothing but zeroes
 
             // Compute partial derivatives for all faces
-            Vector3[] partials = new Vector3[triangleCount];
-            for (int i = 0; i < triangleCount; ++i)
+            var partials = new Vector3[triangleCount];
+            for (var i = 0; i < triangleCount; ++i)
             {
-                PositionNormalTextured v0 = vertexList[(int)indexList[i * 3 + 0]];
-                PositionNormalTextured v1 = vertexList[(int)indexList[i * 3 + 1]];
-                PositionNormalTextured v2 = vertexList[(int)indexList[i * 3 + 2]];
-                Vector3 edge0 = v1.Position - v0.Position;
-                Vector3 edge1 = v2.Position - v0.Position;
-                float m00 = v1.Tu - v0.Tu;
-                float m01 = v1.Tv - v0.Tv;
-                float m10 = v2.Tu - v0.Tu;
-                float m11 = v2.Tv - v0.Tv;
+                var v0 = vertexList[(int)indexList[i * 3 + 0]];
+                var v1 = vertexList[(int)indexList[i * 3 + 1]];
+                var v2 = vertexList[(int)indexList[i * 3 + 2]];
+                var edge0 = v1.Position - v0.Position;
+                var edge1 = v2.Position - v0.Position;
+                var m00 = v1.Tu - v0.Tu;
+                var m01 = v1.Tv - v0.Tv;
+                var m10 = v2.Tu - v0.Tu;
+                var m11 = v2.Tv - v0.Tv;
 
-                float determinant = m00 * m11 - m01 * m10;
+                var determinant = m00 * m11 - m01 * m10;
                 if (Math.Abs(determinant) < 1.0e-6f)
                 {
                     // No unique vector; just select one of the edges
@@ -1841,11 +1831,11 @@ namespace TerraViewer
                 else
                 {
                     // Matrix n is the inverse of m
-                    float invDeterminant = 1.0f / determinant;
-                    float n00 = m11 * invDeterminant;
-                    float n01 = -m01 * invDeterminant;
-                    float n10 = -m10 * invDeterminant;
-                    float n11 = m00 * invDeterminant;
+                    var invDeterminant = 1.0f / determinant;
+                    var n00 = m11 * invDeterminant;
+                    var n01 = -m01 * invDeterminant;
+                    var n10 = -m10 * invDeterminant;
+                    var n11 = m00 * invDeterminant;
 
                     partials[i] = n00 * edge0 + n01 * edge1;
                     partials[i].Normalize();
@@ -1853,26 +1843,26 @@ namespace TerraViewer
             }
 
             // Finally, average the partial derivatives
-            int newVertexCount = triangleCount * 3;
-            Vector3[] tangents = new Vector3[newVertexCount];
-            float cosCreaseAngle = Math.Min(0.9999f, (float)Math.Cos(creaseAngleRad));
-            for (int i = 0; i < newVertexCount; ++i)
+            var newVertexCount = triangleCount * 3;
+            var tangents = new Vector3[newVertexCount];
+            var cosCreaseAngle = Math.Min(0.9999f, (float)Math.Cos(creaseAngleRad));
+            for (var i = 0; i < newVertexCount; ++i)
             {
-                uint vertexIndex = indexList[i];
-                uint uniqueIndex = vertexMap[(int)vertexIndex];
-                Vector3 du = partials[i / 3];
+                var vertexIndex = indexList[i];
+                var uniqueIndex = vertexMap[(int)vertexIndex];
+                var du = partials[i / 3];
 
-                Vector3 sum = Vector3.Zero;
-                foreach (int faceIndex in vertexInstances[uniqueIndex])
+                var sum = Vector3.Zero;
+                foreach (var faceIndex in vertexInstances[uniqueIndex])
                 {
-                    Vector3 T = partials[faceIndex];
+                    var T = partials[faceIndex];
                     if (Vector3.Dot(du, T) > cosCreaseAngle)
                     {
                         sum += T;
                     }
                 }
 
-                Vector3 N = vertexList[(int)vertexIndex].Normal;
+                var N = vertexList[(int)vertexIndex].Normal;
 
                 // Make the tangent orthogonal to the vertex normal
                 tangents[i] = sum - Vector3.Dot(N, sum) * N;
@@ -1889,21 +1879,21 @@ namespace TerraViewer
         // This method returns an array of vertex normals, one for each index in the index list
         private Vector3[] CalculateVertexNormals(List<PositionNormalTextured> vertexList, List<int> indexList, float creaseAngleRad)
         {
-            int vertexCount = vertexList.Count;
-            int triangleCount = indexList.Count / 3;
+            var vertexCount = vertexList.Count;
+            var triangleCount = indexList.Count / 3;
 
             // vertexInstanceCounts contains the number of times each vertex is referenced in the mesh 
-            int[] vertexInstanceCounts = new int[vertexCount];
-            foreach (int vertexIndex in indexList)
+            var vertexInstanceCounts = new int[vertexCount];
+            foreach (var vertexIndex in indexList)
             {
                 vertexInstanceCounts[vertexIndex]++;
             }
 
             // vertexInstances contains the list of faces each vertex is referenced in
-            int[][] vertexInstances = new int[vertexCount][];
-            for (int i = 0; i < vertexCount; ++i)
+            var vertexInstances = new int[vertexCount][];
+            for (var i = 0; i < vertexCount; ++i)
             {
-                int count = vertexInstanceCounts[i];
+                var count = vertexInstanceCounts[i];
                 if (count > 0)
                 {
                     vertexInstances[i] = new int[count];
@@ -1911,43 +1901,43 @@ namespace TerraViewer
             }
 
             // For each vertex, record all faces which include it
-            for (int i = 0; i < indexList.Count; ++i)
+            for (var i = 0; i < indexList.Count; ++i)
             {
-                int faceIndex = i / 3;
-                int vertexIndex = indexList[i];
+                var faceIndex = i / 3;
+                var vertexIndex = indexList[i];
                 vertexInstances[vertexIndex][--vertexInstanceCounts[vertexIndex]] = faceIndex;
             }
 
             // At this point, vertexInstanceCounts should contain nothing but zeroes
 
             // Compute normals for all faces
-            Vector3[] faceNormals = new Vector3[triangleCount];
-            for (int i = 0; i < triangleCount; ++i)
+            var faceNormals = new Vector3[triangleCount];
+            for (var i = 0; i < triangleCount; ++i)
             {
                 // The face normal is just the cross product of the two edge vectors
-                int i0 = indexList[i * 3 + 0];
-                int i1 = indexList[i * 3 + 1];
-                int i2 = indexList[i * 3 + 2];
-                Vector3 edge0 = vertexList[i1].Position - vertexList[i0].Position;
-                Vector3 edge1 = vertexList[i2].Position - vertexList[i1].Position;
+                var i0 = indexList[i * 3 + 0];
+                var i1 = indexList[i * 3 + 1];
+                var i2 = indexList[i * 3 + 2];
+                var edge0 = vertexList[i1].Position - vertexList[i0].Position;
+                var edge1 = vertexList[i2].Position - vertexList[i1].Position;
                 faceNormals[i] = Vector3.Cross(edge0, edge1);
 
                 faceNormals[i].Normalize();
             }
 
             // Finally, average the face normals
-            int newVertexCount = triangleCount * 3;
-            Vector3[] vertexNormals = new Vector3[newVertexCount];
-            float cosCreaseAngle = Math.Min(0.9999f, (float)Math.Cos(creaseAngleRad));
-            for (int i = 0; i < newVertexCount; ++i)
+            var newVertexCount = triangleCount * 3;
+            var vertexNormals = new Vector3[newVertexCount];
+            var cosCreaseAngle = Math.Min(0.9999f, (float)Math.Cos(creaseAngleRad));
+            for (var i = 0; i < newVertexCount; ++i)
             {
-                int vertexIndex = indexList[i];
-                Vector3 faceNormal = faceNormals[i / 3];
+                var vertexIndex = indexList[i];
+                var faceNormal = faceNormals[i / 3];
 
-                Vector3 sum = Vector3.Zero;
-                foreach (int faceIndex in vertexInstances[vertexIndex])
+                var sum = Vector3.Zero;
+                foreach (var faceIndex in vertexInstances[vertexIndex])
                 {
-                    Vector3 n = faceNormals[faceIndex];
+                    var n = faceNormals[faceIndex];
                     if (Vector3.Dot(faceNormal, n) > cosCreaseAngle)
                     {
                         sum += n;
@@ -1983,24 +1973,24 @@ namespace TerraViewer
 
         // Load a color chunk from a 3ds file
         // Colors may be stored in a 3ds file either as 3 floats or 3 bytes
-        private System.Drawing.Color LoadColorChunk(BinaryReader br)
+        private Color LoadColorChunk(BinaryReader br)
         {
-            ushort chunkID = br.ReadUInt16();
-            uint chunkLength = br.ReadUInt32();
-            System.Drawing.Color color = System.Drawing.Color.Black;
+            var chunkID = br.ReadUInt16();
+            var chunkLength = br.ReadUInt32();
+            var color = Color.Black;
 
             if ((chunkID == 0x0010 || chunkID == 0x0013) && chunkLength == 18)
             {
                 // Need to guard against values outside of [0, 1], otherwise Color.FromArgb
                 // will throw an exception.
-                float r = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
-                float g = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
-                float b = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
-                color = System.Drawing.Color.FromArgb(255, (int)(255.0f * r), (int)(255.0f * g), (int)(255.0f * b));
+                var r = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
+                var g = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
+                var b = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
+                color = Color.FromArgb(255, (int)(255.0f * r), (int)(255.0f * g), (int)(255.0f * b));
             }
             else if ((chunkID == 0x0011 || chunkID == 0x0012) && chunkLength == 9)
             {
-                color = System.Drawing.Color.FromArgb(255, br.ReadByte(), br.ReadByte(), br.ReadByte());
+                color = Color.FromArgb(255, br.ReadByte(), br.ReadByte(), br.ReadByte());
             }
             else
             {
@@ -2016,9 +2006,9 @@ namespace TerraViewer
         // A percentage may be stored as either a float or a 16-bit integer
         private float LoadPercentageChunk(BinaryReader br)
         {
-            ushort chunkID = br.ReadUInt16();
-            uint chunkLength = br.ReadUInt32();
-            float percentage = 0.0f;
+            var chunkID = br.ReadUInt16();
+            var chunkLength = br.ReadUInt32();
+            var percentage = 0.0f;
 
             if (chunkID == 0x0030 && chunkLength == 8)
             {
@@ -2037,7 +2027,7 @@ namespace TerraViewer
             return percentage;
         }
 
-        Dictionary<string, Texture11> TextureCache = new Dictionary<string, Texture11>();
+        readonly Dictionary<string, Texture11> TextureCache = new Dictionary<string, Texture11>();
 
         private void LoadMeshFromObj(string filename)
         {
@@ -2045,38 +2035,38 @@ namespace TerraViewer
             // Temporary workaround until unmanaged resource leak is identified
             GC.Collect();
 
-            bool objectFound = false;
+            var objectFound = false;
             //Dictionary<string, ObjectNode> objectTable = new Dictionary<string, ObjectNode>();
-            List<ObjectNode> objects = new List<ObjectNode>();
-            ObjectNode currentObject = new ObjectNode();
+            var objects = new List<ObjectNode>();
+            var currentObject = new ObjectNode();
             currentObject.Name = "Default";
 
-            int triangleCount = 0;
-            int vertexCount = 0;
+            var triangleCount = 0;
+            var vertexCount = 0;
 
  //           List<Mesh.Group> matGroups = new List<Mesh.Group>();
 
-            List<PositionNormalTextured> vertexList = new List<PositionNormalTextured>();
-            List<Vector3> vertList = new List<Vector3>();
-            List<Vector3> normList = new List<Vector3>();
-            List<Vector2> uvList = new List<Vector2>();
+            var vertexList = new List<PositionNormalTextured>();
+            var vertList = new List<Vector3>();
+            var normList = new List<Vector3>();
+            var uvList = new List<Vector2>();
 
             vertList.Add(new Vector3());
             normList.Add(new Vector3());
             uvList.Add(new Vector2());
 
 
-            List<int> indexList = new List<int>();
-            List<int> attribList = new List<int>();
-            List<int[]> applyLists = new List<int[]>();
-            List<int> applyListsIndex = new List<int>();
-            List<string> materialNames = new List<string>();
-            int currentMaterialIndex = -1;
-            Material currentMaterial = new Material();
-            Mesh.Group currentGroup = new Mesh.Group();
+            var indexList = new List<int>();
+            var attribList = new List<int>();
+            var applyLists = new List<int[]>();
+            var applyListsIndex = new List<int>();
+            var materialNames = new List<string>();
+            var currentMaterialIndex = -1;
+            var currentMaterial = new Material();
+            var currentGroup = new Mesh.Group();
         
 
-            int currentIndex = 0;
+            var currentIndex = 0;
 
 
             //initialize the default material
@@ -2084,7 +2074,7 @@ namespace TerraViewer
             currentMaterial = new Material();
             currentMaterial.Diffuse = Color;
             currentMaterial.Ambient = Color;
-            currentMaterial.Specular = System.Drawing.Color.White;
+            currentMaterial.Specular = Color.White;
             currentMaterial.SpecularSharpness = 30.0f;
             currentMaterial.Opacity = 1.0f;
             currentMaterial.Default = true;
@@ -2096,13 +2086,13 @@ namespace TerraViewer
 
             using (Stream fs = new FileStream(filename, FileMode.Open,FileAccess.Read))
             {
-                StreamReader sr = new StreamReader(fs);
+                var sr = new StreamReader(fs);
           
                 while (!sr.EndOfStream)
                 {
-                    string line = sr.ReadLine().Replace("  ", " ");
+                    var line = sr.ReadLine().Replace("  ", " ");
 
-                    string[] parts = line.Trim().Split(new char[] { ' ' });
+                    var parts = line.Trim().Split(new[] { ' ' });
 
                     if (parts.Length > 0)
                     {
@@ -2110,13 +2100,13 @@ namespace TerraViewer
                         {
                             case "mtllib":
                                 {
-                                    string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
-                                    string matFile = path + "\\" + parts[1];
+                                    var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+                                    var matFile = path + "\\" + parts[1];
                                     LoadMatLib(matFile);
                                 }
                                 break;
                             case "usemtl":
-                                string materialName = parts[1];
+                                var materialName = parts[1];
                                 if (matLib.ContainsKey(materialName))
                                 {
                                     if (currentMaterialIndex == -1 && currentIndex > 0)
@@ -2145,9 +2135,9 @@ namespace TerraViewer
                                             {
                                                 if (!TextureCache.ContainsKey(textureLib[materialName]))
                                                 {
-                                                    string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+                                                    var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
 
-                                                    Texture11 tex = LoadTexture(path + textureLib[materialName]);
+                                                    var tex = LoadTexture(path + textureLib[materialName]);
                                                     if (tex != null)
                                                     {
                                                         meshFilenames.Add(textureLib[materialName]);
@@ -2228,9 +2218,9 @@ namespace TerraViewer
                                 //}
                                 break;
                             case "f":
-                                int[] indexiesA = GetIndexies(parts[1]);
-                                int[] indexiesB = GetIndexies(parts[2]);
-                                int[] indexiesC = GetIndexies(parts[3]);
+                                var indexiesA = GetIndexies(parts[1]);
+                                var indexiesB = GetIndexies(parts[2]);
+                                var indexiesC = GetIndexies(parts[3]);
 
                                 vertexList.Add(new PositionNormalTextured(vertList[indexiesA[0]], normList[indexiesA[2]], uvList[indexiesA[1]]));
                                 vertexList.Add(new PositionNormalTextured(vertList[indexiesB[0]], normList[indexiesB[2]], uvList[indexiesB[1]]));
@@ -2255,7 +2245,7 @@ namespace TerraViewer
                                 //bool flip = true;
                                 if (parts.Length > 4)
                                 {
-                                    int partIndex = 4;
+                                    var partIndex = 4;
 
                                     while (partIndex < (parts.Length))
                                     {
@@ -2312,15 +2302,15 @@ namespace TerraViewer
             if (normList.Count < 2)
             {
 
-                float creaseAngleRad = MathUtil.DegreesToRadians(Smooth ? 170.0f : 45.0f);
+                var creaseAngleRad = MathUtil.DegreesToRadians(Smooth ? 170.0f : 45.0f);
 
-                Vector3[] vertexNormals = CalculateVertexNormalsMerged(vertexList, indexList, creaseAngleRad);
-                List<PositionNormalTextured> newVertexList = new List<PositionNormalTextured>();
-                int newVertexCount = indexList.Count;
+                var vertexNormals = CalculateVertexNormalsMerged(vertexList, indexList, creaseAngleRad);
+                var newVertexList = new List<PositionNormalTextured>();
+                var newVertexCount = indexList.Count;
 
-                for (int vertexIndex = 0; vertexIndex < newVertexCount; ++vertexIndex)
+                for (var vertexIndex = 0; vertexIndex < newVertexCount; ++vertexIndex)
                 {
-                    PositionNormalTextured v = vertexList[indexList[vertexIndex]];
+                    var v = vertexList[indexList[vertexIndex]];
                     v.Normal = vertexNormals[vertexIndex];
                     newVertexList.Add(v);
                 }
@@ -2332,7 +2322,7 @@ namespace TerraViewer
 
 
             mesh = new Mesh(vertexList.ToArray(), indexList.ToArray());
-            ObjectNode rootDummy = new ObjectNode();
+            var rootDummy = new ObjectNode();
             rootDummy.Name = "Root";
             rootDummy.Parent = null;
             rootDummy.Level = -1;
@@ -2366,7 +2356,7 @@ namespace TerraViewer
         {
             if (!File.Exists(filename))
             {
-                string newfilename = FindFile(filename);
+                var newfilename = FindFile(filename);
                 if (string.IsNullOrEmpty(newfilename))
                 {
                     newfilename = FindFileFuzzy(filename);
@@ -2386,20 +2376,20 @@ namespace TerraViewer
         public static string FindFileFuzzy(string filename)
         {
             filename = filename.ToLower();
-            string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
-            string file = filename.Substring(filename.LastIndexOf("\\") + 1);
+            var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+            var file = filename.Substring(filename.LastIndexOf("\\") + 1);
             if (file.Contains("."))
             {
                 file = file.Substring(0, file.LastIndexOf('.') );
             }
 
-            string ext = filename.Substring(filename.LastIndexOf(".") + 1).ToLower();
+            var ext = filename.Substring(filename.LastIndexOf(".") + 1).ToLower();
 
-            foreach (string f in Directory.GetFiles(path, "*.*", SearchOption.AllDirectories))
+            foreach (var f in Directory.GetFiles(path, "*.*", SearchOption.AllDirectories))
             {
-                string fb = f.Substring(f.LastIndexOf("\\") + 1).ToLower();
-                string fe = ""; 
-                string ff = "";
+                var fb = f.Substring(f.LastIndexOf("\\") + 1).ToLower();
+                var fe = ""; 
+                var ff = "";
                 if (f.Contains("."))
                 {
                     fe = fb.Substring(fb.LastIndexOf(".") + 1);
@@ -2427,12 +2417,12 @@ namespace TerraViewer
 
         public static string FindFile(string filename)
         {
-            string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
-            string file = filename.Substring(filename.LastIndexOf("\\") + 1);
+            var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+            var file = filename.Substring(filename.LastIndexOf("\\") + 1);
 
-            foreach (string dir in Directory.GetDirectories(path))
+            foreach (var dir in Directory.GetDirectories(path))
             {
-                string child = dir + @"\" + file;
+                var child = dir + @"\" + file;
                 if (File.Exists(child))
                 {
                     return child;
@@ -2458,8 +2448,8 @@ namespace TerraViewer
 
             try
             {
-                Material currentMaterial = new Material();
-                string materialName = "";
+                var currentMaterial = new Material();
+                var materialName = "";
 
                 matLib = new Dictionary<string, Material>();
                 textureLib = new Dictionary<string, string>();
@@ -2467,13 +2457,13 @@ namespace TerraViewer
 
                 using (Stream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
                 {
-                    StreamReader sr = new StreamReader(fs);
+                    var sr = new StreamReader(fs);
 
                     while (!sr.EndOfStream)
                     {
-                        string line = sr.ReadLine();
+                        var line = sr.ReadLine();
 
-                        string[] parts = line.Trim().Split(new char[] { ' ' });
+                        var parts = line.Trim().Split(new[] { ' ' });
 
                         if (parts.Length > 0)
                         {
@@ -2486,26 +2476,26 @@ namespace TerraViewer
                                     }
 
                                     currentMaterial = new Material();
-                                    currentMaterial.Diffuse = System.Drawing.Color.White;
-                                    currentMaterial.Ambient = System.Drawing.Color.White;
-                                    currentMaterial.Specular = System.Drawing.Color.Black;
+                                    currentMaterial.Diffuse = Color.White;
+                                    currentMaterial.Ambient = Color.White;
+                                    currentMaterial.Specular = Color.Black;
                                     currentMaterial.SpecularSharpness = 30.0f;
                                     currentMaterial.Opacity = 1.0f;
                                     materialName = parts[1];
                                     break;
                                 case "Ka":
-                                    currentMaterial.Ambient = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
+                                    currentMaterial.Ambient = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
                                     break;
                                 case "map_Kd":
                                     //ENDURE TEXTURES ARE NOT BLACK!    
-                                    currentMaterial.Diffuse = System.Drawing.Color.White;
+                                    currentMaterial.Diffuse = Color.White;
 
-                                    string textureFilename = parts[1];
-                                    for (int i = 2; i < parts.Length; i++)
+                                    var textureFilename = parts[1];
+                                    for (var i = 2; i < parts.Length; i++)
                                     {
                                         textureFilename += " " + parts[i];
                                     }
-                                    string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+                                    var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
 
                                     textureFilename = textureFilename.Replace("/", "\\");
                                     if (textureFilename.Contains("\\"))
@@ -2520,10 +2510,10 @@ namespace TerraViewer
                                     }
                                     break;
                                 case "Kd":
-                                    currentMaterial.Diffuse = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
+                                    currentMaterial.Diffuse = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
                                     break;
                                 case "Ks":
-                                    currentMaterial.Specular = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255,255)), (int)(Math.Min(float.Parse(parts[2]) * 255,255)), (int)(Math.Min(float.Parse(parts[3]) * 255,255)));
+                                    currentMaterial.Specular = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255,255)), (int)(Math.Min(float.Parse(parts[2]) * 255,255)), (int)(Math.Min(float.Parse(parts[3]) * 255,255)));
                                     break;
                                 case "d":
                                     // Where does this map?
@@ -2536,7 +2526,7 @@ namespace TerraViewer
 
                                 case "illum":
                                     // Where does this map?
-                                    int illuminationMode = int.Parse(parts[1]);
+                                    var illuminationMode = int.Parse(parts[1]);
                                     break;
 
                                 case "sharpness":
@@ -2563,8 +2553,8 @@ namespace TerraViewer
 
         int[] GetIndexies(string data)
         {
-            string[] parts = data.Trim().Split(new char[] { '/' });
-            int[] indecies = new int[3];
+            var parts = data.Trim().Split(new[] { '/' });
+            var indecies = new int[3];
 
             if (string.IsNullOrEmpty(data))
             {
@@ -2605,42 +2595,42 @@ namespace TerraViewer
             ushort sectionID;
             uint sectionLength;
 
-            string name = "";
-            string material = "";
-            int triangleCount = 0;
-            int vertexCount = 0;
-            List<PositionNormalTextured> vertexList = new List<PositionNormalTextured>();
-            List<int> indexList = new List<int>();
-            List<int> attribList = new List<int>();
+            var name = "";
+            var material = "";
+            var triangleCount = 0;
+            var vertexCount = 0;
+            var vertexList = new List<PositionNormalTextured>();
+            var indexList = new List<int>();
+            var attribList = new List<int>();
             //List<int[]> applyLists = new List<int[]>();
             //List<int> applyListsIndex = new List<int>();
-            List<string> materialNames = new List<string>();
-            int currentMaterialIndex = -1;
-            Material currentMaterial = new Material();
-            int attributeID = 0;
+            var materialNames = new List<string>();
+            var currentMaterialIndex = -1;
+            var currentMaterial = new Material();
+            var attributeID = 0;
 
-            int count = 0;
+            var count = 0;
             UInt16 lastID = 0;
-            bool exit = false;
-            bool normalMapFound = false;
+            var exit = false;
+            var normalMapFound = false;
 
             float offsetX = 0;
             float offsetY = 0;
             float offsetZ = 0;
-            List<ObjectNode> objects = new List<ObjectNode>();
+            var objects = new List<ObjectNode>();
             ObjectNode currentObject = null;
-            List<int> objHierarchy = new List<int>();
-            List<string> objNames = new List<string>();
-            Dictionary<string, ObjectNode> objectTable = new Dictionary<string, ObjectNode>();
+            var objHierarchy = new List<int>();
+            var objNames = new List<string>();
+            var objectTable = new Dictionary<string, ObjectNode>();
 
-            int dummyCount = 0;
+            var dummyCount = 0;
 
             using (Stream fs = new FileStream(filename, FileMode.Open))
             {
-                BinaryReader br = new BinaryReader(fs);
-                long length = fs.Length - 1;
-                int startMapIndex = 0;
-                int startTriangleIndex = 0;
+                var br = new BinaryReader(fs);
+                var length = fs.Length - 1;
+                var startMapIndex = 0;
+                var startTriangleIndex = 0;
                 while (br.BaseStream.Position < length && !exit) //Loop to scan the whole file
                 {
                     sectionID = br.ReadUInt16();
@@ -2694,11 +2684,11 @@ namespace TerraViewer
 
                             for (i = 0; i < vertexCount; i++)
                             {
-                                float x = br.ReadSingle() - offsetX;
-                                float y = br.ReadSingle() - offsetY;
-                                float z = br.ReadSingle() - offsetZ;
+                                var x = br.ReadSingle() - offsetX;
+                                var y = br.ReadSingle() - offsetY;
+                                var z = br.ReadSingle() - offsetZ;
 
-                                PositionNormalTextured vert = new PositionNormalTextured(x * scale, z * scale, y * scale, 0, 0, 0, 0, 0);
+                                var vert = new PositionNormalTextured(x * scale, z * scale, y * scale, 0, 0, 0, 0, 0);
                                 vertexList.Add(vert);
                             }
                             break;
@@ -2711,13 +2701,13 @@ namespace TerraViewer
 
                                 for (i = 0; i < triCount; i++)
                                 {
-                                    int aa = br.ReadUInt16() + startMapIndex;
-                                    int bb = br.ReadUInt16() + startMapIndex;
-                                    int cc = br.ReadUInt16() + startMapIndex;
+                                    var aa = br.ReadUInt16() + startMapIndex;
+                                    var bb = br.ReadUInt16() + startMapIndex;
+                                    var cc = br.ReadUInt16() + startMapIndex;
                                     indexList.Add(cc);
                                     indexList.Add(bb);
                                     indexList.Add(aa);
-                                    UInt16 flags = br.ReadUInt16();
+                                    var flags = br.ReadUInt16();
                                 }
                             }
                             break;
@@ -2739,7 +2729,7 @@ namespace TerraViewer
                                     i++;
                                 } while (b1 != '\0');
                                 int triCount = br.ReadUInt16();
-                                int[] applyList = new int[triCount];
+                                var applyList = new int[triCount];
 
                                 attributeID = GetMaterialID(material, materialNames);
 
@@ -2758,8 +2748,8 @@ namespace TerraViewer
                             count = br.ReadUInt16();
                             for (i = 0; i < count; i++)
                             {
-                                PositionNormalTextured vert = vertexList[startMapIndex + i];
-                                Vector2 texCoord = new Vector2(br.ReadSingle(), FlipV ? (1.0f - br.ReadSingle()) : (br.ReadSingle()));
+                                var vert = vertexList[startMapIndex + i];
+                                var texCoord = new Vector2(br.ReadSingle(), FlipV ? (1.0f - br.ReadSingle()) : (br.ReadSingle()));
                                 vertexList[startMapIndex + i] = new PositionNormalTextured(vert.Position, Vector3.Zero, texCoord);
                             }
                             break;
@@ -2775,7 +2765,7 @@ namespace TerraViewer
                         //    }
                         //    break;
                         case 0x4160:
-                            float[] mat = new float[12];
+                            var mat = new float[12];
                             for (i = 0; i < 12; i++)
                             {
                                 mat[i] = br.ReadSingle();
@@ -2804,7 +2794,7 @@ namespace TerraViewer
                         // Material Name
                         case 0xA000:
                             {
-                                string matName = "";
+                                var matName = "";
                                 i = 0;
                                 byte b2;
                                 do
@@ -2827,9 +2817,9 @@ namespace TerraViewer
                                 currentMaterialIndex++;
 
                                 currentMaterial = new Material();
-                                currentMaterial.Diffuse = System.Drawing.Color.White;
-                                currentMaterial.Ambient = System.Drawing.Color.White;
-                                currentMaterial.Specular = System.Drawing.Color.Black;
+                                currentMaterial.Diffuse = Color.White;
+                                currentMaterial.Ambient = Color.White;
+                                currentMaterial.Specular = Color.Black;
                                 currentMaterial.SpecularSharpness = 30.0f;
                                 currentMaterial.Opacity = 1.0f;
                             }
@@ -2869,7 +2859,7 @@ namespace TerraViewer
                         // Texture file name
                         case 0xA300:
                             {
-                                string textureFilename = "";
+                                var textureFilename = "";
                                 i = 0;
                                 byte b2;
                                 do
@@ -2882,10 +2872,10 @@ namespace TerraViewer
 
                                     i++;
                                 } while (b2 != '\0');
-                                string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+                                var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
                                 try
                                 {
-                                    Texture11 tex = LoadTexture(path + textureFilename);
+                                    var tex = LoadTexture(path + textureFilename);
 
                                     if (tex != null)
                                     {
@@ -2895,7 +2885,7 @@ namespace TerraViewer
                                         // The ISS model has black for the diffuse color; to work around this
                                         // we'll set the diffuse color to white when there's a texture present.
                                         // The correct fix is to modify the 3ds model of ISS.
-                                        currentMaterial.Diffuse = System.Drawing.Color.White;
+                                        currentMaterial.Diffuse = Color.White;
                                     }
                                     else
                                     {
@@ -2913,11 +2903,11 @@ namespace TerraViewer
                         // Bump map
                         case 0xA230:
                             {
-                                float percentage = LoadPercentageChunk(br);
+                                var percentage = LoadPercentageChunk(br);
 
                                 int nameId = br.ReadUInt16();
-                                uint nameBlockLength = br.ReadUInt32();
-                                string textureFilename = "";
+                                var nameBlockLength = br.ReadUInt32();
+                                var textureFilename = "";
                                 i = 0;
                                 byte b2;
                                 do
@@ -2931,10 +2921,10 @@ namespace TerraViewer
                                     i++;
                                 } while (b2 != '\0');
 
-                                string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+                                var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
                                 try
                                 {
-                                    Texture11 tex = LoadTexture(path + textureFilename);
+                                    var tex = LoadTexture(path + textureFilename);
 
                                     if (tex != null)
                                     {
@@ -2961,11 +2951,11 @@ namespace TerraViewer
                         // Specular map
                         case 0xA204:
                             {
-                                float strength = LoadPercentageChunk(br);
+                                var strength = LoadPercentageChunk(br);
 
                                 int nameId = br.ReadUInt16();
-                                uint nameBlockLength = br.ReadUInt32();
-                                string textureFilename = "";
+                                var nameBlockLength = br.ReadUInt32();
+                                var textureFilename = "";
                                 i = 0;
                                 byte b2;
                                 do
@@ -2979,18 +2969,18 @@ namespace TerraViewer
                                     i++;
                                 } while (b2 != '\0');
 
-                                string path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
+                                var path = filename.Substring(0, filename.LastIndexOf('\\') + 1);
                                 try
                                 {
-                                    Texture11 tex = LoadTexture(path + textureFilename);
+                                    var tex = LoadTexture(path + textureFilename);
                                     if (tex != null)
                                     {
                                         meshSpecularTextures.Add(tex);
                                         meshFilenames.Add(textureFilename);
 
                                         // Set the current specular color from the specular texture strength
-                                        int gray = (int)(255.99f * strength / 100.0f);
-                                        currentMaterial.Specular = System.Drawing.Color.FromArgb(255, gray, gray, gray);
+                                        var gray = (int)(255.99f * strength / 100.0f);
+                                        currentMaterial.Specular = Color.FromArgb(255, gray, gray, gray);
                                     }
                                     else
                                     {
@@ -3023,9 +3013,9 @@ namespace TerraViewer
 
                                     i++;
                                 } while (b1 != '\0');
-                                int dum1 = (int)br.ReadUInt16();
-                                int dum2 = (int)br.ReadUInt16();
-                                int level = (int)br.ReadUInt16();
+                                var dum1 = (int)br.ReadUInt16();
+                                var dum2 = (int)br.ReadUInt16();
+                                var level = (int)br.ReadUInt16();
 
                                 if (level == 65535)
                                 {
@@ -3069,7 +3059,7 @@ namespace TerraViewer
                             break;
                         case 0xB013:
                             //pivot point
-                            float[] points = new float[3];
+                            var points = new float[3];
                             for (i = 0; i < 3; i++)
                             {
                                 points[i] = br.ReadSingle();
@@ -3083,7 +3073,7 @@ namespace TerraViewer
                             break;
                         case 0xB020:
                             {
-                                float[] pos = new float[8];
+                                var pos = new float[8];
                                 for (i = 0; i < 8; i++)
                                 {
                                     pos[i] = br.ReadSingle();
@@ -3130,15 +3120,15 @@ namespace TerraViewer
             // the crease angle to 0 degrees, the model will have a faceted appearance.
             // Right now, the smooth flag selects between one of two crease angles,
             // but some smoothing is always applied.
-            float creaseAngleRad = MathUtil.DegreesToRadians(Smooth ? 70.0f : 45.0f);
+            var creaseAngleRad = MathUtil.DegreesToRadians(Smooth ? 70.0f : 45.0f);
 
-            Vector3[] vertexNormals = CalculateVertexNormalsMerged(vertexList, indexList, creaseAngleRad);
-            List<PositionNormalTextured> newVertexList = new List<PositionNormalTextured>();
-            int newVertexCount = triangleCount * 3;
+            var vertexNormals = CalculateVertexNormalsMerged(vertexList, indexList, creaseAngleRad);
+            var newVertexList = new List<PositionNormalTextured>();
+            var newVertexCount = triangleCount * 3;
 
-            for (int vertexIndex = 0; vertexIndex < newVertexCount; ++vertexIndex)
+            for (var vertexIndex = 0; vertexIndex < newVertexCount; ++vertexIndex)
             {
-                PositionNormalTextured v = vertexList[indexList[vertexIndex]];
+                var v = vertexList[indexList[vertexIndex]];
                 v.Normal = vertexNormals[vertexIndex];
                 newVertexList.Add(v);
             }
@@ -3146,18 +3136,18 @@ namespace TerraViewer
 
             // Use the triangle mesh and material assignments to create a single
             // index list for the mesh.
-            List<uint> newIndexList = new List<uint>();
+            var newIndexList = new List<uint>();
 
-            foreach (ObjectNode node in objects)
+            foreach (var node in objects)
             {
 
 
-                List<Mesh.Group> materialGroups = new List<Mesh.Group>();
+                var materialGroups = new List<Mesh.Group>();
                 for (i = 0; i < node.ApplyLists.Count; i++)
                 {
-                    int matId = node.ApplyListsIndex[i];
-                    int startIndex = newIndexList.Count;
-                    foreach (int triangleIndex in node.ApplyLists[i])
+                    var matId = node.ApplyListsIndex[i];
+                    var startIndex = newIndexList.Count;
+                    foreach (var triangleIndex in node.ApplyLists[i])
                     {
                         newIndexList.Add((uint)(triangleIndex * 3));
                         newIndexList.Add((uint)(triangleIndex * 3 + 1));
@@ -3174,24 +3164,24 @@ namespace TerraViewer
             }
 
             // Turn objects into tree
-            Stack<ObjectNode> nodeStack = new Stack<ObjectNode>();
+            var nodeStack = new Stack<ObjectNode>();
 
-            List<ObjectNode> nodeTreeRoot = new List<ObjectNode>();
+            var nodeTreeRoot = new List<ObjectNode>();
 
-            ObjectNode rootDummy = new ObjectNode();
+            var rootDummy = new ObjectNode();
             rootDummy.Name = "Root";
             rootDummy.Parent = null;
             rootDummy.Level = -1;
             rootDummy.DrawGroup = null;
 
-            int currentLevel = -1;
+            var currentLevel = -1;
 
             nodeStack.Push(rootDummy);
             nodeTreeRoot.Add(rootDummy);
 
             for (i = 0; i < objHierarchy.Count; i++)
             {
-                int level = objHierarchy[i];
+                var level = objHierarchy[i];
 
                 if (level <= currentLevel)
                 {
@@ -3206,7 +3196,7 @@ namespace TerraViewer
 
                 if (objNames[i].StartsWith("$$$"))
                 {
-                    ObjectNode dummy = new ObjectNode();
+                    var dummy = new ObjectNode();
                     dummy.Name = objNames[i].Replace("$$$", "");
                     dummy.Parent = nodeStack.Peek();
                     dummy.Parent.Children.Add(dummy);
@@ -3225,7 +3215,7 @@ namespace TerraViewer
 
             if (objHierarchy.Count == 0)
             {
-                foreach (ObjectNode node in objects)
+                foreach (var node in objects)
                 {
                     rootDummy.Children.Add(node);
                     node.Parent = rootDummy;
@@ -3245,14 +3235,14 @@ namespace TerraViewer
                     tangentIndexList.Add(tangentIndex);
                 }
 
-                Vector3[] tangents = CalculateVertexTangents(newVertexList, tangentIndexList, creaseAngleRad);
+                var tangents = CalculateVertexTangents(newVertexList, tangentIndexList, creaseAngleRad);
 
                 // Copy the tangents in the vertex data list
                 var vertices = new PositionNormalTexturedTangent[newVertexList.Count];
-                int vertexIndex = 0;
-                foreach (PositionNormalTextured v in newVertexList)
+                var vertexIndex = 0;
+                foreach (var v in newVertexList)
                 {
-                    PositionNormalTexturedTangent tvertex = new PositionNormalTexturedTangent(v.Position, v.Normal, new Vector2(v.Tu, v.Tv), tangents[vertexIndex]);
+                    var tvertex = new PositionNormalTexturedTangent(v.Position, v.Normal, new Vector2(v.Tu, v.Tv), tangents[vertexIndex]);
                     vertices[vertexIndex] = tvertex;
                     ++vertexIndex;
                 }
@@ -3274,18 +3264,18 @@ namespace TerraViewer
 
         private void OffsetObjects(List<PositionNormalTextured> vertList, List<ObjectNode> objects, Matrix3d offsetMat, Vector3 offsetPoint)
         {
-            foreach (ObjectNode node in objects)
+            foreach (var node in objects)
             {
-                Matrix3d matLoc = node.LocalMat; //offsetMat *;
+                var matLoc = node.LocalMat; //offsetMat *;
 
                 OffsetObjects(vertList, node.Children, matLoc, node.PivotPoint + offsetPoint);
 
-                foreach (Mesh.Group group in node.DrawGroup)
+                foreach (var group in node.DrawGroup)
                 {
-                    int end = group.startIndex + group.indexCount;
-                    for (int i = group.startIndex; i < end; i++)
+                    var end = group.startIndex + group.indexCount;
+                    for (var i = group.startIndex; i < end; i++)
                     {
-                        PositionNormalTextured vert = vertList[i];
+                        var vert = vertList[i];
                         vert.Pos += (node.PivotPoint + offsetPoint);
                         vertList[i] = vert;
                     }
@@ -3306,21 +3296,21 @@ namespace TerraViewer
         //   - Shadows cast by nearby planets
         public void SetupLighting(RenderContext11 renderContext)
         {
-            Vector3d objPosition = new Vector3d(renderContext.World.OffsetX, renderContext.World.OffsetY, renderContext.World.OffsetZ);
-            Vector3d objToLight = objPosition - renderContext.ReflectedLightPosition;
-            Vector3d sunPosition = renderContext.SunPosition - renderContext.ReflectedLightPosition;
-            double cosPhaseAngle = sunPosition.Length() <= 0.0 ? 1.0 : Vector3d.Dot(objToLight, sunPosition) / (objToLight.Length() * sunPosition.Length());
-            float reflectedLightFactor = (float)Math.Max(0.0, cosPhaseAngle);
+            var objPosition = new Vector3d(renderContext.World.OffsetX, renderContext.World.OffsetY, renderContext.World.OffsetZ);
+            var objToLight = objPosition - renderContext.ReflectedLightPosition;
+            var sunPosition = renderContext.SunPosition - renderContext.ReflectedLightPosition;
+            var cosPhaseAngle = sunPosition.Length() <= 0.0 ? 1.0 : Vector3d.Dot(objToLight, sunPosition) / (objToLight.Length() * sunPosition.Length());
+            var reflectedLightFactor = (float)Math.Max(0.0, cosPhaseAngle);
             reflectedLightFactor = (float)Math.Sqrt(reflectedLightFactor); // Tweak falloff of reflected light
-            float hemiLightFactor = 0.0f;
+            var hemiLightFactor = 0.0f;
 
             // 1. Reduce the amount of sunlight when the object is in the shadow of a planet
             // 2. Introduce some lighting due to scattering by the planet's atmosphere if it's
             //    close to the surface.
-            double sunlightFactor = 1.0;
+            var sunlightFactor = 1.0;
             if (renderContext.OccludingPlanetRadius > 0.0)
             {
-                double objAltitude = (objPosition - renderContext.OccludingPlanetPosition).Length() - renderContext.OccludingPlanetRadius;
+                var objAltitude = (objPosition - renderContext.OccludingPlanetPosition).Length() - renderContext.OccludingPlanetRadius;
                 hemiLightFactor = (float)Math.Max(0.0, Math.Min(1.0, 1.0 - (objAltitude / renderContext.OccludingPlanetRadius) * 300));
                 reflectedLightFactor *= (1.0f - hemiLightFactor);
 
@@ -3328,55 +3318,55 @@ namespace TerraViewer
                 // We're assuming that the radius of the object is very small relative to Earth;
                 // for large objects the amount of shadow will vary, and we should use circular
                 // eclipse shadows.
-                Vector3d sunToPlanet = renderContext.OccludingPlanetPosition - renderContext.SunPosition;
-                Vector3d objToPlanet = renderContext.OccludingPlanetPosition - objPosition;
+                var sunToPlanet = renderContext.OccludingPlanetPosition - renderContext.SunPosition;
+                var objToPlanet = renderContext.OccludingPlanetPosition - objPosition;
 
-                Vector3d hemiLightDirection = -objToPlanet;
+                var hemiLightDirection = -objToPlanet;
                 hemiLightDirection.Normalize();
                 renderContext.HemisphereLightUp = hemiLightDirection;
 
-                Vector3d objToSun = renderContext.SunPosition - objPosition;
-                double sunPlanetDistance = sunToPlanet.Length();
-                double t = -Vector3d.Dot(objToSun, sunToPlanet) / (sunPlanetDistance * sunPlanetDistance);
+                var objToSun = renderContext.SunPosition - objPosition;
+                var sunPlanetDistance = sunToPlanet.Length();
+                var t = -Vector3d.Dot(objToSun, sunToPlanet) / (sunPlanetDistance * sunPlanetDistance);
                 if (t > 1.0)
                 {
                     // Object is on the side of the planet opposite the sun, so a shadow is possible
 
                     // Compute the position of the object projected onto the shadow axis
-                    Vector3d shadowAxisPoint = Vector3d.Add(renderContext.SunPosition, Vector3d.Multiply(sunToPlanet, t));
+                    var shadowAxisPoint = Vector3d.Add(renderContext.SunPosition, Vector3d.Multiply(sunToPlanet, t));
 
                     // d is the distance to the shadow axis
-                    double d = (shadowAxisPoint - objPosition).Length();
+                    var d = (shadowAxisPoint - objPosition).Length();
 
                     // s is the distance from the sun along the shadow axis
-                    double s = (shadowAxisPoint - renderContext.SunPosition).Length();
+                    var s = (shadowAxisPoint - renderContext.SunPosition).Length();
 
                     // Use the sun's radius to accurately compute the penumbra and umbra cones
                     const double solarRadius = 0.004645784; // AU
-                    double penumbraRadius = renderContext.OccludingPlanetRadius + (t - 1.0) * (renderContext.OccludingPlanetRadius + solarRadius);
-                    double umbraRadius = renderContext.OccludingPlanetRadius + (t - 1.0) * (renderContext.OccludingPlanetRadius - solarRadius);
+                    var penumbraRadius = renderContext.OccludingPlanetRadius + (t - 1.0) * (renderContext.OccludingPlanetRadius + solarRadius);
+                    var umbraRadius = renderContext.OccludingPlanetRadius + (t - 1.0) * (renderContext.OccludingPlanetRadius - solarRadius);
 
                     if (d < penumbraRadius)
                     {
                         // The object is inside the penumbra, so it is at least partly shadowed
-                        double minimumShadow = 0.0;
+                        var minimumShadow = 0.0;
                         if (umbraRadius < 0.0)
                         {
                             // No umbra at this point; degree of shadowing is limited because the
                             // planet doesn't completely cover the sun even when the object is positioned
                             // exactly on the shadow axis.
-                            double occlusion = Math.Pow(1.0 / (1.0 - umbraRadius), 2.0);
+                            var occlusion = Math.Pow(1.0 / (1.0 - umbraRadius), 2.0);
                             umbraRadius = 0.0;
                             minimumShadow = 1.0 - occlusion;
                         }
 
                         // Approximate the amount of shadow with linear interpolation. The accurate
                         // calculation involves computing the area of the intersection of two circles.
-                        double u = Math.Max(0.0, umbraRadius);
+                        var u = Math.Max(0.0, umbraRadius);
                         sunlightFactor = Math.Max(minimumShadow, (d - u) / (penumbraRadius - u));
 
-                        int gray = (int)(255.99f * sunlightFactor);
-                        renderContext.SunlightColor = System.Drawing.Color.FromArgb(gray, gray, gray);
+                        var gray = (int)(255.99f * sunlightFactor);
+                        renderContext.SunlightColor = Color.FromArgb(gray, gray, gray);
 
                         // Reduce sky-scattered light as well
                         hemiLightFactor *= (float)sunlightFactor;
@@ -3384,10 +3374,10 @@ namespace TerraViewer
                 }
             }
 
-            renderContext.ReflectedLightColor = System.Drawing.Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
+            renderContext.ReflectedLightColor = Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
                                                                                (int)(renderContext.ReflectedLightColor.G * reflectedLightFactor),
                                                                                (int)(renderContext.ReflectedLightColor.B * reflectedLightFactor));
-            renderContext.HemisphereLightColor = System.Drawing.Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
+            renderContext.HemisphereLightColor = Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
                                                                                (int)(renderContext.HemisphereLightColor.G * hemiLightFactor),
                                                                                (int)(renderContext.HemisphereLightColor.B * hemiLightFactor));
         }
@@ -3405,33 +3395,33 @@ namespace TerraViewer
             {
                 Reload();
             }
-            Matrix3d oldWorld = renderContext.World;
+            var oldWorld = renderContext.World;
 
-            Vector3 offset = mesh.BoundingSphere.Center;
-            float unitScale = 1.0f;
+            var offset = mesh.BoundingSphere.Center;
+            var unitScale = 1.0f;
             if (mesh.BoundingSphere.Radius > 0.0f)
             {
                 unitScale = 1.0f / mesh.BoundingSphere.Radius;
             }
             renderContext.World = Matrix3d.Translation(-offset.X, -offset.Y, -offset.Z) * Matrix3d.Scaling(unitScale, unitScale, unitScale) * oldWorld;
 
-            Matrix3d worldView = renderContext.World * renderContext.View;
-            Vector3d v = worldView.Transform(Vector3d.Empty);
-            double scaleFactor = Math.Sqrt(worldView.M11 * worldView.M11 + worldView.M22 * worldView.M22 + worldView.M33 * worldView.M33) / unitScale;
-            double dist = v.Length();
-            double radius = scaleFactor;
+            var worldView = renderContext.World * renderContext.View;
+            var v = worldView.Transform(Vector3d.Empty);
+            var scaleFactor = Math.Sqrt(worldView.M11 * worldView.M11 + worldView.M22 * worldView.M22 + worldView.M33 * worldView.M33) / unitScale;
+            var dist = v.Length();
+            var radius = scaleFactor;
 
             // Calculate pixelsPerUnit which is the number of pixels covered
             // by an object 1 AU at the distance of the planet center from
             // the camera. This calculation works regardless of the projection
             // type.
-            int viewportHeight = (int)renderContext.ViewPort.Height;
-            double p11 = renderContext.Projection.M11;
-            double p34 = renderContext.Projection.M34;
-            double p44 = renderContext.Projection.M44;
-            double w = Math.Abs(p34) * dist + p44;
-            float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
-            float radiusInPixels = (float)(radius * pixelsPerUnit);
+            var viewportHeight = (int)renderContext.ViewPort.Height;
+            var p11 = renderContext.Projection.M11;
+            var p34 = renderContext.Projection.M34;
+            var p44 = renderContext.Projection.M44;
+            var w = Math.Abs(p34) * dist + p44;
+            var pixelsPerUnit = (float)(p11 / w) * viewportHeight;
+            var radiusInPixels = (float)(radius * pixelsPerUnit);
             if (radiusInPixels < 0.5f)
             {
                 // Too small to be visible; skip rendering
@@ -3447,18 +3437,18 @@ namespace TerraViewer
             if (Properties.Settings.Default.SolarSystemLighting)
             {
                 SetupLighting(renderContext);
-                renderContext.AmbientLightColor = System.Drawing.Color.FromArgb(11, 11, 11);
+                renderContext.AmbientLightColor = Color.FromArgb(11, 11, 11);
             }
             else
             {
                 // No lighting: set ambient light to white and turn off all other light sources
-                renderContext.SunlightColor = System.Drawing.Color.Black;
-                renderContext.ReflectedLightColor = System.Drawing.Color.Black;
-                renderContext.HemisphereLightColor = System.Drawing.Color.Black;
-                renderContext.AmbientLightColor = System.Drawing.Color.White;
+                renderContext.SunlightColor = Color.Black;
+                renderContext.ReflectedLightColor = Color.Black;
+                renderContext.HemisphereLightColor = Color.Black;
+                renderContext.AmbientLightColor = Color.White;
             }
 
-            SharpDX.Direct3D11.Device device = renderContext.Device;
+            var device = renderContext.Device;
 
 
             if (mesh == null)
@@ -3472,16 +3462,16 @@ namespace TerraViewer
             renderContext.DepthStencilMode = DepthStencilMode.ZReadWrite;
             renderContext.BlendMode = BlendMode.Alpha;
 
-            int count = meshMaterials.Count;
+            var count = meshMaterials.Count;
 
             mesh.beginDrawing(renderContext);
             if (count > 0)
             {
-                for (int i = 0; i < meshMaterials.Count; i++)
+                for (var i = 0; i < meshMaterials.Count; i++)
                 {
                     if (meshMaterials[i].Default)
                     {
-                        Material mat = meshMaterials[i];
+                        var mat = meshMaterials[i];
                         mat.Diffuse = Color;
                         mat.Ambient = Color;
                         meshMaterials[i] = mat;
@@ -3496,7 +3486,7 @@ namespace TerraViewer
             else
             {
                 renderContext.PreDraw();
-                for (int i = 0; i < meshTextures.Count; i++)
+                for (var i = 0; i < meshTextures.Count; i++)
                 {
                     var key = new PlanetShaderKey(PlanetSurfaceStyle.Diffuse, false, 0);
                     renderContext.SetupPlanetSurfaceEffect(key, 1.0f);
@@ -3523,7 +3513,7 @@ namespace TerraViewer
             renderContext.SunlightColor = savedSunlightColor;
             renderContext.ReflectedLightColor = savedReflectedColor;
             renderContext.HemisphereLightColor = savedHemiColor;
-            renderContext.AmbientLightColor = System.Drawing.Color.Black;
+            renderContext.AmbientLightColor = Color.Black;
 
 
 
@@ -3536,7 +3526,7 @@ namespace TerraViewer
         {
             if (textures != null)
             {
-                for (int i = 0; i < textures.Count; ++i)
+                for (var i = 0; i < textures.Count; ++i)
                 {
                     if (textures[i] != null)
                     {
@@ -3559,7 +3549,7 @@ namespace TerraViewer
                 mesh = null;
             }
 
-            foreach (Texture11 tex in TextureCache.Values)
+            foreach (var tex in TextureCache.Values)
             {
                 if (tex != null)
                 {
@@ -3589,23 +3579,19 @@ namespace TerraViewer
         public List<Mesh.Group> DrawGroup = new List<Mesh.Group>();
         public List<int[]> ApplyLists = new List<int[]>();
         public List<int> ApplyListsIndex = new List<int>();
-        public ObjectNode()
-        {
-        }
-
     }
 
 
     public class Object3dLayerUI : LayerUI
     {
-        Object3dLayer layer = null;
+        readonly Object3dLayer layer;
         bool opened = true;
 
         public Object3dLayerUI(Object3dLayer layer)
         {
             this.layer = layer;
         }
-        IUIServicesCallbacks callbacks = null;
+        IUIServicesCallbacks callbacks;
 
         public override void SetUICallbacks(IUIServicesCallbacks callbacks)
         {
@@ -3621,7 +3607,7 @@ namespace TerraViewer
 
         public override List<LayerUITreeNode> GetTreeNodes()
         {
-            List<LayerUITreeNode> nodes = new List<LayerUITreeNode>();
+            var nodes = new List<LayerUITreeNode>();
             if (layer.object3d.Objects.Count > 0 && layer.object3d.Objects[0].Children != null)
             {
                 LoadTree(nodes, layer.object3d.Objects[0].Children);
@@ -3631,14 +3617,14 @@ namespace TerraViewer
 
         void LoadTree(List<LayerUITreeNode> nodes, List<ObjectNode> children)
         {
-            foreach (ObjectNode child in children)
+            foreach (var child in children)
             {
-                LayerUITreeNode node = new LayerUITreeNode();
+                var node = new LayerUITreeNode();
                 node.Name = child.Name;
                 node.Tag = child;
                 node.Checked = child.Enabled;
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
-                node.NodeChecked += new LayerUITreeNodeCheckedDelegate(node_NodeChecked);
+                node.NodeSelected += node_NodeSelected;
+                node.NodeChecked += node_NodeChecked;
                 nodes.Add(node);
                 LoadTree(node.Nodes, child.Children);
             }
@@ -3647,7 +3633,7 @@ namespace TerraViewer
 
         void node_NodeChecked(LayerUITreeNode node, bool newState)
         {
-            ObjectNode child = (ObjectNode)node.Tag;
+            var child = (ObjectNode)node.Tag;
 
             if (child != null)
             {
@@ -3661,9 +3647,9 @@ namespace TerraViewer
         {
             if (callbacks != null)
             {
-                ObjectNode child = (ObjectNode)node.Tag;
+                var child = (ObjectNode)node.Tag;
 
-                Dictionary<String, String> rowData = new Dictionary<string, string>();
+                var rowData = new Dictionary<string, string>();
 
                 rowData.Add("Name", child.Name);
                 rowData.Add("Pivot.X", child.PivotPoint.X.ToString());

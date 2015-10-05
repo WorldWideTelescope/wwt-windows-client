@@ -22,21 +22,21 @@ namespace TerraViewer
         {
             fileMutex.WaitOne();
 
-            BinaryReader br = new BinaryReader(Stream);
+            var br = new BinaryReader(Stream);
 
-            long fileLen = br.BaseStream.Length;
+            var fileLen = br.BaseStream.Length;
             long start = 0;
             if (fileLen > 1024)
             {
                 start = fileLen - 1024;
             }
 
-            bool dirFound = false;
+            var dirFound = false;
 
             while (!dirFound)
             {
                 br.BaseStream.Seek(start, SeekOrigin.Begin);
-                uint sig = br.ReadUInt32();
+                var sig = br.ReadUInt32();
                 if (sig == 0x06054b50)
                 {
                     dirFound = true;
@@ -51,16 +51,16 @@ namespace TerraViewer
             int diskDir = br.ReadUInt16();
             int disckCount = br.ReadUInt16();
             int totalCount = br.ReadUInt16();
-            UInt32 dirSize = br.ReadUInt32();
+            var dirSize = br.ReadUInt32();
             long dirOffset = br.ReadUInt32();
 
             br.BaseStream.Seek(dirOffset, SeekOrigin.Begin);
 
-            for (int i = 0; i < totalCount; i++)
+            for (var i = 0; i < totalCount; i++)
             {
-                ZipEntry file = new ZipEntry();
+                var file = new ZipEntry();
 
-                UInt32 sig = br.ReadUInt32();
+                var sig = br.ReadUInt32();
                 if (sig != 0x02014b50)
                 {
                     break;
@@ -68,20 +68,20 @@ namespace TerraViewer
 
                 br.BaseStream.Seek(6, SeekOrigin.Current);
                 file.CompressionMethod = br.ReadUInt16();
-                Int16 time = br.ReadInt16();
-                Int16 date = br.ReadInt16();
+                var time = br.ReadInt16();
+                var date = br.ReadInt16();
                 file.LastModified = ZipModTimeToDateTime(time, date);
-                UInt32 crc = br.ReadUInt32();
+                var crc = br.ReadUInt32();
                 file.CompressedLength = br.ReadInt32();
                 file.Length = br.ReadInt32();
-                UInt16 fileNameLength = br.ReadUInt16();
-                UInt16 extraLength =  br.ReadUInt16();
-                UInt16 commentLength =  br.ReadUInt16();
-                UInt16 disk = br.ReadUInt16();
-                UInt16 attributes = br.ReadUInt16();
-                UInt32 exAttributes = br.ReadUInt32();
+                var fileNameLength = br.ReadUInt16();
+                var extraLength =  br.ReadUInt16();
+                var commentLength =  br.ReadUInt16();
+                var disk = br.ReadUInt16();
+                var attributes = br.ReadUInt16();
+                var exAttributes = br.ReadUInt32();
                 file.FileHeaderOffset = br.ReadUInt32();
-                byte[] rawFilename = br.ReadBytes(fileNameLength);
+                var rawFilename = br.ReadBytes(fileNameLength);
 
                 file.Filename = Encoding.UTF8.GetString(rawFilename, 0, rawFilename.Length);
                 file.FileOffset = file.FileHeaderOffset + 30 + fileNameLength + extraLength;
@@ -97,12 +97,12 @@ namespace TerraViewer
         public static DateTime ZipModTimeToDateTime(Int16 time, Int16 date)
         {
 
-            int years = 0;
-            int months = 1;
-            int days = 1;
-            int hours = 0;
-            int minutes = 0;
-            int seconds = 0;
+            var years = 0;
+            var months = 1;
+            var days = 1;
+            var hours = 0;
+            var minutes = 0;
+            var seconds = 0;
             days = (date & 0x1F);
             months = ((date & 0x01E0) >> 5);
             years = 1980 + ((date & 0xFE00) >> 9);
@@ -132,37 +132,37 @@ namespace TerraViewer
             try
             {
                 Owner.fileMutex.WaitOne();
-                BinaryReader br = new BinaryReader(Owner.Stream);
+                var br = new BinaryReader(Owner.Stream);
                 br.BaseStream.Seek(FileHeaderOffset, SeekOrigin.Begin);
-                UInt32 sig = br.ReadUInt32();
+                var sig = br.ReadUInt32();
 
                 if (sig != 0x04034b50)
                 {
                     return null;
                 }
                 br.BaseStream.Seek(FileHeaderOffset + 26, SeekOrigin.Begin);
-                UInt16 fileNameLength = br.ReadUInt16();
+                var fileNameLength = br.ReadUInt16();
                 br.BaseStream.Seek(FileHeaderOffset + 28, SeekOrigin.Begin);
-                UInt16 extraLength = br.ReadUInt16();
+                var extraLength = br.ReadUInt16();
 
                 br.BaseStream.Seek(FileHeaderOffset + 30 + fileNameLength + extraLength, SeekOrigin.Begin);
 
-                byte[] inBuffer = br.ReadBytes(CompressedLength);
+                var inBuffer = br.ReadBytes(CompressedLength);
 
-                MemoryStream msInput = new MemoryStream(inBuffer);
+                var msInput = new MemoryStream(inBuffer);
 
                 if (CompressionMethod == 8)
                 {
-                    byte[] outBuffer = new byte[Length];
+                    var outBuffer = new byte[Length];
 
-                    MemoryStream msOutput = new MemoryStream(outBuffer);
-                    DeflateStream gzs = new DeflateStream(msInput, CompressionMode.Decompress);
+                    var msOutput = new MemoryStream(outBuffer);
+                    var gzs = new DeflateStream(msInput, CompressionMode.Decompress);
 
 
-                    byte[] buffer = new byte[32768];
+                    var buffer = new byte[32768];
                     while (true)
                     {
-                        int read = gzs.Read(buffer, 0, buffer.Length);
+                        var read = gzs.Read(buffer, 0, buffer.Length);
                         if (read <= 0)
                         {
                             break;
@@ -187,10 +187,5 @@ namespace TerraViewer
     }
     public class ZipArchiveWriter
     {
-        public ZipArchiveWriter()
-        {
-        }
-
-
     }
 }

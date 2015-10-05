@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace TerraViewer
 {
@@ -27,12 +23,12 @@ namespace TerraViewer
         {
             get
             {
-                return Target.TargetID + "\t" + ParameterIndex.ToString() + "\t" + KeyGroup.Quant(Time).ToString();
+                return Target.TargetID + "\t" + ParameterIndex + "\t" + KeyGroup.Quant(Time);
             }
         }
         public static string GetIndexKey(AnimationTarget target, int parameterIndex, double time)
         {
-            return target.TargetID + "\t" + parameterIndex.ToString() + "\t" + KeyGroup.Quant(time).ToString();
+            return target.TargetID + "\t" + parameterIndex + "\t" + KeyGroup.Quant(time);
         }
     }
 }

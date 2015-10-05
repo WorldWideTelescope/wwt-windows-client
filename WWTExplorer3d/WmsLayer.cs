@@ -4,12 +4,12 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 using System.Globalization;
-using System.Xml.Serialization;
 using System.Threading;
+using System.Xml;
 
 namespace TerraViewer
 {
-    public class WmsLayer : Layer, TerraViewer.ITimeSeriesDescription
+    public class WmsLayer : Layer, ITimeSeriesDescription
     {
         public KmlGroundOverlay Overlay = new KmlGroundOverlay();
         public string filename;
@@ -21,12 +21,12 @@ namespace TerraViewer
                 return;
             }
 
-            string fName = filename;
+            var fName = filename;
 
-            bool copy = !fName.Contains(ID.ToString());
+            var copy = !fName.Contains(ID.ToString());
 
-            string fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, this.ID.ToString());
-            string path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.png", fc.PackageID, ID);
+            var path = fName.Substring(0, fName.LastIndexOf('\\') + 1);
 
             if (copy)
             {
@@ -64,7 +64,7 @@ namespace TerraViewer
         {
             SetCurrentImage();
 
-            Overlay.color = Color.FromArgb((int)(this.Opacity * opacity * Color.A), Color);
+            Overlay.color = Color.FromArgb((int)(Opacity * opacity * Color.A), Color);
             Earth3d.MainWindow.KmlMarkers.AddGroundOverlay(Overlay);
             return true;
         }
@@ -130,7 +130,7 @@ namespace TerraViewer
                 }
             }
         }
-        int height = 0;
+        int height;
         [LayerProperty]
         public int Height
         {
@@ -141,7 +141,7 @@ namespace TerraViewer
             }
         }
 
-        int width = 0;
+        int width;
         [LayerProperty]
         public int Width
         {
@@ -181,7 +181,7 @@ namespace TerraViewer
                 }
             }
         }
-        DateTime seriesStartTime = new DateTime();
+        DateTime seriesStartTime;
 
         [LayerProperty]
         public DateTime SeriesStartTime
@@ -197,7 +197,7 @@ namespace TerraViewer
         }
 
 
-        DateTime seriesEndTime = new DateTime();
+        DateTime seriesEndTime;
 
         [LayerProperty]
         public DateTime SeriesEndTime
@@ -212,7 +212,7 @@ namespace TerraViewer
             }
         }
 
-        TimeSpan timeStep = new TimeSpan();
+        TimeSpan timeStep;
 
         [LayerProperty]
         public TimeSpan TimeStep
@@ -278,7 +278,7 @@ namespace TerraViewer
 
         string MakeWmsGetMapUrl(string layers, string styles, double west, double north, double east, double south, int width, int height, string time, string elevation)
         {
-            string val = string.Format("{0}version={9}&service=WMS&request=GetMap&layers={1}&styles={2}&crs=CRS:84&srs=EPSG:4326&bbox={3},{4},{5},{6}&width={7}&height={8}&format=image/png&transparent=TRUE",
+            var val = string.Format("{0}version={9}&service=WMS&request=GetMap&layers={1}&styles={2}&crs=CRS:84&srs=EPSG:4326&bbox={3},{4},{5},{6}&width={7}&height={8}&format=image/png&transparent=TRUE",
                                             ServiceUrl, layers, styles, west, south, east, north, width, height, wmsVersion);
 
             if (!string.IsNullOrEmpty(time))
@@ -288,7 +288,7 @@ namespace TerraViewer
             return val;
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("North", North.ToString());
             xmlWriter.WriteAttributeString("South", South.ToString());
@@ -311,9 +311,9 @@ namespace TerraViewer
 
         private string GetDateRangeString()
         {
-            StringBuilder sb = new StringBuilder();
-            bool firstTime = true;
-            foreach (TimeRange tr in TimeRanges)
+            var sb = new StringBuilder();
+            var firstTime = true;
+            foreach (var tr in TimeRanges)
             {
                 if (!firstTime)
                 {
@@ -340,8 +340,8 @@ namespace TerraViewer
 
         private void ParseRanges(string p)
         {
-            string[] parts = p.Split(new char[] { ',' });
-            foreach (string part in parts)
+            var parts = p.Split(new[] { ',' });
+            foreach (var part in parts)
             {
                 TimeRanges.Add(new TimeRange(part));
             }
@@ -349,14 +349,14 @@ namespace TerraViewer
         }
 
 
-        WmsImageCache WmsCache = new WmsImageCache();
+        readonly WmsImageCache WmsCache = new WmsImageCache();
 
         public void SetCurrentImage()
         {
-            string timeString = GetTimeString();
-            string url = GetCurrentPath(timeString);
+            var timeString = GetTimeString();
+            var url = GetCurrentPath(timeString);
 
-            Texture11 texture = WmsCache.GetTexture(timeString,url);
+            var texture = WmsCache.GetTexture(timeString,url);
 
             Overlay.Icon = new KmlIcon();
             Overlay.Icon.Texture = texture;
@@ -367,7 +367,7 @@ namespace TerraViewer
 
         private string GetTimeString()
         {
-            string timeString="";
+            var timeString="";
 
             if (TimeRanges.Count == 0)
             {
@@ -382,7 +382,7 @@ namespace TerraViewer
             //TimeRange now = new TimeRange(SpaceTimeController.Now);
 
 
-            int location = FindDateIndex(SpaceTimeController.Now);
+            var location = FindDateIndex(SpaceTimeController.Now);
 
             if (location < 0)
             {
@@ -405,8 +405,8 @@ namespace TerraViewer
                 return TimeRanges.Count - 1;
             }
 
-            int indexTarget = TimeRanges.Count / 2;
-            int range = indexTarget;
+            var indexTarget = TimeRanges.Count / 2;
+            var range = indexTarget;
 
             while (indexTarget < TimeRanges.Count - 1)
             {
@@ -447,7 +447,7 @@ namespace TerraViewer
 
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             North = Double.Parse(node.Attributes["North"].Value);
 
@@ -509,7 +509,7 @@ namespace TerraViewer
         public TimeRange(string dateString)
         {
             dateString = dateString.Replace("\n", "").Replace(" ", "");
-            string[] dateParts = dateString.Split(new char[] { '/' });
+            var dateParts = dateString.Split(new[] { '/' });
             IsRange = false;
             StartTime = new DateTime();
             EndTime = new DateTime();
@@ -523,7 +523,7 @@ namespace TerraViewer
                 if (dateParts.Length > 0)
                 {
                     StartTimeString = dateParts[0];
-                    StartTime = DateTime.ParseExact(dateParts[0], new string[] { @"yyyy-MM-dd\THH:mm:ss.000\Z", @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM", "o" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+                    StartTime = DateTime.ParseExact(dateParts[0], new[] { @"yyyy-MM-dd\THH:mm:ss.000\Z", @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM", "o" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 
                     //layer.StartTime = DateTime.Parse(dateParts[0]);
                     if (StartTime.Kind == DateTimeKind.Local)
@@ -541,7 +541,7 @@ namespace TerraViewer
                 if (dateParts.Length > 1)
                 {
                     EndTimeString = dateParts[1];
-                    EndTime = DateTime.ParseExact(dateParts[1], new string[] { @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+                    EndTime = DateTime.ParseExact(dateParts[1], new[] { @"yyyy-MM-dd\THH:mm:ss\Z", @"yyyy-MM-dd\THH:mm\Z", @"yyyy-MM-dd\THH\Z", @"yyyy-MM-dd", @"yyyy-MM" }, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 
                     if (EndTime.Kind == DateTimeKind.Local)
                     {
@@ -558,7 +558,7 @@ namespace TerraViewer
                 if (dateParts.Length > 2)
                 {
                     TimeStepString = dateParts[2];
-                    TimeStep = System.Xml.XmlConvert.ToTimeSpan(dateParts[2]);
+                    TimeStep = XmlConvert.ToTimeSpan(dateParts[2]);
                 }
                 else
                 {
@@ -586,37 +586,34 @@ namespace TerraViewer
             {
                 return StartTimeString;
             }
-            else if (SpaceTimeController.Now > EndTime)
+            if (SpaceTimeController.Now > EndTime)
             {
                 return EndTimeString;
             }
+            if (TimeStep.TotalDays == 30)
+            {
+                var tmp = now;
+
+                targetTime = new DateTime(tmp.Year, tmp.Month, 1);
+            }
             else
             {
-                if (TimeStep.TotalDays == 30)
-                {
-                    DateTime tmp = now;
+                var ts = now - StartTime;
 
-                    targetTime = new DateTime(tmp.Year, tmp.Month, 1);
-                }
-                else
-                {
-                    TimeSpan ts = now - StartTime;
+                var steps = (int)((ts.TotalSeconds / TimeStep.TotalSeconds) + .5);
 
-                    int steps = (int)((ts.TotalSeconds / TimeStep.TotalSeconds) + .5);
-
-                    targetTime = StartTime.Add(TimeSpan.FromSeconds(TimeStep.TotalSeconds * steps));
-                }
+                targetTime = StartTime.Add(TimeSpan.FromSeconds(TimeStep.TotalSeconds * steps));
             }
 
             if (TimeStep.TotalDays == 30)
             {
-                DateTime tmp = targetTime;
+                var tmp = targetTime;
 
                 targetTime = new DateTime(tmp.Year, tmp.Month, 1);
             }
 
 
-            string timeString = targetTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + "Z";
+            var timeString = targetTime.ToString("s", CultureInfo.InvariantCulture) + "Z";
             timeString = timeString.Replace("0001-01-01T00Z", "");
 
             if (TimeStep.TotalDays == 30)
@@ -679,7 +676,7 @@ namespace TerraViewer
 
     class WmsImageCache : IDisposable
     {
-        SortedDictionary<string, WmsCahceEntry> cache = new SortedDictionary<string, WmsCahceEntry>();
+        readonly SortedDictionary<string, WmsCahceEntry> cache = new SortedDictionary<string, WmsCahceEntry>();
 
         public Texture11 GetTexture(string date, string url)
         {
@@ -688,7 +685,7 @@ namespace TerraViewer
                 Add(date, url);
             }
 
-            WmsCahceEntry result = cache[date];
+            var result = cache[date];
 
             if (result.Texture != null)
             {
@@ -697,7 +694,7 @@ namespace TerraViewer
 
             Texture11 tempTexture = null;
 
-            foreach (WmsCahceEntry entry in cache.Values)
+            foreach (var entry in cache.Values)
             {
                  
                 if ((entry.Date.CompareTo(date) > 0 && tempTexture != null ))
@@ -716,40 +713,40 @@ namespace TerraViewer
 
         private void Add(string date, string url)
         {
-            WmsCahceEntry entry = new WmsCahceEntry(date, url);
+            var entry = new WmsCahceEntry(date, url);
             cache.Add(date, entry);
 
             entry.Requested = true;
 
             // Do a background load on this
-            ThreadPool.QueueUserWorkItem(new WaitCallback(LoadTexture), entry);
+            ThreadPool.QueueUserWorkItem(LoadTexture, entry);
         }
 
         public static int MaxErrorCount = 3;
 
         public static void LoadTexture(object objEntry)
         {
-            WmsCahceEntry entry = objEntry as WmsCahceEntry;
+            var entry = objEntry as WmsCahceEntry;
             entry.Requested = true;
             try
             {
-                String dir = Properties.Settings.Default.CahceDirectory + "Data\\KmlCache\\";
+                var dir = Properties.Settings.Default.CahceDirectory + "Data\\KmlCache\\";
                 if (!Directory.Exists(dir))
                 {
                     Directory.CreateDirectory(dir);
                 }
                 // This is a expanded timeout version of WebClient
-                MyWebClient Client = new MyWebClient();
+                var Client = new MyWebClient();
 
 
-                string filename = dir + ((uint)entry.URL.GetHashCode32()).ToString() + ".png";
+                var filename = dir + ((uint)entry.URL.GetHashCode32()) + ".png";
 
 
                 Stream stream = null;
 
                 if (Uri.IsWellFormedUriString(entry.URL, UriKind.Absolute))
                 {
-                    byte[] data = Client.DownloadData(entry.URL);
+                    var data = Client.DownloadData(entry.URL);
                     stream = new MemoryStream(data);
                 }
                 else
@@ -758,11 +755,11 @@ namespace TerraViewer
                 }
 
 
-                FileStream fileStream = File.OpenWrite(filename);
-                byte[] buffer = new byte[32768];
+                var fileStream = File.OpenWrite(filename);
+                var buffer = new byte[32768];
                 while (true)
                 {
-                    int read = stream.Read(buffer, 0, buffer.Length);
+                    var read = stream.Read(buffer, 0, buffer.Length);
                     if (read <= 0)
                         break;
                     fileStream.Write(buffer, 0, read);
@@ -805,7 +802,7 @@ namespace TerraViewer
 
         public void CleanUp()
         {
-            foreach (WmsCahceEntry entry in cache.Values)
+            foreach (var entry in cache.Values)
             {
                 if (entry.Texture != null)
                 {

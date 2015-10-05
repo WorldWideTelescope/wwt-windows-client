@@ -9,17 +9,14 @@
 ===============================================================================
 */
 using System;
+using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
-using System.Collections;
 using System.Threading;
 using System.Drawing;
-using System.Xml;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
-using System.Reflection;
 using System.Collections.Generic;
 
 namespace TerraViewer
@@ -36,7 +33,7 @@ namespace TerraViewer
             return request.ToLower().StartsWith(_sig);
         }
 
-        static Dictionary<string, ScriptableProperty> SettingsList;
+        static readonly Dictionary<string, ScriptableProperty> SettingsList;
 
         static HTTPLayerApi()
         {
@@ -131,10 +128,10 @@ namespace TerraViewer
         public override void ProcessRequest(string request, ref Socket socket, bool authenticated, string body)
         {
            
-            QueryString query = new QueryString(request);
+            var query = new QueryString(request);
 
-            String sMimeType = "text/xml";
-            string data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status></LayerApi>";
+            var sMimeType = "text/xml";
+            var data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status></LayerApi>";
             if (!authenticated)
             {
                 data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Error - IP Not Authorized by Client</Status></LayerApi>";
@@ -142,9 +139,9 @@ namespace TerraViewer
                 return;
             }
 
-            string cmd = query["cmd"].ToLower();
+            var cmd = query["cmd"].ToLower();
 
-            Guid layerID = Guid.Empty;
+            var layerID = Guid.Empty;
 
             if (!string.IsNullOrEmpty(query["id"]))
             {
@@ -153,117 +150,117 @@ namespace TerraViewer
 
 
 
-            int color = Color.White.ToArgb();
+            var color = Color.White.ToArgb();
             if (!string.IsNullOrEmpty(query["color"]))
             {
-                color = int.Parse(query["color"],System.Globalization.NumberStyles.HexNumber);
+                color = int.Parse(query["color"],NumberStyles.HexNumber);
             }
 
 
-            int currentVersion = 0;
+            var currentVersion = 0;
             if (!string.IsNullOrEmpty(query["version"]))
             {
                 currentVersion = int.Parse(query["version"]);
             }
 
-            string notifyType = "None";
+            var notifyType = "None";
             if (!string.IsNullOrEmpty(query["notifytype"]))
             {
                 notifyType = query["notifytype"];
             }
 
-            int notifyTimeout = 30000;
+            var notifyTimeout = 30000;
             if (!string.IsNullOrEmpty(query["notifytimeout"]))
             {
                 notifyTimeout = Math.Min(120000,int.Parse(query["notifytimeout"]));
             }
 
-            int notifyRate = 100;
+            var notifyRate = 100;
             if (!string.IsNullOrEmpty(query["notifyrate"]))
             {
                 notifyRate = Math.Min(10000,int.Parse(query["notifyrate"]));
             } 
             
-            DateTime dateTime = DateTime.Now;      
+            var dateTime = DateTime.Now;      
             if (!string.IsNullOrEmpty(query["datetime"]))
             {
                 dateTime = Convert.ToDateTime(query["datetime"]);
                 SpaceTimeController.Now = dateTime;
             }
 
-            DateTime beginDate = DateTime.MinValue;
+            var beginDate = DateTime.MinValue;
             if (!string.IsNullOrEmpty(query["startdate"]))
             {
                 beginDate = Convert.ToDateTime(query["startdate"]);
             }
             
-            DateTime endDate = DateTime.MaxValue;
+            var endDate = DateTime.MaxValue;
             if (!string.IsNullOrEmpty(query["enddate"]))
             {
                 endDate = Convert.ToDateTime(query["enddate"]);
             }
 
-            double timeRate = 1.0;
+            var timeRate = 1.0;
             if (!string.IsNullOrEmpty(query["timerate"]))
             {
                 timeRate = Convert.ToDouble(query["timerate"]);
                 SpaceTimeController.TimeRate = timeRate;
             }
    
-            string name = "New Layer";
+            var name = "New Layer";
             if (!string.IsNullOrEmpty(query["name"]))
             {
                 name = query["name"];
             }
             
-            string propName = "";
+            var propName = "";
             if (!string.IsNullOrEmpty(query["propname"]))
             {
                 propName = query["propname"];
             }
             
-            string propValue = "";
+            var propValue = "";
             if (!string.IsNullOrEmpty(query["propvalue"]))
             {
                 propValue = query["propvalue"];
             }    
             
-            string filename = "";
+            var filename = "";
             if (!string.IsNullOrEmpty(query["filename"]))
             {
                 filename = query["filename"];
             }
 
-            string referenceFrame = "";
+            var referenceFrame = "";
             if (!string.IsNullOrEmpty(query["frame"]))
             {
                 referenceFrame = query["frame"];
             }
 
-            string parent = "";
+            var parent = "";
             if (!string.IsNullOrEmpty(query["parent"]))
             {
                 parent = query["parent"];
             }
 
-            string move = "";
+            var move = "";
             if (!string.IsNullOrEmpty(query["move"]))
             {
                 move = query["move"];
             }
-            FadeType fadeType = FadeType.None;
+            var fadeType = FadeType.None;
             if (!string.IsNullOrEmpty(query["fadetype"]))
             {
                 fadeType = (FadeType)Enum.Parse(typeof(FadeType), query["fadetype"]);
             }
 
-            double fadeRange = 0.0;
+            var fadeRange = 0.0;
             if (!string.IsNullOrEmpty(query["faderange"]))
             {
                 fadeRange = Convert.ToDouble(query["faderange"]);
             }
 
-            bool showLayer = true;
+            var showLayer = true;
             if (!string.IsNullOrEmpty(query["show"]))
             {
                 showLayer = Convert.ToBoolean(query["show"]);
@@ -282,25 +279,25 @@ namespace TerraViewer
                 lookat = query["lookat"];
             }
 
-            bool instant = false;
+            var instant = false;
             if (!string.IsNullOrEmpty(query["instant"]))
             {
                 instant = Convert.ToBoolean(query["instant"]);
             }
 
-            bool noPurge = false;
+            var noPurge = false;
             if (!string.IsNullOrEmpty(query["nopurge"]))
             {
                 noPurge = Convert.ToBoolean(query["nopurge"]);
             }
 
-            bool fromClipboard = false;
+            var fromClipboard = false;
             if (!string.IsNullOrEmpty(query["fromclipboard"]))
             {
                 fromClipboard = Convert.ToBoolean(query["fromclipboard"]);
             }
 
-            bool purgeAll = false;
+            var purgeAll = false;
             if (!string.IsNullOrEmpty(query["purgeall"]))
             {
                 purgeAll = Convert.ToBoolean(query["purgeall"]);
@@ -311,31 +308,31 @@ namespace TerraViewer
                 LayerManager.SetAutoloop(Convert.ToBoolean(query["autoloop"]));
             }
 
-            bool layersOnly = false;
+            var layersOnly = false;
             if (!string.IsNullOrEmpty(query["layersonly"]))
             {
                 layersOnly = Convert.ToBoolean(query["layersonly"]);
             }
             
-            bool hasheader = false;
+            var hasheader = false;
             if (!string.IsNullOrEmpty(query["hasheader"]))
             {
                 hasheader = Convert.ToBoolean(query["hasheader"]);
             }
 
-            string coordinates = "";
+            var coordinates = "";
             if (!string.IsNullOrEmpty(query["coordinates"]))
             {
                 coordinates = query["coordinates"];
             }
 
-            string cmdtarget = "";
+            var cmdtarget = "";
             if (!string.IsNullOrEmpty(query["cmdtarget"]))
             {
                 cmdtarget = query["cmdtarget"];
             }
 
-            string cmdtype = "";
+            var cmdtype = "";
             if (!string.IsNullOrEmpty(query["cmdtype"]))
             {
                 cmdtype = query["cmdtype"];
@@ -370,7 +367,7 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    DateTime start = DateTime.Now;
+                                    var start = DateTime.Now;
                                     //default text
                                     data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Timeout</Status></LayerApi>";
                                     while ((DateTime.Now - start).TotalMilliseconds < notifyTimeout)
@@ -382,20 +379,17 @@ namespace TerraViewer
                                             break;
                                         }
 
-                                        Layer target = LayerManager.LayerList[layerID];
+                                        var target = LayerManager.LayerList[layerID];
                                         if (target == null)
                                         {
                                             data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Error - Invalid layer ID</Status></LayerApi>";
                                             break;
                                         }
-                                       
-                                        else
+
+                                        if (target.Version != currentVersion)
                                         {
-                                            if (target.Version != currentVersion)
-                                            {
-                                                data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><Layer {0}=\"{1}\" Version=\"{2}\"></Layer></LayerApi>", "ID", target.ID, target.Version);
-                                                break;
-                                            }
+                                            data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><Layer {0}=\"{1}\" Version=\"{2}\"></Layer></LayerApi>", "ID", target.ID, target.Version);
+                                            break;
                                         }
                                     }
 
@@ -403,7 +397,7 @@ namespace TerraViewer
                                 break;
                             case "layerlist":
                                 {
-                                    DateTime start = DateTime.Now;
+                                    var start = DateTime.Now;
                                     //default text
                                     data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Timeout</Status></LayerApi>";
                                     while ((DateTime.Now - start).TotalMilliseconds < notifyTimeout)
@@ -424,7 +418,7 @@ namespace TerraViewer
                         break;
                     case "version":
                         {
-                            data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Version>{0}</Version></LayerApi>", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                            data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Version>{0}</Version></LayerApi>", Assembly.GetExecutingAssembly().GetName().Version);
 
                         }
                         break;
@@ -443,10 +437,10 @@ namespace TerraViewer
                         break;
                     case "load":
                         {
-                            Guid id = LayerManager.LoadLayer(name, referenceFrame, filename, color, beginDate, endDate, fadeType, fadeRange);
+                            var id = LayerManager.LoadLayer(name, referenceFrame, filename, color, beginDate, endDate, fadeType, fadeRange);
                             if (id != Guid.Empty)
                             {
-                                data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><NewLayerID>{0}</NewLayerID></LayerApi>", id.ToString());
+                                data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><NewLayerID>{0}</NewLayerID></LayerApi>", id);
                             }
                             else
                             {
@@ -505,8 +499,8 @@ namespace TerraViewer
 
                     case "new":
                         {
-                            Guid id = LayerManager.CreateLayerFromString(body, name, referenceFrame, false, color, beginDate, endDate, fadeType, fadeRange);
-                            data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><NewLayerID>{0}</NewLayerID></LayerApi>", id.ToString());
+                            var id = LayerManager.CreateLayerFromString(body, name, referenceFrame, false, color, beginDate, endDate, fadeType, fadeRange);
+                            data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><NewLayerID>{0}</NewLayerID></LayerApi>", id);
                         }
                         break;
                     case "get":
@@ -656,7 +650,7 @@ namespace TerraViewer
                             if (layerID != Guid.Empty)
                             {
                                 Layer layer = null;
-                                string val = LayerManager.GetLayerPropByID(layerID, propName, out layer);
+                                var val = LayerManager.GetLayerPropByID(layerID, propName, out layer);
                                 if (!string.IsNullOrEmpty(val))
                                 {
 
@@ -670,7 +664,7 @@ namespace TerraViewer
                             else
                             {
                                 ReferenceFrame frame = null;
-                                string val = LayerManager.GetFramePropByName(referenceFrame, propName, out frame);
+                                var val = LayerManager.GetFramePropByName(referenceFrame, propName, out frame);
                                 if (!string.IsNullOrEmpty(val))
                                 {
                                     data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><Frame {0}=\"{1}\"></Frame></LayerApi>", propName, val);
@@ -733,22 +727,22 @@ namespace TerraViewer
                         break;
                     case "state":
                         {
-                            CameraParameters cam = Earth3d.MainWindow.viewCamera;
+                            var cam = Earth3d.MainWindow.viewCamera;
                             if (Earth3d.MainWindow.Space)
                             {
                                 data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><ViewState lookat=\"{7}\" ra=\"{0}\" dec=\"{1}\" zoom=\"{2}\" rotation=\"{4}\" time=\"{5}\" timerate=\"{6}\" ReferenceFrame=\"Sky\" ViewToken=\"SD8834DFA\" ZoomText=\"{8}\"></ViewState></LayerApi>",
-                                    cam.RA, cam.Dec, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.contextPanel.ViewLabelText);
+                                    cam.RA, cam.Dec, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now, SpaceTimeController.TimeRate, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.contextPanel.ViewLabelText);
                             }
                             else
                             {
                                 data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><ViewState lookat=\"{7}\" lat=\"{0}\" lng=\"{1}\" zoom=\"{2}\" angle=\"{3}\" rotation=\"{4}\" time=\"{5}\" timerate=\"{6}\" ReferenceFrame=\"{8}\" ViewToken=\"{10}\" ZoomText=\"{9}\"></ViewState></LayerApi>",
-                                    cam.Lat, cam.Lng, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.FocusReferenceFrame(), Earth3d.MainWindow.contextPanel.ViewLabelText, Earth3d.MainWindow.viewCamera.ToToken());
+                                    cam.Lat, cam.Lng, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now, SpaceTimeController.TimeRate, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.FocusReferenceFrame(), Earth3d.MainWindow.contextPanel.ViewLabelText, Earth3d.MainWindow.viewCamera.ToToken());
                             }
                         }
                         break;
                     case "mode":
                         {
-                            ImageSetType lookAt = (ImageSetType)Enum.Parse(typeof(ImageSetType), lookat);
+                            var lookAt = (ImageSetType)Enum.Parse(typeof(ImageSetType), lookat);
                             Earth3d.MainWindow.contextPanel.SetLookAtTarget(lookAt);
 
                             data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status></LayerApi>";
@@ -822,11 +816,11 @@ namespace TerraViewer
                             data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status></LayerApi>";
                             if (move.ToLower().StartsWith("reticle"))
                             {
-                                string[] parts = move.Split(new char[] { ':' });
+                                var parts = move.Split(new[] { ':' });
                                 if (parts.Length > 1)
                                 {
-                                    int id = int.Parse(parts[1]);
-                                    Coordinates result = Earth3d.MainWindow.GetCoordinatesForReticle(id);
+                                    var id = int.Parse(parts[1]);
+                                    var result = Earth3d.MainWindow.GetCoordinatesForReticle(id);
 
                                     if (Earth3d.MainWindow.SolarSystemMode)
                                     {
@@ -835,11 +829,11 @@ namespace TerraViewer
                                     else
                                     {
                                         CameraParameters cameraParams;
-                                        double lat = result.Lat;
-                                        double lng = result.Lng;
-                                        double zoom = Convert.ToDouble(Earth3d.MainWindow.ZoomFactor);
-                                        double rotation = Convert.ToDouble(Earth3d.MainWindow.CameraRotate);
-                                        double angle = Convert.ToDouble(Earth3d.MainWindow.CameraAngle);
+                                        var lat = result.Lat;
+                                        var lng = result.Lng;
+                                        var zoom = Convert.ToDouble(Earth3d.MainWindow.ZoomFactor);
+                                        var rotation = Convert.ToDouble(Earth3d.MainWindow.CameraRotate);
+                                        var angle = Convert.ToDouble(Earth3d.MainWindow.CameraAngle);
                                         cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
                                         if (Earth3d.MainWindow.Space)
                                         {
@@ -926,20 +920,20 @@ namespace TerraViewer
                         break;
                     case "getelevation":
                         {
-                            string[] parts = coordinates.Split(new char[] { ',' });
-                            StringBuilder sb = new StringBuilder();
+                            var parts = coordinates.Split(new[] { ',' });
+                            var sb = new StringBuilder();
                             sb.Append("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><Elevations>");
                             try
                             {
-                                foreach (string part in parts)
+                                foreach (var part in parts)
                                 {
-                                    string[] latLng = part.Split(new char[] { ' ' });
+                                    var latLng = part.Split(new[] { ' ' });
                                     if (latLng.Length > 1)
                                     {
 
-                                        double lat = double.Parse(latLng[0]);
-                                        double lng = double.Parse(latLng[1]);
-                                        double alt = Earth3d.MainWindow.GetAltitudeForLatLong(lat, lng) - EGM96Geoid.Height(lat, lng);
+                                        var lat = double.Parse(latLng[0]);
+                                        var lng = double.Parse(latLng[1]);
+                                        var alt = Earth3d.MainWindow.GetAltitudeForLatLong(lat, lng) - EGM96Geoid.Height(lat, lng);
                                         sb.Append(string.Format("<Coordinates Lat=\"{0}\" Lng=\"{1}\" Altitude=\"{2}\" />", lat, lng, alt));
 
                                     }
@@ -962,7 +956,7 @@ namespace TerraViewer
 
             if (!string.IsNullOrEmpty(flyTo))
             {
-                string[] lines = flyTo.Split(new char[] { ',' });
+                var lines = flyTo.Split(new[] { ',' });
                 if (lines.Length == 1)
                 {
                     MethodInvoker doIt = delegate
@@ -988,11 +982,11 @@ namespace TerraViewer
                 if (lines.Length == 5 )
                 {
                     CameraParameters cameraParams;
-                    double lat = Convert.ToDouble(lines[0]);
-                    double lng = Convert.ToDouble(lines[1]);
-                    double zoom = Convert.ToDouble(lines[2]);
-                    double rotation = Convert.ToDouble(lines[3]);
-                    double angle = Convert.ToDouble(lines[4]);
+                    var lat = Convert.ToDouble(lines[0]);
+                    var lng = Convert.ToDouble(lines[1]);
+                    var zoom = Convert.ToDouble(lines[2]);
+                    var rotation = Convert.ToDouble(lines[3]);
+                    var angle = Convert.ToDouble(lines[4]);
                     cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
                     if (Earth3d.MainWindow.Space)
                     {
@@ -1024,15 +1018,15 @@ namespace TerraViewer
                 if (lines.Length > 5)
                 {
                     CameraParameters cameraParams;
-                    double lat = Convert.ToDouble(lines[0]);
-                    double lng = Convert.ToDouble(lines[1]);
-                    double zoom = Convert.ToDouble(lines[2]);
-                    double rotation = Convert.ToDouble(lines[3]);
-                    double angle = Convert.ToDouble(lines[4]);
-                    string frame = lines[5];
-                    string token = "";
+                    var lat = Convert.ToDouble(lines[0]);
+                    var lng = Convert.ToDouble(lines[1]);
+                    var zoom = Convert.ToDouble(lines[2]);
+                    var rotation = Convert.ToDouble(lines[3]);
+                    var angle = Convert.ToDouble(lines[4]);
+                    var frame = lines[5];
+                    var token = "";
                     cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
-                    bool done = false;
+                    var done = false;
                     if (frame == "Sky")
                     {
                         cameraParams.RA = Convert.ToDouble(lines[1]);
@@ -1100,7 +1094,7 @@ namespace TerraViewer
                     }
                     if (!done)
                     {
-                        TourPlace pl = new TourPlace(frame, 0, 0, Classification.SolarSystem, "UMA", Earth3d.MainWindow.CurrentImageSet.DataSetType == ImageSetType.SolarSystem ? ImageSetType.Sky : Earth3d.MainWindow.CurrentImageSet.DataSetType, zoom);
+                        var pl = new TourPlace(frame, 0, 0, Classification.SolarSystem, "UMA", Earth3d.MainWindow.CurrentImageSet.DataSetType == ImageSetType.SolarSystem ? ImageSetType.Sky : Earth3d.MainWindow.CurrentImageSet.DataSetType, zoom);
                         if (lines.Length > 6)
                         {
                             token = lines[6];
@@ -1151,12 +1145,12 @@ namespace TerraViewer
             try
             {
 
-                bool safeToSet = SettingsList.ContainsKey(name);
+                var safeToSet = SettingsList.ContainsKey(name);
 
                 if (safeToSet)
                 {
-                    Type thisType = Properties.Settings.Default.GetType();
-                    PropertyInfo pi = thisType.GetProperty(name);
+                    var thisType = Properties.Settings.Default.GetType();
+                    var pi = thisType.GetProperty(name);
                     if (pi.PropertyType.BaseType == typeof(Enum))
                     {
                         pi.SetValue(Properties.Settings.Default, Enum.Parse(pi.PropertyType, value), null);
@@ -1171,7 +1165,7 @@ namespace TerraViewer
                         {
                             
 
-                            BlendState blendState = Properties.Settings.Default[name] as BlendState;
+                            var blendState = Properties.Settings.Default[name] as BlendState;
                             if (blendState != null)
                             {
                                 if (value.ToLower() == "true" || value.ToLower() == "false")
@@ -1180,7 +1174,7 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    float val = float.Parse(value);
+                                    var val = float.Parse(value);
                                     blendState.Opacity = val;
                                 }
                             }
@@ -1193,7 +1187,7 @@ namespace TerraViewer
                     {
                         try
                         {
-                            ConstellationFilter filter = Properties.Settings.Default[name] as ConstellationFilter;
+                            var filter = Properties.Settings.Default[name] as ConstellationFilter;
                             if (filter != null)
                             {
                                 filter.Clone(ConstellationFilter.Families[value]);
@@ -1225,12 +1219,12 @@ namespace TerraViewer
         {
             try
             {
-                bool safeToSet = SettingsList.ContainsKey(name);
+                var safeToSet = SettingsList.ContainsKey(name);
 
                 if (safeToSet)
                 {
-                    Type thisType = Properties.Settings.Default.GetType();
-                    PropertyInfo pi = thisType.GetProperty(name);
+                    var thisType = Properties.Settings.Default.GetType();
+                    var pi = thisType.GetProperty(name);
                     
                     return pi.GetValue(Properties.Settings.Default, null);
                 }
@@ -1244,24 +1238,24 @@ namespace TerraViewer
 
         public static bool ToggleSetting(string name)
         {
-            bool status = false;
+            var status = false;
             try
             {
-                bool safeToSet = SettingsList.ContainsKey(name);
+                var safeToSet = SettingsList.ContainsKey(name);
 
                 if (safeToSet)
                 {
-                    Type thisType = Properties.Settings.Default.GetType();
-                    PropertyInfo pi = thisType.GetProperty(name);
+                    var thisType = Properties.Settings.Default.GetType();
+                    var pi = thisType.GetProperty(name);
                     if (pi.PropertyType == typeof(bool))
                     {
-                        Boolean val = (bool)pi.GetValue(Properties.Settings.Default, null);
-                        pi.SetValue(Properties.Settings.Default, (Boolean)(!val), null);
+                        var val = (bool)pi.GetValue(Properties.Settings.Default, null);
+                        pi.SetValue(Properties.Settings.Default, !val, null);
                         status = !val;
                     }
                     else if (pi.PropertyType == typeof(BlendState))
                     {
-                        BlendState bval = (BlendState)pi.GetValue(Properties.Settings.Default, null);
+                        var bval = (BlendState)pi.GetValue(Properties.Settings.Default, null);
                         bval.TargetState = !bval.TargetState;
                         status = bval.TargetState;
                     }
@@ -1282,12 +1276,12 @@ namespace TerraViewer
 
         public static string[] GetBoolSettings()
         {
-            List<string> boolSettings = new List<string>();
+            var boolSettings = new List<string>();
 
-            foreach (string setting in SettingsList.Keys)
+            foreach (var setting in SettingsList.Keys)
             {
-                Type thisType = Properties.Settings.Default.GetType();
-                PropertyInfo pi = thisType.GetProperty(setting);
+                var thisType = Properties.Settings.Default.GetType();
+                var pi = thisType.GetProperty(setting);
                 if (pi.PropertyType == typeof(bool))
                 {
                     boolSettings.Add(setting);
@@ -1298,9 +1292,9 @@ namespace TerraViewer
 
         public static ScriptableProperty[] GetSettingsList()
         {
-            List<ScriptableProperty> settingsList = new List<ScriptableProperty>();
+            var settingsList = new List<ScriptableProperty>();
 
-            foreach (ScriptableProperty setting in SettingsList.Values)
+            foreach (var setting in SettingsList.Values)
             {
                 settingsList.Add(setting);
             }
@@ -1309,12 +1303,12 @@ namespace TerraViewer
 
         public static string[] GetSettingsByType(Type type)
         {
-            List<string> SettingsByType = new List<string>();
+            var SettingsByType = new List<string>();
 
-            foreach (string setting in SettingsList.Keys)
+            foreach (var setting in SettingsList.Keys)
             {
-                Type thisType = Properties.Settings.Default.GetType();
-                PropertyInfo pi = thisType.GetProperty(setting);
+                var thisType = Properties.Settings.Default.GetType();
+                var pi = thisType.GetProperty(setting);
                 if (pi.PropertyType == type)
                 {
                     SettingsByType.Add(setting);

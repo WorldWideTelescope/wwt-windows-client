@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 namespace TerraViewer
@@ -7,7 +8,7 @@ namespace TerraViewer
     {
         public static WcsImage FromFile(string fileName)
         {
-            string extension = Path.GetExtension(fileName);
+            var extension = Path.GetExtension(fileName);
 
             switch (extension.ToLower())
             {
@@ -37,7 +38,7 @@ namespace TerraViewer
             set { creditsUrl = value; }
         }
 
-        private bool validWcs = false;
+        private bool validWcs;
 
         public bool ValidWcs
         {
@@ -188,7 +189,7 @@ namespace TerraViewer
         protected void CalculateRotationFromCD()
         {
             double sign = Math.Sign(cd1_1 * cd2_2 - cd1_2 * cd2_1);
-            double rot2 = Math.Atan2((-sign * cd1_2), cd2_2);
+            var rot2 = Math.Atan2((-sign * cd1_2), cd2_2);
 
             rotation = rot2 / Math.PI * 180;
         }
@@ -200,16 +201,16 @@ namespace TerraViewer
             set { filename = value; }
         }
 
-        private System.Drawing.Color color = System.Drawing.Color.White;
+        private Color color = Color.White;
 
-        public System.Drawing.Color Color
+        public Color Color
         {
             get { return color; }
             set { color = value; }
         }
 
 
-        private bool colorCombine = false;
+        private bool colorCombine;
 
         public bool ColorCombine
         {
@@ -218,6 +219,6 @@ namespace TerraViewer
         }
 
 
-        abstract public System.Drawing.Bitmap GetBitmap();
+        abstract public Bitmap GetBitmap();
     }
 }

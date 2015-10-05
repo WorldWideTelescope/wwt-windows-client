@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -20,53 +21,53 @@ namespace TerraViewer.Callibration
 
         private void SetUiStrings()
         {
-            this.AddProjector.Text = Language.GetLocalizedText(166, "Add");
-            this.EditProjector.Text = Language.GetLocalizedText(502, "Edit");
-            this.DeleteProjector.Text = Language.GetLocalizedText(167, "Delete");
-            this.label1.Text = Language.GetLocalizedText(701, "Projectors");
-            this.label2.Text = Language.GetLocalizedText(702, "Points");
-            this.PointWeightLabel.Text = Language.GetLocalizedText(703, "Point Weight");
-            this.addToolStripMenuItem.Text = Language.GetLocalizedText(166, "Add");
-            this.deleteToolStripMenuItem.Text = Language.GetLocalizedText(167, "Delete");
-            this.transferFromEdgesToolStripMenuItem.Text = Language.GetLocalizedText(700, "Transfer from Edges");
-            this.moveUpToolStripMenuItem.Text = Language.GetLocalizedText(685, "Move Up");
-            this.moveDownToolStripMenuItem.Text = Language.GetLocalizedText(686, "Move Down");
-            this.blendPointToolStripMenuItem.Text = Language.GetLocalizedText(704, "Blend Point");
-            this.propertiesToolStripMenuItem.Text = Language.GetLocalizedText(20, "Properties");
-            this.label6.Text = Language.GetLocalizedText(705, "Iterations");
-            this.label4.Text = Language.GetLocalizedText(706, "Blur Size");
-            this.MakeBlendMap.Text = Language.GetLocalizedText(707, "Make Blend Maps");
-            this.solveZ.Text = Language.GetLocalizedText(708, "Solve Z");
-            this.solveY.Text = Language.GetLocalizedText(709, "Solve Y");
-            this.solveX.Text = Language.GetLocalizedText(710, "Solve X");
-            this.solveRoll.Text = Language.GetLocalizedText(711, "Solve Roll");
-            this.solveHeading.Text = Language.GetLocalizedText(712, "Solve Heading");
-            this.solvePitch.Text = Language.GetLocalizedText(713, "Solve Pitch");
-            this.solveAspect.Text = Language.GetLocalizedText(714, "Solve Aspect");
-            this.solveFOV.Text = Language.GetLocalizedText(715, "Solve Fov");
-            this.UseRadial.Text = Language.GetLocalizedText(716, "Solve Radial Distortion");
-            this.MakeWarpMaps.Text = Language.GetLocalizedText(717, "Make Warp Maps");
-            this.useConstraints.Text = Language.GetLocalizedText(718, "Use Constraints");
-            this.errorLabel.Text = Language.GetLocalizedText(719, "Average Error");
-            this.SolveDistortion.Text = Language.GetLocalizedText(720, "Solve Alignment");
-            this.label7.Text = Language.GetLocalizedText(721, "Screen Type");
-            this.wwtButton1.Text = Language.GetLocalizedText(722, "Software Update");
-            this.SendNewMaps.Text = Language.GetLocalizedText(723, "Send New Maps");
-            this.label5.Text = Language.GetLocalizedText(724, "Tilt");
-            this.label3.Text = Language.GetLocalizedText(725, "Screen Radius");
-            this.ShowOutlines.Text = Language.GetLocalizedText(726, "Outlines");
-            this.blackBackground.Text = Language.GetLocalizedText(727, "Black Background");
-            this.showGrid.Text = Language.GetLocalizedText(728, "Dome Grid");
-            this.showProjectorUI.Text = Language.GetLocalizedText(729, "Calibratis");
-            this.Save.Text = Language.GetLocalizedText(168, "Save");
-            this.LoadConfig.Text = Language.GetLocalizedText(730, "Load");
-            this.label8.Text = Language.GetLocalizedText(731, "Color Correction");
-            this.label9.Text = Language.GetLocalizedText(732, "Red");
-            this.label10.Text = Language.GetLocalizedText(733, "Green");
-            this.label11.Text = Language.GetLocalizedText(734, "Blue");
-            this.Text = Language.GetLocalizedText(669, "Multi-Channel Calibration");
-            this.Align.Title = Language.GetLocalizedText(790, "Align");
-            this.Blend.Title = Language.GetLocalizedText(791, "Blend");
+            AddProjector.Text = Language.GetLocalizedText(166, "Add");
+            EditProjector.Text = Language.GetLocalizedText(502, "Edit");
+            DeleteProjector.Text = Language.GetLocalizedText(167, "Delete");
+            label1.Text = Language.GetLocalizedText(701, "Projectors");
+            label2.Text = Language.GetLocalizedText(702, "Points");
+            PointWeightLabel.Text = Language.GetLocalizedText(703, "Point Weight");
+            addToolStripMenuItem.Text = Language.GetLocalizedText(166, "Add");
+            deleteToolStripMenuItem.Text = Language.GetLocalizedText(167, "Delete");
+            transferFromEdgesToolStripMenuItem.Text = Language.GetLocalizedText(700, "Transfer from Edges");
+            moveUpToolStripMenuItem.Text = Language.GetLocalizedText(685, "Move Up");
+            moveDownToolStripMenuItem.Text = Language.GetLocalizedText(686, "Move Down");
+            blendPointToolStripMenuItem.Text = Language.GetLocalizedText(704, "Blend Point");
+            propertiesToolStripMenuItem.Text = Language.GetLocalizedText(20, "Properties");
+            label6.Text = Language.GetLocalizedText(705, "Iterations");
+            label4.Text = Language.GetLocalizedText(706, "Blur Size");
+            MakeBlendMap.Text = Language.GetLocalizedText(707, "Make Blend Maps");
+            solveZ.Text = Language.GetLocalizedText(708, "Solve Z");
+            solveY.Text = Language.GetLocalizedText(709, "Solve Y");
+            solveX.Text = Language.GetLocalizedText(710, "Solve X");
+            solveRoll.Text = Language.GetLocalizedText(711, "Solve Roll");
+            solveHeading.Text = Language.GetLocalizedText(712, "Solve Heading");
+            solvePitch.Text = Language.GetLocalizedText(713, "Solve Pitch");
+            solveAspect.Text = Language.GetLocalizedText(714, "Solve Aspect");
+            solveFOV.Text = Language.GetLocalizedText(715, "Solve Fov");
+            UseRadial.Text = Language.GetLocalizedText(716, "Solve Radial Distortion");
+            MakeWarpMaps.Text = Language.GetLocalizedText(717, "Make Warp Maps");
+            useConstraints.Text = Language.GetLocalizedText(718, "Use Constraints");
+            errorLabel.Text = Language.GetLocalizedText(719, "Average Error");
+            SolveDistortion.Text = Language.GetLocalizedText(720, "Solve Alignment");
+            label7.Text = Language.GetLocalizedText(721, "Screen Type");
+            wwtButton1.Text = Language.GetLocalizedText(722, "Software Update");
+            SendNewMaps.Text = Language.GetLocalizedText(723, "Send New Maps");
+            label5.Text = Language.GetLocalizedText(724, "Tilt");
+            label3.Text = Language.GetLocalizedText(725, "Screen Radius");
+            ShowOutlines.Text = Language.GetLocalizedText(726, "Outlines");
+            blackBackground.Text = Language.GetLocalizedText(727, "Black Background");
+            showGrid.Text = Language.GetLocalizedText(728, "Dome Grid");
+            showProjectorUI.Text = Language.GetLocalizedText(729, "Calibratis");
+            Save.Text = Language.GetLocalizedText(168, "Save");
+            LoadConfig.Text = Language.GetLocalizedText(730, "Load");
+            label8.Text = Language.GetLocalizedText(731, "Color Correction");
+            label9.Text = Language.GetLocalizedText(732, "Red");
+            label10.Text = Language.GetLocalizedText(733, "Green");
+            label11.Text = Language.GetLocalizedText(734, "Blue");
+            Text = Language.GetLocalizedText(669, "Multi-Channel Calibration");
+            Align.Title = Language.GetLocalizedText(790, "Align");
+            Blend.Title = Language.GetLocalizedText(791, "Blend");
 
 
 
@@ -77,8 +78,8 @@ namespace TerraViewer.Callibration
 
         public static void SendViewConfig(int projectorID, ProjectorEntry pe, double domeTilt)
         {
-            string command = string.Format("CONFIG,{0},{1},{2},{3},{4},{5},{6},{7},{8}",
-                Earth3d.MainWindow.Config.ClusterID.ToString(),
+            var command = string.Format("CONFIG,{0},{1},{2},{3},{4},{5},{6},{7},{8}",
+                Earth3d.MainWindow.Config.ClusterID,
                 pe.ID,
                 pe.ViewTransform.Heading,
                 pe.ViewTransform.Pitch,
@@ -93,25 +94,17 @@ namespace TerraViewer.Callibration
 
         private void AddProjector_Click(object sender, EventArgs e)
         {
-            int maxID = -1;
+            var maxID = CalibrationInfo.Projectors.Select(p => p.ID).Concat(new[] {-1}).Max();
 
-            foreach (ProjectorEntry p in CalibrationInfo.Projectors)
-            {
-                if (p.ID > maxID)
-                {
-                    maxID = p.ID;
-                }
-            }
             maxID++;
 
             
-            ProjectorProperties projProps = new ProjectorProperties();
-            ProjectorEntry pe = new ProjectorEntry();
-            pe.ID = maxID;
+            var projProps = new ProjectorProperties();
+            var pe = new ProjectorEntry {ID = maxID};
             projProps.Projector = pe;
             projProps.CalibrationInfo = CalibrationInfo;
             projProps.AddMode = true;
-            bool allGood = false;
+            var allGood = false;
 
             while (!allGood)
             {
@@ -126,7 +119,6 @@ namespace TerraViewer.Callibration
                     else
                     {
                         UiTools.ShowMessageBox(Language.GetLocalizedText(696, "That ID currently exists. Please choose a unique ID"));
-                        allGood = false;
                     }
                 }
                 else
@@ -140,16 +132,16 @@ namespace TerraViewer.Callibration
 
         private void DeleteProjector_Click(object sender, EventArgs e)
         {
-            ProjectorEntry pe = ProjectorList.SelectedItem as ProjectorEntry;
+            var pe = ProjectorList.SelectedItem as ProjectorEntry;
 
             if (pe == null)
             {
                 return;
             }
 
-            for (int i = CalibrationInfo.Edges.Count-1; i > -1;  i--)
+            for (var i = CalibrationInfo.Edges.Count-1; i > -1;  i--)
             {
-                Edge edge = CalibrationInfo.Edges[i];
+                var edge = CalibrationInfo.Edges[i];
                 if (edge.Left == pe.ID || edge.Right == pe.ID)
                 {
                     CalibrationInfo.Edges.RemoveAt(i);
@@ -161,14 +153,14 @@ namespace TerraViewer.Callibration
 
         void ReloadListBox()
         {
-            int currentIndex = ProjectorList.SelectedIndex;
+            var currentIndex = ProjectorList.SelectedIndex;
 
             screenType.Items.Clear();
             screenType.Items.AddRange(Enum.GetNames(typeof(ScreenTypes)));
             screenType.SelectedIndex = (int)CalibrationInfo.ScreenType;
             
             ProjectorList.Items.Clear();
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
                 ProjectorList.Items.Add(pe);
             }
@@ -179,12 +171,12 @@ namespace TerraViewer.Callibration
             }
 
             ReloadPointTree();
-            DomeRadius.Text = CalibrationInfo.DomeSize.ToString();
-            domeTilt.Text = CalibrationInfo.DomeTilt.ToString();
+            DomeRadius.Text = CalibrationInfo.DomeSize.ToString(CultureInfo.InvariantCulture);
+            domeTilt.Text = CalibrationInfo.DomeTilt.ToString(CultureInfo.InvariantCulture);
             BlurSize.Value = CalibrationInfo.BlendMarkBlurAmount / 2;
             BlurIterations.Value = CalibrationInfo.BlendMarkBlurIterations;
-            BlurSizeText.Text = CalibrationInfo.BlendMarkBlurAmount.ToString();
-            blurIterationsText.Text = CalibrationInfo.BlendMarkBlurIterations.ToString();
+            BlurSizeText.Text = CalibrationInfo.BlendMarkBlurAmount.ToString(CultureInfo.InvariantCulture);
+            blurIterationsText.Text = CalibrationInfo.BlendMarkBlurIterations.ToString(CultureInfo.InvariantCulture);
             useConstraints.Checked = CalibrationInfo.UseConstraints;
             UseRadial.Checked = CalibrationInfo.SolveRadialDistortion;
 
@@ -202,13 +194,14 @@ namespace TerraViewer.Callibration
 
         private void Load_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = Language.GetLocalizedText(1176, "WWT Calibration files (*.wtc)|*.wtc");
+            var ofd = new OpenFileDialog
+            {
+                Filter = Language.GetLocalizedText(1176, "WWT Calibration files (*.wtc)|*.wtc")
+            };
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                string fileName = ofd.FileName;
+                var fileName = ofd.FileName;
 
                 OpenConfigFile(fileName);
             }
@@ -218,8 +211,8 @@ namespace TerraViewer.Callibration
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(CalibrationInfo));
-                FileStream fs = new FileStream(fileName, FileMode.Open);
+                var serializer = new XmlSerializer(typeof(CalibrationInfo));
+                var fs = new FileStream(fileName, FileMode.Open);
 
                 CalibrationInfo = (CalibrationInfo)serializer.Deserialize(fs);
 
@@ -237,36 +230,21 @@ namespace TerraViewer.Callibration
         {
             
 
-            SaveFileDialog sfd = new SaveFileDialog();
-
-            sfd.Filter = Language.GetLocalizedText(1176, "WWT Calibration files (*.wtc)|*.wtc");
+            var sfd = new SaveFileDialog
+            {
+                Filter = Language.GetLocalizedText(1176, "WWT Calibration files (*.wtc)|*.wtc")
+            };
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(CalibrationInfo));
-                StreamWriter sw = new StreamWriter(sfd.FileName);
+                var serializer = new XmlSerializer(typeof(CalibrationInfo));
+                var sw = new StreamWriter(sfd.FileName);
 
                 Properties.Settings.Default.LastDomeConfigFile = sfd.FileName;
                 serializer.Serialize(sw, CalibrationInfo);
 
                 sw.Close();
             }
-        }
-
-        private void Show_Click(object sender, EventArgs e)
-        {
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
-            {
-                string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + pe.ID + ",METADATA," + pe.Name + "," + SavedColor.Save(Color.DarkGray) + ",True";
-                NetControl.SendCommand(command);
-            }
-        }
-
-        private void Hide_Click(object sender, EventArgs e)
-        {
-            string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1,CLOSE";
-            NetControl.SendCommand(command);
-
         }
 
         private void ProjectorList_DoubleClick(object sender, EventArgs e)
@@ -278,10 +256,8 @@ namespace TerraViewer.Callibration
         {
             if (ProjectorList.SelectedItem != null)
             {
-                ProjectorEntry pe = (ProjectorEntry)ProjectorList.SelectedItem;
-                ProjectorProperties projProps = new ProjectorProperties();
-                projProps.Projector = pe;
-                projProps.CalibrationInfo = CalibrationInfo;
+                var pe = (ProjectorEntry)ProjectorList.SelectedItem;
+                var projProps = new ProjectorProperties {Projector = pe, CalibrationInfo = CalibrationInfo};
                 if (projProps.ShowDialog() == DialogResult.OK)
                 {
                     ReloadListBox();
@@ -330,32 +306,32 @@ namespace TerraViewer.Callibration
             PointTree.Nodes.Clear();
             if (Align.Selected)
             {
-                TreeNode constraints = PointTree.Nodes.Add(Language.GetLocalizedText(736, "Constraints"));
+                var constraints = PointTree.Nodes.Add(Language.GetLocalizedText(736, "Constraints"));
                 // First all the Constraints
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
-                    TreeNode node = constraints.Nodes.Add(pe.Name);
+                    var node = constraints.Nodes.Add(pe.Name);
                     node.Tag = pe;
                     // First all the Constraints
 
-                    foreach (GroundTruthPoint pnt in pe.Constraints)
+                    foreach (var pnt in pe.Constraints)
                     {
-                        TreeNode pntNode = node.Nodes.Add(pnt.ToString());
+                        var pntNode = node.Nodes.Add(pnt.ToString());
                         pntNode.Tag = pnt;
                     }
 
                 }
                 constraints.Expand();
                 // Not the Edges
-                TreeNode edges = PointTree.Nodes.Add(Language.GetLocalizedText(737, "Edges"));
+                var edges = PointTree.Nodes.Add(Language.GetLocalizedText(737, "Edges"));
                 // First all the Constraints
-                foreach (Edge edge in CalibrationInfo.Edges)
+                foreach (var edge in CalibrationInfo.Edges)
                 {
-                    TreeNode node = edges.Nodes.Add(CalibrationInfo.GetEdgeDisplayName(edge));
+                    var node = edges.Nodes.Add(CalibrationInfo.GetEdgeDisplayName(edge));
                     node.Tag = edge;
-                    foreach (EdgePoint edgePoint in edge.Points)
+                    foreach (var edgePoint in edge.Points)
                     {
-                        TreeNode pntNode = node.Nodes.Add(edgePoint.ToString());
+                        var pntNode = node.Nodes.Add(edgePoint.ToString());
                         pntNode.Tag = edgePoint;
                     }
                 }
@@ -364,13 +340,13 @@ namespace TerraViewer.Callibration
             else
             {
                 // First all the Constraints
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
-                    TreeNode node = PointTree.Nodes.Add(pe.Name);
+                    var node = PointTree.Nodes.Add(pe.Name);
                     node.Tag = pe;
-                    foreach (BlendPoint bp in pe.BlendPolygon)
+                    foreach (var bp in pe.BlendPolygon)
                     {
-                        TreeNode pntNode = node.Nodes.Add(bp.ToString());
+                        var pntNode = node.Nodes.Add(bp.ToString());
                         pntNode.Tag = bp;
                     }
                 }
@@ -392,11 +368,11 @@ namespace TerraViewer.Callibration
             {
                 return CalibrationInfo.ProjLookup[nodeID].Name;
             }
-            return "Node " + nodeID.ToString();
+            return "Node " + nodeID;
         }
 
-        List<RectangleF> regions = new List<RectangleF>();
-        List<Rectangle> regionRects = new List<Rectangle>();
+        readonly List<RectangleF> regions = new List<RectangleF>();
+        readonly List<Rectangle> regionRects = new List<Rectangle>();
 
         Brush leftBrush;
         Brush rightBrush;
@@ -408,11 +384,9 @@ namespace TerraViewer.Callibration
             MakeRegions();
 
             
-            for (int i = 1; i < 7; i++)
+            for (var i = 1; i < 7; i++)
             {
-                ProjectorEntry pe = new ProjectorEntry();
-                pe.Name = "Projector " + i.ToString();
-                pe.ID = i;
+                var pe = new ProjectorEntry {Name = "Projector " + i, ID = i};
 
                 CalibrationInfo.Projectors.Add(pe);
                 CalibrationInfo.ProjLookup.Add(pe.ID, pe);
@@ -464,49 +438,27 @@ namespace TerraViewer.Callibration
         PointF center;
         float radius = 1;
 
-        PointF GetAltAzFromPoint(PointF point)
-        {
-            double alt = 0;
-            double az = 0;
-
-            double x = point.X - center.X;
-            double y = point.Y - center.Y;
-            double dist = Math.Sqrt(x*x + y*y);
-
-            alt = 90 - Math.Min(1, dist / radius) * 90;
-            az = ((Math.Atan2(y, x) / Math.PI * 180)+630)%360;
-            return new PointF((float)az, (float)alt);
-        }
-
         PointF GetPointFromAltAz(PointF point)
         {
-            PointF retPoint = new PointF();
+            var retPoint = new PointF();
             point.X += 90;
             retPoint.X = center.X  + (float)Math.Cos(point.X / 180 * Math.PI) * ((90-point.Y) / 90) * radius;
             retPoint.Y = center.Y + (float)Math.Sin(point.X / 180 * Math.PI) * ((90-point.Y) / 90) * radius;
             return retPoint;
         }
 
-        PointF GetPointFromXYZ(Vector3d point)
-        {
-            PointF retPoint = new PointF();
-            retPoint.X = (float)(center.X + (point.X / CalibrationInfo.DomeSize) * radius);
-            retPoint.Y = (float)(center.Y + (-point.Z / CalibrationInfo.DomeSize) * radius);
-            return retPoint;
-        }
-
         private void MakeRegionRects()
         {
             regionRects.Clear();
-            Rectangle rectClient = MousePad.ClientRectangle;
+            var rectClient = MousePad.ClientRectangle;
 
-            float min = (float)Math.Min(rectClient.Width, rectClient.Height);
+            float min = Math.Min(rectClient.Width, rectClient.Height);
             radius = (min / 2)*.95f;
-            center = new PointF(rectClient.Width / 2, rectClient.Height / 2);
-            float left = center.X - min/2;
-            float top = center.Y - min/2;
+            center = new PointF(rectClient.Width / 2F, rectClient.Height / 2F);
+            var left = center.X - min/2;
+            var top = center.Y - min/2;
 
-            foreach (RectangleF rectIn in regions)
+            foreach (var rectIn in regions)
             {
                 regionRects.Add(new Rectangle((int)(left + min * rectIn.Left), (int)(top + min * rectIn.Top), (int)(rectIn.Width * min), (int)(rectIn.Height * min)));
             }
@@ -516,11 +468,11 @@ namespace TerraViewer.Callibration
         {
             if (regionRects.Count > 5)
             {
-                for (int i = 1; i < 7; i++)
+                for (var i = 1; i < 7; i++)
                 {
                     RectangleF rect = regionRects[i - 1];
 
-                    Brush textBrush = UiTools.StadardTextBrush;
+                    var textBrush = UiTools.StadardTextBrush;
                     if (i == leftNode)
                     {
                         textBrush = leftBrush;
@@ -539,48 +491,48 @@ namespace TerraViewer.Callibration
             }
             if (Align.Selected)
             {
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
-                    SolveProjector sp = GetSolveProjector(pe.ID);
-                    foreach (GroundTruthPoint gt in pe.Constraints)
+                    var sp = GetSolveProjector(pe.ID);
+                    foreach (var gt in pe.Constraints)
                     {
-                        int size = 2;
+                        var size = 2;
                         if (gt == tag)
                         {
                             size = 8;
                         }
-                        Vector2d pntAltAz = sp.GetCoordinatesForScreenPoint(gt.X, gt.Y);
-                        PointF pnt = GetPointFromAltAz(new PointF((float)pntAltAz.X + 90, (float)pntAltAz.Y));
+                        var pntAltAz = sp.GetCoordinatesForScreenPoint(gt.X, gt.Y);
+                        var pnt = GetPointFromAltAz(new PointF((float)pntAltAz.X + 90, (float)pntAltAz.Y));
                         e.Graphics.DrawLine(Pens.Blue, PointF.Add(pnt, new Size(-size, 0)), PointF.Add(pnt, new Size(size, 0)));
                         e.Graphics.DrawLine(Pens.Blue, PointF.Add(pnt, new Size(0, -size)), PointF.Add(pnt, new Size(0, size)));
                     }
                 }
-                foreach (Edge edge in CalibrationInfo.Edges)
+                foreach (var edge in CalibrationInfo.Edges)
                 {
-                    SolveProjector left = GetSolveProjector(edge.Left);
-                    SolveProjector right = GetSolveProjector(edge.Right);
+                    var left = GetSolveProjector(edge.Left);
+                    var right = GetSolveProjector(edge.Right);
 
-                    foreach (EdgePoint ep in edge.Points)
+                    foreach (var ep in edge.Points)
                     {
                         {
-                            int size = 2;
+                            var size = 2;
                             if (ep == tag)
                             {
                                 size = 8;
                             }
-                            Vector2d pntLeft = left.GetCoordinatesForScreenPoint(ep.Left.X, ep.Left.Y);
-                            PointF pnt = GetPointFromAltAz(new PointF((float)pntLeft.X + 90, (float)pntLeft.Y));
+                            var pntLeft = left.GetCoordinatesForScreenPoint(ep.Left.X, ep.Left.Y);
+                            var pnt = GetPointFromAltAz(new PointF((float)pntLeft.X + 90, (float)pntLeft.Y));
                             e.Graphics.DrawLine(Pens.Red, PointF.Add(pnt, new Size(-size, 0)), PointF.Add(pnt, new Size(size, 0)));
                             e.Graphics.DrawLine(Pens.Red, PointF.Add(pnt, new Size(0, -size)), PointF.Add(pnt, new Size(0, size)));
                         }
                         {
-                            int size = 2;
+                            var size = 2;
                             if (ep == tag)
                             {
                                 size = 8;
                             }
-                            Vector2d pntRight = right.GetCoordinatesForScreenPoint(ep.Right.X, ep.Right.Y);
-                            PointF pnt = GetPointFromAltAz(new PointF((float)pntRight.X + 90, (float)pntRight.Y));
+                            var pntRight = right.GetCoordinatesForScreenPoint(ep.Right.X, ep.Right.Y);
+                            var pnt = GetPointFromAltAz(new PointF((float)pntRight.X + 90, (float)pntRight.Y));
                             e.Graphics.DrawLine(Pens.Green, PointF.Add(pnt, new Size(-size, 0)), PointF.Add(pnt, new Size(size, 0)));
                             e.Graphics.DrawLine(Pens.Green, PointF.Add(pnt, new Size(0, -size)), PointF.Add(pnt, new Size(0, size)));
                         }
@@ -589,15 +541,15 @@ namespace TerraViewer.Callibration
             }
             else
             {
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
-                    SolveProjector sp = GetSolveProjector(pe.ID);
+                    var sp = GetSolveProjector(pe.ID);
 
-                    List<PointF> points = new List<PointF>();
-                    List<PointF> polyPoints = new List<PointF>();
-                    int selected = -1;
-                    int index = 0;
-                    foreach (BlendPoint bp in pe.BlendPolygon)
+                    var points = new List<PointF>();
+                    var polyPoints = new List<PointF>();
+                    var selected = -1;
+                    var index = 0;
+                    foreach (var bp in pe.BlendPolygon)
                     {
                         if (bp == tag)
                         {
@@ -605,8 +557,8 @@ namespace TerraViewer.Callibration
                         }
                         index++;
                         polyPoints.Add(new PointF((float)bp.X, (float)bp.Y));
-                        Vector2d pntAltAz = sp.GetCoordinatesForScreenPoint(bp.X, bp.Y);
-                        PointF pnt = GetPointFromAltAz(new PointF((float)pntAltAz.X + 90, (float)pntAltAz.Y));
+                        var pntAltAz = sp.GetCoordinatesForScreenPoint(bp.X, bp.Y);
+                        var pnt = GetPointFromAltAz(new PointF((float)pntAltAz.X + 90, (float)pntAltAz.Y));
                         points.Add(pnt);
 
                     }
@@ -615,25 +567,17 @@ namespace TerraViewer.Callibration
                     {
                         polyPoints = InterpolatePolygon(polyPoints);
 
-                        List<PointF> polyPointsScreenSpace = new List<PointF>();
-                        foreach (PointF polyPnt in polyPoints)
-                        {
-                            Vector2d pntAltAz = sp.GetCoordinatesForScreenPoint(polyPnt.X, polyPnt.Y);
-                            PointF pnt = GetPointFromAltAz(new PointF((float)pntAltAz.X + 90, (float)pntAltAz.Y));
-                            polyPointsScreenSpace.Add(pnt);
-                        }
+                        var white = new SolidBrush(Color.FromArgb(129, 255, 255, 255));
 
-                        SolidBrush white = new SolidBrush(Color.FromArgb(129, 255, 255, 255));
-
-                        e.Graphics.FillPolygon(white, polyPointsScreenSpace.ToArray());
+                        e.Graphics.FillPolygon(white, polyPoints.Select(polyPnt => sp.GetCoordinatesForScreenPoint(polyPnt.X, polyPnt.Y)).Select(pntAltAz => GetPointFromAltAz(new PointF((float) pntAltAz.X + 90, (float) pntAltAz.Y))).ToArray());
 
                         white.Dispose();
                     }
 
                     index = 0;
-                    foreach (PointF point in points)
+                    foreach (var point in points)
                     {
-                        int size = 2;
+                        var size = 2;
                         if (index == selected)
                         {
                             size = 8;
@@ -649,18 +593,18 @@ namespace TerraViewer.Callibration
 
         List<PointF> InterpolatePolygon( List<PointF> pointsIn)
         {
-            List<PointF> pointsOut = new List<PointF>();
+            var pointsOut = new List<PointF>();
 
-            PointF lastPoint = pointsIn[pointsIn.Count-1];
-            foreach (PointF point in pointsIn)
+            var lastPoint = pointsIn[pointsIn.Count-1];
+            foreach (var point in pointsIn)
             {
-                float distX = point.X - lastPoint.X;
-                float distY = point.Y - lastPoint.Y;
+                var distX = point.X - lastPoint.X;
+                var distY = point.Y - lastPoint.Y;
 
-                float distance = (float)Math.Sqrt(distX * distX + distY * distY);
-                int steps = (int)(distance / 10);
+                var distance = (float)Math.Sqrt(distX * distX + distY * distY);
+                var steps = (int)(distance / 10);
 
-                for (int i = 1; i < steps; i++)
+                for (var i = 1; i < steps; i++)
                 {
                     pointsOut.Add(new PointF(lastPoint.X + (distX / steps * i), lastPoint.Y + (distY / steps * i)));
                 }
@@ -680,16 +624,15 @@ namespace TerraViewer.Callibration
         {
             if (solveProjectors.Count == 0)
             {
-                ProjectorEntry pe = CalibrationInfo.Projectors.Find(delegate(ProjectorEntry p) { return p.ID == index; });
+                var pe = CalibrationInfo.Projectors.Find(p => p.ID == index);
 
-                SolveProjector sp = new SolveProjector(pe, CalibrationInfo.DomeSize, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, CalibrationInfo.ScreenType, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? SolveParameters.FishEye : SolveParameters.Default);
-                sp.RadialDistorion = CalibrationInfo.ScreenType == ScreenTypes.FishEye ? false : UseRadial.Checked;
+                var sp = new SolveProjector(pe, CalibrationInfo.DomeSize, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, CalibrationInfo.ScreenType, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? SolveParameters.FishEye : SolveParameters.Default)
+                {
+                    RadialDistorion = CalibrationInfo.ScreenType != ScreenTypes.FishEye && UseRadial.Checked
+                };
                 return sp;
             }
-            else
-            {
-                return solveProjectors[index-1];
-            }
+            return solveProjectors[index-1];
         }
 
         private void EditProjector_Click(object sender, EventArgs e)
@@ -702,19 +645,19 @@ namespace TerraViewer.Callibration
             showUI = showProjectorUI.Checked;
             if (!showUI)
             {
-                string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1,CLOSE";
+                var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + ",-1,CLOSE";
                 NetControl.SendCommand(command);
             }
         }
-        bool showUI = false;
+        bool showUI;
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (showUI)
             {
-                Color backgroundColor = blackBackground.Checked ? Color.Black : Color.DarkGray;
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                var backgroundColor = blackBackground.Checked ? Color.Black : Color.DarkGray;
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
-                    string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + pe.ID + ",METADATA," + pe.Name + "," + SavedColor.Save(backgroundColor) + "," + outline.ToString();
+                    var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + pe.ID + ",METADATA," + pe.Name + "," + SavedColor.Save(backgroundColor) + "," + outline;
                     NetControl.SendCommand(command);
                     if (Align.Selected)
                     {
@@ -747,7 +690,7 @@ namespace TerraViewer.Callibration
         {
 
         }
-        bool outline = false;
+        bool outline;
         private void ShowOutlines_CheckedChanged(object sender, EventArgs e)
         {
             outline = ShowOutlines.Checked;
@@ -756,8 +699,8 @@ namespace TerraViewer.Callibration
         int leftNode = -1;
 
         int rightNode = -1;
-        Edge selectedEdge = null;
-        GroundTruthPoint sliderTarget = null;
+        Edge selectedEdge;
+        GroundTruthPoint sliderTarget;
 
         private void WeightTrackBar_ValueChanged(object sender, EventArgs e)
         {
@@ -800,7 +743,7 @@ namespace TerraViewer.Callibration
             }
         }
 
-        ProjectorEntry colorCorrectTarget = null;
+        ProjectorEntry colorCorrectTarget;
 
         public ProjectorEntry ColorCorrectTarget
         {
@@ -813,7 +756,7 @@ namespace TerraViewer.Callibration
                 if (colorCorrectTarget != value)
                 {
                     colorCorrectTarget = value;
-                    bool enabled = value != null;
+                    var enabled = value != null;
 
                     redSlider.Enabled = enabled;
                     greenSlider.Enabled = enabled;
@@ -828,9 +771,9 @@ namespace TerraViewer.Callibration
                         redSlider.Value = Math.Max(0, colorCorrectTarget.WhiteBalance.Red - 155);
                         greenSlider.Value = Math.Max(0, colorCorrectTarget.WhiteBalance.Green - 155);
                         blueSlider.Value = Math.Max(0, colorCorrectTarget.WhiteBalance.Blue - 155);
-                        redAmount.Text = colorCorrectTarget.WhiteBalance.Red.ToString();
-                        greenAmount.Text = colorCorrectTarget.WhiteBalance.Green.ToString();
-                        blueAmount.Text = colorCorrectTarget.WhiteBalance.Blue.ToString();
+                        redAmount.Text = colorCorrectTarget.WhiteBalance.Red.ToString(CultureInfo.InvariantCulture);
+                        greenAmount.Text = colorCorrectTarget.WhiteBalance.Green.ToString(CultureInfo.InvariantCulture);
+                        blueAmount.Text = colorCorrectTarget.WhiteBalance.Blue.ToString(CultureInfo.InvariantCulture);
                     }
                     else
                     {
@@ -856,15 +799,15 @@ namespace TerraViewer.Callibration
             selectedEdge = null;
             if (e.Node != null && e.Node.Tag is Edge)
             {
-                Edge edge = e.Node.Tag as Edge;
+                var edge = e.Node.Tag as Edge;
                 selectedEdge = edge;
                 leftNode = edge.Left;
                 rightNode = edge.Right;
             }
             if (e.Node != null && e.Node.Tag is EdgePoint)
             {
-                Edge edge = e.Node.Parent.Tag as Edge;
-                EdgePoint ep = e.Node.Tag as EdgePoint;
+                var edge = e.Node.Parent.Tag as Edge;
+                var ep = e.Node.Tag as EdgePoint;
                 if (edge != null)
                 {
                     selectedEdge = edge;
@@ -878,7 +821,7 @@ namespace TerraViewer.Callibration
             }
             if (e.Node != null && e.Node.Tag is ProjectorEntry)
             {
-                ProjectorEntry pe = e.Node.Tag as ProjectorEntry;
+                var pe = e.Node.Tag as ProjectorEntry;
                 rightNode = -1;
                 leftNode = pe.ID;
                 ColorCorrectTarget = pe;
@@ -886,17 +829,17 @@ namespace TerraViewer.Callibration
 
             if (e.Node != null && e.Node.Parent != null && e.Node.Parent.Tag is ProjectorEntry)
             {
-                ProjectorEntry pe = e.Node.Parent.Tag as ProjectorEntry;
+                var pe = e.Node.Parent.Tag as ProjectorEntry;
                 rightNode = -1;
                 leftNode = pe.ID;
 
                 if (Align.Selected)
                 {
-                    GroundTruthPoint gt = e.Node.Tag as GroundTruthPoint;
+                    var gt = e.Node.Tag as GroundTruthPoint;
                     if (gt != null)
                     {
 
-                        int index = pe.Constraints.IndexOf(gt);
+                        var index = pe.Constraints.IndexOf(gt);
 
                         SliderTarget = gt;
                         SliderTargetNode = e.Node;
@@ -906,11 +849,11 @@ namespace TerraViewer.Callibration
                 }
                 else
                 {
-                    BlendPoint bp = e.Node.Tag as BlendPoint;
+                    var bp = e.Node.Tag as BlendPoint;
                     if (bp != null)
                     {
                         
-                        int index = pe.BlendPolygon.IndexOf(bp);
+                        var index = pe.BlendPolygon.IndexOf(bp);
                        
                         pe.SelectedBlendPoint = index ;
                         SendBlendPointEditUpdate(pe);
@@ -935,9 +878,9 @@ namespace TerraViewer.Callibration
             AddPointToTree();
         }
 
-        double[] alts = new double[] { 0, 25, 50, 75 };
-        double[] centers = new double[] { 180, 90, 0, 270, 180, 0 };
-        double[] altCenter = new double[] { 30, 30, 30, 30, 70, 70 };
+        readonly double[] alts = { 0, 25, 50, 75 };
+        readonly double[] centers = { 180, 90, 0, 270, 180, 0 };
+        readonly double[] altCenter = { 30, 30, 30, 30, 70, 70 };
         private void AddPointToTree()
         {
             if (PointTree.SelectedNode == null)
@@ -1008,20 +951,16 @@ namespace TerraViewer.Callibration
                 //        }
                 //    }
 
-                if (Control.ModifierKeys == Keys.Alt || Control.ModifierKeys == (Keys.Alt | Keys.Shift))
+                if (ModifierKeys == Keys.Alt || ModifierKeys == (Keys.Alt | Keys.Shift))
                 {
-                    bool North = Control.ModifierKeys == (Keys.Alt | Keys.Shift);
-
                     if (PointTree.SelectedNode.Tag is ProjectorEntry)
                     {
-                        Random rnd = new Random();
+                        var pe = PointTree.SelectedNode.Tag as ProjectorEntry;
 
-                        ProjectorEntry pe = PointTree.SelectedNode.Tag as ProjectorEntry;
-
-                        for (int i = 0; i < 4; i++)
+                        for (var i = 0; i < 4; i++)
                         {
 
-                            double alt = alts[i];
+                            var alt = alts[i];
                             double steps = 25;
 
                             if (i == 3)
@@ -1030,29 +969,17 @@ namespace TerraViewer.Callibration
                             }
 
 
-                            for (double az = 7.2; az < 360; az += 360 / steps)
+                            for (var az = 7.2; az < 360; az += 360 / steps)
                             {
-                                GroundTruthPoint pnt = new GroundTruthPoint();
+                                var pnt = new GroundTruthPoint
+                                {
+                                    X = pe.Width/2.0,
+                                    Y = pe.Height/2.0,
+                                    Alt = alt,
+                                    Az = az,
+                                    AxisType = AxisTypes.Both
+                                };
 
-                                int cX = pe.Width / 2;
-                                int cY = pe.Height / 2;
-                                cY = 120;
-
-                                double rad = pe.Height / 2;
-                                rad = pe.Width / 2;
-
-                                double az2 = az - 90;
-                                //pnt.X = cX - (float)Math.Cos(az2 / 180 * Math.PI) * ((90 - alt) / 90) * rad;
-                                //pnt.Y = cY + (float)Math.Sin(az2 / 180 * Math.PI) * ((90 - alt) / 90) * rad;
-
-                                //pnt.X += rnd.NextDouble() / 1000f;
-                                //pnt.Y += rnd.NextDouble() / 1000f;
-                                pnt.X = pe.Width / 2;
-                                pnt.Y = pe.Height / 2;
-
-                                pnt.Alt = alt;
-                                pnt.Az = az;
-                                pnt.AxisType = AxisTypes.Both;
                                 if (altCenter[pe.ID - 1] < 70)
                                 {
                                     if (((Math.Abs(az - centers[pe.ID - 1]) < 55) || (Math.Abs((az - 360) - centers[pe.ID - 1]) < 55)) && alt < 75)
@@ -1060,7 +987,7 @@ namespace TerraViewer.Callibration
                                         pe.Constraints.Add(pnt);
                                         pe.SelectedGroundTruth = pe.Constraints.Count - 1;
 
-                                        TreeNode child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
+                                        var child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
                                         child.Tag = pnt;
                                     }
                                 }
@@ -1071,7 +998,7 @@ namespace TerraViewer.Callibration
                                         pe.Constraints.Add(pnt);
                                         pe.SelectedGroundTruth = pe.Constraints.Count - 1;
 
-                                        TreeNode child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
+                                        var child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
                                         child.Tag = pnt;
                                     }
                                 }
@@ -1086,13 +1013,11 @@ namespace TerraViewer.Callibration
 
                 if (PointTree.SelectedNode.Tag is ProjectorEntry)
                 {
-                    ProjectorEntry pe = PointTree.SelectedNode.Tag as ProjectorEntry;
+                    var pe = PointTree.SelectedNode.Tag as ProjectorEntry;
 
-                    GroundTruthPointProperties props = new GroundTruthPointProperties();
+                    var props = new GroundTruthPointProperties();
 
-                    GroundTruthPoint pnt = new GroundTruthPoint();
-                    pnt.X = pe.Width / 2;
-                    pnt.Y = pe.Height / 2;
+                    var pnt = new GroundTruthPoint {X = pe.Width/2.0, Y = pe.Height/2.0};
 
                     props.Target = pnt;
                     if (props.ShowDialog() == DialogResult.OK)
@@ -1102,32 +1027,31 @@ namespace TerraViewer.Callibration
 
                         pe.SelectedGroundTruth = pe.Constraints.Count - 1;
 
-                        TreeNode child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
+                        var child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
                         child.Tag = pnt;
                         PointTree.SelectedNode = child;
                     }
                     return;
                 }
-                if (PointTree.SelectedNode.Tag is GroundTruthPoint)
+                var groundTruthPoint = PointTree.SelectedNode.Tag as GroundTruthPoint;
+                if (groundTruthPoint != null)
                 {
-                    ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                    var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
 
-                    GroundTruthPointProperties props = new GroundTruthPointProperties();
+                    var props = new GroundTruthPointProperties();
 
-                    GroundTruthPoint pnt = new GroundTruthPoint();
-                    pnt.X = pe.Width / 2;
-                    pnt.Y = pe.Height / 2;
+                    var pnt = new GroundTruthPoint {X = pe.Width/2.0, Y = pe.Height/2.0};
 
                     props.Target = pnt;
                     if (props.ShowDialog() == DialogResult.OK)
                     {
-                        int index = pe.Constraints.IndexOf((GroundTruthPoint)PointTree.SelectedNode.Tag) + 1;
+                        var index = pe.Constraints.IndexOf(groundTruthPoint) + 1;
 
                         pe.Constraints.Insert(index, pnt);
 
 
 
-                        TreeNode child = PointTree.SelectedNode.Parent.Nodes.Insert(PointTree.SelectedNode.Index + 1, pnt.ToString());
+                        var child = PointTree.SelectedNode.Parent.Nodes.Insert(PointTree.SelectedNode.Index + 1, pnt.ToString());
                         child.Tag = pnt;
                         PointTree.SelectedNode = child;
                     }
@@ -1137,39 +1061,33 @@ namespace TerraViewer.Callibration
 
                 if (PointTree.SelectedNode.Tag is Edge)
                 {
-                    Edge edge = PointTree.SelectedNode.Tag as Edge;
+                    var edge = PointTree.SelectedNode.Tag as Edge;
 
-                    EdgePoint ep = new EdgePoint();
+                    var ep = new EdgePoint {Left = new GroundTruthPoint(), Right = new GroundTruthPoint()};
 
-                    ep.Left = new GroundTruthPoint();
-                    ep.Right = new GroundTruthPoint();
-
-                    ep.Left.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2;
-                    ep.Left.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2;
-                    ep.Right.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2;
-                    ep.Right.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2;
+                    ep.Left.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2.0;
+                    ep.Left.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2.0;
+                    ep.Right.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2.0;
+                    ep.Right.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2.0;
                     edge.Points.Add(ep);
-                    TreeNode child = PointTree.SelectedNode.Nodes.Add(ep.ToString());
+                    var child = PointTree.SelectedNode.Nodes.Add(ep.ToString());
                     child.Tag = ep;
                     PointTree.SelectedNode = child;
                     return;
                 }
                 if (PointTree.SelectedNode.Tag is EdgePoint)
                 {
-                    Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
+                    var edge = PointTree.SelectedNode.Parent.Tag as Edge;
 
-                    EdgePoint ep = new EdgePoint();
+                    var ep = new EdgePoint {Left = new GroundTruthPoint(), Right = new GroundTruthPoint()};
 
-                    ep.Left = new GroundTruthPoint();
-                    ep.Right = new GroundTruthPoint();
-
-                    ep.Left.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2;
-                    ep.Left.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2;
-                    ep.Right.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2;
-                    ep.Right.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2;
+                    ep.Left.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2.0;
+                    ep.Left.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2.0;
+                    ep.Right.X = CalibrationInfo.ProjLookup[edge.Left].Width / 2.0;
+                    ep.Right.Y = CalibrationInfo.ProjLookup[edge.Left].Height / 2.0;
 
                     edge.Points.Insert(PointTree.SelectedNode.Index + 1, ep);
-                    TreeNode child = PointTree.SelectedNode.Parent.Nodes.Insert(PointTree.SelectedNode.Index + 1, ep.ToString());
+                    var child = PointTree.SelectedNode.Parent.Nodes.Insert(PointTree.SelectedNode.Index + 1, ep.ToString());
                     child.Tag = ep;
                     PointTree.SelectedNode = child;
                     return;
@@ -1177,9 +1095,8 @@ namespace TerraViewer.Callibration
 
                 if (PointTree.SelectedNode.Text == "Edges")
                 {
-                    Edge edge = new Edge(-1, -1);
-                    EdgeProperties props = new EdgeProperties();
-                    props.Edge = edge;
+                    var edge = new Edge(-1, -1);
+                    var props = new EdgeProperties {Edge = edge};
                     edge.Owner = CalibrationInfo;
                     
                     if (props.ShowDialog() == DialogResult.OK)
@@ -1190,23 +1107,20 @@ namespace TerraViewer.Callibration
                             ReloadPointTree();
                         }
                     }
-                    return;
                 }
             }
             else
             {
                 if (PointTree.SelectedNode.Tag is ProjectorEntry)
                 {
-                    ProjectorEntry pe = PointTree.SelectedNode.Tag as ProjectorEntry;
-                    BlendPoint pnt = new BlendPoint();
-                    pnt.X = pe.Width / 2;
-                    pnt.Y = pe.Height / 2;
+                    var pe = PointTree.SelectedNode.Tag as ProjectorEntry;
+                    var pnt = new BlendPoint {X = pe.Width/2.0, Y = pe.Height/2.0};
 
                     pe.BlendPolygon.Add(pnt);
 
                     pe.SelectedBlendPoint = pe.BlendPolygon.Count - 1;
 
-                    TreeNode child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
+                    var child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
                     child.Tag = pnt;
                     PointTree.SelectedNode = child;
                     return;
@@ -1215,23 +1129,20 @@ namespace TerraViewer.Callibration
 
                 if (PointTree.SelectedNode.Parent != null && PointTree.SelectedNode.Parent.Tag is ProjectorEntry)
                 {
-                    BlendPoint bp = (BlendPoint)PointTree.SelectedNode.Tag;
+                    var bp = (BlendPoint)PointTree.SelectedNode.Tag;
 
-                    ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                    BlendPoint pnt = new BlendPoint();
-                    pnt.X = pe.Width / 2;
-                    pnt.Y = pe.Height / 2;
+                    var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                    var pnt = new BlendPoint {X = pe.Width/2.0, Y = pe.Height/2.0};
 
-                    int index = pe.BlendPolygon.IndexOf(bp) + 1;
+                    var index = pe.BlendPolygon.IndexOf(bp) + 1;
                     pe.BlendPolygon.Insert(index, pnt);
 
                     pe.SelectedBlendPoint = index + 1;
 
 
-                    TreeNode child = PointTree.SelectedNode.Parent.Nodes.Insert(index, pnt.ToString());
+                    var child = PointTree.SelectedNode.Parent.Nodes.Insert(index, pnt.ToString());
                     child.Tag = pnt;
                     PointTree.SelectedNode = child;
-                    return;
                 }
             }
         }
@@ -1251,7 +1162,7 @@ namespace TerraViewer.Callibration
 
 
 
-        bool drag = false;
+        bool drag;
         Point pntLast = Point.Empty;
 
         private void MousePad_MouseDown(object sender, MouseEventArgs e)
@@ -1263,7 +1174,7 @@ namespace TerraViewer.Callibration
 
             if (Align.Selected)
             {
-                GroundTruthPoint gt = PointTree.SelectedNode.Tag as GroundTruthPoint;
+                var gt = PointTree.SelectedNode.Tag as GroundTruthPoint;
                 if (gt != null)
                 {
                     drag = true;
@@ -1271,7 +1182,7 @@ namespace TerraViewer.Callibration
                 }
                 else
                 {
-                    EdgePoint ep = PointTree.SelectedNode.Tag as EdgePoint;
+                    var ep = PointTree.SelectedNode.Tag as EdgePoint;
                     if (ep != null)
                     {
                         drag = true;
@@ -1281,7 +1192,7 @@ namespace TerraViewer.Callibration
             }
             else
             {
-                BlendPoint bp = PointTree.SelectedNode.Tag as BlendPoint;
+                var bp = PointTree.SelectedNode.Tag as BlendPoint;
                 if (bp != null)
                 {
                     drag = true;
@@ -1296,14 +1207,14 @@ namespace TerraViewer.Callibration
             {
                 if (Align.Selected)
                 {
-                    GroundTruthPoint gt = PointTree.SelectedNode.Tag as GroundTruthPoint;
-                    ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                    EdgePoint ep = PointTree.SelectedNode.Tag as EdgePoint;
-                    Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
+                    var gt = PointTree.SelectedNode.Tag as GroundTruthPoint;
+                    var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                    var ep = PointTree.SelectedNode.Tag as EdgePoint;
+                    var edge = PointTree.SelectedNode.Parent.Tag as Edge;
 
                     if (gt != null && pe != null)
                     {
-                        Point delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
+                        var delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
 
                         gt.X += delta.X;
                         gt.Y += delta.Y;
@@ -1312,7 +1223,7 @@ namespace TerraViewer.Callibration
                     }
                     if (ep != null && edge != null)
                     {
-                        Point delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
+                        var delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
                         if (e.Button == MouseButtons.Left)
                         {
                             ep.Left.X += delta.X;
@@ -1331,12 +1242,12 @@ namespace TerraViewer.Callibration
                 }
                 else
                 {
-                    BlendPoint bp = PointTree.SelectedNode.Tag as BlendPoint;
-                    ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                    var bp = PointTree.SelectedNode.Tag as BlendPoint;
+                    var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
 
                     if (bp != null && pe != null)
                     {
-                        Point delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
+                        var delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
 
                         bp.X += delta.X;
                         bp.Y += delta.Y;
@@ -1345,13 +1256,6 @@ namespace TerraViewer.Callibration
                     }
                 }
                 pntLast = e.Location;
-            }
-            else
-            {
-                //PointF pnt = GetAltAzFromPoint(new PointF(e.X, e.Y));
-                //PointF pntBack = GetPointFromAltAz(pnt);
-
-                //this.Text = string.Format("X={0}, Y={1}, alt/az = {2}, pntBack = {3}", e.X, e.Y, pnt, pntBack);
             }
         }
 
@@ -1366,10 +1270,10 @@ namespace TerraViewer.Callibration
 
         private void SendBlendPointEditUpdate(ProjectorEntry pe)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            bool first = true;
-            foreach (BlendPoint bp in pe.BlendPolygon)
+            var first = true;
+            foreach (var bp in pe.BlendPolygon)
             {
                 if (!first)
                 {
@@ -1379,14 +1283,14 @@ namespace TerraViewer.Callibration
                 {
                     first = false;
                 }
-                sb.Append(bp.X.ToString());
+                sb.Append(bp.X.ToString(CultureInfo.InvariantCulture));
                 sb.Append(" ");
-                sb.Append(bp.Y.ToString());
+                sb.Append(bp.Y.ToString(CultureInfo.InvariantCulture));
                 sb.Append(" ");
-                sb.Append(bp.Softness.ToString());
+                sb.Append(bp.Softness.ToString(CultureInfo.InvariantCulture));
             }
 
-            string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Polygon.ToString() + "," + pe.SelectedBlendPoint.ToString() + "," + SavedColor.Save(Color.FromArgb(255, Gamma(pe.WhiteBalance.Red), Gamma(pe.WhiteBalance.Green), Gamma(pe.WhiteBalance.Blue))) + "," + SavedColor.Save(Color.Yellow) + "," + sb.ToString();
+            var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Polygon + "," + pe.SelectedBlendPoint + "," + SavedColor.Save(Color.FromArgb(255, Gamma(pe.WhiteBalance.Red), Gamma(pe.WhiteBalance.Green), Gamma(pe.WhiteBalance.Blue))) + "," + SavedColor.Save(Color.Yellow) + "," + sb;
             NetControl.SendCommand(command);
            
         }
@@ -1399,11 +1303,11 @@ namespace TerraViewer.Callibration
         private void SendAlignPointEditUpdate(ProjectorEntry pe, bool emptyList)
         {
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             if (!emptyList)
             {
-                bool first = true;
-                foreach (GroundTruthPoint gt in pe.Constraints)
+                var first = true;
+                foreach (var gt in pe.Constraints)
                 {
                     if (!first)
                     {
@@ -1413,26 +1317,26 @@ namespace TerraViewer.Callibration
                     {
                         first = false;
                     }
-                    sb.Append(gt.X.ToString());
+                    sb.Append(gt.X.ToString(CultureInfo.InvariantCulture));
                     sb.Append(" ");
-                    sb.Append(gt.Y.ToString());
+                    sb.Append(gt.Y.ToString(CultureInfo.InvariantCulture));
                 }
             }
-            Color pointColor = Color.Red;
+            var pointColor = Color.Red;
 
 
-            string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Points.ToString() + "," + pe.SelectedGroundTruth.ToString() + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(pointColor) + "," + sb.ToString();
+            var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Points + "," + pe.SelectedGroundTruth + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(pointColor) + "," + sb;
             NetControl.SendCommand(command);
 
         }
 
         private void SendEdgePointEditUpdate(Edge edge)
         {
-            StringBuilder sbLeft = new StringBuilder();
-            StringBuilder sbRight = new StringBuilder();
+            var sbLeft = new StringBuilder();
+            var sbRight = new StringBuilder();
 
-            bool first = true;
-            foreach (EdgePoint ep in edge.Points)
+            var first = true;
+            foreach (var ep in edge.Points)
             {
                 if (!first)
                 {
@@ -1443,22 +1347,21 @@ namespace TerraViewer.Callibration
                 {
                     first = false;
                 }
-                sbLeft.Append(ep.Left.X.ToString());
+                sbLeft.Append(ep.Left.X.ToString(CultureInfo.InvariantCulture));
                 sbLeft.Append(" ");
-                sbLeft.Append(ep.Left.Y.ToString());
+                sbLeft.Append(ep.Left.Y.ToString(CultureInfo.InvariantCulture));
 
-                sbRight.Append(ep.Right.X.ToString());
+                sbRight.Append(ep.Right.X.ToString(CultureInfo.InvariantCulture));
                 sbRight.Append(" ");
-                sbRight.Append(ep.Right.Y.ToString());
+                sbRight.Append(ep.Right.Y.ToString(CultureInfo.InvariantCulture));
 
 
             }
-            Color pointColor = Color.Red;
 
 
-            string commandLeft = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + edge.Left.ToString() + ",GEOMETRY," + GeometryStyles.Points.ToString() + "," + edge.SelectedPoint.ToString() + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(Color.Red) + "," + sbLeft.ToString();
+            var commandLeft = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + edge.Left + ",GEOMETRY," + GeometryStyles.Points + "," + edge.SelectedPoint + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(Color.Red) + "," + sbLeft;
             NetControl.SendCommand(commandLeft);
-            string commandRight = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + edge.Right.ToString() + ",GEOMETRY," + GeometryStyles.Points.ToString() + "," + edge.SelectedPoint.ToString() + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(Color.Green) + "," + sbRight.ToString();
+            var commandRight = "CAL," + Earth3d.MainWindow.Config.ClusterID + "," + edge.Right + ",GEOMETRY," + GeometryStyles.Points + "," + edge.SelectedPoint + "," + SavedColor.Save(Color.White) + "," + SavedColor.Save(Color.Green) + "," + sbRight;
             NetControl.SendCommand(commandRight);
 
         }
@@ -1475,12 +1378,7 @@ namespace TerraViewer.Callibration
         {
             if (PointTree.SelectedNode != null)
             {
-                bool move = true; ;
-
-                if (PointTree.SelectedNode.Tag is Edge || PointTree.SelectedNode.Tag is ProjectorEntry)
-                {
-                    move = false;
-                }
+                var move = !(PointTree.SelectedNode.Tag is Edge || PointTree.SelectedNode.Tag is ProjectorEntry);
 
                 moveDownToolStripMenuItem.Visible = move;
                 moveUpToolStripMenuItem.Visible = move;
@@ -1489,7 +1387,7 @@ namespace TerraViewer.Callibration
                 if (PointTree.SelectedNode.Tag is EdgePoint)
                 {
                     blendPointToolStripMenuItem.Visible = true;
-                    EdgePoint ep = PointTree.SelectedNode.Tag as EdgePoint;
+                    var ep = PointTree.SelectedNode.Tag as EdgePoint;
                     blendPointToolStripMenuItem.Checked = ep.Blend;
                     blendPointToolStripMenuItem.Visible = true;
                 }
@@ -1521,23 +1419,23 @@ namespace TerraViewer.Callibration
         }
         private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int index = 0;
-            int nodeIndex = 0;
-            TreeNode node = PointTree.SelectedNode;
+            int index;
+            int nodeIndex;
+            var node = PointTree.SelectedNode;
             if (Align.Selected)
             {
                 if (PointTree.SelectedNode != null)
                 {
                     if (PointTree.SelectedNode.Tag is GroundTruthPoint)
                     {
-                        ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                        GroundTruthPoint pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
+                        var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                        var pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
                         index = pe.Constraints.IndexOf(pnt);
                         if (index > 0)
                         {
                             pe.Constraints.Remove(pnt);
                             pe.Constraints.Insert(index - 1, pnt);
-                            TreeNode parentNode = PointTree.SelectedNode.Parent;
+                            var parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
                             parentNode.Nodes.Insert(nodeIndex-1, node);
@@ -1546,15 +1444,15 @@ namespace TerraViewer.Callibration
                     }
                     else if (PointTree.SelectedNode.Tag is EdgePoint)
                     {
-                        Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
-                        EdgePoint pnt = (EdgePoint)PointTree.SelectedNode.Tag;
+                        var edge = PointTree.SelectedNode.Parent.Tag as Edge;
+                        var pnt = (EdgePoint)PointTree.SelectedNode.Tag;
 
                         index = edge.Points.IndexOf(pnt);
                         if (index > 0)
                         {
                             edge.Points.Remove(pnt);
                             edge.Points.Insert(index - 1, pnt);
-                            TreeNode parentNode = PointTree.SelectedNode.Parent;
+                            var parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
                             parentNode.Nodes.Insert(nodeIndex - 1, node);
@@ -1569,46 +1467,46 @@ namespace TerraViewer.Callibration
             {
                 if (PointTree.SelectedNode != null)
                 {
-                    if (PointTree.SelectedNode.Tag is BlendPoint)
+                    var blendPoint = PointTree.SelectedNode.Tag as BlendPoint;
+                    if (blendPoint != null)
                     {
-                        ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                        BlendPoint pnt = (BlendPoint)PointTree.SelectedNode.Tag;
+                        var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                        var pnt = blendPoint;
                         index = pe.BlendPolygon.IndexOf(pnt);
                         if (index > 0)
                         {
                             pe.BlendPolygon.Remove(pnt);
                             pe.BlendPolygon.Insert(index - 1, pnt);
-                            TreeNode parentNode = PointTree.SelectedNode.Parent;
+                            var parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
                             parentNode.Nodes.Insert(nodeIndex - 1, node);
                             PointTree.SelectedNode = node;
                         }
                     }
-
                 }
             }
         }
 
         private void moveDownToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int index = 0;
-            int nodeIndex = 0;
-            TreeNode node = PointTree.SelectedNode;
+            int index;
+            int nodeIndex;
+            var node = PointTree.SelectedNode;
             if (Align.Selected)
             {
                 if (PointTree.SelectedNode != null)
                 {
                     if (PointTree.SelectedNode.Tag is GroundTruthPoint)
                     {
-                        ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                        GroundTruthPoint pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
+                        var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                        var pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
                         index = pe.Constraints.IndexOf(pnt);
                         if (index < pe.Constraints.Count-1)
                         {
                             pe.Constraints.Remove(pnt);
                             pe.Constraints.Insert(index + 1, pnt);
-                            TreeNode parentNode = PointTree.SelectedNode.Parent;
+                            var parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
                             parentNode.Nodes.Insert(nodeIndex + 1, node);
@@ -1617,15 +1515,15 @@ namespace TerraViewer.Callibration
                     }
                     else if (PointTree.SelectedNode.Tag is EdgePoint)
                     {
-                        Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
-                        EdgePoint pnt = (EdgePoint)PointTree.SelectedNode.Tag;
+                        var edge = PointTree.SelectedNode.Parent.Tag as Edge;
+                        var pnt = (EdgePoint)PointTree.SelectedNode.Tag;
 
                         index = edge.Points.IndexOf(pnt);
                         if (index < edge.Points.Count-1)
                         {
                             edge.Points.Remove(pnt);
                             edge.Points.Insert(index + 1, pnt);
-                            TreeNode parentNode = PointTree.SelectedNode.Parent;
+                            var parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
                             parentNode.Nodes.Insert(nodeIndex + 1, node);
@@ -1640,23 +1538,23 @@ namespace TerraViewer.Callibration
             {
                 if (PointTree.SelectedNode != null)
                 {
-                    if (PointTree.SelectedNode.Tag is BlendPoint)
+                    var blendPoint = PointTree.SelectedNode.Tag as BlendPoint;
+                    if (blendPoint != null)
                     {
-                        ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                        BlendPoint pnt = (BlendPoint)PointTree.SelectedNode.Tag;
+                        var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                        var pnt = blendPoint;
                         index = pe.BlendPolygon.IndexOf(pnt);
                         if (index < pe.BlendPolygon.Count - 1)
                         {
                             pe.BlendPolygon.Remove(pnt);
                             pe.BlendPolygon.Insert(index + 1, pnt);
-                            TreeNode parentNode = PointTree.SelectedNode.Parent;
+                            var parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
                             parentNode.Nodes.Insert(nodeIndex + 1, node);
                             PointTree.SelectedNode = node;
                         }
                     }
-
                 }
             }
         }
@@ -1665,7 +1563,7 @@ namespace TerraViewer.Callibration
         {
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(699, "This will clear existing blend polygons for this projector and create new ones by trasfering edge points from align. This operation can not be undone, are you sure you want to proceed?"), Language.GetLocalizedText(700, "Transfer from Edges"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                ProjectorEntry pe = PointTree.SelectedNode.Tag as ProjectorEntry;
+                var pe = PointTree.SelectedNode.Tag as ProjectorEntry;
                 pe.BlendPolygon.Clear();
                 TransferEdges(pe);
                 ReloadPointTree();
@@ -1674,11 +1572,11 @@ namespace TerraViewer.Callibration
 
         private void TransferEdges(ProjectorEntry pe)
         {
-            SortedList<double, BlendPoint> pointList = new SortedList<double, BlendPoint>();
+            var pointList = new SortedList<double, BlendPoint>();
 
-            foreach (Edge edge in CalibrationInfo.Edges)
+            foreach (var edge in CalibrationInfo.Edges)
             {
-                bool right = false;
+                var right = false;
                 if (edge.Right == pe.ID)
                 {
                     right = true;
@@ -1688,27 +1586,17 @@ namespace TerraViewer.Callibration
                     continue;
                 }
 
-                foreach (EdgePoint edgePoint in edge.Points)
+                foreach (var edgePoint in edge.Points)
                 {
-                    GroundTruthPoint pnt;
                     if (!edgePoint.Blend)
                     {
                         continue;
                     }
 
-                    if (right)
-                    {
-                        pnt = edgePoint.Right;
-                    }
-                    else
-                    {
-                        pnt = edgePoint.Left;
-                    }
+                    var pnt = right ? edgePoint.Right : edgePoint.Left;
 
-                    BlendPoint blend = new BlendPoint();
-                    blend.X = pnt.X;
-                    blend.Y = pnt.Y;
-                    double angle = Math.Atan2(pnt.X - (pe.Width / 2), pnt.Y - (pe.Height / 2));
+                    var blend = new BlendPoint {X = pnt.X, Y = pnt.Y};
+                    var angle = Math.Atan2(pnt.X - (pe.Width / 2.0), pnt.Y - (pe.Height / 2.0));
                     if (!pointList.ContainsKey(angle))
                     {
                         pointList.Add(angle, blend);
@@ -1716,7 +1604,7 @@ namespace TerraViewer.Callibration
                 }
             }
 
-            foreach (BlendPoint blend in pointList.Values)
+            foreach (var blend in pointList.Values)
             {
                 pe.BlendPolygon.Add(blend);
             }
@@ -1724,7 +1612,7 @@ namespace TerraViewer.Callibration
 
         private void blendPointToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EdgePoint ep = PointTree.SelectedNode.Tag as EdgePoint;
+            var ep = PointTree.SelectedNode.Tag as EdgePoint;
             ep.Blend = blendPointToolStripMenuItem.Checked = !ep.Blend;
             RefreshTreeeNames(PointTree.Nodes);
         }
@@ -1733,9 +1621,9 @@ namespace TerraViewer.Callibration
         {
             if (PointTree.SelectedNode.Tag is GroundTruthPoint)
             {
-                GroundTruthPointProperties props = new GroundTruthPointProperties();
+                var props = new GroundTruthPointProperties();
 
-                GroundTruthPoint pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
+                var pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
                 props.Target = pnt;
                 if (props.ShowDialog() == DialogResult.OK)
                 {
@@ -1750,22 +1638,22 @@ namespace TerraViewer.Callibration
             {
                 if (PointTree.SelectedNode.Tag is GroundTruthPoint)
                 {
-                    ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                    GroundTruthPoint pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
+                    var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                    var pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
                     pe.Constraints.Remove(pnt);
                     PointTree.SelectedNode.Remove();
                 }
                 else if (PointTree.SelectedNode.Tag is BlendPoint)
                 {
-                    ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
-                    BlendPoint pnt = (BlendPoint)PointTree.SelectedNode.Tag;
+                    var pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                    var pnt = (BlendPoint)PointTree.SelectedNode.Tag;
                     pe.BlendPolygon.Remove(pnt);
                     PointTree.SelectedNode.Remove();
                 }
                 else if (PointTree.SelectedNode.Tag is EdgePoint)
                 {
-                    Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
-                    EdgePoint pnt = (EdgePoint)PointTree.SelectedNode.Tag;
+                    var edge = PointTree.SelectedNode.Parent.Tag as Edge;
+                    var pnt = (EdgePoint)PointTree.SelectedNode.Tag;
                     edge.Points.Remove(pnt);
                     PointTree.SelectedNode.Remove();
                 }
@@ -1810,7 +1698,7 @@ namespace TerraViewer.Callibration
         {
 
         }
-        bool running = false;
+        bool running;
 
         private void SolveDistortion_Click(object sender, EventArgs e)
         {
@@ -1818,12 +1706,12 @@ namespace TerraViewer.Callibration
             {
                 running = true;
                 SolveDistortion.Text = Language.GetLocalizedText(1177, "Stop Solving");
-                SolveAlignment sa = new SolveAlignment();
+                var sa = new SolveAlignment();
                 sa.SetupSolve(CalibrationInfo, useConstraints.Checked, UseRadial.Checked);
 
                 solveProjectors = sa.projectors;
 
-                for (int i = 0; i < 2550; i++)
+                for (var i = 0; i < 2550; i++)
                 {
                     if (!running)
                     {
@@ -1831,8 +1719,8 @@ namespace TerraViewer.Callibration
                     }
                     try
                     {
-                        double error = sa.Iterate();
-                        AverageError.Text = error.ToString();
+                        var error = sa.Iterate();
+                        AverageError.Text = error.ToString(CultureInfo.InvariantCulture);
                     }
                     catch
                     {
@@ -1845,7 +1733,7 @@ namespace TerraViewer.Callibration
 
                 }
 
-                for (int x = 0; x < CalibrationInfo.Projectors.Count; x++)
+                for (var x = 0; x < CalibrationInfo.Projectors.Count; x++)
                 {
                     CalibrationInfo.Projectors[x].SolvedProjection = solveProjectors[x].Projection;
                     CalibrationInfo.Projectors[x].SolvedTransform = solveProjectors[x].Transform;
@@ -1856,7 +1744,7 @@ namespace TerraViewer.Callibration
 
                 if (UiTools.ShowMessageBox(Language.GetLocalizedText(745, "Would you like to use the solved Projector parameters? You can always use the 'Copy Solved' button in the Projector Edit to do this manually."), Language.GetLocalizedText(746, "Use Solved Parameters as Projector Defaults"), MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                    foreach (var pe in CalibrationInfo.Projectors)
                     {
                         pe.ProjectorProjection = pe.SolvedProjection.Copy();
                         pe.ProjectorTransform = pe.SolvedTransform.Copy();
@@ -1878,7 +1766,7 @@ namespace TerraViewer.Callibration
 
         private void DomeRadius_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             CalibrationInfo.DomeSize = UiTools.ParseAndValidateDouble(DomeRadius, CalibrationInfo.DomeSize, ref failed);
             
@@ -1886,22 +1774,21 @@ namespace TerraViewer.Callibration
 
         private void ProjectorList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ProjectorEntry pe = (ProjectorEntry)ProjectorList.SelectedItem;
+            var pe = (ProjectorEntry)ProjectorList.SelectedItem;
 
-            SolveProjector sp = new SolveProjector(pe, CalibrationInfo.DomeSize, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, ScreenTypes.Spherical, SolveParameters.Default);
+            var sp = new SolveProjector(pe, CalibrationInfo.DomeSize, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, ScreenTypes.Spherical, SolveParameters.Default);
 
-            Vector2d pnt = sp.GetCoordinatesForScreenPoint(pe.Width / 2, pe.Height / 2);
-            Vector2d pnt2 = sp.GetCoordinatesForScreenPoint(pe.Width / 2+1, pe.Height / 2);
-            Vector2d pntCamera = sp.GetCoordinatesForProjector();
+            var pnt = sp.GetCoordinatesForScreenPoint(pe.Width / 2.0, pe.Height / 2.0);
+            sp.GetCoordinatesForScreenPoint(pe.Width/2 + 1, pe.Height/2.0);
+            var pntCamera = sp.GetCoordinatesForProjector();
 
 
-            PointF pntRayDirection = GetPointFromAltAz(new PointF((float)pnt.X+90, (float)pnt.Y));
-            //PointF pntProj = GetPointFromXYZ(new Vector3d(pe.ProjectorTransform.X,pe.ProjectorTransform.Y,pe.ProjectorTransform.Z));
-            PointF pntProj = GetPointFromAltAz(new PointF((float)pntCamera.X+90, (float)pntCamera.Y));
+            var pntRayDirection = GetPointFromAltAz(new PointF((float)pnt.X+90, (float)pnt.Y));
+            var pntProj = GetPointFromAltAz(new PointF((float)pntCamera.X+90, (float)pntCamera.Y));
             
             Refresh();
             MousePad.Refresh();
-            Graphics g = MousePad.CreateGraphics();
+            var g = MousePad.CreateGraphics();
 
             g.DrawLine(Pens.Yellow, pntRayDirection, pntProj);
             g.DrawRectangle(Pens.Red, pntProj.X - 5, pntProj.Y - 5, 10, 10);
@@ -1913,7 +1800,7 @@ namespace TerraViewer.Callibration
 
         private void MakeWarpMaps_Click(object sender, EventArgs e)
         {
-            this.Enabled = false;
+            Enabled = false;
             if (CalibrationInfo.ScreenType == ScreenTypes.FishEye)
             {
                 GenerateFisheyeWarpMaps();
@@ -1922,8 +1809,8 @@ namespace TerraViewer.Callibration
             {
                 GenerateWarpMaps();
             }
-            this.Enabled = true;
-            this.Activate();
+            Enabled = true;
+            Activate();
 
         }
 
@@ -1931,50 +1818,40 @@ namespace TerraViewer.Callibration
         {
             ProgressPopup.Show(this, Language.GetLocalizedText(747, "Building Maps"), Language.GetLocalizedText(748, "Building Warp Maps"));
 
-            string path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
+            var path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            int index = 0;
+            var index = 0;
 
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
-                List<GroundTruthPoint> gtPoints = new List<GroundTruthPoint>();
-                //foreach (GroundTruthPoint gt in pe.Constraints)
-                //{
-                //    gtPoints.Add(gt);
-                //}
-                foreach (Edge edge in CalibrationInfo.Edges)
+                var gtPoints = new List<GroundTruthPoint>();
+
+                foreach (var edge in CalibrationInfo.Edges)
                 {
-                    bool isRight = edge.Right == pe.ID;
+                    var isRight = edge.Right == pe.ID;
                     if (!isRight && edge.Left != pe.ID)
                     {
                         continue;
                     }
-                    SolveProjector spRight = GetSolveProjector(edge.Right);
+                    var spRight = GetSolveProjector(edge.Right);
 
-                    SolveProjector spLeft = GetSolveProjector(edge.Left);
+                    var spLeft = GetSolveProjector(edge.Left);
 
-                    foreach (EdgePoint ep in edge.Points)
-                    {
-                        Vector2d pntLeft = spLeft.GetCoordinatesForScreenPoint(ep.Left.X, ep.Left.Y);
-                        Vector2d pntRight = spRight.GetCoordinatesForScreenPoint(ep.Right.X, ep.Right.Y);
-                        Vector2d pntAvg = Vector2d.Average3d(pntLeft, pntRight);
-
-                        GroundTruthPoint gt = new GroundTruthPoint();
-                        gt.X = isRight ? ep.Right.X : ep.Left.X;
-                        gt.Y = isRight ? ep.Right.Y : ep.Left.Y;
-                        gt.AxisType = AxisTypes.Both;
-                        gt.Az = pntAvg.X;
-                        gt.Alt = pntAvg.Y;
-                        gtPoints.Add(gt);
-                    }
-
+                    gtPoints.AddRange(from ep in edge.Points
+                        let pntLeft = spLeft.GetCoordinatesForScreenPoint(ep.Left.X, ep.Left.Y)
+                        let pntRight = spRight.GetCoordinatesForScreenPoint(ep.Right.X, ep.Right.Y)
+                        let pntAvg = Vector2d.Average3d(pntLeft, pntRight)
+                        select new GroundTruthPoint
+                        {
+                            X = isRight ? ep.Right.X : ep.Left.X, Y = isRight ? ep.Right.Y : ep.Left.Y, AxisType = AxisTypes.Both, Az = pntAvg.X, Alt = pntAvg.Y
+                        });
                 }
 
-                Bitmap bmp = WarpMapper.MakeWarpMap(pe, CalibrationInfo.DomeSize, UseRadial.Checked, gtPoints, (CalibrationInfo.ScreenType == ScreenTypes.Spherical) ? ScreenTypes.Spherical: ScreenTypes.Cylindrical);
+                var bmp = WarpMapper.MakeWarpMap(pe, CalibrationInfo.DomeSize, UseRadial.Checked, gtPoints, (CalibrationInfo.ScreenType == ScreenTypes.Spherical) ? ScreenTypes.Spherical: ScreenTypes.Cylindrical);
                 bmp.Save(string.Format("{0}\\distort_{1}.png", path, pe.Name.Replace(" ", "_")));
                 bmp.Dispose();
                 index++;
@@ -1988,49 +1865,38 @@ namespace TerraViewer.Callibration
         {
             ProgressPopup.Show(this, Language.GetLocalizedText(747, "Building Maps"), Language.GetLocalizedText(748, "Building Warp Maps"));
 
-            string path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
+            var path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            int index = 0;
+            var index = 0;
 
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
-                SolveProjector sp = GetSolveProjector(pe.ID);
+                var sp = GetSolveProjector(pe.ID);
 
-                StreamWriter sw = new StreamWriter(string.Format("{0}\\distort_{1}.data", path, pe.Name.Replace(" ", "_")));
+                var sw = new StreamWriter(string.Format("{0}\\distort_{1}.data", path, pe.Name.Replace(" ", "_")));
 
-                int stepsX = 100;
-                int stepsY = 100;
-                int count = stepsX * stepsY;
-                int total = 0;
+                const int stepsX = 100;
+                const int stepsY = 100;
 
                 sw.WriteLine("2");
-                sw.WriteLine(string.Format("{0} {1}", stepsX, stepsY));
+                sw.WriteLine("{0} {1}", stepsX, stepsY);
 
-                double stepSizeX = (double)pe.Width/(stepsX-1);
-                double stepSizeY = (double)pe.Height / (stepsY - 1);
+                var stepSizeX = (double)pe.Width/(stepsX-1);
+                var stepSizeY = (double)pe.Height / (stepsY - 1);
 
                 for (double y = 0; (int)(y+.5) <= pe.Height; y += stepSizeY)
                 {
                     for (double x = 0; (int)(x+.5) <= pe.Width; x += stepSizeX)
                     {
-                        Vector2d altAz = sp.GetCoordinatesForScreenPoint(x, y);
-                        Vector2d pnt = GetPointFromAltAz(altAz);
-                        float color = 255;
-                        if (altAz.Y < 0)
-                        {
-                            color = 0;
-                        }
-                        else
-                        {
-                            color = 1;
-                        }
+                        var altAz = sp.GetCoordinatesForScreenPoint(x, y);
+                        var pnt = GetPointFromAltAz(altAz);
+                        float color = altAz.Y < 0 ? 0 : 1;
 
-                        sw.WriteLine(string.Format("{0}\t{1}\t{2}\t{3}\t{4}", -((x - pe.Width / 2) / (pe.Height / 2)), -((y - pe.Height / 2) / (pe.Height / 2)), pnt.X, pnt.Y, color));
-                        total++;
+                        sw.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", -((x - pe.Width / 2.0) / (pe.Height / 2.0)), -((y - pe.Height / 2.0) / (pe.Height / 2.0)), pnt.X, pnt.Y, color);
                     }
                 }
 
@@ -2046,10 +1912,11 @@ namespace TerraViewer.Callibration
 
         Vector2d GetPointFromAltAz(Vector2d point)
         {
-            Vector2d retPoint = new Vector2d();
-           // point.X += 90;
-            retPoint.X = .5 + Math.Cos(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * .5;
-            retPoint.Y = .5 + Math.Sin(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * .5;
+            var retPoint = new Vector2d
+            {
+                X = .5 + Math.Cos(point.X/180*Math.PI)*((90 - point.Y)/90)*.5,
+                Y = .5 + Math.Sin(point.X/180*Math.PI)*((90 - point.Y)/90)*.5
+            };
             return retPoint;
         }
         
@@ -2058,8 +1925,8 @@ namespace TerraViewer.Callibration
         {
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(750, "Would you like to build new maps with the current parameters? Answering 'No' will send the exsiting maps"), Language.GetLocalizedText(751, "Build new Maps"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                this.Enabled = false;
-                this.Cursor = Cursors.WaitCursor;
+                Enabled = false;
+                Cursor = Cursors.WaitCursor;
                 ProgressPopup.Show(this, Language.GetLocalizedText(747, "Building Maps"), Language.GetLocalizedText(748, "Building Warp Maps"));
                 if (CalibrationInfo.ScreenType == ScreenTypes.FishEye)
                 {
@@ -2073,46 +1940,46 @@ namespace TerraViewer.Callibration
                 }
                
                 ProgressPopup.Done();
-                this.Cursor = Cursors.Default;
-                this.Enabled = true;
+                Cursor = Cursors.Default;
+                Enabled = true;
             }
 
             if (CalibrationInfo.ScreenType != ScreenTypes.FishEye)
             {
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
                     SendViewConfig(pe.ID, pe, CalibrationInfo.DomeTilt);
                 }
             }
             
-            string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1,RELOADWARPS";
+            var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + ",-1,RELOADWARPS";
             NetControl.SendCommand(command);
-            this.Activate();
+            Activate();
 
         }
 
         private void MakeBlendMap_Click(object sender, EventArgs e)
         {
-            this.Enabled = false;
+            Enabled = false;
             MakeBlendMaps();
-            this.Enabled = true;
-            this.Activate();
+            Enabled = true;
+            Activate();
         }
 
         private void MakeBlendMaps()
         {
             ProgressPopup.Show(this, Language.GetLocalizedText(747, "Building Maps"), Language.GetLocalizedText(752, "Building Blend Maps"));
            
-            string path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
+            var path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            int index = 0;
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            var index = 0;
+            foreach (var pe in CalibrationInfo.Projectors)
             {
-                Bitmap bmp = WarpMapper.MakeBlendMap(pe, CalibrationInfo.BlendMarkBlurAmount, CalibrationInfo.BlendMarkBlurIterations, (float)CalibrationInfo.BlendGamma);
+                var bmp = WarpMapper.MakeBlendMap(pe, CalibrationInfo.BlendMarkBlurAmount, CalibrationInfo.BlendMarkBlurIterations, (float)CalibrationInfo.BlendGamma);
                 bmp.Save(string.Format("{0}\\blend_{1}.png", path, pe.Name.Replace(" ", "_")));
                 bmp.Dispose();
                 index++;
@@ -2125,18 +1992,18 @@ namespace TerraViewer.Callibration
         private void BlurSize_ValueChanged(object sender, EventArgs e)
         {
             CalibrationInfo.BlendMarkBlurAmount = BlurSize.Value * 2 + 1;
-            BlurSizeText.Text = CalibrationInfo.BlendMarkBlurAmount.ToString();
+            BlurSizeText.Text = CalibrationInfo.BlendMarkBlurAmount.ToString(CultureInfo.InvariantCulture);
         }
 
         private void BlurIterations_ValueChanged(object sender, EventArgs e)
         {
             CalibrationInfo.BlendMarkBlurIterations = BlurIterations.Value;
-            blurIterationsText.Text = CalibrationInfo.BlendMarkBlurIterations.ToString();
+            blurIterationsText.Text = CalibrationInfo.BlendMarkBlurIterations.ToString(CultureInfo.InvariantCulture);
         }
 
         private void domeTilt_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             CalibrationInfo.DomeTilt = UiTools.ParseAndValidateDouble(domeTilt, CalibrationInfo.DomeTilt, ref failed);
 
@@ -2149,7 +2016,7 @@ namespace TerraViewer.Callibration
 
         private void GammaText_TextChanged(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             CalibrationInfo.BlendGamma = UiTools.ParseAndValidateDouble(GammaText, CalibrationInfo.BlendGamma, ref failed);
 
@@ -2164,7 +2031,7 @@ namespace TerraViewer.Callibration
 
         private void wwtButton1_Click(object sender, EventArgs e)
         {
-            string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1,UPDATESOFTWARE";
+            var command = "CAL," + Earth3d.MainWindow.Config.ClusterID + ",-1,UPDATESOFTWARE";
             NetControl.SendCommand(command);
         }
 
@@ -2180,7 +2047,7 @@ namespace TerraViewer.Callibration
         {
             if (UiTools.ShowMessageBox(Language.GetLocalizedText(756, "This will clear all existing blend polygons for all projectors and create new ones by trasfering edge points from align. This operation can not be undone, are you sure you want to proceed?"), Language.GetLocalizedText(700, "Transfer from Edges"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
                     pe.BlendPolygon.Clear();
                     TransferEdges(pe);
@@ -2203,8 +2070,6 @@ namespace TerraViewer.Callibration
                 case ScreenTypes.FishEye:
                     Blend.Enabled = false;
                     SetAlignBlendMode(true);
-                    break;
-                default:
                     break;
             }
 
@@ -2320,7 +2185,7 @@ namespace TerraViewer.Callibration
 
         private void redSlider_ValueChanged(object sender, EventArgs e)
         {
-            redAmount.Text = (155 + redSlider.Value).ToString();
+            redAmount.Text = (155 + redSlider.Value).ToString(CultureInfo.InvariantCulture);
             if (colorCorrectTarget != null)
             {
                 colorCorrectTarget.WhiteBalance.Red = 155 + redSlider.Value;
@@ -2330,7 +2195,7 @@ namespace TerraViewer.Callibration
 
         private void greenSlider_ValueChanged(object sender, EventArgs e)
         {
-            greenAmount.Text = (155 + greenSlider.Value).ToString();
+            greenAmount.Text = (155 + greenSlider.Value).ToString(CultureInfo.InvariantCulture);
             if (colorCorrectTarget != null)
             {
                 colorCorrectTarget.WhiteBalance.Green = 155 + greenSlider.Value;
@@ -2340,18 +2205,12 @@ namespace TerraViewer.Callibration
 
         private void blueSlider_ValueChanged(object sender, EventArgs e)
         {
-            blueAmount.Text = (155 + blueSlider.Value).ToString();
+            blueAmount.Text = (155 + blueSlider.Value).ToString(CultureInfo.InvariantCulture);
             if (colorCorrectTarget != null)
             {
                 colorCorrectTarget.WhiteBalance.Blue = 155 + blueSlider.Value;
                 SendBlendPointEditUpdate(colorCorrectTarget);
             }
         }
-
-        private void ScalableCalibration_Click(object sender, EventArgs e)
-        {
-
-        }
-
     }
 }

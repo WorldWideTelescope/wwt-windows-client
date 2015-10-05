@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
-using System.Drawing;
 using System.IO;
 using SharpDX;
 using Color = System.Drawing.Color;
-using System.Reflection;
 using System.Xml;
 
 namespace TerraViewer
@@ -200,12 +197,12 @@ namespace TerraViewer
         {
             get
             {
-                SavedColor saveCol = new SavedColor(representativeColor.ToArgb());
+                var saveCol = new SavedColor(representativeColor.ToArgb());
                 return saveCol.Save();
             }
             set
             {
-                Color newVal = SavedColor.Load(value);
+                var newVal = SavedColor.Load(value);
 
                 if (RepresentativeColor != newVal)
                 {
@@ -312,7 +309,7 @@ namespace TerraViewer
             set { epoch = value; }
         }
       
-        private Orbit orbit = null;
+        private Orbit orbit;
 
         public Orbit Orbit
         {
@@ -331,14 +328,14 @@ namespace TerraViewer
         public void ImportTrajectory(string filename)
         {
             Trajectory.Clear();
-            string[] data = File.ReadAllLines(filename);
-            foreach (string line in data)
+            var data = File.ReadAllLines(filename);
+            foreach (var line in data)
             {
                 Trajectory.Add(new TrajectorySample(line));
             }
         }
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("ReferenceFrame");
             xmlWriter.WriteAttributeString("Name", Name);
@@ -371,7 +368,7 @@ namespace TerraViewer
             if (ReferenceFrameType == ReferenceFrameTypes.Orbital)
             {
                 xmlWriter.WriteAttributeString("SemiMajorAxis", SemiMajorAxis.ToString());
-                xmlWriter.WriteAttributeString("SemiMajorAxisScale", this.SemiMajorAxisUnits.ToString());
+                xmlWriter.WriteAttributeString("SemiMajorAxisScale", SemiMajorAxisUnits.ToString());
                 xmlWriter.WriteAttributeString("Eccentricity", Eccentricity.ToString());
                 xmlWriter.WriteAttributeString("Inclination", Inclination.ToString());
                 xmlWriter.WriteAttributeString("ArgumentOfPeriapsis", ArgumentOfPeriapsis.ToString());
@@ -385,9 +382,9 @@ namespace TerraViewer
             {
                 xmlWriter.WriteStartElement("Trajectory");
 
-                foreach (TrajectorySample sample in Trajectory)
+                foreach (var sample in Trajectory)
                 {
-                    string data = sample.ToString();
+                    var data = sample.ToString();
                     xmlWriter.WriteElementString("Sample", data);
                 }
                 xmlWriter.WriteEndElement();
@@ -396,7 +393,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
             Name = node.Attributes["Name"].Value;
             Parent = node.Attributes["Parent"].Value;
@@ -470,10 +467,10 @@ namespace TerraViewer
             Inclination = double.Parse(line2.Substring(8, 8));
             LongitudeOfAscendingNode = double.Parse(line2.Substring(17, 8));
             ArgumentOfPeriapsis = double.Parse(line2.Substring(34, 8));
-            double revs = double.Parse(line2.Substring(52, 11));
+            var revs = double.Parse(line2.Substring(52, 11));
             MeanAnomolyAtEpoch = double.Parse(line2.Substring(43, 8));
             MeanDailyMotion = revs * 360.0;
-            double part = (86400.0 / revs) / (Math.PI * 2.0);
+            var part = (86400.0 / revs) / (Math.PI * 2.0);
             SemiMajorAxis = Math.Pow((part * part) * gravity, 1.0 / 3.0);
             SemiMajorAxisUnits = AltUnits.Meters;
 
@@ -485,8 +482,8 @@ namespace TerraViewer
                 return false;
             }
 
-            int checksum = 0;
-            for (int i = 0; i < 68; i++)
+            var checksum = 0;
+            for (var i = 0; i < 68; i++)
             {
                 switch (line[i])
                 {
@@ -553,7 +550,7 @@ namespace TerraViewer
 
         public void ComputeFrame(RenderContext11 renderContext)
         {
-            if (this.Reference == ReferenceFrames.Sandbox)
+            if (Reference == ReferenceFrames.Sandbox)
             {
                 WorldMatrix = Matrix3d.Identity;
                 return;
@@ -603,7 +600,7 @@ namespace TerraViewer
             WorldMatrix.Translate(Translation);
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI)));
             WorldMatrix.Scale(new Vector3d(Scale, Scale, Scale));
-            WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)(Coordinates.MstFromUTC2(SpaceTimeController.Now, 0) / 180 * Math.PI), (float)0, (float)0));
+            WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)(Coordinates.MstFromUTC2(SpaceTimeController.Now, 0) / 180 * Math.PI), 0, 0));
         }
         private void ComputeFixedSherical(RenderContext11 renderContext)
         {
@@ -617,14 +614,14 @@ namespace TerraViewer
 
             WorldMatrix = Matrix3d.Identity;
             WorldMatrix.Translate(Translation);
-            double localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
+            var localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
             WorldMatrix.Scale(new Vector3d(localScale, localScale, localScale));
             //WorldMatrix.Scale(new Vector3d(1000, 1000, 1000));
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI)));
             WorldMatrix.Multiply(Matrix3d.RotationZ(-90.0 / 180.0 * Math.PI));
             if (RotationalPeriod != 0)
             {
-                double rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
+                var rotationCurrent = (((SpaceTimeController.JNow - ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
             WorldMatrix.Translate(new Vector3d(1 + (Altitude / renderContext.NominalRadius), 0, 0));
@@ -646,32 +643,32 @@ namespace TerraViewer
             // example, the Sun-Earth L2 point is approximated by using x = 1,500,000 km, y = 0 and z = 0.
 
             WorldMatrix = Matrix3d.Identity;
-            double localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
+            var localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
             WorldMatrix.Scale(new Vector3d(localScale, localScale, localScale));
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI)));
             WorldMatrix.Translate(Translation / 6371.000);
 
             // Currently we assume the Sun-Earth system
-            double jd = SpaceTimeController.JNow;
-            double B = CAACoordinateTransformation.DegreesToRadians(CAAEarth.EclipticLatitude(jd));
-            double L = CAACoordinateTransformation.DegreesToRadians(CAAEarth.EclipticLongitude(jd));
-            Vector3d eclPos = new Vector3d(Math.Cos(L) * Math.Cos(B), Math.Sin(L) * Math.Cos(B), Math.Sin(B));
+            var jd = SpaceTimeController.JNow;
+            var B = CAACoordinateTransformation.DegreesToRadians(CAAEarth.EclipticLatitude(jd));
+            var L = CAACoordinateTransformation.DegreesToRadians(CAAEarth.EclipticLongitude(jd));
+            var eclPos = new Vector3d(Math.Cos(L) * Math.Cos(B), Math.Sin(L) * Math.Cos(B), Math.Sin(B));
 
             // Just approximate the orbital velocity for now
-            Vector3d eclVel = Vector3d.Cross(eclPos, new Vector3d(0.0, 0.0, 1.0));
+            var eclVel = Vector3d.Cross(eclPos, new Vector3d(0.0, 0.0, 1.0));
             eclVel.Normalize();
 
             // Convert to WWT's coordinate convention by swapping Y and Z
             eclPos = new Vector3d(eclPos.X, eclPos.Z, eclPos.Y);
             eclVel = new Vector3d(eclVel.X, eclVel.Z, eclVel.Y);
 
-            Vector3d xaxis = eclPos;
-            Vector3d yaxis = Vector3d.Cross(eclVel, eclPos);
-            Vector3d zaxis = eclVel;
-            Matrix3d rotation = new Matrix3d(xaxis.X, yaxis.X, zaxis.X, 0, xaxis.Y, yaxis.Y, zaxis.Y, 0, xaxis.Z, yaxis.Z, zaxis.Z, 0, 0, 0, 0, 1);
+            var xaxis = eclPos;
+            var yaxis = Vector3d.Cross(eclVel, eclPos);
+            var zaxis = eclVel;
+            var rotation = new Matrix3d(xaxis.X, yaxis.X, zaxis.X, 0, xaxis.Y, yaxis.Y, zaxis.Y, 0, xaxis.Z, yaxis.Z, zaxis.Z, 0, 0, 0, 0, 1);
 
             // Convert from ecliptic to J2000 EME (equatorial) system
-            double earthObliquity = CAACoordinateTransformation.DegreesToRadians(Coordinates.MeanObliquityOfEcliptic(jd));
+            var earthObliquity = CAACoordinateTransformation.DegreesToRadians(Coordinates.MeanObliquityOfEcliptic(jd));
             rotation = rotation * Matrix3d.RotationX(-earthObliquity);
 
             WorldMatrix.Multiply(rotation);
@@ -679,33 +676,33 @@ namespace TerraViewer
 
         private void ComputeFrameTrajectory(RenderContext11 renderContext)
         {
-            Vector3d vector = new Vector3d();
-            Vector3d point = GetTragectoryPoint(SpaceTimeController.JNow, out vector);
+            var vector = new Vector3d();
+            var point = GetTragectoryPoint(SpaceTimeController.JNow, out vector);
 
-            Vector3d direction = vector;
+            var direction = vector;
 
             direction.Normalize();
-            Vector3d up = point;
+            var up = point;
             up.Normalize();
             direction.Normalize();
 
-            double dist = point.Length();
-            double scaleFactor = 1.0;
+            var dist = point.Length();
+            var scaleFactor = 1.0;
             //scaleFactor = UiTools.KilometersPerAu * 1000;
             scaleFactor *= 1 / renderContext.NominalRadius;
 
 
-            Matrix3d look = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), direction, new Vector3d(0, 1, 0));
+            var look = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), direction, new Vector3d(0, 1, 0));
             look.Invert();
 
             WorldMatrix = Matrix3d.Identity;
             WorldMatrix.Translate(Translation);
-            double localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
+            var localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
             WorldMatrix.Scale(new Vector3d(localScale, localScale, localScale));
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI))); 
             if (RotationalPeriod != 0)
             {
-                double rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
+                var rotationCurrent = (((SpaceTimeController.JNow - ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
 
@@ -721,16 +718,16 @@ namespace TerraViewer
 
         private Vector3d GetTragectoryPoint(double jNow, out Vector3d vector)
         {
-            int min = 0;
-            int max = Trajectory.Count - 1;
+            var min = 0;
+            var max = Trajectory.Count - 1;
 
-            Vector3d point = new Vector3d();
+            var point = new Vector3d();
 
             vector = new Vector3d();
 
-            int current = max / 2;
+            var current = max / 2;
 
-            bool found = false;
+            var found = false;
 
             while (!found)
             {
@@ -749,9 +746,9 @@ namespace TerraViewer
 
                 if ((Trajectory[current - 1].Time <= jNow) && (Trajectory[current].Time > jNow))
                 {
-                    double denominator = Trajectory[current].Time - Trajectory[current - 1].Time;
-                    double numerator = jNow - Trajectory[current - 1].Time;
-                    double tween = numerator / denominator;
+                    var denominator = Trajectory[current].Time - Trajectory[current - 1].Time;
+                    var numerator = jNow - Trajectory[current - 1].Time;
+                    var tween = numerator / denominator;
                     vector = Trajectory[current - 1].Position - Trajectory[current].Position;
                     point = Vector3d.Lerp(Trajectory[current - 1].Position, Trajectory[current].Position, tween);
                     return point;
@@ -759,14 +756,14 @@ namespace TerraViewer
 
                 if (Trajectory[current].Time < jNow)
                 {
-                    int next = current + (max - current + 1) / 2;
+                    var next = current + (max - current + 1) / 2;
                     min = current;
                     current = next;
                 }
                 else
                     if (Trajectory[current - 1].Time > jNow)
                     {
-                        int next = current - (current - min + 1) / 2;
+                        var next = current - (current - min + 1) / 2;
                         max = current;
                         current = next;
                     }
@@ -777,20 +774,20 @@ namespace TerraViewer
 
         private void ComputeOrbital(RenderContext11 renderContext)
         {
-            CAAEllipticalObjectElements ee = Elements;
-            Vector3d point = CAAElliptical.CalculateRectangular(SpaceTimeController.JNow, ee, out MeanAnomoly);
+            var ee = Elements;
+            var point = CAAElliptical.CalculateRectangular(SpaceTimeController.JNow, ee, out MeanAnomoly);
 
-            Vector3d pointInstantLater = CAAElliptical.CalculateRectangular(ee, MeanAnomoly + .001);
+            var pointInstantLater = CAAElliptical.CalculateRectangular(ee, MeanAnomoly + .001);
 
-            Vector3d direction = point - pointInstantLater;
+            var direction = point - pointInstantLater;
 
             direction.Normalize();
-            Vector3d up = point;
+            var up = point;
             up.Normalize();
             direction.Normalize();
 
-            double dist = point.Length();
-            double scaleFactor = 1.0;
+            var dist = point.Length();
+            var scaleFactor = 1.0;
             switch (SemiMajorAxisUnits)
             {
                 case AltUnits.Meters:
@@ -829,19 +826,19 @@ namespace TerraViewer
             scaleFactor *= 1 / renderContext.NominalRadius;
 
 
-            Matrix3d look = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), direction, up);
+            var look = Matrix3d.LookAtLH(new Vector3d(0, 0, 0), direction, up);
             look.Invert();
 
             WorldMatrix = Matrix3d.Identity;
             WorldMatrix.Translate(Translation);
 
 
-            double localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
+            var localScale = (1 / renderContext.NominalRadius) * Scale * MeanRadius;
             WorldMatrix.Scale(new Vector3d(localScale, localScale, localScale));
             WorldMatrix.Rotate(Quaternion.RotationYawPitchRoll((float)((Heading) / 180.0 * Math.PI), (float)(Pitch / 180.0 * Math.PI), (float)(Roll / 180.0 * Math.PI)));
             if (RotationalPeriod != 0)
             {
-                double rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
+                var rotationCurrent = (((SpaceTimeController.JNow - ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
 
@@ -858,12 +855,12 @@ namespace TerraViewer
 
         public bool SetProp(string name, string value)
         {
-            Type thisType = this.GetType();
-            PropertyInfo pi = thisType.GetProperty(name);
-            bool safeToSet = false;
-            Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var thisType = GetType();
+            var pi = thisType.GetProperty(name);
+            var safeToSet = false;
+            var layerPropType = typeof(LayerProperty);
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var var in attributes)
             {
                 if (var.GetType() == layerPropType)
                 {
@@ -899,7 +896,7 @@ namespace TerraViewer
 
         public bool SetProps(string xml)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(xml);
 
 
@@ -924,12 +921,12 @@ namespace TerraViewer
 
         public string GetProp(string name)
         {
-            Type thisType = this.GetType();
-            PropertyInfo pi = thisType.GetProperty(name);
-            bool safeToGet = false;
-            Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var thisType = GetType();
+            var pi = thisType.GetProperty(name);
+            var safeToGet = false;
+            var layerPropType = typeof(LayerProperty);
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var var in attributes)
             {
                 if (var.GetType() == layerPropType)
                 {
@@ -949,28 +946,28 @@ namespace TerraViewer
 
         public string GetProps()
         {
-            MemoryStream ms = new MemoryStream();
-            using (XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8))
+            var ms = new MemoryStream();
+            using (var xmlWriter = new XmlTextWriter(ms, Encoding.UTF8))
             {
                 xmlWriter.Formatting = Formatting.Indented;
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("LayerApi");
                 xmlWriter.WriteElementString("Status", "Success");
                 xmlWriter.WriteStartElement("Frame");
-                xmlWriter.WriteAttributeString("Class", this.GetType().ToString().Replace("TerraViewer.", ""));
+                xmlWriter.WriteAttributeString("Class", GetType().ToString().Replace("TerraViewer.", ""));
 
 
-                Type thisType = this.GetType();
-                PropertyInfo[] properties = thisType.GetProperties();
+                var thisType = GetType();
+                var properties = thisType.GetProperties();
 
-                Type layerPropType = typeof(LayerProperty);
+                var layerPropType = typeof(LayerProperty);
 
-                foreach (PropertyInfo pi in properties)
+                foreach (var pi in properties)
                 {
-                    bool safeToGet = false;
+                    var safeToGet = false;
 
-                    object[] attributes = pi.GetCustomAttributes(false);
-                    foreach (object var in attributes)
+                    var attributes = pi.GetCustomAttributes(false);
+                    foreach (var var in attributes)
                     {
                         if (var.GetType() == layerPropType)
                         {
@@ -990,7 +987,7 @@ namespace TerraViewer
                 xmlWriter.Close();
 
             }
-            byte[] data = ms.GetBuffer();
+            var data = ms.GetBuffer();
             return Encoding.UTF8.GetString(data);
 
         }
@@ -998,7 +995,7 @@ namespace TerraViewer
         public double[] GetParams()
         {
             //todo this is for spherical fixed, need to add orbital..
-            double[] paramList = new double[12];
+            var paramList = new double[12];
             paramList[0] = MeanRadius;
             paramList[1] = Oblateness;
             paramList[2] = Heading;
@@ -1017,7 +1014,7 @@ namespace TerraViewer
 
         public string[] GetParamNames()
         {
-            return new string[] 
+            return new[] 
             { 
                 "MeanRadius",
                 "Oblateness",
@@ -1036,7 +1033,7 @@ namespace TerraViewer
 
         public BaseTweenType[] GetParamTypes()
         {
-            return new BaseTweenType[]
+            return new[]
             { 
                 BaseTweenType.Power,
                 BaseTweenType.Linear,
@@ -1123,7 +1120,7 @@ namespace TerraViewer
             line = line.Replace("  ", " ");
             line = line.Replace("  ", " ");
 
-            string[] parts = line.Split(new char[] { ' ', '\t', ',' });
+            var parts = line.Split(new[] { ' ', '\t', ',' });
 
             if (parts.Length > 3)
             {
@@ -1146,11 +1143,7 @@ namespace TerraViewer
             {
                 return string.Format("{0} {1} {2} {3}", Time, X, Y, Z);
             }
-            else
-            {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
-            }
-
+            return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
         }
     }
 }

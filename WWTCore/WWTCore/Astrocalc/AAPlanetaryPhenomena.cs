@@ -36,7 +36,7 @@ public static partial class GlobalMembersStdafx
 public class  CAAPlanetaryPhenomena
 {
 //Enums
-  public enum PlanetaryObject: int
+  public enum PlanetaryObject
   {
 	MERCURY,
 	VENUS,
@@ -47,7 +47,7 @@ public class  CAAPlanetaryPhenomena
 	NEPTUNE
   }
 
-  public enum EventType: int
+  public enum EventType
   {
 	INFERIOR_CONJUNCTION,
 	SUPERIOR_CONJUNCTION,
@@ -65,7 +65,7 @@ public class  CAAPlanetaryPhenomena
   
   public static double K(double Year, PlanetaryObject @object, EventType type)
   {
-	int nCoefficient = -1;
+	var nCoefficient = -1;
     if ((int)@object >= (int)PlanetaryObject.MARS)
 	{
 	  Debug.Assert(type == EventType.OPPOSITION || type == EventType.CONJUNCTION);
@@ -85,12 +85,12 @@ public class  CAAPlanetaryPhenomena
 		nCoefficient = (int)@object *2 + 1;
 	}
   
-	double k = (365.2425 *Year + 1721060 - GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].A) / GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].B;
+	var k = (365.2425 *Year + 1721060 - GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].A) / GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].B;
 	return Math.Floor(k + 0.5);
   }
   public static double Mean(double k, PlanetaryObject @object, EventType type)
   {
-	int nCoefficient = -1;
+	var nCoefficient = -1;
     if ((int)@object >= (int)PlanetaryObject.MARS)
 	{
 	  Debug.Assert(type == EventType.OPPOSITION || type == EventType.CONJUNCTION);
@@ -118,15 +118,12 @@ public class  CAAPlanetaryPhenomena
   
 	if (type == EventType.WESTERN_ELONGATION || type == EventType.EASTERN_ELONGATION || type == EventType.STATION1 || type == EventType.STATION2)
 	{
-        if ((int)@object >= (int)PlanetaryObject.MARS)
-		JDE0 = Mean(k, @object, EventType.OPPOSITION);
-	  else
-		JDE0 = Mean(k, @object, EventType.INFERIOR_CONJUNCTION);
+	    JDE0 = Mean(k, @object, (int)@object >= (int)PlanetaryObject.MARS ? EventType.OPPOSITION : EventType.INFERIOR_CONJUNCTION);
 	}
 	else
 	  JDE0 = Mean(k, @object, type);
   
-	int nCoefficient = -1;
+	var nCoefficient = -1;
     if (@object >= PlanetaryObject.MARS)
 	{
 	  Debug.Assert(type == EventType.OPPOSITION || type == EventType.CONJUNCTION || type == EventType.STATION1 || type == EventType.STATION2);
@@ -146,11 +143,11 @@ public class  CAAPlanetaryPhenomena
 		nCoefficient = (int)@object *2 + 1;
 	}
   
-	double M = CAACoordinateTransformation.MapTo0To360Range(GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M0 + GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M1 *k);
+	var M = CAACoordinateTransformation.MapTo0To360Range(GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M0 + GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M1 *k);
 	M = CAACoordinateTransformation.DegreesToRadians(M); //convert M to radians
   
-	double T = (JDE0 - 2451545) / 36525;
-	double T2 = T *T;
+	var T = (JDE0 - 2451545) / 36525;
+	var T2 = T *T;
   
 	double a =0;
 	double b =0;
@@ -346,17 +343,17 @@ public class  CAAPlanetaryPhenomena
   }
   public static double ElongationValue(double k, PlanetaryObject @object, bool bEastern)
   {
-	double JDE0 = Mean(k, @object, EventType.INFERIOR_CONJUNCTION);
+	var JDE0 = Mean(k, @object, EventType.INFERIOR_CONJUNCTION);
 
     Debug.Assert((int)@object < (int)PlanetaryObject.MARS);
   
-	int nCoefficient = (int)@object *2;
+	var nCoefficient = (int)@object *2;
   
-	double M = CAACoordinateTransformation.MapTo0To360Range(GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M0 + GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M1 *k);
+	var M = CAACoordinateTransformation.MapTo0To360Range(GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M0 + GlobalMembersStdafx.g_PlanetaryPhenomenaCoefficient1[nCoefficient].M1 *k);
 	M = CAACoordinateTransformation.DegreesToRadians(M); //convert M to radians
   
-	double T = (JDE0 - 2451545) / 36525;
-	double T2 = T *T;
+	var T = (JDE0 - 2451545) / 36525;
+	var T2 = T *T;
   
 	double @value = 0;
     if ((int)@object == (int)PlanetaryObject.MERCURY)

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TerraViewer
 {
@@ -13,12 +12,12 @@ namespace TerraViewer
         {
             if (syncToClock)
             {
-                DateTime justNow = SpaceTimeController.MetaNow;
+                var justNow = MetaNow;
 
                 if (timeRate != 1.0)
                 {
-                    TimeSpan ts = justNow - last;
-                    long ticks = (long)(ts.Ticks * timeRate);
+                    var ts = justNow - last;
+                    var ticks = (long)(ts.Ticks * timeRate);
                     offset = offset.Add(new TimeSpan(ticks));
                 }
                 last = justNow;
@@ -30,7 +29,7 @@ namespace TerraViewer
                 catch
                 {
                     now = new DateTime(1, 12, 25, 23, 59, 59);
-                    offset = now - SpaceTimeController.MetaNow;
+                    offset = now - MetaNow;
                     nowUtc = now.ToUniversalTime();
 
                 }
@@ -38,14 +37,14 @@ namespace TerraViewer
                 if (now.Year > 4000)
                 {
                     now = new DateTime(4000, 12, 31, 23, 59, 59);
-                    offset = now - SpaceTimeController.MetaNow;
+                    offset = now - MetaNow;
                     nowUtc = now.ToUniversalTime();
                 }
 
                 if (now.Year < 1)
                 {
                     now = new DateTime(0, 12, 25, 23, 59, 59);
-                    offset = now - SpaceTimeController.MetaNow;
+                    offset = now - MetaNow;
                     nowUtc = now.ToUniversalTime();
                 }
 
@@ -59,27 +58,27 @@ namespace TerraViewer
             {
                 now = now.Add(ts);
                 nowUtc = now.ToUniversalTime();
-                offset = now - SpaceTimeController.MetaNow;
+                offset = now - MetaNow;
             }
             catch
             {
                 now = new DateTime(1, 12, 25, 23, 59, 59);
                 nowUtc = now.ToUniversalTime();
-                offset = now - SpaceTimeController.MetaNow;
+                offset = now - MetaNow;
             }
 
             if (now.Year > 4000)
             {
                 now = new DateTime(4000, 12, 31, 23, 59, 59);
                 nowUtc = now.ToUniversalTime();
-                offset = now - SpaceTimeController.MetaNow;
+                offset = now - MetaNow;
             }
 
             if (now.Year < 1)
             {
                 now = new DateTime(0, 12, 25, 23, 59, 59);
                 nowUtc = now.ToUniversalTime();
-                offset = now - SpaceTimeController.MetaNow;
+                offset = now - MetaNow;
             }
         }
 
@@ -89,13 +88,10 @@ namespace TerraViewer
             {
                 if (syncToClock)
                 {
-                    DateTime future = Now.Add(new TimeSpan((long)((delta * 10000000) * timeRate)));
+                    var future = Now.Add(new TimeSpan((long)((delta * 10000000) * timeRate)));
                     return future;
                 }
-                else
-                {
-                    return Now;
-                }
+                return Now;
             }
             catch
             {
@@ -108,13 +104,10 @@ namespace TerraViewer
             {
                 if (syncToClock)
                 {
-                    DateTime future = Now.Add(new TimeSpan((long)((delta * 10000000) * timeRate)));
+                    var future = Now.Add(new TimeSpan((long)((delta * 10000000) * timeRate)));
                     return UtcToJulian(future);
                 }
-                else
-                {
-                    return UtcToJulian(Now);
-                }
+                return UtcToJulian(Now);
             }
             catch
             {
@@ -130,12 +123,12 @@ namespace TerraViewer
             set
             {
                 now = value.ToLocalTime();
-                offset = now - SpaceTimeController.MetaNow;
-                last = SpaceTimeController.MetaNow;
+                offset = now - MetaNow;
+                last = MetaNow;
                 nowUtc = now.ToUniversalTime();
             }
         }
-        static DateTime last = SpaceTimeController.MetaNow;
+        static DateTime last = MetaNow;
 
 
         static DateTime metaNow = DateTime.Now;
@@ -183,12 +176,9 @@ namespace TerraViewer
 
                     // todo fix ticks to proper ratio
 
-                    return (Int64)metaNow.Ticks * factor / 1000;
+                    return metaNow.Ticks * factor / 1000;
                 }
-                else
-                {
-                    return HiResTimer.TickCount;
-                }
+                return HiResTimer.TickCount;
             }
         }
 
@@ -206,7 +196,7 @@ namespace TerraViewer
             syncToClock = true;
         }
 
-        static TimeSpan offset = new TimeSpan();
+        static TimeSpan offset;
 
         static DateTime now = DateTime.Now;
         static DateTime nowUtc = DateTime.Now.ToUniversalTime();
@@ -236,12 +226,12 @@ namespace TerraViewer
 
         public static bool SyncToClock
         {
-            get { return SpaceTimeController.syncToClock; }
+            get { return syncToClock; }
             set
             {
-                if (SpaceTimeController.syncToClock != value)
+                if (syncToClock != value)
                 {
-                    SpaceTimeController.syncToClock = value;
+                    syncToClock = value;
                     if (value)
                     {
                         last = DateTime.Now;
@@ -269,8 +259,8 @@ namespace TerraViewer
 
         public static double Altitude
         {
-            get { return SpaceTimeController.altitude; }
-            set { SpaceTimeController.altitude = value; }
+            get { return altitude; }
+            set { altitude = value; }
         }
 
         static public Coordinates Location
@@ -301,25 +291,25 @@ namespace TerraViewer
 
         public static double UtcToJulian(DateTime utc)
         {
-            int year = utc.Year;
-            int month = utc.Month;
+            var year = utc.Year;
+            var month = utc.Month;
             double day = utc.Day;
             double hour = utc.Hour;
             double minute = utc.Minute;
-            double second = utc.Second + utc.Millisecond / 1000.0;
-            double dblDay = day + (hour / 24.0) + (minute / 1440.0) + (second / 86400.0);
+            var second = utc.Second + utc.Millisecond / 1000.0;
+            var dblDay = day + (hour / 24.0) + (minute / 1440.0) + (second / 86400.0);
             return AstroCalc.AstroCalc.GetJulianDay(year, month, dblDay);
         }
 
         public static double TwoLineDateToJulian(string p)
         {
-            bool pre1950 = Convert.ToInt32(p.Substring(0, 1)) < 6;
-            int year = Convert.ToInt32((pre1950 ? " 20" : "19") + p.Substring(0, 2));
+            var pre1950 = Convert.ToInt32(p.Substring(0, 1)) < 6;
+            var year = Convert.ToInt32((pre1950 ? " 20" : "19") + p.Substring(0, 2));
             double days = Convert.ToInt32(p.Substring(2, 3));
-            double fraction = Convert.ToDouble(p.Substring(5));
+            var fraction = Convert.ToDouble(p.Substring(5));
 
-            TimeSpan ts = TimeSpan.FromDays(days - 1 + fraction);
-            DateTime date = new DateTime(year, 1, 1, 0, 0, 0, 0);
+            var ts = TimeSpan.FromDays(days - 1 + fraction);
+            var date = new DateTime(year, 1, 1, 0, 0, 0, 0);
             date += ts;
             return UtcToJulian(date);
         }
@@ -327,7 +317,7 @@ namespace TerraViewer
         public static bool DoneDumping()
         {
 
-            if (!FrameDumping || CancelFrameDump || (SpaceTimeController.CurrentFrameNumber >= SpaceTimeController.TotalFrames))
+            if (!FrameDumping || CancelFrameDump || (CurrentFrameNumber >= TotalFrames))
             {
                 return true;
             }
@@ -336,7 +326,7 @@ namespace TerraViewer
 
         public static void Faster()
         {
-            SpaceTimeController.SyncToClock = true;
+            SyncToClock = true;
             if (TimeRate > .9)
             {
                 TimeRate *= 1.1;
@@ -359,23 +349,23 @@ namespace TerraViewer
 
         public static void Slower()
         {
-            SpaceTimeController.SyncToClock = true;
-            if (SpaceTimeController.TimeRate < -.9)
+            SyncToClock = true;
+            if (TimeRate < -.9)
             {
-                SpaceTimeController.TimeRate *= 1.1;
+                TimeRate *= 1.1;
             }
-            else if (SpaceTimeController.TimeRate > 1)
+            else if (TimeRate > 1)
             {
-                SpaceTimeController.TimeRate /= 1.1;
+                TimeRate /= 1.1;
             }
             else
             {
-                SpaceTimeController.TimeRate = -1.0;
+                TimeRate = -1.0;
             }
 
-            if (SpaceTimeController.TimeRate < -1000000000)
+            if (TimeRate < -1000000000)
             {
-                SpaceTimeController.TimeRate = -1000000000;
+                TimeRate = -1000000000;
             }
         }
 
@@ -388,14 +378,14 @@ namespace TerraViewer
 
         public static void PauseTime()
         {
-            SpaceTimeController.SyncToClock = !SpaceTimeController.SyncToClock;
+            SyncToClock = !SyncToClock;
         }
 
         public static void InvokeAction(string actionString, string value)
         {
             try
             {
-                SpaceTimeActions action = (SpaceTimeActions)Enum.Parse(typeof(SpaceTimeActions), actionString, true);
+                var action = (SpaceTimeActions)Enum.Parse(typeof(SpaceTimeActions), actionString, true);
 
                 switch (action)
                 {
@@ -511,7 +501,7 @@ namespace TerraViewer
 
         ScriptableProperty[] IScriptable.GetProperties()
         {
-            List<ScriptableProperty> props = new List<ScriptableProperty>();
+            var props = new List<ScriptableProperty>();
 
             props.Add(new ScriptableProperty("TimeRate", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Log, -1000000, 1000000, false));
             props.Add(new ScriptableProperty("Pause", ScriptablePropertyTypes.BlendState, ScriptablePropertyScale.Linear, -90, +90, true));
@@ -525,7 +515,7 @@ namespace TerraViewer
 
         void IScriptable.InvokeAction(string name, string value)
         {
-            SpaceTimeController.InvokeAction(name, value);
+            InvokeAction(name, value);
         }
 
         void IScriptable.SetProperty(string name, string value)
@@ -533,10 +523,10 @@ namespace TerraViewer
             switch (name.ToLower())
             {
                 case "timerate":
-                    SpaceTimeController.TimeRate = double.Parse(value);
+                    TimeRate = double.Parse(value);
                     break;
                 case "pause":
-                    SpaceTimeController.SyncToClock = !bool.Parse(value);
+                    SyncToClock = !bool.Parse(value);
                     break;
             }
             return;
@@ -547,10 +537,10 @@ namespace TerraViewer
             switch (name.ToLower())
             {
                 case "timerate":
-                    return SpaceTimeController.TimeRate.ToString();
+                    return TimeRate.ToString();
 
                 case "pause":
-                    return SpaceTimeController.SyncToClock.ToString();
+                    return SyncToClock.ToString();
 
             }
             return null;
@@ -562,8 +552,8 @@ namespace TerraViewer
             {
 
                 case "pause":
-                    SpaceTimeController.SyncToClock = !SpaceTimeController.SyncToClock;
-                    return !SpaceTimeController.syncToClock;
+                    SyncToClock = !SyncToClock;
+                    return !syncToClock;
             }
             return false;
         }

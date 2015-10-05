@@ -1,10 +1,7 @@
 // Copyright Microsoft Copr 2006
 // Written by Jonathan Fay
 
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace TerraViewer
 {
@@ -54,12 +51,9 @@ namespace TerraViewer
         {
             if (string.IsNullOrEmpty(Name))
             {
-                return Coordinates.FormatDMS((((((RA )) / 360) * 24.0 + 12) % 24)) + ", " + Coordinates.FormatDMS(Dec) + ", " + PointType.ToString();
+                return Coordinates.FormatDMS((((((RA )) / 360) * 24.0 + 12) % 24)) + ", " + Coordinates.FormatDMS(Dec) + ", " + PointType;
             }
-            else
-            {
-                return Name + ", " + PointType.ToString();
-            }
+            return Name + ", " + PointType;
         }
     }
     public enum PointType { Move, Line, Dash, Start };

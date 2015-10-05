@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.D3DCompiler;
 using SharpDX;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using SharpDX.DXGI;
+using Buffer = SharpDX.Direct3D11.Buffer;
+using Color = System.Drawing.Color;
+using Device = SharpDX.Direct3D11.Device;
 
 namespace TerraViewer
 {
@@ -16,15 +23,15 @@ namespace TerraViewer
         public const int MaxEclipseShadows = 4;
         public const int MaxOverlayTextures = 2;
 
-        private PixelShader pixelShader = null;
-        private VertexShader vertexShader = null;
+        private PixelShader pixelShader;
+        private VertexShader vertexShader;
         private byte[] pixelShaderBytecode;
         private byte[] vertexShaderBytecode;
 
         private PlanetShaderKey key;
 
-        private static PlanetShaderKeyComparer shaderLibraryComparer = null;
-        private static Dictionary<PlanetShaderKey, PlanetShader11> shaderLibrary = null;
+        private static PlanetShaderKeyComparer shaderLibraryComparer;
+        private static Dictionary<PlanetShaderKey, PlanetShader11> shaderLibrary;
 
         public enum StandardVertexLayout
         {
@@ -147,27 +154,27 @@ namespace TerraViewer
             public Vector4 OverlayColor3;
         }
 
-        private SharpDX.Direct3D11.InputLayout[] layoutCache = new SharpDX.Direct3D11.InputLayout[(int)StandardVertexLayout.Count];
+        private readonly InputLayout[] layoutCache = new InputLayout[(int)StandardVertexLayout.Count];
 
-        private SharpDX.Direct3D11.Buffer constantBuffer;
+        private Buffer constantBuffer;
         private PlanetShaderConstants constants;
 
         // Set this value to true while debugging to force reloading of all shaders
-        private static bool regenerateShaders = false;
+        private static bool regenerateShaders;
 
         public static void CompileAndSaveShaders()
         {
-            PlanetShaderKey k = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
+            var k = new PlanetShaderKey(PlanetSurfaceStyle.Emissive, false, 0);
             saveToLibrary(k);
             k.textures = PlanetShaderKey.SurfaceProperty.Diffuse;
             saveToLibrary(k);
 
-            for (int lightCount = 0; lightCount < 2; ++lightCount)
+            for (var lightCount = 0; lightCount < 2; ++lightCount)
             {
-                int maxShadows = Math.Min(lightCount, 1);
-                for (int shadowCount = 0; shadowCount < maxShadows; ++shadowCount)
+                var maxShadows = Math.Min(lightCount, 1);
+                for (var shadowCount = 0; shadowCount < maxShadows; ++shadowCount)
                 {
-                    for (int tex = 0; tex < 2; ++tex)
+                    for (var tex = 0; tex < 2; ++tex)
                     {
                         k.eclipseShadowCount = shadowCount;
                         k.lightCount = lightCount;
@@ -359,9 +366,9 @@ namespace TerraViewer
             }
         }
 
-        public void SetOverlayTextureColor(int overlayIndex, System.Drawing.Color color)
+        public void SetOverlayTextureColor(int overlayIndex, Color color)
         {
-            Vector4 colorf = new Vector4(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
+            var colorf = new Vector4(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
             switch (overlayIndex)
             {
                 case 0: constants.OverlayColor0 = colorf; break;
@@ -652,22 +659,22 @@ namespace TerraViewer
             // Just the defaults right now...
             ShaderFlags shaderFlags = 0;
 
-            PlanetSurfaceStyle style = key.style;
-            System.Console.WriteLine("Building shader: " + key.ToString());
+            var style = key.style;
+            Console.WriteLine("Building shader: " + key.ToString());
 
-            bool hasVertexColors = (key.flags & PlanetShaderKey.ShaderFlags.PerVertexColor) == PlanetShaderKey.ShaderFlags.PerVertexColor;
-            bool needCameraSpacePosition = key.eclipseShadowCount > 0 || key.HasRingShadows;
-            bool needObjectSpacePosition = true;
-            bool needSurfaceNormals = style != PlanetSurfaceStyle.Emissive;
-            bool needSurfaceTangents = needSurfaceNormals && key.hasTexture(PlanetShaderKey.SurfaceProperty.Normal);
+            var hasVertexColors = (key.flags & PlanetShaderKey.ShaderFlags.PerVertexColor) == PlanetShaderKey.ShaderFlags.PerVertexColor;
+            var needCameraSpacePosition = key.eclipseShadowCount > 0 || key.HasRingShadows;
+            var needObjectSpacePosition = true;
+            var needSurfaceNormals = style != PlanetSurfaceStyle.Emissive;
+            var needSurfaceTangents = needSurfaceNormals && key.hasTexture(PlanetShaderKey.SurfaceProperty.Normal);
                  
             string vsIn;                // Vertex shader input
             string psIn;                // Vertex shader output / pixel shader input
-            string shaderConstantDecl = "";  // Shader constant declarations
-            string textureDecl = "";
-            string vertexShaderText = "";    // Vertex shader source
-            string pixelShaderText = "";     // Pixel shader source
-            string samplerStateText = "";
+            var shaderConstantDecl = "";  // Shader constant declarations
+            var textureDecl = "";
+            var vertexShaderText = "";    // Vertex shader source
+            var pixelShaderText = "";     // Pixel shader source
+            var samplerStateText = "";
 
 
             samplerStateText =
@@ -804,7 +811,7 @@ namespace TerraViewer
                     "     float4 AtmosphereInscatter : COLOR;    \n" +
                     "     float4 AtmosphereExtinction : COLOR1;  \n";
             }
-            for (int shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
+            for (var shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
             {
                 psIn +=
                     "     float4 EclipseShadowCoord" + shadowIndex + " : TEXCOORD" + eclipseShadowCoordIndex(shadowIndex) + ";   \n";
@@ -814,7 +821,7 @@ namespace TerraViewer
                 psIn +=
                     "     float4 RingShadowCoord : TEXCOORD" + ringShadowCoordIndex() + ";   \n";
             }
-            for (int overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
+            for (var overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
             {
                 psIn +=
                     "     float2 OverlayTexCoord" + overlayIndex + " : TEXCOORD" + overlayTexCoordIndex(overlayIndex) + ";  \n";
@@ -845,13 +852,13 @@ namespace TerraViewer
                     declareConstant("float3", "atmosphereCenter", 15);
             }
 
-            for (int shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
+            for (var shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
             {
                 shaderConstantDecl +=
                     declareConstant("float4x4", "matEclipseShadow" + shadowIndex, 16 + 4 * shadowIndex);
             }
 
-            for (int overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
+            for (var overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
             {
                 shaderConstantDecl +=
                     declareConstant("float4x4", "matOverlayTexture" + overlayIndex, 32 + 4 * overlayIndex);
@@ -968,7 +975,7 @@ namespace TerraViewer
 
             }
 
-            for (int shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
+            for (var shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
             {
                 vertexShaderText +=
                     "    Out.EclipseShadowCoord" + shadowIndex + " = mul(cameraSpacePos, matEclipseShadow" + shadowIndex + ");\n";
@@ -991,7 +998,7 @@ namespace TerraViewer
             }
 
             // Transform the long/lat coord to get overlay texture coordinates
-            for (int overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
+            for (var overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
             {
                 vertexShaderText +=
                     "    Out.OverlayTexCoord" + overlayIndex + " = mul(float4(In.LongLatCoord.x, In.LongLatCoord.y, 1.0, 0.0), matOverlayTexture" + overlayIndex + ").xy;\n";
@@ -1001,7 +1008,7 @@ namespace TerraViewer
                     "     return Out;                              \n" + // Transfer color
                     " }                                            \n";
 
-            bool viewDependentLighting = false;
+            var viewDependentLighting = false;
             if (style == PlanetSurfaceStyle.Specular ||
                 style == PlanetSurfaceStyle.SpecularPass ||
                 style == PlanetSurfaceStyle.LommelSeeliger)
@@ -1009,21 +1016,21 @@ namespace TerraViewer
                 viewDependentLighting = true;
             }
 
-            bool hasSpecular = false;
+            var hasSpecular = false;
             if (style == PlanetSurfaceStyle.Specular ||
                 style == PlanetSurfaceStyle.SpecularPass)
             {
                 hasSpecular = true;
             }
 
-            bool hasHemisphereLight = true;
+            var hasHemisphereLight = true;
 
             // Generate the pixel shader source
 
             const int PixelShaderConstantStart = 48;
 
             // Generate the pixel shader constants
-            for (int i = 0; i < key.lightCount; ++i)
+            for (var i = 0; i < key.lightCount; ++i)
             {
                 shaderConstantDecl +=
                     declareConstant("float3", "lightDirection" + i, PixelShaderConstantStart + 0 + i) +
@@ -1083,7 +1090,7 @@ namespace TerraViewer
                     "Texture2D ringTexture : register(" + RenderContext11.PixelProfile + ", t" + ringShadowSamplerIndex() + ");\n";
             }
 
-            for (int overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
+            for (var overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
             {
                 textureDecl +=
                     "Texture2D overlayTexture" + overlayIndex + " : register(" + RenderContext11.PixelProfile + ", t" + overlayTextureSamplerIndex(overlayIndex) + ");\n";
@@ -1157,7 +1164,7 @@ namespace TerraViewer
             }
 
             // Merge in color from any overlay textures
-            for (int overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
+            for (var overlayIndex = 0; overlayIndex < key.overlayTextureCount; ++overlayIndex)
             {
                 pixelShaderText +=
                     "     {\n" +
@@ -1170,7 +1177,7 @@ namespace TerraViewer
             // so we need to normalize it.
             if (style != PlanetSurfaceStyle.Emissive && style != PlanetSurfaceStyle.PlanetaryRings)
             {
-                string normalSign = "";
+                var normalSign = "";
                 if (key.TwoSidedLighting)
                     normalSign = " * (face ? 1 : -1)";
 
@@ -1231,7 +1238,7 @@ namespace TerraViewer
                 }
 
                 // Compute the contribution from each light source and sum them
-                for (int lightIndex = 0; lightIndex < key.lightCount; ++lightIndex)
+                for (var lightIndex = 0; lightIndex < key.lightCount; ++lightIndex)
                 {
                     pixelShaderText += "     {\n";
                     pixelShaderText +=
@@ -1298,15 +1305,15 @@ namespace TerraViewer
             pixelShaderText +=
                 "    float4 shadow = 1.0;   \n";
 
-            bool hasShadows = key.eclipseShadowCount > 0 || key.HasRingShadows || key.style == PlanetSurfaceStyle.PlanetaryRings;
+            var hasShadows = key.eclipseShadowCount > 0 || key.HasRingShadows || key.style == PlanetSurfaceStyle.PlanetaryRings;
 
             // TODO: Shadowing should be handled in the light source loop
             // Not a problem for current lighting situations, however.
             if (hasShadows)
             {
-                for (int shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
+                for (var shadowIndex = 0; shadowIndex < key.eclipseShadowCount; ++shadowIndex)
                 {
-                    string shadowCoord = "In.EclipseShadowCoord" + shadowIndex;
+                    var shadowCoord = "In.EclipseShadowCoord" + shadowIndex;
                     pixelShaderText +=
                         "     shadow *= eclipseTexture.Sample(ClampTextureSampler, " + shadowCoord + ".xy / " + shadowCoord + ".w);   \n";
                 }
@@ -1363,12 +1370,12 @@ namespace TerraViewer
                 "};\n";
 
 
-            string pixelShaderSource = psIn + "\n" +
+            var pixelShaderSource = psIn + "\n" +
                                        shaderConstantDecl + "\n" +
                                        textureDecl + "\n" +
                                        samplerStateText + "\n" +
                                        pixelShaderText + "\n";
-            string vertexShaderSource = vsIn + "\n" +
+            var vertexShaderSource = vsIn + "\n" +
                                         psIn + "\n" +
                                         shaderConstantDecl + "\n" +
                                         vertexShaderText;
@@ -1388,58 +1395,58 @@ namespace TerraViewer
             {
                 vertexShader = new VertexShader(RenderContext11.PrepDevice, vertexShaderBytecode);
             }
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PlanetShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PlanetShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
 
-        public SharpDX.Direct3D11.InputLayout inputLayout(StandardVertexLayout vertexType)
+        public InputLayout inputLayout(StandardVertexLayout vertexType)
         {
-            int index = (int) vertexType;
+            var index = (int) vertexType;
             var device = RenderContext11.PrepDevice;
 
             if (layoutCache[index] == null)
             {
-                SharpDX.Direct3D11.InputLayout layout = null;
+                InputLayout layout = null;
 
                 switch (vertexType)
                 {
                     case StandardVertexLayout.Position:
-                        layout = new SharpDX.Direct3D11.InputLayout(device, InputSignature, new[]
+                        layout = new InputLayout(device, InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
                            });
                         break;
                     case StandardVertexLayout.PositionNormal:
-                        layout = new SharpDX.Direct3D11.InputLayout(device, InputSignature, new[]
+                        layout = new InputLayout(device, InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float,      12, 0),
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("NORMAL", 0, Format.R32G32B32_Float,      12, 0),
                            });
                         break;
                     case StandardVertexLayout.PositionNormalTex:
-                        layout = new SharpDX.Direct3D11.InputLayout(device, InputSignature, new[]
+                        layout = new InputLayout(device, InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float,      12, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       24, 0)
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("NORMAL", 0, Format.R32G32B32_Float,      12, 0),
+                               new InputElement("TEXCOORD", 0, Format.R32G32_Float,       24, 0)
                            });
                         break;
                     case StandardVertexLayout.PositionNormalTex2:
-                        layout = new SharpDX.Direct3D11.InputLayout(device, InputSignature, new[]
+                        layout = new InputLayout(device, InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float,      12, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       24, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 1, SharpDX.DXGI.Format.R32G32_Float,       32, 0)
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("NORMAL", 0, Format.R32G32B32_Float,      12, 0),
+                               new InputElement("TEXCOORD", 0, Format.R32G32_Float,       24, 0),
+                               new InputElement("TEXCOORD", 1, Format.R32G32_Float,       32, 0)
                            });
                         break;
                     case StandardVertexLayout.PositionNormalTexTangent:
-                        layout = new SharpDX.Direct3D11.InputLayout(device, InputSignature, new[]
+                        layout = new InputLayout(device, InputSignature, new[]
                            {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float,      12, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       24, 0),
-                               new SharpDX.Direct3D11.InputElement("TANGENT", 0, SharpDX.DXGI.Format.R32G32B32_Float,        32, 0)
+                               new InputElement("POSITION", 0, Format.R32G32B32_Float,     0, 0),
+                               new InputElement("NORMAL", 0, Format.R32G32B32_Float,      12, 0),
+                               new InputElement("TEXCOORD", 0, Format.R32G32_Float,       24, 0),
+                               new InputElement("TANGENT", 0, Format.R32G32B32_Float,        32, 0)
                            });
                         break;
                 }
@@ -1456,7 +1463,7 @@ namespace TerraViewer
     public sealed class ShaderLibrary
     {
         private static ShaderLibrary instance = InitShaderLibrary();
-        private Dictionary<string, byte[]> compiledShaders;
+        private readonly Dictionary<string, byte[]> compiledShaders;
         private bool AttemptedLoadingPrecompiledShaders = false;
 
         public struct ShaderLevel
@@ -1467,7 +1474,7 @@ namespace TerraViewer
             public string geometryProfile;
         }
 
-        private ShaderLevel[] shaderLevels = 
+        private readonly ShaderLevel[] shaderLevels = 
         {
             new ShaderLevel { featureLevel = FeatureLevel.Level_10_0, vertexProfile = "vs_4_0", pixelProfile = "ps_4_0", geometryProfile = "gs_4_0" },                                    
             new ShaderLevel { featureLevel = FeatureLevel.Level_9_3, vertexProfile = "vs_4_0_level_9_3", pixelProfile = "ps_4_0_level_9_3", geometryProfile = null },                                    
@@ -1524,18 +1531,18 @@ namespace TerraViewer
 
         void SavePrecompiledShaders()
         {
-            System.IO.FileStream fs = null;
+            FileStream fs = null;
             try
             {
-                string shaderFile = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") + "\\wwtshaders.bin";
-                System.Diagnostics.Debug.WriteLine("Writing shader library to " + shaderFile);
-                fs = System.IO.File.OpenWrite(shaderFile);
-                var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                var shaderFile = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") + "\\wwtshaders.bin";
+                Debug.WriteLine("Writing shader library to " + shaderFile);
+                fs = File.OpenWrite(shaderFile);
+                var formatter = new BinaryFormatter();
                 formatter.Serialize(fs, compiledShaders);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine("Error writing precompiled shader file: " + e.Message);
+                Debug.WriteLine("Error writing precompiled shader file: " + e.Message);
             }
             finally
             {
@@ -1547,18 +1554,18 @@ namespace TerraViewer
         }
 
 
-        Dictionary<string, byte[]> LoadPrecompiledShaderLibrary(System.IO.Stream stream)
+        Dictionary<string, byte[]> LoadPrecompiledShaderLibrary(Stream stream)
         {
             Dictionary<String, byte[]> shaders = null;
 
-            var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            var formatter = new BinaryFormatter();
             try
             {
                 shaders = (Dictionary<String, byte[]>)formatter.Deserialize(stream);
             }
-            catch (System.Runtime.Serialization.SerializationException e)
+            catch (SerializationException e)
             {
-                System.Console.WriteLine("OOPS: " + e.Message);
+                Console.WriteLine("OOPS: " + e.Message);
             }
 
             return shaders;
@@ -1567,16 +1574,16 @@ namespace TerraViewer
         Dictionary<string, byte[]> LoadPrecompiledShaderLibrary()
         {
             Dictionary<String, byte[]> shaders = null;
-            System.IO.FileStream fs = null;
+            FileStream fs = null;
             try
             {
-                System.Diagnostics.Debug.WriteLine("Loading precompiled shaders from " + ShaderLibrary.PrecompiledShaderFile);
-                fs = System.IO.File.OpenRead(ShaderLibrary.PrecompiledShaderFile);
+                Debug.WriteLine("Loading precompiled shaders from " + PrecompiledShaderFile);
+                fs = File.OpenRead(PrecompiledShaderFile);
                 shaders = LoadPrecompiledShaderLibrary(fs);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine("Error reading precompiled shaders: " + e.Message);
+                Debug.WriteLine("Error reading precompiled shaders: " + e.Message);
             }
             finally
             {
@@ -1606,12 +1613,12 @@ namespace TerraViewer
             {
                 bytecode = ShaderBytecode.Compile(sourceText, entryPoint, profile);
             }
-            catch (SharpDX.CompilationException e)
+            catch (CompilationException e)
             {
-                System.Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
             }
 
-            string libraryKey = profile + key;
+            var libraryKey = profile + key;
             compiledShaders[libraryKey] = bytecode;
 
             return bytecode;
@@ -1620,15 +1627,12 @@ namespace TerraViewer
         // Get the bytecode for the shader with the specified key
         public byte[] getShaderBytecode(string key, string sourceText, string entryPoint, string profile)
         {
-            string libraryKey = profile + key;
+            var libraryKey = profile + key;
             if (UsePrecompiledShaders)
             {
                 return compiledShaders[libraryKey];
             }
-            else
-            {
-                return compileShader(key, sourceText, entryPoint, profile);
-            }
+            return compileShader(key, sourceText, entryPoint, profile);
         }
     }
 
@@ -1638,7 +1642,7 @@ namespace TerraViewer
         {
             Type[] constructorSignature = {};
 
-            Assembly thisAssembly = Assembly.GetAssembly(typeof(ShaderBundle));
+            var thisAssembly = Assembly.GetAssembly(typeof(ShaderBundle));
             var allTypes = thisAssembly.GetTypes();
             var shaderClasses = new List<Type>();
             foreach (var t in allTypes)
@@ -1648,7 +1652,7 @@ namespace TerraViewer
                     foreach (var level in ShaderLibrary.ShaderLevels)
                     {
                         var constructor = t.GetConstructor(constructorSignature);
-                        ShaderBundle bundle = (ShaderBundle)constructor.Invoke(null);
+                        var bundle = (ShaderBundle)constructor.Invoke(null);
                         if (bundle.isFeatureLevelSupported(level.featureLevel))
                         {
                             bundle.CompileShader(level.vertexProfile, level.pixelProfile);
@@ -1711,10 +1715,7 @@ namespace TerraViewer
             {
                 return true;
             }
-            else
-            {
-                return level >= FeatureLevel.Level_10_0;
-            }
+            return level >= FeatureLevel.Level_10_0;
         }
 
         public byte[] VertexShaderBytecode
@@ -1746,22 +1747,22 @@ namespace TerraViewer
             get
             {
                 // For the 'fixed' shaders in WWT, the precompiled shader cache key is just the class name
-                return this.GetType().Name;
+                return GetType().Name;
             }
         }
 
         public void CompileShader(string vertexProfile, string pixelProfile)
         {
-            string vertexShaderText = GetVertexShaderSource(vertexProfile);
+            var vertexShaderText = GetVertexShaderSource(vertexProfile);
             vertexShaderBytecode = ShaderLibrary.Instance.getShaderBytecode(Key, vertexShaderText, "VS", vertexProfile);
             vertexShader = new VertexShader(RenderContext11.PrepDevice, vertexShaderBytecode);
 
-            string pixelShaderText = GetPixelShaderSource(pixelProfile);
+            var pixelShaderText = GetPixelShaderSource(pixelProfile);
             pixelShaderBytecode = ShaderLibrary.Instance.getShaderBytecode(Key, pixelShaderText, "PS", pixelProfile);
             pixelShader = new PixelShader(RenderContext11.PrepDevice, pixelShaderBytecode);
 
-            string geometryShaderProfile = "gs_4_0";
-            string geometryShaderText = GetGeometryShaderSource(geometryShaderProfile);
+            var geometryShaderProfile = "gs_4_0";
+            var geometryShaderText = GetGeometryShaderSource(geometryShaderProfile);
             if (geometryShaderText != null)
             {
                 geometryShaderBytecode = ShaderLibrary.Instance.getShaderBytecode(Key, geometryShaderText, "GS", geometryShaderProfile);
@@ -1805,11 +1806,11 @@ namespace TerraViewer
             }
         }
 
-        public static System.Drawing.Color Color
+        public static Color Color
         {
             set
             {
-                constants.Color = new SharpDX.Color4(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f, value.A / 255.0f); ;
+                constants.Color = new Color4(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f, value.A / 255.0f); ;
             }
         }
 
@@ -1861,7 +1862,7 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
                     });
             }
 
@@ -1892,7 +1893,7 @@ namespace TerraViewer
                 " }                                            ";
         }
 
-        static SharpDX.Direct3D11.Buffer constantBuffer;
+        static Buffer constantBuffer;
 
         protected override string GetVertexShaderSource(string profile)
         {
@@ -1935,7 +1936,7 @@ namespace TerraViewer
         {
             instance = new SimpleLineShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -1969,11 +1970,11 @@ namespace TerraViewer
             }
         }
 
-        public static System.Drawing.Color Color
+        public static Color Color
         {
             set
             {
-                constants.Color = new SharpDX.Color4(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f, value.A / 255.0f); ;
+                constants.Color = new Color4(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f, value.A / 255.0f); ;
             }
         }
 
@@ -2003,9 +2004,9 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {     
-                        new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
-                        new SharpDX.Direct3D11.InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
                     });
 
             }
@@ -2040,7 +2041,7 @@ namespace TerraViewer
                 " }                                            ";
         }
 
-        static SharpDX.Direct3D11.Buffer constantBuffer;
+        static Buffer constantBuffer;
 
         protected override string GetVertexShaderSource(string profile)
         {
@@ -2076,7 +2077,7 @@ namespace TerraViewer
         {
             instance = new SimpleGeometryShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -2160,10 +2161,10 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 24, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 28, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("NORMAL", 0, Format.R32G32B32_Float, 12, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 24, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 28, 0),
                     });
             }
 
@@ -2193,7 +2194,7 @@ namespace TerraViewer
                 " }                                            ";
         }
 
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         protected override string GetVertexShaderSource(string profile)
         {
@@ -2254,7 +2255,7 @@ namespace TerraViewer
         {
             instance = new LineShaderNormalDates11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderNormalDatesConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderNormalDatesConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -2285,7 +2286,7 @@ namespace TerraViewer
         private static PointShaderDates11 instance;
         public static PointShaderDatesConstants Constants;
         private static InputLayout layout;
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         public static VertexShader Shader
         {
@@ -2333,10 +2334,10 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 12, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
 
                     });
             }
@@ -2441,7 +2442,7 @@ namespace TerraViewer
         {
             instance = new PointShaderDates11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PointShaderDatesConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PointShaderDatesConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
     }
 
@@ -2476,7 +2477,7 @@ namespace TerraViewer
         private static AnaglyphStereoShader instance;
         private static AnaglyphStereoShaderConstants constants;
         private static InputLayout layout;
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         public static VertexShader Shader
         {
@@ -2523,8 +2524,8 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 16, 0),
                     });
             }
 
@@ -2598,7 +2599,7 @@ namespace TerraViewer
         {
             instance = new AnaglyphStereoShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<AnaglyphStereoShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<AnaglyphStereoShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -2615,7 +2616,7 @@ namespace TerraViewer
         private static InterlineStereoShader instance;
         private static InterlineStereoShaderConstants constants;
         private static InputLayout layout;
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         public static VertexShader Shader
         {
@@ -2670,8 +2671,8 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 16, 0),
                     });
             }
 
@@ -2751,7 +2752,7 @@ namespace TerraViewer
         {
             instance = new InterlineStereoShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<InterlineStereoShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<InterlineStereoShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -2771,7 +2772,7 @@ namespace TerraViewer
         private static RiftStereoShader instance;
         public static RiftStereoShaderConstants constants;
         private static InputLayout layout;
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         public static VertexShader Shader
         {
@@ -2812,8 +2813,8 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 16, 0),
                     });
             }
 
@@ -3012,7 +3013,7 @@ namespace TerraViewer
         {
             instance = new RiftStereoShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<RiftStereoShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<RiftStereoShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -3080,8 +3081,8 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 16, 0),
                     });
             }
 
@@ -3166,7 +3167,7 @@ namespace TerraViewer
         protected static ShaderBytecode pixelShaderByteCodeNoTexture;
         protected static PixelShader pixelShaderNoTexture;
 
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         public static VertexShader Shader
         {
@@ -3207,9 +3208,9 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
 
                    });
             }
@@ -3264,7 +3265,7 @@ namespace TerraViewer
 
         private static void MakePixelShaderNoTexture()
         {
-            string shaderText =
+            var shaderText =
                 "struct PS_IN                                \n" +
                     "{                                          \n" +
                     "	float4 pos : SV_POSITION;               \n" +
@@ -3333,7 +3334,7 @@ namespace TerraViewer
         {
             instance = new WarpOutputShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -3344,7 +3345,7 @@ namespace TerraViewer
         private static EllipseShader11 instance;
         private static EllipseShaderConstants constants;
         private static InputLayout layout;
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
 
         public static VertexShader Shader
@@ -3430,7 +3431,7 @@ namespace TerraViewer
         }
 
 
-        public void UseShader(RenderContext11 renderContext, double semiMajorAxis, double eccentricity, double eccentricAnomaly, Color color, Matrix3d world, Vector3d positionNow)
+        public void UseShader(RenderContext11 renderContext, double semiMajorAxis, double eccentricity, double eccentricAnomaly, SharpDX.Color color, Matrix3d world, Vector3d positionNow)
         {
             SemiMajorAxis = (float)semiMajorAxis;
             Eccentricity = (float)eccentricity;
@@ -3439,11 +3440,11 @@ namespace TerraViewer
             Color = color;
             PositionNow = positionNow;
 
-            Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             matrixWVP.Transpose();
             MatWVP = matrixWVP;
 
-            Matrix positionWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
+            var positionWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
             positionWVP.Transpose();
 
             MatPositionWVP = positionWVP;
@@ -3464,7 +3465,7 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
                     });
             }
 
@@ -3543,7 +3544,7 @@ namespace TerraViewer
         {
             instance = new EllipseShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<EllipseShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<EllipseShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -3579,7 +3580,7 @@ namespace TerraViewer
         private static OrbitTraceShader instance;
         private static OrbitPathShaderConstants constants;
         private static InputLayout layout;
-        static SharpDX.Direct3D11.Buffer constantBuffer;
+        static Buffer constantBuffer;
 
 
         public static VertexShader Shader
@@ -3660,7 +3661,7 @@ namespace TerraViewer
         }
 
 
-        public static void UseShader(RenderContext11 renderContext, Color color, Matrix3d world, Vector3d positionNow, double timeOffset, double coverageDuration)
+        public static void UseShader(RenderContext11 renderContext, SharpDX.Color color, Matrix3d world, Vector3d positionNow, double timeOffset, double coverageDuration)
         {
             TimeOffset = (float)timeOffset;
             CoverageDuration = (float)coverageDuration;
@@ -3668,11 +3669,11 @@ namespace TerraViewer
             Color = color;
             PositionNow = positionNow;
 
-            Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             matrixWVP.Transpose();
             MatWVP = matrixWVP;
 
-            Matrix positionWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
+            var positionWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
             positionWVP.Transpose();
 
             MatPositionWVP = positionWVP;
@@ -3693,8 +3694,8 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("TIME", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("TIME", 0, Format.R32_Float, 12, 0),
                     });
             }
 
@@ -3766,7 +3767,7 @@ namespace TerraViewer
         {
             instance = new OrbitTraceShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<EllipseShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<EllipseShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -3792,7 +3793,7 @@ namespace TerraViewer
     public class PointSpriteShader11 : ShaderBundle
     {
         private static PointSpriteShader11 instance;
-        private static SharpDX.Direct3D11.Buffer constantBuffer;
+        private static Buffer constantBuffer;
 
 
         public static VertexShader Shader
@@ -3890,9 +3891,9 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 12, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 16, 0)
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 12, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 16, 0)
                     });
             }
 
@@ -4083,7 +4084,7 @@ namespace TerraViewer
         {
             instance = new PointSpriteShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -4112,7 +4113,7 @@ namespace TerraViewer
     {
         // Constants shared between different time series point sprite
         // shaders (downlevel and D3D10+)
-        protected static SharpDX.Direct3D11.Buffer constantBuffer;
+        protected static Buffer constantBuffer;
 
         public static TimeSeriesPointSpriteShaderConstants Constants;
 
@@ -4208,10 +4209,10 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 12, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
 
                     });
             }
@@ -4361,7 +4362,7 @@ namespace TerraViewer
         {
             instance = new TimeSeriesPointSpriteShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -4407,8 +4408,8 @@ namespace TerraViewer
     public class TimeSeriesColumnChartShader11 : ShaderBundle
     {
         private static TimeSeriesColumnChartShader11 instance;
-        private static SharpDX.Direct3D11.Buffer constantBuffer;
-        private static SharpDX.Direct3D11.Buffer geometryConstantBuffer;
+        private static Buffer constantBuffer;
+        private static Buffer geometryConstantBuffer;
         public static TimeSeriesPointSpriteShaderConstants Constants;
         private static InputLayout layout;
 
@@ -4464,7 +4465,7 @@ namespace TerraViewer
             }
         }
 
-        private static bool colChart = false;
+        private static bool colChart;
 
         public static bool ColChart
         {
@@ -4483,10 +4484,10 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 12, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
 
                     });
             }
@@ -4715,8 +4716,8 @@ namespace TerraViewer
         {
             instance = new TimeSeriesColumnChartShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
-            geometryConstantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            geometryConstantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -4724,8 +4725,8 @@ namespace TerraViewer
     public class TimeSeriesColumnChartShaderNGon11 : ShaderBundle
     {
         private static TimeSeriesColumnChartShaderNGon11 instance;
-        private static SharpDX.Direct3D11.Buffer constantBuffer;
-        private static SharpDX.Direct3D11.Buffer geometryConstantBuffer;
+        private static Buffer constantBuffer;
+        private static Buffer geometryConstantBuffer;
         public static TimeSeriesPointSpriteShaderConstants Constants;
         private static InputLayout layout;
 
@@ -4781,7 +4782,7 @@ namespace TerraViewer
             }
         }
 
-        private static bool colChart = false;
+        private static bool colChart;
 
         public static bool ColChart
         {
@@ -4800,10 +4801,10 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 12, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
 
                     });
             }
@@ -4980,8 +4981,8 @@ namespace TerraViewer
         {
             instance = new TimeSeriesColumnChartShaderNGon11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
-            geometryConstantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            geometryConstantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<Matrix>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
     }
 
@@ -4990,7 +4991,7 @@ namespace TerraViewer
     public class KeplerPointSpriteShader11 : ShaderBundle
     {
         private static KeplerPointSpriteShader11 instance;
-        private static SharpDX.Direct3D11.Buffer constantBuffer;
+        private static Buffer constantBuffer;
         public static KeplerPointSpriteShaderConstants Constants;
         private static InputLayout layout;
 
@@ -5055,14 +5056,14 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 24, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 28, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 32, 0),
-                        new InputElement("TEXCOORD", 1, SharpDX.DXGI.Format.R32G32_Float, 40, 0),
-                        new InputElement("TEXCOORD", 2, SharpDX.DXGI.Format.R32G32_Float, 48, 0),
-                        new InputElement("TEXCOORD", 3, SharpDX.DXGI.Format.R32G32_Float, 56, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("NORMAL", 0, Format.R32G32B32_Float, 12, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 24, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 28, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 32, 0),
+                        new InputElement("TEXCOORD", 1, Format.R32G32_Float, 40, 0),
+                        new InputElement("TEXCOORD", 2, Format.R32G32_Float, 48, 0),
+                        new InputElement("TEXCOORD", 3, Format.R32G32_Float, 56, 0),
 
                     });
             }
@@ -5244,7 +5245,7 @@ namespace TerraViewer
         {
             instance = new KeplerPointSpriteShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<KeplerPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<KeplerPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -5305,7 +5306,7 @@ namespace TerraViewer
     public class DownlevelKeplerPointSpriteShader11 : ShaderBundle
     {
         private static DownlevelKeplerPointSpriteShader11 instance;
-        private static SharpDX.Direct3D11.Buffer constantBuffer;
+        private static Buffer constantBuffer;
         public static KeplerPointSpriteShaderConstants Constants;
         private static InputLayout layout;
         private static InputLayout instancedLayout;
@@ -5355,15 +5356,15 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("POSITION", 1, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 24, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 28, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 32, 0),
-                        new InputElement("TEXCOORD", 1, SharpDX.DXGI.Format.R32G32_Float, 40, 0),
-                        new InputElement("TEXCOORD", 2, SharpDX.DXGI.Format.R32G32_Float, 48, 0),
-                        new InputElement("TEXCOORD", 3, SharpDX.DXGI.Format.R32G32_Float, 56, 0),
-                        new InputElement("CORNER", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 64, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POSITION", 1, Format.R32G32B32_Float, 12, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 24, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 28, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 32, 0),
+                        new InputElement("TEXCOORD", 1, Format.R32G32_Float, 40, 0),
+                        new InputElement("TEXCOORD", 2, Format.R32G32_Float, 48, 0),
+                        new InputElement("TEXCOORD", 3, Format.R32G32_Float, 56, 0),
+                        new InputElement("CORNER", 0, Format.R8G8B8A8_UNorm, 64, 0),
 
                     });
             }
@@ -5373,15 +5374,15 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 instancedLayout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("CORNER",    0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
-                        new InputElement("POSITION",  0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("POSITION",  1, SharpDX.DXGI.Format.R32G32B32_Float, 12, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float,       24, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("COLOR",     0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,  28, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("TEXCOORD",  0, SharpDX.DXGI.Format.R32G32_Float,    32, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("TEXCOORD",  1, SharpDX.DXGI.Format.R32G32_Float,    40, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("TEXCOORD",  2, SharpDX.DXGI.Format.R32G32_Float,    48, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("TEXCOORD",  3, SharpDX.DXGI.Format.R32G32_Float,    56, 1, InputClassification.PerInstanceData, 1)
+                        new InputElement("CORNER",    0, Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
+                        new InputElement("POSITION",  0, Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("POSITION",  1, Format.R32G32B32_Float, 12, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float,       24, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("COLOR",     0, Format.R8G8B8A8_UNorm,  28, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("TEXCOORD",  0, Format.R32G32_Float,    32, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("TEXCOORD",  1, Format.R32G32_Float,    40, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("TEXCOORD",  2, Format.R32G32_Float,    48, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("TEXCOORD",  3, Format.R32G32_Float,    56, 1, InputClassification.PerInstanceData, 1)
                     });
             }
 
@@ -5537,7 +5538,7 @@ namespace TerraViewer
         {
             instance = new DownlevelKeplerPointSpriteShader11();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<DownlevelKeplerPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<DownlevelKeplerPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
     }
 
@@ -5545,7 +5546,7 @@ namespace TerraViewer
     public class CompatibilityPointSpriteShader : ShaderBundle
     {
         private static CompatibilityPointSpriteShader instance;
-        private static SharpDX.Direct3D11.Buffer constantBuffer;
+        private static Buffer constantBuffer;
 
         public struct Vertex
         {
@@ -5556,15 +5557,15 @@ namespace TerraViewer
             public float size;
             public uint corner;
 
-            public System.Drawing.Color Color
+            public Color Color
             {
                 get
                 {
-                    return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                    return Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
                 }
                 set
                 {
-                    color = (uint)(((uint)value.A) << 24) | (((uint)value.B) << 16) | (((uint)value.G) << 8) | (((uint)value.R));
+                    color = ((uint)value.A) << 24 | (((uint)value.B) << 16) | (((uint)value.G) << 8) | value.R;
                 }
             }   
         }
@@ -5657,10 +5658,10 @@ namespace TerraViewer
             {
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 12, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 16, 0),
-                        new InputElement("CORNER", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 20, 0)
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 12, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 16, 0),
+                        new InputElement("CORNER", 0, Format.R8G8B8A8_UNorm, 20, 0)
                     });
             }
 
@@ -5668,10 +5669,10 @@ namespace TerraViewer
             {
                 instancedLayout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("CORNER",    0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
-                        new InputElement("POSITION",  0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("COLOR",     0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,  12, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float,       16, 1, InputClassification.PerInstanceData, 1)
+                        new InputElement("CORNER",    0, Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
+                        new InputElement("POSITION",  0, Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("COLOR",     0, Format.R8G8B8A8_UNorm,  12, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float,       16, 1, InputClassification.PerInstanceData, 1)
                     });
             }
 
@@ -5760,7 +5761,7 @@ namespace TerraViewer
         {
             instance = new CompatibilityPointSpriteShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
     }
@@ -5777,15 +5778,15 @@ namespace TerraViewer
             public Vector3 Position;
             public float PointSize;
             public uint color;
-            public System.Drawing.Color Color
+            public Color Color
             {
                 get
                 {
-                    return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                    return Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
                 }
                 set
                 {
-                    color = (uint)(((uint)value.A) << 24) | (((uint)value.B) << 16) | (((uint)value.G) << 8) | (((uint)value.R));
+                    color = ((uint)value.A) << 24 | (((uint)value.B) << 16) | (((uint)value.G) << 8) | value.R;
                 }
             }
             public float Tu;
@@ -5850,11 +5851,11 @@ namespace TerraViewer
                 // Layout from VertexShader input signature
                 layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
-                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
-                        new InputElement("CORNER", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 28, 0),
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float, 12, 0),
+                        new InputElement("COLOR", 0, Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float, 20, 0),
+                        new InputElement("CORNER", 0, Format.R8G8B8A8_UNorm, 28, 0),
                     });
             }
 
@@ -5862,11 +5863,11 @@ namespace TerraViewer
             {
                 instancedLayout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
                     {
-                        new InputElement("CORNER",    0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
-                        new InputElement("POSITION",  0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float,       12, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("COLOR",     0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,  16, 1, InputClassification.PerInstanceData, 1),
-                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,     20, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("CORNER",    0, Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
+                        new InputElement("POSITION",  0, Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("POINTSIZE", 0, Format.R32_Float,       12, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("COLOR",     0, Format.R8G8B8A8_UNorm,  16, 1, InputClassification.PerInstanceData, 1),
+                        new InputElement("TEXCOORD", 0, Format.R32G32_Float,     20, 1, InputClassification.PerInstanceData, 1),
                     });
             }
             if (instanced)
@@ -5985,7 +5986,7 @@ namespace TerraViewer
         {
             instance = new DownlevelTimeSeriesPointSpriteShader();
             instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
-            constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            constantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<TimeSeriesPointSpriteShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
     }
 
@@ -6018,7 +6019,7 @@ namespace TerraViewer
 
             if (contantBuffer == null)
             {
-                contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<HDRShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+                contantBuffer = new Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<HDRShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
             }
             context.PixelShader.Set(pixelShader);
           
@@ -6040,7 +6041,7 @@ namespace TerraViewer
        
         private static void MakePixelShader()
         {
-            string shaderText =
+            var shaderText =
                 ConstantDeclarations +
              
 
@@ -6072,7 +6073,7 @@ namespace TerraViewer
 
         }
 
-        static SharpDX.Direct3D11.Buffer contantBuffer;
+        static Buffer contantBuffer;
 
         
 

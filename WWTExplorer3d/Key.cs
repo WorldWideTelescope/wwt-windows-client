@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Windows;
 using System.Windows.Media.Animation;
+using System.Xml;
 
 namespace TerraViewer
 {
@@ -32,7 +31,7 @@ namespace TerraViewer
             BaseTweenType = baseTweenType;
         }
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Key");
             xmlWriter.WriteAttributeString("Time", Time.ToString());
@@ -46,7 +45,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public Key(System.Xml.XmlNode node)
+        public Key(XmlNode node)
         {
             Time = double.Parse(node.Attributes["Time"].Value);
             Value = double.Parse(node.Attributes["Value"].Value);
@@ -84,29 +83,23 @@ namespace TerraViewer
                     {
                         return Math.Sinh(alpha / factor) / 100.0;
                     }
-                    else
-                    {
-                        return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
-                    }
+                    return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
                 case KeyType.Custom:
                     {
-                        ks.ControlPoint1 = new System.Windows.Point(P1, P2);
-                        ks.ControlPoint2 = new System.Windows.Point(P3, P4);
+                        ks.ControlPoint1 = new Point(P1, P2);
+                        ks.ControlPoint2 = new Point(P3, P4);
 
                         return ks.GetSplineProgress(alpha);
                         //return ComputeSpline(first, new Vector2d(P1, P2), new Vector2d(P3, P4), last, alpha).Y;
                     }
                 case KeyType.Instant:
-                    {
-                        if (alpha > .999)
+                {
+                    if (alpha > .999)
                         {
                             return 1;
                         }
-                        else
-                        {
-                            return 0;
-                        }
-                    }         
+                    return 0;
+                }
                 default:
                     return alpha;
             }
@@ -129,29 +122,23 @@ namespace TerraViewer
                     {
                         return Math.Sinh(alpha / factor) / 100.0;
                     }
-                    else
-                    {
-                        return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
-                    }
+                    return 1.0 - (Math.Sinh((1.0 - alpha) / factor) / 100.0);
                 case KeyType.Custom:
                     {
-                        ks.ControlPoint1 = new System.Windows.Point(p1, p2);
-                        ks.ControlPoint2 = new System.Windows.Point(p3, p4);
+                        ks.ControlPoint1 = new Point(p1, p2);
+                        ks.ControlPoint2 = new Point(p3, p4);
 
                         return ks.GetSplineProgress(alpha);
                         //return ComputeSpline(first, new Vector2d(P1, P2), new Vector2d(P3, P4), last, alpha).Y;
                     }
                 case KeyType.Instant:
-                    {
-                        if (alpha > .999)
+                {
+                    if (alpha > .999)
                         {
                             return 1;
                         }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
+                    return 0;
+                }
                 default:
                     return alpha;
             }
@@ -160,16 +147,16 @@ namespace TerraViewer
         static Vector2d first = new Vector2d(0, 0);      
         static Vector2d last = new Vector2d(1, 1);
 
-        static KeySpline ks = new KeySpline();
+        static readonly KeySpline ks = new KeySpline();
 
         private Vector2d ComputeSpline(Vector2d begin, Vector2d control1, Vector2d control2, Vector2d end, double tween)
         {
-            Vector2d A1 = Vector2d.Lerp(begin, control1, tween);
-            Vector2d A2 = Vector2d.Lerp(control1, control2, tween);
-            Vector2d A3 = Vector2d.Lerp(control2, end, tween);
+            var A1 = Vector2d.Lerp(begin, control1, tween);
+            var A2 = Vector2d.Lerp(control1, control2, tween);
+            var A3 = Vector2d.Lerp(control2, end, tween);
 
-            Vector2d B1 = Vector2d.Lerp(A1, A2, tween);
-            Vector2d B2 = Vector2d.Lerp(A2, A3, tween);
+            var B1 = Vector2d.Lerp(A1, A2, tween);
+            var B2 = Vector2d.Lerp(A2, A3, tween);
             return Vector2d.Lerp(B1, B2, tween);
         }
     }

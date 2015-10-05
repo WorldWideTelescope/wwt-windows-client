@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace TerraViewer.Callibration
@@ -17,17 +13,17 @@ namespace TerraViewer.Callibration
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(782, "ID");
-            this.label2.Text = Language.GetLocalizedText(238, "Name");
-            this.projectorListLabel.Text = Language.GetLocalizedText(783, "Projector List");
-            this.ProjectorTab.Title = Language.GetLocalizedText(784, "Projector");
-            this.ViewTab.Title = Language.GetLocalizedText(140, "View");
-            this.OK.Text = Language.GetLocalizedText(759, "Ok");
-            this.Solved.Title = Language.GetLocalizedText(785, "Solved");
-            this.CopySolved.Text = Language.GetLocalizedText(786, "Copy Solved");
-            this.CopyView.Text = Language.GetLocalizedText(787, "Copy View");
-            this.updateClient.Text = Language.GetLocalizedText(788, "Send Update");
-            this.Text = Language.GetLocalizedText(789, "Projector Properties");
+            label1.Text = Language.GetLocalizedText(782, "ID");
+            label2.Text = Language.GetLocalizedText(238, "Name");
+            projectorListLabel.Text = Language.GetLocalizedText(783, "Projector List");
+            ProjectorTab.Title = Language.GetLocalizedText(784, "Projector");
+            ViewTab.Title = Language.GetLocalizedText(140, "View");
+            OK.Text = Language.GetLocalizedText(759, "Ok");
+            Solved.Title = Language.GetLocalizedText(785, "Solved");
+            CopySolved.Text = Language.GetLocalizedText(786, "Copy Solved");
+            CopyView.Text = Language.GetLocalizedText(787, "Copy View");
+            updateClient.Text = Language.GetLocalizedText(788, "Send Update");
+            Text = Language.GetLocalizedText(789, "Projector Properties");
         }
 
         public ProjectorEntry Projector;
@@ -36,11 +32,11 @@ namespace TerraViewer.Callibration
 
         private void ProjectorProperties_Load(object sender, EventArgs e)
         {
-            int selected = 0;
-            int index = 0;
+            var selected = 0;
+            var index = 0;
             if (!AddMode)
             {
-                foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+                foreach (var pe in CalibrationInfo.Projectors)
                 {
                     if (pe == Projector)
                     {
@@ -61,7 +57,7 @@ namespace TerraViewer.Callibration
 
         private void SyncProjectorEntry()
         {
-            projectorID.Text = Projector.ID.ToString();
+            projectorID.Text = Projector.ID.ToString(CultureInfo.InvariantCulture);
             projectorName.Text = Projector.Name;
             if (ViewTab.Selected)
             {
@@ -143,7 +139,7 @@ namespace TerraViewer.Callibration
 
         private void CopySolved_Click(object sender, EventArgs e)
         {
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
                 pe.ProjectorProjection = pe.SolvedProjection.Copy();
                 pe.ProjectorTransform = pe.SolvedTransform.Copy();
@@ -154,7 +150,7 @@ namespace TerraViewer.Callibration
 
         private void CopyView_Click(object sender, EventArgs e)
         {
-            foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
+            foreach (var pe in CalibrationInfo.Projectors)
             {
                 pe.ProjectorProjection = pe.ViewProjection.Copy();
                 pe.ProjectorTransform = pe.ViewTransform.Copy();

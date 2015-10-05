@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+using System.Windows.Media;
+
 [assembly: AssemblyTitle("WorldWide Telescope")]
 [assembly: AssemblyDescription("Interactive 3D viewer for the WorldWide Telescope")]
 [assembly: AssemblyConfiguration("")]
@@ -32,6 +33,6 @@ using System.Resources;
 //
 [assembly: AssemblyVersion("5.2.09.1")]
 [assembly: AssemblyFileVersion("5.2.09.1")]
-[assembly: NeutralResourcesLanguageAttribute("en-US")]
-[assembly: System.Windows.Media.DisableDpiAwareness]
+[assembly: NeutralResourcesLanguage("en-US")]
+[assembly: DisableDpiAwareness]
 

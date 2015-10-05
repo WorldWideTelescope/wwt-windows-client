@@ -55,59 +55,59 @@ public class  CAANodes
   
   public static CAANodeObjectDetails PassageThroAscendingNode(CAAEllipticalObjectElements elements)
   {
-	double v = CAACoordinateTransformation.MapTo0To360Range(-elements.w);
+	var v = CAACoordinateTransformation.MapTo0To360Range(-elements.w);
 	v = CAACoordinateTransformation.DegreesToRadians(v);
-	double E = Math.Atan(Math.Sqrt((1 - elements.e) / (1 + elements.e)) * Math.Tan(v/2))*2;
-	double M = E - elements.e *Math.Sin(E);
+	var E = Math.Atan(Math.Sqrt((1 - elements.e) / (1 + elements.e)) * Math.Tan(v/2))*2;
+	var M = E - elements.e *Math.Sin(E);
 	M = CAACoordinateTransformation.RadiansToDegrees(M);
-	double n = CAAElliptical.MeanMotionFromSemiMajorAxis(elements.a);
+	var n = CAAElliptical.MeanMotionFromSemiMajorAxis(elements.a);
   
-	CAANodeObjectDetails details = new CAANodeObjectDetails();
-	details.t = elements.T + M/n;
-	details.radius = elements.a*(1 - elements.e *Math.Cos(E));
-  
-	return details;
+	var details = new CAANodeObjectDetails {t = elements.T + M/n, radius = elements.a*(1 - elements.e*Math.Cos(E))};
+
+      return details;
   }
   public static CAANodeObjectDetails PassageThroDescendingNode(CAAEllipticalObjectElements elements)
   {
-	double v = CAACoordinateTransformation.MapTo0To360Range(180 - elements.w);
+	var v = CAACoordinateTransformation.MapTo0To360Range(180 - elements.w);
 	v = CAACoordinateTransformation.DegreesToRadians(v);
-	double E = Math.Atan(Math.Sqrt((1 - elements.e) / (1 + elements.e)) * Math.Tan(v/2))*2;
-	double M = E - elements.e *Math.Sin(E);
+	var E = Math.Atan(Math.Sqrt((1 - elements.e) / (1 + elements.e)) * Math.Tan(v/2))*2;
+	var M = E - elements.e *Math.Sin(E);
 	M = CAACoordinateTransformation.RadiansToDegrees(M);
-	double n = CAAElliptical.MeanMotionFromSemiMajorAxis(elements.a);
+	var n = CAAElliptical.MeanMotionFromSemiMajorAxis(elements.a);
   
-	CAANodeObjectDetails details = new CAANodeObjectDetails();
-	details.t = elements.T + M/n;
-	details.radius = elements.a*(1 - elements.e *Math.Cos(E));
-  
-	return details;
+	var details = new CAANodeObjectDetails {t = elements.T + M/n, radius = elements.a*(1 - elements.e*Math.Cos(E))};
+
+      return details;
   }
   public static CAANodeObjectDetails PassageThroAscendingNode(CAAParabolicObjectElements elements)
   {
-	double v = CAACoordinateTransformation.MapTo0To360Range(-elements.w);
+	var v = CAACoordinateTransformation.MapTo0To360Range(-elements.w);
 	v = CAACoordinateTransformation.DegreesToRadians(v);
-	double s = Math.Tan(v / 2);
-	double s2 = s *s;
+	var s = Math.Tan(v / 2);
+	var s2 = s *s;
   
-	CAANodeObjectDetails details = new CAANodeObjectDetails();
-	details.t = elements.T + 27.403895*(s2 *s + 3 *s)*elements.q *Math.Sqrt(elements.q);
-	details.radius = elements.q*(1 + s2);
-  
-	return details;
+	var details = new CAANodeObjectDetails
+	{
+	    t = elements.T + 27.403895*(s2*s + 3*s)*elements.q*Math.Sqrt(elements.q),
+	    radius = elements.q*(1 + s2)
+	};
+
+      return details;
   }
   public static CAANodeObjectDetails PassageThroDescendingNode(CAAParabolicObjectElements elements)
   {
-	double v = CAACoordinateTransformation.MapTo0To360Range(180 - elements.w);
+	var v = CAACoordinateTransformation.MapTo0To360Range(180 - elements.w);
 	v = CAACoordinateTransformation.DegreesToRadians(v);
   
-	double s = Math.Tan(v / 2);
-	double s2 = s *s;
+	var s = Math.Tan(v / 2);
+	var s2 = s *s;
   
-	CAANodeObjectDetails details = new CAANodeObjectDetails();
-	details.t = elements.T + 27.403895*(s2 *s + 3 *s)*elements.q *Math.Sqrt(elements.q);
-	details.radius = elements.q*(1 + s2);
-  
-	return details;
+	var details = new CAANodeObjectDetails
+	{
+	    t = elements.T + 27.403895*(s2*s + 3*s)*elements.q*Math.Sqrt(elements.q),
+	    radius = elements.q*(1 + s2)
+	};
+
+      return details;
   }
 }

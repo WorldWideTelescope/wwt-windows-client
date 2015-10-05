@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Text;
+using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
@@ -24,10 +24,8 @@ namespace TerraViewer.Callibration
             Calibrating = true;
 
             textFont = new Font("MS Sans Serif", 72, FontStyle.Bold, GraphicsUnit.Pixel);
-            sf = new StringFormat();
-            sf.Alignment = StringAlignment.Center;
-            sf.LineAlignment = StringAlignment.Center;
-            targetNodeID = Earth3d.MainWindow.Config.NodeID.ToString();
+            sf = new StringFormat {Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center};
+            targetNodeID = Earth3d.MainWindow.Config.NodeID.ToString(CultureInfo.InvariantCulture);
 
         }
 
@@ -43,7 +41,7 @@ namespace TerraViewer.Callibration
         static public string projectorName = "Projector";
         static public string targetNodeID = "0";
 
-        static bool Calibrating = false;
+        static bool Calibrating;
 
 
         internal static void ParseCommandString(string[] values)
@@ -55,7 +53,7 @@ namespace TerraViewer.Callibration
                 {
                     Earth3d.MainWindow.ShowCalibrationScreen();
                 }
-                if ((values[2] == "-1") || (values[2] == Earth3d.MainWindow.Config.NodeID.ToString()))
+                if ((values[2] == "-1") || (values[2] == Earth3d.MainWindow.Config.NodeID.ToString(CultureInfo.InvariantCulture)))
                 {
                     switch (values[3])
                     {
@@ -85,15 +83,15 @@ namespace TerraViewer.Callibration
 
         public static void UpdateSoftware()
         {
-            WebClient client = new WebClient();
+            var client = new WebClient();
             // Get Distortion map
             try
             {
-                string url = string.Format("http://{0}:5050/Configuration/images/executable", NetControl.MasterAddress);
-                Byte[] data = client.DownloadData(url);
+                var url = string.Format("http://{0}:5050/Configuration/images/executable", NetControl.MasterAddress);
+                var data = client.DownloadData(url);
                 File.WriteAllBytes("wwtexplorer.exe", data);
-                System.Diagnostics.Process.Start("wwtexplorer.exe", "restart");
-                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Process.Start("wwtexplorer.exe", "restart");
+                Process.GetCurrentProcess().Kill();
             }
             catch
             {
@@ -105,12 +103,12 @@ namespace TerraViewer.Callibration
         {
             if (Settings.DomeView)
             {
-                WebClient client = new WebClient();
+                var client = new WebClient();
                 // Get Distortion map
                 try
                 {
-                    string url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.data", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
-                    string filename = "";// Earth3d.MainWindow.Config.DistortionGrid;
+                    var url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.data", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
+                    var filename = "";// Earth3d.MainWindow.Config.DistortionGrid;
                     if (string.IsNullOrEmpty(filename))
                     {
                         if (!Directory.Exists("c:\\wwtconfig"))
@@ -120,16 +118,13 @@ namespace TerraViewer.Callibration
                         filename = string.Format("c:\\wwtconfig\\distort_{0}.data", Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
                         Properties.Settings.Default.CustomWarpFilename = filename;
                         Properties.Settings.Default.DomeTypeIndex = 3;
-                        Byte[] data = client.DownloadData(url);
+                        var data = client.DownloadData(url);
                         File.WriteAllBytes(filename, data);
 
 
                         if (Earth3d.MainWindow.InvokeRequired)
                         {
-                            MethodInvoker InvalidateMe = delegate
-                            {
-                                Earth3d.MainWindow.CreateWarpVertexBuffer();
-                            };
+                            MethodInvoker InvalidateMe = () => Earth3d.MainWindow.CreateWarpVertexBuffer();
                             try
                             {
                                 Earth3d.MainWindow.Invoke(InvalidateMe);
@@ -153,12 +148,12 @@ namespace TerraViewer.Callibration
             else
             {
 
-                WebClient client = new WebClient();
+                var client = new WebClient();
                 // Get Distortion map
                 try
                 {
-                    string url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.png", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
-                    string filename = Earth3d.MainWindow.Config.DistortionGrid;
+                    var url = string.Format("http://{0}:5050/Configuration/images/distort_{1}.png", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
+                    var filename = Earth3d.MainWindow.Config.DistortionGrid;
                     if (string.IsNullOrEmpty(filename))
                     {
                         if (!Directory.Exists("c:\\wwtconfig"))
@@ -168,7 +163,7 @@ namespace TerraViewer.Callibration
                         filename = string.Format("c:\\wwtconfig\\distort_{0}.png", Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
                         Earth3d.MainWindow.Config.DistortionGrid = filename;
                     }
-                    Byte[] data = client.DownloadData(url);
+                    var data = client.DownloadData(url);
                     File.WriteAllBytes(filename, data);
                 }
                 catch
@@ -177,8 +172,8 @@ namespace TerraViewer.Callibration
                 // Get Blend Map
                 try
                 {
-                    string url = string.Format("http://{0}:5050/Configuration/images/blend_{1}.png", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
-                    string filename = Earth3d.MainWindow.Config.BlendFile;
+                    var url = string.Format("http://{0}:5050/Configuration/images/blend_{1}.png", NetControl.MasterAddress, Earth3d.MainWindow.Config.NodeDiplayName.Replace(" ","_"));
+                    var filename = Earth3d.MainWindow.Config.BlendFile;
                     if (string.IsNullOrEmpty(filename))
                     {
                         if (!Directory.Exists("c:\\wwtconfig"))
@@ -189,7 +184,7 @@ namespace TerraViewer.Callibration
                         Earth3d.MainWindow.Config.BlendFile = filename;
 
                     }
-                    Byte[] data = client.DownloadData(url);
+                    var data = client.DownloadData(url);
                     File.WriteAllBytes(filename, data);
                 }
                 catch
@@ -206,13 +201,12 @@ namespace TerraViewer.Callibration
         {
             if (!Calibrating && master == null)
             {
-                master = new CalibrationScreen();
-                master.Owner = Earth3d.MainWindow;
+                master = new CalibrationScreen {Owner = Earth3d.MainWindow};
                 master.Show();
             }
         }
 
-        static CalibrationScreen master = null;
+        static CalibrationScreen master;
         static void UpdateScreen()
         {
             if (master != null)
@@ -220,10 +214,7 @@ namespace TerraViewer.Callibration
 
                 if (master.InvokeRequired)
                 {
-                    MethodInvoker InvalidateMe = delegate
-                        {
-                            master.Invalidate();
-                        };
+                    MethodInvoker InvalidateMe = () => master.Invalidate();
                     try
                     {
                         master.Invoke(InvalidateMe);
@@ -247,10 +238,7 @@ namespace TerraViewer.Callibration
 
                 if (master.InvokeRequired)
                 {
-                    MethodInvoker InvalidateMe = delegate
-                    {
-                        master.Close();
-                    };
+                    MethodInvoker InvalidateMe = () => master.Close();
                     try
                     {
                         master.Invoke(InvalidateMe);
@@ -283,10 +271,10 @@ namespace TerraViewer.Callibration
                 if (values.Length > 8)
                 {
                     points.Clear();
-                    string[] pointListText = values[8].Split(new char[] { ';' });
-                    foreach (string pointText in pointListText)
+                    var pointListText = values[8].Split(new[] { ';' });
+                    foreach (var pointText in pointListText)
                     {
-                        string[] parts = pointText.Split(new char[] { ' ' });
+                        var parts = pointText.Split(new[] { ' ' });
                         if (parts.Length > 1)
                         {
                             points.Add(new PointF(float.Parse(parts[0]), float.Parse(parts[1])));
@@ -311,18 +299,18 @@ namespace TerraViewer.Callibration
 
         private void CalibrationScreen_Paint(object sender, PaintEventArgs e)
         {
-            Rectangle rect = this.ClientRectangle;
+            var rect = ClientRectangle;
 
             e.Graphics.Clear(Background);
 
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality; 
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality; 
 
             if (DrawOutline)
             {
-                Pen linePen = new Pen(Color.Red, 4);
-                Rectangle smaller = rect;
+                var linePen = new Pen(Color.Red, 4);
+                var smaller = rect;
                 smaller.Inflate(-2, -2);
                 e.Graphics.DrawRectangle(linePen, smaller);
                 linePen.Dispose();
@@ -332,24 +320,22 @@ namespace TerraViewer.Callibration
             switch (GeometryStyle)
             {
                 case GeometryStyles.Points:
-                    DrawPoints(e.Graphics, false);
+                    DrawPoints(e.Graphics);
                     break;
                 case GeometryStyles.Lines:
                     DrawLines(e.Graphics);
                     break;
                 case GeometryStyles.Polygon:
-                    DrawPolygon(e.Graphics, false);
+                    DrawPolygon(e.Graphics);
                     break;
                 case GeometryStyles.SoftPolygon:
-                    DrawPolygon(e.Graphics, true);
-                    break;
-                default:
+                    DrawPolygon(e.Graphics);
                     break;
             }
 
             if (selectedPoint > -1 && selectedPoint < points.Count)
             {
-                Pen linePen = new Pen(LineColor, 3);
+                var linePen = new Pen(LineColor, 3);
 
                 DrawPoint(e.Graphics, linePen, points[selectedPoint]);
 
@@ -358,13 +344,13 @@ namespace TerraViewer.Callibration
            
             Brush brush = new SolidBrush(Color.LightGreen);
 
-            e.Graphics.DrawString(Earth3d.MainWindow.Config.NodeDiplayName, textFont, brush, new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height), sf);
+            e.Graphics.DrawString(Earth3d.MainWindow.Config.NodeDiplayName, textFont, brush, new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
 
 
 
         }
 
-        private void DrawPolygon(Graphics g, bool soft)
+        private static void DrawPolygon(Graphics g)
         {
             Brush brush = new SolidBrush(FillColor);
 
@@ -375,9 +361,9 @@ namespace TerraViewer.Callibration
             brush.Dispose();
         }
 
-        private void DrawLines(Graphics g)
+        private static void DrawLines(Graphics g)
         {
-            Pen linePen = new Pen(LineColor, 1);
+            var linePen = new Pen(LineColor, 1);
             if (points.Count > 1)
             {
 
@@ -386,12 +372,12 @@ namespace TerraViewer.Callibration
             linePen.Dispose();
         }
 
-        private void DrawPoints(Graphics g, bool p)
+        private static void DrawPoints(Graphics g)
         {
-            Pen linePen = new Pen(FillColor, 2);
+            var linePen = new Pen(FillColor, 2);
             try
             {
-                foreach (PointF point in points)
+                foreach (var point in points)
                 {
                     DrawPoint(g, linePen, point);
                 }
@@ -407,7 +393,7 @@ namespace TerraViewer.Callibration
             g.DrawLine(linePen, PointF.Add(point, new Size(0, 15)), PointF.Subtract(point, new Size(0, 15)));
             g.DrawLine(linePen, PointF.Add(point, new Size(15, 0)), PointF.Subtract(point, new Size(15, 0)));
 
-            RectangleF rect = new RectangleF(PointF.Subtract(point, new Size(15, 15)), new SizeF(30, 30));
+            var rect = new RectangleF(PointF.Subtract(point, new Size(15, 15)), new SizeF(30, 30));
             g.DrawEllipse(linePen, rect);
         }
 
@@ -419,19 +405,19 @@ namespace TerraViewer.Callibration
             }
             else if (e.Button == MouseButtons.Middle)
             {
-                int x = (int)GeometryStyle;
+                var x = (int)GeometryStyle;
                 x++;
                 x = x % 3;
                 GeometryStyle = (GeometryStyles)x;
             }
             else
             {
-                if (Control.ModifierKeys == Keys.Shift)
+                if (ModifierKeys == Keys.Shift)
                 {
                     selectedPoint++;
                     selectedPoint = selectedPoint % points.Count;
                 }
-                else if (Control.ModifierKeys == Keys.Alt)
+                else if (ModifierKeys == Keys.Alt)
                 {
                     selectedPoint = -1;
                 }
@@ -442,11 +428,10 @@ namespace TerraViewer.Callibration
             }
             Invalidate();
         }
-        bool drag = false;
+        bool drag;
         private void CalibrationScreen_FormClosed(object sender, FormClosedEventArgs e)
         {
             master = null;
-           // Earth3d.ReadyToRender = true;
             Calibrating = false;
         }
 

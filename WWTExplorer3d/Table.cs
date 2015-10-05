@@ -9,17 +9,13 @@ namespace TerraViewer
 {
     class Table
     {
-        public Table()
-        {
-        }
-
         public Guid Guid = new Guid();
         public string[] Header = new string[0];
         public List<string[]> Rows = new List<string[]>();
         public char Delimiter = '\t';
         public bool Locked = false;
 
-        private Mutex tableMutex = new Mutex();
+        private readonly Mutex tableMutex = new Mutex();
 
         public void Lock()
         {
@@ -45,10 +41,10 @@ namespace TerraViewer
         {
             stream = new GZipStream(stream, CompressionMode.Compress);
 
-            StreamWriter sw = new StreamWriter(stream, Encoding.UTF8);
-            bool first = true;
+            var sw = new StreamWriter(stream, Encoding.UTF8);
+            var first = true;
 
-            foreach (string col in Header)
+            foreach (var col in Header)
             {
                 if (!first)
                 {
@@ -62,10 +58,10 @@ namespace TerraViewer
                 sw.Write(col);
             }
             sw.Write("\r\n");
-            foreach (string[] row in Rows)
+            foreach (var row in Rows)
             {
                 first = true;
-                foreach (string col in row)
+                foreach (var col in row)
                 {
                     if (!first)
                     {
@@ -87,12 +83,12 @@ namespace TerraViewer
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            StringWriter sw = new StringWriter(sb);
-            bool first = true;
+            var sw = new StringWriter(sb);
+            var first = true;
 
-            foreach (string col in Header)
+            foreach (var col in Header)
             {
                 if (!first)
                 {
@@ -106,10 +102,10 @@ namespace TerraViewer
                 sw.Write(col);
             }
             sw.Write("\r\n");
-            foreach (string[] row in Rows)
+            foreach (var row in Rows)
             {
                 first = true;
-                foreach (string col in row)
+                foreach (var col in row)
                 {
                     if (!first)
                     {
@@ -130,17 +126,14 @@ namespace TerraViewer
        
         public static bool IsGzip(Stream stream)
         {
-            BinaryReader br = new BinaryReader(stream);
-            byte[] line = br.ReadBytes(2);
+            var br = new BinaryReader(stream);
+            var line = br.ReadBytes(2);
 
             if (line[0] == 31 && line[1] == 139)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
 
@@ -148,15 +141,15 @@ namespace TerraViewer
         {
             if (buffer[0] == 31 && buffer[1] == 139)
             {
-                MemoryStream msIn = new MemoryStream(buffer);
-                MemoryStream msOut = new MemoryStream();
+                var msIn = new MemoryStream(buffer);
+                var msOut = new MemoryStream();
 
 
-                byte[] data = new byte[2048];
+                var data = new byte[2048];
 
                 while (true)
                 {
-                    int count = msIn.Read(data, 0, 2048);
+                    var count = msIn.Read(data, 0, 2048);
                     msOut.Write(data, 0, count);
 
                     if (count < 2048)
@@ -188,21 +181,21 @@ namespace TerraViewer
         public static Table Load(Stream stream, char delimiter)
         {
             
-            bool gZip = IsGzip(stream);
+            var gZip = IsGzip(stream);
             stream.Seek(0, SeekOrigin.Begin);
             if (gZip)
             {
                 stream = new GZipStream(stream, CompressionMode.Decompress);
             }
 
-            Table table = new Table();
+            var table = new Table();
             table.Delimiter = delimiter;
 
-            StreamReader sr = new StreamReader(stream);
+            var sr = new StreamReader(stream);
 
             if (sr.Peek() >= 0)
             {
-                string headerLine = sr.ReadLine();
+                var headerLine = sr.ReadLine();
                 table.Rows.Clear();
                 table.Header = UiTools.SplitString(headerLine, delimiter);
             }
@@ -211,11 +204,11 @@ namespace TerraViewer
                 table.Header = new string[0];
             }
 
-            int count = 0;
+            var count = 0;
             while (sr.Peek() >= 0)
             {
-                string line = sr.ReadLine();
-                string[] rowData = UiTools.SplitString(line, delimiter);
+                var line = sr.ReadLine();
+                var rowData = UiTools.SplitString(line, delimiter);
                 if (rowData.Length < 2)
                 {
                     break;
@@ -229,12 +222,12 @@ namespace TerraViewer
         public void LoadFromString(string data, bool isUpdate, bool purge, bool hasHeader)
         {
             
-            StringReader sr = new StringReader(data);
+            var sr = new StringReader(data);
             if (!isUpdate || hasHeader)
             {
                 if (sr.Peek() >= 0)
                 {
-                    string headerLine = sr.ReadLine();
+                    var headerLine = sr.ReadLine();
 
                     if (!headerLine.Contains("\t") && headerLine.Contains(","))
                     {
@@ -252,17 +245,17 @@ namespace TerraViewer
                     Header = new string[0];
                 }
             }
-            List<string[]> temp = new List<string[]>();
+            var temp = new List<string[]>();
             if (!purge)
             {
                 temp = Rows;
             }
 
-            int count = 0;
+            var count = 0;
             while (sr.Peek() >= 0)
             {
-                string line = sr.ReadLine();
-                string[] rowData = UiTools.SplitString(line, Delimiter);
+                var line = sr.ReadLine();
+                var rowData = UiTools.SplitString(line, Delimiter);
                 if (rowData.Length < 1)
                 {
                     break;
@@ -279,12 +272,12 @@ namespace TerraViewer
 
         public void Append(string data)
         {
-            StringReader sr = new StringReader(data);
-            int count = 0;
+            var sr = new StringReader(data);
+            var count = 0;
             while (sr.Peek() >= 0)
             {
-                string line = sr.ReadLine();
-                string[] rowData = UiTools.SplitString(line, Delimiter);
+                var line = sr.ReadLine();
+                var rowData = UiTools.SplitString(line, Delimiter);
                 if (rowData.Length < 2)
                 {
                     break;

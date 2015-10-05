@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace TerraViewer.Callibration
@@ -43,18 +42,18 @@ namespace TerraViewer.Callibration
         public List<Edge> Edges = new List<Edge>();
 
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public Dictionary<int, ProjectorEntry> ProjLookup = new Dictionary<int, ProjectorEntry>();
 
         public void SyncLookupsAndOwners()
         {
             ProjLookup.Clear();
-            foreach(ProjectorEntry pe in Projectors)
+            foreach(var pe in Projectors)
             {
                 ProjLookup.Add(pe.ID, pe);
             }
 
-            foreach (Edge edge in Edges)
+            foreach (var edge in Edges)
             {
                 edge.Owner = this;
             }

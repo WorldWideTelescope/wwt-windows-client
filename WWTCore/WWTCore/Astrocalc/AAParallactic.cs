@@ -47,7 +47,7 @@ public class  CAAParallactic
 	Latitude = CAACoordinateTransformation.DegreesToRadians(Latitude);
 	ObliquityOfEcliptic = CAACoordinateTransformation.DegreesToRadians(ObliquityOfEcliptic);
   
-	double @value = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(-Math.Cos(LocalSiderealTime), Math.Sin(ObliquityOfEcliptic)*Math.Tan(Latitude) + Math.Cos(ObliquityOfEcliptic)*Math.Sin(LocalSiderealTime)));
+	var @value = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(-Math.Cos(LocalSiderealTime), Math.Sin(ObliquityOfEcliptic)*Math.Tan(Latitude) + Math.Cos(ObliquityOfEcliptic)*Math.Sin(LocalSiderealTime)));
 	return CAACoordinateTransformation.MapTo0To360Range(@value);
   }
   public static double AngleBetweenEclipticAndHorizon(double LocalSiderealTime, double ObliquityOfEcliptic, double Latitude)
@@ -56,7 +56,7 @@ public class  CAAParallactic
 	Latitude = CAACoordinateTransformation.DegreesToRadians(Latitude);
 	ObliquityOfEcliptic = CAACoordinateTransformation.DegreesToRadians(ObliquityOfEcliptic);
   
-	double @value = CAACoordinateTransformation.RadiansToDegrees(Math.Acos(Math.Cos(ObliquityOfEcliptic)*Math.Sin(Latitude) - Math.Sin(ObliquityOfEcliptic)*Math.Cos(Latitude)*Math.Sin(LocalSiderealTime)));
+	var @value = CAACoordinateTransformation.RadiansToDegrees(Math.Acos(Math.Cos(ObliquityOfEcliptic)*Math.Sin(Latitude) - Math.Sin(ObliquityOfEcliptic)*Math.Cos(Latitude)*Math.Sin(LocalSiderealTime)));
 	return CAACoordinateTransformation.MapTo0To360Range(@value);
   }
   public static double AngleBetweenNorthCelestialPoleAndNorthPoleOfEcliptic(double Lambda, double Beta, double ObliquityOfEcliptic)
@@ -65,7 +65,7 @@ public class  CAAParallactic
 	Beta = CAACoordinateTransformation.DegreesToRadians(Beta);
 	ObliquityOfEcliptic = CAACoordinateTransformation.DegreesToRadians(ObliquityOfEcliptic);
   
-	double @value = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(Math.Cos(Lambda)*Math.Tan(ObliquityOfEcliptic), Math.Sin(Beta)*Math.Sin(Lambda)*Math.Tan(ObliquityOfEcliptic) - Math.Cos(Beta)));
+	var @value = CAACoordinateTransformation.RadiansToDegrees(Math.Atan2(Math.Cos(Lambda)*Math.Tan(ObliquityOfEcliptic), Math.Sin(Beta)*Math.Sin(Lambda)*Math.Tan(ObliquityOfEcliptic) - Math.Cos(Beta)));
 	return CAACoordinateTransformation.MapTo0To360Range(@value);
   }
 }

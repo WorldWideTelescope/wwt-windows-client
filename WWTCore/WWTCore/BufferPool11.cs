@@ -1,21 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
-using SharpDX;
-using SharpDX.DXGI;
-using SharpDX.Windows;
-using System.Diagnostics;
-
-using Buffer = SharpDX.Direct3D11.Buffer;
-using Device = SharpDX.Direct3D11.Device;
-using MapFlags = SharpDX.Direct3D11.MapFlags;
-using SharpDX.D3DCompiler;
 using System.IO;
 //using System.Drawing.Imaging;
 using System.Threading;
@@ -25,35 +10,35 @@ namespace TerraViewer
 {
     public class BufferPool11
     {
-        static Dictionary<int, Buffers> IndexPools = new Dictionary<int, Buffers>();
-        static Dictionary<int, Buffers> VertexX2Pools = new Dictionary<int, Buffers>();
-        static Dictionary<int, Buffers> LockX2Pools = new Dictionary<int, Buffers>();
-        static Dictionary<int, Buffers> Vector3dPools = new Dictionary<int, Buffers>();
-        static Dictionary<int, Buffers> IndexU32Pools = new Dictionary<int, Buffers>();
-        static Dictionary<int, Buffers> IndexU16Pools = new Dictionary<int, Buffers>();
-        static Buffers TriangleListPool = new Buffers(1);
-        static Buffers PositionTextureListPool = new Buffers(1);
+        static readonly Dictionary<int, Buffers> IndexPools = new Dictionary<int, Buffers>();
+        static readonly Dictionary<int, Buffers> VertexX2Pools = new Dictionary<int, Buffers>();
+        static readonly Dictionary<int, Buffers> LockX2Pools = new Dictionary<int, Buffers>();
+        static readonly Dictionary<int, Buffers> Vector3dPools = new Dictionary<int, Buffers>();
+        static readonly Dictionary<int, Buffers> IndexU32Pools = new Dictionary<int, Buffers>();
+        static readonly Dictionary<int, Buffers> IndexU16Pools = new Dictionary<int, Buffers>();
+        static readonly Buffers TriangleListPool = new Buffers(1);
+        static readonly Buffers PositionTextureListPool = new Buffers(1);
         
-        static Mutex BufferMutex = new Mutex();
+        static readonly Mutex BufferMutex = new Mutex();
 
         public static void DisposeBuffers()
         {
-            foreach (Buffers pool in IndexPools.Values)
+            foreach (var pool in IndexPools.Values)
             {
-                foreach (object buf in pool.Entries)
+                foreach (var buf in pool.Entries)
                 {
-                    IndexBuffer11 indexBuf = buf as IndexBuffer11;
+                    var indexBuf = buf as IndexBuffer11;
                     indexBuf.Dispose();
                     GC.SuppressFinalize(indexBuf);
                 }
             }
             IndexPools.Clear();
 
-            foreach (Buffers pool in VertexX2Pools.Values)
+            foreach (var pool in VertexX2Pools.Values)
             {
-                foreach (object buf in pool.Entries)
+                foreach (var buf in pool.Entries)
                 {
-                    VertexBuffer11 vertexBuf = buf as VertexBuffer11;
+                    var vertexBuf = buf as VertexBuffer11;
                     vertexBuf.Dispose();
                     GC.SuppressFinalize(vertexBuf);
                 }
@@ -67,7 +52,7 @@ namespace TerraViewer
             IndexU32Pools.Clear();
             TriangleListPool.Entries.Clear();
 
-            foreach (Texture11 texture in TexturePool256)
+            foreach (var texture in TexturePool256)
             {
                 texture.Dispose();
                 GC.SuppressFinalize(texture);
@@ -254,7 +239,7 @@ namespace TerraViewer
             BufferMutex.WaitOne();
             try
             {
-                int count = buff.Length;
+                var count = buff.Length;
                 if (count < 2048)
                 {
                     if (!LockX2Pools.ContainsKey(count))
@@ -306,7 +291,7 @@ namespace TerraViewer
                 return;
             }
             BufferMutex.WaitOne();
-            int count = buff.Length;
+            var count = buff.Length;
             if (count < 2048)
             {
                 if (!Vector3dPools.ContainsKey(count))
@@ -355,7 +340,7 @@ namespace TerraViewer
                 return;
             }
             BufferMutex.WaitOne();
-            int count = buff.Length;
+            var count = buff.Length;
             if (count < 2048)
             {
                 if (!IndexU32Pools.ContainsKey(count))
@@ -404,7 +389,7 @@ namespace TerraViewer
                 return;
             }
             BufferMutex.WaitOne();
-            int count = buff.Length;
+            var count = buff.Length;
             if (count < 2048)
             {
                 if (!IndexU16Pools.ContainsKey(count))
@@ -417,7 +402,7 @@ namespace TerraViewer
             BufferMutex.ReleaseMutex();
         }
 
-        static Stack<Texture11> TexturePool256 = new Stack<Texture11>();
+        static readonly Stack<Texture11> TexturePool256 = new Stack<Texture11>();
 
         public static void ReturnTexture(Texture11 texture)
         {

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.Xml.Serialization;
-using System.Xml;
 
 namespace TerraViewer.Callibration
 {
@@ -42,10 +39,10 @@ namespace TerraViewer.Callibration
         [XmlArray("Constraints")]
         public List<GroundTruthPoint> Constraints = new List<GroundTruthPoint>();
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public int SelectedBlendPoint = -1;
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public int SelectedGroundTruth = -1;
 
         [XmlElement("ViewProjection")]
@@ -115,15 +112,17 @@ namespace TerraViewer.Callibration
 
         public Projection Copy()
         {
-            Projection proj = new Projection();
-            proj.FOV = this.FOV;
-            proj.Aspect = this.Aspect;
-            proj.XOffset = this.XOffset;
-            proj.YOffset = this.YOffset;
-            proj.RadialAmountX = this.RadialAmountX;
-            proj.RadialAmountY = this.RadialAmountY;
-            proj.RadialCenterX = this.RadialCenterX;
-            proj.RadialCenterY = this.RadialCenterY;
+            var proj = new Projection
+            {
+                FOV = FOV,
+                Aspect = Aspect,
+                XOffset = XOffset,
+                YOffset = YOffset,
+                RadialAmountX = RadialAmountX,
+                RadialAmountY = RadialAmountY,
+                RadialCenterX = RadialCenterX,
+                RadialCenterY = RadialCenterY
+            };
 
             return proj;
         }
@@ -148,14 +147,15 @@ namespace TerraViewer.Callibration
 
         public Transform Copy()
         {
-            Transform tran = new Transform();
-
-            tran.X = this.X;
-            tran.Y = this.Y;
-            tran.Z = this.Z;
-            tran.Heading = this.Heading;
-            tran.Pitch = this.Pitch;
-            tran.Roll = this.Roll;
+            var tran = new Transform
+            {
+                X = X,
+                Y = Y,
+                Z = Z,
+                Heading = Heading,
+                Pitch = Pitch,
+                Roll = Roll
+            };
 
             return tran;
         }
@@ -212,7 +212,7 @@ namespace TerraViewer.Callibration
                     return string.Format("alt={2},az={3}, x={0},y={1}, weight={4}", X, Y, Alt, Az, Weight);
 
                 default:
-                    return string.Format("x={0},y={1},alt={2},az={3}, weight={2}, type={3}", X, Y, Alt, Az, AxisType.ToString());
+                    return string.Format("x={0},y={1},alt={2},az={3}, weight={2}, type={3}", X, Y, Alt, Az);
             }
         }
     }

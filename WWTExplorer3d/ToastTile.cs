@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -19,27 +15,27 @@ namespace TerraViewer
 
         protected PositionTexture[,] bounds;
         protected bool backslash = false;
-        List<PositionTexture> vertexList = null;
-        List<Triangle>[] childTriangleList = new List<Triangle>[4];
+        List<PositionTexture> vertexList;
+        readonly List<Triangle>[] childTriangleList = new List<Triangle>[4];
 
         protected double[] demArray;
         protected void ComputeBoundingSphere(Tile parent, double altitude)
         {
             InitializeGrids();
 
-            Vector3d[] pointList = BufferPool11.GetVector3dBuffer(vertexList.Count);
-            double scaleFactor = (1 + (altitude / DemScaleFactor));
+            var pointList = BufferPool11.GetVector3dBuffer(vertexList.Count);
+            var scaleFactor = (1 + (altitude / DemScaleFactor));
 
             if (DemEnabled)
             {
-                for (int i = 0; i < vertexList.Count; i++)
+                for (var i = 0; i < vertexList.Count; i++)
                 {
                     pointList[i] = Vector3d.Scale(vertexList[i].Position, scaleFactor);
                 }
             }
             else
             {
-                for (int i = 0; i < vertexList.Count; i++)
+                for (var i = 0; i < vertexList.Count; i++)
                 {
                     pointList[i] = vertexList[i].Position;
                 }
@@ -81,10 +77,7 @@ namespace TerraViewer
             {
                 return backSlashIndexBuffer[index, accomidation];
             }
-            else
-            {
-                return slashIndexBuffer[index, accomidation];
-            }
+            return slashIndexBuffer[index, accomidation];
         }
 
         protected void CalcSphere(Vector3d[] list)
@@ -119,16 +112,16 @@ namespace TerraViewer
                 }         
             }
 
-            if (!this.DemReady || this.DemData == null )
+            if (!DemReady || DemData == null )
             {
                 return false;
             }
 
-            Vector3d testPoint = Coordinates.GeoTo3dDouble(lat, lng);
-            bool top = IsLeftOfHalfSpace(TopLeft, TopRight, testPoint);
-            bool right = IsLeftOfHalfSpace(TopRight, BottomRight, testPoint);
-            bool bottom = IsLeftOfHalfSpace(BottomRight, BottomLeft, testPoint);
-            bool left = IsLeftOfHalfSpace(BottomLeft, TopLeft, testPoint);
+            var testPoint = Coordinates.GeoTo3dDouble(lat, lng);
+            var top = IsLeftOfHalfSpace(TopLeft, TopRight, testPoint);
+            var right = IsLeftOfHalfSpace(TopRight, BottomRight, testPoint);
+            var bottom = IsLeftOfHalfSpace(BottomRight, BottomLeft, testPoint);
+            var left = IsLeftOfHalfSpace(BottomLeft, TopLeft, testPoint);
 
             if (top && right && bottom && left)
             {
@@ -143,9 +136,9 @@ namespace TerraViewer
         {
             pntA.Normalize();
             pntB.Normalize();
-            Vector3d cross = Vector3d.Cross(pntA, pntB);
+            var cross = Vector3d.Cross(pntA, pntB);
 
-            double dot = Vector3d.Dot(cross, pntTest);
+            var dot = Vector3d.Dot(cross, pntTest);
 
             return dot > 0;
         }
@@ -157,22 +150,19 @@ namespace TerraViewer
             {
                 //interate children
 
-                foreach (long childKey in childrenId)
+                foreach (var childKey in childrenId)
                 {
-                    Tile child = TileCache.GetCachedTile(childKey);
+                    var child = TileCache.GetCachedTile(childKey);
                     if (child != null)
                     {
                         if (child.IsPointInTile(lat, lng))
                         {
-                            double retVal = child.GetSurfacePointAltitude(lat, lng, meters);
+                            var retVal = child.GetSurfacePointAltitude(lat, lng, meters);
                             if (retVal != 0)
                             {
                                 return retVal;
                             }
-                            else
-                            {
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
@@ -182,61 +172,61 @@ namespace TerraViewer
 
         private double GetAltitudeFromLatLng(double lat, double lng, bool meters)
         {
-            Vector3d testPoint = Coordinates.GeoTo3dDouble(lat, lng);
-            Vector2d uv = DistanceCalc.GetUVFromInnerPoint(TopLeft, TopRight, BottomLeft, BottomRight, testPoint);
+            var testPoint = Coordinates.GeoTo3dDouble(lat, lng);
+            var uv = DistanceCalc.GetUVFromInnerPoint(TopLeft, TopRight, BottomLeft, BottomRight, testPoint);
 
             // Get 4 samples and interpolate
-            double uud = Math.Max(0, Math.Min(16, (uv.X * 16)));
-            double vvd = Math.Max(0, Math.Min(16, (uv.Y * 16)));
+            var uud = Math.Max(0, Math.Min(16, (uv.X * 16)));
+            var vvd = Math.Max(0, Math.Min(16, (uv.Y * 16)));
 
 
 
-            int uu = Math.Max(0, Math.Min(15, (int)(uv.X * 16)));
-            int vv = Math.Max(0, Math.Min(15, (int)(uv.Y * 16)));
+            var uu = Math.Max(0, Math.Min(15, (int)(uv.X * 16)));
+            var vv = Math.Max(0, Math.Min(15, (int)(uv.Y * 16)));
 
-            double ha = uud - uu;
-            double va = vvd - vv;
+            var ha = uud - uu;
+            var va = vvd - vv;
 
             if (demArray != null)
             {
                 // 4 nearest neighbors
-                double ul = demArray[uu + 17 * vv];
-                double ur = demArray[(uu + 1) + 17 * vv];
-                double ll = demArray[uu + 17 * (vv + 1)];
-                double lr = demArray[(uu + 1) + 17 * (vv + 1)];
+                var ul = demArray[uu + 17 * vv];
+                var ur = demArray[(uu + 1) + 17 * vv];
+                var ll = demArray[uu + 17 * (vv + 1)];
+                var lr = demArray[(uu + 1) + 17 * (vv + 1)];
 
-                double top = ul * (1 - ha) + ha * ur;
-                double bottom = ll * (1 - ha) + ha * lr;
-                double val = top * (1 - va) + va * bottom;
+                var top = ul * (1 - ha) + ha * ur;
+                var bottom = ll * (1 - ha) + ha * lr;
+                var val = top * (1 - va) + va * bottom;
 
                 return val / (meters ? 1 : DemScaleFactor);
             }
 
             return demAverage / (meters ? 1 : DemScaleFactor);
         }
-        static int countCreatedForNow = 0;
+        static int countCreatedForNow;
         public override double GetSurfacePointAltitudeNow(double lat, double lng, bool meters, int targetLevel)
         {
 
             if (level < targetLevel)
             {
-                int yOffset = 0;
+                var yOffset = 0;
                 if (dataset.Mercator || dataset.BottomsUp)
                 {
                     yOffset = 1;
                 }
-                int xOffset = 0;
+                var xOffset = 0;
 
-                int xMax = 2;
-                int childIndex = 0;
-                for (int y1 = 0; y1 < 2; y1++)
+                var xMax = 2;
+                var childIndex = 0;
+                for (var y1 = 0; y1 < 2; y1++)
                 {
-                    for (int x1 = 0; x1 < xMax; x1++)
+                    for (var x1 = 0; x1 < xMax; x1++)
                     {
                         //  if (level < (demEnabled ? 12 : dataset.Levels))
                         if (level < dataset.Levels && level < (targetLevel + 1))
                         {
-                            Tile child = TileCache.GetCachedTile(childrenId[childIndex]);
+                            var child = TileCache.GetCachedTile(childrenId[childIndex]);
                             if (child == null || !child.ReadyToRender)
                             {
                                 countCreatedForNow++;
@@ -248,15 +238,12 @@ namespace TerraViewer
                             {
                                 if (child.IsPointInTile(lat, lng))
                                 {
-                                    double retVal = child.GetSurfacePointAltitudeNow(lat, lng, meters, targetLevel);
+                                    var retVal = child.GetSurfacePointAltitudeNow(lat, lng, meters, targetLevel);
                                     if (retVal != 0)
                                     {
                                         return retVal;
                                     }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    break;
                                 }
                             }
                         }
@@ -274,7 +261,7 @@ namespace TerraViewer
         {
             vertexList = BufferPool11.GetPositionTextureList();
 
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 if (childTriangleList[i] != null)
                 {
@@ -292,14 +279,14 @@ namespace TerraViewer
             {
                     
                 
-                ToastTile parent = Parent as ToastTile;
+                var parent = Parent as ToastTile;
                 if (parent == null)
                 {
                     return;
                 }
 
-                int xIndex = x % 2;
-                int yIndex = y % 2;
+                var xIndex = x % 2;
+                var yIndex = y % 2;
 
                 if (level > 1)
                 {
@@ -466,19 +453,19 @@ namespace TerraViewer
 
         private PositionTexture Midpoint(PositionTexture positionNormalTextured, PositionTexture positionNormalTextured_2)
         {
-            Vector3d a1 = Vector3d.Lerp(positionNormalTextured.Position, positionNormalTextured_2.Position, .5f);
-            Vector2d a1uv = Vector2d.Lerp(new Vector2d(positionNormalTextured.Tu, positionNormalTextured.Tv), new Vector2d(positionNormalTextured_2.Tu, positionNormalTextured_2.Tv), .5f);
+            var a1 = Vector3d.Lerp(positionNormalTextured.Position, positionNormalTextured_2.Position, .5f);
+            var a1uv = Vector2d.Lerp(new Vector2d(positionNormalTextured.Tu, positionNormalTextured.Tv), new Vector2d(positionNormalTextured_2.Tu, positionNormalTextured_2.Tv), .5f);
 
             a1.Normalize();
             return new PositionTexture(a1, a1uv.X, a1uv.Y);
         }
         int subDivisionLevel = 4;
-        bool subDivided = false;
+        bool subDivided;
 
         public static Mutex dumpMutex = new Mutex();
         public override void OnCreateVertexBuffer(VertexBuffer11 vb)
 		{
-            bool dem = DemEnabled;
+            var dem = DemEnabled;
 
             if (!subDivided)
             {
@@ -488,13 +475,13 @@ namespace TerraViewer
                 }
 
                 
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
-                    int count = subDivisionLevel;
+                    var count = subDivisionLevel;
                     while (count-- > 1)
                     {
-                        List<Triangle> newList = BufferPool11.GetTriagleList();
-                        foreach (Triangle tri in childTriangleList[i])
+                        var newList = BufferPool11.GetTriagleList();
+                        foreach (var tri in childTriangleList[i])
                         {
                             tri.SubDivide(newList, vertexList);
                         }
@@ -509,7 +496,7 @@ namespace TerraViewer
             //{
             //    indexBuffer[i] = BufferPool11.GetShortIndexBuffer(childTriangleList[i].Count * 3);
             //}
-            int indexCount = childTriangleList[0].Count * 3;
+            var indexCount = childTriangleList[0].Count * 3;
 
 
             demIndex = 0;
@@ -517,9 +504,9 @@ namespace TerraViewer
             {
                
                 // Create a vertex buffer 
-                PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
+                var verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
 
-                int index = 0;
+                var index = 0;
                 if (dem && level > 1)
                 {
                     demArray = new double[17 * 17];
@@ -541,7 +528,7 @@ namespace TerraViewer
                     }
                 }
 
-                foreach (PositionTexture vert in vertexList)
+                foreach (var vert in vertexList)
                 {
                     if (dem)
                     {
@@ -558,17 +545,17 @@ namespace TerraViewer
                 vb.Unlock();
                 TriangleCount = childTriangleList[0].Count*4;
 
-                int quarterDivisions = SubDivisions / 2;
-                int part = 0;
-                foreach (List<Triangle> triList in childTriangleList)
+                var quarterDivisions = SubDivisions / 2;
+                var part = 0;
+                foreach (var triList in childTriangleList)
                 {
                     if (GetIndexBuffer(part, 0) == null)
                     {
-                        short[] indexArray = new short[indexCount];
-                        int indexer = 0;
+                        var indexArray = new short[indexCount];
+                        var indexer = 0;
                         //dumpMutex.WaitOne();
                         //System.Diagnostics.Debug.WriteLine("start Index dump:" + part.ToString() + ";" + (backslash ? "Backslash" : "Slash"));
-                        foreach (Triangle tri in triList)
+                        foreach (var tri in triList)
                         {
                             indexArray[indexer++] = (short)tri.A;
                             indexArray[indexer++] = (short)tri.B;
@@ -623,9 +610,9 @@ namespace TerraViewer
                 return;
             }
 
-            for (int a = 0; a < 16; a++)
+            for (var a = 0; a < 16; a++)
             {
-                short[] partArray = indexArray.Clone() as short[];
+                var partArray = indexArray.Clone() as short[];
                 ProcessAccomindations(partArray, a);
                 if (backslash)
                 {
@@ -640,15 +627,15 @@ namespace TerraViewer
 
         private void ProcessAccomindations(short[] indexArray, int a)
         {
-            Dictionary<short, short> map = new Dictionary<short, short>();
-            Dictionary<int, short> gridMap = new Dictionary<int, short>();
+            var map = new Dictionary<short, short>();
+            var gridMap = new Dictionary<int, short>();
 
-            foreach (short index in indexArray)
+            foreach (var index in indexArray)
             {
-                PositionTexture vert = vertexList[index];
-                int arrayX = (int)(vert.Tu * 16 + .5);
-                int arrayY = (int)(vert.Tv * 16 + .5);
-                int ii = (arrayY << 8) + arrayX;
+                var vert = vertexList[index];
+                var arrayX = (int)(vert.Tu * 16 + .5);
+                var arrayY = (int)(vert.Tv * 16 + .5);
+                var ii = (arrayY << 8) + arrayX;
 
                 if (!gridMap.ContainsKey(ii))
                 {
@@ -658,15 +645,15 @@ namespace TerraViewer
             }
 
 
-            int sections = 16;
+            var sections = 16;
 
             if ((a & 1) == 1)
             {
-                for (int x = 1; x < sections; x += 2)
+                for (var x = 1; x < sections; x += 2)
                 {
-                    int y = sections;
-                    int key = (y << 8) + x;
-                    int val = (y << 8) + x + 1;
+                    var y = sections;
+                    var key = (y << 8) + x;
+                    var val = (y << 8) + x + 1;
                     if (gridMap.ContainsKey(key))
                     {
                         map.Add(gridMap[key], (gridMap[val]));
@@ -676,11 +663,11 @@ namespace TerraViewer
 
             if ((a & 2) == 2)
             {
-                for (int y = 1; y < sections; y += 2)
+                for (var y = 1; y < sections; y += 2)
                 {
-                    int x = sections;
-                    int key = (y << 8) + x;
-                    int val = ((y + 1) << 8) + x;
+                    var x = sections;
+                    var key = (y << 8) + x;
+                    var val = ((y + 1) << 8) + x;
                     if (gridMap.ContainsKey(key))
                     {
                         map.Add(gridMap[key], (gridMap[val]));
@@ -690,11 +677,11 @@ namespace TerraViewer
 
             if ((a & 4) == 4)
             {
-                for (int x = 1; x < sections; x += 2)
+                for (var x = 1; x < sections; x += 2)
                 {
-                    int y = 0;
-                    int key = (y << 8) + x;
-                    int val = (y << 8) + x + 1;
+                    var y = 0;
+                    var key = (y << 8) + x;
+                    var val = (y << 8) + x + 1;
                     if (gridMap.ContainsKey(key))
                     {
                         map.Add(gridMap[key], (gridMap[val]));
@@ -704,11 +691,11 @@ namespace TerraViewer
 
             if ((a & 8) == 8)
             {
-                for (int y = 1; y < sections; y += 2)
+                for (var y = 1; y < sections; y += 2)
                 {
-                    int x = 0;
-                    int key = (y << 8) + x;
-                    int val = ((y + 1) << 8) + x;
+                    var x = 0;
+                    var key = (y << 8) + x;
+                    var val = ((y + 1) << 8) + x;
                     if (gridMap.ContainsKey(key))
                     {
                         map.Add(gridMap[key], (gridMap[val]));
@@ -722,7 +709,7 @@ namespace TerraViewer
                 return;
             }
 
-            for (int i = 0; i < indexArray.Length; i++)
+            for (var i = 0; i < indexArray.Length; i++)
             {
                 if (map.ContainsKey(indexArray[i]))
                 {
@@ -733,15 +720,15 @@ namespace TerraViewer
 
         public void WriteDebugVertex(int index)
         {
-            PositionTexture vert = vertexList[index];
-            byte arrayX = (byte)(int)(vert.Tu * 16 + .5);
-            byte arrayY = (byte)(int)(vert.Tv * 16 + .5);
+            var vert = vertexList[index];
+            var arrayX = (byte)(int)(vert.Tu * 16 + .5);
+            var arrayY = (byte)(int)(vert.Tv * 16 + .5);
 
-            System.Diagnostics.Debug.Write(index );
-            System.Diagnostics.Debug.Write("\t" );
-            System.Diagnostics.Debug.Write(arrayX );
-            System.Diagnostics.Debug.Write("\t" );
-            System.Diagnostics.Debug.WriteLine(arrayY );
+            Debug.Write(index );
+            Debug.Write("\t" );
+            Debug.Write(arrayX );
+            Debug.Write("\t" );
+            Debug.WriteLine(arrayY );
 
         }
 
@@ -758,8 +745,8 @@ namespace TerraViewer
 
         internal PositionNormalTexturedX2 GetMappedVertex(PositionTexture vert)
         {
-            PositionNormalTexturedX2 vertOut = new PositionNormalTexturedX2();
-            Coordinates latLng = Coordinates.CartesianToSpherical2(vert.Position);
+            var vertOut = new PositionNormalTexturedX2();
+            var latLng = Coordinates.CartesianToSpherical2(vert.Position);
             //      latLng.Lng += 90;
             if (latLng.Lng < -180)
             {
@@ -776,8 +763,8 @@ namespace TerraViewer
 
             if (level > 1)
             {
-                byte arrayX = (byte)(int)(vert.Tu * 16 + .5);
-                byte arrayY = (byte)(int)(vert.Tv * 16 + .5);
+                var arrayX = (byte)(int)(vert.Tu * 16 + .5);
+                var arrayY = (byte)(int)(vert.Tv * 16 + .5);
                 demArray[arrayX + arrayY * 17] = DemData[demIndex];
 
                 if (backslash)
@@ -798,7 +785,7 @@ namespace TerraViewer
                 }
             }
             
-            Vector3d pos = GeoTo3dWithAltitude(latLng.Lat, latLng.Lng, false);
+            var pos = GeoTo3dWithAltitude(latLng.Lat, latLng.Lng, false);
             vertOut.Tu = (float) vert.Tu;
             vertOut.Tv = (float) vert.Tv;
 
@@ -814,22 +801,22 @@ namespace TerraViewer
         {
             
 
-            ToastTile parent = Parent as ToastTile;
+            var parent = Parent as ToastTile;
             if (parent == null)
             {
                 return false;
             }
 
-            int offsetX = ((X % 2) == 1 ? 8 : 0);
-            int offsetY = ((Y % 2) == 0 ? 8 : 0);
+            var offsetX = ((X % 2) == 1 ? 8 : 0);
+            var offsetY = ((Y % 2) == 0 ? 8 : 0);
 
 
             demArray = new double[17 * 17];
             // Interpolate accross 
-            for (int y = 0; y < 17; y += 2)
+            for (var y = 0; y < 17; y += 2)
             {
-                bool copy = true;
-                for (int x = 0; x < 17; x++)
+                var copy = true;
+                for (var x = 0; x < 17; x++)
                 {
                     if (copy)
                     {
@@ -849,9 +836,9 @@ namespace TerraViewer
                 }
             }
             // Interpolate down
-            for (int y = 1; y < 17; y += 2)
+            for (var y = 1; y < 17; y += 2)
             {
-                for (int x = 0; x < 17; x++)
+                for (var x = 0; x < 17; x++)
                 {
 
                     demArray[(16 - y) * 17 + x] =
@@ -868,7 +855,7 @@ namespace TerraViewer
 
 
             DemData = new double[demSize];
-            for (int i = 0; i < demSize; i++)
+            for (var i = 0; i < demSize; i++)
             {
                 if (backslash)
                 {
@@ -894,9 +881,9 @@ namespace TerraViewer
 
         private static void WriteDemIndexArrays()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(" byte[] backslashXIndex = new byte[] {");
-            foreach (byte b in backslashXIndex)
+            foreach (var b in backslashXIndex)
             {
                 sb.Append(b.ToString());
                 sb.Append(", ");
@@ -906,7 +893,7 @@ namespace TerraViewer
             sb.AppendLine("");
 
             sb.Append(" byte[] backslashYIndex = new byte[] {");
-            foreach (byte b in backslashYIndex)
+            foreach (var b in backslashYIndex)
             {
                 sb.Append(b.ToString());
                 sb.Append(", ");
@@ -916,7 +903,7 @@ namespace TerraViewer
             sb.AppendLine("");
 
             sb.Append(" byte[] slashXIndex = new byte[] {");
-            foreach (byte b in slashXIndex)
+            foreach (var b in slashXIndex)
             {
                 sb.Append(b.ToString());
                 sb.Append(", ");
@@ -927,7 +914,7 @@ namespace TerraViewer
             sb.AppendLine("");
 
             sb.Append(" byte[] slashYIndex = new byte[] {");
-            foreach (byte b in slashYIndex)
+            foreach (var b in slashYIndex)
             {
                 sb.Append(b.ToString());
                 sb.Append(", ");
@@ -950,13 +937,13 @@ namespace TerraViewer
         }
 
                
-        int quadrant = 0;
+        int quadrant;
 
         private void ComputeQuadrant()
         {
-            int xQuad = 0;
-            int yQuad = 0;
-            int tiles = (int)Math.Pow(2, this.level);
+            var xQuad = 0;
+            var yQuad = 0;
+            var tiles = (int)Math.Pow(2, level);
 
             if (x > (tiles / 2) - 1)
             {
@@ -976,11 +963,11 @@ namespace TerraViewer
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;
+            topDown = !dataset.BottomsUp;
             demSize = 513;
             if (dataset.MeanRadius != 0)
             {
-                this.DemScaleFactor = dataset.MeanRadius;
+                DemScaleFactor = dataset.MeanRadius;
             }
             else
             {
@@ -998,7 +985,7 @@ namespace TerraViewer
 
 
             ComputeBoundingSphere( parent, parent !=null ? parent.demAverage : 0);
-            insideOut = this.Dataset.DataSetType == ImageSetType.Sky || this.Dataset.DataSetType == ImageSetType.Panorama;
+            insideOut = Dataset.DataSetType == ImageSetType.Sky || Dataset.DataSetType == ImageSetType.Panorama;
         }
 
         public override void CleanUp(bool removeFromParent)
@@ -1018,7 +1005,7 @@ namespace TerraViewer
 
             if (childTriangleList != null)
             {
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     if (childTriangleList[i] != null)
                     {
@@ -1035,10 +1022,10 @@ namespace TerraViewer
         static public double LineToPoint(Vector3d l0, Vector3d l1, Vector3d p)
         {
  
-            Vector3d v = l1 - l0;
-            Vector3d w = p - l0;
+            var v = l1 - l0;
+            var w = p - l0;
 
-            double dist = Vector3d.Cross(w, v).Length() / v.Length();
+            var dist = Vector3d.Cross(w, v).Length() / v.Length();
 
             return dist;
         }
@@ -1051,13 +1038,13 @@ namespace TerraViewer
             lr.Normalize();
             pnt.Normalize();
 
-            double dUpper = LineToPoint(ul, ur, pnt);
-            double dLower = LineToPoint(ll, lr, pnt);
-            double dVert = dUpper + dLower;
+            var dUpper = LineToPoint(ul, ur, pnt);
+            var dLower = LineToPoint(ll, lr, pnt);
+            var dVert = dUpper + dLower;
 
-            double dRight = LineToPoint(ur, lr, pnt);
-            double dLeft = LineToPoint(ul, ll, pnt);
-            double dHoriz = dRight + dLeft;
+            var dRight = LineToPoint(ur, lr, pnt);
+            var dLeft = LineToPoint(ul, ll, pnt);
+            var dHoriz = dRight + dLeft;
 
             return new Vector2d( dLeft/dHoriz, dUpper/dVert);
         }

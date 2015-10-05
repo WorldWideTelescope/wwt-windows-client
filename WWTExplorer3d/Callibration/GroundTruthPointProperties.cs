@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace TerraViewer.Callibration
@@ -17,29 +13,29 @@ namespace TerraViewer.Callibration
         }
         private void SetUiStrings()
         {
-            this.label1.Text = Language.GetLocalizedText(763, "Altitude");
-            this.label2.Text = Language.GetLocalizedText(764, "Constraint Type");
-            this.label3.Text = Language.GetLocalizedText(765, "Azimuth");
-            this.label4.Text = Language.GetLocalizedText(766, "Weight");
-            this.OK.Text = Language.GetLocalizedText(759, "Ok");
-            this.Text = Language.GetLocalizedText(767, "GroundTruthPointProperties");
+            label1.Text = Language.GetLocalizedText(763, "Altitude");
+            label2.Text = Language.GetLocalizedText(764, "Constraint Type");
+            label3.Text = Language.GetLocalizedText(765, "Azimuth");
+            label4.Text = Language.GetLocalizedText(766, "Weight");
+            OK.Text = Language.GetLocalizedText(759, "Ok");
+            Text = Language.GetLocalizedText(767, "GroundTruthPointProperties");
         }
 
         public GroundTruthPoint Target = null;
         private void GroundTruthPointProperties_Load(object sender, EventArgs e)
         {
-            this.ConstraintTypeCombo.Items.AddRange(Enum.GetNames(typeof(AxisTypes)));
-            this.ConstraintTypeCombo.Items.RemoveAt(ConstraintTypeCombo.Items.Count - 1);
-            this.ConstraintTypeCombo.SelectedIndex = (int)Target.AxisType;
+            ConstraintTypeCombo.Items.AddRange(Enum.GetNames(typeof(AxisTypes)));
+            ConstraintTypeCombo.Items.RemoveAt(ConstraintTypeCombo.Items.Count - 1);
+            ConstraintTypeCombo.SelectedIndex = (int)Target.AxisType;
 
-            AzText.Text = Target.Az.ToString();
-            AltText.Text = Target.Alt.ToString();
-            WeightText.Text = Target.Weight.ToString();
+            AzText.Text = Target.Az.ToString(CultureInfo.InvariantCulture);
+            AltText.Text = Target.Alt.ToString(CultureInfo.InvariantCulture);
+            WeightText.Text = Target.Weight.ToString(CultureInfo.InvariantCulture);
         }
 
         private void OK_Click(object sender, EventArgs e)
         {
-            bool failed = false;
+            var failed = false;
 
             Target.Az = UiTools.ParseAndValidateDouble(AzText, Target.Az, ref failed);
             Target.Alt = UiTools.ParseAndValidateDouble(AltText, Target.Alt, ref failed);
@@ -48,7 +44,7 @@ namespace TerraViewer.Callibration
             if (!failed)
             {
                 DialogResult = DialogResult.OK;
-                this.Close();
+                Close();
             }
         }
 

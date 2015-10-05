@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data;
+﻿using System.Data;
 
 namespace ShapefileTools
 {
@@ -10,7 +7,7 @@ namespace ShapefileTools
         internal DataRow props;
         public DataRow Attributes
         {
-            get { return this.props; }
+            get { return props; }
            
         }
     }
@@ -78,41 +75,41 @@ namespace ShapefileTools
 /// </summary>
         public double[] BoundingBox
         {
-            get { return this.bbox; }
-            set { this.bbox = value; }
+            get { return bbox; }
+            set { bbox = value; }
         }
     }
 
     public abstract class ComplexShapeM : ComplexShape {
-        private double[] mRange = new double[2];
+        private readonly double[] mRange = new double[2];
 
         public double MMin
         {
-            get { return this.mRange[0]; }
-            set { this.mRange[0] = value; }
+            get { return mRange[0]; }
+            set { mRange[0] = value; }
         }
 
         public double MMax
         {
-            get { return this.mRange[1]; }
-            set { this.mRange[1] = value; }
+            get { return mRange[1]; }
+            set { mRange[1] = value; }
         }
     }
 
     public abstract class ComplexShapeZ : ComplexShapeM
     {
-        private double[] zRange = new double[2];
+        private readonly double[] zRange = new double[2];
 
         public double ZMin
         {
-            get { return this.zRange[0]; }
-            set { this.zRange[0] = value; }
+            get { return zRange[0]; }
+            set { zRange[0] = value; }
         }
 
         public double ZMax
         {
-            get { return this.zRange[1]; }
-            set { this.zRange[1] = value; }
+            get { return zRange[1]; }
+            set { zRange[1] = value; }
         }
     }
 

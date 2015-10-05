@@ -1,32 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Text;
 using System.Drawing;
 
 using System.IO;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Net;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using WwtDataUtils;
+using WWTThumbnails;
 
 namespace TerraViewer
 {
     class MyWebClient : WebClient
     {
-        public MyWebClient()
-        {
-
-        }
-
         protected override WebRequest GetWebRequest(Uri uri)
         {
-            WebRequest w = base.GetWebRequest(uri);
+            var w = base.GetWebRequest(uri);
             w.Timeout = 120 * 1000;
             return w;
         }
@@ -34,13 +29,13 @@ namespace TerraViewer
 
     class UiTools
     {
-        static public System.Drawing.Font StandardSmall = new System.Drawing.Font("Segoe UI", 7, FontStyle.Regular);
-        static public System.Drawing.Font StandardRegular = new System.Drawing.Font("Segoe UI", 8, FontStyle.Regular);
-        static public System.Drawing.Font StandardLarge = new System.Drawing.Font("Segoe UI", 12, FontStyle.Regular);
-        static public System.Drawing.Font StandardHuge = new System.Drawing.Font("Segoe UI", 15, FontStyle.Regular);
-        static public System.Drawing.Font StandardGargantuan = new System.Drawing.Font("Segoe UI", 15, FontStyle.Regular);
-        static public System.Drawing.Font TreeViewRegular = new System.Drawing.Font("Segoe UI", 8.25f, FontStyle.Regular);
-        static public System.Drawing.Font TreeViewBold = new System.Drawing.Font("Segoe UI", 9f, FontStyle.Bold);
+        static public Font StandardSmall = new Font("Segoe UI", 7, FontStyle.Regular);
+        static public Font StandardRegular = new Font("Segoe UI", 8, FontStyle.Regular);
+        static public Font StandardLarge = new Font("Segoe UI", 12, FontStyle.Regular);
+        static public Font StandardHuge = new Font("Segoe UI", 15, FontStyle.Regular);
+        static public Font StandardGargantuan = new Font("Segoe UI", 15, FontStyle.Regular);
+        static public Font TreeViewRegular = new Font("Segoe UI", 8.25f, FontStyle.Regular);
+        static public Font TreeViewBold = new Font("Segoe UI", 9f, FontStyle.Bold);
         static public Brush StadardTextBrush = new SolidBrush(Color.White);
         static public Brush DisabledTextBrush = new SolidBrush(Color.Gray);
         static public Brush YellowTextBrush = new SolidBrush(Color.Yellow);
@@ -50,7 +45,7 @@ namespace TerraViewer
         static public StringFormat StringFormatCenterCenter = new StringFormat();
         static public StringFormat StringFormatCenterLeft = new StringFormat();
         static public StringFormat StringFormatThumbnails = new StringFormat();
-        static public Color TextBackground = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(105)))));
+        static public Color TextBackground = Color.FromArgb(68, 88, 105);
         //        static public Direct3D.Material DefaultMaterial = new Direct3D.Material();
 
         static UiTools()
@@ -83,12 +78,12 @@ namespace TerraViewer
             FormatProvider = new NumberFormatInfo();
             FormatProvider.NumberDecimalSeparator = ".";
             FormatProvider.NumberGroupSeparator = ",";
-            FormatProvider.NumberGroupSizes = new int[] { 3 };
+            FormatProvider.NumberGroupSizes = new[] { 3 };
 
-            List<Color> colorList = new List<Color>();
+            var colorList = new List<Color>();
             foreach (KnownColor name in Enum.GetValues(typeof(KnownColor)))
             {
-                Color c = Color.FromKnownColor(name);
+                var c = Color.FromKnownColor(name);
                 colorList.Add(c);
             }
             KnownColors = colorList.ToArray();
@@ -103,35 +98,29 @@ namespace TerraViewer
 
         public static string GetMonthName(int month, bool shortName)
         {
-            DateTime date = new DateTime(2000, month + 1, 1);
+            var date = new DateTime(2000, month + 1, 1);
 
             if (shortName)
             {
                 return date.ToString("MMM");
             }
-            else
-            {
-                return date.ToString("MMMM");
-            }
+            return date.ToString("MMMM");
         }
 
         public static string GetDayName(int day, bool shortName)
         {
-            DateTime date = new DateTime(2012, 4, (day % 7) + 1);
+            var date = new DateTime(2012, 4, (day % 7) + 1);
 
             if (shortName)
             {
                 return date.ToString("ddd");
             }
-            else
-            {
-                return date.ToString("dddd");
-            }
+            return date.ToString("dddd");
         }
 
         public static string GetHourName(int hour)
         {
-            DateTime date = new DateTime(2000, 1, 1, hour, 0, 0);
+            var date = new DateTime(2000, 1, 1, hour, 0, 0);
             return date.ToString("hh:mm tt");
 
         }
@@ -140,17 +129,17 @@ namespace TerraViewer
         {
             if (delimiter == '\t')
             {
-                return data.Split(new char[] { '\t' });
+                return data.Split(new[] { '\t' });
             }
 
-            List<string> output = new List<string>();
+            var output = new List<string>();
 
-            int nestingLevel = 0;
+            var nestingLevel = 0;
 
-            int current = 0;
-            int count = 0;
-            int start = 0;
-            bool inQuotes = false;
+            var current = 0;
+            var count = 0;
+            var start = 0;
+            var inQuotes = false;
             while (current < data.Length)
             {
                 if (data[current] == '(')
@@ -191,13 +180,13 @@ namespace TerraViewer
 
         public static double ParseAndValidateDouble(TextBox input, double defValue, ref bool failed)
         {
-            bool sucsess = false;
-            double result = defValue;
+            var sucsess = false;
+            var result = defValue;
             sucsess = double.TryParse(input.Text, out result);
 
             if (sucsess)
             {
-                input.BackColor = UiTools.TextBackground;
+                input.BackColor = TextBackground;
             }
             else
             {
@@ -210,8 +199,8 @@ namespace TerraViewer
 
         public static double ParseAndValidateCoordinate(TextBox input, double defValue, ref bool failed)
         {
-            bool sucsess = false;
-            double result = defValue;
+            var sucsess = false;
+            var result = defValue;
             sucsess = Coordinates.Validate(input.Text);
 
 
@@ -219,7 +208,7 @@ namespace TerraViewer
             if (sucsess)
             {
                 result = Coordinates.Parse(input.Text);
-                input.BackColor = UiTools.TextBackground;
+                input.BackColor = TextBackground;
             }
             else
             {
@@ -232,9 +221,9 @@ namespace TerraViewer
 
         static public Stream GetMemoryStreamFromUrl(string url)
         {
-            WebClient client = new WebClient();
-            Byte[] data = client.DownloadData(url);
-            MemoryStream stream = new MemoryStream(data);
+            var client = new WebClient();
+            var data = client.DownloadData(url);
+            var stream = new MemoryStream(data);
 
             return stream;
         }
@@ -244,7 +233,7 @@ namespace TerraViewer
         static public bool ValidateString(string instr, string regexstr)
         {
             instr = instr.Trim();
-            System.Text.RegularExpressions.Regex pattern = new System.Text.RegularExpressions.Regex(regexstr);
+            var pattern = new Regex(regexstr);
             return pattern.IsMatch(instr);
         }
 
@@ -252,8 +241,8 @@ namespace TerraViewer
 
         static public int GetTransparentColor(int color, float opacity)
         {
-            Color inColor = Color.FromArgb(color);
-            Color outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
+            var inColor = Color.FromArgb(color);
+            var outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
             return outColor.ToArgb();
         }
 
@@ -263,10 +252,10 @@ namespace TerraViewer
             {
                 if (File.Exists(filename))
                 {
-                    Bitmap bmpTemp = new Bitmap(filename);
+                    var bmpTemp = new Bitmap(filename);
 
-                    Bitmap bmpReturn = new Bitmap(bmpTemp.Width, bmpTemp.Height);
-                    Graphics g = Graphics.FromImage(bmpReturn);
+                    var bmpReturn = new Bitmap(bmpTemp.Width, bmpTemp.Height);
+                    var g = Graphics.FromImage(bmpReturn);
                     g.DrawImage(bmpTemp, new Rectangle(0, 0, bmpTemp.Width, bmpTemp.Height), new Rectangle(0, 0, bmpTemp.Width, bmpTemp.Height), GraphicsUnit.Pixel);
                     g.Dispose();
                     GC.SuppressFinalize(g);
@@ -274,10 +263,7 @@ namespace TerraViewer
                     GC.SuppressFinalize(bmpTemp);
                     return bmpReturn;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             catch
             {
@@ -295,9 +281,9 @@ namespace TerraViewer
 
             if (url.StartsWith(@"http://www.worldwidetelescope.org/hst/") || url.StartsWith(@"http://www.worldwidetelescope.org/thumbnails/") || url.StartsWith(@"http://www.worldwidetelescope.org/spitzer/"))
             {
-                string name = url.Substring(url.LastIndexOf("/") + 1).Replace(".jpg", "").Replace(".png", "");
+                var name = url.Substring(url.LastIndexOf("/") + 1).Replace(".jpg", "").Replace(".png", "");
 
-                Bitmap bmp = WWTThumbnails.WWTThmbnail.GetThumbnail(name);
+                var bmp = WWTThmbnail.GetThumbnail(name);
                 if (bmp != null)
                 {
                     return bmp;
@@ -307,9 +293,9 @@ namespace TerraViewer
 
             if (url.StartsWith(@"http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=") || url.StartsWith(@"http://www.worldwidetelescope.org/spitzer/"))
             {
-                string name = url.Replace("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=", "");
+                var name = url.Replace("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=", "");
 
-                Bitmap bmp = WWTThumbnails.WWTThmbnail.GetThumbnail(name);
+                var bmp = WWTThmbnail.GetThumbnail(name);
                 if (bmp != null)
                 {
                     return bmp;
@@ -318,7 +304,7 @@ namespace TerraViewer
             }
             int id = Math.Abs(url.GetHashCode32());
 
-            string filename = id.ToString() + ".jpg";
+            var filename = id + ".jpg";
 
             return LoadThumbnailFromWeb(url, filename);
         }
@@ -332,7 +318,7 @@ namespace TerraViewer
             {
                 DataSetManager.DownloadFile(CacheProxy.GetCacheUrl(url), Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename, true, true);
 
-                return UiTools.LoadBitmap(Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename);
+                return LoadBitmap(Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename);
 
             }
             catch
@@ -344,9 +330,9 @@ namespace TerraViewer
 
         static public string GetNamesStringFromArray(string[] array)
         {
-            string names = "";
-            string delim = "";
-            foreach (string name in array)
+            var names = "";
+            var delim = "";
+            foreach (var name in array)
             {
                 names += delim;
                 names += name;
@@ -360,9 +346,9 @@ namespace TerraViewer
             if (bindType == BindingType.Toggle)
             {
                 //filter by toggle
-                List<ScriptableProperty> filtered = new List<ScriptableProperty>();
+                var filtered = new List<ScriptableProperty>();
 
-                foreach (ScriptableProperty prop in properties)
+                foreach (var prop in properties)
                 {
                     if (prop.Togglable)
                     {
@@ -372,12 +358,7 @@ namespace TerraViewer
                 return filtered.ToArray();
 
             }
-            else
-            {
-                return properties;
-            }
-
-
+            return properties;
         }
 
 
@@ -387,9 +368,9 @@ namespace TerraViewer
             try
             {
                 Bitmap bmpTemp = null;
-                using (Stream stream = File.Open(filename, System.IO.FileMode.Open))
+                using (Stream stream = File.Open(filename, FileMode.Open))
                 {
-                    Image tempImg = Image.FromStream(stream);
+                    var tempImg = Image.FromStream(stream);
                     bmpTemp = new Bitmap(tempImg);
                     tempImg.Dispose();
                     GC.SuppressFinalize(tempImg);
@@ -408,7 +389,7 @@ namespace TerraViewer
 
         }
 
-        static public void SaveBitmap(Bitmap bmp, string filename, System.Drawing.Imaging.ImageFormat format)
+        static public void SaveBitmap(Bitmap bmp, string filename, ImageFormat format)
         {
             using (Stream stream = File.Open(filename, FileMode.Create))
             {
@@ -420,15 +401,15 @@ namespace TerraViewer
         static public byte[] LoadBlob(string filename)
         {
 
-            FileInfo fi = new FileInfo(filename);
+            var fi = new FileInfo(filename);
 
             if (fi == null)
             {
                 return null;
             }
 
-            byte[] blob = new byte[(int)fi.Length];
-            using (FileStream fs = new FileStream(filename, FileMode.Open))
+            var blob = new byte[(int)fi.Length];
+            using (var fs = new FileStream(filename, FileMode.Open))
             {
                 fs.Read(blob, 0, (int)fi.Length);
                 fs.Close();
@@ -439,9 +420,9 @@ namespace TerraViewer
      
         public static string[] GetBindingTargetTypeList()
         {
-            List<String> types = new List<string>();
+            var types = new List<string>();
 
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 types.Add(Enum.GetName(typeof(BindingTargetType), (BindingTargetType)i));
             }
@@ -453,30 +434,30 @@ namespace TerraViewer
 
         static public string MakeGrayScaleImage(string filename)
         {
-            string gsFilename = filename + ".gs.png";
+            var gsFilename = filename + ".gs.png";
             if (File.Exists(gsFilename))
             {
                 return gsFilename;
             }
 
-            Bitmap bmpIn = new Bitmap(filename);
+            var bmpIn = new Bitmap(filename);
 
-            FastBitmap fastBmp = new FastBitmap(bmpIn);
-            int width = bmpIn.Width;
-            int height = bmpIn.Height;
-            int stride = width;
+            var fastBmp = new FastBitmap(bmpIn);
+            var width = bmpIn.Width;
+            var height = bmpIn.Height;
+            var stride = width;
             fastBmp.LockBitmap();
             unsafe
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    int indexY = y;
-                    PixelData* pData = fastBmp[0, y];
-                    for (int x = 0; x < width; x++)
+                    var indexY = y;
+                    var pData = fastBmp[0, y];
+                    for (var x = 0; x < width; x++)
                     {
-                        PixelData pixel = *pData;
+                        var pixel = *pData;
 
-                        int val = (int)Gamma((Gamma(pixel.green, 2.2f) * .6152 + Gamma(pixel.red, 2.2f) * .2126 + Gamma(pixel.blue, 2.2f) * .1722), 1 / 2.2f);
+                        var val = (int)Gamma((Gamma(pixel.green, 2.2f) * .6152 + Gamma(pixel.red, 2.2f) * .2126 + Gamma(pixel.blue, 2.2f) * .1722), 1 / 2.2f);
 
                         *pData++ = new PixelData(val, val, val, pixel.alpha);
                     }
@@ -503,8 +484,8 @@ namespace TerraViewer
 
         static public string CleanFileName(string filename)
         {
-            char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
-            int index = -1;
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var index = -1;
             while ((index = filename.IndexOfAny(invalidChars)) != -1)
             {
                 filename = filename.Remove(index);
@@ -518,19 +499,18 @@ namespace TerraViewer
         }
         public static bool IsEmail(string Email)
         {
-            string strRegex = @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}" +
+            var strRegex = @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}" +
                 @"\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\" +
                 @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
-            Regex re = new Regex(strRegex);
+            var re = new Regex(strRegex);
             if (re.IsMatch(Email))
                 return (true);
-            else
-                return (false);
+            return (false);
         }
 
         public static bool IsUrl(string Url)
         {
-            string strRegex = "^(https?://)"
+            var strRegex = "^(https?://)"
             + "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //user@ 
             + @"(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP- 199.194.52.184 
             + "|" // allows either IP or domain 
@@ -540,15 +520,14 @@ namespace TerraViewer
             + "(:[0-9]{1,4})?" // port number- :80 
             + "((/?)|" // a slash isn't required if there is no file name 
             + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$";
-            Regex re = new Regex(strRegex);
+            var re = new Regex(strRegex);
 
             if (re.IsMatch(Url))
                 return (true);
-            else
-                return (false);
+            return (false);
         }
 
-        static WebClient client = new WebClient();
+        static readonly WebClient client = new WebClient();
         /// <summary>
         /// This sends a http message to the server but does not wait for a response
         /// </summary>
@@ -603,18 +582,18 @@ namespace TerraViewer
         }
 
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hwnd, StringBuilder text, int length);
         [DllImport("user32.dll")]
         public static extern IntPtr GetFocus();
 
         public static Control GetFocusControl()
         {
-            IntPtr focus = GetFocus();
+            var focus = GetFocus();
 
-            Control control = Control.FromHandle(focus);
+            var control = Control.FromHandle(focus);
             return control;
         }
         public static bool IsAppFocused()
@@ -627,12 +606,12 @@ namespace TerraViewer
         public const double SSMUnitConversion = 370; // No idea where this fudge factors comes from
         public static double SolarSystemToMeters(double SolarSystemCameraDistance)
         {
-            return SolarSystemCameraDistance * UiTools.KilometersPerAu * SSMUnitConversion;
+            return SolarSystemCameraDistance * KilometersPerAu * SSMUnitConversion;
         }
 
         public static double MetersToSolarSystemDistance(double meters)
         {
-            return meters / SSMUnitConversion * UiTools.KilometersPerAu;
+            return meters / SSMUnitConversion * KilometersPerAu;
         }
 
 
@@ -647,100 +626,88 @@ namespace TerraViewer
             {
                 return distance.ToString("#.######");
             }
-            else
-                if (distance < .0001)
-                {
-                    return distance.ToString("#.#####");
-                }
-                else
-                    if (distance < .001)
-                    {
-                        return distance.ToString("#.####");
-                    }
-                    else
-                        if (distance < .01)
-                        {
-                            return distance.ToString("#.###");
-                        }
-                        else
-                            if (distance < .1)
-                            {
-                                return distance.ToString("#.##");
-                            }
-                            else
-                            {
-                                return distance.ToString("###,###,###,###.#");
-                            }
-
+            if (distance < .0001)
+            {
+                return distance.ToString("#.#####");
+            }
+            if (distance < .001)
+            {
+                return distance.ToString("#.####");
+            }
+            if (distance < .01)
+            {
+                return distance.ToString("#.###");
+            }
+            if (distance < .1)
+            {
+                return distance.ToString("#.##");
+            }
+            return distance.ToString("###,###,###,###.#");
         }
 
 
         // Distance is stored in AU in WWT but is displayed in KM AU, LY, MPC
         public static string FormatDistance(double distance)
         {
-
             if (distance < .1)
             {
                 // Kilometers
-                double km = (distance * KilometersPerAu);
+                var km = (distance * KilometersPerAu);
 
                 if (km < 10)
                 {
                     double m = (int)(km * 1000);
                     return m.ToString("###,###,###,###.#") + " m";
                 }
-                else
-                {
-                    km = (int)km;
-                    return km.ToString("###,###,###,###.#") + " km";
-                }
+                km = (int)km;
+                return km.ToString("###,###,###,###.#") + " km";
             }
-            else if (distance < (10))
+            if (distance < (10))
             {
                 //Units in u
-                double au = ((int)(distance * 10 + .5)) / 10.0;
+                var au = ((int)(distance * 10 + .5)) / 10.0;
                 return au.ToString("###,###,###,###.#") + " au";
             }
-            else if (distance < (AuPerLightYear / 10.0))
+            if (distance < (AuPerLightYear / 10.0))
             {
                 //Units in u
                 double au = (int)(distance);
                 return au.ToString("###,###,###,###.#") + " au";
             }
-            else if (distance < (AuPerLightYear * 10))
+            if (distance < (AuPerLightYear * 10))
             {
                 // Units in lightyears
-                double ly = ((int)((distance * 10) / AuPerLightYear)) / 10.0;
+                var ly = ((int)((distance * 10) / AuPerLightYear)) / 10.0;
                 return ly.ToString("###,###,###,###.#") + " ly";
             }
-            else if (distance < (AuPerLightYear * 1000000))
+            if (distance < (AuPerLightYear * 1000000))
             {
                 // Units in lightyears
                 double ly = ((int)((distance) / AuPerLightYear));
                 return ly.ToString("###,###,###,###.#") + " ly";
             }
-            else if (distance < (AuPerParsec * 10000000))
+            if (distance < (AuPerParsec * 10000000))
             {
-                double mpc = ((int)((distance * 10) / (AuPerParsec * 1000000.0))) / 10.0;
+                var mpc = ((int)((distance * 10) / (AuPerParsec * 1000000.0))) / 10.0;
                 return mpc.ToString("###,###,###,###.#") + " Mpc";
             }
-            else if (distance < (AuPerParsec * 1000000000))
+            if (distance < (AuPerParsec * 1000000000))
             {
                 double mpc = ((int)((distance) / (AuPerParsec * 1000000.0)));
                 return mpc.ToString("###,###,###,###.#") + " Mpc";
             }
             else
             {
-                double mpc = ((int)((distance * 10) / (AuPerParsec * 1000000000.0))) / 10.0;
+                var mpc = ((int)((distance * 10) / (AuPerParsec * 1000000000.0))) / 10.0;
                 return mpc.ToString("###,###,###,###.#") + " Gpc";
             }
         }
 
         public static string FormatDecimalHours(double dayFraction)
         {
-            TimeSpan ts = DateTime.UtcNow - DateTime.Now;
+            var ts = DateTime.UtcNow - DateTime.Now;
 
-            double day = (dayFraction - ts.TotalHours) + 0.0083333334;
+            var day = (dayFraction - ts.TotalHours) + 0.0083333334;
             while (day > 24)
             {
                 day -= 24;
@@ -749,9 +716,9 @@ namespace TerraViewer
             {
                 day += 24;
             }
-            int hours = (int)day;
-            int minutes = (int)((day * 60.0) - ((double)hours * 60.0));
-            int seconds = (int)((day * 3600) - (((double)hours * 3600) + ((double)minutes * 60.0)));
+            var hours = (int)day;
+            var minutes = (int)((day * 60.0) - (hours * 60.0));
+            var seconds = (int)((day * 3600) - (((double)hours * 3600) + (minutes * 60.0)));
 
             return string.Format("{0:00}:{1:00}", hours, minutes, seconds);
             //return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
@@ -762,45 +729,45 @@ namespace TerraViewer
 
             try
             {
-                Bitmap bmpThumb = new Bitmap(96, 45);
+                var bmpThumb = new Bitmap(96, 45);
 
-                Graphics g = Graphics.FromImage(bmpThumb);
+                var g = Graphics.FromImage(bmpThumb);
 
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-                double imageAspect = ((double)imgOrig.Width) / (imgOrig.Height);
+                var imageAspect = ((double)imgOrig.Width) / (imgOrig.Height);
 
-                double clientAspect = ((double)bmpThumb.Width) / bmpThumb.Height;
+                var clientAspect = ((double)bmpThumb.Width) / bmpThumb.Height;
 
-                int cw = bmpThumb.Width;
-                int ch = bmpThumb.Height;
+                var cw = bmpThumb.Width;
+                var ch = bmpThumb.Height;
 
                 if (imageAspect < clientAspect)
                 {
-                    ch = (int)((double)cw / imageAspect);
+                    ch = (int)(cw / imageAspect);
                 }
                 else
                 {
-                    cw = (int)((double)ch * imageAspect);
+                    cw = (int)(ch * imageAspect);
                 }
 
-                int cx = (bmpThumb.Width - cw) / 2;
-                int cy = ((bmpThumb.Height - ch) / 2);// - 1;
-                Rectangle destRect = new Rectangle(cx, cy, cw, ch);//+ 1);
+                var cx = (bmpThumb.Width - cw) / 2;
+                var cy = ((bmpThumb.Height - ch) / 2);// - 1;
+                var destRect = new Rectangle(cx, cy, cw, ch);//+ 1);
 
-                Rectangle srcRect = new Rectangle(0, 0, imgOrig.Width, imgOrig.Height);
-                g.DrawImage(imgOrig, destRect, srcRect, System.Drawing.GraphicsUnit.Pixel);
+                var srcRect = new Rectangle(0, 0, imgOrig.Width, imgOrig.Height);
+                g.DrawImage(imgOrig, destRect, srcRect, GraphicsUnit.Pixel);
                 g.Dispose();
                 GC.SuppressFinalize(g);
                 return bmpThumb;
             }
             catch
             {
-                Bitmap bmp = new Bitmap(96, 45);
-                Graphics g = Graphics.FromImage(bmp);
+                var bmp = new Bitmap(96, 45);
+                var g = Graphics.FromImage(bmp);
                 g.Clear(Color.Blue);
 
-                g.DrawString("Can't Capture", UiTools.StandardSmall, UiTools.StadardTextBrush, new PointF(3, 15));
+                g.DrawString("Can't Capture", StandardSmall, StadardTextBrush, new PointF(3, 15));
                 return bmp;
             }
         }
@@ -816,7 +783,7 @@ namespace TerraViewer
 
         public static void SetWallpaper(String path)
         {
-            RegistryKey desktop = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", true);
+            var desktop = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", true);
 
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, path,
@@ -840,7 +807,7 @@ namespace TerraViewer
 
         private const int SM_CXSCREEN = 0;
         private const int SM_CYSCREEN = 1;
-        private static IntPtr HWND_TOP = IntPtr.Zero;
+        private static readonly IntPtr HWND_TOP = IntPtr.Zero;
         private const int SWP_SHOWWINDOW = 64; // 0x0040
 
         public static void ShowFullScreen(Control form, bool doubleWide, int screenID)
@@ -858,8 +825,8 @@ namespace TerraViewer
                 screenTarget = Screen.AllScreens[screenID];
             }
 
-            int height = screenTarget.Bounds.Height;
-            int width = screenTarget.Bounds.Width;
+            var height = screenTarget.Bounds.Height;
+            var width = screenTarget.Bounds.Width;
 
             if (Properties.Settings.Default.FullScreenHeight != 0 && Properties.Settings.Default.FullScreenWidth != 0)
             {
@@ -911,15 +878,15 @@ namespace TerraViewer
         public static Bitmap GetMetafileFromClipboard()
         {
             OpenClipboard(IntPtr.Zero);
-            IntPtr hemf = GetClipboardData(CF_ENHMETAFILE);
+            var hemf = GetClipboardData(CF_ENHMETAFILE);
             CloseClipboard();
             if (hemf != IntPtr.Zero)
             {
-                Metafile mf = new Metafile(hemf, true);
-                Bitmap b = new Bitmap(mf.Width, mf.Height);
-                Graphics g = Graphics.FromImage(b);
-                GraphicsUnit unit = GraphicsUnit.Millimeter;
-                RectangleF rsrc = mf.GetBounds(ref unit);
+                var mf = new Metafile(hemf, true);
+                var b = new Bitmap(mf.Width, mf.Height);
+                var g = Graphics.FromImage(b);
+                var unit = GraphicsUnit.Millimeter;
+                var rsrc = mf.GetBounds(ref unit);
                 g.PageUnit = GraphicsUnit.Pixel;
                 g.DrawImage(mf, 0, 0, mf.Width, mf.Height);
                 g.Dispose();
@@ -968,7 +935,7 @@ namespace TerraViewer
             return dwVolume & 0x0000ffff / ushort.MaxValue;
         }
 
-        static EndpointVolume vol = null;
+        static EndpointVolume vol;
 
         private static void SetVolume(int value)
         {
@@ -990,11 +957,11 @@ namespace TerraViewer
         {
             fixed (char* str = s.ToCharArray())
             {
-                char* chPtr = str;
-                int num = 0x15051505;
-                int num2 = num;
-                int* numPtr = (int*)chPtr;
-                for (int i = s.Length; i > 0; i -= 4)
+                var chPtr = str;
+                var num = 0x15051505;
+                var num2 = num;
+                var numPtr = (int*)chPtr;
+                for (var i = s.Length; i > 0; i -= 4)
                 {
                     num = (((num << 5) + num) + (num >> 0x1b)) ^ numPtr[0];
                     if (i <= 2)
@@ -1148,17 +1115,17 @@ namespace TerraViewer
 
         }
 
-        object oEnumerator = null;
+        object oEnumerator;
 
-        IMMDeviceEnumerator iMde = null;
+        IMMDeviceEnumerator iMde;
 
-        object oDevice = null;
+        object oDevice;
 
-        IMMDevice imd = null;
+        IMMDevice imd;
 
-        object oEndPoint = null;
+        object oEndPoint;
 
-        IAudioEndpointVolume iAudioEndpoint = null;
+        IAudioEndpointVolume iAudioEndpoint;
 
 
         public delegate void DelegateMixerChange();
@@ -1170,13 +1137,13 @@ namespace TerraViewer
 
             const uint CLSCTX_INPROC_SERVER = 1;
 
-            Guid clsid = new Guid("BCDE0395-E52F-467C-8E3D-C4579291692E");
+            var clsid = new Guid("BCDE0395-E52F-467C-8E3D-C4579291692E");
 
-            Guid IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
+            var IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
 
             oEnumerator = null;
 
-            uint hResult = CoCreateInstance(ref clsid, null, CLSCTX_INPROC_SERVER, ref IID_IUnknown, out oEnumerator);
+            var hResult = CoCreateInstance(ref clsid, null, CLSCTX_INPROC_SERVER, ref IID_IUnknown, out oEnumerator);
 
             if (hResult != 0 || oEnumerator == null)
             {
@@ -1194,9 +1161,9 @@ namespace TerraViewer
 
             }
 
-            IntPtr pDevice = IntPtr.Zero;
+            var pDevice = IntPtr.Zero;
 
-            int retVal = iMde.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eConsole, ref pDevice);
+            var retVal = iMde.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eConsole, ref pDevice);
 
             if (retVal != 0)
             {
@@ -1205,9 +1172,9 @@ namespace TerraViewer
 
             }
 
-            int dwStateMask = DEVICE_STATE_ACTIVE | DEVICE_STATE_NOTPRESENT | DEVICE_STATE_UNPLUGGED;
+            var dwStateMask = DEVICE_STATE_ACTIVE | DEVICE_STATE_NOTPRESENT | DEVICE_STATE_UNPLUGGED;
 
-            IntPtr pCollection = IntPtr.Zero;
+            var pCollection = IntPtr.Zero;
 
             retVal = iMde.EnumAudioEndpoints(EDataFlow.eRender, dwStateMask, ref pCollection);
 
@@ -1218,7 +1185,7 @@ namespace TerraViewer
 
             }
 
-            oDevice = System.Runtime.InteropServices.Marshal.GetObjectForIUnknown(pDevice);
+            oDevice = Marshal.GetObjectForIUnknown(pDevice);
 
             imd = oDevice as IMMDevice;
 
@@ -1229,13 +1196,13 @@ namespace TerraViewer
 
             }
 
-            Guid iid = new Guid("5CDF2C82-841E-4546-9722-0CF74078229A");
+            var iid = new Guid("5CDF2C82-841E-4546-9722-0CF74078229A");
 
-            uint dwClsCtx = (uint)CLSCTX.CLSCTX_ALL;
+            var dwClsCtx = (uint)CLSCTX.CLSCTX_ALL;
 
-            IntPtr pActivationParams = IntPtr.Zero;
+            var pActivationParams = IntPtr.Zero;
 
-            IntPtr pEndPoint = IntPtr.Zero;
+            var pEndPoint = IntPtr.Zero;
 
             retVal = imd.Activate(ref iid, dwClsCtx, pActivationParams, ref pEndPoint);
 
@@ -1246,7 +1213,7 @@ namespace TerraViewer
 
             }
 
-            oEndPoint = System.Runtime.InteropServices.Marshal.GetObjectForIUnknown(pEndPoint);
+            oEndPoint = Marshal.GetObjectForIUnknown(pEndPoint);
 
             iAudioEndpoint = oEndPoint as IAudioEndpointVolume;
 
@@ -1266,7 +1233,7 @@ namespace TerraViewer
             if (iAudioEndpoint != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(iAudioEndpoint);
+                Marshal.ReleaseComObject(iAudioEndpoint);
 
                 iAudioEndpoint = null;
 
@@ -1275,7 +1242,7 @@ namespace TerraViewer
             if (oEndPoint != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(oEndPoint);
+                Marshal.ReleaseComObject(oEndPoint);
 
                 oEndPoint = null;
 
@@ -1284,7 +1251,7 @@ namespace TerraViewer
             if (imd != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(imd);
+                Marshal.ReleaseComObject(imd);
 
                 imd = null;
 
@@ -1293,7 +1260,7 @@ namespace TerraViewer
             if (oDevice != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(oDevice);
+                Marshal.ReleaseComObject(oDevice);
 
                 oDevice = null;
 
@@ -1302,7 +1269,7 @@ namespace TerraViewer
             if (iMde != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(iMde);
+                Marshal.ReleaseComObject(iMde);
 
                 iMde = null;
 
@@ -1311,7 +1278,7 @@ namespace TerraViewer
             if (oEnumerator != null)
             {
 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(oEnumerator);
+                Marshal.ReleaseComObject(oEnumerator);
 
                 oEnumerator = null;
 
@@ -1333,9 +1300,9 @@ namespace TerraViewer
             get
             {
 
-                bool mute = false;
+                var mute = false;
 
-                int retVal = iAudioEndpoint.GetMute(ref mute);
+                var retVal = iAudioEndpoint.GetMute(ref mute);
 
                 if (retVal != 0)
                 {
@@ -1351,15 +1318,15 @@ namespace TerraViewer
             set
             {
 
-                Guid nullGuid = Guid.Empty;
+                var nullGuid = Guid.Empty;
 
-                bool mute = value;
+                var mute = value;
 
                 // TODO
 
                 // Problem #2 : This function always terminate with an internal error!
 
-                int retVal = iAudioEndpoint.SetMute(mute, ref nullGuid);
+                var retVal = iAudioEndpoint.SetMute(mute, ref nullGuid);
 
                 if (retVal != 0)
                 {
@@ -1374,9 +1341,9 @@ namespace TerraViewer
 
             get
             {
-                float level = 0.0F;
+                var level = 0.0F;
 
-                int retVal = iAudioEndpoint.GetMasterVolumeLevelScalar(ref level);
+                var retVal = iAudioEndpoint.GetMasterVolumeLevelScalar(ref level);
 
                 if (retVal != 0)
                 {
@@ -1389,13 +1356,13 @@ namespace TerraViewer
             set
             {
 
-                float level = value;
+                var level = value;
 
                 Guid nullGuid;
 
                 nullGuid = Guid.Empty;
 
-                int retVal = iAudioEndpoint.SetMasterVolumeLevelScalar(level, nullGuid);
+                var retVal = iAudioEndpoint.SetMasterVolumeLevelScalar(level, nullGuid);
 
                 if (retVal != 0)
                 {
@@ -1413,7 +1380,7 @@ namespace TerraViewer
 
             nullGuid = Guid.Empty;
 
-            int retVal = iAudioEndpoint.VolumeStepUp(nullGuid);
+            var retVal = iAudioEndpoint.VolumeStepUp(nullGuid);
 
             if (retVal != 0)
             {
@@ -1425,7 +1392,7 @@ namespace TerraViewer
         {
             Guid nullGuid;
             nullGuid = Guid.Empty;
-            int retVal = iAudioEndpoint.VolumeStepDown(nullGuid);
+            var retVal = iAudioEndpoint.VolumeStepDown(nullGuid);
         }
     }
 }

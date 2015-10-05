@@ -52,17 +52,17 @@ public class  CAAPhysicalSun
   
   public static CAAPhysicalSunDetails Calculate(double JD)
   {
-	double theta = CAACoordinateTransformation.MapTo0To360Range((JD - 2398220) * 360 / 25.38);
-	double I = 7.25;
-	double K = 73.6667 + 1.3958333*(JD - 2396758)/36525;
+	var theta = CAACoordinateTransformation.MapTo0To360Range((JD - 2398220) * 360 / 25.38);
+	var I = 7.25;
+	var K = 73.6667 + 1.3958333*(JD - 2396758)/36525;
   
 	//Calculate the apparent longitude of the sun (excluding the effect of nutation)
-	double L = CAAEarth.EclipticLongitude(JD);
-	double R = CAAEarth.RadiusVector(JD);
-	double SunLong = L + 180 - CAACoordinateTransformation.DMSToDegrees(0, 0, 20.4898 / R);
-	double SunLongDash = SunLong + CAACoordinateTransformation.DMSToDegrees(0, 0, CAANutation.NutationInLongitude(JD));
+	var L = CAAEarth.EclipticLongitude(JD);
+	var R = CAAEarth.RadiusVector(JD);
+	var SunLong = L + 180 - CAACoordinateTransformation.DMSToDegrees(0, 0, 20.4898 / R);
+	var SunLongDash = SunLong + CAACoordinateTransformation.DMSToDegrees(0, 0, CAANutation.NutationInLongitude(JD));
   
-	double epsilon = CAANutation.TrueObliquityOfEcliptic(JD);
+	var epsilon = CAANutation.TrueObliquityOfEcliptic(JD);
   
 	//Convert to radians
 	epsilon = CAACoordinateTransformation.DegreesToRadians(epsilon);
@@ -72,24 +72,25 @@ public class  CAAPhysicalSun
 	I = CAACoordinateTransformation.DegreesToRadians(I);
 	theta = CAACoordinateTransformation.DegreesToRadians(theta);
   
-	double x = Math.Atan(-Math.Cos(SunLong)*Math.Tan(epsilon));
-	double y = Math.Atan(-Math.Cos(SunLong - K)*Math.Tan(I));
+	var x = Math.Atan(-Math.Cos(SunLong)*Math.Tan(epsilon));
+	var y = Math.Atan(-Math.Cos(SunLong - K)*Math.Tan(I));
   
-	CAAPhysicalSunDetails details = new CAAPhysicalSunDetails();
-  
-	details.P = CAACoordinateTransformation.RadiansToDegrees(x + y);
-	details.B0 = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sin(SunLong - K)*Math.Sin(I)));
-  
-	double eta = Math.Atan(Math.Tan(SunLong - K)*Math.Cos(I));
+	var details = new CAAPhysicalSunDetails
+	{
+	    P = CAACoordinateTransformation.RadiansToDegrees(x + y),
+	    B0 = CAACoordinateTransformation.RadiansToDegrees(Math.Asin(Math.Sin(SunLong - K)*Math.Sin(I)))
+	};
+
+      var eta = Math.Atan(Math.Tan(SunLong - K)*Math.Cos(I));
 	details.L0 = CAACoordinateTransformation.MapTo0To360Range(CAACoordinateTransformation.RadiansToDegrees(eta - theta));
   
 	return details;
   }
   public static double TimeOfStartOfRotation(int C)
   {
-	double JED = 2398140.2270 + 27.2752316 *C;
+	var JED = 2398140.2270 + 27.2752316 *C;
   
-	double M = CAACoordinateTransformation.MapTo0To360Range(281.96 + 26.882476 *C);
+	var M = CAACoordinateTransformation.MapTo0To360Range(281.96 + 26.882476 *C);
 	M = CAACoordinateTransformation.DegreesToRadians(M);
   
 	JED += (0.1454 *Math.Sin(M) - 0.0085 *Math.Sin(2 *M) - 0.0141 *Math.Cos(2 *M));

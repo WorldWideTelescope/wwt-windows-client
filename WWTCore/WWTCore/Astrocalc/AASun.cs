@@ -58,8 +58,8 @@ public class  CAASun
   public static double GeometricFK5EclipticLongitude(double JD)
   {
 	//Convert to the FK5 stystem
-	double Longitude = GeometricEclipticLongitude(JD);
-	double Latitude = GeometricEclipticLatitude(JD);
+	var Longitude = GeometricEclipticLongitude(JD);
+	var Latitude = GeometricEclipticLatitude(JD);
 	Longitude += CAAFK5.CorrectionInLongitude(Longitude, Latitude, JD);
   
 	return Longitude;
@@ -67,22 +67,22 @@ public class  CAASun
   public static double GeometricFK5EclipticLatitude(double JD)
   {
 	//Convert to the FK5 stystem
-	double Longitude = GeometricEclipticLongitude(JD);
-	double Latitude = GeometricEclipticLatitude(JD);
-	double SunLatCorrection = CAAFK5.CorrectionInLatitude(Longitude, JD);
+	var Longitude = GeometricEclipticLongitude(JD);
+	var Latitude = GeometricEclipticLatitude(JD);
+	var SunLatCorrection = CAAFK5.CorrectionInLatitude(Longitude, JD);
 	Latitude += SunLatCorrection;
   
 	return Latitude;
   }
   public static double ApparentEclipticLongitude(double JD)
   {
-	double Longitude = GeometricFK5EclipticLongitude(JD);
+	var Longitude = GeometricFK5EclipticLongitude(JD);
   
 	//Apply the correction in longitude due to nutation
 	Longitude += CAACoordinateTransformation.DMSToDegrees(0, 0, CAANutation.NutationInLongitude(JD));
   
 	//Apply the correction in longitude due to aberration
-	double R = CAAEarth.RadiusVector(JD);
+	var R = CAAEarth.RadiusVector(JD);
 	Longitude -= CAACoordinateTransformation.DMSToDegrees(0, 0, 20.4898 / R);
   
 	return Longitude;
@@ -93,12 +93,12 @@ public class  CAASun
   }
   public static CAA3DCoordinate EclipticRectangularCoordinatesMeanEquinox(double JD)
   {
-	double Longitude = CAACoordinateTransformation.DegreesToRadians(GeometricFK5EclipticLongitude(JD));
-	double Latitude = CAACoordinateTransformation.DegreesToRadians(GeometricFK5EclipticLatitude(JD));
-	double R = CAAEarth.RadiusVector(JD);
-	double epsilon = CAACoordinateTransformation.DegreesToRadians(CAANutation.MeanObliquityOfEcliptic(JD));
+	var Longitude = CAACoordinateTransformation.DegreesToRadians(GeometricFK5EclipticLongitude(JD));
+	var Latitude = CAACoordinateTransformation.DegreesToRadians(GeometricFK5EclipticLatitude(JD));
+	var R = CAAEarth.RadiusVector(JD);
+	var epsilon = CAACoordinateTransformation.DegreesToRadians(CAANutation.MeanObliquityOfEcliptic(JD));
   
-	CAA3DCoordinate @value = new CAA3DCoordinate();
+	var @value = new CAA3DCoordinate();
 	@value.X = R * Math.Cos(Latitude) * Math.Cos(Longitude);
 	@value.Y = R * (Math.Cos(Latitude) * Math.Sin(Longitude) * Math.Cos(epsilon) - Math.Sin(Latitude) * Math.Sin(epsilon));
 	@value.Z = R * (Math.Cos(Latitude) * Math.Sin(Longitude) * Math.Sin(epsilon) + Math.Sin(Latitude) * Math.Cos(epsilon));
@@ -107,14 +107,14 @@ public class  CAASun
   }
   public static CAA3DCoordinate EclipticRectangularCoordinatesJ2000(double JD)
   {
-	double Longitude = GeometricEclipticLongitudeJ2000(JD);
+	var Longitude = GeometricEclipticLongitudeJ2000(JD);
 	Longitude = CAACoordinateTransformation.DegreesToRadians(Longitude);
-	double Latitude = GeometricEclipticLatitudeJ2000(JD);
+	var Latitude = GeometricEclipticLatitudeJ2000(JD);
 	Latitude = CAACoordinateTransformation.DegreesToRadians(Latitude);
-	double R = CAAEarth.RadiusVector(JD);
+	var R = CAAEarth.RadiusVector(JD);
   
-	CAA3DCoordinate @value = new CAA3DCoordinate();
-	double coslatitude = Math.Cos(Latitude);
+	var @value = new CAA3DCoordinate();
+	var coslatitude = Math.Cos(Latitude);
 	@value.X = R * coslatitude * Math.Cos(Longitude);
 	@value.Y = R * coslatitude * Math.Sin(Longitude);
 	@value.Z = R * Math.Sin(Latitude);
@@ -123,21 +123,21 @@ public class  CAASun
   }
   public static CAA3DCoordinate EquatorialRectangularCoordinatesJ2000(double JD)
   {
-	CAA3DCoordinate @value = EclipticRectangularCoordinatesJ2000(JD);
+	var @value = EclipticRectangularCoordinatesJ2000(JD);
 	@value = CAAFK5.ConvertVSOPToFK5J2000(@value);
   
 	return @value;
   }
   public static CAA3DCoordinate EquatorialRectangularCoordinatesB1950(double JD)
   {
-	CAA3DCoordinate @value = EclipticRectangularCoordinatesJ2000(JD);
+	var @value = EclipticRectangularCoordinatesJ2000(JD);
 	@value = CAAFK5.ConvertVSOPToFK5B1950(@value);
   
 	return @value;
   }
   public static CAA3DCoordinate EquatorialRectangularCoordinatesAnyEquinox(double JD, double JDEquinox)
   {
-	CAA3DCoordinate @value = EquatorialRectangularCoordinatesJ2000(JD);
+	var @value = EquatorialRectangularCoordinatesJ2000(JD);
 	@value = CAAFK5.ConvertVSOPToFK5AnyEquinox(@value, JDEquinox);
   
 	return @value;

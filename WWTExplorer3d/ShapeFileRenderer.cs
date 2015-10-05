@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 using ShapefileTools;
 
 using System.Drawing;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using Point = ShapefileTools.Point;
 using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
@@ -15,7 +19,7 @@ namespace TerraViewer
     {
         PositionVertexBuffer11 shapeFileVertex;
         IndexBuffer11 shapeFileIndex;
-        bool isLongIndex = false;
+        bool isLongIndex;
         internal ShapeFile shapefile;
         int shapeVertexCount;
         int shapeIndexCount;
@@ -24,7 +28,7 @@ namespace TerraViewer
         {
           
         }
-        ShapeFileLayerUI primaryUI = null;
+        ShapeFileLayerUI primaryUI;
         public override LayerUI GetPrimaryUI()
         {
             if (primaryUI == null)
@@ -54,16 +58,16 @@ namespace TerraViewer
 
         public override void AddFilesToCabinet(FileCabinet fc)
         {
-            string fName = shapefile.FileName;
+            var fName = shapefile.FileName;
 
-            bool copy = !fName.Contains(ID.ToString());
+            var copy = !fName.Contains(ID.ToString());
 
-            string fileName = fc.TempDirectory + string.Format("{0}\\{1}.shp", fc.PackageID, this.ID.ToString());
-            string prjFileName = fc.TempDirectory + string.Format("{0}\\{1}.prj", fc.PackageID, this.ID.ToString());
-            string dbFileName = fc.TempDirectory + string.Format("{0}\\{1}.dbf", fc.PackageID, this.ID.ToString());
+            var fileName = fc.TempDirectory + string.Format("{0}\\{1}.shp", fc.PackageID, ID);
+            var prjFileName = fc.TempDirectory + string.Format("{0}\\{1}.prj", fc.PackageID, ID);
+            var dbFileName = fc.TempDirectory + string.Format("{0}\\{1}.dbf", fc.PackageID, ID);
      
-            string prjFile = fName.ToUpper().Replace(".SHP", ".PRJ");
-            string dbaseFile = fName.ToUpper().Replace(".SHP", ".DBF");
+            var prjFile = fName.ToUpper().Replace(".SHP", ".PRJ");
+            var dbaseFile = fName.ToUpper().Replace(".SHP", ".DBF");
 
             if (copy)
             {
@@ -100,7 +104,7 @@ namespace TerraViewer
             }
         }
 
-        public override void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public override void SaveToXml(XmlTextWriter xmlWriter)
         {
             base.SaveToXml(xmlWriter);
         }
@@ -137,30 +141,30 @@ namespace TerraViewer
         }
         public override IPlace FindClosest(Coordinates target, float distance, IPlace closestPlace, bool astronomical)
         {
-            bool pointFound = false;
-            int pointIndex = -1;
-            Vector3d target3d = Coordinates.GeoTo3dDouble(target.Lat, target.Lng, 1);
+            var pointFound = false;
+            var pointIndex = -1;
+            var target3d = Coordinates.GeoTo3dDouble(target.Lat, target.Lng, 1);
 
-            for (int i = 0; i < shapefile.Shapes.Count; i++)
+            for (var i = 0; i < shapefile.Shapes.Count; i++)
             {
                 if (shapefile.Shapes[i] is ComplexShape)
                 {
-                    ComplexShape p = (ComplexShape)shapefile.Shapes[i];
+                    var p = (ComplexShape)shapefile.Shapes[i];
 
                     if (PointInboundingBox(target, p.BoundingBox))
                     {
                         if (p.Attributes != null && p.Attributes.ItemArray.GetLength(0) > 0)
                         {
-                            int nameCol = GetNameColumn();
+                            var nameCol = GetNameColumn();
                             if (nameCol == -1)
                             {
                                 nameCol = 0;
                             }
 
-                            TourPlace place = new TourPlace(p.Attributes.ItemArray[nameCol].ToString(), (p.BoundingBox[1] + p.BoundingBox[3]) / 2, (p.BoundingBox[0] + p.BoundingBox[2]) / 2, Classification.Unidentified, "", ImageSetType.Earth, -1);
+                            var place = new TourPlace(p.Attributes.ItemArray[nameCol].ToString(), (p.BoundingBox[1] + p.BoundingBox[3]) / 2, (p.BoundingBox[0] + p.BoundingBox[2]) / 2, Classification.Unidentified, "", ImageSetType.Earth, -1);
 
-                            Dictionary<String, String> rowData = new Dictionary<string, string>();
-                            for (int r = 0; r < p.Attributes.ItemArray.GetLength(0); r++)
+                            var rowData = new Dictionary<string, string>();
+                            for (var r = 0; r < p.Attributes.ItemArray.GetLength(0); r++)
                             {
 
                                 rowData.Add(p.Attributes.Table.Columns[r].ColumnName, p.Attributes.ItemArray[r].ToString());
@@ -174,12 +178,12 @@ namespace TerraViewer
                     }
                 }
 
-                else if (shapefile.Shapes[i].GetType() == typeof(ShapefileTools.Point))
+                else if (shapefile.Shapes[i].GetType() == typeof(Point))
                 {
-                    ShapefileTools.Point p = (ShapefileTools.Point)shapefile.Shapes[i];
+                    var p = (Point)shapefile.Shapes[i];
 
-                    Vector3d point = Coordinates.GeoTo3dDouble(p.Y, p.X, 1);
-                    Vector3d dist = target3d - point;
+                    var point = Coordinates.GeoTo3dDouble(p.Y, p.X, 1);
+                    var dist = target3d - point;
 
                     if (dist.Length() < distance)
                     {
@@ -194,13 +198,13 @@ namespace TerraViewer
 
             if (pointFound)
             {
-                ShapefileTools.Point p = (ShapefileTools.Point)shapefile.Shapes[pointIndex];
+                var p = (Point)shapefile.Shapes[pointIndex];
                 if (p.Attributes.ItemArray.GetLength(0) > 0)
                 {
-                    TourPlace place = new TourPlace(p.Attributes.ItemArray[0].ToString(), p.Y, p.X, Classification.Unidentified, "", ImageSetType.Earth, -1);
+                    var place = new TourPlace(p.Attributes.ItemArray[0].ToString(), p.Y, p.X, Classification.Unidentified, "", ImageSetType.Earth, -1);
 
-                    Dictionary<String, String> rowData = new Dictionary<string, string>();
-                    for (int r = 0; r < p.Attributes.ItemArray.GetLength(0); r++)
+                    var rowData = new Dictionary<string, string>();
+                    for (var r = 0; r < p.Attributes.ItemArray.GetLength(0); r++)
                     {
 
                         rowData.Add(p.Attributes.Table.Columns[r].ColumnName, p.Attributes.ItemArray[r].ToString());
@@ -212,7 +216,7 @@ namespace TerraViewer
             }
             return closestPlace;
         }
-        private static SharpDX.Direct3D11.InputLayout layout;
+        private static InputLayout layout;
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
@@ -224,15 +228,15 @@ namespace TerraViewer
             if (shapeFileVertex == null)
             {
 
-                List<Vector3> vertList = new List<Vector3>();
-                List<UInt32> indexList = new List<UInt32>();
+                var vertList = new List<Vector3>();
+                var indexList = new List<UInt32>();
                 UInt32 firstItemIndex = 0;
-                Vector3 lastItem = new Vector3();
-                bool firstItem = true;
+                var lastItem = new Vector3();
+                var firstItem = true;
 
 
 
-                bool north = true;
+                var north = true;
                 double offsetX = 0;
                 double offsetY = 0;
                 double centralMeridian = 0;
@@ -254,26 +258,26 @@ namespace TerraViewer
 
 
                 UInt32 currentIndex = 0;
-                Color color = Color;
-                int count = 360;
-                for (int i = 0; i < shapefile.Shapes.Count; i++)
+                var color = Color;
+                var count = 360;
+                for (var i = 0; i < shapefile.Shapes.Count; i++)
                 {
                     if (shapefile.Shapes[i].GetType() == typeof(Polygon))
                     {
-                        Polygon p = (Polygon)shapefile.Shapes[i];
+                        var p = (Polygon)shapefile.Shapes[i];
 
-                        for (int z = 0; z < p.Rings.Length; z++)
+                        for (var z = 0; z < p.Rings.Length; z++)
                         {
                             count = (p.Rings[z].Points.Length);
 
                             // content from DBF
-                            DataRow dr = p.Rings[z].Attributes;
+                            var dr = p.Rings[z].Attributes;
 
-                            for (int k = 0; k < p.Rings[z].Points.Length; k++)
+                            for (var k = 0; k < p.Rings[z].Points.Length; k++)
                             {
                                 // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                                double Xcoord = p.Rings[z].Points[k].X;
-                                double Ycoord = p.Rings[z].Points[k].Y;
+                                var Xcoord = p.Rings[z].Points[k].X;
+                                var Ycoord = p.Rings[z].Points[k].Y;
 
                                 if (shapefile.Projection == ShapeFile.Projections.Geo)
                                 {
@@ -312,20 +316,20 @@ namespace TerraViewer
                     }
                     else if (shapefile.Shapes[i].GetType() == typeof(PolygonZ))
                     {
-                        PolygonZ p = (PolygonZ)shapefile.Shapes[i];
+                        var p = (PolygonZ)shapefile.Shapes[i];
 
-                        for (int z = 0; z < p.Rings.Length; z++)
+                        for (var z = 0; z < p.Rings.Length; z++)
                         {
                             count = (p.Rings[z].Points.Length);
 
                             // content from DBF
-                            DataRow dr = p.Rings[z].Attributes;
+                            var dr = p.Rings[z].Attributes;
 
-                            for (int k = 0; k < p.Rings[z].Points.Length; k++)
+                            for (var k = 0; k < p.Rings[z].Points.Length; k++)
                             {
                                 // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                                double Xcoord = p.Rings[z].Points[k].X;
-                                double Ycoord = p.Rings[z].Points[k].Y;
+                                var Xcoord = p.Rings[z].Points[k].X;
+                                var Ycoord = p.Rings[z].Points[k].Y;
 
                                 if (shapefile.Projection == ShapeFile.Projections.Geo)
                                 {
@@ -365,17 +369,17 @@ namespace TerraViewer
                     }
                     else if (shapefile.Shapes[i].GetType() == typeof(PolyLine))
                     {
-                        PolyLine p = (PolyLine)shapefile.Shapes[i];
-                        for (int z = 0; z < p.Lines.Length; z++)
+                        var p = (PolyLine)shapefile.Shapes[i];
+                        for (var z = 0; z < p.Lines.Length; z++)
                         {
                             count = (p.Lines[z].Points.Length);
 
                             firstItem = true;
-                            for (int k = 0; k < p.Lines[z].Points.Length; k++)
+                            for (var k = 0; k < p.Lines[z].Points.Length; k++)
                             {
                                 // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                                double Xcoord = p.Lines[z].Points[k].X;
-                                double Ycoord = p.Lines[z].Points[k].Y;
+                                var Xcoord = p.Lines[z].Points[k].X;
+                                var Ycoord = p.Lines[z].Points[k].Y;
                                 if (shapefile.Projection == ShapeFile.Projections.Geo)
                                 {
                                     lastItem = Coordinates.GeoTo3d(Ycoord, Xcoord);
@@ -412,18 +416,18 @@ namespace TerraViewer
                     }
                     else if (shapefile.Shapes[i].GetType() == typeof(PolyLineZ))
                     {
-                        PolyLineZ p = (PolyLineZ)shapefile.Shapes[i];
-                        for (int z = 0; z < p.Lines.Length; z++)
+                        var p = (PolyLineZ)shapefile.Shapes[i];
+                        for (var z = 0; z < p.Lines.Length; z++)
                         {
                             count = (p.Lines[z].Points.Length);
-                            Vector3[] points = new Vector3[(count)];
+                            var points = new Vector3[(count)];
 
                             firstItem = true;
-                            for (int k = 0; k < p.Lines[z].Points.Length; k++)
+                            for (var k = 0; k < p.Lines[z].Points.Length; k++)
                             {
                                 // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                                double Xcoord = p.Lines[z].Points[k].X;
-                                double Ycoord = p.Lines[z].Points[k].Y;
+                                var Xcoord = p.Lines[z].Points[k].X;
+                                var Ycoord = p.Lines[z].Points[k].Y;
                                 if (shapefile.Projection == ShapeFile.Projections.Geo)
                                 {
                                     lastItem = Coordinates.GeoTo3d(Ycoord, Xcoord);
@@ -458,13 +462,13 @@ namespace TerraViewer
 
                         }
                     }
-                    else if (shapefile.Shapes[i].GetType() == typeof(ShapefileTools.Point))
+                    else if (shapefile.Shapes[i].GetType() == typeof(Point))
                     {
-                        ShapefileTools.Point p = (ShapefileTools.Point)shapefile.Shapes[i];
+                        var p = (Point)shapefile.Shapes[i];
 
                         // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                        double Xcoord = p.X;
-                        double Ycoord = p.Y;
+                        var Xcoord = p.X;
+                        var Ycoord = p.Y;
                         if (shapefile.Projection == ShapeFile.Projections.Geo)
                         {
                             lastItem = Coordinates.GeoTo3d(Ycoord, Xcoord);
@@ -485,9 +489,9 @@ namespace TerraViewer
                 shapeVertexCount = vertList.Count;
                 shapeFileVertex = new PositionVertexBuffer11(vertList.Count, RenderContext11.PrepDevice);
 
-                Vector3[] verts = (Vector3[])shapeFileVertex.Lock(0, 0); // Lock the buffer (which will return our structs)
-                int indexer = 0;
-                foreach (Vector3 vert in vertList)
+                var verts = (Vector3[])shapeFileVertex.Lock(0, 0); // Lock the buffer (which will return our structs)
+                var indexer = 0;
+                foreach (var vert in vertList)
                 {
                     verts[indexer++] = vert;
                 }
@@ -512,8 +516,8 @@ namespace TerraViewer
                     if (isLongIndex)
                     {
                         indexer = 0;
-                        UInt32[] indexes = (UInt32[])shapeFileIndex.Lock();
-                        foreach (UInt32 indexVal in indexList)
+                        var indexes = (UInt32[])shapeFileIndex.Lock();
+                        foreach (var indexVal in indexList)
                         {
                             indexes[indexer++] = indexVal;
                         }
@@ -522,8 +526,8 @@ namespace TerraViewer
                     else
                     {
                         indexer = 0;
-                        short[] indexes = (short[])shapeFileIndex.Lock();
-                        foreach (UInt32 indexVal in indexList)
+                        var indexes = (short[])shapeFileIndex.Lock();
+                        foreach (var indexVal in indexList)
                         {
                             indexes[indexer++] = (short)indexVal;
                         }
@@ -537,7 +541,7 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Alpha;
             SimpleLineShader11.Color = Color.FromArgb((int)(opacity * 255), Color);
 
-            SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            var mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
             mat.Transpose();
 
             SimpleLineShader11.WVPMatrix = mat;
@@ -550,17 +554,17 @@ namespace TerraViewer
 
             if (lines)
             {
-                renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
+                renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
                 renderContext.SetIndexBuffer(shapeFileIndex);
                 renderContext.devContext.DrawIndexed(shapeFileIndex.Count, 0, 0);
             }
             else
             {
-                renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
+                renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.PointList;
                 renderContext.devContext.Draw(shapeVertexCount, 0);
             }
 
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            renderContext.devContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             return true;
         }
@@ -575,7 +579,7 @@ namespace TerraViewer
         {
             //todo copy binary format
 
-            string data = ToWellKnownText();
+            var data = ToWellKnownText();
 
             Clipboard.SetText(data);
 
@@ -589,7 +593,7 @@ namespace TerraViewer
             {
                 return null;
             }
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             // Make Header
 
@@ -604,11 +608,11 @@ namespace TerraViewer
             }
             sb.AppendLine();
 
-            bool firstItem = true;
-            bool firstShape = true;
+            var firstItem = true;
+            var firstShape = true;
 
 
-            bool north = true;
+            var north = true;
             double offsetX = 0;
             double offsetY = 0;
             double centralMeridian = 0;
@@ -626,18 +630,18 @@ namespace TerraViewer
 
             }
 
-            int color = Color.ToArgb();
-            int count = 360;
-            for (int i = 0; i < shapefile.Shapes.Count; i++)
+            var color = Color.ToArgb();
+            var count = 360;
+            for (var i = 0; i < shapefile.Shapes.Count; i++)
             {
                 if (shapefile.Shapes[i].GetType() == typeof(Polygon))
                 {
                     firstShape = true;
                     firstItem = true;
                     sb.Append("Polygon (");
-                    Polygon p = (Polygon)shapefile.Shapes[i];
+                    var p = (Polygon)shapefile.Shapes[i];
 
-                    for (int z = 0; z < p.Rings.Length; z++)
+                    for (var z = 0; z < p.Rings.Length; z++)
                     {
                         if (firstShape)
                         {
@@ -650,13 +654,13 @@ namespace TerraViewer
                         sb.Append("(");
                         count = (p.Rings[z].Points.Length);
                         // content from DBF
-                        DataRow dr = p.Rings[z].Attributes;
+                        var dr = p.Rings[z].Attributes;
                         firstItem = true;
-                        for (int k = 0; k < p.Rings[z].Points.Length; k++)
+                        for (var k = 0; k < p.Rings[z].Points.Length; k++)
                         {
                             // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                            double Xcoord = p.Rings[z].Points[k].X;
-                            double Ycoord = p.Rings[z].Points[k].Y;
+                            var Xcoord = p.Rings[z].Points[k].X;
+                            var Ycoord = p.Rings[z].Points[k].Y;
                             if (firstItem)
                             {
                                 firstItem = false;
@@ -667,7 +671,7 @@ namespace TerraViewer
                             }
 
                           //  sb.Append(Xcoord.ToString("F5") + " " + Ycoord.ToString("F5"));
-                            sb.Append(Xcoord.ToString() + " " + Ycoord.ToString());
+                            sb.Append(Xcoord + " " + Ycoord);
                         }
 
                         sb.Append(")");
@@ -679,17 +683,17 @@ namespace TerraViewer
                 }
                 else if (shapefile.Shapes[i].GetType() == typeof(PolyLine))
                 {
-                    PolyLine p = (PolyLine)shapefile.Shapes[i];
-                    for (int z = 0; z < p.Lines.Length; z++)
+                    var p = (PolyLine)shapefile.Shapes[i];
+                    for (var z = 0; z < p.Lines.Length; z++)
                     {
                         firstShape = true;
                         firstItem = true;
                         sb.Append("LineString (");
                         count = (p.Lines[z].Points.Length);
-                        PositionColoredTextured[] points = new PositionColoredTextured[(count)];
+                        var points = new PositionColoredTextured[(count)];
 
                         firstItem = true;
-                        for (int k = 0; k < p.Lines[z].Points.Length; k++)
+                        for (var k = 0; k < p.Lines[z].Points.Length; k++)
                         {
                             //if (firstShape)
                             //{
@@ -701,8 +705,8 @@ namespace TerraViewer
                             //}
 
                             // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                            double Xcoord = p.Lines[z].Points[k].X;
-                            double Ycoord = p.Lines[z].Points[k].Y;
+                            var Xcoord = p.Lines[z].Points[k].X;
+                            var Ycoord = p.Lines[z].Points[k].Y;
                             if (firstItem)
                             {
                                 firstItem = false;
@@ -712,7 +716,7 @@ namespace TerraViewer
                                 sb.Append(",");
                             }
 
-                            sb.Append(Xcoord.ToString() + " " + Ycoord.ToString());
+                            sb.Append(Xcoord + " " + Ycoord);
 
                         }
                         sb.Append(")");
@@ -723,17 +727,17 @@ namespace TerraViewer
                 }
                 else if (shapefile.Shapes[i].GetType() == typeof(PolyLineZ))
                 {
-                    PolyLineZ p = (PolyLineZ)shapefile.Shapes[i];
-                    for (int z = 0; z < p.Lines.Length; z++)
+                    var p = (PolyLineZ)shapefile.Shapes[i];
+                    for (var z = 0; z < p.Lines.Length; z++)
                     {
                         firstShape = true;
                         firstItem = true;
                         sb.Append("LineString (");
                         count = (p.Lines[z].Points.Length);
-                        PositionColoredTextured[] points = new PositionColoredTextured[(count)];
+                        var points = new PositionColoredTextured[(count)];
 
                         firstItem = true;
-                        for (int k = 0; k < p.Lines[z].Points.Length; k++)
+                        for (var k = 0; k < p.Lines[z].Points.Length; k++)
                         {
                             //if (firstShape)
                             //{
@@ -745,9 +749,9 @@ namespace TerraViewer
                             //}
 
                             // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                            double Xcoord = p.Lines[z].Points[k].X;
-                            double Ycoord = p.Lines[z].Points[k].Y;
-                            double Zcoord = p.Lines[z].Points[k].Z;
+                            var Xcoord = p.Lines[z].Points[k].X;
+                            var Ycoord = p.Lines[z].Points[k].Y;
+                            var Zcoord = p.Lines[z].Points[k].Z;
                             if (firstItem)
                             {
                                 firstItem = false;
@@ -757,7 +761,7 @@ namespace TerraViewer
                                 sb.Append(",");
                             }
 
-                            sb.Append(Xcoord.ToString() + " " + Ycoord.ToString() + " " + Zcoord.ToString());
+                            sb.Append(Xcoord + " " + Ycoord + " " + Zcoord);
 
                         }
                         sb.Append(")");
@@ -766,13 +770,13 @@ namespace TerraViewer
 
                     }
                 }
-                else if (shapefile.Shapes[i].GetType() == typeof(ShapefileTools.Point))
+                else if (shapefile.Shapes[i].GetType() == typeof(Point))
                 {
-                    ShapefileTools.Point p = (ShapefileTools.Point)shapefile.Shapes[i];
+                    var p = (Point)shapefile.Shapes[i];
 
                     // 2D Point coordinates. 3d also supported which would add a Z. There's also an optional measure (M) that can be used.
-                    double Xcoord = p.X;
-                    double Ycoord = p.Y;
+                    var Xcoord = p.X;
+                    var Ycoord = p.Y;
 
                     sb.Append(string.Format("Point ({0} {1})"));
 
@@ -793,18 +797,18 @@ namespace TerraViewer
         {
             if (dataRow != null)
             {
-                foreach (object col in dataRow.ItemArray)
+                foreach (var col in dataRow.ItemArray)
                 {
                     sb.Append("\t");
-                    sb.Append(col.ToString());
+                    sb.Append(col);
                 }
             }
         }
 
         public int GetNameColumn()
         {
-            int col = -1;
-            int index = 0;
+            var col = -1;
+            var index = 0;
             if (shapefile.Table != null)
             {
                 foreach (DataColumn column in shapefile.Table.Columns)
@@ -854,14 +858,14 @@ namespace TerraViewer
 
     public class ShapeFileLayerUI : LayerUI
     {
-        ShapeFileRenderer layer = null;
+        readonly ShapeFileRenderer layer;
         bool opened = true;
 
         public ShapeFileLayerUI(ShapeFileRenderer layer)
         {
             this.layer = layer;
         }
-        IUIServicesCallbacks callbacks = null;
+        IUIServicesCallbacks callbacks;
 
         public override void SetUICallbacks(IUIServicesCallbacks callbacks)
         {
@@ -877,13 +881,13 @@ namespace TerraViewer
 
         public override List<LayerUITreeNode> GetTreeNodes()
         {
-            List<LayerUITreeNode> nodes = new List<LayerUITreeNode>();
-            int nameColumn = layer.GetNameColumn();
-            for (int i = 0; i < layer.shapefile.Shapes.Count; i++)
+            var nodes = new List<LayerUITreeNode>();
+            var nameColumn = layer.GetNameColumn();
+            for (var i = 0; i < layer.shapefile.Shapes.Count; i++)
             {
-                Type type = layer.shapefile.Shapes[i].GetType();
+                var type = layer.shapefile.Shapes[i].GetType();
 
-                LayerUITreeNode node = new LayerUITreeNode();
+                var node = new LayerUITreeNode();
                 if (nameColumn == -1)
                 {
                     node.Name = type.Name;
@@ -895,7 +899,7 @@ namespace TerraViewer
 
                 node.Tag = layer.shapefile.Shapes[i];
                 node.Checked = true;
-                node.NodeSelected += new LayerUITreeNodeSelectedDelegate(node_NodeSelected);
+                node.NodeSelected += node_NodeSelected;
                 nodes.Add(node);
             }
             return nodes;
@@ -907,13 +911,13 @@ namespace TerraViewer
         {
             if (callbacks != null)
             {
-                Shape shape = (Shape)node.Tag;
+                var shape = (Shape)node.Tag;
 
                 if (shape.Attributes != null && shape.Attributes.ItemArray.GetLength(0) > 0)
                 {
 
-                    Dictionary<String, String> rowData = new Dictionary<string, string>();
-                    for (int r = 0; r < shape.Attributes.ItemArray.GetLength(0); r++)
+                    var rowData = new Dictionary<string, string>();
+                    for (var r = 0; r < shape.Attributes.ItemArray.GetLength(0); r++)
                     {
 
                         rowData.Add(shape.Attributes.Table.Columns[r].ColumnName, shape.Attributes.ItemArray[r].ToString());

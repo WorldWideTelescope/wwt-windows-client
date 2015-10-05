@@ -48,17 +48,17 @@ public class  CAAPluto
   
   public static double EclipticLongitude(double JD)
   {
-	double T = (JD - 2451545) / 36525;
-	double J = 34.35 + 3034.9057 *T;
-	double S = 50.08 + 1222.1138 *T;
-	double P = 238.96 + 144.9600 *T;
+	var T = (JD - 2451545) / 36525;
+	var J = 34.35 + 3034.9057 *T;
+	var S = 50.08 + 1222.1138 *T;
+	var P = 238.96 + 144.9600 *T;
   
 	//Calculate Longitude
 	double L = 0;
-    int nPlutoCoefficients = GlobalMembersStdafx.g_PlutoArgumentCoefficients.Length;
-	for (int i =0; i<nPlutoCoefficients; i++)
+    var nPlutoCoefficients = GlobalMembersStdafx.g_PlutoArgumentCoefficients.Length;
+	for (var i =0; i<nPlutoCoefficients; i++)
 	{
-	  double Alpha = GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].J * J + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].S * S + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].P * P;
+	  var Alpha = GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].J * J + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].S * S + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].P * P;
 	  Alpha = CAACoordinateTransformation.DegreesToRadians(Alpha);
 	  L += ((GlobalMembersStdafx.g_PlutoLongitudeCoefficients[i].A * Math.Sin(Alpha)) + (GlobalMembersStdafx.g_PlutoLongitudeCoefficients[i].B * Math.Cos(Alpha)));
 	}
@@ -70,17 +70,17 @@ public class  CAAPluto
   }
   public static double EclipticLatitude(double JD)
   {
-	double T = (JD - 2451545) / 36525;
-	double J = 34.35 + 3034.9057 *T;
-	double S = 50.08 + 1222.1138 *T;
-	double P = 238.96 + 144.9600 *T;
+	var T = (JD - 2451545) / 36525;
+	var J = 34.35 + 3034.9057 *T;
+	var S = 50.08 + 1222.1138 *T;
+	var P = 238.96 + 144.9600 *T;
   
 	//Calculate Latitude
 	double L = 0;
-    int nPlutoCoefficients = GlobalMembersStdafx.g_PlutoArgumentCoefficients.Length;
-	for (int i =0; i<nPlutoCoefficients; i++)
+    var nPlutoCoefficients = GlobalMembersStdafx.g_PlutoArgumentCoefficients.Length;
+	for (var i =0; i<nPlutoCoefficients; i++)
 	{
-	  double Alpha = GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].J * J + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].S * S + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].P * P;
+	  var Alpha = GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].J * J + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].S * S + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].P * P;
 	  Alpha = CAACoordinateTransformation.DegreesToRadians(Alpha);
 	  L += ((GlobalMembersStdafx.g_PlutoLatitudeCoefficients[i].A * Math.Sin(Alpha)) + (GlobalMembersStdafx.g_PlutoLatitudeCoefficients[i].B * Math.Cos(Alpha)));
 	}
@@ -91,17 +91,17 @@ public class  CAAPluto
   }
   public static double RadiusVector(double JD)
   {
-	double T = (JD - 2451545) / 36525;
-	double J = 34.35 + 3034.9057 *T;
-	double S = 50.08 + 1222.1138 *T;
-	double P = 238.96 + 144.9600 *T;
+	var T = (JD - 2451545) / 36525;
+	var J = 34.35 + 3034.9057 *T;
+	var S = 50.08 + 1222.1138 *T;
+	var P = 238.96 + 144.9600 *T;
   
 	//Calculate Radius
 	double R = 0;
-    int nPlutoCoefficients = GlobalMembersStdafx.g_PlutoArgumentCoefficients.Length;
-	for (int i =0; i<nPlutoCoefficients; i++)
+    var nPlutoCoefficients = GlobalMembersStdafx.g_PlutoArgumentCoefficients.Length;
+	for (var i =0; i<nPlutoCoefficients; i++)
 	{
-	  double Alpha = GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].J * J + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].S * S + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].P * P;
+	  var Alpha = GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].J * J + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].S * S + GlobalMembersStdafx.g_PlutoArgumentCoefficients[i].P * P;
 	  Alpha = CAACoordinateTransformation.DegreesToRadians(Alpha);
 	  R += ((GlobalMembersStdafx.g_PlutoRadiusCoefficients[i].A * Math.Sin(Alpha)) + (GlobalMembersStdafx.g_PlutoRadiusCoefficients[i].B * Math.Cos(Alpha)));
 	}
