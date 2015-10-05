@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E5ACF4
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WTT.Patterns", "WTT.Patterns\WTT.Patterns.csproj", "{92DC6CE2-C2C0-4E1A-AEDA-91EE945B9413}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WTT.Common", "WTT.Patterns\WTT.Common.csproj", "{92DC6CE2-C2C0-4E1A-AEDA-91EE945B9413}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

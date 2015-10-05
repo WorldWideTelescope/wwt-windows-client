@@ -2462,9 +2462,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WTT.Patterns\WTT.Patterns.csproj">
+    <ProjectReference Include="..\WTT.Patterns\WTT.Common.csproj">
       <Project>{92DC6CE2-C2C0-4E1A-AEDA-91EE945B9413}</Project>
-      <Name>WTT.Patterns</Name>
+      <Name>WTT.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\WWTCore\WWTCore\WWTCore.csproj">
       <Project>{6c205caa-423d-48b8-813b-e586e105c71b}</Project>
