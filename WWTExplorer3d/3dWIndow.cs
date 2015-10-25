@@ -9628,7 +9628,7 @@ namespace TerraViewer
 
                         float sunAtDistance = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 7.5)) / 3);
 
-                        if (sunAtDistance > 0)
+                        if (sunAtDistance > 0 && Settings.Active.SolarSystemPlanets)
                         {
                             Planets.DrawPointPlanet(RenderContext11, new Vector3d(0, 0, 0), (float)d * sunAtDistance, Color.FromArgb(192, 191, 128), false, 1);
                         }
