@@ -308,7 +308,7 @@ namespace TerraViewer
 
                         if (TrackScope.Checked)
                         {
-                            Earth3d.MainWindow.GotoTarget(new TourPlace("None", TelescopeDec, Earth3d.MainWindow.RAtoViewLng(TelescopeRa), Classification.BlackHole, Earth3d.MainWindow.Constellation, ImageSetType.Sky, 0), true, true, false);
+                            Earth3d.MainWindow.GotoTarget(new TourPlace("None", TelescopeDec, TelescopeRa, Classification.BlackHole, Earth3d.MainWindow.Constellation, ImageSetType.Sky, 0), true, true, false);
                             //Earth3d.MainWindow.RA = TelescopeRa;
                             //Earth3d.MainWindow.Dec = TelescopeDec;
                         }
