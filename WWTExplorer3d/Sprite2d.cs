@@ -13,7 +13,7 @@ namespace TerraViewer
         static Buffer VertexBuffer;
         static VertexBufferBinding VertexBufferBinding;
 
-        public static void Draw(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, SharpDX.Direct3D.PrimitiveTopology primitiveType)
+        public static void Draw(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, SharpDX.Direct3D.PrimitiveTopology primitiveType, float opacity = 1.0f)
         {
             if (VertexBuffer == null)
             {
@@ -28,7 +28,7 @@ namespace TerraViewer
             mat.Transpose();
 
             WarpOutputShader.MatWVP = mat;
-            WarpOutputShader.Use(renderContext.devContext, texture != null);
+            WarpOutputShader.Use(renderContext.devContext, texture != null, opacity);
 
             renderContext.SetVertexBuffer(VertexBufferBinding);
 
