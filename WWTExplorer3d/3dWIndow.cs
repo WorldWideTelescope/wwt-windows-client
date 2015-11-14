@@ -8720,7 +8720,7 @@ namespace TerraViewer
 
             if (StereoMode != StereoModes.Off && (!Space || rift))
             {
-                RenderContext11.ViewPort = new SharpDX.Direct3D11.Viewport(0, 0, ViewWidth, renderWindow.Height, 0.0f, 1.0f);
+                RenderContext11.ViewPort = new SharpDX.ViewportF(0, 0, ViewWidth, renderWindow.Height, 0.0f, 1.0f);
 
                 // Ensure that the dome depth/stencil buffer matches our requirements
                 if (domeZbuffer != null)

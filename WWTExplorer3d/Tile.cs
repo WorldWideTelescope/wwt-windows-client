@@ -821,7 +821,7 @@ namespace TerraViewer
         }
 
         
-        public static SharpDX.Direct3D11.Viewport Viewport;
+        public static SharpDX.ViewportF Viewport;
         public static SharpDX.Matrix wvp;
         public static int maxLevel = 20;
      
@@ -844,17 +844,17 @@ namespace TerraViewer
 
                 // Test for tile scale in view..
                 topLeftScreen = TopLeft.Vector311;
-                topLeftScreen = SharpDX.Vector3.Project(topLeftScreen,Viewport.TopLeftX,Viewport.TopLeftY,Viewport.Width,Viewport.Height,Viewport.MinDepth,Viewport.MaxDepth, wvp);
+                topLeftScreen = SharpDX.Vector3.Project(topLeftScreen,Viewport.X,Viewport.Y,Viewport.Width,Viewport.Height,Viewport.MinDepth,Viewport.MaxDepth, wvp);
 
 
                 bottomRightScreen = BottomRight.Vector311;
-                bottomRightScreen = SharpDX.Vector3.Project(bottomRightScreen, Viewport.TopLeftX, Viewport.TopLeftY, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
+                bottomRightScreen = SharpDX.Vector3.Project(bottomRightScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
 
                 topRightScreen = TopRight.Vector311;
-                topRightScreen = SharpDX.Vector3.Project(topRightScreen, Viewport.TopLeftX, Viewport.TopLeftY, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
+                topRightScreen = SharpDX.Vector3.Project(topRightScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
     
                 bottomLeftScreen = BottomLeft.Vector311;
-                bottomLeftScreen = SharpDX.Vector3.Project(bottomLeftScreen, Viewport.TopLeftX, Viewport.TopLeftY, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
+                bottomLeftScreen = SharpDX.Vector3.Project(bottomLeftScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
 
                 SharpDX.Vector3 top = topLeftScreen;
                 top = SharpDX.Vector3.Subtract(top, topRightScreen);

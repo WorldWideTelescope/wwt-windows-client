@@ -434,10 +434,10 @@ namespace TerraViewer
                 {
                     if (placemark.ShouldDisplay())
                     {
-                        SharpDX.Direct3D11.Viewport vp = Earth3d.MainWindow.RenderContext11.ViewPort;
+                        SharpDX.ViewportF vp = Earth3d.MainWindow.RenderContext11.ViewPort;
                         double alt = placemark.Point.altitude + EGM96Geoid.Height(placemark.Point.latitude, placemark.Point.longitude);
                         Vector3d point3d = Coordinates.GeoTo3dDouble(placemark.Point.latitude, placemark.Point.longitude, 1 + (alt / Earth3d.MainWindow.RenderContext11.NominalRadius));
-                        Vector3 point = Vector3.Project(point3d.Vector311, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height, 0, 1, wvp);
+                        Vector3 point = Vector3.Project(point3d.Vector311, vp.X, vp.Y, vp.Width, vp.Height, 0, 1, wvp);
                         // point.Z = 1;
                         KmlStyle style = placemark.Style.GetStyle(placemark.Selected);
                         Texture11 texture = style.IconStyle.Icon.Texture;

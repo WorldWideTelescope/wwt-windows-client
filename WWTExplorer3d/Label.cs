@@ -126,7 +126,7 @@ namespace TerraViewer
 
             Matrix3d wvp = renderContext.World * renderContext.View * renderContext.Projection;
 
-            Vector3 screenPos = Vector3.Project(temp.Vector311, renderContext.ViewPort.TopLeftX, renderContext.ViewPort.TopLeftY,renderContext.ViewPort.Width,renderContext.ViewPort.Height, 0, 1, wvp.Matrix11);
+            Vector3 screenPos = Vector3.Project(temp.Vector311, renderContext.ViewPort.X, renderContext.ViewPort.Y, renderContext.ViewPort.Width, renderContext.ViewPort.Height, 0, 1, wvp.Matrix11);
             
             // Get the w component of the transformed object position; if it's negative the
             // object is behind the viewer.

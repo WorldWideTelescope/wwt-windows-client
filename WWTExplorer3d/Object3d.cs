@@ -879,7 +879,7 @@ namespace TerraViewer
 
         Draging dragMode = Draging.None;
 
-        Point pntDown = new Point();
+        System.Drawing.Point pntDown = new System.Drawing.Point();
         double valueOnDown = 0;
         double valueOnDown2 = 0;
 
@@ -1150,7 +1150,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool Hover(Point pnt)
+        public bool Hover(System.Drawing.Point pnt)
         {
             return false;
         }

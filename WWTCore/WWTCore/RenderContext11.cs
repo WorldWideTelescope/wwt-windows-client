@@ -91,15 +91,15 @@ namespace TerraViewer
         private TriangleCullMode currentCullMode = TriangleCullMode.CullClockwise;
         private bool currentMultisampleState = true;
         private RasterizerState[] standardRasterizerStates;
-        private Viewport viewPort;
+        private ViewportF viewPort;
 
-        public Viewport ViewPort
+        public ViewportF ViewPort
         {
             get { return viewPort; }
             set
             {
                 viewPort = value;
-                devContext.Rasterizer.SetViewports(viewPort);
+                devContext.Rasterizer.SetViewport(viewPort);
             }
         }
 

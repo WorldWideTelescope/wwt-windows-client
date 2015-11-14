@@ -2752,7 +2752,7 @@ namespace TerraViewer
                     for (int x = 0; x < bmp.Width; x++)
                     {
                         Color col = bmp.GetPixel(x, y);
-                        int icol = (new SharpDX.Color(col.R, col.G, col.B, 255)).ToRgba();
+                        int icol = (new SharpDX.Color((byte)col.R, (byte)col.G, (byte)col.B, (byte)255)).ToRgba();
 
                         double luminance = (0.265 * (double)col.R + 0.670 * (double)col.G + 0.065 * (double)col.B);
                         if (luminance > 5)

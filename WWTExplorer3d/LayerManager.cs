@@ -3142,7 +3142,7 @@ namespace TerraViewer
         private static double ProjectedSizeInPixels(RenderContext11 renderContext, Vector3d center, double radius)
         {
             Matrix3d projection = renderContext.Projection;
-            SharpDX.Direct3D11.Viewport viewport = renderContext.ViewPort;
+            SharpDX.ViewportF viewport = renderContext.ViewPort;
 
             double distance = center.Length();
 

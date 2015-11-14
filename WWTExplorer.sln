@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30324.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WWTExplorer", "WWTExplorer3d\WWTExplorer.csproj", "{733C84E7-58F2-4E09-AC82-58AFD7E7BDD3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,8 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WWTCore", "WWTCore\WWTCore\WWTCore.csproj", "{6C205CAA-423D-48B8-813B-E586E105C71B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0EEA2EC3-0F7A-4907-A6C4-886C8AE34220}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharpDX", "SharpDX\SharpDX.vcxproj", "{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibOvr", "LibOvr\LibOvr.vcxproj", "{2FA76D13-A07C-400B-95E2-F6C24DA1721F}"
 EndProject
@@ -141,22 +139,6 @@ Global
 		{6C205CAA-423D-48B8-813B-E586E105C71B}.Release|Win32.ActiveCfg = Release|Any CPU
 		{6C205CAA-423D-48B8-813B-E586E105C71B}.Release|x64.ActiveCfg = Release|Any CPU
 		{6C205CAA-423D-48B8-813B-E586E105C71B}.Release|x86.ActiveCfg = Release|Any CPU
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|Win32.Build.0 = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|x64.ActiveCfg = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|x86.ActiveCfg = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Debug|x86.Build.0 = Debug|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|Any CPU.ActiveCfg = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|Win32.ActiveCfg = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|Win32.Build.0 = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|x64.ActiveCfg = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|x86.ActiveCfg = Release|Win32
-		{9028C5F8-5E71-4ACD-8F31-A3C19A525ABD}.Release|x86.Build.0 = Release|Win32
 		{2FA76D13-A07C-400B-95E2-F6C24DA1721F}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{2FA76D13-A07C-400B-95E2-F6C24DA1721F}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{2FA76D13-A07C-400B-95E2-F6C24DA1721F}.Debug|Mixed Platforms.Build.0 = Debug|Win32
