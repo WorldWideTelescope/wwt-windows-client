@@ -1959,6 +1959,18 @@ namespace TerraViewer
                         }
                     }
 
+                    if (planetID == (int)SolarSystemObjects.Moon)
+                    {
+                        if(sizeIndex < 4)
+                        {
+                            float width = Settings.Active.SolarSystemScale * .00028f;
+                            SetupShadow(renderContext, centerPoint, width, SolarSystemObjects.Earth, 0);
+                            eclipseShadowCount = 1;
+                        }
+
+                    }
+
+
                     // Eclipse shadow setup for Jupiter
                     // Shadow widths based only on moon diameter in relation to Moon diameter
                     if (planetID == (int)SolarSystemObjects.Jupiter && sizeIndex < 3)
