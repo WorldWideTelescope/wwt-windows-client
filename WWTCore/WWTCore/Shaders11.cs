@@ -6118,4 +6118,125 @@ namespace TerraViewer
         
     }
 
+
+    public class SimpleShader : ShaderBundle
+    {
+        private static SimpleShader instance;
+
+        public static VertexShader Shader
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    initialize();
+                }
+                return instance.CompiledVertexShader;
+            }
+
+        }
+
+        public static PixelShader PixelShader
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    initialize();
+                }
+                return instance.CompiledPixelShader;
+            }
+        }
+
+        private static InputLayout layout;
+
+        public static void Use(DeviceContext context)
+        {
+            if (instance == null)
+            {
+                initialize();
+            }
+
+            if (layout == null)
+            {
+                // Layout from VertexShader input signature
+                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                    {
+                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
+                   });
+            }
+
+
+            context.InputAssembler.InputLayout = layout;
+
+            context.VertexShader.Set(instance.CompiledVertexShader);
+
+            context.PixelShader.Set(instance.CompiledPixelShader);
+
+        
+        }
+
+        protected override string GetPixelShaderSource(string profile)
+        {
+            return
+                "struct PS_IN                                \n" +
+                    "{                                          \n" +
+                    "	float4 pos : SV_POSITION;               \n" +
+                    "	float2 tex : TEXCOORD;                  \n" +
+                    "};                                             \n" +
+                "    \n" +
+                " Texture2D picture;     \n" +
+                " SamplerState pictureSampler;   \n" +
+                "    \n" +
+                "    \n" +
+                "    \n" +
+                " float4 PS( PS_IN input ) : SV_Target   \n" +
+                " {     \n" +
+                " 	return picture.Sample(pictureSampler, input.tex);   \n" +
+                //" 	return float4(1,1,1,0);   \n" +
+                " }   \n" +
+                "    ";
+
+        }
+
+
+        protected override string GetVertexShaderSource(string profile)
+        {
+
+            return
+                    "struct VS_IN                               \n" +
+                    "{                                          \n" +
+                    "	float4 pos : POSITION;                  \n" +
+                    "	float2 tex : TEXCOORD;                  \n" +
+                    "};                                         \n" +
+                    "                                           \n" +
+                    "struct PS_IN                                \n" +
+                    "{                                          \n" +
+                    "	float4 pos : SV_POSITION;               \n" +
+                    "	float2 tex : TEXCOORD;                  \n" +
+                    "};                                             \n" +
+                    "                                           \n" +
+                    "PS_IN VS( VS_IN input )                    \n" +
+                    "{                                          \n " +
+                    "	PS_IN output = (PS_IN)0;                \n" +
+                    "	  " +
+                    "   output.pos = input.pos;  " +
+                    "	output.tex = input.tex;                     \n" +
+                    "	return output;                          \n" +
+                   
+                    "}                                          \n" +
+                    "                                           \n" +
+                    "                                           \n";
+        }
+
+        static void initialize()
+        {
+            instance = new SimpleShader();
+            instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
+        }
+
+    }
+
+
 }

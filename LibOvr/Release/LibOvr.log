@@ -1,8 +1,0 @@
-﻿Build started 5/12/2015 7:33:13 PM.
-     1>Project "C:\Projects\WWTClient\LibOvr\LibOvr.vcxproj" on node 7 (Build target(s)).
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.MakeFile.Targets(37,5): warning MSB8005: The property 'NMakeBuildCommandLine' doesn't exist.  Skipping...
-     1>Done Building Project "C:\Projects\WWTClient\LibOvr\LibOvr.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:00.11

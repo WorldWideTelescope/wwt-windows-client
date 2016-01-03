@@ -1462,6 +1462,27 @@ namespace TerraViewer
             renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
         }
 
+        public RenderTargetTexture(int width, int height, Format format)
+        {
+            this.Width = width;
+            this.Height = height;
+            RenderTexture = new Texture11(new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
+            {
+                Format = format,
+                ArraySize = 1,
+                MipLevels = 1,
+                Width = width,
+                Height = height,
+                SampleDescription = new SampleDescription(RenderContext11.MultiSampleCount, 0),
+                Usage = ResourceUsage.Default,
+                BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None
+            }));
+
+            renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
+        }
+
         public RenderTargetTexture(int width, int height, int sampleCount)
         {
             this.Width = width;
@@ -1482,6 +1503,7 @@ namespace TerraViewer
 
             renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
         }
+
 
         public void Dispose()
         {
