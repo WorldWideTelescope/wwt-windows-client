@@ -230,6 +230,9 @@ namespace TerraViewer
         private ToolStripMenuItem monitorEightToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem15;
         private ToolStripMenuItem exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem;
+        private ToolStripMenuItem oculusVRHeadsetToolStripMenuItem;
+        private ToolStripMenuItem monoModeToolStripMenuItem;
+        private ToolStripMenuItem startInOculusModeToolStripMenuItem;
         int tileSizeY = 256;
 
         public void StartFadeTransition(double milliseconds)
@@ -2036,6 +2039,10 @@ namespace TerraViewer
             {
                 WindowsLiveSignIn();
             }
+            if(Properties.Settings.Default.RiftStartup)
+            {
+                StartRift();
+            }
         }
         Text3dBatch hold;
         void SampHighlightRow(string url, string id, int row)
@@ -3553,6 +3560,9 @@ namespace TerraViewer
             this.alternatingLinesOddToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alternatingLinesEvenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.oculusRiftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.oculusVRHeadsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.monoModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startInOculusModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expermentalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fullDomeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFullDomeViewInstanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -3605,7 +3615,7 @@ namespace TerraViewer
             // 
             this.timer.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // Seperator
+            // menuItem7
             // 
             this.menuItem7.Name = "menuItem7";
             this.menuItem7.Size = new System.Drawing.Size(32, 19);
@@ -4567,7 +4577,7 @@ namespace TerraViewer
             this.selectLanguageToolStripMenuItem,
             this.regionalDataCacheToolStripMenuItem});
             this.settingsMenu.Name = "contextMenuStrip1";
-            this.settingsMenu.Size = new System.Drawing.Size(207, 248);
+            this.settingsMenu.Size = new System.Drawing.Size(207, 226);
             this.settingsMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.settingsMenu.Opening += new System.ComponentModel.CancelEventHandler(this.settingsMenu_Opening);
             this.settingsMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4847,13 +4857,14 @@ namespace TerraViewer
             this.showLayerManagerToolStripMenuItem,
             this.toolStripSeparator20,
             this.stereoToolStripMenuItem,
+            this.oculusVRHeadsetToolStripMenuItem,
             this.expermentalToolStripMenuItem,
             this.toggleFullScreenModeF11ToolStripMenuItem,
             this.multiSampleAntialiasingToolStripMenuItem,
             this.lockVerticalSyncToolStripMenuItem,
             this.targetFrameRateToolStripMenuItem});
             this.viewMenu.Name = "contextMenuStrip1";
-            this.viewMenu.Size = new System.Drawing.Size(341, 452);
+            this.viewMenu.Size = new System.Drawing.Size(341, 474);
             this.viewMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.viewMenu.Opening += new System.ComponentModel.CancelEventHandler(this.viewMenu_Opening);
             this.viewMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -5103,6 +5114,30 @@ namespace TerraViewer
             this.oculusRiftToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.oculusRiftToolStripMenuItem.Text = "Oculus Rift";
             this.oculusRiftToolStripMenuItem.Click += new System.EventHandler(this.oculusRiftToolStripMenuItem_Click);
+            // 
+            // oculusVRHeadsetToolStripMenuItem
+            // 
+            this.oculusVRHeadsetToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.monoModeToolStripMenuItem,
+            this.startInOculusModeToolStripMenuItem});
+            this.oculusVRHeadsetToolStripMenuItem.Name = "oculusVRHeadsetToolStripMenuItem";
+            this.oculusVRHeadsetToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.oculusVRHeadsetToolStripMenuItem.Text = "Oculus VR Headset";
+            this.oculusVRHeadsetToolStripMenuItem.DropDownOpening += new System.EventHandler(this.oculusVRHeadsetToolStripMenuItem_DropDownOpening);
+            // 
+            // monoModeToolStripMenuItem
+            // 
+            this.monoModeToolStripMenuItem.Name = "monoModeToolStripMenuItem";
+            this.monoModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.monoModeToolStripMenuItem.Text = "Mono Mode";
+            this.monoModeToolStripMenuItem.Click += new System.EventHandler(this.monoModeToolStripMenuItem_Click);
+            // 
+            // startInOculusModeToolStripMenuItem
+            // 
+            this.startInOculusModeToolStripMenuItem.Name = "startInOculusModeToolStripMenuItem";
+            this.startInOculusModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.startInOculusModeToolStripMenuItem.Text = "Start in Oculus Mode";
+            this.startInOculusModeToolStripMenuItem.Click += new System.EventHandler(this.startInOculusModeToolStripMenuItem_Click);
             // 
             // expermentalToolStripMenuItem
             // 
@@ -5380,7 +5415,7 @@ namespace TerraViewer
             this.kioskTitleBar.Dock = System.Windows.Forms.DockStyle.Top;
             this.kioskTitleBar.Location = new System.Drawing.Point(0, 34);
             this.kioskTitleBar.Name = "kioskTitleBar";
-            this.kioskTitleBar.Size = new System.Drawing.Size(863, 34);
+            this.kioskTitleBar.Size = new System.Drawing.Size(1442, 34);
             this.kioskTitleBar.TabIndex = 9;
             this.kioskTitleBar.Visible = false;
             // 
@@ -5390,7 +5425,7 @@ namespace TerraViewer
             this.renderWindow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderWindow.Location = new System.Drawing.Point(0, 34);
             this.renderWindow.Name = "renderWindow";
-            this.renderWindow.Size = new System.Drawing.Size(863, 328);
+            this.renderWindow.Size = new System.Drawing.Size(1442, 328);
             this.renderWindow.TabIndex = 8;
             this.renderWindow.TabStop = false;
             this.renderWindow.Click += new System.EventHandler(this.renderWindow_Click);
@@ -5415,7 +5450,7 @@ namespace TerraViewer
             this.menuTabs.Location = new System.Drawing.Point(0, 0);
             this.menuTabs.Name = "menuTabs";
             this.menuTabs.SelectedTabIndex = 0;
-            this.menuTabs.Size = new System.Drawing.Size(863, 34);
+            this.menuTabs.Size = new System.Drawing.Size(1442, 34);
             this.menuTabs.StartX = 0;
             this.menuTabs.TabIndex = 4;
             this.menuTabs.TabClicked += new TerraViewer.TabClickedEventHandler(this.menuTabs_TabClicked);
@@ -5427,7 +5462,7 @@ namespace TerraViewer
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(863, 362);
+            this.ClientSize = new System.Drawing.Size(1442, 362);
             this.Controls.Add(this.kioskTitleBar);
             this.Controls.Add(this.renderWindow);
             this.Controls.Add(this.menuTabs);
@@ -5586,7 +5621,7 @@ namespace TerraViewer
                     Properties.Settings.Default.MultiSampling = 1;
                 }
                 RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-                RenderContext11 = new RenderContext11(renderWindow);
+                RenderContext11 = new RenderContext11(renderWindow, Properties.Settings.Default.RiftStartup);
 
                 ReadyToRender = true;
                 pause = false;
@@ -8911,16 +8946,25 @@ namespace TerraViewer
                         swapTexture = eyeTexture[(int)eye];
                         swapTexture.AdvanceToNextView();
 
+                        if (Properties.Settings.Default.RiftMonoMode)
+                        {
+                            // Resolve a single buffer for each eye, cuts rendering cost in half
 
-                        RenderFrame(stereoRenderTextureRight.renderView, rightDepthBuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
+                            dest = new SharpDX.Direct3D11.Resource(swapTextures[eye].Textures[swapTexture.CurrentIndex].Texture);
 
-                        dest = new SharpDX.Direct3D11.Resource(swapTextures[eye].Textures[swapTexture.CurrentIndex].Texture);
+                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
+                                                                                           dest, 0,
+                                                                                           riftFormat);
+                        }
+                        else
+                        {
+                            RenderFrame(stereoRenderTextureRight.renderView, rightDepthBuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
 
-                        RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureRight.RenderTexture.Texture, 0,
-                                                                                       dest, 0,
-                                                                                       riftFormat);
-
-
+                            dest = new SharpDX.Direct3D11.Resource(swapTextures[eye].Textures[swapTexture.CurrentIndex].Texture);
+                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureRight.RenderTexture.Texture, 0,
+                                                                                           dest, 0,
+                                                                                           riftFormat);
+                        }
                     }
                     else
                     {
@@ -17541,8 +17585,18 @@ namespace TerraViewer
             // Initialize OVR Library
             OVR.Initialize();
 
+            if (OVR.HmdDetect() < 1)
+            {
+                throw new IndexOutOfRangeException("No Rfft detected");
+            }
+
             // Create our HMD
-            hmd = OVR.HmdCreate(0) ?? OVR.HmdCreateDebug(HMDType.DK2);
+            hmd = OVR.HmdCreate(0);
+
+            if (hmd == null)
+            {
+                throw new IndexOutOfRangeException("Can't create Rift");
+            }
 
             SharpDX.Size2 left = hmd.GetFovTextureSize(EyeType.Left, hmd.DefaultEyeFov[0]);
             SharpDX.Size2 right = hmd.GetFovTextureSize(EyeType.Right, hmd.DefaultEyeFov[1]);
@@ -17603,49 +17657,46 @@ namespace TerraViewer
 
         private void oculusRiftToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            StartRift();
+        }
 
-            if (!riftInit)
+        private void StartRift()
+        {
+            try
             {
-                InitializeRift();
+                if (!riftInit)
+                {
+                    InitializeRift();
+                }
+
+                rift = true;
+                StereoMode = StereoModes.OculusRift;
+
+                Properties.Settings.Default.ColSettingsVersion++;
             }
-
-            rift = true;
-            StereoMode = StereoModes.OculusRift;
-
-            Properties.Settings.Default.ColSettingsVersion++;
+            catch
+            {
+                UiTools.ShowMessageBox("Unable to connect to Oculus Rift. Please make sure its not already in use or check setup using the Rift Configuration tool and try the test scene.");
+            }
         }
 
         private void sideBySideCrossEyedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
-            {
-                rift = false;
-                AttachRenderWindow();
-            }
+                StereoMode = StereoModes.CrossEyed;
+                Properties.Settings.Default.ColSettingsVersion++;
 
-            StereoMode = StereoModes.CrossEyed;
-            Properties.Settings.Default.ColSettingsVersion++;
         }
 
 
         private void alternatingLinesOddToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
-            {
-                rift = false;
-                AttachRenderWindow();
-            }
             StereoMode = StereoModes.InterlineOdd;
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
         private void alternatingLinesEvenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
-            {
-                rift = false;
-                AttachRenderWindow();
-            }
+
             StereoMode = StereoModes.InterlineEven;
             Properties.Settings.Default.ColSettingsVersion++;
         }
@@ -19924,9 +19975,26 @@ namespace TerraViewer
         {
             clientNodeListToolStripMenuItem.Checked = ClientNodeList.IsNodeListVisible();
         }
+
+        private void monoModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.RiftMonoMode = !Properties.Settings.Default.RiftMonoMode;
+        }
+
+        private void startInOculusModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.RiftStartup = !Properties.Settings.Default.RiftStartup;
+            RestartNow();
+        }
+
+        private void oculusVRHeadsetToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            monoModeToolStripMenuItem.Checked = Properties.Settings.Default.RiftMonoMode;
+            startInOculusModeToolStripMenuItem.Checked = Properties.Settings.Default.RiftStartup;
+        }
     }
 
-    
+
 
 
 

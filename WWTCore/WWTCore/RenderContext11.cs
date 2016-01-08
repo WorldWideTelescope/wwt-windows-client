@@ -131,7 +131,7 @@ namespace TerraViewer
             get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
         }
 
-        public RenderContext11(System.Windows.Forms.Control control)
+        public RenderContext11(System.Windows.Forms.Control control, bool forceNoSRGB = false)
         {
 
             bool failed = true;
@@ -197,7 +197,10 @@ namespace TerraViewer
 
             if (!Downlevel)
             {
-                sRGB = true;
+                if (!forceNoSRGB)
+                {
+                    sRGB = true;
+                }
                 //dv1 = device.QueryInterface<Device1>();
                 //dv1.MaximumFrameLatency = 1;
             }
