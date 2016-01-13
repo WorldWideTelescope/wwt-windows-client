@@ -530,7 +530,7 @@ namespace TerraViewer
         {
             get
             {
-                elements.a = SemiMajorAxis;
+                elements.a = UiTools.GetMeters(SemiMajorAxis, SemiMajorAxisUnits);
                 elements.e = Eccentricity;
                 elements.i = Inclination;
                 //ArgumentOfPeriapsis += LongitudeOfAscendingNode;

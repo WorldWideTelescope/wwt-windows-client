@@ -530,12 +530,11 @@ namespace TerraViewer
                 }
                 onTarget = true;
             }
-
-
-            tour.CurrentTourStop.FaderOpacity = 0;
+   
 
             if (tour.CurrentTourStop != null)
             {
+                tour.CurrentTourStop.FaderOpacity = 0;
                 Tile.fastLoad = false;
                 double elapsedSeconds = tour.CurrentTourStop.TweenPosition * tour.CurrentTourStop.Duration.TotalSeconds;
                 if (slideChanging)

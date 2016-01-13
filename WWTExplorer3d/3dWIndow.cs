@@ -7963,7 +7963,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    back = cameraDistance > 1900 ? cameraDistance + 200 : 1900;
+                    back = cameraDistance > 950 ? cameraDistance + 1900 : 1900;
 
                     if (Settings.Active.SolarSystemScale < 13)
                     {

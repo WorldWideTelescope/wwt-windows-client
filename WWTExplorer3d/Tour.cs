@@ -722,6 +722,8 @@ namespace TerraViewer
             TourDirty = false;
         }
 
+        string saveID = "";
+
         string id;
 
         public string Id
