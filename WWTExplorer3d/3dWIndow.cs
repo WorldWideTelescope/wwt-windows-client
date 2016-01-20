@@ -6852,8 +6852,7 @@ namespace TerraViewer
                     top,
                     m_nearPlane,
                     back);
-            }
-            if (rift)
+            } else if (rift)
             {
                 FovPort fovPort = eyeRenderDesc[renderType == RenderTypes.LeftEye ? 0 : 1].Fov;
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
