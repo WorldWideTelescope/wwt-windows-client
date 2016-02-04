@@ -74,6 +74,9 @@ namespace TerraViewer.Callibration
 
         public CalibrationInfo CalibrationInfo = new CalibrationInfo();
 
+        private CalibrationImageType calibrationImageType = CalibrationImageType.None;
+        private int CalibrationProjectorTarget = 0;
+
 
         public static void SendViewConfig(int projectorID, ProjectorEntry pe, double domeTilt)
         {
@@ -159,6 +162,8 @@ namespace TerraViewer.Callibration
             ReloadListBox();
         }
 
+   
+
         void ReloadListBox()
         {
             int currentIndex = ProjectorList.SelectedIndex;
@@ -166,17 +171,28 @@ namespace TerraViewer.Callibration
             screenType.Items.Clear();
             screenType.Items.AddRange(Enum.GetNames(typeof(ScreenTypes)));
             screenType.SelectedIndex = (int)CalibrationInfo.ScreenType;
-            
+
+            ProjectorServerPaternPiicker.Items.Clear();
+            ProjectorServerPaternPiicker.Items.Add("All Projectors");
+
             ProjectorList.Items.Clear();
             foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
             {
                 ProjectorList.Items.Add(pe);
+
+                ProjectorServerPaternPiicker.Items.Add(pe);
             }
 
             if (ProjectorList.Items.Count > currentIndex)
             {
                 ProjectorList.SelectedIndex = currentIndex;
             }
+
+            ProjectorServerPaternPiicker.SelectedIndex = 0;
+
+            pattern.Items.Clear();
+            pattern.Items.AddRange(Enum.GetNames(typeof(CalibrationImageType)));
+            pattern.SelectedIndex = (int)calibrationImageType;
 
             ReloadPointTree();
             DomeRadius.Text = CalibrationInfo.DomeSize.ToString();
@@ -436,6 +452,7 @@ namespace TerraViewer.Callibration
             {
                 OpenConfigFile(Properties.Settings.Default.LastDomeConfigFile);
             }
+
 
 
 
@@ -714,7 +731,15 @@ namespace TerraViewer.Callibration
                 Color backgroundColor = blackBackground.Checked ? Color.Black : Color.DarkGray;
                 foreach (ProjectorEntry pe in CalibrationInfo.Projectors)
                 {
-                    string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + pe.ID + ",METADATA," + pe.Name + "," + SavedColor.Save(backgroundColor) + "," + outline.ToString();
+                    string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString()
+                        + "," + pe.ID
+                        + ",METADATA,"
+                        + pe.Name + ","
+                        + SavedColor.Save(backgroundColor)
+                        + "," + outline.ToString()
+                        + "," + ((int)calibrationImageType).ToString()
+                        + "," + CalibrationProjectorTarget.ToString();
+
                     NetControl.SendCommand(command);
                     if (Align.Selected)
                     {
@@ -2353,5 +2378,24 @@ namespace TerraViewer.Callibration
 
         }
 
+        private void pattern_SelectionChanged(object sender, EventArgs e)
+        {
+            calibrationImageType = (CalibrationImageType) pattern.SelectedIndex;
+        }
+
+
+        private void paternServer_SelectionChanged(object sender, EventArgs e)
+        {
+            ProjectorEntry pe = ProjectorServerPaternPiicker.SelectedItem as ProjectorEntry;
+
+            if (pe != null)
+            {
+                CalibrationProjectorTarget = pe.ID;
+            }
+            else
+            {
+                CalibrationProjectorTarget = -1;
+            }
+        }
     }
 }

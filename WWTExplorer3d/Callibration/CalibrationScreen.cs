@@ -11,6 +11,7 @@ using System.IO;
 namespace TerraViewer.Callibration
 {
     public enum GeometryStyles { Points, Lines, Polygon, SoftPolygon };
+    public enum CalibrationImageType { None, Bkack, White, Squares, SmallSquares, Points, DensePoints, Checkerboard };
     public partial class CalibrationScreen : Form
     {
         public CalibrationScreen()
@@ -42,6 +43,8 @@ namespace TerraViewer.Callibration
         static public Color FillColor = Color.White;
         static public string projectorName = "Projector";
         static public string targetNodeID = "0";
+        static public bool ShowCalibrationImage = false;
+        static public CalibrationImageType CalibrationType = CalibrationImageType.None;
 
         static bool Calibrating = false;
 
@@ -300,67 +303,138 @@ namespace TerraViewer.Callibration
 
         private static void PareseMetaData(string[] values)
         {
-            if (values.Length > 6)
+            if (values.Length > 8)
             {
                 Earth3d.MainWindow.Config.NodeDiplayName = values[4];
                 Background = SavedColor.Load(values[5]);
                 DrawOutline = Boolean.Parse(values[6]);
+                CalibrationType = (CalibrationImageType)int.Parse(values[7]);
+                int node = int.Parse(values[8]);
+                ShowCalibrationImage = CalibrationType != CalibrationImageType.None;
+                if (!(node == -1 || node == Earth3d.MainWindow.Config.NodeID) && ShowCalibrationImage)
+                {
+                    CalibrationType = CalibrationImageType.Bkack;
+                }
             }
         }
+
+        
 
 
         private void CalibrationScreen_Paint(object sender, PaintEventArgs e)
         {
             Rectangle rect = this.ClientRectangle;
 
-            e.Graphics.Clear(Background);
+            e.Graphics.Clear(ShowCalibrationImage ? Color.Black : Background);
 
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality; 
+            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
 
-            if (DrawOutline)
+            if (ShowCalibrationImage)
             {
-                Pen linePen = new Pen(Color.Red, 4);
-                Rectangle smaller = rect;
-                smaller.Inflate(-2, -2);
-                e.Graphics.DrawRectangle(linePen, smaller);
-                linePen.Dispose();
+                switch (CalibrationType)
+                {
+                    case CalibrationImageType.Bkack:
+                        break;
+                    case CalibrationImageType.White:
+                        e.Graphics.Clear(Color.White);
+                        break;
+                    case CalibrationImageType.Squares:
+                        DrawGrid(e.Graphics, 50, true);
+                        break;
+                    case CalibrationImageType.SmallSquares:
+                        DrawGrid(e.Graphics, 25, true);
+                        break;
+                    case CalibrationImageType.Points:
+                        DrawGrid(e.Graphics, 50, false);
+                        break;
+                    case CalibrationImageType.DensePoints:
+                        DrawGrid(e.Graphics, 25, false);
+                        break;
+                    case CalibrationImageType.Checkerboard:
+                        break;
+                    default:
+                        break;
+                }     
+            }
+            else
+            {
+                if (DrawOutline)
+                {
+                    Pen linePen = new Pen(Color.Red, 4);
+                    Rectangle smaller = rect;
+                    smaller.Inflate(-2, -2);
+                    e.Graphics.DrawRectangle(linePen, smaller);
+                    linePen.Dispose();
+                }
+
+
+                switch (GeometryStyle)
+                {
+                    case GeometryStyles.Points:
+                        DrawPoints(e.Graphics, false);
+                        break;
+                    case GeometryStyles.Lines:
+                        DrawLines(e.Graphics);
+                        break;
+                    case GeometryStyles.Polygon:
+                        DrawPolygon(e.Graphics, false);
+                        break;
+                    case GeometryStyles.SoftPolygon:
+                        DrawPolygon(e.Graphics, true);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (selectedPoint > -1 && selectedPoint < points.Count)
+                {
+                    Pen linePen = new Pen(LineColor, 3);
+
+                    DrawPoint(e.Graphics, linePen, points[selectedPoint]);
+
+                    linePen.Dispose();
+                }
+
+                Brush brush = new SolidBrush(Color.LightGreen);
+
+                e.Graphics.DrawString(Earth3d.MainWindow.Config.NodeDiplayName, textFont, brush, new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height), sf);
+
+
+            }
+        }
+
+        private void DrawGrid(Graphics g, int size, bool squares)
+        {
+            int countX = 1920 / (size);
+            int countY = 1050 / (size);
+            int skip = 1;
+
+            if (squares)
+            {
+                skip = 2;
             }
 
-
-            switch (GeometryStyle)
+            Brush white = new SolidBrush(Color.White);
+            for (int y = 0; y < countY; y += skip)
             {
-                case GeometryStyles.Points:
-                    DrawPoints(e.Graphics, false);
-                    break;
-                case GeometryStyles.Lines:
-                    DrawLines(e.Graphics);
-                    break;
-                case GeometryStyles.Polygon:
-                    DrawPolygon(e.Graphics, false);
-                    break;
-                case GeometryStyles.SoftPolygon:
-                    DrawPolygon(e.Graphics, true);
-                    break;
-                default:
-                    break;
+                for (int x = 0; x < countX; x += skip)
+                {
+                    if (squares)
+                    {
+                        g.DrawRectangle(Pens.White, x * size + 35.5f, y * size + 15.5f, size, size);
+
+                        g.FillRectangle(white, new RectangleF(x * size + 35.5f, y * size + 15.5f, size, size));
+                    }
+                    else
+                    {
+                        g.FillEllipse(white, new RectangleF(x * size + 30.5f, y * size + 10.5f, 10, 10));
+                    }
+
+                }
             }
-
-            if (selectedPoint > -1 && selectedPoint < points.Count)
-            {
-                Pen linePen = new Pen(LineColor, 3);
-
-                DrawPoint(e.Graphics, linePen, points[selectedPoint]);
-
-                linePen.Dispose();
-            }
-           
-            Brush brush = new SolidBrush(Color.LightGreen);
-
-            e.Graphics.DrawString(Earth3d.MainWindow.Config.NodeDiplayName, textFont, brush, new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height), sf);
-
-
+            white.Dispose();
 
         }
 
