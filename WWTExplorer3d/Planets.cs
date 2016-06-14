@@ -1289,7 +1289,13 @@ namespace TerraViewer
             
 
             float fade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 8.6, 0));
+            //
+            // Sync orbit state
 
+            if (Settings.Active.PlanetOrbitsFilter != Properties.Settings.Default.PlanetOrbitsFilter)
+            {
+                Properties.Settings.Default.PlanetOrbitsFilter = Settings.Active.PlanetOrbitsFilter;
+            }
 
             if (Properties.Settings.Default.SolarSystemOrbits.State ) // && fade > 0)
             {
@@ -1763,7 +1769,7 @@ namespace TerraViewer
 
                 SharpDX.Matrix wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
                 shader.WVPMatrix = wvp;
-                shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, opacity);
 
                 Matrix3d invWorld = worldMatrix;
                 invWorld.Invert();
@@ -1961,11 +1967,18 @@ namespace TerraViewer
 
                     if (planetID == (int)SolarSystemObjects.Moon)
                     {
-                        if(sizeIndex < 4)
+                        if (sizeIndex < 4)
                         {
-                            float width = Settings.Active.SolarSystemScale * .00028f;
-                            SetupShadow(renderContext, centerPoint, width, SolarSystemObjects.Earth, 0);
-                            eclipseShadowCount = 1;
+                            double earthDist = Math.Abs((planet3dLocations[(int)SolarSystemObjects.Sun] - planet3dLocations[(int)SolarSystemObjects.Earth]).Length());
+                            double moonDist = Math.Abs((planet3dLocations[(int)SolarSystemObjects.Sun] - planet3dLocations[(int)SolarSystemObjects.Moon]).Length());
+
+                            if (moonDist > earthDist)
+                            {
+
+                                float width = Settings.Active.SolarSystemScale * .00028f;
+                                SetupShadow(renderContext, centerPoint, width, SolarSystemObjects.Earth, 0);
+                                eclipseShadowCount = 1;
+                            }
                         }
 
                     }
@@ -2806,7 +2819,7 @@ namespace TerraViewer
                         renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
                         Earth3d.MainWindow.DrawTiledSphere(planet, 100, Color.White);
 
-                        if (planetID == (int)SolarSystemObjects.Earth && Settings.Active.ShowClouds)
+                        if (planetID == (int)SolarSystemObjects.Earth && Properties.Settings.Default.ShowClouds.State)
                         {
                             if (CloudTexture != null)
                             {
@@ -2819,7 +2832,7 @@ namespace TerraViewer
                                     cloudShaderKey.style = PlanetSurfaceStyle.Emissive;
                                 }
 
-                                SetupPlanetSurfaceEffect(renderContext, cloudShaderKey, 1.0f);
+                                SetupPlanetSurfaceEffect(renderContext, cloudShaderKey, Properties.Settings.Default.ShowClouds.Opacity);
                                 SetAtmosphereConstants(renderContext, planetID, 1.0f, CalcSkyGeometryHeight(planetID));
 
                                 renderContext.MainTexture = CloudTexture;

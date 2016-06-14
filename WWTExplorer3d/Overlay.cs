@@ -1150,6 +1150,8 @@ namespace TerraViewer
             return;
         }
 
+
+
         public override void InitiaizeGeometry()
         {
             if (points == null)

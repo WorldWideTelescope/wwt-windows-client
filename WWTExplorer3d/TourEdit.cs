@@ -538,6 +538,7 @@ namespace TerraViewer
                 ts.EndTarget.BackgroundImageSet = ts.Target.BackgroundImageSet;
                 ts.EndTarget.StudyImageset = ts.Target.StudyImageset;
                 ts.Target = ts.EndTarget;
+                ts.StartTime = ts.EndTime;
                 ts.EndTarget = null;
             }
 

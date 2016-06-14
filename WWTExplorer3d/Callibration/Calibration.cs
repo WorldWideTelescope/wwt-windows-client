@@ -90,7 +90,7 @@ namespace TerraViewer.Callibration
                 pe.ViewProjection.FOV / 2,
                 pe.ViewProjection.Aspect,
                 domeTilt);
-            
+
             NetControl.SendCommand(command);
         }
 
@@ -107,7 +107,7 @@ namespace TerraViewer.Callibration
             }
             maxID++;
 
-            
+
             ProjectorProperties projProps = new ProjectorProperties();
             ProjectorEntry pe = new ProjectorEntry();
             pe.ID = maxID;
@@ -150,7 +150,7 @@ namespace TerraViewer.Callibration
                 return;
             }
 
-            for (int i = CalibrationInfo.Edges.Count-1; i > -1;  i--)
+            for (int i = CalibrationInfo.Edges.Count - 1; i > -1; i--)
             {
                 Edge edge = CalibrationInfo.Edges[i];
                 if (edge.Left == pe.ID || edge.Right == pe.ID)
@@ -162,7 +162,7 @@ namespace TerraViewer.Callibration
             ReloadListBox();
         }
 
-   
+
 
         void ReloadListBox()
         {
@@ -212,7 +212,7 @@ namespace TerraViewer.Callibration
             solveX.Checked = (CalibrationInfo.SolveParameters & (int)SolveParameters.X) == (int)SolveParameters.X;
             solveY.Checked = (CalibrationInfo.SolveParameters & (int)SolveParameters.Y) == (int)SolveParameters.Y;
             solveZ.Checked = (CalibrationInfo.SolveParameters & (int)SolveParameters.Z) == (int)SolveParameters.Z;
-            
+
             MousePad.Invalidate();
         }
 
@@ -251,7 +251,7 @@ namespace TerraViewer.Callibration
         }
         private void SaveConfig_Click(object sender, EventArgs e)
         {
-            
+
 
             SaveFileDialog sfd = new SaveFileDialog();
 
@@ -401,7 +401,7 @@ namespace TerraViewer.Callibration
         }
 
 
-       
+
         private string GetNodeText(int nodeID)
         {
             if (CalibrationInfo.ProjLookup.ContainsKey(nodeID))
@@ -423,7 +423,7 @@ namespace TerraViewer.Callibration
 
             MakeRegions();
 
-            
+
             for (int i = 1; i < 7; i++)
             {
                 ProjectorEntry pe = new ProjectorEntry();
@@ -456,7 +456,7 @@ namespace TerraViewer.Callibration
 
 
 
-            BlendPanelButtons .Visible = false;
+            BlendPanelButtons.Visible = false;
             BlendPanelButtons.Dock = DockStyle.None;
         }
 
@@ -479,8 +479,9 @@ namespace TerraViewer.Callibration
 
         }
         PointF center;
+        PointF bmpCenter;
         float radius = 1;
-
+        float circle = 1;
         PointF GetAltAzFromPoint(PointF point)
         {
             double alt = 0;
@@ -488,10 +489,10 @@ namespace TerraViewer.Callibration
 
             double x = point.X - center.X;
             double y = point.Y - center.Y;
-            double dist = Math.Sqrt(x*x + y*y);
+            double dist = Math.Sqrt(x * x + y * y);
 
             alt = 90 - Math.Min(1, dist / radius) * 90;
-            az = ((Math.Atan2(y, x) / Math.PI * 180)+630)%360;
+            az = ((Math.Atan2(y, x) / Math.PI * 180) + 630) % 360;
             return new PointF((float)az, (float)alt);
         }
 
@@ -499,8 +500,8 @@ namespace TerraViewer.Callibration
         {
             PointF retPoint = new PointF();
             point.X += 90;
-            retPoint.X = center.X  + (float)Math.Cos(point.X / 180 * Math.PI) * ((90-point.Y) / 90) * radius;
-            retPoint.Y = center.Y + (float)Math.Sin(point.X / 180 * Math.PI) * ((90-point.Y) / 90) * radius;
+            retPoint.X = center.X + (float)Math.Cos(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * radius;
+            retPoint.Y = center.Y + (float)Math.Sin(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * radius;
             return retPoint;
         }
 
@@ -518,10 +519,13 @@ namespace TerraViewer.Callibration
             Rectangle rectClient = MousePad.ClientRectangle;
 
             float min = (float)Math.Min(rectClient.Width, rectClient.Height);
-            radius = (min / 2)*.95f;
+            circle = min;
+            radius = (min / 2) * .95f;
             center = new PointF(rectClient.Width / 2, rectClient.Height / 2);
-            float left = center.X - min/2;
-            float top = center.Y - min/2;
+            float left = center.X - min / 2;
+            float top = center.Y - min / 2;
+
+            bmpCenter = new PointF(center.X - left, center.Y - top);
 
             foreach (RectangleF rectIn in regions)
             {
@@ -664,11 +668,11 @@ namespace TerraViewer.Callibration
             }
         }
 
-        List<PointF> InterpolatePolygon( List<PointF> pointsIn)
+        List<PointF> InterpolatePolygon(List<PointF> pointsIn)
         {
             List<PointF> pointsOut = new List<PointF>();
 
-            PointF lastPoint = pointsIn[pointsIn.Count-1];
+            PointF lastPoint = pointsIn[pointsIn.Count - 1];
             foreach (PointF point in pointsIn)
             {
                 float distX = point.X - lastPoint.X;
@@ -691,13 +695,13 @@ namespace TerraViewer.Callibration
 
         List<SolveProjector> solveProjectors = new List<SolveProjector>();
 
-        
+
 
         private SolveProjector GetSolveProjector(int index)
         {
             if (solveProjectors.Count == 0)
             {
-                ProjectorEntry pe = CalibrationInfo.Projectors.Find(delegate(ProjectorEntry p) { return p.ID == index; });
+                ProjectorEntry pe = CalibrationInfo.Projectors.Find(delegate (ProjectorEntry p) { return p.ID == index; });
 
                 SolveProjector sp = new SolveProjector(pe, CalibrationInfo.DomeSize, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, CalibrationInfo.ScreenType, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? SolveParameters.FishEye : SolveParameters.Default);
                 sp.RadialDistorion = CalibrationInfo.ScreenType == ScreenTypes.FishEye ? false : UseRadial.Checked;
@@ -705,7 +709,7 @@ namespace TerraViewer.Callibration
             }
             else
             {
-                return solveProjectors[index-1];
+                return solveProjectors[index - 1];
             }
         }
 
@@ -865,7 +869,7 @@ namespace TerraViewer.Callibration
                         blueSlider.Value = 100;
                         redAmount.Text = "";
                         greenAmount.Text = "";
-                        blueAmount.Text = "";             
+                        blueAmount.Text = "";
                     }
                 }
             }
@@ -934,17 +938,17 @@ namespace TerraViewer.Callibration
                     BlendPoint bp = e.Node.Tag as BlendPoint;
                     if (bp != null)
                     {
-                        
+
                         int index = pe.BlendPolygon.IndexOf(bp);
-                       
-                        pe.SelectedBlendPoint = index ;
+
+                        pe.SelectedBlendPoint = index;
                         SendBlendPointEditUpdate(pe);
                     }
                 }
 
 
-            }  
-            
+            }
+
             MousePad.Invalidate();
 
         }
@@ -1206,7 +1210,7 @@ namespace TerraViewer.Callibration
                     EdgeProperties props = new EdgeProperties();
                     props.Edge = edge;
                     edge.Owner = CalibrationInfo;
-                    
+
                     if (props.ShowDialog() == DialogResult.OK)
                     {
                         if (edge.Left != -1 && edge.Right != -1 && edge.Right != edge.Left)
@@ -1413,7 +1417,7 @@ namespace TerraViewer.Callibration
 
             string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + "," + pe.ID + ",GEOMETRY," + GeometryStyles.Polygon.ToString() + "," + pe.SelectedBlendPoint.ToString() + "," + SavedColor.Save(Color.FromArgb(255, Gamma(pe.WhiteBalance.Red), Gamma(pe.WhiteBalance.Green), Gamma(pe.WhiteBalance.Blue))) + "," + SavedColor.Save(Color.Yellow) + "," + sb.ToString();
             NetControl.SendCommand(command);
-           
+
         }
 
         public int Gamma(int val)
@@ -1490,7 +1494,7 @@ namespace TerraViewer.Callibration
 
 
 
-       
+
         private void wwtCheckbox1_CheckedChanged(object sender, EventArgs e)
         {
 
@@ -1565,7 +1569,7 @@ namespace TerraViewer.Callibration
                             TreeNode parentNode = PointTree.SelectedNode.Parent;
                             nodeIndex = parentNode.Nodes.IndexOf(node);
                             node.Remove();
-                            parentNode.Nodes.Insert(nodeIndex-1, node);
+                            parentNode.Nodes.Insert(nodeIndex - 1, node);
                             PointTree.SelectedNode = node;
                         }
                     }
@@ -1585,7 +1589,7 @@ namespace TerraViewer.Callibration
                             parentNode.Nodes.Insert(nodeIndex - 1, node);
                             PointTree.SelectedNode = node;
                         }
-                       
+
                     }
 
                 }
@@ -1629,7 +1633,7 @@ namespace TerraViewer.Callibration
                         ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
                         GroundTruthPoint pnt = (GroundTruthPoint)PointTree.SelectedNode.Tag;
                         index = pe.Constraints.IndexOf(pnt);
-                        if (index < pe.Constraints.Count-1)
+                        if (index < pe.Constraints.Count - 1)
                         {
                             pe.Constraints.Remove(pnt);
                             pe.Constraints.Insert(index + 1, pnt);
@@ -1646,7 +1650,7 @@ namespace TerraViewer.Callibration
                         EdgePoint pnt = (EdgePoint)PointTree.SelectedNode.Tag;
 
                         index = edge.Points.IndexOf(pnt);
-                        if (index < edge.Points.Count-1)
+                        if (index < edge.Points.Count - 1)
                         {
                             edge.Points.Remove(pnt);
                             edge.Points.Insert(index + 1, pnt);
@@ -1823,7 +1827,7 @@ namespace TerraViewer.Callibration
                     }
                 }
             }
-            MousePad.Invalidate(); 
+            MousePad.Invalidate();
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1865,7 +1869,7 @@ namespace TerraViewer.Callibration
                         running = false;
                     }
                     MousePad.Refresh();
-                    
+
                     Application.DoEvents();
 
                 }
@@ -1906,7 +1910,7 @@ namespace TerraViewer.Callibration
             bool failed = false;
 
             CalibrationInfo.DomeSize = UiTools.ParseAndValidateDouble(DomeRadius, CalibrationInfo.DomeSize, ref failed);
-            
+
         }
 
         private void ProjectorList_SelectedIndexChanged(object sender, EventArgs e)
@@ -1916,14 +1920,14 @@ namespace TerraViewer.Callibration
             SolveProjector sp = new SolveProjector(pe, CalibrationInfo.DomeSize, CalibrationInfo.ScreenType == ScreenTypes.FishEye ? ProjectionType.FishEye : ProjectionType.Projector, ScreenTypes.Spherical, SolveParameters.Default);
 
             Vector2d pnt = sp.GetCoordinatesForScreenPoint(pe.Width / 2, pe.Height / 2);
-            Vector2d pnt2 = sp.GetCoordinatesForScreenPoint(pe.Width / 2+1, pe.Height / 2);
+            Vector2d pnt2 = sp.GetCoordinatesForScreenPoint(pe.Width / 2 + 1, pe.Height / 2);
             Vector2d pntCamera = sp.GetCoordinatesForProjector();
 
 
-            PointF pntRayDirection = GetPointFromAltAz(new PointF((float)pnt.X+90, (float)pnt.Y));
+            PointF pntRayDirection = GetPointFromAltAz(new PointF((float)pnt.X + 90, (float)pnt.Y));
             //PointF pntProj = GetPointFromXYZ(new Vector3d(pe.ProjectorTransform.X,pe.ProjectorTransform.Y,pe.ProjectorTransform.Z));
-            PointF pntProj = GetPointFromAltAz(new PointF((float)pntCamera.X+90, (float)pntCamera.Y));
-            
+            PointF pntProj = GetPointFromAltAz(new PointF((float)pntCamera.X + 90, (float)pntCamera.Y));
+
             Refresh();
             MousePad.Refresh();
             Graphics g = MousePad.CreateGraphics();
@@ -1932,7 +1936,7 @@ namespace TerraViewer.Callibration
             g.DrawRectangle(Pens.Red, pntProj.X - 5, pntProj.Y - 5, 10, 10);
 
             g.Dispose();
-            
+
 
         }
 
@@ -1999,7 +2003,7 @@ namespace TerraViewer.Callibration
 
                 }
 
-                Bitmap bmp = WarpMapper.MakeWarpMap(pe, CalibrationInfo.DomeSize, UseRadial.Checked, gtPoints, (CalibrationInfo.ScreenType == ScreenTypes.Spherical) ? ScreenTypes.Spherical: ScreenTypes.Cylindrical);
+                Bitmap bmp = WarpMapper.MakeWarpMap(pe, CalibrationInfo.DomeSize, UseRadial.Checked, gtPoints, (CalibrationInfo.ScreenType == ScreenTypes.Spherical) ? ScreenTypes.Spherical : ScreenTypes.Cylindrical);
                 bmp.Save(string.Format("{0}\\distort_{1}.png", path, pe.Name.Replace(" ", "_")));
                 bmp.Dispose();
                 index++;
@@ -2035,12 +2039,12 @@ namespace TerraViewer.Callibration
                 sw.WriteLine("2");
                 sw.WriteLine(string.Format("{0} {1}", stepsX, stepsY));
 
-                double stepSizeX = (double)pe.Width/(stepsX-1);
+                double stepSizeX = (double)pe.Width / (stepsX - 1);
                 double stepSizeY = (double)pe.Height / (stepsY - 1);
 
-                for (double y = 0; (int)(y+.5) <= pe.Height; y += stepSizeY)
+                for (double y = 0; (int)(y + .5) <= pe.Height; y += stepSizeY)
                 {
-                    for (double x = 0; (int)(x+.5) <= pe.Width; x += stepSizeX)
+                    for (double x = 0; (int)(x + .5) <= pe.Width; x += stepSizeX)
                     {
                         Vector2d altAz = sp.GetCoordinatesForScreenPoint(x, y);
                         Vector2d pnt = GetPointFromAltAz(altAz);
@@ -2072,12 +2076,12 @@ namespace TerraViewer.Callibration
         Vector2d GetPointFromAltAz(Vector2d point)
         {
             Vector2d retPoint = new Vector2d();
-           // point.X += 90;
+            // point.X += 90;
             retPoint.X = .5 + Math.Cos(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * .5;
             retPoint.Y = .5 + Math.Sin(point.X / 180 * Math.PI) * ((90 - point.Y) / 90) * .5;
             return retPoint;
         }
-        
+
 
         private void SendNewMaps_Click(object sender, EventArgs e)
         {
@@ -2096,7 +2100,7 @@ namespace TerraViewer.Callibration
                     ProgressPopup.SetProgress(50, Language.GetLocalizedText(752, "Building Blend Maps"));
                     MakeBlendMaps();
                 }
-               
+
                 ProgressPopup.Done();
                 this.Cursor = Cursors.Default;
                 this.Enabled = true;
@@ -2109,7 +2113,7 @@ namespace TerraViewer.Callibration
                     SendViewConfig(pe.ID, pe, CalibrationInfo.DomeTilt);
                 }
             }
-            
+
             string command = "CAL," + Earth3d.MainWindow.Config.ClusterID.ToString() + ",-1,RELOADWARPS";
             NetControl.SendCommand(command);
             this.Activate();
@@ -2127,7 +2131,7 @@ namespace TerraViewer.Callibration
         private void MakeBlendMaps()
         {
             ProgressPopup.Show(this, Language.GetLocalizedText(747, "Building Maps"), Language.GetLocalizedText(752, "Building Blend Maps"));
-           
+
             string path = String.Format("{0}\\ProjetorWarpMaps", Properties.Settings.Default.CahceDirectory);
 
             if (!Directory.Exists(path))
@@ -2350,7 +2354,7 @@ namespace TerraViewer.Callibration
             {
                 colorCorrectTarget.WhiteBalance.Red = 155 + redSlider.Value;
                 SendBlendPointEditUpdate(colorCorrectTarget);
-           }
+            }
         }
 
         private void greenSlider_ValueChanged(object sender, EventArgs e)
@@ -2380,7 +2384,7 @@ namespace TerraViewer.Callibration
 
         private void pattern_SelectionChanged(object sender, EventArgs e)
         {
-            calibrationImageType = (CalibrationImageType) pattern.SelectedIndex;
+            calibrationImageType = (CalibrationImageType)pattern.SelectedIndex;
         }
 
 
@@ -2395,6 +2399,299 @@ namespace TerraViewer.Callibration
             else
             {
                 CalibrationProjectorTarget = -1;
+            }
+        }
+
+        private void wwtButton2_Click(object sender, EventArgs e)
+        {
+
+            //CalibrationInfo.DomeSize
+            //UseRadial.Checked,
+            //gtPoints,
+            //(CalibrationInfo.ScreenType == ScreenTypes.Spherical) ? ScreenTypes.Spherical : ScreenTypes.Cylindrical
+
+            ProjectorEntry pe = ProjectorServerPaternPiicker.SelectedItem as ProjectorEntry;
+
+            if (pe == null)
+            {
+                return;
+            }
+
+            float min = 3200;
+            circle = min;
+            radius = (min / 2) * .95f;
+            center = new PointF(3200 / 2, 3200 / 2);
+            float left = center.X - min / 2;
+            float top = center.Y - min / 2;
+
+            bmpCenter = new PointF(center.X - left, center.Y - top);
+
+
+            Bitmap bmp = new Bitmap((int)circle, (int)circle);
+
+            SolveProjector spProjector = new SolveProjector(pe, CalibrationInfo.DomeSize, ProjectionType.Projector, ScreenTypes.Spherical, SolveParameters.Default);
+            spProjector.RadialDistorion = false;
+
+            Graphics g = Graphics.FromImage(bmp);
+
+            g.Clear(Color.Black);
+
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+            SolidBrush domeBackground = new SolidBrush(Color.FromArgb(15, 15, 15));
+
+            g.FillEllipse(domeBackground, new RectangleF((circle / 2) - radius, (circle / 2) - radius, radius * 2, radius * 2));
+            domeBackground.Dispose();
+            // DrawGrid(g, spProjector, 50, true);
+
+            switch (this.calibrationImageType)
+            {
+                case CalibrationImageType.Bkack:
+                    break;
+                case CalibrationImageType.White:
+                    //todo make a warped rect in the dome master space
+                    DrawOutline(g, spProjector, pe.Width, pe.Height);
+                    break;
+                case CalibrationImageType.Squares:
+                    DrawGrid(g, spProjector, 50, true, pe.Width, pe.Height, pe.ID);
+                    break;
+                case CalibrationImageType.SmallSquares:
+                    DrawGrid(g, spProjector, 25, true, pe.Width, pe.Height, pe.ID);
+                    break;
+                case CalibrationImageType.Points:
+                    DrawGrid(g, spProjector, 50, false, pe.Width, pe.Height, pe.ID);
+                    break;
+                case CalibrationImageType.DensePoints:
+                    DrawGrid(g, spProjector, 25, false, pe.Width, pe.Height, pe.ID);
+                    break;
+                case CalibrationImageType.Checkerboard:
+                    break;
+                default:
+                    break;
+            }
+
+            g.Flush();
+            g.Dispose();
+
+            bmp.Save("c:\\temp\\proj" + pe.Name + "_" + calibrationImageType.ToString() + ".png");
+            MousePad.Image = bmp;
+            MakeRegionRects();
+        }
+
+        private void DrawOutline(Graphics g, SolveProjector sp, int width, int height)
+        {
+            List<PointF> points = new List<PointF>();
+
+            for (int x = 0; x < width; x++)
+            {
+                points.Add(WarpPoint(sp, new PointF(x, 0)));
+            }
+            for (int y = 0; y < height; y++)
+            {
+                points.Add(WarpPoint(sp, new PointF(width - 1, y)));
+            }
+
+            for (int x = width - 1; x > -1; x--)
+            {
+                points.Add(WarpPoint(sp, new PointF(x, height - 1)));
+            }
+            for (int y = height; y > -1; y--)
+            {
+                points.Add(WarpPoint(sp, new PointF(0, y)));
+            }
+
+            g.FillPolygon(Brushes.White, points.ToArray());
+            g.DrawPolygon(Pens.White, points.ToArray());
+
+        }
+
+        private void DrawGrid(Graphics g, SolveProjector sp, int size, bool squares, int width, int height, int id)
+        {
+
+            int countX = width / (size);
+            int countY = height / (size);
+            int skip = 1;
+
+            if (squares)
+            {
+                skip = 2;
+            }
+            else
+            {
+                countY++;
+            }
+
+            Brush white = Brushes.White;
+            Brush red = Brushes.Red;
+            Brush blue = Brushes.Blue;
+            Brush green = Brushes.Green;
+
+            for (int y = 0; y < countY; y += skip)
+            {
+                for (int x = 0; x < countX; x += skip)
+                {
+                    if (squares)
+                    {
+                        bool thisBit = false;
+
+                        DrawWarpedRect(g, sp, new RectangleF(x * size + 35.5f, y * size + 15.5f, size, size), white, Pens.White);
+                        //g.DrawRectangle(Pens.White, x * size + 35.5f, y * size + 15.5f, size, size);
+
+                        //g.FillRectangle(white, new RectangleF(x * size + 35.5f, y * size + 15.5f, size, size));
+
+                        if (x == 18 && y == 10)
+                        {
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(red, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        if (x == 18 && y == 8)
+                        {
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(blue, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        if (x == 16 && y == 10)
+                        {
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(green, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        // Bits of the Projector ID
+                        if (x == 14 && y == 12)
+                        {
+                            thisBit = (Earth3d.MainWindow.Config.NodeID & 1) == 1;
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        if (x == 16 && y == 12)
+                        {
+                            thisBit = (id & 2) == 2;
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        if (x == 18 && y == 12)
+                        {
+                            thisBit = (id & 4) == 4;
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        if (x == 20 && y == 12)
+                        {
+                            thisBit = (id & 8) == 8;
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                        if (x == 22 && y == 12)
+                        {
+                            thisBit = (id & 16) == 16;
+                            PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f + (size / 2), y * size + 15.5f + (size / 2)));
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(pnt.X - 5, pnt.Y - 5, 10, 10));
+                        }
+
+                    }
+                    else
+                    {
+                        PointF pnt = WarpPoint(sp, new PointF(x * size + 35.5f, y * size + 15.5f));
+                        PointF pntB = WarpPoint(sp, new PointF((x + 1) * size + 35.5f, (y + 1) * size + 15.5f));
+                        PointF pntD = PointF.Subtract(pnt, new SizeF(pntB));
+                        double dist = Math.Sqrt(pntD.X * pntD.X + pntD.Y * pntD.Y) / 70.7;
+                        float pntSz = (float)(10 * dist);
+                        g.FillEllipse(white, new RectangleF(pnt.X - 5, pnt.Y - 5, pntSz, pntSz));
+                    }
+
+                }
+            }
+
+
+        }
+
+        void DrawWarpedRect(Graphics g, SolveProjector sp, RectangleF rect, Brush brush, Pen pen)
+        {
+            List<PointF> points = new List<PointF>();
+
+            points.Add(WarpPoint(sp, rect.Location));
+            points.Add(WarpPoint(sp, new PointF(rect.Left + rect.Width, rect.Top)));
+            points.Add(WarpPoint(sp, new PointF(rect.Left + rect.Width, rect.Top + rect.Height)));
+            points.Add(WarpPoint(sp, new PointF(rect.Left, rect.Top + rect.Height)));
+
+            g.FillPolygon(brush, points.ToArray());
+            g.DrawPolygon(pen, points.ToArray());
+
+        }
+
+        PointF WarpPoint(SolveProjector sp, PointF pnt)
+        {
+            //double width = 2048;
+            //double height = 2048;
+            //double centerX = 1024;
+            //double centerY = 1024;
+            //double radius = 900;
+
+            PointF pntOut = new PointF();
+
+            Vector2d altaz = sp.GetCoordinatesForScreenPoint(pnt.X, pnt.Y);
+            altaz.X += 180;
+            pntOut.X = (float)(bmpCenter.X + (1.0 - (altaz.Y / 90)) * Math.Cos(altaz.X / 180 * Math.PI) * radius);
+            pntOut.Y = (float)(bmpCenter.Y + (1.0 - (altaz.Y / 90)) * Math.Sin(altaz.X / 180 * Math.PI) * radius);
+
+            return pntOut;
+        }
+
+        private void LoadGrid_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "WWT Calibration Grids (*.grd)|*.grd";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                string[] lines = File.ReadAllLines(ofd.FileName);
+                int currentID = -1;
+                List<GroundTruthPoint> gtPoints = new List<GroundTruthPoint>();
+                int id = 1;
+                foreach(string line in lines)
+                {
+                    string[] parts = line.Split(new char[] { ',' });
+
+                    if (parts.Length > 0)
+                    {
+                        if (parts[0] == "Group")
+                        {
+                            currentID = int.Parse(parts[1]);
+                            gtPoints = new List<GroundTruthPoint>();
+
+                            foreach(var pe in this.CalibrationInfo.Projectors)
+                            {
+                                if (pe.ID == currentID)
+                                {
+                                    pe.Constraints = gtPoints;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (parts.Length == 4)
+                        {
+                            GroundTruthPoint pnt = new GroundTruthPoint();
+                            pnt.X = double.Parse(parts[0]);
+                            pnt.Y = double.Parse(parts[1]);
+                            pnt.Az = double.Parse(parts[2]);
+                            pnt.Alt = double.Parse(parts[3]);
+                            pnt.AxisType = AxisTypes.Both;
+                            pnt.Weight = 1;
+                            pnt.ID = id++;
+                            gtPoints.Add(pnt);
+                        }
+                    }
+                }
+
             }
         }
     }

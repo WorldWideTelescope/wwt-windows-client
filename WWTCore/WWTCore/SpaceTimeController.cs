@@ -311,6 +311,23 @@ namespace TerraViewer
             return AstroCalc.AstroCalc.GetJulianDay(year, month, dblDay);
         }
 
+        public static DateTime JulianToUtc (double jDate)
+        {
+            CAADate date = new CAADate();
+            date.Set(jDate, true);
+            int year=0;
+            int month = 0;
+            int day = 0;
+            int hour = 0;
+            int minute = 0;
+            double second = 0;
+            date.Get(ref year, ref month, ref day, ref hour, ref minute, ref second);
+
+            double ms = (second - ((int)second)) * 1000;
+
+            return new DateTime(year, month, day, hour, minute, (int)second, (int)ms);
+        }
+
         public static double TwoLineDateToJulian(string p)
         {
             bool pre1950 = Convert.ToInt32(p.Substring(0, 1)) < 6;
@@ -322,6 +339,26 @@ namespace TerraViewer
             DateTime date = new DateTime(year, 1, 1, 0, 0, 0, 0);
             date += ts;
             return UtcToJulian(date);
+        }
+
+        public static string JulianToTwoLineDate(double jDate)
+        {
+            return DateToTwoLineDate(JulianToUtc(jDate));
+        }
+
+        public static string DateToTwoLineDate(DateTime date)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(date.Year % 100);
+
+            double day = date.DayOfYear + date.Hour / 24 + date.Minute / 60 / 24 + date.Second / 60 / 60 / 24 + date.Millisecond / 1000 / 60 / 60 / 24;
+
+            string sDay = day.ToString("000.00000000");
+
+            sb.Append(sDay);
+
+            return sb.ToString();
         }
 
         public static bool DoneDumping()

@@ -415,6 +415,7 @@ namespace TerraViewer.Callibration
             {
                 skip = 2;
             }
+            bool thisBit = false;
 
             Brush white = new SolidBrush(Color.White);
             for (int y = 0; y < countY; y += skip)
@@ -426,10 +427,60 @@ namespace TerraViewer.Callibration
                         g.DrawRectangle(Pens.White, x * size + 35.5f, y * size + 15.5f, size, size);
 
                         g.FillRectangle(white, new RectangleF(x * size + 35.5f, y * size + 15.5f, size, size));
+
+                        float margin = (float)size / 4.0f;
+                        float diam = (float)size / 2.0f;
+
+                        if (x == 18 && y == 10)
+                        {
+                             g.FillEllipse(Brushes.Red, new RectangleF(x * size + 35.5f+ margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        if (x == 18 && y == 8)
+                        {
+                            g.FillEllipse(Brushes.Blue, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        if (x == 16 && y == 10)
+                        {
+                              g.FillEllipse(Brushes.Green, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        // Bits of the Projector ID
+                        if (x == 14 && y == 12)
+                        {
+                            thisBit = (Earth3d.MainWindow.Config.NodeID & 1) == 1;
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        if (x == 16 && y == 12)
+                        {
+                            thisBit = (Earth3d.MainWindow.Config.NodeID & 2) == 2;
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        if (x == 18 && y == 12)
+                        {
+                            thisBit = (Earth3d.MainWindow.Config.NodeID & 4) == 4;
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        if (x == 20 && y == 12)
+                        {
+                            thisBit = (Earth3d.MainWindow.Config.NodeID & 8) == 8;
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
+                        if (x == 22 && y == 12)
+                        {
+                            thisBit = (Earth3d.MainWindow.Config.NodeID & 16) == 16;
+                            g.FillEllipse(thisBit ? Brushes.Yellow : Brushes.Cyan, new RectangleF(x * size + 35.5f + margin, y * size + 15.5f + margin, diam, diam));
+                        }
+
                     }
                     else
                     {
-                        g.FillEllipse(white, new RectangleF(x * size + 30.5f, y * size + 10.5f, 10, 10));
+                         g.FillEllipse(white, new RectangleF(x * size + 30.5f, y * size + 10.5f, 10, 10));
                     }
 
                 }

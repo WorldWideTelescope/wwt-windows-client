@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using Vector3 = SharpDX.Vector3;
 using Matrix = SharpDX.Matrix;
+using System.IO.Compression;
 
 namespace TerraViewer
 {
@@ -58,6 +59,58 @@ namespace TerraViewer
 
             //    WriteBinaryMPCData(Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin");
             //}
+        }
+
+        public static void DownloadNewMPSCoreFile()
+        {
+            string filename = Properties.Settings.Default.CahceDirectory + "\\data\\MPCCORB.DAT.gz";
+            string url = "http://www.minorplanetcenter.net/iau/MPCORB/MPCORB.DAT.gz";
+
+            if (!FileDownload.DownloadFile(url, filename, true))
+            {
+                return;
+            }
+            try
+            {
+                Stream fs = File.OpenRead(filename);
+                Stream s = new GZipStream(fs, CompressionMode.Decompress);
+                MPCList.Clear();
+                StreamReader sr = new StreamReader(s);
+                bool dataFound = false;
+                while (!sr.EndOfStream)
+                {
+                    string data = sr.ReadLine();
+                    if (dataFound && data.Length > 150)
+                    {
+                        CAAEllipticalObjectElements ee = new CAAEllipticalObjectElements();
+
+                        ee.a = Convert.ToDouble(data.Substring(92, 11));
+                        ee.e = Convert.ToDouble(data.Substring(70, 9));
+                        ee.i = Convert.ToDouble(data.Substring(59, 9));
+                        ee.omega = Convert.ToDouble(data.Substring(48, 9));
+                        ee.w = Convert.ToDouble(data.Substring(37, 9));
+                        ee.JDEquinox = UnpackEpoch(data.Substring(20, 5));
+                        double M = Convert.ToDouble(data.Substring(26, 9));
+                        double n = Convert.ToDouble(data.Substring(80, 11));
+                        ee.T = ee.JDEquinox - (M / n);
+                        MPCList.Add(ee);
+                    }
+                    else
+                    {
+                        if (data.Length > 3 && data.Substring(0, 4) == "----")
+                        {
+                            dataFound = true;
+                        }
+                    }
+                }
+                sr.Close();
+
+                WriteBinaryMPCData(Properties.Settings.Default.CahceDirectory + "\\data\\mpc.bin");
+            }
+            catch
+            {
+                UiTools.ShowMessageBox(Language.GetLocalizedText(1003, "The image file did not download or is invalid."), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
+            }
         }
 
         private static void ReadFromBin()

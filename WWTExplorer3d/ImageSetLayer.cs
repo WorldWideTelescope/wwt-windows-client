@@ -93,6 +93,10 @@ namespace TerraViewer
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
+            if (!flat)
+            {
+                renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
+            }
             renderContext.WorldBase = renderContext.World ;
             renderContext.ViewBase = renderContext.View;
             Earth3d.MainWindow.MakeFrustum();

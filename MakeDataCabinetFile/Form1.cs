@@ -20,7 +20,7 @@ namespace MakeDataCabinetFile
         {
             string path = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Microsoft\\WorldWideTelescope\\data";
 
-            FileCabinet cab = new FileCabinet(@"C:\wwtsd\wwt\client\setup1\datafiles.cabinet", path);
+            FileCabinet cab = new FileCabinet(textBox1.Text, path);
 
             InjestDirectory(cab, path);
             cab.Package();

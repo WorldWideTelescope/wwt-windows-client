@@ -1287,7 +1287,7 @@ namespace TerraViewer
                         defaultImageset.Checked = isl.OverrideDefaultLayer;
                     }
 
-                    if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer || layerTree.SelectedNode.Tag is GroundOverlayLayer || layerTree.SelectedNode.Tag is GreatCirlceRouteLayer)
+                    if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer || layerTree.SelectedNode.Tag is GroundOverlayLayer || layerTree.SelectedNode.Tag is GreatCirlceRouteLayer || layerTree.SelectedNode.Tag is OrbitLayer)
                     {
                         if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour.EditMode && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
                         {
@@ -1331,6 +1331,15 @@ namespace TerraViewer
                 }
                 else if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag is LayerMap)
                 {
+                    LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+                    bool sandbox = map.Frame.Reference.ToString() == "Sandbox";
+                    bool Dome = map.Frame.Name == "Dome";
+                    bool Sky = map.Frame.Name == "Sky";
+
+                    if (Dome)
+                    {
+                        return;
+                    }
                     contextMenu = new ContextMenuStrip();
                     ToolStripMenuItem trackFrame = new ToolStripMenuItem(Language.GetLocalizedText(1298, "Track this frame"));
                     ToolStripMenuItem goTo = new ToolStripMenuItem(Language.GetLocalizedText(1299, "Fly Here"));
@@ -1356,9 +1365,21 @@ namespace TerraViewer
                     ToolStripSeparator spacer1 = new ToolStripSeparator();
                     ToolStripSeparator spacer0 = new ToolStripSeparator();
                     ToolStripSeparator spacer2 = new ToolStripSeparator();
+                    ToolStripMenuItem asReferenceFrame = new ToolStripMenuItem("As Reference Frame");
+                    ToolStripMenuItem asOrbitalLines = new ToolStripMenuItem("As Orbital Line");
+
+
                     trackFrame.Click += new EventHandler(trackFrame_Click);
                     goTo.Click += new EventHandler(goTo_Click);
-                    addMpc.Click += new EventHandler(addMpc_Click);
+                    asReferenceFrame.Click += new EventHandler(addMpc_Click);
+                    asOrbitalLines.Click += AsOrbitalLines_Click; 
+                    // Ad Sub Menus
+                    addMpc.DropDownItems.Add(asReferenceFrame);
+                    addMpc.DropDownItems.Add(asOrbitalLines);
+
+
+
+
                     addMenu.Click += new EventHandler(addMenu_Click);
                     newLight.Click += new EventHandler(newLight_Click);
                     addFeedMenu.Click += new EventHandler(addFeedMenu_Click);
@@ -1377,17 +1398,24 @@ namespace TerraViewer
                     addGirdLayer.Click += new EventHandler(addGirdLayer_Click);
 
 
-                    LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+                    ToolStripMenuItem convertToOrbit = new ToolStripMenuItem("Extract Orbit Layer");
+                    convertToOrbit.Click += ConvertToOrbit_Click;
+
 
                     if (map.Frame.Reference != ReferenceFrames.Identity)
                     {
                         if (Earth3d.MainWindow.SolarSystemMode | Earth3d.MainWindow.SandboxMode) //&& Control.ModifierKeys == Keys.Control)
                         {
+                            bool spacerNeeded = false;
                             if (map.Frame.Reference != ReferenceFrames.Custom && !Earth3d.MainWindow.SandboxMode)
                             {
                                 // fly to
-                                contextMenu.Items.Add(goTo);
-
+                                if (!Sky)
+                                {
+                                    contextMenu.Items.Add(goTo);
+                                    spacerNeeded = true;
+                                }
+                                
                                 try
                                 {
                                     string name = map.Frame.Reference.ToString();
@@ -1410,32 +1438,70 @@ namespace TerraViewer
                             else
                             {
                                 // track
-                                contextMenu.Items.Add(trackFrame);
+                                if (!sandbox && !Sky)
+                                {
+                                    contextMenu.Items.Add(trackFrame);
+                                    spacerNeeded = true;
+                                }
                                 showOrbit.Checked = map.Frame.ShowOrbitPath;
                                 showOrbit.Click += new EventHandler(showOrbit_Click);
                             }
-                            contextMenu.Items.Add(spacer2);
-                            contextMenu.Items.Add(showOrbit);
 
-                            contextMenu.Items.Add(spacer0);
+                            if (spacerNeeded)
+                            {
+                                contextMenu.Items.Add(spacer2);
+                            }
+
+                            if (!Sky && !sandbox)
+                            {
+                                contextMenu.Items.Add(showOrbit);
+
+                                contextMenu.Items.Add(spacer0);
+                            }
+
                             if (map.Frame.Reference.ToString() == "Sandbox")
                             {
                                 contextMenu.Items.Add(newLight);
                             }
                         }
-                        contextMenu.Items.Add(newMenu);
+
+                        if (!Sky)
+                        {
+                            contextMenu.Items.Add(newMenu);
+                        }
                         contextMenu.Items.Add(newLayerGroupMenu);
+                        
                     }
+                    
                     contextMenu.Items.Add(addMenu);
                     contextMenu.Items.Add(addFeedMenu);
-                    contextMenu.Items.Add(addGreatCircle);
-                    contextMenu.Items.Add(addGirdLayer);
+                    if (!Sky)
+                    {
+                        contextMenu.Items.Add(addGreatCircle);
+                        contextMenu.Items.Add(addGirdLayer);
+                    }
 
-                    contextMenu.Items.Add(addMpc);
-                    contextMenu.Items.Add(addWmsLayer);
+                    if ((map.Frame.Reference != ReferenceFrames.Identity && map.Frame.Name == "Sun") ||
+                        (map.Frame.Reference == ReferenceFrames.Identity && map.Parent != null && map.Parent.Frame.Name == "Sun"))
+                    {
+                        contextMenu.Items.Add(addMpc);
+                    }
+
+                    if (map.Frame.Reference == ReferenceFrames.Custom && map.Frame.ReferenceFrameType == ReferenceFrameTypes.Orbital && map.Parent != null && map.Parent.Frame.Name == "Sun")
+                    {
+                        contextMenu.Items.Add(convertToOrbit);
+                    }
 
 
+                    if (!Sky)
+                    {
+                        contextMenu.Items.Add(addWmsLayer);
+                    }
+
+                    
                     contextMenu.Items.Add(pasteMenu);
+                   
+
                     if (map.Frame.Reference == ReferenceFrames.Identity)
                     {
                         contextMenu.Items.Add(deleteFrameMenu);
@@ -1459,7 +1525,11 @@ namespace TerraViewer
                         contextMenu.Items.Add(popertiesMenu);
 
                     }
-                    contextMenu.Items.Add(spacer1);
+
+                    //if (!Sky)
+                    {
+                        contextMenu.Items.Add(spacer1);
+                    }
                     contextMenu.Items.Add(saveMenu);
                     if (Earth3d.IsLoggedIn)
                     {
@@ -1508,6 +1578,13 @@ namespace TerraViewer
                     }
                 }
             }
+
+        }
+
+        private void ConvertToOrbit_Click(object sender, EventArgs e)
+        {
+            LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+            this.ConvertToTLE(map);
 
         }
 
@@ -1632,21 +1709,65 @@ namespace TerraViewer
 
         void addMpc_Click(object sender, EventArgs e)
         {
+            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
             SimpleInput input = new SimpleInput(Language.GetLocalizedText(1302, "Minor planet name or designation"), Language.GetLocalizedText(238, "Name"), "", 32);
             bool retry = false;
             do
             {
                 if (input.ShowDialog() == DialogResult.OK)
                 {
-                    try
-                    {
-                        GetMpc(input.ResultText);
-                        retry = false;
-                    }
-                    catch
+                    if (target.ChildMaps.ContainsKey(input.ResultText))
                     {
                         retry = true;
-                        UiTools.ShowMessageBox(Language.GetLocalizedText(1303, "The designation was not found or the MPC service was unavailable"));
+                        UiTools.ShowMessageBox("That Name already exists");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            GetMpc(input.ResultText);
+                            retry = false;
+                        }
+                        catch
+                        {
+                            retry = true;
+                            UiTools.ShowMessageBox(Language.GetLocalizedText(1303, "The designation was not found or the MPC service was unavailable"));
+                        }
+                    }
+                }
+                else
+                {
+                    retry = false;
+                }
+            } while (retry);
+            return;
+        }
+        private void AsOrbitalLines_Click(object sender, EventArgs e)
+        {
+            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            SimpleInput input = new SimpleInput(Language.GetLocalizedText(1302, "Minor planet name or designation"), Language.GetLocalizedText(238, "Name"), "", 32);
+            bool retry = false;
+            do
+            {
+                if (input.ShowDialog() == DialogResult.OK)
+                {
+                    if (target.ChildMaps.ContainsKey(input.ResultText))
+                    {
+                        retry = true;
+                        UiTools.ShowMessageBox("That Name already exists");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            GetMpcAsTLE(input.ResultText);
+                            retry = false;
+                        }
+                        catch
+                        {
+                            retry = true;
+                            UiTools.ShowMessageBox(Language.GetLocalizedText(1303, "The designation was not found or the MPC service was unavailable"));
+                        }
                     }
                 }
                 else
@@ -1658,8 +1779,82 @@ namespace TerraViewer
         }
 
 
+        string GetMpcAsTLE(string id)
+        {
+
+            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            WebClient client = new WebClient();
+
+            string data = client.DownloadString("http://www.minorplanetcenter.net/db_search/show_object?object_id=" + id);
+
+
+            int startform = data.IndexOf("show-orbit-button");
+
+            int lastForm = data.IndexOf("/form", startform);
+
+            string formpart = data.Substring(startform, lastForm - startform);
+
+            string name = id;
+
+            ReferenceFrame frame = new ReferenceFrame();
+
+            frame.Oblateness = 0;
+            frame.ShowOrbitPath = true;
+            frame.ShowAsPoint = true;
+            
+            frame.Epoch = SpaceTimeController.UtcToJulian(DateTime.Parse(GetValueByID(formpart, "epoch").Substring(0, 10)));
+            frame.SemiMajorAxis = double.Parse(GetValueByID(formpart, "a")) * UiTools.KilometersPerAu * 1000;
+            frame.ReferenceFrameType = ReferenceFrameTypes.Orbital;
+            frame.Inclination = double.Parse(GetValueByID(formpart, "incl"));
+            frame.LongitudeOfAscendingNode = double.Parse(GetValueByID(formpart, "node"));
+            frame.Eccentricity = double.Parse(GetValueByID(formpart, "e"));
+            frame.MeanAnomolyAtEpoch = double.Parse(GetValueByID(formpart, "m"));
+            frame.MeanDailyMotion = CAAElliptical.MeanMotionFromSemiMajorAxis(double.Parse(GetValueByID(formpart, "a")));
+            frame.ArgumentOfPeriapsis = double.Parse(GetValueByID(formpart, "peri"));
+            frame.Scale = 1;
+            frame.SemiMajorAxisUnits = AltUnits.Meters;
+            frame.MeanRadius = 10;
+            frame.Oblateness = 0;
+
+            String TLE = name + "\n" + frame.ToTLE();
+
+            String filename = Path.GetTempPath() + "\\" + name;
+
+            File.WriteAllText(filename, TLE);
+
+            LoadOrbitsFile(filename, target.Name);
+
+            LoadTree();
+
+            return null;
+        }
+
+        string ConvertToTLE( LayerMap map)
+        {
+
+            LayerMap target = map.Parent;
+
+            ReferenceFrame frame = map.Frame;
+            string name = frame.Name;
+
+            String TLE = name + "\n" + frame.ToTLE();
+
+            String filename = Path.GetTempPath() + "\\" + name;
+
+            File.WriteAllText(filename, TLE);
+
+            LoadOrbitsFile(filename, target.Name);
+
+            LoadTree();
+
+            return null;
+        }
+
         string GetMpc(string id)
         {
+            LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+
+
             WebClient client = new WebClient();
 
             string data = client.DownloadString("http://www.minorplanetcenter.net/db_search/show_object?object_id=" + id);
@@ -1692,15 +1887,16 @@ namespace TerraViewer
             orbit.Frame.MeanRadius = 10;
             orbit.Frame.Oblateness = 0;
 
-            if (!AllMaps["Sun"].ChildMaps.ContainsKey(name.Trim()))
+            if (!AllMaps[target.Name].ChildMaps.ContainsKey(name.Trim()))
             {
-                AllMaps["Sun"].AddChild(orbit);
+                AllMaps[target.Name].AddChild(orbit);
             }
 
             AllMaps.Add(orbit.Name, orbit);
 
-            orbit.Frame.Parent = "Sun";
+            orbit.Frame.Parent = target.Name;
 
+            MakeLayerGroup("Minor Planet", orbit);
 
             LoadTree();
 
@@ -2334,7 +2530,7 @@ namespace TerraViewer
                 orbit.Frame.Scale = 1;
                 orbit.Frame.SemiMajorAxisUnits = AltUnits.Meters;
                 orbit.Frame.MeanRadius = 10;
-                orbit.Frame.Oblateness = 0;
+                orbit.Frame.Oblateness = 0;                   
                 orbit.Frame.FromTLE(data[i + 1], data[i + 2], 398600441800000);
                 if (!AllMaps[name].ChildMaps.ContainsKey(data[i].Trim()))
                 {
@@ -2408,6 +2604,11 @@ namespace TerraViewer
         private void MakeLayerGroup(string name)
         {
             LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
+            MakeLayerGroup(name, target);
+        }
+
+        private static void MakeLayerGroup(string name, LayerMap target)
+        {
             ReferenceFrame frame = new ReferenceFrame();
             frame.Name = name;
             frame.Reference = ReferenceFrames.Identity;

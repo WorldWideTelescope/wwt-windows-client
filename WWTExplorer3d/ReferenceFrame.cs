@@ -465,6 +465,14 @@ namespace TerraViewer
 
         public void FromTLE(string line1, string line2, double gravity)
         {
+            bool isMpcTLE = false;
+            if (line1.Substring(0, 8) == "1 99999U")
+            {
+                isMpcTLE = true;
+                gravity = 132737773784;
+                gravity *= 1000000000;
+            }
+
             Epoch = SpaceTimeController.TwoLineDateToJulian(line1.Substring(18, 14));
             Eccentricity = double.Parse("0." + line2.Substring(26, 7));
             Inclination = double.Parse(line2.Substring(8, 8));
@@ -476,8 +484,107 @@ namespace TerraViewer
             double part = (86400.0 / revs) / (Math.PI * 2.0);
             SemiMajorAxis = Math.Pow((part * part) * gravity, 1.0 / 3.0);
             SemiMajorAxisUnits = AltUnits.Meters;
+            if (isMpcTLE)
+            {
+                SemiMajorAxis = double.Parse(line1.Substring(33, 10));
+                MeanDailyMotion = double.Parse(line1.Substring(52, 11));
+            }
 
         }
+
+        /// <summary>
+        /// This is a hack to save Orbits for use in older WWT versions. This is not for
+        /// Interoperabilit with other System that ingest TLE Data
+        /// </summary>
+        /// <returns></returns>
+        public string ToTLE()
+        {
+            //Epoch need to convert to TLE time string.
+            // Ecentricity remove "0." from the begin and trim to 7 digits
+            // Inclination decimal degrees 8 digits max
+            // LOAN decimal degrees 8 digits
+            // AOP 
+            // mean anomoly at epoch 8 digits
+            // Mean motion (revs per day) Compute
+            // Convert Semi-major-axis to meters from storage unit
+            // Compute revs
+
+            StringBuilder line1 = new StringBuilder();
+            
+            line1.Append("1 99999U 00111AAA ");
+            line1.Append(SpaceTimeController.JulianToTwoLineDate(Epoch));
+            line1.Append(" ");
+            // line1.Append("-.00000001");
+            line1.Append(semiMajorAxis.ToString("0.0000e+00"));
+            line1.Append(" 00000-0 ");
+            line1.Append(meanDailyMotion.ToString("0.00000e+00"));
+            //line1.Append("-00000-1 0 ");
+            line1.Append("  001");
+            line1.Append(ComputeTLECheckSum(line1.ToString()));
+            line1.AppendLine("");
+            StringBuilder line2 = new StringBuilder();
+
+            line2.Append("2 99999 ");
+            line2.Append(inclination.ToString("000.0000 ")); 
+            line2.Append(longitudeOfAscendingNode.ToString("000.0000 "));
+            line2.Append(eccentricity.ToString("0.0000000 ").Substring(2));
+            line2.Append(argumentOfPeriapsis.ToString("000.0000 "));
+            line2.Append(meanAnomolyAtEpoch.ToString("000.0000 "));
+            line2.Append((meanDailyMotion/207732).ToString("0.00000e+00"));
+            line2.Append("00001");
+            line2.Append(ComputeTLECheckSum(line2.ToString()));
+            line2.AppendLine("");
+            return line1.ToString() + line2.ToString();
+        }
+
+        public static char ComputeTLECheckSum(string line)
+        {
+            if (line.Length != 68)
+            {
+                return '0';
+            }
+
+            int checksum = 0;
+            for (int i = 0; i < 68; i++)
+            {
+                switch (line[i])
+                {
+                    case '1':
+                        checksum += 1;
+                        break;
+                    case '2':
+                        checksum += 2;
+                        break;
+                    case '3':
+                        checksum += 3;
+                        break;
+                    case '4':
+                        checksum += 4;
+                        break;
+                    case '5':
+                        checksum += 5;
+                        break;
+                    case '6':
+                        checksum += 6;
+                        break;
+                    case '7':
+                        checksum += 7;
+                        break;
+                    case '8':
+                        checksum += 8;
+                        break;
+                    case '9':
+                        checksum += 9;
+                        break;
+                    case '-':
+                        checksum += 1;
+
+                        break;
+                }
+            }
+            return (char)('0' + (char)(checksum % 10));
+        }
+
         public static bool IsTLECheckSumGood(string line)
         {
             if (line.Length != 69)

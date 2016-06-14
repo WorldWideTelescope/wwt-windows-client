@@ -194,35 +194,42 @@ namespace TerraViewer
                 {
                     int line1 = i;
                     int line2 = i + 1;
-                    ReferenceFrame frame = new ReferenceFrame();
-                    if (data[i].Substring(0, 1) != "1")
+                    if (data[i].Length > 0)
                     {
-                        line1++;
-                        line2++;
-                        frame.Name = data[i].Trim();
-                        i++;
-                    }
-                    else if (data[i].Substring(0, 1) == "1")
-                    {
-                        frame.Name = data[i].Substring(2, 5);
+                        ReferenceFrame frame = new ReferenceFrame();
+                        if (data[i].Substring(0, 1) != "1")
+                        {
+                            line1++;
+                            line2++;
+                            frame.Name = data[i].Trim();
+                            i++;
+                        }
+                        else if (data[i].Substring(0, 1) == "1")
+                        {
+                            frame.Name = data[i].Substring(2, 5);
+                        }
+                        else
+                        {
+                            i -= 2;
+                            continue;
+                        }
+
+                        frame.Reference = ReferenceFrames.Custom;
+                        frame.Oblateness = 0;
+                        frame.ShowOrbitPath = true;
+                        frame.ShowAsPoint = true;
+                        frame.ReferenceFrameType = ReferenceFrameTypes.Orbital;
+                        frame.Scale = 1;
+                        frame.SemiMajorAxisUnits = AltUnits.Meters;
+                        frame.MeanRadius = 10;
+                        frame.Oblateness = 0;
+                        frame.FromTLE(data[line1], data[line2], 398600441800000);
+                        frames.Add(frame);
                     }
                     else
                     {
-                        i -= 2;
-                        continue;
+                        i -= 1;
                     }
-
-                    frame.Reference = ReferenceFrames.Custom;
-                    frame.Oblateness = 0;
-                    frame.ShowOrbitPath = true;
-                    frame.ShowAsPoint = true;
-                    frame.ReferenceFrameType = ReferenceFrameTypes.Orbital;
-                    frame.Scale = 1;
-                    frame.SemiMajorAxisUnits = AltUnits.Meters;
-                    frame.MeanRadius = 10;
-                    frame.Oblateness = 0;
-                    frame.FromTLE(data[line1], data[line2], 398600441800000);
-                    frames.Add(frame);
                 }
             }
         }

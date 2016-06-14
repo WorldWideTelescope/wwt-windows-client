@@ -186,7 +186,7 @@ namespace TerraViewer.Callibration
         Parameter RadialAmountX = new Parameter();
         Parameter RadialAmountY = new Parameter();
 
-
+        bool useGrid = false;
 
         int width = 0;
         int height = 0;
@@ -267,12 +267,50 @@ namespace TerraViewer.Callibration
                     break;
             }
 
-           
+            useGrid = pe.UseGrid;
 
             width = pe.Width;
             height = pe.Height;
             sphereRadius = radius;
 
+            if (useGrid)
+            {
+                LoadGrid(pe.Constraints);
+            }
+
+        }
+
+        GroundTruthPoint[,] grid = new GroundTruthPoint[40,24];
+
+        private void LoadGrid(List<GroundTruthPoint> points)
+        {
+            foreach(var pnt in points)
+            {
+                Point address = GetGridAddressFromPoint(pnt.X, pnt.Y);
+                grid[address.X, address.Y] = pnt;
+            }
+
+            for(int y = 12; y<24; y++)
+            {
+                for(int x = 20; x < 40; x++)
+                {
+                    if (grid[x,y] == null)
+                    {
+                        GroundTruthPoint gt = new GroundTruthPoint();
+                        gt.X = x * 50 + 30.5 - 50;
+                        gt.Y = y * 50 + 10.5 - 50;
+
+                    }
+                }
+            }
+
+        }
+
+        private Point GetGridAddressFromPoint(double x, double y)
+        {
+            int size = 50;
+
+            return new Point((int)((x - 30.5) / size) + 1, (int)((y - 10.5) / size) + 1);
         }
 
         public Projection Projection

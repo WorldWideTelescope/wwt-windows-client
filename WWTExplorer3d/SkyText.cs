@@ -68,7 +68,7 @@ namespace TerraViewer
 
             renderContext.MainTexture = glyphCache.Texture;
             // Debug to get Glyhph textures and caches
-            //SharpDX.Direct3D11.Texture2D.ToFile(renderContext.devContext, glyphCache.Texture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, "c:\\temp\\texture2.png");
+    //        SharpDX.Direct3D11.Texture2D.ToFile(renderContext.devContext, glyphCache.Texture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, "c:\\temp\\texture2.png");
 
             renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
  
@@ -82,7 +82,7 @@ namespace TerraViewer
 
             //dump cache
 
-           // glyphCache.SaveToXML("c:\\temp\\glyphCache.cs");
+  //          glyphCache.SaveToXML("c:\\temp\\glyphCache.xml");
 
         }
  
@@ -122,6 +122,7 @@ namespace TerraViewer
             List<PositionColoredTextured> verts = new List<PositionColoredTextured>();
             foreach (Text3d t3d in Items)
             {
+                float fntAdjust = font.Size / 128f;
                 String text = t3d.Text;
                 SizeF size = g.MeasureString(text, font);
 
@@ -150,7 +151,7 @@ namespace TerraViewer
 
 
 
-                    float fntAdjust = font.Size / 128f;
+                   
                     for (int i = 0; i < (charsNow); i++)
                     {
                         GlyphItem item = glyphCache.GetGlyphItem(text[i+index]);
@@ -687,7 +688,7 @@ namespace TerraViewer
         {
 
             XmlWriter xmlWriter = XmlWriter.Create(filename);
-            xmlWriter.WriteStartElement("GlyphItem");
+            xmlWriter.WriteStartElement("GlyphItems");
             foreach (GlyphItem item in GlyphItems.Values)
             {
                 item.SaveToXml(xmlWriter);

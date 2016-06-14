@@ -26,6 +26,8 @@ namespace TerraViewer.Callibration
         [XmlAttribute("ID")]
         public int ID = 0;
             
+        [XmlAttribute("UseGrid")]
+        public bool UseGrid = false;
       
         [XmlAttribute("Width")]
         public int Width = 1920;

@@ -497,9 +497,13 @@ namespace TerraViewer
                     NextSlide();
                     slideChanging = true;
                 }
+
                 slideElapsedTime = SpaceTimeController.MetaNow - slideStartTime;
 
-                tour.CurrentTourStop.TweenPosition = Math.Min(1,(float)(slideElapsedTime.TotalMilliseconds / tour.CurrentTourStop.Duration.TotalMilliseconds));
+                if (tour.CurrentTourStop != null)
+                {
+                    tour.CurrentTourStop.TweenPosition = Math.Min(1, (float)(slideElapsedTime.TotalMilliseconds / tour.CurrentTourStop.Duration.TotalMilliseconds));
+                }
             }
             else
             {
