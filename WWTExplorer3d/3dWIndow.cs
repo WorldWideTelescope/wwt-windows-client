@@ -7785,6 +7785,7 @@ namespace TerraViewer
             Matrix3d trackingMatrix = Matrix3d.Identity;
             cameraDistance -= 0.000001;
 
+            cameraDistance += cameraDistance * NetControl.DistanceOffsetPercent;
             bool activeTrackingFrame = false;
             if (SolarSystemTrack == SolarSystemObjects.Custom && !string.IsNullOrEmpty(TrackingFrame))
             {
