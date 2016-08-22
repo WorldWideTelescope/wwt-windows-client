@@ -198,6 +198,8 @@ namespace TerraViewer
         }
 
         public static double DistanceOffsetPercent = 0;
+        public static double LastDistanceOffsetPercent = 0;
+        public static double DeltaDistanceOffset = 0;
 
         public static void listenerThreadFunc()
         {
@@ -433,7 +435,10 @@ namespace TerraViewer
                             }
                             else if (values.Length == 2)
                             {
-                                DistanceOffsetPercent = Convert.ToDouble(values[0])/100;
+                                DistanceOffsetPercent = Math.Min(99.0,Convert.ToDouble(values[0]))/100;
+                                DeltaDistanceOffset = (DistanceOffsetPercent - LastDistanceOffsetPercent) / 2;
+                                LastDistanceOffsetPercent = DistanceOffsetPercent;
+
                             }
                             else if (values.Length == 3)
                             {

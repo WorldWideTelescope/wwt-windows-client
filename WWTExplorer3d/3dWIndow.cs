@@ -7761,6 +7761,7 @@ namespace TerraViewer
 
         Vector3d cameraOffset = new Vector3d();
 
+
         private void SetupMatricesSolarSystem11(bool forStars, RenderTypes renderType)
         {
             if (SandboxMode)
@@ -7782,10 +7783,22 @@ namespace TerraViewer
 
             double cameraDistance = SolarSystemCameraDistance;
 
+            
+
             Matrix3d trackingMatrix = Matrix3d.Identity;
             cameraDistance -= 0.000001;
 
+            if (NetControl.DistanceOffsetPercent == NetControl.LastDistanceOffsetPercent)
+            {
+                //no distnace update since we sample 30 FPS but render 60FPS
+                NetControl.DistanceOffsetPercent += NetControl.DeltaDistanceOffset;
+            }
+
+
+
             cameraDistance += cameraDistance * NetControl.DistanceOffsetPercent;
+
+
             bool activeTrackingFrame = false;
             if (SolarSystemTrack == SolarSystemObjects.Custom && !string.IsNullOrEmpty(TrackingFrame))
             {
@@ -7936,7 +7949,9 @@ namespace TerraViewer
                     }
                     else
                     {
-                        RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust;
+                        Matrix3d swingTranslation = Matrix3d.Translation(0, -(1-Math.Cos(NetControl.DistanceOffsetPercent))* SolarSystemCameraDistance / 8,0);
+
+                        RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * swingTranslation;
                     }
 
                     if (multiMonClient)
@@ -8074,7 +8089,7 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[renderType== RenderTypes.LeftEye ? 0 : 1].Fov;
+                FovPort fovPort = eyeRenderDesc[renderType == RenderTypes.LeftEye ? 0 : 1].Fov;
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
                 ProjMatrix = new Matrix3d();
                 var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
@@ -8084,13 +8099,18 @@ namespace TerraViewer
             }
             else if (megaFrameDump)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), megaWidth/megaHeight, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), megaWidth / megaHeight, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = fovLocal;
             }
             else
             {
                 ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = fovLocal;
+                if (Properties.Settings.Default.PerspectiveOffsetX != 0 || Properties.Settings.Default.PerspectiveOffsetY != 0)
+                {
+                    ProjMatrix.M31 += Properties.Settings.Default.PerspectiveOffsetX;
+                    ProjMatrix.M32 += Properties.Settings.Default.PerspectiveOffsetY;
+                }
             }
 
             if (multiMonClient && !config.MultiChannelDome1 && !config.MultiProjector)
