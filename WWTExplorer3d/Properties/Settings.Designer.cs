@@ -2525,5 +2525,29 @@ namespace TerraViewer.Properties {
                 this["OverSampleTerrain"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double SwingScaleFront {
+            get {
+                return ((double)(this["SwingScaleFront"]));
+            }
+            set {
+                this["SwingScaleFront"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double SwingScaleBack {
+            get {
+                return ((double)(this["SwingScaleBack"]));
+            }
+            set {
+                this["SwingScaleBack"] = value;
+            }
+        }
     }
 }

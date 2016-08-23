@@ -7949,7 +7949,16 @@ namespace TerraViewer
                     }
                     else
                     {
-                        Matrix3d swingTranslation = Matrix3d.Translation(0, -(1-Math.Cos(NetControl.DistanceOffsetPercent))* SolarSystemCameraDistance / 8,0);
+                        Matrix3d swingTranslation;
+                        if (NetControl.DistanceOffsetPercent < 0)
+                        {
+                            swingTranslation = Matrix3d.Translation(0, -(1 - Math.Cos(NetControl.DistanceOffsetPercent)) * Properties.Settings.Default.SwingScaleFront * SolarSystemCameraDistance / 4, 0);
+                        }
+                        else
+                        {
+                            swingTranslation = Matrix3d.Translation(0, -(1 - Math.Cos(NetControl.DistanceOffsetPercent)) * Properties.Settings.Default.SwingScaleBack * SolarSystemCameraDistance / 4, 0);
+                        }
+                        var tt = Properties.Settings.Default.SwingScaleFront;
 
                         RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * swingTranslation;
                     }

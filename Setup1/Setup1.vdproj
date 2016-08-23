@@ -680,11 +680,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.D3DCompiler, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_00CDB9669A1541FA855180B0102923EA"
-                    {
-                    "Name" = "8:SharpDX.D3DCompiler.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.D3DCompiler.dll"
             "TargetName" = "8:"
@@ -771,11 +766,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.Toolkit, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_138C9784616AE892D563CE15BCDA84CC"
-                    {
-                    "Name" = "8:SharpDX.Toolkit.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.Toolkit.dll"
             "TargetName" = "8:"
@@ -922,11 +912,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.Toolkit.Compiler, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_2C714C2EA09EDC8B5480867A2954E5EB"
-                    {
-                    "Name" = "8:SharpDX.Toolkit.Compiler.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.Toolkit.Compiler.dll"
             "TargetName" = "8:"
@@ -973,11 +958,6 @@
             "AssemblyAsmDisplayName" = "8:MicrosoftAccount.WindowsForms, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_361D4AC669C64EA94BFDECFB41495F64"
-                    {
-                    "Name" = "8:MicrosoftAccount.WindowsForms.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:MicrosoftAccount.WindowsForms.dll"
             "TargetName" = "8:"
@@ -1104,11 +1084,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.Toolkit.Graphics, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5EF1FAB4C7C52E971144C279AA4C3A7A"
-                    {
-                    "Name" = "8:SharpDX.Toolkit.Graphics.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.Toolkit.Graphics.dll"
             "TargetName" = "8:"
@@ -1155,11 +1130,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.DXGI, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6EDA44993C79B1FF3058CA0EDFDF5A5B"
-                    {
-                    "Name" = "8:SharpDX.DXGI.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.DXGI.dll"
             "TargetName" = "8:"
@@ -1257,11 +1227,6 @@
             "AssemblyAsmDisplayName" = "8:DSMRender, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_7DBA96F71DC97D9AB00F009513B3D80E"
-                    {
-                    "Name" = "8:DSMRender.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:DSMRender.dll"
             "TargetName" = "8:"
@@ -1288,11 +1253,6 @@
             "AssemblyAsmDisplayName" = "8:AssimpNet, Version=3.2.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_861480AED0CA231EF83A829030565319"
-                    {
-                    "Name" = "8:AssimpNet.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AssimpNet.dll"
             "TargetName" = "8:"
@@ -1319,11 +1279,6 @@
             "AssemblyAsmDisplayName" = "8:SharpOVR, Version=0.6.0.4, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8960B49FF6B7DC73AF1AC40654101D45"
-                    {
-                    "Name" = "8:SharpOVR.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpOVR.dll"
             "TargetName" = "8:"
@@ -1430,11 +1385,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.Direct3D11, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B403C90893182231BB3C4A9B0AB76512"
-                    {
-                    "Name" = "8:SharpDX.Direct3D11.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.Direct3D11.dll"
             "TargetName" = "8:"
@@ -1501,11 +1451,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_CD1E833DEF9B558A2B1CA3EDBF7D2FE9"
-                    {
-                    "Name" = "8:SharpDX.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.dll"
             "TargetName" = "8:"
@@ -1532,11 +1477,6 @@
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_DB75BFAB6D37DC96487A73BAA1143675"
-                    {
-                    "Name" = "8:Newtonsoft.Json.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
@@ -1563,11 +1503,6 @@
             "AssemblyAsmDisplayName" = "8:SharpDX.Direct2D1, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_DE10A81B7827FF63E4F19346ED9D6838"
-                    {
-                    "Name" = "8:SharpDX.Direct2D1.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:SharpDX.Direct2D1.dll"
             "TargetName" = "8:"
@@ -1594,11 +1529,6 @@
             "AssemblyAsmDisplayName" = "8:WWTCore, Version=5.5.3.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_E56B1630F60FBFDCDA1B0913FA65E67F"
-                    {
-                    "Name" = "8:WWTCore.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:WWTCore.dll"
             "TargetName" = "8:"
@@ -1625,11 +1555,6 @@
             "AssemblyAsmDisplayName" = "8:Interop.Shell32, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_F65276FA82F0D5ECADE423238BABD422"
-                    {
-                    "Name" = "8:Interop.Shell32.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Interop.Shell32.dll"
             "TargetName" = "8:"
@@ -1656,11 +1581,6 @@
             "AssemblyAsmDisplayName" = "8:WWTThumbnails, Version=2.2.4.0, Culture=neutral, PublicKeyToken=d90315cd674d735e, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_FD64DEBBC9AEF2D16E721A31D1B1E748"
-                    {
-                    "Name" = "8:WWTThumbnails.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:WWTThumbnails.dll"
             "TargetName" = "8:"
@@ -1945,15 +1865,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:WorldWide Telescope"
-        "ProductCode" = "8:{309FFA4E-B6A6-4A36-9B17-B5108EFDF735}"
-        "PackageCode" = "8:{1B8014DF-CA70-4911-9A01-018192A00F88}"
+        "ProductCode" = "8:{FE1958C1-B4CA-4A1C-B261-D3DE5739F182}"
+        "PackageCode" = "8:{42E724BC-540F-4F6C-9D48-DABCE53408B0}"
         "UpgradeCode" = "8:{543D9051-C7F5-4C6B-BEA5-6CA148C8487F}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:5.5.12"
+        "ProductVersion" = "8:5.5.16"
         "Manufacturer" = "8:WorldWide Telescope"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
