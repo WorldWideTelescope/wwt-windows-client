@@ -24,7 +24,7 @@ using Registry = Microsoft.Win32.Registry;
 using System.Security.Permissions;
 using MSAuth;
 using System.Threading.Tasks;
-using SharpOVR;
+using OculusWrap;
 
 namespace TerraViewer
 {
@@ -154,7 +154,7 @@ namespace TerraViewer
         private ToolStripMenuItem detachMainViewToSecondMonitor;
         private ToolStripMenuItem shapeFileToolStripMenuItem;
         private ToolStripMenuItem showLayerManagerToolStripMenuItem;
-         private ToolStripMenuItem regionalDataCacheToolStripMenuItem;
+        private ToolStripMenuItem regionalDataCacheToolStripMenuItem;
         private ToolStripMenuItem addAsNewLayerToolStripMenuItem;
         private ToolStripMenuItem addCollectionAsTourStopsToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem8;
@@ -604,7 +604,7 @@ namespace TerraViewer
             {
                 if (rift)
                 {
-                    return  leftEyeWidth;
+                    return leftEyeWidth;
                 }
 
                 if ((!Space || rift) && (StereoMode == StereoModes.CrossEyed || StereoMode == StereoModes.SideBySide || StereoMode == StereoModes.OculusRift))
@@ -1856,7 +1856,7 @@ namespace TerraViewer
             {
                 Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5";
             }
-             
+
             Earth3d.MainWindow = this;
             this.dsm = new DataSetManager();
             Constellations.Containment = this.constellationCheck;
@@ -2041,7 +2041,7 @@ namespace TerraViewer
             {
                 WindowsLiveSignIn();
             }
-            if(Properties.Settings.Default.RiftStartup)
+            if (Properties.Settings.Default.RiftStartup)
             {
                 StartRift();
             }
@@ -2414,7 +2414,7 @@ namespace TerraViewer
 
         Search searchPane = null;
         FolderBrowser toursTab = null;
-   
+
         FolderBrowser explorePane = null;
         FolderBrowser communitiesPane = null;
         View viewPane = null;
@@ -2516,7 +2516,7 @@ namespace TerraViewer
             }
         }
 
-        private async void  menuTabs_ControlEvent(object sender, ControlAction e)
+        private async void menuTabs_ControlEvent(object sender, ControlAction e)
         {
             switch (e)
             {
@@ -3084,7 +3084,7 @@ namespace TerraViewer
                 runUpdate();
             }
         }
-    
+
 
         static public Dictionary<int, IImageSet> ImagesetHashTable = new Dictionary<int, IImageSet>();
 
@@ -5667,7 +5667,7 @@ namespace TerraViewer
         PositionColorTexturedVertexBuffer11[] domeVertexBuffer;
         IndexBuffer11[] domeIndexBuffer;
         int domeVertexCount;
- 
+
         int domeTriangleCount;
 
 
@@ -6295,12 +6295,10 @@ namespace TerraViewer
                     else if (rift)
                     {
                         Matrix3d matRiftView = Matrix3d.Identity;
-                        float yaw = 0;
-                        float pitch = 0;
-                        float roll = 0;
-                        eyeRenderPose[0].Orientation.GetEulerAngles(out yaw, out pitch, out roll);
 
-                        matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
+                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                        matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
+
                         view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView;
                     }
 
@@ -6366,12 +6364,13 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[0].Fov;
+                var fovPort = eyeTextures[0].FieldOfView;
+                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
+
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                ProjMatrix = new Matrix3d();
-                var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
                 projMat.Transpose();
 
+                ProjMatrix = new Matrix3d();
                 ProjMatrix.Matrix11 = projMat;
             }
             else if (megaFrameDump)
@@ -6482,12 +6481,10 @@ namespace TerraViewer
                     else if (rift)
                     {
                         Matrix3d matRiftView = Matrix3d.Identity;
-                        float yaw = 0;
-                        float pitch = 0;
-                        float roll = 0;
-                        eyeRenderPose[0].Orientation.GetEulerAngles(out yaw, out pitch, out roll);
 
-                        matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
+                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                        matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
+
                         view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView;
                     }
                     else
@@ -6551,12 +6548,13 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[0].Fov;
+                var fovPort = eyeTextures[0].FieldOfView;
+                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
+
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                ProjMatrix = new Matrix3d();
-                var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
                 projMat.Transpose();
 
+                ProjMatrix = new Matrix3d();
                 ProjMatrix.Matrix11 = projMat;
             }
             else if (megaFrameDump)
@@ -6858,12 +6856,9 @@ namespace TerraViewer
             if (rift)
             {
                 Matrix3d matRiftView = Matrix3d.Identity;
-                float yaw = 0;
-                float pitch = 0;
-                float roll = 0;
-                eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation.GetEulerAngles(out yaw, out pitch, out roll);
 
-                matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
+                var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
                 RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * matRiftView;
             }
             else
@@ -6901,12 +6896,13 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[renderType == RenderTypes.LeftEye ? 0 : 1].Fov;
+                var fovPort = eyeTextures[renderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
+                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
+
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                ProjMatrix = new Matrix3d();
-                var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
                 projMat.Transpose();
 
+                ProjMatrix = new Matrix3d();
                 ProjMatrix.Matrix11 = projMat;
             }
             else
@@ -6958,19 +6954,15 @@ namespace TerraViewer
 
             ViewPoint = Coordinates.RADecTo3d(0, 0, 1.0);
 
-            
+
             FovAngle = ((360) / FOVMULT) / Math.PI * 180;
             RenderContext11.CameraPosition = new Vector3d(0.0, 0.0, 0.0);
             // This is for distance Calculation. For space everything is the same distance, so camera target is key.
             if (rift)
             {
                 Matrix3d matRiftView = Matrix3d.Identity;
-                float yaw = 0;
-                float pitch = 0;
-                float roll = 0;
-                eyeRenderPose[0].Orientation.GetEulerAngles(out yaw, out pitch, out roll);
-
-                matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
+                var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
                 RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, new Vector3d(0.0, 0.0, -1.0), new Vector3d(Math.Sin(camLocal), Math.Cos(camLocal), 0.0)) * matRiftView;
                 RenderContext11.ViewBase = RenderContext11.View;
             }
@@ -6987,12 +6979,13 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[0].Fov;
+                var fovPort = eyeTextures[0].FieldOfView;
+                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
+
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                ProjMatrix = new Matrix3d();
-                var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
                 projMat.Transpose();
 
+                ProjMatrix = new Matrix3d();
                 ProjMatrix.Matrix11 = projMat;
             }
             else if (megaFrameDump)
@@ -7086,7 +7079,7 @@ namespace TerraViewer
             else
             {
                 RenderContext11.View = RenderContext11.View * config.ViewMatrix;
- 
+
                 ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
 
             }
@@ -7098,7 +7091,7 @@ namespace TerraViewer
             MakeFrustum();
         }
 
-      
+
         public static Matrix3d inverseWorld;
 
         public void MakeFrustum()
@@ -7317,7 +7310,7 @@ namespace TerraViewer
                          Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
                     RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, cameraTarget, lookUp) * Matrix3d.RotationX(((-config.TotalDomeTilt) / 180 * Math.PI)) * matDomePreview;
                 }
-                else if (rift )
+                else if (rift)
                 {
                     double amount = distance / 100;
                     Matrix3d stereoTranslate = Matrix3d.Translation(renderType == RenderTypes.LeftEye ? amount : -amount, 0, 0);
@@ -7325,18 +7318,20 @@ namespace TerraViewer
 
                     if (rift)
                     {
-                        SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position;
+                        SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
                         amount *= 10;
                         stereoTranslate = Matrix3d.Translation(-pos.X * amount, -pos.Y * amount, pos.Z * amount);
 
+                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
+                        matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1,1,1));
+                        
 
+                        //float yaw = 0;
+                        //float pitch = 0;
+                        //float roll = 0;
+                        //SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation).GetEulerAngles(out yaw, out pitch, out roll);
 
-                        float yaw = 0;
-                        float pitch = 0;
-                        float roll = 0;
-                        eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation.GetEulerAngles(out yaw, out pitch, out roll);
-
-                        matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
+                        // matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
                     }
                     RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, cameraTarget, lookUp) * matRiftView * stereoTranslate;
                 }
@@ -7408,20 +7403,20 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[renderType == RenderTypes.LeftEye ? 0 : 1].Fov;
+                var fovPort = eyeTextures[renderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
+                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
+
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                ProjMatrix = new Matrix3d();
-                var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
                 projMat.Transpose();
 
+                ProjMatrix = new Matrix3d();
                 ProjMatrix.Matrix11 = projMat;
-                //Matrix3d.PerspectiveFovLH(RenderContext11.PerspectiveFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
             }
             else if (megaFrameDump)
             {
 
                 m_nearPlane = distance * .05f;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, megaWidth/megaHeight, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, megaWidth / megaHeight, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = fovLocal;
             }
             else
@@ -7545,7 +7540,7 @@ namespace TerraViewer
                     {
                         if (tile.IsPointInTile(viewLat, viewLong))
                         {
-                            return tile.GetSurfacePointAltitudeNow(viewLat, viewLong, true, Tile.lastDeepestLevel+1);
+                            return tile.GetSurfacePointAltitudeNow(viewLat, viewLong, true, Tile.lastDeepestLevel + 1);
                         }
                     }
                 }
@@ -7918,18 +7913,15 @@ namespace TerraViewer
                         double amount = cameraDistance / 100;
                         Matrix3d stereoTranslate = Matrix3d.Translation(renderType == RenderTypes.LeftEye ? amount : -amount, 0, 0);
                         Matrix3d matRiftView = Matrix3d.Identity;
-                       
+
                         if (rift)
-                        { 
-                            SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position;
+                        {
+                            SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
                             amount *= 10;
                             stereoTranslate = Matrix3d.Translation(-pos.X * amount, -pos.Y * amount, pos.Z * amount);
-                            float yaw = 0;
-                            float pitch = 0;
-                            float roll = 0;
-                            eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation.GetEulerAngles(out yaw, out pitch, out roll);
-                            
-                            matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
+
+                            var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
+                            matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
                         }
                         RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * matRiftView * stereoTranslate;
                     }
@@ -8073,17 +8065,18 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                FovPort fovPort = eyeRenderDesc[renderType== RenderTypes.LeftEye ? 0 : 1].Fov;
+                var fovPort = eyeTextures[renderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
+                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
+
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                ProjMatrix = new Matrix3d();
-                var projMat = OVR.MatrixProjection(fovPort, (float)m_nearPlane, (float)back, Projection.None);
                 projMat.Transpose();
 
+                ProjMatrix = new Matrix3d();
                 ProjMatrix.Matrix11 = projMat;
             }
             else if (megaFrameDump)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), megaWidth/megaHeight, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), megaWidth / megaHeight, m_nearPlane, back);
                 RenderContext11.PerspectiveFov = fovLocal;
             }
             else
@@ -8185,7 +8178,7 @@ namespace TerraViewer
             FovAngle = ((ZoomFactor/**16*/) / FOVMULT) / Math.PI * 180;
 
 
-             double distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
+            double distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
 
             RenderContext11.CameraPosition = new Vector3d(0, 0, distance);
             Vector3d lookUp = new Vector3d(Math.Sin(-CameraRotate), Math.Cos(-CameraRotate), 0.0001f);
@@ -8915,7 +8908,7 @@ namespace TerraViewer
 
             if (!megaFrameDump)
             {
-               
+
 
                 if (StereoMode != StereoModes.Off && (!Space || rift))
                 {
@@ -9004,39 +8997,40 @@ namespace TerraViewer
                             }
 
                             int eye = 0;
-                            var swapTexture = eyeTexture[(int)eye];
-                            swapTexture.AdvanceToNextView();
-
+                            var swapTexture = eyeTextures[(int)eye];
+                            int textureIndex;
+                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
                             RenderFrame(stereoRenderTextureLeft.renderView, leftDepthBuffer.DepthView, RenderTypes.LeftEye, ViewWidth, ViewHeight);
-
-
-                            SharpDX.Direct3D11.Resource dest = new SharpDX.Direct3D11.Resource(swapTextures[eye].Textures[swapTexture.CurrentIndex].Texture);
-                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
+                         //   SharpDX.Direct3D11.Resource dest = new SharpDX.Direct3D11.Resource(eyeTextures[eye].RenderTargetViews[textureIndex].Resource);
+                             SharpDX.Direct3D11.Resource dest = eyeTextures[eye].RenderTargetViews[textureIndex].Resource;
+                           RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
                                                                                             dest, 0,
                                                                                            riftFormat);
-
+                            eyeTextures[eye].SwapTextureSet.Commit();
                             eye = 1;
-                            swapTexture = eyeTexture[(int)eye];
-                            swapTexture.AdvanceToNextView();
-
+                            swapTexture = eyeTextures[(int)eye];
+                            
+                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
+                        
                             if (Properties.Settings.Default.RiftMonoMode)
                             {
                                 // Resolve a single buffer for each eye, cuts rendering cost in half
 
-                                dest = new SharpDX.Direct3D11.Resource(swapTextures[eye].Textures[swapTexture.CurrentIndex].Texture);
-
+                                dest = eyeTextures[eye].RenderTargetViews[textureIndex].Resource;
                                 RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
-                                                                                               dest, 0,
-                                                                                               riftFormat);
+                                                                                                 dest, 0,
+                                                                                                riftFormat);
+                                eyeTextures[eye].SwapTextureSet.Commit();
                             }
                             else
                             {
                                 RenderFrame(stereoRenderTextureRight.renderView, rightDepthBuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
 
-                                dest = new SharpDX.Direct3D11.Resource(swapTextures[eye].Textures[swapTexture.CurrentIndex].Texture);
+                                dest = eyeTextures[eye].RenderTargetViews[textureIndex].Resource;
                                 RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureRight.RenderTexture.Texture, 0,
-                                                                                               dest, 0,
-                                                                                               riftFormat);
+                                                                                                 dest, 0,
+                                                                                                riftFormat);
+                                eyeTextures[eye].SwapTextureSet.Commit();
                             }
                         }
                         else
@@ -9072,16 +9066,21 @@ namespace TerraViewer
                         if (rift)
                         {
                             int eye = 0;
-                            var swapTexture = eyeTexture[(int)eye];
-                            swapTexture.AdvanceToNextView();
+                            int textureIndex;
+                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
+                            var swapTexture = eyeTextures[eye].RenderTargetViews[textureIndex];               
 
-                            RenderFrame(swapTexture.CurrentView, swapTexture.DepthStencilView, RenderTypes.LeftEye, leftEyeWidth, leftEyeHeight);
-
+                            RenderFrame(swapTexture, eyeTextures[eye].DepthStencilView, RenderTypes.LeftEye, leftEyeWidth, leftEyeHeight);
+             
+                            eyeTextures[eye].SwapTextureSet.Commit();
                             eye = 1;
-                            swapTexture = eyeTexture[(int)eye];
-                            swapTexture.AdvanceToNextView();
+                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
+                            swapTexture = eyeTextures[eye].RenderTargetViews[textureIndex];
 
-                            RenderFrame(swapTexture.CurrentView, swapTexture.DepthStencilView, RenderTypes.RightEye, rightEyeWidth, rightEyeHeight);
+                            RenderFrame(swapTexture, eyeTextures[eye].DepthStencilView, RenderTypes.RightEye, rightEyeWidth, rightEyeHeight);
+
+                            eyeTextures[eye].SwapTextureSet.Commit();
+
                         }
                         else
                         {
@@ -9101,7 +9100,7 @@ namespace TerraViewer
                     }
                     else if (StereoMode == StereoModes.OculusRift)
                     {
-                        hmd.SubmitFrame(riftFrameIndex, ref layerEyeFov.Header);
+                        var result = hmd.SubmitFrame(0, layers);
                         riftFrameIndex++;
 
                         RenderTextureToScreen(mirror.ResourceView, mirrorTexture.Description.Width, mirrorTexture.Description.Height);
@@ -9708,7 +9707,7 @@ namespace TerraViewer
             bool offscreenRender = targetTextureView != null;
 
             Tile.deepestLevel = 0;
- 
+
             try
             {
                 if (offscreenRender)
@@ -9762,7 +9761,7 @@ namespace TerraViewer
 
                     SetupMatricesSolarSystem11(false, renderType);
 
- 
+
                     Matrix3d matLocal = RenderContext11.World;
                     matLocal.Multiply(Matrix3d.Translation(-viewCamera.ViewTarget));
                     RenderContext11.World = matLocal;
@@ -9886,7 +9885,7 @@ namespace TerraViewer
                                     float c = ((cmbBlend)) / 16;
                                     Matrix3d matOldMW = RenderContext11.World;
                                     Matrix3d matLocalMW = RenderContext11.World;
-  
+
                                     matLocalMW.Multiply(Matrix3d.Scaling(2.9090248982E+15, 2.9090248982E+15, 2.9090248982E+15));
                                     matLocalMW.Multiply(Matrix3d.RotationX(-23.5 / 180 * Math.PI));
                                     matLocalMW.Multiply(Matrix3d.RotationY(Math.PI));
@@ -9945,7 +9944,7 @@ namespace TerraViewer
                                 Grids.DrawStars3D(RenderContext11, Properties.Settings.Default.SolarSystemStars.Opacity * skyOpacity);
                             }
 
-                                         
+
                             LayerManager.Draw(RenderContext11, 1.0f, true, "Sky", true, false);
 
                             RenderContext11.World = matOld;
@@ -9967,7 +9966,7 @@ namespace TerraViewer
                         }
 
                         double p = Math.Log(zoom);
-                        double d = (180 / SolarSystemCameraDistance) * 100; 
+                        double d = (180 / SolarSystemCameraDistance) * 100;
 
                         float sunAtDistance = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 7.5)) / 3);
 
@@ -10018,12 +10017,12 @@ namespace TerraViewer
                     ComputeViewParameters(CurrentImageSet);
 
                     // Update Context pane
-                    CurrentViewCorners = new Coordinates[] 
+                    CurrentViewCorners = new Coordinates[]
                     {
                         GetCoordinatesForScreenPoint(0, 0),
                         GetCoordinatesForScreenPoint(ViewWidth, 0),
                         GetCoordinatesForScreenPoint(ViewWidth, renderWindow.ClientRectangle.Height),
-                        GetCoordinatesForScreenPoint(0, renderWindow.ClientRectangle.Height) 
+                        GetCoordinatesForScreenPoint(0, renderWindow.ClientRectangle.Height)
                     };
 
                     Coordinates temp = GetCoordinatesForScreenPoint(ViewWidth / 2, renderWindow.ClientRectangle.Height / 2);
@@ -10244,7 +10243,7 @@ namespace TerraViewer
                 }
 
 
-                if (Properties.Settings.Default.ShowTouchControls && (!TourPlayer.Playing || mover == null) && ( renderType == RenderTypes.Normal || renderType == RenderTypes.LeftEye || renderType == RenderTypes.RightEye) && !rift && !megaFrameDump)
+                if (Properties.Settings.Default.ShowTouchControls && (!TourPlayer.Playing || mover == null) && (renderType == RenderTypes.Normal || renderType == RenderTypes.LeftEye || renderType == RenderTypes.RightEye) && !rift && !megaFrameDump)
                 {
                     DrawTouchControls();
                 }
@@ -10345,7 +10344,7 @@ namespace TerraViewer
                     bool retVal = false;
                     while (!result && !retVal)
                     {
-                        SharpDX.DataStream ds = RenderContext11.devContext.GetData(query); 
+                        SharpDX.DataStream ds = RenderContext11.devContext.GetData(query);
 
                         result = ds.ReadBoolean();
                         ds.Close();
@@ -10399,7 +10398,7 @@ namespace TerraViewer
 
             SettingParameter sp = Settings.Active.GetSetting(StockSkyOverlayTypes.FadeToBlack);
 
-            
+
 
             if ((sp.Opacity > 0) && !(Settings.MasterController && Properties.Settings.Default.FadeRemoteOnly))
             {
@@ -10773,7 +10772,7 @@ namespace TerraViewer
             PresentFrame11(false);
         }
 
-     
+
         void RenderTextureToScreen(SharpDX.Direct3D11.ShaderResourceView eye, int width, int height)
         {
             RenderContext11.SetDisplayRenderTargets();
@@ -10845,10 +10844,10 @@ namespace TerraViewer
 
             RenderContext11.BlendMode = BlendMode.Alpha;
 
-            
+
             PresentFrame11(false);
         }
-      
+
         public void DrawClouds()
         {
             Texture11 cloudTexture = Planets.CloudTexture;
@@ -11245,7 +11244,7 @@ namespace TerraViewer
         {
             RegisterFileType(".wtt", Language.GetLocalizedText(87, "WorldWide Telescope Tour"));
             RegisterFileType(".wtml", Language.GetLocalizedText(88, "WorldWide Telescope Media List"));
-  
+
         }
 
         static private void RegisterFileType(string extension, string friendlyName)
@@ -11386,7 +11385,7 @@ namespace TerraViewer
             SW_FORCEMINIMIZE = 11, SW_MAX = 11
         };
 
-      
+
 
         public static bool TouchKiosk = false;
         public static bool NoUi = false;
@@ -11418,7 +11417,7 @@ namespace TerraViewer
         [STAThread]
         static void Main(string[] args)
         {
- 
+
 
 
             CultureInfo culture = new CultureInfo("en-US", false);
@@ -11426,14 +11425,14 @@ namespace TerraViewer
             Application.CurrentCulture = culture;
             System.Threading.Thread.CurrentThread.Priority = System.Threading.ThreadPriority.AboveNormal;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
- 
+
             DateTime now = DateTime.Now;
             bool singleInstance = true;
 
 
             foreach (string arg in args)
             {
-             
+
                 if (arg == "-logging")
                 {
                     Logging = true;
@@ -11971,7 +11970,7 @@ namespace TerraViewer
             return (int)((lat + 90.0) / (baseTileDegrees / (Math.Pow(2, viewTileLevel)))) - 1;
         }
 
-       
+
 
         public double GetPixelScaleX(bool mouseRelative)
         {
@@ -12946,7 +12945,7 @@ namespace TerraViewer
             }
         }
 
-     
+
 
         bool reverseMatrix = false;
         private static bool fullScreen = false;
@@ -12961,7 +12960,7 @@ namespace TerraViewer
             MoveView(0, -50, false);
         }
 
-      
+
         public void MoveUp()
         {
             MoveView(0, 50, false);
@@ -13022,7 +13021,7 @@ namespace TerraViewer
             double scaleY = GetPixelScaleY();
             double scaleX = GetPixelScaleX(mouseDrag);
 
-       
+
             if (CurrentImageSet.DataSetType == ImageSetType.SolarSystem || SandboxMode)
             {
                 if (scaleY > .05999)
@@ -13083,7 +13082,7 @@ namespace TerraViewer
         public static void LaunchHelp()
         {
             WebWindow.OpenUrl("http://www.worldwidetelescope.org/Support/Index", true);
-           
+
         }
 
         bool settingsDirty = false;
@@ -13753,7 +13752,7 @@ namespace TerraViewer
             {
                 return;
             }
-            if ((trackObject && SolarSystemMode) )
+            if ((trackObject && SolarSystemMode))
             {
                 if ((place.Classification == Classification.SolarSystem && place.Type != ImageSetType.SolarSystem) || (place.Classification == Classification.Star) || (place.Classification == Classification.Galaxy) && place.Distance > 0)
                 {
@@ -13892,7 +13891,7 @@ namespace TerraViewer
                         Vector3d toVector = camTo.ViewTarget;
                         toVector.Subtract(fromParams.ViewTarget);
 
-  
+
                         if (place.Classification == Classification.Star)
                         {
                             toVector = -toVector;
@@ -13980,7 +13979,7 @@ namespace TerraViewer
             {
                 SolarSystemTrack = place.Target;
                 GotoTarget(noZoom, instant, camParams, place.StudyImageset, place.BackgroundImageSet);
- 
+
                 if (trackObject)
                 {
                     Tracking = true;
@@ -14347,7 +14346,7 @@ namespace TerraViewer
             get { return zoomSpeed; }
             set { zoomSpeed = value; }
         }
- 
+
         static long lastRender = HiResTimer.TickCount;
 
         private void timer2_Tick(object sender, EventArgs e)
@@ -14369,7 +14368,7 @@ namespace TerraViewer
             }
         }
 
- 
+
         private void menuMasterControler_Click(object sender, EventArgs e)
         {
             Settings.MasterController = !Settings.MasterController;
@@ -14868,7 +14867,7 @@ namespace TerraViewer
 
         private void Earth3d_ResizeBegin(object sender, EventArgs e)
         {
-  
+
         }
 
         private void Earth3d_ResizeEnd(object sender, EventArgs e)
@@ -15097,7 +15096,7 @@ namespace TerraViewer
         {
             bool ot = ((Math.Abs(ViewLat - TargetLat) < .0000000001 && Math.Abs(ViewLong - TargetLong) < .0000000001 && Math.Abs(ZoomFactor - TargetZoom) < .000000000001) && mover == null);
             return ot;
-         
+
         }
 
 
@@ -15127,13 +15126,13 @@ namespace TerraViewer
 
         private void newTimelineTour_Click(object sender, EventArgs e)
         {
-           
+
 
         }
 
         private void newInteractiveTour_Click(object sender, EventArgs e)
         {
-            
+
 
         }
         private bool CloseOpenToursOrAbort(bool silent)
@@ -15246,10 +15245,10 @@ namespace TerraViewer
                     }
                     tourEdit.Tour = tour;
 
-                   
+
                     Properties.Settings.Default.AutoRepeatTour = true;
                     tourEdit.PlayNow(true);
-                   
+
                 }
                 if (Settings.MasterController && Properties.Settings.Default.AutoSyncTours)
                 {
@@ -15265,7 +15264,7 @@ namespace TerraViewer
 
         private void openObservingListMenuItem_Click(object sender, EventArgs e)
         {
-           
+
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(107, "WorldWide Telescope Collection") + "|*.wtml";
             if (openFile.ShowDialog() == DialogResult.OK)
@@ -15442,7 +15441,7 @@ namespace TerraViewer
         internal KmlCollection MyPlaces = new KmlCollection();
         private void openKMLMenuItem_Click(object sender, EventArgs e)
         {
-          
+
         }
 
         private bool OpenKmlFile(string filename)
@@ -15464,7 +15463,7 @@ namespace TerraViewer
         {
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Filter = Language.GetLocalizedText(979, "Images(*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT)|*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT");
-             openFile.RestoreDirectory = true;
+            openFile.RestoreDirectory = true;
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 if (File.Exists(openFile.FileName))
@@ -15491,32 +15490,32 @@ namespace TerraViewer
                 if (hasAvm)
                 {
                     imageSet = new ImageSetHelper(
-                        wcsImage.Description, 
+                        wcsImage.Description,
                         filename,
                         ImageSetType.Sky,
                         BandPass.Visible,
                         ProjectionType.SkyImage,
                         Math.Abs(filename.GetHashCode32()),
-                        0, 
-                        0, 
+                        0,
+                        0,
                         256,
                         wcsImage.ScaleY,
                         ".tif",
                         wcsImage.ScaleX > 0,
-                        "", 
-                        wcsImage.CenterX, 
+                        "",
+                        wcsImage.CenterX,
                         wcsImage.CenterY,
                         wcsImage.Rotation,
                         false,
-                        "", 
-                        false, 
-                        false, 
+                        "",
+                        false,
+                        false,
                         1,
                         wcsImage.ReferenceX,
                         wcsImage.ReferenceY,
-                        wcsImage.Copyright, 
-                        wcsImage.CreditsUrl, 
-                        "", 
+                        wcsImage.Copyright,
+                        wcsImage.CreditsUrl,
+                        "",
                         "",
                         0,
                         ""
@@ -15936,7 +15935,7 @@ namespace TerraViewer
                         {
                             result = lookup.SkyLookup(targetName);
                         }
-  
+
 
                         if (result != null)
                         {
@@ -16002,7 +16001,7 @@ namespace TerraViewer
             STCRegion region = footprint.ACS_ConeFootprintL1((contextMenuTargetObject.RA * 15), contextMenuTargetObject.Dec, fovAngle);
 
         }
-       
+
 
         private void uSNONVOConeSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -16016,7 +16015,7 @@ namespace TerraViewer
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(data);
                 VoTable voTable = new VoTable(doc);
-   
+
                 VoTableLayer layer = LayerManager.AddVoTableLayer(voTable, "VO Table");
                 VOTableViewer viewer = new VOTableViewer();
                 viewer.Layer = layer;
@@ -16028,7 +16027,7 @@ namespace TerraViewer
             {
                 WebWindow.OpenUrl(url, true);
             }
-  
+
         }
 
         private void saveCurrentViewImageToFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -16444,7 +16443,7 @@ namespace TerraViewer
 
                     if (Properties.Settings.Default.NavigationHold)
                     {
-                         activeTouch = TouchControls.None;
+                        activeTouch = TouchControls.None;
                     }
                 }
 
@@ -17684,7 +17683,7 @@ namespace TerraViewer
             string url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), (FovAngle) < (1.0 / 60.0) ? (FovAngle).ToString() : (1.0 / 60.0).ToString());
 
             RunVoSearch(url, null);
- 
+
         }
 
         public void RunVoSearch(string url, string ID)
@@ -17836,20 +17835,28 @@ namespace TerraViewer
 
         bool rift = false;
         bool riftInit = false;
-        
-        private HMD hmd;
-        private SwapTexture[] eyeTexture = new SwapTexture[2];
-        private SwapTextureSetD3D[] swapTextures = new SwapTextureSetD3D[2];
+        private Wrap wrap = new Wrap();
+        private Hmd hmd;
+        private EyeTexture[] eyeTextures = null;
+
         private SharpDX.Direct3D11.Texture2D mirrorTexture;
         private Texture11 mirror;
-        private LayerEyeFov layerEyeFov;
-        private EyeRenderDesc[] eyeRenderDesc = new EyeRenderDesc[2];
-        private PoseF[] eyeRenderPose = new PoseF[2];
+
+        private OVRTypes.Posef[] eyeRenderPose = new OVRTypes.Posef[2];
+      
+
+
+        //    private SwapTexture[] eyeTexture = new SwapTexture[2];
+        //    private SwapTextureSetD3D[] swapTextures = new SwapTextureSetD3D[2];
+        //    private LayerEyeFov layerEyeFov;
+        //     private EyeRenderDesc[] eyeRenderDesc = new EyeRenderDesc[2];
+
         private SharpDX.Vector3[] hmdToEyeViewOffset = new SharpDX.Vector3[2];
 
         private SharpDX.Vector3 headPos = new SharpDX.Vector3(0f, 0f, -5f);
         private float bodyYaw = 3.141592f;
-
+        private Layers layers = null;
+        LayerEyeFov layerEyeFov;
         private int leftEyeWidth = 1;
         private int leftEyeHeight = 1;
         private int rightEyeWidth = 1;
@@ -17862,78 +17869,283 @@ namespace TerraViewer
         protected void InitializeRift()
         {
 
-            // Initialize OVR Library
-            OVR.Initialize();
+            
 
-            if (OVR.HmdDetect() < 1)
+            SharpDX.DXGI.Factory factory = null;
+            MirrorTexture mirrorTextureWrap = null;
+            Guid textureInterfaceId = new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c"); // Interface ID of the Direct3D Texture2D interface.
+
+            // Define initialization parameters with debug flag.
+            OVRTypes.InitParams initializationParameters = new OVRTypes.InitParams();
+            initializationParameters.Flags = OVRTypes.InitFlags.Debug;
+
+            // Initialize the Oculus runtime.
+            bool success = wrap.Initialize(initializationParameters);
+            if (!success)
             {
-                throw new IndexOutOfRangeException("No Rfft detected");
+                MessageBox.Show("Failed to initialize the Oculus runtime library.", "Uh oh", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
-            // Create our HMD
-            hmd = OVR.HmdCreate(0);
-
+            // Use the head mounted display.
+            OVRTypes.GraphicsLuid graphicsLuid;
+            hmd = wrap.Hmd_Create(out graphicsLuid);
             if (hmd == null)
             {
-                throw new IndexOutOfRangeException("Can't create Rift");
+                MessageBox.Show("Oculus Rift not detected.", "Uh oh", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
-            SharpDX.Size2 left = hmd.GetFovTextureSize(EyeType.Left, hmd.DefaultEyeFov[0]);
-            SharpDX.Size2 right = hmd.GetFovTextureSize(EyeType.Right, hmd.DefaultEyeFov[1]);
-
-            leftEyeWidth = left.Width;
-            leftEyeHeight = left.Height;
-            rightEyeWidth = right.Width;
-            rightEyeHeight = right.Height;
-
-            // Create our render target
-            eyeTexture[0] = hmd.CreateSwapTexture(RenderContext11.Device, riftFormat, left, false);
-            eyeTexture[1] = hmd.CreateSwapTexture(RenderContext11.Device, riftFormat, right, false);
-
-            swapTextures[0] = new SwapTextureSetD3D(eyeTexture[0].TextureSet);
-
-            swapTextures[1] = new SwapTextureSetD3D(eyeTexture[1].TextureSet);
-
-            // Create our layer
-            layerEyeFov = new LayerEyeFov
+            if (hmd.ProductName == string.Empty)
             {
-                Header = new LayerHeader(LayerType.EyeFov, LayerFlags.HighQuality),
-                ColorTextureLeft = eyeTexture[0].TextureSet,
-                ColorTextureRight = eyeTexture[1].TextureSet,
-                ViewportLeft = new Rect(0, 0, eyeTexture[0].Size.Width, eyeTexture[0].Size.Height),
-                ViewportRight = new Rect(0, 0, eyeTexture[1].Size.Width, eyeTexture[1].Size.Height),
-                FovLeft = hmd.DefaultEyeFov[0],
-                FovRight = hmd.DefaultEyeFov[1],
-            };
+                MessageBox.Show("The HMD is not enabled.", "There's a tear in the Rift", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-            // Keep eye view offsets
-            eyeRenderDesc[0] = hmd.GetRenderDesc(EyeType.Left, hmd.DefaultEyeFov[0]);
-            eyeRenderDesc[1] = hmd.GetRenderDesc(EyeType.Right, hmd.DefaultEyeFov[1]);
-            hmdToEyeViewOffset[0] = eyeRenderDesc[0].HmdToEyeViewOffset;
-            hmdToEyeViewOffset[1] = eyeRenderDesc[1].HmdToEyeViewOffset;
+            try
+            {
+                // Create a set of layers to submit.
+                eyeTextures = new EyeTexture[2];
+                OVRTypes.Result result;
 
-            // Create a mirror texture
-            mirrorTexture = hmd.CreateMirrorTexture(RenderContext11.Device, RenderContext11.BackBuffer.Description);
-            mirror = new Texture11(mirrorTexture);
-            
-            // Configure tracking
-            hmd.ConfigureTracking(TrackingCapabilities.Orientation | TrackingCapabilities.Position | TrackingCapabilities.MagYawCorrection, TrackingCapabilities.None);
+                // Create DirectX drawing device.
+                SharpDX.Direct3D11.Device device = RenderContext11.Device;
 
-            // Set enabled capabilities
-            hmd.EnabledCaps = HMDCapabilities.LowPersistence | HMDCapabilities.DynamicPrediction;
-            
-            riftInit = true;
-           
+                // Create DirectX Graphics Interface factory, used to create the swap chain.
+                factory = new SharpDX.DXGI.Factory();
+
+
+                // Retrieve the DXGI device, in order to set the maximum frame latency.
+                using (SharpDX.DXGI.Device1 dxgiDevice = device.QueryInterface<SharpDX.DXGI.Device1>())
+                {
+                    dxgiDevice.MaximumFrameLatency = 1;
+                }
+
+                layers = new Layers();
+                layerEyeFov = layers.AddLayerEyeFov();
+
+                for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
+                {
+                    OVRTypes.EyeType eye = (OVRTypes.EyeType)eyeIndex;
+                    EyeTexture eyeTexture = new EyeTexture();
+                    eyeTextures[eyeIndex] = eyeTexture;
+
+                    // Retrieve size and position of the texture for the current eye.
+                    eyeTexture.FieldOfView = hmd.DefaultEyeFov[eyeIndex];
+                    eyeTexture.TextureSize = hmd.GetFovTextureSize(eye, hmd.DefaultEyeFov[eyeIndex], 1.0f);
+                    eyeTexture.RenderDescription		= hmd.GetRenderDesc(eye, hmd.DefaultEyeFov[eyeIndex]);
+                    eyeTexture.HmdToEyeViewOffset = eyeTexture.RenderDescription.HmdToEyeOffset;
+                    eyeTexture.ViewportSize.Position = new OVRTypes.Vector2i(0, 0);
+                    eyeTexture.ViewportSize.Size = eyeTexture.TextureSize;
+                    eyeTexture.Viewport = new SharpDX.Viewport(0, 0, eyeTexture.TextureSize.Width, eyeTexture.TextureSize.Height, 0.0f, 1.0f);
+
+                    // Define a texture at the size recommended for the eye texture.
+                    eyeTexture.Texture2DDescription = new SharpDX.Direct3D11.Texture2DDescription();
+                    eyeTexture.Texture2DDescription.Width = eyeTexture.TextureSize.Width;
+                    eyeTexture.Texture2DDescription.Height = eyeTexture.TextureSize.Height;
+                    eyeTexture.Texture2DDescription.ArraySize = 1;
+                    eyeTexture.Texture2DDescription.MipLevels = 1;
+                    eyeTexture.Texture2DDescription.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
+                    eyeTexture.Texture2DDescription.SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0);
+                    eyeTexture.Texture2DDescription.Usage = SharpDX.Direct3D11.ResourceUsage.Default;
+                    eyeTexture.Texture2DDescription.CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None;
+                    eyeTexture.Texture2DDescription.BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource | SharpDX.Direct3D11.BindFlags.RenderTarget;
+
+                    // Convert the SharpDX texture description to the Oculus texture swap chain description.
+                    OVRTypes.TextureSwapChainDesc textureSwapChainDesc = SharpDXHelpers.CreateTextureSwapChainDescription(eyeTexture.Texture2DDescription);
+
+                    // Create a texture swap chain, which will contain the textures to render to, for the current eye.
+                    result = hmd.CreateTextureSwapChainDX(device.NativePointer, textureSwapChainDesc, out eyeTexture.SwapTextureSet);
+                    //WriteErrorDetails(wrap, result, "Failed to create swap chain.");
+
+                    // Retrieve the number of buffers of the created swap chain.
+                    int textureSwapChainBufferCount;
+                    result = eyeTexture.SwapTextureSet.GetLength(out textureSwapChainBufferCount);
+                    //WriteErrorDetails(wrap, result, "Failed to retrieve the number of buffers of the created swap chain.");
+
+                    // Create room for each DirectX texture in the SwapTextureSet.
+                    eyeTexture.Textures = new SharpDX.Direct3D11.Texture2D[textureSwapChainBufferCount];
+                    eyeTexture.RenderTargetViews = new SharpDX.Direct3D11.RenderTargetView[textureSwapChainBufferCount];
+
+                    // Create a texture 2D and a render target view, for each unmanaged texture contained in the SwapTextureSet.
+                    for (int textureIndex = 0; textureIndex < textureSwapChainBufferCount; textureIndex++)
+                    {
+                        // Retrieve the Direct3D texture contained in the Oculus TextureSwapChainBuffer.
+                        IntPtr swapChainTextureComPtr = IntPtr.Zero;
+                        result = eyeTexture.SwapTextureSet.GetBufferDX(textureIndex, textureInterfaceId, out swapChainTextureComPtr);
+                        //WriteErrorDetails(wrap, result, "Failed to retrieve a texture from the created swap chain.");
+
+                        // Create a managed Texture2D, based on the unmanaged texture pointer.
+                        eyeTexture.Textures[textureIndex] = new SharpDX.Direct3D11.Texture2D(swapChainTextureComPtr);
+
+                        // Create a render target view for the current Texture2D.
+                        eyeTexture.RenderTargetViews[textureIndex] = new SharpDX.Direct3D11.RenderTargetView(device, eyeTexture.Textures[textureIndex]);
+                    }
+
+                    // Define the depth buffer, at the size recommended for the eye texture.
+                    eyeTexture.DepthBufferDescription = new SharpDX.Direct3D11.Texture2DDescription();
+                    eyeTexture.DepthBufferDescription.Format = SharpDX.DXGI.Format.D32_Float;
+                    eyeTexture.DepthBufferDescription.Width = eyeTexture.TextureSize.Width;
+                    eyeTexture.DepthBufferDescription.Height = eyeTexture.TextureSize.Height;
+                    eyeTexture.DepthBufferDescription.ArraySize = 1;
+                    eyeTexture.DepthBufferDescription.MipLevels = 1;
+                    eyeTexture.DepthBufferDescription.SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0);
+                    eyeTexture.DepthBufferDescription.Usage = SharpDX.Direct3D11.ResourceUsage.Default;
+                    eyeTexture.DepthBufferDescription.BindFlags = SharpDX.Direct3D11.BindFlags.DepthStencil;
+                    eyeTexture.DepthBufferDescription.CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None;
+                    eyeTexture.DepthBufferDescription.OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None;
+
+                    // Create the depth buffer.
+                    eyeTexture.DepthBuffer = new SharpDX.Direct3D11.Texture2D(device, eyeTexture.DepthBufferDescription);
+                    eyeTexture.DepthStencilView = new SharpDX.Direct3D11.DepthStencilView(device, eyeTexture.DepthBuffer);
+
+                    // Specify the texture to show on the HMD.
+                    layerEyeFov.ColorTexture[eyeIndex] = eyeTexture.SwapTextureSet.TextureSwapChainPtr;
+                    layerEyeFov.Viewport[eyeIndex].Position = new OVRTypes.Vector2i(0, 0);
+                    layerEyeFov.Viewport[eyeIndex].Size = eyeTexture.TextureSize;
+                    layerEyeFov.Fov[eyeIndex] = eyeTexture.FieldOfView;
+                    layerEyeFov.Header.Flags = OVRTypes.LayerFlags.None;
+                }
+
+
+
+                OVRTypes.MirrorTextureDesc mirrorTextureDescription = new OVRTypes.MirrorTextureDesc();
+                mirrorTextureDescription.Format = OVRTypes.TextureFormat.R8G8B8A8_UNORM_SRGB;
+                mirrorTextureDescription.Width = RenderContext11.BackBuffer.Description.Width;
+                mirrorTextureDescription.Height = RenderContext11.BackBuffer.Description.Height;
+                mirrorTextureDescription.MiscFlags = OVRTypes.TextureMiscFlags.None;
+
+                // Create the texture used to display the rendered result on the computer monitor.
+                result = hmd.CreateMirrorTextureDX(device.NativePointer, mirrorTextureDescription, out mirrorTextureWrap);
+                //WriteErrorDetails(wrap, result, "Failed to create mirror texture.");
+
+                // Retrieve the Direct3D texture contained in the Oculus MirrorTexture.
+                IntPtr mirrorTextureComPtr = IntPtr.Zero;
+                result = mirrorTextureWrap.GetBufferDX(textureInterfaceId, out mirrorTextureComPtr);
+                //WriteErrorDetails(wrap, result, "Failed to retrieve the texture from the created mirror texture buffer.");
+
+                // Create a managed Texture2D, based on the unmanaged texture pointer.
+                mirrorTexture = new SharpDX.Direct3D11.Texture2D(mirrorTextureComPtr);
+                mirror = new Texture11(mirrorTexture);
+                riftInit = true;
+                leftEyeWidth = eyeTextures[0].TextureSize.Width;
+                leftEyeHeight = eyeTextures[0].TextureSize.Height;
+                rightEyeWidth = eyeTextures[1].TextureSize.Width;
+                rightEyeHeight = eyeTextures[1].TextureSize.Height;
+            }
+            catch
+            {
+
+            }
         }
+
+
+
+        //protected void InitializeRift()
+        //{
+
+        //    OVRTypes.InitParams initializationParameters = new OVRTypes.InitParams();
+        //    initializationParameters.Flags = OVRTypes.InitFlags.Debug;
+
+        //    // Initialize OVR Library
+        //    bool success = wrap.Initialize(initializationParameters);
+        //    if (!success)
+        //    {
+        //        MessageBox.Show("Failed to initialize the Oculus runtime library.", "WorldWide Telescope", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+
+        //    // Use the head mounted display.
+        //    OVRTypes.GraphicsLuid graphicsLuid;
+        //    hmd = wrap.Hmd_Create(out graphicsLuid);
+        //    if (hmd == null)
+        //    {
+        //        MessageBox.Show("Oculus Rift not detected.", "WorldWide Telescope", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    if (hmd.ProductName == string.Empty)
+        //    {
+        //        MessageBox.Show("The HMD is not enabled.", "There's a tear in the Rift", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    SharpDX.Size2 left = hmd.GetFovTextureSize(EyeType.Left, hmd.DefaultEyeFov[0]);
+        //    SharpDX.Size2 right = hmd.GetFovTextureSize(EyeType.Right, hmd.DefaultEyeFov[1]);
+
+        //    leftEyeWidth = left.Width;
+        //    leftEyeHeight = left.Height;
+        //    rightEyeWidth = right.Width;
+        //    rightEyeHeight = right.Height;
+
+        //    // Create our render target
+        //    eyeTexture[0] = hmd.CreateSwapTexture(RenderContext11.Device, riftFormat, left, false);
+        //    eyeTexture[1] = hmd.CreateSwapTexture(RenderContext11.Device, riftFormat, right, false);
+
+        //    swapTextures[0] = new SwapTextureSetD3D(eyeTexture[0].TextureSet);
+
+        //    swapTextures[1] = new SwapTextureSetD3D(eyeTexture[1].TextureSet);
+
+        //    // Create our layer
+        //    layerEyeFov = new LayerEyeFov
+        //    {
+        //        Header = new LayerHeader(LayerType.EyeFov, LayerFlags.HighQuality),
+        //        ColorTextureLeft = eyeTexture[0].TextureSet,
+        //        ColorTextureRight = eyeTexture[1].TextureSet,
+        //        ViewportLeft = new Rect(0, 0, eyeTexture[0].Size.Width, eyeTexture[0].Size.Height),
+        //        ViewportRight = new Rect(0, 0, eyeTexture[1].Size.Width, eyeTexture[1].Size.Height),
+        //        FovLeft = hmd.DefaultEyeFov[0],
+        //        FovRight = hmd.DefaultEyeFov[1],
+        //    };
+
+        //    // Keep eye view offsets
+        //    eyeRenderDesc[0] = hmd.GetRenderDesc(EyeType.Left, hmd.DefaultEyeFov[0]);
+        //    eyeRenderDesc[1] = hmd.GetRenderDesc(EyeType.Right, hmd.DefaultEyeFov[1]);
+        //    hmdToEyeViewOffset[0] = eyeRenderDesc[0].HmdToEyeViewOffset;
+        //    hmdToEyeViewOffset[1] = eyeRenderDesc[1].HmdToEyeViewOffset;
+
+        //    // Create a mirror texture
+        //    mirrorTexture = hmd.CreateMirrorTexture(RenderContext11.Device, RenderContext11.BackBuffer.Description);
+        //    mirror = new Texture11(mirrorTexture);
+
+        //    // Configure tracking
+        //    hmd.ConfigureTracking(TrackingCapabilities.Orientation | TrackingCapabilities.Position | TrackingCapabilities.MagYawCorrection, TrackingCapabilities.None);
+
+        //    // Set enabled capabilities
+        //    hmd.EnabledCaps = HMDCapabilities.LowPersistence | HMDCapabilities.DynamicPrediction;
+
+        //    riftInit = true;
+
+        //}
+
 
         void GetRiftSample()
         {
             // Get eye poses
-            hmd.GetEyePoses(riftFrameIndex, hmdToEyeViewOffset, eyeRenderPose);
-            layerEyeFov.RenderPoseLeft = eyeRenderPose[0];
-            layerEyeFov.RenderPoseRight = eyeRenderPose[1];
-        }
+            //hmd.GetEyePoses(riftFrameIndex, hmdToEyeViewOffset, eyeRenderPose);
+            //layerEyeFov.RenderPoseLeft = eyeRenderPose[0];
+            //layerEyeFov.RenderPoseRight = eyeRenderPose[1];
 
+            OVRTypes.Vector3f[] hmdToEyeViewOffsets = { eyeTextures[0].HmdToEyeViewOffset, eyeTextures[1].HmdToEyeViewOffset };
+            double displayMidpoint = hmd.GetPredictedDisplayTime(0);
+            OVRTypes.TrackingState trackingState = hmd.GetTrackingState(displayMidpoint, true);
+
+            // Calculate the position and orientation of each eye.
+            wrap.CalcEyePoses(trackingState.HeadPose.ThePose, hmdToEyeViewOffsets, ref eyeRenderPose);
+
+            for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
+            {
+                OVRTypes.EyeType eye = (OVRTypes.EyeType)eyeIndex;
+                EyeTexture eyeTexture = eyeTextures[eyeIndex];
+
+                layerEyeFov.RenderPose[eyeIndex] = eyeRenderPose[eyeIndex];
+
+                // Update the render description at each frame, as the HmdToEyeOffset can change at runtime.
+                eyeTexture.RenderDescription = hmd.GetRenderDesc(eye, hmd.DefaultEyeFov[eyeIndex]);
+
+            }
+        }
 
         private void oculusRiftToolStripMenuItem_Click(object sender, EventArgs e)
         {

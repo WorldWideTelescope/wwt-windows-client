@@ -203,9 +203,6 @@
     <Reference Include="SharpDX.Toolkit.Graphics">
       <HintPath>$(SharpDXPackageBinDir)\SharpDX.Toolkit.Graphics.dll</HintPath>
     </Reference>
-    <Reference Include="SharpOVR">
-      <HintPath>..\packages\SharpOVR.0.6.0.4\lib\SharpOVR.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -237,7 +234,8 @@
     <Compile Include="ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
-    <Compile Include="Oculus.cs" />
+    <Compile Include="Ovr\EyeTexture.cs" />
+    <Compile Include="Ovr\SharpDXHelpers.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2465,6 +2463,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OculusWrap\OculusWrap.csproj">
+      <Project>{737a81a8-553c-49a9-8f17-5adf691a56b2}</Project>
+      <Name>OculusWrap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WWTCore\WWTCore\WWTCore.csproj">
       <Project>{6c205caa-423d-48b8-813b-e586e105c71b}</Project>
       <Name>WWTCore</Name>

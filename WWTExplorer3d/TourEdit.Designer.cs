@@ -51,29 +51,33 @@ namespace TerraViewer
             // pinUp
             // 
             this.pinUp.Enabled = false;
-            this.pinUp.Location = new System.Drawing.Point(675, 110);
+            this.pinUp.Location = new System.Drawing.Point(719, 154);
+            this.pinUp.MaximumSize = new System.Drawing.Size(75, 35);
+            this.pinUp.MinimumSize = new System.Drawing.Size(75, 35);
+            this.pinUp.Size = new System.Drawing.Size(75, 35);
             this.pinUp.TabIndex = 12;
             this.pinUp.Visible = false;
             // 
             // tourStopList
             // 
             this.tourStopList.AllowMultipleSelection = false;
-            this.tourStopList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tourStopList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tourStopList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(22)))), ((int)(((byte)(31)))));
-            this.tourStopList.ColCount = 3;
-            this.tourStopList.Location = new System.Drawing.Point(72, 8);
+            this.tourStopList.ColCount = 5;
+            this.tourStopList.HitType = TerraViewer.TourStopList.HitPosition.Default;
+            this.tourStopList.Location = new System.Drawing.Point(108, 12);
             this.tourStopList.Margin = new System.Windows.Forms.Padding(0);
-            this.tourStopList.MaximumSize = new System.Drawing.Size(4096, 475);
-            this.tourStopList.MinimumSize = new System.Drawing.Size(100, 65);
+            this.tourStopList.MaximumSize = new System.Drawing.Size(6144, 731);
+            this.tourStopList.MinimumSize = new System.Drawing.Size(150, 100);
             this.tourStopList.MultipleSelection = false;
             this.tourStopList.Name = "tourStopList";
             this.tourStopList.Paginator = null;
-            this.tourStopList.RowCount = 1;
+            this.tourStopList.RowCount = 2;
             this.tourStopList.SelectedItem = -1;
             this.tourStopList.ShowAddButton = true;
-            this.tourStopList.Size = new System.Drawing.Size(557, 105);
+            this.tourStopList.Size = new System.Drawing.Size(836, 162);
             this.tourStopList.TabIndex = 2;
             this.tourStopList.ThumbnailSize = TerraViewer.ThumbnailSize.Small;
             this.toolTip.SetToolTip(this.tourStopList, "Slides");
@@ -100,9 +104,10 @@ namespace TerraViewer
             this.AddText.ForeColor = System.Drawing.Color.White;
             this.AddText.Image = global::TerraViewer.Properties.Resources.tool_icon_text_24;
             this.AddText.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.AddText.Location = new System.Drawing.Point(637, 63);
+            this.AddText.Location = new System.Drawing.Point(956, 97);
+            this.AddText.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AddText.Name = "AddText";
-            this.AddText.Size = new System.Drawing.Size(54, 45);
+            this.AddText.Size = new System.Drawing.Size(81, 69);
             this.AddText.TabIndex = 7;
             this.AddText.Text = "Text";
             this.AddText.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -116,11 +121,12 @@ namespace TerraViewer
             this.EditTourProperties.DialogResult = System.Windows.Forms.DialogResult.None;
             this.EditTourProperties.ImageDisabled = null;
             this.EditTourProperties.ImageEnabled = null;
-            this.EditTourProperties.Location = new System.Drawing.Point(632, 4);
-            this.EditTourProperties.MaximumSize = new System.Drawing.Size(140, 33);
+            this.EditTourProperties.Location = new System.Drawing.Point(948, 6);
+            this.EditTourProperties.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.EditTourProperties.MaximumSize = new System.Drawing.Size(210, 51);
             this.EditTourProperties.Name = "EditTourProperties";
             this.EditTourProperties.Selected = false;
-            this.EditTourProperties.Size = new System.Drawing.Size(112, 33);
+            this.EditTourProperties.Size = new System.Drawing.Size(168, 51);
             this.EditTourProperties.TabIndex = 3;
             this.EditTourProperties.Text = "Tour Properties";
             this.EditTourProperties.Click += new System.EventHandler(this.EditTourProperties_Click);
@@ -132,9 +138,10 @@ namespace TerraViewer
             this.AddShape.ForeColor = System.Drawing.Color.White;
             this.AddShape.Image = global::TerraViewer.Properties.Resources.tool_icon_shape_24;
             this.AddShape.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.AddShape.Location = new System.Drawing.Point(691, 63);
+            this.AddShape.Location = new System.Drawing.Point(1036, 97);
+            this.AddShape.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AddShape.Name = "AddShape";
-            this.AddShape.Size = new System.Drawing.Size(54, 45);
+            this.AddShape.Size = new System.Drawing.Size(81, 69);
             this.AddShape.TabIndex = 8;
             this.AddShape.Text = "Shapes";
             this.AddShape.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -149,9 +156,10 @@ namespace TerraViewer
             this.AddPicture.ForeColor = System.Drawing.Color.White;
             this.AddPicture.Image = global::TerraViewer.Properties.Resources.tool_icon_picture_24;
             this.AddPicture.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.AddPicture.Location = new System.Drawing.Point(745, 63);
+            this.AddPicture.Location = new System.Drawing.Point(1118, 97);
+            this.AddPicture.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AddPicture.Name = "AddPicture";
-            this.AddPicture.Size = new System.Drawing.Size(54, 45);
+            this.AddPicture.Size = new System.Drawing.Size(81, 69);
             this.AddPicture.TabIndex = 9;
             this.AddPicture.Text = "Picture";
             this.AddPicture.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -165,9 +173,10 @@ namespace TerraViewer
             this.AddVideo.ForeColor = System.Drawing.Color.White;
             this.AddVideo.Image = global::TerraViewer.Properties.Resources.tool_icon_video_24;
             this.AddVideo.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.AddVideo.Location = new System.Drawing.Point(745, 63);
+            this.AddVideo.Location = new System.Drawing.Point(1118, 97);
+            this.AddVideo.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AddVideo.Name = "AddVideo";
-            this.AddVideo.Size = new System.Drawing.Size(54, 45);
+            this.AddVideo.Size = new System.Drawing.Size(81, 69);
             this.AddVideo.TabIndex = 6;
             this.AddVideo.Text = "Video";
             this.AddVideo.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -182,11 +191,12 @@ namespace TerraViewer
             this.SaveTour.DialogResult = System.Windows.Forms.DialogResult.None;
             this.SaveTour.ImageDisabled = null;
             this.SaveTour.ImageEnabled = null;
-            this.SaveTour.Location = new System.Drawing.Point(739, 4);
-            this.SaveTour.MaximumSize = new System.Drawing.Size(140, 33);
+            this.SaveTour.Location = new System.Drawing.Point(1108, 6);
+            this.SaveTour.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.SaveTour.MaximumSize = new System.Drawing.Size(210, 51);
             this.SaveTour.Name = "SaveTour";
             this.SaveTour.Selected = false;
-            this.SaveTour.Size = new System.Drawing.Size(67, 33);
+            this.SaveTour.Size = new System.Drawing.Size(100, 51);
             this.SaveTour.TabIndex = 4;
             this.SaveTour.Text = " Save";
             this.SaveTour.Click += new System.EventHandler(this.SaveTour_Click);
@@ -195,9 +205,10 @@ namespace TerraViewer
             // 
             this.Preview.BackColor = System.Drawing.Color.Transparent;
             this.Preview.Image = global::TerraViewer.Properties.Resources.button_play_normal;
-            this.Preview.Location = new System.Drawing.Point(4, 16);
+            this.Preview.Location = new System.Drawing.Point(6, 25);
+            this.Preview.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Preview.Name = "Preview";
-            this.Preview.Size = new System.Drawing.Size(64, 64);
+            this.Preview.Size = new System.Drawing.Size(96, 98);
             this.Preview.TabIndex = 8;
             this.Preview.TabStop = false;
             this.Preview.EnabledChanged += new System.EventHandler(this.Preview_EnabledChanged);
@@ -212,27 +223,30 @@ namespace TerraViewer
             this.MusicTrack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.MusicTrack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(63)))), ((int)(((byte)(85)))));
             this.MusicTrack.Enabled = false;
-            this.MusicTrack.Location = new System.Drawing.Point(808, 10);
-            this.MusicTrack.MaximumSize = new System.Drawing.Size(193, 46);
-            this.MusicTrack.MinimumSize = new System.Drawing.Size(193, 46);
+            this.MusicTrack.Location = new System.Drawing.Point(1212, 15);
+            this.MusicTrack.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.MusicTrack.MaximumSize = new System.Drawing.Size(290, 71);
+            this.MusicTrack.MinimumSize = new System.Drawing.Size(290, 71);
             this.MusicTrack.Mute = false;
             this.MusicTrack.Name = "MusicTrack";
-            this.MusicTrack.Size = new System.Drawing.Size(193, 46);
+            this.MusicTrack.Size = new System.Drawing.Size(290, 71);
             this.MusicTrack.TabIndex = 10;
             this.MusicTrack.Target = null;
             this.MusicTrack.TrackType = TerraViewer.AudioType.Music;
+            this.MusicTrack.Load += new System.EventHandler(this.MusicTrack_Load);
             // 
             // VoiceTrack
             // 
             this.VoiceTrack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.VoiceTrack.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(63)))), ((int)(((byte)(85)))));
             this.VoiceTrack.Enabled = false;
-            this.VoiceTrack.Location = new System.Drawing.Point(808, 68);
-            this.VoiceTrack.MaximumSize = new System.Drawing.Size(193, 46);
-            this.VoiceTrack.MinimumSize = new System.Drawing.Size(193, 46);
+            this.VoiceTrack.Location = new System.Drawing.Point(1212, 105);
+            this.VoiceTrack.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.VoiceTrack.MaximumSize = new System.Drawing.Size(290, 71);
+            this.VoiceTrack.MinimumSize = new System.Drawing.Size(290, 71);
             this.VoiceTrack.Mute = false;
             this.VoiceTrack.Name = "VoiceTrack";
-            this.VoiceTrack.Size = new System.Drawing.Size(193, 46);
+            this.VoiceTrack.Size = new System.Drawing.Size(290, 71);
             this.VoiceTrack.TabIndex = 11;
             this.VoiceTrack.Target = null;
             this.VoiceTrack.TrackType = TerraViewer.AudioType.Voice;
@@ -241,10 +255,12 @@ namespace TerraViewer
             // 
             this.ShowSafeArea.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ShowSafeArea.BackColor = System.Drawing.Color.Transparent;
+            this.ShowSafeArea.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ShowSafeArea.Checked = false;
-            this.ShowSafeArea.Location = new System.Drawing.Point(632, 35);
+            this.ShowSafeArea.Location = new System.Drawing.Point(948, 54);
+            this.ShowSafeArea.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.ShowSafeArea.Name = "ShowSafeArea";
-            this.ShowSafeArea.Size = new System.Drawing.Size(112, 25);
+            this.ShowSafeArea.Size = new System.Drawing.Size(168, 38);
             this.ShowSafeArea.TabIndex = 5;
             this.ShowSafeArea.Text = "Show Safe Area";
             this.ShowSafeArea.CheckedChanged += new System.EventHandler(this.ShowSafeArea_CheckedChanged);
@@ -255,9 +271,10 @@ namespace TerraViewer
             this.runTimeLabel.BackColor = System.Drawing.Color.Transparent;
             this.runTimeLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.runTimeLabel.ForeColor = System.Drawing.Color.White;
-            this.runTimeLabel.Location = new System.Drawing.Point(9, 83);
+            this.runTimeLabel.Location = new System.Drawing.Point(14, 128);
+            this.runTimeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.runTimeLabel.Name = "runTimeLabel";
-            this.runTimeLabel.Size = new System.Drawing.Size(54, 13);
+            this.runTimeLabel.Size = new System.Drawing.Size(82, 23);
             this.runTimeLabel.TabIndex = 0;
             this.runTimeLabel.Text = "Run Time";
             // 
@@ -267,9 +284,10 @@ namespace TerraViewer
             this.totalTimeText.BackColor = System.Drawing.Color.Transparent;
             this.totalTimeText.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalTimeText.ForeColor = System.Drawing.Color.White;
-            this.totalTimeText.Location = new System.Drawing.Point(22, 101);
+            this.totalTimeText.Location = new System.Drawing.Point(33, 155);
+            this.totalTimeText.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.totalTimeText.Name = "totalTimeText";
-            this.totalTimeText.Size = new System.Drawing.Size(28, 13);
+            this.totalTimeText.Size = new System.Drawing.Size(41, 23);
             this.totalTimeText.TabIndex = 1;
             this.totalTimeText.Text = "3:34";
             // 
@@ -277,19 +295,21 @@ namespace TerraViewer
             // 
             this.Dome.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Dome.BackColor = System.Drawing.Color.Transparent;
+            this.Dome.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.Dome.Checked = false;
-            this.Dome.Location = new System.Drawing.Point(739, 35);
+            this.Dome.Location = new System.Drawing.Point(1108, 54);
+            this.Dome.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.Dome.Name = "Dome";
-            this.Dome.Size = new System.Drawing.Size(65, 25);
+            this.Dome.Size = new System.Drawing.Size(98, 38);
             this.Dome.TabIndex = 6;
             this.Dome.Text = "Dome";
             this.Dome.CheckedChanged += new System.EventHandler(this.Dome_CheckedChanged);
             // 
             // TourEditTab
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 123);
+            this.ClientSize = new System.Drawing.Size(1512, 189);
             this.Controls.Add(this.Dome);
             this.Controls.Add(this.totalTimeText);
             this.Controls.Add(this.runTimeLabel);
@@ -304,6 +324,7 @@ namespace TerraViewer
             this.Controls.Add(this.AddText);
             this.Controls.Add(this.tourStopList);
             this.Controls.Add(this.AddVideo);
+            this.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.Name = "TourEditTab";
             this.Text = "Create";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TourEditTab_FormClosed);
