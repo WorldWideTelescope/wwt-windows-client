@@ -6294,14 +6294,14 @@ namespace TerraViewer
                     }
                     else if (rift)
                     {
+                     
                         Matrix3d matRiftView = Matrix3d.Identity;
 
-                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
                         matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
 
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView;
+                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView ;
                     }
-
                     else
                     {
                         view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust;
@@ -6364,7 +6364,7 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                var fovPort = eyeTextures[0].FieldOfView;
+                var fovPort = eyeTextures[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
                 var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
 
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
@@ -6482,7 +6482,7 @@ namespace TerraViewer
                     {
                         Matrix3d matRiftView = Matrix3d.Identity;
 
-                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
                         matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
 
                         view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView;
@@ -6548,7 +6548,7 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                var fovPort = eyeTextures[0].FieldOfView;
+                var fovPort = eyeTextures[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
                 var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
 
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
@@ -6961,7 +6961,7 @@ namespace TerraViewer
             if (rift)
             {
                 Matrix3d matRiftView = Matrix3d.Identity;
-                var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
+                var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
                 matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
                 RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, new Vector3d(0.0, 0.0, -1.0), new Vector3d(Math.Sin(camLocal), Math.Cos(camLocal), 0.0)) * matRiftView;
                 RenderContext11.ViewBase = RenderContext11.View;
@@ -6979,7 +6979,7 @@ namespace TerraViewer
             }
             else if (rift)
             {
-                var fovPort = eyeTextures[0].FieldOfView;
+                var fovPort = eyeTextures[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
                 var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
 
                 RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
@@ -17901,7 +17901,9 @@ namespace TerraViewer
             OVRTypes.InitParams initializationParameters = new OVRTypes.InitParams();
 
             //todo remove detbug flag
-            initializationParameters.Flags = OVRTypes.InitFlags.Debug;
+            //initializationParameters.Flags = OVRTypes.InitFlags.Debug;
+            initializationParameters.Flags = OVRTypes.InitFlags.RequestVersion;
+            initializationParameters.RequestedMinorVersion = 8;
 
             // Initialize the Oculus runtime.
             bool success = wrap.Initialize(initializationParameters);
