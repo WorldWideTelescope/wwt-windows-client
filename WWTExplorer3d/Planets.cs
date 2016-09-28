@@ -929,10 +929,10 @@ namespace TerraViewer
                 //    1) ellipses representing the osculating Keplerian elements
                 //    2) orbit 'traces' which plot the actual path an object has traveled over some period of time
                 //
-                // Ellipses can be rendered very efficiently by offloading most of the computation to the CPU. However,
-                // the orbital elements of significantly perturbed bodies vary enough that the osculating ellipse appears
-                // to pulse when the time rate is accelerated. This is confusing to most people, so we avoid it by using
-                // traces for the outer planets (which perturb each other) and the Earth (where the orbit is affected
+                // Ellipses can be rendered very efficiently by offloading most of the computation from the CPU to the GPU. 
+                // However, the orbital elements of significantly perturbed bodies vary enough that the osculating ellipse
+                // appears to pulse when the time rate is accelerated. This is confusing to most people, so we avoid it by 
+                // using traces for the outer planets (which perturb each other) and the Earth (where the orbit is affected
                 // by the Moon.)
                 orbitTraces = new OrbitTrace[20];
                 orbitTraces[(int)SolarSystemObjects.Earth]   = new OrbitTrace(SolarSystemObjects.Earth,   100,   1    * 365.25);

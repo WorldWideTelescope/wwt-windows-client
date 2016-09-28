@@ -197,6 +197,9 @@ namespace TerraViewer
             }
         }
 
+        public static double DistanceOffsetPercent = 0;
+        public static double LastDistanceOffsetPercent = 0;
+        public static double DeltaDistanceOffset = 0;
 
         public static void listenerThreadFunc()
         {
@@ -396,7 +399,7 @@ namespace TerraViewer
 
                             if (values.Length == 27 && !Settings.MasterController)
                             {
-                               
+
                                 if (values[0] == "SYNC" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1])
                                 {
                                     MasterAddress = destinationEP.Address.ToString();
@@ -428,6 +431,13 @@ namespace TerraViewer
                                     currnetSyncFrame++;
                                     sync.Set();
                                 }
+
+                            }
+                            else if (values.Length == 2)
+                            {
+                                DistanceOffsetPercent = Math.Min(99.0,Convert.ToDouble(values[0]))/100;
+                                DeltaDistanceOffset = (DistanceOffsetPercent - LastDistanceOffsetPercent) / 2;
+                                LastDistanceOffsetPercent = DistanceOffsetPercent;
 
                             }
                             else if (values.Length == 3)
@@ -493,7 +503,7 @@ namespace TerraViewer
                                     Earth3d.MainWindow.SetBackgroundByName(name);
                                 }
                             }
-                            else if ((values.Length == 15 ) && values[0] == "Kinect" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1])
+                            else if ((values.Length == 15) && values[0] == "Kinect" && Earth3d.MainWindow.Config.ClusterID.ToString() == values[1])
                             {
                                 double leftRight = Convert.ToDouble(values[2]);
                                 double upDown = Convert.ToDouble(values[3]);
@@ -593,7 +603,7 @@ namespace TerraViewer
                                     Reticle.Hide(retId, false);
                                 }
 
-                                Earth3d.MainWindow.SetHeadPosition(new Vector3d(-double.Parse(values[15])*2, -double.Parse(values[16])*2, (double.Parse(values[17])-1.5))*6);
+                                Earth3d.MainWindow.SetHeadPosition(new Vector3d(-double.Parse(values[15]) * 2, -double.Parse(values[16]) * 2, (double.Parse(values[17]) - 1.5)) * 6);
                             }
 
                         }

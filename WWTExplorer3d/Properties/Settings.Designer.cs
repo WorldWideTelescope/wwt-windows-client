@@ -2489,5 +2489,65 @@ namespace TerraViewer.Properties {
                 this["RiftStartup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double PerspectiveOffsetX {
+            get {
+                return ((double)(this["PerspectiveOffsetX"]));
+            }
+            set {
+                this["PerspectiveOffsetX"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double PerspectiveOffsetY {
+            get {
+                return ((double)(this["PerspectiveOffsetY"]));
+            }
+            set {
+                this["PerspectiveOffsetY"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OverSampleTerrain {
+            get {
+                return ((bool)(this["OverSampleTerrain"]));
+            }
+            set {
+                this["OverSampleTerrain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double SwingScaleFront {
+            get {
+                return ((double)(this["SwingScaleFront"]));
+            }
+            set {
+                this["SwingScaleFront"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double SwingScaleBack {
+            get {
+                return ((double)(this["SwingScaleBack"]));
+            }
+            set {
+                this["SwingScaleBack"] = value;
+            }
+        }
     }
 }

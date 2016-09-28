@@ -124,7 +124,12 @@ namespace TerraViewer
             SettingsList.Add("ConstellationBoundariesFilter", new ScriptableProperty("ConstellationBoundariesFilter", ScriptablePropertyTypes.ConstellationFilter));
             SettingsList.Add("ConstellationNamesFilter", new ScriptableProperty("ConstellationNamesFilter", ScriptablePropertyTypes.ConstellationFilter));
             SettingsList.Add("ConstellationArtFilter", new ScriptableProperty("ConstellationArtFilter", ScriptablePropertyTypes.ConstellationFilter));
-           
+            SettingsList.Add("PerspectiveOffsetX", new ScriptableProperty("PerspectiveOffsetX", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -1, +1, false));
+            SettingsList.Add("PerspectiveOffsetY", new ScriptableProperty("PerspectiveOffsetY", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -1, +1, false));
+            SettingsList.Add("OverSampleTerrain", new ScriptableProperty("OverSampleTerrain", ScriptablePropertyTypes.Bool));
+            SettingsList.Add("SwingScaleFront", new ScriptableProperty("SwingScaleFront", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, 0, 10, false));
+            SettingsList.Add("SwingScaleBack", new ScriptableProperty("SwingScaleBack", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, 0, 10, false));
+
 
         }
 

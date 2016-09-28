@@ -874,7 +874,15 @@ namespace TerraViewer
                 
 
                 float lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
-                if (lengthMax < (400 - ((Earth3d.MainWindow.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality))) // was 220
+
+                float testLength = (400 - ((Earth3d.MainWindow.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality));
+
+                if (Properties.Settings.Default.OverSampleTerrain)
+                {
+                    testLength = 150;
+                }
+
+                if (lengthMax < testLength) // was 220
                 {
                     return false;
 
