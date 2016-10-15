@@ -69,52 +69,61 @@ namespace TerraViewer
         {
 
             BinaryReader br = new BinaryReader(stream);
-
             bool foundEnd = false;
-            bool additionalHeadersChecked = false;
 
-            while (!additionalHeadersChecked)
+
+
+            while (!foundEnd)
             {
                 for (int i = 0; i < 36; i++)
                 {
                     byte[] line = br.ReadBytes(80);
 
-                    string data = new string(Encoding.UTF8.GetChars(line));
-                    //string data = new string(line);
-                    string keyword = data.Substring(0, 8).TrimEnd();
-                    string[] values = data.Substring(10).Split(new char[] { '/' });
+
+
 
                     if (!foundEnd)
                     {
+                        string data = new string(Encoding.UTF8.GetChars(line));
+
+                        //string data = new string(line);
+                        string keyword = data.Substring(0, 8).TrimEnd();
+                        string[] values = data.Substring(10).Split(new char[] { '/' });
                         if (keyword.ToUpper() == "END")
                         {
                             foundEnd = true;
+                            // Check for XTENSION
+                            i++;
+                            line = br.ReadBytes(80);
+                            data = new string(Encoding.UTF8.GetChars(line));
+                            while (String.IsNullOrWhiteSpace(data))
+                            {
+                                i++;
+                                line = br.ReadBytes(80);
+                                data = new string(Encoding.UTF8.GetChars(line));
+                            }
+                            keyword = data.Substring(0, 8).TrimEnd();
+                            values = data.Substring(10).Split(new char[] { '/' });
+                            if (keyword.ToUpper() == "XTENSION")
+                            {
+                                // We have additional headers
+                                foundEnd = false;
+                            }
+                            else
+                            {
+                                // Rewind these 80 bytes which could be data
+                                br.BaseStream.Seek(-80, SeekOrigin.Current);
+                            }
                         }
                         else
                         {
-                            AddKeyword(keyword, values, false);
+                            AddKeyword(keyword, values);
                         }
                     }
-                    else
-                    {
-                        // Check for additional headers
-                        if (keyword.ToUpper() == "XTENSION")
-                        {
-                            // We have additional headers
-                            continue;
-                        }
-                        else if (keyword.ToUpper() == "END")
-                        {
-                            // It is truly the end
-                            additionalHeadersChecked = true;
-                        }
-                        else
-                        {
-                            AddKeyword(keyword, values, true);
-                        }
-                    }
+
                 }
             }
+            
 
             NumAxis = Convert.ToInt32(header["NAXIS"]);
 
@@ -184,13 +193,15 @@ namespace TerraViewer
             }
         }
 
-        private void AddKeyword(string keyword, string[] values, bool updatePrimaryHeader)
+
+
+        private void AddKeyword(string keyword, string[] values)
         {
             if (keyword != "CONTINUE" && keyword != "COMMENT" && keyword != "HISTORY" && !String.IsNullOrEmpty(keyword))
             {
                 try
                 {
-                    if (updatePrimaryHeader)
+                    if (header.ContainsKey(keyword))
                     {
                         header[keyword] = values[0].Trim();
                     }
@@ -198,6 +209,7 @@ namespace TerraViewer
                     {
                         header.Add(keyword.ToUpper(), values[0].Trim());
                     }
+
                 }
                 catch
                 {
