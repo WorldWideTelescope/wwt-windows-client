@@ -9000,6 +9000,24 @@ namespace TerraViewer
                         rightEye = new RenderTargetTexture(ViewWidth, ViewHeight, 1);
                     }
 
+                    if (leftDepthBuffer != null)
+                    {
+                        if (leftDepthBuffer.Width != ViewWidth || leftDepthBuffer.Height != ViewHeight)
+                        {
+                            leftDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
+
+                            rightDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
+
+                            leftDepthBuffer.Dispose();
+                            GC.SuppressFinalize(leftDepthBuffer);
+                            leftDepthBuffer = null;
+
+                            rightDepthBuffer.Dispose();
+                            GC.SuppressFinalize(rightDepthBuffer);
+                            rightDepthBuffer = null;
+                        }
+                    }
+
                     if (RenderContext11.MultiSampleCount > 1)
                     {
                         if (rift)
@@ -9018,12 +9036,12 @@ namespace TerraViewer
 
                             if (leftDepthBuffer == null)
                             {
-                                leftDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
+                                leftDepthBuffer = new DepthBuffer(leftEyeWidth, leftEyeHeight);
                             }
 
                             if (rightDepthBuffer == null)
                             {
-                                rightDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
+                                rightDepthBuffer = new DepthBuffer(leftEyeWidth, leftEyeHeight);
                             }
 
                             int eye = 0;
@@ -9068,21 +9086,31 @@ namespace TerraViewer
                             // resolve to the left and then the right eye textures. 
                             if (stereoRenderTextureLeft == null)
                             {
-                                stereoRenderTextureLeft = new RenderTargetTexture(leftEyeWidth, leftEyeHeight);
+                                stereoRenderTextureLeft = new RenderTargetTexture(ViewWidth, ViewHeight);
                             }
 
                             if (stereoRenderTextureRight == null)
                             {
-                                stereoRenderTextureRight = new RenderTargetTexture(leftEyeWidth, leftEyeHeight);
+                                stereoRenderTextureRight = new RenderTargetTexture(ViewWidth, ViewHeight);
                             }
 
-                            RenderFrame(stereoRenderTextureLeft.renderView, domeZbuffer.DepthView, RenderTypes.LeftEye, ViewWidth, ViewHeight);
+                            if (leftDepthBuffer == null)
+                            {
+                                leftDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
+                            }
+
+                            if (rightDepthBuffer == null)
+                            {
+                                rightDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
+                            }
+
+                            RenderFrame(stereoRenderTextureLeft.renderView, leftDepthBuffer.DepthView, RenderTypes.LeftEye, ViewWidth, ViewHeight);
 
                             RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
                                                                                            leftEye.RenderTexture.Texture, 0,
                                                                                            RenderContext11.DefaultColorFormat);
 
-                            RenderFrame(stereoRenderTextureRight.renderView, domeZbuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
+                            RenderFrame(stereoRenderTextureRight.renderView, rightDepthBuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
 
                             RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureRight.RenderTexture.Texture, 0,
                                                                                            rightEye.RenderTexture.Texture, 0,
