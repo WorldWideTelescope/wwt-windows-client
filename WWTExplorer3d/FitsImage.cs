@@ -12,7 +12,7 @@ using System.IO.Compression;
 namespace TerraViewer
 {
     public enum ScaleTypes { Linear, Log, Power, SquareRoot, HistogramEqualization };
-    public enum DataTypes  { Byte, Int16, Int32, Float, Double, None};
+    public enum DataTypes { Byte, Int16, Int32, Float, Double, None };
     public class FitsImage : WcsImage
     {
         Dictionary<String, String> header = new Dictionary<string, string>();
@@ -69,47 +69,67 @@ namespace TerraViewer
         {
 
             BinaryReader br = new BinaryReader(stream);
-
             bool foundEnd = false;
+
+
+
             while (!foundEnd)
             {
                 for (int i = 0; i < 36; i++)
                 {
                     byte[] line = br.ReadBytes(80);
 
+
+
+
                     if (!foundEnd)
                     {
                         string data = new string(Encoding.UTF8.GetChars(line));
+
                         //string data = new string(line);
                         string keyword = data.Substring(0, 8).TrimEnd();
                         string[] values = data.Substring(10).Split(new char[] { '/' });
-
                         if (keyword.ToUpper() == "END")
                         {
                             foundEnd = true;
+                            // Check for XTENSION
+                            i++;
+                            line = br.ReadBytes(80);
+                            data = new string(Encoding.UTF8.GetChars(line));
+                            while (String.IsNullOrWhiteSpace(data))
+                            {
+                                i++;
+                                line = br.ReadBytes(80);
+                                data = new string(Encoding.UTF8.GetChars(line));
+                            }
+                            keyword = data.Substring(0, 8).TrimEnd();
+                            values = data.Substring(10).Split(new char[] { '/' });
+                            if (keyword.ToUpper() == "XTENSION")
+                            {
+                                // We have additional headers
+                                foundEnd = false;
+                            }
+                            else
+                            {
+                                // Rewind these 80 bytes which could be data
+                                br.BaseStream.Seek(-80, SeekOrigin.Current);
+                            }
                         }
                         else
                         {
-                            if (keyword != "CONTINUE" && keyword != "COMMENT" && keyword != "HISTORY" && !String.IsNullOrEmpty(keyword))
-                            {
-                                try
-                                {
-                                    header.Add(keyword.ToUpper(), values[0].Trim());
-                                }
-                                catch
-                                {
-                                }
-                            }
+                            AddKeyword(keyword, values);
                         }
                     }
+
                 }
             }
+            
 
             NumAxis = Convert.ToInt32(header["NAXIS"]);
 
             ContainsBlanks = header.ContainsKey("BLANK");
 
-            if ( ContainsBlanks )
+            if (ContainsBlanks)
             {
                 BlankValue = Convert.ToDouble(header["BLANK"]);
             }
@@ -120,16 +140,16 @@ namespace TerraViewer
             }
 
             AxisSize = new int[NumAxis];
-            
+
             for (int axis = 0; axis < NumAxis; axis++)
             {
-                AxisSize[axis] = Convert.ToInt32(header[string.Format("NAXIS{0}",axis+1)]);
+                AxisSize[axis] = Convert.ToInt32(header[string.Format("NAXIS{0}", axis + 1)]);
                 BufferSize *= AxisSize[axis];
             }
 
             int bitsPix = Convert.ToInt32(header["BITPIX"]);
 
-            
+
             switch (bitsPix)
             {
                 case 8:
@@ -173,6 +193,30 @@ namespace TerraViewer
             }
         }
 
+
+
+        private void AddKeyword(string keyword, string[] values)
+        {
+            if (keyword != "CONTINUE" && keyword != "COMMENT" && keyword != "HISTORY" && !String.IsNullOrEmpty(keyword))
+            {
+                try
+                {
+                    if (header.ContainsKey(keyword))
+                    {
+                        header[keyword] = values[0].Trim();
+                    }
+                    else
+                    {
+                        header.Add(keyword.ToUpper(), values[0].Trim());
+                    }
+
+                }
+                catch
+                {
+                }
+            }
+        }
+
         private void ComputeWcs()
         {
             if (header.ContainsKey("CROTA2"))
@@ -195,11 +239,11 @@ namespace TerraViewer
 
             if (header.ContainsKey("CRPIX1"))
             {
-                referenceX = Convert.ToDouble(header["CRPIX1"].Trim())-1;
+                referenceX = Convert.ToDouble(header["CRPIX1"].Trim()) - 1;
 
                 if (header.ContainsKey("CRPIX2"))
                 {
-                    referenceY = Convert.ToDouble(header["CRPIX2"].Trim())-1;
+                    referenceY = Convert.ToDouble(header["CRPIX2"].Trim()) - 1;
                     hasPixel = true;
                 }
             }
@@ -253,7 +297,7 @@ namespace TerraViewer
                 centerX = result[0];
                 centerY = result[1];
             }
-    
+
             if (header.ContainsKey("CD1_1") && header.ContainsKey("CD1_2")
                 && header.ContainsKey("CD2_1") && header.ContainsKey("CD2_2"))
             {
@@ -270,9 +314,9 @@ namespace TerraViewer
                     CalculateScaleFromCD();
                 }
                 hasScale = true;
-                hasRotation = true;  
+                hasRotation = true;
             }
-            
+
 
             ValidWcs = hasScale && hasRotation && hasPixel && hasLocation;
         }
@@ -286,14 +330,14 @@ namespace TerraViewer
             double logMax = Math.Log(HistogramMaxCount);
             for (int i = 0; i < Histogram.Length; i++)
             {
-                double height = Math.Log(Histogram[i])/logMax;
+                double height = Math.Log(Histogram[i]) / logMax;
                 if (height < 0)
                 {
                     height = 0;
                 }
 
-                
-                g.DrawLine(Pens.White, new Point(i,150), new Point(i,(int)(150 -(height*150))));
+
+                g.DrawLine(Pens.White, new Point(i, 150), new Point(i, (int)(150 - (height * 150))));
             }
             pen.Dispose();
             g.Flush();
@@ -304,7 +348,7 @@ namespace TerraViewer
 
         public int[] ComputeHistogram(int count, out int maxCount)
         {
-            int [] histogram = new int[count];
+            int[] histogram = new int[count];
 
             switch (DataType)
             {
@@ -339,7 +383,7 @@ namespace TerraViewer
             return histogram;
         }
 
-        private void ComputeHistogramDouble(int [] histogram)
+        private void ComputeHistogramDouble(int[] histogram)
         {
             int buckets = histogram.Length;
             double[] buf = (double[])DataBuffer;
@@ -349,12 +393,12 @@ namespace TerraViewer
             {
                 if (!double.IsNaN(val))
                 {
-                    histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
+                    histogram[Math.Min(buckets - 1, (int)((val - MinVal) / factor))]++;
                 }
             }
         }
 
-        private void ComputeHistogramFloat(int [] histogram)
+        private void ComputeHistogramFloat(int[] histogram)
         {
             int buckets = histogram.Length;
             float[] buf = (float[])DataBuffer;
@@ -364,12 +408,12 @@ namespace TerraViewer
             {
                 if (!float.IsNaN(val))
                 {
-                    histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
+                    histogram[Math.Min(buckets - 1, (int)((val - MinVal) / factor))]++;
                 }
             }
         }
 
-        private void ComputeHistogramInt32(int [] histogram)
+        private void ComputeHistogramInt32(int[] histogram)
         {
             int buckets = histogram.Length;
             Int32[] buf = (Int32[])DataBuffer;
@@ -377,13 +421,13 @@ namespace TerraViewer
 
             foreach (Int32 val in buf)
             {
-                histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
+                histogram[Math.Min(buckets - 1, (int)((val - MinVal) / factor))]++;
             }
         }
 
 
 
-        private void ComputeHistogramInt16(int [] histogram)
+        private void ComputeHistogramInt16(int[] histogram)
         {
             int buckets = histogram.Length;
             short[] buf = (short[])DataBuffer;
@@ -391,11 +435,11 @@ namespace TerraViewer
 
             foreach (Int16 val in buf)
             {
-                histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
+                histogram[Math.Min(buckets - 1, (int)((val - MinVal) / factor))]++;
             }
         }
 
-        private void ComputeHistogramByte(int [] histogram)
+        private void ComputeHistogramByte(int[] histogram)
         {
             int buckets = histogram.Length;
             Byte[] buf = (Byte[])DataBuffer;
@@ -403,7 +447,7 @@ namespace TerraViewer
 
             foreach (Byte val in buf)
             {
-                histogram[Math.Min(buckets-1, (int)((val - MinVal) / factor))]++;
+                histogram[Math.Min(buckets - 1, (int)((val - MinVal) / factor))]++;
             }
         }
 
@@ -430,7 +474,7 @@ namespace TerraViewer
 
         private void InitDataShort(BinaryReader br)
         {
-            short[] buffer =  new Int16[BufferSize];
+            short[] buffer = new Int16[BufferSize];
             DataBuffer = buffer;
             for (int i = 0; i < BufferSize; i++)
             {
@@ -452,7 +496,7 @@ namespace TerraViewer
             DataBuffer = buffer;
             for (int i = 0; i < BufferSize; i++)
             {
-                buffer[i] = (int)((((short)br.ReadSByte()* 256) + (short)br.ReadByte() ) + 32768);
+                buffer[i] = (int)((((short)br.ReadSByte() * 256) + (short)br.ReadByte()) + 32768);
                 if (MinVal > (double)buffer[i])
                 {
                     MinVal = (double)buffer[i];
@@ -470,7 +514,7 @@ namespace TerraViewer
             DataBuffer = buffer;
             for (int i = 0; i < BufferSize; i++)
             {
-                buffer[i] = (br.ReadSByte() << 24) + (br.ReadSByte() << 16) + (br.ReadSByte()  << 8) + br.ReadByte();
+                buffer[i] = (br.ReadSByte() << 24) + (br.ReadSByte() << 16) + (br.ReadSByte() << 8) + br.ReadByte();
                 if (MinVal > (double)buffer[i])
                 {
                     MinVal = (double)buffer[i];
@@ -575,7 +619,7 @@ namespace TerraViewer
                     scale = new HistogramEqualization(this, min, max);
                     break;
             }
-           
+
             try
             {
                 switch (DataType)
@@ -597,7 +641,7 @@ namespace TerraViewer
             }
             catch
             {
-                return new Bitmap(10,10);
+                return new Bitmap(10, 10);
             }
         }
 
@@ -772,7 +816,7 @@ namespace TerraViewer
             int[] buf = (int[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0]*AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1];
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -828,7 +872,7 @@ namespace TerraViewer
             short[] buf = (short[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0]*AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1];
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -844,8 +888,8 @@ namespace TerraViewer
                         if (color)
                         {
                             int datR = buf[(x + indexY * stride)];
-                            int datG = buf[(x + indexY * stride)+page];
-                            int datB = buf[(x + indexY * stride)+page*2];
+                            int datG = buf[(x + indexY * stride) + page];
+                            int datB = buf[(x + indexY * stride) + page * 2];
                             if (ContainsBlanks && (double)datR == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
@@ -972,7 +1016,7 @@ namespace TerraViewer
         double factor;
         int[] Histogram;
         int maxHistogramValue = 1;
-        Byte[] lookup ;
+        Byte[] lookup;
         const int buckets = 10000;
         public HistogramEqualization(FitsImage image, double min, double max)
         {
@@ -981,18 +1025,18 @@ namespace TerraViewer
             factor = max - min;
             Histogram = image.ComputeHistogram(buckets, out maxHistogramValue);
             lookup = new Byte[buckets];
-            int totalCounts = image.Width*image.Height;
+            int totalCounts = image.Width * image.Height;
             int sum = 0;
-            for(int i = 0;i< buckets;i++)
+            for (int i = 0; i < buckets; i++)
             {
-                sum+=Histogram[i];
-                lookup[i]=(Byte)(Math.Min(255,((sum*255.0))/totalCounts)+.5);
+                sum += Histogram[i];
+                lookup[i] = (Byte)(Math.Min(255, ((sum * 255.0)) / totalCounts) + .5);
             }
         }
 
         public override byte Map(double val)
         {
-            return (Byte)lookup[Math.Min(buckets-1, Math.Max(0, (int)((double)(val - min) / factor * (buckets-1.0))))];
+            return (Byte)lookup[Math.Min(buckets - 1, Math.Max(0, (int)((double)(val - min) / factor * (buckets - 1.0))))];
         }
     }
 }
