@@ -8038,7 +8038,10 @@ namespace TerraViewer
                 }
                 else
                 {
-                    back = cameraDistance > 950 ? cameraDistance + 1900 : 1900;
+                    // Github Issue #149
+                    // Orbits past Neptune are clipping 
+
+                    back = cameraDistance > 950 ? cameraDistance + 2500 : 1900;
 
                     if (Settings.Active.SolarSystemScale < 13)
                     {
