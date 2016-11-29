@@ -69,7 +69,9 @@ namespace TerraViewer
             set { linkID = value; }
         }
 
-       
+        private Action Action;
+
+
         virtual public void Play()
         {
         }
@@ -788,6 +790,12 @@ namespace TerraViewer
             {
                 LinkID = node.Attributes["LinkID"].Value;
             }
+            
+            if (node["Action"] != null)
+            {
+                XmlNode action = node["Action"];
+                Action = Action.FromXml(action);
+            }
 
             if (node.Attributes["Anchor"] != null)
             {
@@ -830,6 +838,14 @@ namespace TerraViewer
         public virtual void InitializeFromXml(System.Xml.XmlNode node)
         {
 
+        }
+
+        public void ExecuteAction(int tourstopIndex)
+        {
+            if (this.Action != null)
+            {
+                this.Action.Execute(tourstopIndex);
+            }
         }
 
         public override string ToString()

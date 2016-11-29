@@ -223,6 +223,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Action.cs" />
     <Compile Include="Authentication\IAuthenticationInfo.cs" />
     <Compile Include="Authentication\OAuthAuthenticator.cs" />
     <Compile Include="Authentication\OAuthTicket.cs" />
