@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.NetworkInformation;
 
 namespace TerraViewer
 {
@@ -21,48 +22,35 @@ namespace TerraViewer
             Points = points;
         }
 
-        /*
-         * TODO: fill in  for Action 
-        public Font Font
-        {
-            get
-            {
-                FontStyle style = (Bold ? FontStyle.Bold : FontStyle.Regular) | (Italic ? FontStyle.Italic : FontStyle.Regular);
-
-                return new Font(FontName, FontSize, style);
-
-
-            }
-        }*/
-
         public override string ToString()
         {
             return Filename;
         }
-
-        /*
-         * TODO: fill in for Action 
+ 
         internal void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Action");
             xmlWriter.WriteAttributeString("Filename", this.Filename);
+            xmlWriter.WriteAttributeString("Id", this.Id);
             xmlWriter.WriteAttributeString("Points", this.Points.ToString());
-            xmlWriter.WriteAttributeString("Type", this.Type);
+            xmlWriter.WriteAttributeString("Type", this.Type.ToString());
 
             xmlWriter.WriteEndElement();
-        }*/
+        }
 
         public void Execute(int slide)
         {
             if (this.Filename != null)
             {
-                string strPath = Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory) + "\\" + this.Filename;
+                string strPath = Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\wwt_data";
+                System.IO.Directory.CreateDirectory(strPath);
+                strPath += "\\" + this.Filename;
                 FileStream fs = new FileStream(strPath, FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter sw = new StreamWriter(fs);
-
+                var mac = this.GetMacAddress();
                 if (sw.BaseStream.Length == 0)
                 {
-                    var cols = "time,slide,id,points";
+                    var cols = "computer,time,slide,id,points";
                     sw.WriteLine(cols);
                     sw.Flush();
                 }
@@ -70,11 +58,25 @@ namespace TerraViewer
                 {
                     sw.BaseStream.Seek(0, SeekOrigin.End);
                 }
-                var line = string.Format("{0},{1},{2},{3}", DateTime.Now.ToString("MM/dd/yyyy h:mm tt"), slide, this.Id, this.Points);
+                var line = string.Format("{0},{1},{2},{3},{4}", mac, DateTime.Now.ToString("MM/dd/yyyy h:mm tt"), slide, this.Id, this.Points);
                 sw.WriteLine(line);
                 sw.Flush();
                 sw.Close();
             }
+        }
+
+        private string GetMacAddress()
+        {
+            string mac = "";
+            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (nic.OperationalStatus == OperationalStatus.Up)
+                {
+                    mac += nic.GetPhysicalAddress().ToString();
+                    break;
+                }
+            }
+            return mac;
         }
 
         internal static Action FromXml(System.Xml.XmlNode node)

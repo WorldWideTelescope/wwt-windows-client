@@ -69,7 +69,7 @@ namespace TerraViewer
             set { linkID = value; }
         }
 
-        private Action Action;
+        public Action Action;
 
 
         virtual public void Play()
@@ -738,6 +738,10 @@ namespace TerraViewer
             
             this.WriteOverlayProperties(xmlWriter);
 
+            if (this.Action != null)
+            {
+                this.Action.SaveToXml(xmlWriter);
+            }
 
             if (AnimationTarget != null && saveKeys)
             {

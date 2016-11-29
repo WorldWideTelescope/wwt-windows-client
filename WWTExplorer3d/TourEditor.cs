@@ -826,6 +826,7 @@ namespace TerraViewer
 
             ToolStripMenuItem linkID = new ToolStripMenuItem(Language.GetLocalizedText(589, "Link to Slide") + linkString);
             ToolStripMenuItem pickColor = new ToolStripMenuItem(Language.GetLocalizedText(458, "Color/Opacity"));
+            ToolStripMenuItem addAction = new ToolStripMenuItem(Language.GetLocalizedText(1378, "Add Quiz Action"));
             ToolStripMenuItem flipbookProperties = new ToolStripMenuItem(Language.GetLocalizedText(630, "Flipbook Properties"));
             ToolStripMenuItem interpolateMenu = new ToolStripMenuItem(Language.GetLocalizedText(1029, "Animation Tween Type"));
 
@@ -914,6 +915,7 @@ namespace TerraViewer
             editText.Click += new EventHandler(editText_Click);
             url.Click += new EventHandler(url_Click);
             pickColor.Click += new EventHandler(pickColor_Click);
+            addAction.Click += new EventHandler(addAction_Click);
             pasteMenu.Click += new EventHandler(pasteMenu_Click);
             animateMenu.Click += new EventHandler(animateMenu_Click);
 
@@ -954,6 +956,7 @@ namespace TerraViewer
             contextMenu.Items.Add(url);
             contextMenu.Items.Add(linkID);
             contextMenu.Items.Add(animateMenu);
+            contextMenu.Items.Add(addAction);
 
             if (Focus.AnimationTarget == null)
             {
@@ -1284,6 +1287,15 @@ namespace TerraViewer
                     overlay.Color = picker.Color;
                 }
             }
+        }
+
+        void addAction_Click(object sender, EventArgs e)
+        {
+            ActionEdit actionEdit = new ActionEdit();
+            Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(1378, "Add/Edit Quiz Action"), tour));
+            actionEdit.Overlay = Focus;
+            actionEdit.ShowDialog();
+            OverlayList.UpdateOverlayList(tour.CurrentTourStop, Selection);
         }
 
         void volume_Click(object sender, EventArgs e)
