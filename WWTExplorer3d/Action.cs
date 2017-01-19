@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net.NetworkInformation;
 
 namespace TerraViewer
 {
@@ -47,7 +46,7 @@ namespace TerraViewer
                 strPath += "\\" + this.Filename;
                 FileStream fs = new FileStream(strPath, FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter sw = new StreamWriter(fs);
-                var mac = this.GetMacAddress();
+                var computerID = Properties.Settings.Default.UserRatingGUID.ToString();
                 if (sw.BaseStream.Length == 0)
                 {
                     var cols = "computer,time,slide,id,points";
@@ -58,25 +57,11 @@ namespace TerraViewer
                 {
                     sw.BaseStream.Seek(0, SeekOrigin.End);
                 }
-                var line = string.Format("{0},{1},{2},{3},{4}", mac, DateTime.Now.ToString("MM/dd/yyyy h:mm tt"), slide, this.Id, this.Points);
+                var line = string.Format("{0},{1},{2},{3},{4}", computerID, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"), slide, this.Id, this.Points);
                 sw.WriteLine(line);
                 sw.Flush();
                 sw.Close();
             }
-        }
-
-        private string GetMacAddress()
-        {
-            string mac = "";
-            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (nic.OperationalStatus == OperationalStatus.Up)
-                {
-                    mac += nic.GetPhysicalAddress().ToString();
-                    break;
-                }
-            }
-            return mac;
         }
 
         internal static Action FromXml(System.Xml.XmlNode node)
