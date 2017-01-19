@@ -190,6 +190,7 @@ namespace TerraViewer
 
                 if (tour.CurrentTourStop.IsLinked && !PreRoll)
                 {
+
                     try
                     {
                         switch (tour.CurrentTourStop.NextSlide)
@@ -665,6 +666,9 @@ namespace TerraViewer
 
                 if (tour.CurrentTourStop.Overlays[i].HitTest(location))
                 {
+                    // execute any action attributed to this overlay before going to url or link
+                    tour.CurrentTourStop.Overlays[i].ExecuteAction(tour.CurrentTourstopIndex);
+
                     if (!string.IsNullOrEmpty(tour.CurrentTourStop.Overlays[i].Url))
                     {
                         Overlay linkItem = tour.CurrentTourStop.Overlays[i];

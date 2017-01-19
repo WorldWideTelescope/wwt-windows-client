@@ -1238,8 +1238,11 @@ namespace TerraViewer
             {
                 foreach (Texture11 texture in textureList.Values)
                 {
-                    texture.Dispose();
-                    GC.SuppressFinalize(texture);
+                    if (texture != null)
+                    {
+                        texture.Dispose();
+                        GC.SuppressFinalize(texture);
+                    }
                 }
                 textureList.Clear();
             }

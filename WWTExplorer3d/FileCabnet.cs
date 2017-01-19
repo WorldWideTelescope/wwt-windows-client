@@ -60,11 +60,18 @@ namespace TerraViewer
 
             if (!FileDirectory.ContainsKey(filePart))
             {
-                FileEntry fe = new FileEntry(filePart, (int)fi.Length);
-                fe.Offset = currentOffset;
-                FileList.Add(fe);
-                FileDirectory.Add(filePart, fe);
-                currentOffset += fe.Size;
+                try
+                {
+                    FileEntry fe = new FileEntry(filePart, (int)fi.Length);
+                    fe.Offset = currentOffset;
+                    FileList.Add(fe);
+                    FileDirectory.Add(filePart, fe);
+                    currentOffset += fe.Size;
+                }
+                catch
+                {
+                  //UiTools.ShowMessageBox("File not found: " + filePart);
+                }
             }
         }
 
