@@ -20520,7 +20520,7 @@ namespace TerraViewer
             Texture11.SaveStream = true;
             TileCache.PurgeQueue();
             TileCache.ClearCache();
-            // End 3d cities saving
+            enable3dCitiesExport = true;
         }
     }
 
