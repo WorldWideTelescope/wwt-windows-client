@@ -295,8 +295,29 @@ namespace TerraViewer
             return FromStream(RenderContext11.PrepDevice, stream);
         }
 
+        public void SaveToFile(string filename)
+        {
+            if (SaveStream && savedStrem != null)
+            {
+                File.WriteAllBytes(filename, savedStrem);
+            }
+        }
+
+        byte[] savedStrem = null;
+        static public bool SaveStream = false;
+
         static public Texture11 FromStream(Device device, Stream stream)
         {
+            byte[] data = null;
+            if (SaveStream)
+            {
+                MemoryStream ms = new MemoryStream();
+
+                stream.CopyTo(ms);
+                stream.Seek(0, SeekOrigin.Begin);
+                data = ms.GetBuffer();        
+            }
+
             try
             {
                 ImageLoadInformation loadInfo = new ImageLoadInformation();
@@ -319,7 +340,9 @@ namespace TerraViewer
 
                 Texture2D texture = Texture2D.FromStream<Texture2D>(device, stream, (int)stream.Length, loadInfo);
 
-                return new Texture11(texture);
+                Texture11 t11 = new Texture11(texture);
+                t11.savedStrem = data;
+                return t11;
             }
             catch
             {

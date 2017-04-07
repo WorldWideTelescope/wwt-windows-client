@@ -235,6 +235,8 @@ namespace TerraViewer
         private ToolStripMenuItem startInOculusModeToolStripMenuItem;
         private ToolStripMenuItem DownloadMPC;
         private ToolStripSeparator toolStripSeparator10;
+        private ToolStripMenuItem exportCurrentCitiesViewAs3DMeshToolStripMenuItem;
+        private ToolStripMenuItem enableExport3dCitiesModeToolStripMenuItem;
         int tileSizeY = 256;
 
         public void StartFadeTransition(double milliseconds)
@@ -1371,6 +1373,7 @@ namespace TerraViewer
         public static bool HideSplash = false;
         public Earth3d()
         {
+          
             AudioPlayer.Initialize();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
@@ -3509,6 +3512,8 @@ namespace TerraViewer
             this.tpsToolStripMenuItem120 = new System.Windows.Forms.ToolStripMenuItem();
             this.tpsToolStripMenuItemUnlimited = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
+            this.DownloadMPC = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.saveCacheAsCabinetFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.restoreCacheFromCabinetFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
@@ -3547,6 +3552,7 @@ namespace TerraViewer
             this.saveCurrentViewImageToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.screenBroadcastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
@@ -3595,6 +3601,7 @@ namespace TerraViewer
             this.fPSToolStripMenuItem60 = new System.Windows.Forms.ToolStripMenuItem();
             this.fPSToolStripMenuItem30 = new System.Windows.Forms.ToolStripMenuItem();
             this.fPSToolStripMenuItem24 = new System.Windows.Forms.ToolStripMenuItem();
+            this.enableExport3dCitiesModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StatupTimer = new System.Windows.Forms.Timer(this.components);
             this.SlideAdvanceTimer = new System.Windows.Forms.Timer(this.components);
             this.TourEndCheck = new System.Windows.Forms.Timer(this.components);
@@ -3603,8 +3610,6 @@ namespace TerraViewer
             this.kioskTitleBar = new TerraViewer.KioskTitleBar();
             this.renderWindow = new TerraViewer.RenderTarget();
             this.menuTabs = new TerraViewer.MenuTabs();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.DownloadMPC = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu.SuspendLayout();
             this.communitiesMenu.SuspendLayout();
             this.searchMenu.SuspendLayout();
@@ -3659,21 +3664,21 @@ namespace TerraViewer
             this.editToolStripMenuItem,
             this.sAMPToolStripMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(325, 472);
+            this.contextMenu.Size = new System.Drawing.Size(225, 352);
             this.contextMenu.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.contextMenu_Closing);
             this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
             // 
             // nameToolStripMenuItem
             // 
             this.nameToolStripMenuItem.Name = "nameToolStripMenuItem";
-            this.nameToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.nameToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.nameToolStripMenuItem.Text = "Name:";
             this.nameToolStripMenuItem.Click += new System.EventHandler(this.nameToolStripMenuItem_Click);
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(321, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(221, 6);
             // 
             // informationToolStripMenuItem
             // 
@@ -3685,48 +3690,48 @@ namespace TerraViewer
             this.lookUpOnNEDToolStripMenuItem,
             this.lookUpOnSDSSToolStripMenuItem});
             this.informationToolStripMenuItem.Name = "informationToolStripMenuItem";
-            this.informationToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.informationToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.informationToolStripMenuItem.Text = "Information";
             // 
             // lookupOnSimbadToolStripMenuItem
             // 
             this.lookupOnSimbadToolStripMenuItem.Name = "lookupOnSimbadToolStripMenuItem";
-            this.lookupOnSimbadToolStripMenuItem.Size = new System.Drawing.Size(329, 30);
+            this.lookupOnSimbadToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.lookupOnSimbadToolStripMenuItem.Text = "Look up on SIMBAD";
             this.lookupOnSimbadToolStripMenuItem.Click += new System.EventHandler(this.lookupOnSimbadToolStripMenuItem_Click);
             // 
             // lookupOnSEDSToolStripMenuItem
             // 
             this.lookupOnSEDSToolStripMenuItem.Name = "lookupOnSEDSToolStripMenuItem";
-            this.lookupOnSEDSToolStripMenuItem.Size = new System.Drawing.Size(329, 30);
+            this.lookupOnSEDSToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.lookupOnSEDSToolStripMenuItem.Text = "Look up on SEDS";
             this.lookupOnSEDSToolStripMenuItem.Click += new System.EventHandler(this.lookupOnSEDSToolStripMenuItem_Click);
             // 
             // lookupOnWikipediaToolStripMenuItem
             // 
             this.lookupOnWikipediaToolStripMenuItem.Name = "lookupOnWikipediaToolStripMenuItem";
-            this.lookupOnWikipediaToolStripMenuItem.Size = new System.Drawing.Size(329, 30);
+            this.lookupOnWikipediaToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.lookupOnWikipediaToolStripMenuItem.Text = "Look up on Wikipedia";
             this.lookupOnWikipediaToolStripMenuItem.Click += new System.EventHandler(this.lookupOnWikipediaToolStripMenuItem_Click);
             // 
             // publicationsToolStripMenuItem
             // 
             this.publicationsToolStripMenuItem.Name = "publicationsToolStripMenuItem";
-            this.publicationsToolStripMenuItem.Size = new System.Drawing.Size(329, 30);
+            this.publicationsToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.publicationsToolStripMenuItem.Text = "Look up publications on ADS";
             this.publicationsToolStripMenuItem.Click += new System.EventHandler(this.publicationsToolStripMenuItem_Click);
             // 
             // lookUpOnNEDToolStripMenuItem
             // 
             this.lookUpOnNEDToolStripMenuItem.Name = "lookUpOnNEDToolStripMenuItem";
-            this.lookUpOnNEDToolStripMenuItem.Size = new System.Drawing.Size(329, 30);
+            this.lookUpOnNEDToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.lookUpOnNEDToolStripMenuItem.Text = "Look up on NED";
             this.lookUpOnNEDToolStripMenuItem.Click += new System.EventHandler(this.lookUpOnNEDToolStripMenuItem_Click);
             // 
             // lookUpOnSDSSToolStripMenuItem
             // 
             this.lookUpOnSDSSToolStripMenuItem.Name = "lookUpOnSDSSToolStripMenuItem";
-            this.lookUpOnSDSSToolStripMenuItem.Size = new System.Drawing.Size(329, 30);
+            this.lookUpOnSDSSToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.lookUpOnSDSSToolStripMenuItem.Text = "Look up on SDSS";
             this.lookUpOnSDSSToolStripMenuItem.Click += new System.EventHandler(this.lookUpOnSDSSToolStripMenuItem_Click);
             // 
@@ -3737,27 +3742,27 @@ namespace TerraViewer
             this.getSDSSImageToolStripMenuItem,
             this.getDSSFITSToolStripMenuItem});
             this.imageryToolStripMenuItem.Name = "imageryToolStripMenuItem";
-            this.imageryToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.imageryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.imageryToolStripMenuItem.Text = "Imagery";
             // 
             // getDSSImageToolStripMenuItem
             // 
             this.getDSSImageToolStripMenuItem.Name = "getDSSImageToolStripMenuItem";
-            this.getDSSImageToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.getDSSImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.getDSSImageToolStripMenuItem.Text = "Get DSS image";
             this.getDSSImageToolStripMenuItem.Click += new System.EventHandler(this.getDSSImageToolStripMenuItem_Click);
             // 
             // getSDSSImageToolStripMenuItem
             // 
             this.getSDSSImageToolStripMenuItem.Name = "getSDSSImageToolStripMenuItem";
-            this.getSDSSImageToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.getSDSSImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.getSDSSImageToolStripMenuItem.Text = "Get SDSS image";
             this.getSDSSImageToolStripMenuItem.Click += new System.EventHandler(this.getSDSSImageToolStripMenuItem_Click);
             // 
             // getDSSFITSToolStripMenuItem
             // 
             this.getDSSFITSToolStripMenuItem.Name = "getDSSFITSToolStripMenuItem";
-            this.getDSSFITSToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.getDSSFITSToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.getDSSFITSToolStripMenuItem.Text = "Get DSS FITS";
             this.getDSSFITSToolStripMenuItem.Click += new System.EventHandler(this.getDSSFITSToolStripMenuItem_Click);
             // 
@@ -3770,14 +3775,14 @@ namespace TerraViewer
             this.sDSSSearchToolStripMenuItem,
             this.toolStripMenuItem3});
             this.virtualObservatorySearchesToolStripMenuItem.Name = "virtualObservatorySearchesToolStripMenuItem";
-            this.virtualObservatorySearchesToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.virtualObservatorySearchesToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.virtualObservatorySearchesToolStripMenuItem.Text = "Virtual Observatory Searches";
             this.virtualObservatorySearchesToolStripMenuItem.Click += new System.EventHandler(this.virtualObservatorySearchesToolStripMenuItem_Click);
             // 
             // uSNONVOConeSearchToolStripMenuItem
             // 
             this.uSNONVOConeSearchToolStripMenuItem.Name = "uSNONVOConeSearchToolStripMenuItem";
-            this.uSNONVOConeSearchToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.uSNONVOConeSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.uSNONVOConeSearchToolStripMenuItem.Text = "USNO NVO cone search";
             this.uSNONVOConeSearchToolStripMenuItem.Visible = false;
             this.uSNONVOConeSearchToolStripMenuItem.Click += new System.EventHandler(this.uSNONVOConeSearchToolStripMenuItem_Click);
@@ -3786,7 +3791,7 @@ namespace TerraViewer
             // 
             this.hLAFootprintsToolStripMenuItem.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.hLAFootprintsToolStripMenuItem.Name = "hLAFootprintsToolStripMenuItem";
-            this.hLAFootprintsToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.hLAFootprintsToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.hLAFootprintsToolStripMenuItem.Text = "HLA Footprints";
             this.hLAFootprintsToolStripMenuItem.Visible = false;
             this.hLAFootprintsToolStripMenuItem.Click += new System.EventHandler(this.hLAFootprintsToolStripMenuItem_Click);
@@ -3794,54 +3799,54 @@ namespace TerraViewer
             // nEDSearchToolStripMenuItem
             // 
             this.nEDSearchToolStripMenuItem.Name = "nEDSearchToolStripMenuItem";
-            this.nEDSearchToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.nEDSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.nEDSearchToolStripMenuItem.Text = "NED Search";
             this.nEDSearchToolStripMenuItem.Click += new System.EventHandler(this.NEDSearchToolStripMenuItem_Click);
             // 
             // sDSSSearchToolStripMenuItem
             // 
             this.sDSSSearchToolStripMenuItem.Name = "sDSSSearchToolStripMenuItem";
-            this.sDSSSearchToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.sDSSSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.sDSSSearchToolStripMenuItem.Text = "SDSS Search";
             this.sDSSSearchToolStripMenuItem.Click += new System.EventHandler(this.sDSSSearchToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(382, 30);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(264, 22);
             this.toolStripMenuItem3.Text = "VO Cone Search / Registry Lookup...";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.vORegistryToolStripMenuItem_Click);
             // 
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(321, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(221, 6);
             // 
             // setAsForegroundImageryToolStripMenuItem
             // 
             this.setAsForegroundImageryToolStripMenuItem.Name = "setAsForegroundImageryToolStripMenuItem";
-            this.setAsForegroundImageryToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.setAsForegroundImageryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.setAsForegroundImageryToolStripMenuItem.Text = "Set as Forground Imagery";
             this.setAsForegroundImageryToolStripMenuItem.Click += new System.EventHandler(this.setAsForegroundImageryToolStripMenuItem_Click);
             // 
             // setAsBackgroundImageryToolStripMenuItem
             // 
             this.setAsBackgroundImageryToolStripMenuItem.Name = "setAsBackgroundImageryToolStripMenuItem";
-            this.setAsBackgroundImageryToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.setAsBackgroundImageryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.setAsBackgroundImageryToolStripMenuItem.Text = "Set as Background Imagery";
             this.setAsBackgroundImageryToolStripMenuItem.Click += new System.EventHandler(this.setAsBackgroundImageryToolStripMenuItem_Click);
             // 
             // addToImageStackToolStripMenuItem
             // 
             this.addToImageStackToolStripMenuItem.Name = "addToImageStackToolStripMenuItem";
-            this.addToImageStackToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.addToImageStackToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.addToImageStackToolStripMenuItem.Text = "Add to Image Stack";
             this.addToImageStackToolStripMenuItem.Click += new System.EventHandler(this.addToImageStackToolStripMenuItem_Click);
             // 
             // addAsNewLayerToolStripMenuItem
             // 
             this.addAsNewLayerToolStripMenuItem.Name = "addAsNewLayerToolStripMenuItem";
-            this.addAsNewLayerToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.addAsNewLayerToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.addAsNewLayerToolStripMenuItem.Text = "Add as New Layer";
             this.addAsNewLayerToolStripMenuItem.Click += new System.EventHandler(this.addAsNewLayerToolStripMenuItem_Click);
             // 
@@ -3852,46 +3857,46 @@ namespace TerraViewer
             this.showCacheSpaceUsedToolStripMenuItem,
             this.removeFromImageCacheToolStripMenuItem});
             this.cacheManagementToolStripMenuItem1.Name = "cacheManagementToolStripMenuItem1";
-            this.cacheManagementToolStripMenuItem1.Size = new System.Drawing.Size(324, 30);
+            this.cacheManagementToolStripMenuItem1.Size = new System.Drawing.Size(224, 22);
             this.cacheManagementToolStripMenuItem1.Text = "Cache Management";
             // 
             // cacheImageryTilePyramidToolStripMenuItem
             // 
             this.cacheImageryTilePyramidToolStripMenuItem.Name = "cacheImageryTilePyramidToolStripMenuItem";
-            this.cacheImageryTilePyramidToolStripMenuItem.Size = new System.Drawing.Size(327, 30);
+            this.cacheImageryTilePyramidToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.cacheImageryTilePyramidToolStripMenuItem.Text = "Cache Imagery Tile Pyramid...";
             this.cacheImageryTilePyramidToolStripMenuItem.Click += new System.EventHandler(this.cacheImageryTilePyramidToolStripMenuItem_Click);
             // 
             // showCacheSpaceUsedToolStripMenuItem
             // 
             this.showCacheSpaceUsedToolStripMenuItem.Name = "showCacheSpaceUsedToolStripMenuItem";
-            this.showCacheSpaceUsedToolStripMenuItem.Size = new System.Drawing.Size(327, 30);
+            this.showCacheSpaceUsedToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.showCacheSpaceUsedToolStripMenuItem.Text = "Show Cache Space Used...";
             this.showCacheSpaceUsedToolStripMenuItem.Click += new System.EventHandler(this.showCacheSpaceUsedToolStripMenuItem_Click);
             // 
             // removeFromImageCacheToolStripMenuItem
             // 
             this.removeFromImageCacheToolStripMenuItem.Name = "removeFromImageCacheToolStripMenuItem";
-            this.removeFromImageCacheToolStripMenuItem.Size = new System.Drawing.Size(327, 30);
+            this.removeFromImageCacheToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.removeFromImageCacheToolStripMenuItem.Text = "Remove from Image Cache";
             this.removeFromImageCacheToolStripMenuItem.Click += new System.EventHandler(this.removeFromImageCacheToolStripMenuItem_Click);
             // 
             // ImagerySeperator
             // 
             this.ImagerySeperator.Name = "ImagerySeperator";
-            this.ImagerySeperator.Size = new System.Drawing.Size(321, 6);
+            this.ImagerySeperator.Size = new System.Drawing.Size(221, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.propertiesToolStripMenuItem.Text = "Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
             // copyShortcutToolStripMenuItem
             // 
             this.copyShortcutToolStripMenuItem.Name = "copyShortcutToolStripMenuItem";
-            this.copyShortcutToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.copyShortcutToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.copyShortcutToolStripMenuItem.Text = "Copy Shortcut";
             this.copyShortcutToolStripMenuItem.Click += new System.EventHandler(this.copyShortcutToolStripMenuItem_Click);
             // 
@@ -3900,7 +3905,7 @@ namespace TerraViewer
             this.addToCollectionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newCollectionToolStripMenuItem});
             this.addToCollectionsToolStripMenuItem.Name = "addToCollectionsToolStripMenuItem";
-            this.addToCollectionsToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.addToCollectionsToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.addToCollectionsToolStripMenuItem.Text = "Add to Collection";
             this.addToCollectionsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.addToCollectionsToolStripMenuItem_DropDownOpening);
             this.addToCollectionsToolStripMenuItem.Click += new System.EventHandler(this.addToCollectionsToolStripMenuItem_Click);
@@ -3908,20 +3913,20 @@ namespace TerraViewer
             // newCollectionToolStripMenuItem
             // 
             this.newCollectionToolStripMenuItem.Name = "newCollectionToolStripMenuItem";
-            this.newCollectionToolStripMenuItem.Size = new System.Drawing.Size(227, 30);
+            this.newCollectionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.newCollectionToolStripMenuItem.Text = "New Collection...";
             // 
             // removeFromCollectionToolStripMenuItem
             // 
             this.removeFromCollectionToolStripMenuItem.Name = "removeFromCollectionToolStripMenuItem";
-            this.removeFromCollectionToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.removeFromCollectionToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.removeFromCollectionToolStripMenuItem.Text = "Remove from Collection";
             this.removeFromCollectionToolStripMenuItem.Click += new System.EventHandler(this.removeFromCollectionToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.editToolStripMenuItem.Text = "Edit...";
             this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
             // 
@@ -3931,7 +3936,7 @@ namespace TerraViewer
             this.sendImageToToolStripMenuItem,
             this.sendTableToToolStripMenuItem});
             this.sAMPToolStripMenuItem.Name = "sAMPToolStripMenuItem";
-            this.sAMPToolStripMenuItem.Size = new System.Drawing.Size(324, 30);
+            this.sAMPToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.sAMPToolStripMenuItem.Text = "SAMP";
             // 
             // sendImageToToolStripMenuItem
@@ -3939,13 +3944,13 @@ namespace TerraViewer
             this.sendImageToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.broadcastToolStripMenuItem});
             this.sendImageToToolStripMenuItem.Name = "sendImageToToolStripMenuItem";
-            this.sendImageToToolStripMenuItem.Size = new System.Drawing.Size(215, 30);
+            this.sendImageToToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sendImageToToolStripMenuItem.Text = "Send Image To";
             // 
             // broadcastToolStripMenuItem
             // 
             this.broadcastToolStripMenuItem.Name = "broadcastToolStripMenuItem";
-            this.broadcastToolStripMenuItem.Size = new System.Drawing.Size(175, 30);
+            this.broadcastToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.broadcastToolStripMenuItem.Text = "Broadcast";
             this.broadcastToolStripMenuItem.Click += new System.EventHandler(this.broadcastToolStripMenuItem_Click);
             // 
@@ -3954,13 +3959,13 @@ namespace TerraViewer
             this.sendTableToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.broadcastToolStripMenuItem1});
             this.sendTableToToolStripMenuItem.Name = "sendTableToToolStripMenuItem";
-            this.sendTableToToolStripMenuItem.Size = new System.Drawing.Size(215, 30);
+            this.sendTableToToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sendTableToToolStripMenuItem.Text = "Send Table To";
             // 
             // broadcastToolStripMenuItem1
             // 
             this.broadcastToolStripMenuItem1.Name = "broadcastToolStripMenuItem1";
-            this.broadcastToolStripMenuItem1.Size = new System.Drawing.Size(175, 30);
+            this.broadcastToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
             this.broadcastToolStripMenuItem1.Text = "Broadcast";
             // 
             // HoverTimer
@@ -3980,7 +3985,7 @@ namespace TerraViewer
             this.uploadObservingListToCommunityMenuItem,
             this.uploadImageToCommunityMenuItem});
             this.communitiesMenu.Name = "communitiesMenu";
-            this.communitiesMenu.Size = new System.Drawing.Size(406, 160);
+            this.communitiesMenu.Size = new System.Drawing.Size(281, 120);
             this.communitiesMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.communitiesMenu.Opening += new System.ComponentModel.CancelEventHandler(this.communitiesMenu_Opening);
             this.communitiesMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -3988,14 +3993,14 @@ namespace TerraViewer
             // joinCoomunityMenuItem
             // 
             this.joinCoomunityMenuItem.Name = "joinCoomunityMenuItem";
-            this.joinCoomunityMenuItem.Size = new System.Drawing.Size(405, 30);
+            this.joinCoomunityMenuItem.Size = new System.Drawing.Size(280, 22);
             this.joinCoomunityMenuItem.Text = "Join a Community...";
             this.joinCoomunityMenuItem.Click += new System.EventHandler(this.joinCoomunityMenuItem_Click);
             // 
             // updateLoginCredentialsMenuItem
             // 
             this.updateLoginCredentialsMenuItem.Name = "updateLoginCredentialsMenuItem";
-            this.updateLoginCredentialsMenuItem.Size = new System.Drawing.Size(405, 30);
+            this.updateLoginCredentialsMenuItem.Size = new System.Drawing.Size(280, 22);
             this.updateLoginCredentialsMenuItem.Text = "Update Login Credentials...";
             this.updateLoginCredentialsMenuItem.Click += new System.EventHandler(this.associateLiveIDToolStripMenuItem_Click);
             // 
@@ -4003,27 +4008,27 @@ namespace TerraViewer
             // 
             this.logoutMenuItem.Enabled = false;
             this.logoutMenuItem.Name = "logoutMenuItem";
-            this.logoutMenuItem.Size = new System.Drawing.Size(405, 30);
+            this.logoutMenuItem.Size = new System.Drawing.Size(280, 22);
             this.logoutMenuItem.Text = "Logout";
             this.logoutMenuItem.Visible = false;
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(402, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(277, 6);
             this.toolStripSeparator8.Visible = false;
             // 
             // uploadObservingListToCommunityMenuItem
             // 
             this.uploadObservingListToCommunityMenuItem.Name = "uploadObservingListToCommunityMenuItem";
-            this.uploadObservingListToCommunityMenuItem.Size = new System.Drawing.Size(405, 30);
+            this.uploadObservingListToCommunityMenuItem.Size = new System.Drawing.Size(280, 22);
             this.uploadObservingListToCommunityMenuItem.Text = "Upload Observing List to Community...";
             this.uploadObservingListToCommunityMenuItem.Visible = false;
             // 
             // uploadImageToCommunityMenuItem
             // 
             this.uploadImageToCommunityMenuItem.Name = "uploadImageToCommunityMenuItem";
-            this.uploadImageToCommunityMenuItem.Size = new System.Drawing.Size(405, 30);
+            this.uploadImageToCommunityMenuItem.Size = new System.Drawing.Size(280, 22);
             this.uploadImageToCommunityMenuItem.Text = "Upload Image to Community... ";
             this.uploadImageToCommunityMenuItem.Visible = false;
             // 
@@ -4035,7 +4040,7 @@ namespace TerraViewer
             this.vORegistryToolStripMenuItem,
             this.findEarthBasedLocationToolStripMenuItem});
             this.searchMenu.Name = "contextMenuStrip1";
-            this.searchMenu.Size = new System.Drawing.Size(383, 94);
+            this.searchMenu.Size = new System.Drawing.Size(265, 70);
             this.searchMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.searchMenu.Opening += new System.ComponentModel.CancelEventHandler(this.searchMenu_Opening);
             this.searchMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4043,21 +4048,21 @@ namespace TerraViewer
             // sIMBADSearchToolStripMenuItem
             // 
             this.sIMBADSearchToolStripMenuItem.Name = "sIMBADSearchToolStripMenuItem";
-            this.sIMBADSearchToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.sIMBADSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.sIMBADSearchToolStripMenuItem.Text = "SIMBAD Search...";
             this.sIMBADSearchToolStripMenuItem.Click += new System.EventHandler(this.sIMBADSearchToolStripMenuItem_Click);
             // 
             // vORegistryToolStripMenuItem
             // 
             this.vORegistryToolStripMenuItem.Name = "vORegistryToolStripMenuItem";
-            this.vORegistryToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.vORegistryToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.vORegistryToolStripMenuItem.Text = "VO Cone Search / Registry Lookup...";
             this.vORegistryToolStripMenuItem.Click += new System.EventHandler(this.vORegistryToolStripMenuItem_Click);
             // 
             // findEarthBasedLocationToolStripMenuItem
             // 
             this.findEarthBasedLocationToolStripMenuItem.Name = "findEarthBasedLocationToolStripMenuItem";
-            this.findEarthBasedLocationToolStripMenuItem.Size = new System.Drawing.Size(382, 30);
+            this.findEarthBasedLocationToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
             this.findEarthBasedLocationToolStripMenuItem.Text = "Find Earth Based Location...";
             this.findEarthBasedLocationToolStripMenuItem.Click += new System.EventHandler(this.findEarthBasedLocationToolStripMenuItem_Click);
             // 
@@ -4088,7 +4093,7 @@ namespace TerraViewer
             this.sendTourToProjectorServersToolStripMenuItem,
             this.automaticTourSyncWithProjectorServersToolStripMenuItem});
             this.toursMenu.Name = "contextMenuStrip1";
-            this.toursMenu.Size = new System.Drawing.Size(436, 544);
+            this.toursMenu.Size = new System.Drawing.Size(303, 408);
             this.toursMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.toursMenu.Opening += new System.ComponentModel.CancelEventHandler(this.toursMenu_Opening);
             this.toursMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4096,14 +4101,14 @@ namespace TerraViewer
             // tourHomeMenuItem
             // 
             this.tourHomeMenuItem.Name = "tourHomeMenuItem";
-            this.tourHomeMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.tourHomeMenuItem.Size = new System.Drawing.Size(302, 22);
             this.tourHomeMenuItem.Text = "Tour Home";
             this.tourHomeMenuItem.Click += new System.EventHandler(this.tourHomeMenuItem_Click);
             // 
             // tourSearchWebPageMenuItem
             // 
             this.tourSearchWebPageMenuItem.Name = "tourSearchWebPageMenuItem";
-            this.tourSearchWebPageMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.tourSearchWebPageMenuItem.Size = new System.Drawing.Size(302, 22);
             this.tourSearchWebPageMenuItem.Text = "Tour Search Web Page";
             this.tourSearchWebPageMenuItem.Visible = false;
             this.tourSearchWebPageMenuItem.Click += new System.EventHandler(this.tourSearchWebPageMenuItem_Click);
@@ -4111,47 +4116,47 @@ namespace TerraViewer
             // musicAndOtherTourResourceToolStripMenuItem
             // 
             this.musicAndOtherTourResourceToolStripMenuItem.Name = "musicAndOtherTourResourceToolStripMenuItem";
-            this.musicAndOtherTourResourceToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.musicAndOtherTourResourceToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.musicAndOtherTourResourceToolStripMenuItem.Text = "Music and other Tour Resource";
             this.musicAndOtherTourResourceToolStripMenuItem.Click += new System.EventHandler(this.musicAndOtherTourResourceToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(432, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(299, 6);
             // 
             // createANewTourToolStripMenuItem
             // 
             this.createANewTourToolStripMenuItem.Name = "createANewTourToolStripMenuItem";
-            this.createANewTourToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.createANewTourToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.createANewTourToolStripMenuItem.Text = "Create a New Tour...";
             this.createANewTourToolStripMenuItem.Click += new System.EventHandler(this.newSlideBasedTour);
             // 
             // saveTourAsToolStripMenuItem
             // 
             this.saveTourAsToolStripMenuItem.Name = "saveTourAsToolStripMenuItem";
-            this.saveTourAsToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.saveTourAsToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.saveTourAsToolStripMenuItem.Text = "Save Tour As...";
             this.saveTourAsToolStripMenuItem.Click += new System.EventHandler(this.saveTourAsToolStripMenuItem_Click);
             // 
             // publishTourMenuItem
             // 
             this.publishTourMenuItem.Name = "publishTourMenuItem";
-            this.publishTourMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.publishTourMenuItem.Size = new System.Drawing.Size(302, 22);
             this.publishTourMenuItem.Text = "Submit Tour for Publication...";
             this.publishTourMenuItem.Click += new System.EventHandler(this.publishTourMenuItem_Click);
             // 
             // renderToVideoToolStripMenuItem
             // 
             this.renderToVideoToolStripMenuItem.Name = "renderToVideoToolStripMenuItem";
-            this.renderToVideoToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.renderToVideoToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.renderToVideoToolStripMenuItem.Text = "Render to Video...";
             this.renderToVideoToolStripMenuItem.Click += new System.EventHandler(this.renderToVideoToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(432, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(299, 6);
             // 
             // autoRepeatToolStripMenuItem
             // 
@@ -4160,68 +4165,68 @@ namespace TerraViewer
             this.allToolStripMenuItem,
             this.offToolStripMenuItem});
             this.autoRepeatToolStripMenuItem.Name = "autoRepeatToolStripMenuItem";
-            this.autoRepeatToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.autoRepeatToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.autoRepeatToolStripMenuItem.Text = "Auto Repeat";
             // 
             // oneToolStripMenuItem
             // 
             this.oneToolStripMenuItem.Name = "oneToolStripMenuItem";
-            this.oneToolStripMenuItem.Size = new System.Drawing.Size(130, 30);
+            this.oneToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.oneToolStripMenuItem.Text = "One";
             this.oneToolStripMenuItem.Click += new System.EventHandler(this.oneToolStripMenuItem_Click);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(130, 30);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.allToolStripMenuItem_Click);
             // 
             // offToolStripMenuItem
             // 
             this.offToolStripMenuItem.Name = "offToolStripMenuItem";
-            this.offToolStripMenuItem.Size = new System.Drawing.Size(130, 30);
+            this.offToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.offToolStripMenuItem.Text = "Off";
             this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
             // 
             // editTourToolStripMenuItem
             // 
             this.editTourToolStripMenuItem.Name = "editTourToolStripMenuItem";
-            this.editTourToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.editTourToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.editTourToolStripMenuItem.Text = "Edit Tour";
             this.editTourToolStripMenuItem.Click += new System.EventHandler(this.editTourToolStripMenuItem_Click);
             // 
             // showOverlayListToolStripMenuItem
             // 
             this.showOverlayListToolStripMenuItem.Name = "showOverlayListToolStripMenuItem";
-            this.showOverlayListToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.showOverlayListToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.showOverlayListToolStripMenuItem.Text = "Show Overlay List";
             this.showOverlayListToolStripMenuItem.Click += new System.EventHandler(this.showOverlayListToolStripMenuItem_Click);
             // 
             // showKeyframerToolStripMenuItem
             // 
             this.showKeyframerToolStripMenuItem.Name = "showKeyframerToolStripMenuItem";
-            this.showKeyframerToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.showKeyframerToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.showKeyframerToolStripMenuItem.Text = "Show Timeline Editor";
             this.showKeyframerToolStripMenuItem.Click += new System.EventHandler(this.showKeyframerToolStripMenuItem_Click);
             // 
             // showSlideNumbersToolStripMenuItem
             // 
             this.showSlideNumbersToolStripMenuItem.Name = "showSlideNumbersToolStripMenuItem";
-            this.showSlideNumbersToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.showSlideNumbersToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.showSlideNumbersToolStripMenuItem.Text = "Show Slide Numbers";
             this.showSlideNumbersToolStripMenuItem.Click += new System.EventHandler(this.showSlideNumbersToolStripMenuItem_Click);
             // 
             // toolStripMenuItem12
             // 
             this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(432, 6);
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(299, 6);
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.undoToolStripMenuItem.Text = "&Undo:";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -4229,38 +4234,38 @@ namespace TerraViewer
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.redoToolStripMenuItem.Text = "Redo:";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripMenuItem13
             // 
             this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new System.Drawing.Size(432, 6);
+            this.toolStripMenuItem13.Size = new System.Drawing.Size(299, 6);
             // 
             // publishTourToCommunityToolStripMenuItem
             // 
             this.publishTourToCommunityToolStripMenuItem.Name = "publishTourToCommunityToolStripMenuItem";
-            this.publishTourToCommunityToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.publishTourToCommunityToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.publishTourToCommunityToolStripMenuItem.Text = "Publish Tour to Community...";
             this.publishTourToCommunityToolStripMenuItem.Click += new System.EventHandler(this.publishTourToCommunityToolStripMenuItem_Click);
             // 
             // toolStripSeparator23
             // 
             this.toolStripSeparator23.Name = "toolStripSeparator23";
-            this.toolStripSeparator23.Size = new System.Drawing.Size(432, 6);
+            this.toolStripSeparator23.Size = new System.Drawing.Size(299, 6);
             // 
             // sendTourToProjectorServersToolStripMenuItem
             // 
             this.sendTourToProjectorServersToolStripMenuItem.Name = "sendTourToProjectorServersToolStripMenuItem";
-            this.sendTourToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.sendTourToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.sendTourToProjectorServersToolStripMenuItem.Text = "Send Tour to Projector Servers";
             this.sendTourToProjectorServersToolStripMenuItem.Click += new System.EventHandler(this.sendTourToProjectorServersToolStripMenuItem_Click);
             // 
             // automaticTourSyncWithProjectorServersToolStripMenuItem
             // 
             this.automaticTourSyncWithProjectorServersToolStripMenuItem.Name = "automaticTourSyncWithProjectorServersToolStripMenuItem";
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(435, 30);
+            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
             this.automaticTourSyncWithProjectorServersToolStripMenuItem.Text = "Automatic Tour Sync with Projector Servers";
             this.automaticTourSyncWithProjectorServersToolStripMenuItem.Click += new System.EventHandler(this.automaticTourSyncWithProjectorServersToolStripMenuItem_Click);
             // 
@@ -4280,7 +4285,7 @@ namespace TerraViewer
             this.toolStripSeparator13,
             this.ASCOMPlatformHomePage});
             this.telescopeMenu.Name = "contextMenuStrip1";
-            this.telescopeMenu.Size = new System.Drawing.Size(345, 262);
+            this.telescopeMenu.Size = new System.Drawing.Size(241, 198);
             this.telescopeMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.telescopeMenu.Opening += new System.ComponentModel.CancelEventHandler(this.telescopeMenu_Opening);
             this.telescopeMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4289,7 +4294,7 @@ namespace TerraViewer
             // 
             this.slewTelescopeMenuItem.MergeIndex = 0;
             this.slewTelescopeMenuItem.Name = "slewTelescopeMenuItem";
-            this.slewTelescopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.slewTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.slewTelescopeMenuItem.Text = "Slew To Object";
             this.slewTelescopeMenuItem.Click += new System.EventHandler(this.slewTelescopeMenuItem_Click);
             // 
@@ -4297,7 +4302,7 @@ namespace TerraViewer
             // 
             this.centerTelescopeMenuItem.MergeIndex = 1;
             this.centerTelescopeMenuItem.Name = "centerTelescopeMenuItem";
-            this.centerTelescopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.centerTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.centerTelescopeMenuItem.Text = "Center on Scope";
             this.centerTelescopeMenuItem.Click += new System.EventHandler(this.centerTelescopeMenuItem_Click);
             // 
@@ -4305,7 +4310,7 @@ namespace TerraViewer
             // 
             this.SyncTelescopeMenuItem.MergeIndex = 2;
             this.SyncTelescopeMenuItem.Name = "SyncTelescopeMenuItem";
-            this.SyncTelescopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.SyncTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.SyncTelescopeMenuItem.Text = "Sync Scope to Current Location";
             this.SyncTelescopeMenuItem.Click += new System.EventHandler(this.SyncTelescopeMenuItem_Click);
             // 
@@ -4313,13 +4318,13 @@ namespace TerraViewer
             // 
             this.toolStripSeparator3.MergeIndex = 3;
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(341, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(237, 6);
             // 
             // chooseTelescopeMenuItem
             // 
             this.chooseTelescopeMenuItem.MergeIndex = 4;
             this.chooseTelescopeMenuItem.Name = "chooseTelescopeMenuItem";
-            this.chooseTelescopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.chooseTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.chooseTelescopeMenuItem.Text = "Choose Telescope";
             this.chooseTelescopeMenuItem.Click += new System.EventHandler(this.chooseTelescopeMenuItem_Click);
             // 
@@ -4328,7 +4333,7 @@ namespace TerraViewer
             this.connectTelescopeMenuItem.AccessibleName = "";
             this.connectTelescopeMenuItem.MergeIndex = 5;
             this.connectTelescopeMenuItem.Name = "connectTelescopeMenuItem";
-            this.connectTelescopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.connectTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.connectTelescopeMenuItem.Text = "Connect";
             this.connectTelescopeMenuItem.Click += new System.EventHandler(this.connectTelescopeMenuItem_Click);
             // 
@@ -4336,7 +4341,7 @@ namespace TerraViewer
             // 
             this.trackScopeMenuItem.MergeIndex = 6;
             this.trackScopeMenuItem.Name = "trackScopeMenuItem";
-            this.trackScopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.trackScopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.trackScopeMenuItem.Text = "Track Telescope";
             this.trackScopeMenuItem.Click += new System.EventHandler(this.trackScopeMenuItem_Click);
             // 
@@ -4344,25 +4349,25 @@ namespace TerraViewer
             // 
             this.toolStripSeparator12.MergeIndex = 7;
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(341, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(237, 6);
             // 
             // parkTelescopeMenuItem
             // 
             this.parkTelescopeMenuItem.MergeIndex = 8;
             this.parkTelescopeMenuItem.Name = "parkTelescopeMenuItem";
-            this.parkTelescopeMenuItem.Size = new System.Drawing.Size(344, 30);
+            this.parkTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
             this.parkTelescopeMenuItem.Text = "Park";
             this.parkTelescopeMenuItem.Click += new System.EventHandler(this.parkTelescopeMenuItem_Click);
             // 
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(341, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(237, 6);
             // 
             // ASCOMPlatformHomePage
             // 
             this.ASCOMPlatformHomePage.Name = "ASCOMPlatformHomePage";
-            this.ASCOMPlatformHomePage.Size = new System.Drawing.Size(344, 30);
+            this.ASCOMPlatformHomePage.Size = new System.Drawing.Size(240, 22);
             this.ASCOMPlatformHomePage.Text = "ASCOM Platform";
             this.ASCOMPlatformHomePage.Click += new System.EventHandler(this.AscomPlatformMenuItem_Click);
             // 
@@ -4384,7 +4389,7 @@ namespace TerraViewer
             this.toolStripSeparator4,
             this.exitMenuItem});
             this.exploreMenu.Name = "contextMenuStrip1";
-            this.exploreMenu.Size = new System.Drawing.Size(365, 322);
+            this.exploreMenu.Size = new System.Drawing.Size(254, 242);
             this.exploreMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.exploreMenu.Opening += new System.ComponentModel.CancelEventHandler(this.exploreMenu_Opening);
             this.exploreMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4396,25 +4401,25 @@ namespace TerraViewer
             this.toolStripSeparator5,
             this.newSimpleTourMenuItem});
             this.createNewObservingListToolStripMenuItem.Name = "createNewObservingListToolStripMenuItem";
-            this.createNewObservingListToolStripMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.createNewObservingListToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.createNewObservingListToolStripMenuItem.Text = "New";
             // 
             // newObservingListpMenuItem
             // 
             this.newObservingListpMenuItem.Name = "newObservingListpMenuItem";
-            this.newObservingListpMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.newObservingListpMenuItem.Size = new System.Drawing.Size(171, 22);
             this.newObservingListpMenuItem.Text = "Collection...";
             this.newObservingListpMenuItem.Click += new System.EventHandler(this.newObservingListpMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(237, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(168, 6);
             // 
             // newSimpleTourMenuItem
             // 
             this.newSimpleTourMenuItem.Name = "newSimpleTourMenuItem";
-            this.newSimpleTourMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.newSimpleTourMenuItem.Size = new System.Drawing.Size(171, 22);
             this.newSimpleTourMenuItem.Text = "Slide-Based Tour...";
             this.newSimpleTourMenuItem.Click += new System.EventHandler(this.newSlideBasedTour);
             // 
@@ -4431,41 +4436,41 @@ namespace TerraViewer
             this.layerManagerToolStripMenuItem,
             this.customGalaxyFileToolStripMenuItem});
             this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.openFileToolStripMenuItem.Text = "&Open";
             // 
             // openTourMenuItem
             // 
             this.openTourMenuItem.Name = "openTourMenuItem";
-            this.openTourMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.openTourMenuItem.Size = new System.Drawing.Size(190, 22);
             this.openTourMenuItem.Text = "Tour...";
             this.openTourMenuItem.Click += new System.EventHandler(this.openTourMenuItem_Click);
             // 
             // openObservingListMenuItem
             // 
             this.openObservingListMenuItem.Name = "openObservingListMenuItem";
-            this.openObservingListMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.openObservingListMenuItem.Size = new System.Drawing.Size(190, 22);
             this.openObservingListMenuItem.Text = "Collection...";
             this.openObservingListMenuItem.Click += new System.EventHandler(this.openObservingListMenuItem_Click);
             // 
             // layersToolStripMenuItem
             // 
             this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
-            this.layersToolStripMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.layersToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.layersToolStripMenuItem.Text = "Layers...";
             this.layersToolStripMenuItem.Click += new System.EventHandler(this.layersToolStripMenuItem_Click);
             // 
             // openImageMenuItem
             // 
             this.openImageMenuItem.Name = "openImageMenuItem";
-            this.openImageMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.openImageMenuItem.Size = new System.Drawing.Size(190, 22);
             this.openImageMenuItem.Text = "Astronomical Image...";
             this.openImageMenuItem.Click += new System.EventHandler(this.openImageMenuItem_Click);
             // 
             // openKMLMenuItem
             // 
             this.openKMLMenuItem.Name = "openKMLMenuItem";
-            this.openKMLMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.openKMLMenuItem.Size = new System.Drawing.Size(190, 22);
             this.openKMLMenuItem.Text = "KML...";
             this.openKMLMenuItem.Visible = false;
             this.openKMLMenuItem.Click += new System.EventHandler(this.openKMLMenuItem_Click);
@@ -4473,14 +4478,14 @@ namespace TerraViewer
             // vOTableToolStripMenuItem
             // 
             this.vOTableToolStripMenuItem.Name = "vOTableToolStripMenuItem";
-            this.vOTableToolStripMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.vOTableToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.vOTableToolStripMenuItem.Text = "VO Table...";
             this.vOTableToolStripMenuItem.Click += new System.EventHandler(this.vOTableToolStripMenuItem_Click);
             // 
             // shapeFileToolStripMenuItem
             // 
             this.shapeFileToolStripMenuItem.Name = "shapeFileToolStripMenuItem";
-            this.shapeFileToolStripMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.shapeFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.shapeFileToolStripMenuItem.Text = "Shape File...";
             this.shapeFileToolStripMenuItem.Visible = false;
             this.shapeFileToolStripMenuItem.Click += new System.EventHandler(this.shapeFileToolStripMenuItem_Click);
@@ -4488,85 +4493,85 @@ namespace TerraViewer
             // layerManagerToolStripMenuItem
             // 
             this.layerManagerToolStripMenuItem.Name = "layerManagerToolStripMenuItem";
-            this.layerManagerToolStripMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.layerManagerToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.layerManagerToolStripMenuItem.Text = "Layer Manager";
             this.layerManagerToolStripMenuItem.Click += new System.EventHandler(this.layerManagerToolStripMenuItem_Click);
             // 
             // customGalaxyFileToolStripMenuItem
             // 
             this.customGalaxyFileToolStripMenuItem.Name = "customGalaxyFileToolStripMenuItem";
-            this.customGalaxyFileToolStripMenuItem.Size = new System.Drawing.Size(269, 30);
+            this.customGalaxyFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.customGalaxyFileToolStripMenuItem.Text = "Custom Galaxy File...";
             this.customGalaxyFileToolStripMenuItem.Click += new System.EventHandler(this.customGalaxyFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(361, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(250, 6);
             // 
             // showFinderToolStripMenuItem
             // 
             this.showFinderToolStripMenuItem.Name = "showFinderToolStripMenuItem";
-            this.showFinderToolStripMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.showFinderToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.showFinderToolStripMenuItem.Text = "Show Finder";
             this.showFinderToolStripMenuItem.Click += new System.EventHandler(this.showFinderToolStripMenuItem_Click);
             // 
             // playCollectionAsSlideShowToolStripMenuItem
             // 
             this.playCollectionAsSlideShowToolStripMenuItem.Name = "playCollectionAsSlideShowToolStripMenuItem";
-            this.playCollectionAsSlideShowToolStripMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.playCollectionAsSlideShowToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.playCollectionAsSlideShowToolStripMenuItem.Text = "Play Collection as Slide Show";
             this.playCollectionAsSlideShowToolStripMenuItem.Click += new System.EventHandler(this.playCollectionAsSlideShowToolStripMenuItem_Click);
             // 
             // addCollectionAsTourStopsToolStripMenuItem
             // 
             this.addCollectionAsTourStopsToolStripMenuItem.Name = "addCollectionAsTourStopsToolStripMenuItem";
-            this.addCollectionAsTourStopsToolStripMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.addCollectionAsTourStopsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.addCollectionAsTourStopsToolStripMenuItem.Text = "Add Collection as Tour Stops";
             this.addCollectionAsTourStopsToolStripMenuItem.Click += new System.EventHandler(this.addCollectionAsTourStopsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(361, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(250, 6);
             // 
             // ShowWelcomeTips
             // 
             this.ShowWelcomeTips.Name = "ShowWelcomeTips";
-            this.ShowWelcomeTips.Size = new System.Drawing.Size(364, 30);
+            this.ShowWelcomeTips.Size = new System.Drawing.Size(253, 22);
             this.ShowWelcomeTips.Text = "Show Welcome Tips";
             this.ShowWelcomeTips.Click += new System.EventHandler(this.ShowWelcomeTips_Click);
             // 
             // aboutMenuItem
             // 
             this.aboutMenuItem.Name = "aboutMenuItem";
-            this.aboutMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.aboutMenuItem.Size = new System.Drawing.Size(253, 22);
             this.aboutMenuItem.Text = "About WorldWide Telescope";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // gettingStarteMenuItem
             // 
             this.gettingStarteMenuItem.Name = "gettingStarteMenuItem";
-            this.gettingStarteMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.gettingStarteMenuItem.Size = new System.Drawing.Size(253, 22);
             this.gettingStarteMenuItem.Text = "Getting Started (Help)";
             this.gettingStarteMenuItem.Click += new System.EventHandler(this.gettingStarteMenuItem_Click);
             // 
             // homepageMenuItem
             // 
             this.homepageMenuItem.Name = "homepageMenuItem";
-            this.homepageMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.homepageMenuItem.Size = new System.Drawing.Size(253, 22);
             this.homepageMenuItem.Text = "WorldWide Telescope Home Page";
             this.homepageMenuItem.Click += new System.EventHandler(this.homepageMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(361, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(250, 6);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(364, 30);
+            this.exitMenuItem.Size = new System.Drawing.Size(253, 22);
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -4588,7 +4593,7 @@ namespace TerraViewer
             this.selectLanguageToolStripMenuItem,
             this.regionalDataCacheToolStripMenuItem});
             this.settingsMenu.Name = "contextMenuStrip1";
-            this.settingsMenu.Size = new System.Drawing.Size(293, 331);
+            this.settingsMenu.Size = new System.Drawing.Size(207, 226);
             this.settingsMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.settingsMenu.Opening += new System.ComponentModel.CancelEventHandler(this.settingsMenu_Opening);
             this.settingsMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4596,38 +4601,38 @@ namespace TerraViewer
             // checkForUpdatesToolStripMenuItem
             // 
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(289, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(203, 6);
             // 
             // feedbackToolStripMenuItem
             // 
             this.feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
-            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.feedbackToolStripMenuItem.Text = "Product Support...";
             this.feedbackToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click);
             // 
             // toolStripSeparator17
             // 
             this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(289, 6);
+            this.toolStripSeparator17.Size = new System.Drawing.Size(203, 6);
             // 
             // restoreDefaultsToolStripMenuItem
             // 
             this.restoreDefaultsToolStripMenuItem.Name = "restoreDefaultsToolStripMenuItem";
-            this.restoreDefaultsToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.restoreDefaultsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.restoreDefaultsToolStripMenuItem.Text = "Restore Defaults";
             this.restoreDefaultsToolStripMenuItem.Click += new System.EventHandler(this.restoreDefaultsToolStripMenuItem_Click);
             // 
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(289, 6);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(203, 6);
             // 
             // advancedToolStripMenuItem
             // 
@@ -4652,28 +4657,28 @@ namespace TerraViewer
             this.toolStripMenuItem6,
             this.sendLayersToProjectorServersToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.advancedToolStripMenuItem.Text = "Advanced";
             this.advancedToolStripMenuItem.DropDownOpening += new System.EventHandler(this.advancedToolStripMenuItem_DropDownOpening);
             // 
             // downloadQueueToolStripMenuItem
             // 
             this.downloadQueueToolStripMenuItem.Name = "downloadQueueToolStripMenuItem";
-            this.downloadQueueToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.downloadQueueToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.downloadQueueToolStripMenuItem.Text = "Show Download Queue";
             this.downloadQueueToolStripMenuItem.Click += new System.EventHandler(this.showQueue_Click);
             // 
             // startQueueToolStripMenuItem
             // 
             this.startQueueToolStripMenuItem.Name = "startQueueToolStripMenuItem";
-            this.startQueueToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.startQueueToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.startQueueToolStripMenuItem.Text = "Start Queue";
             this.startQueueToolStripMenuItem.Click += new System.EventHandler(this.startQueue_Click);
             // 
             // stopQueueToolStripMenuItem
             // 
             this.stopQueueToolStripMenuItem.Name = "stopQueueToolStripMenuItem";
-            this.stopQueueToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.stopQueueToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.stopQueueToolStripMenuItem.Text = "Stop Queue";
             this.stopQueueToolStripMenuItem.Click += new System.EventHandler(this.stopQueue_Click);
             // 
@@ -4686,165 +4691,177 @@ namespace TerraViewer
             this.tpsToolStripMenuItem120,
             this.tpsToolStripMenuItemUnlimited});
             this.tileLoadingThrottlingToolStripMenuItem.Name = "tileLoadingThrottlingToolStripMenuItem";
-            this.tileLoadingThrottlingToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.tileLoadingThrottlingToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.tileLoadingThrottlingToolStripMenuItem.Text = "Tile Loading Throttling";
             this.tileLoadingThrottlingToolStripMenuItem.DropDownOpening += new System.EventHandler(this.tileLoadingThrottlingToolStripMenuItem_DropDownOpening);
             // 
             // tpsToolStripMenuItem15
             // 
             this.tpsToolStripMenuItem15.Name = "tpsToolStripMenuItem15";
-            this.tpsToolStripMenuItem15.Size = new System.Drawing.Size(211, 30);
+            this.tpsToolStripMenuItem15.Size = new System.Drawing.Size(126, 22);
             this.tpsToolStripMenuItem15.Text = "15 tps";
             this.tpsToolStripMenuItem15.Click += new System.EventHandler(this.tpsToolStripMenuItem15_Click);
             // 
             // tpsToolStripMenuItem30
             // 
             this.tpsToolStripMenuItem30.Name = "tpsToolStripMenuItem30";
-            this.tpsToolStripMenuItem30.Size = new System.Drawing.Size(211, 30);
+            this.tpsToolStripMenuItem30.Size = new System.Drawing.Size(126, 22);
             this.tpsToolStripMenuItem30.Text = "30 tps";
             this.tpsToolStripMenuItem30.Click += new System.EventHandler(this.tpsToolStripMenuItem30_Click);
             // 
             // tpsToolStripMenuItem60
             // 
             this.tpsToolStripMenuItem60.Name = "tpsToolStripMenuItem60";
-            this.tpsToolStripMenuItem60.Size = new System.Drawing.Size(211, 30);
+            this.tpsToolStripMenuItem60.Size = new System.Drawing.Size(126, 22);
             this.tpsToolStripMenuItem60.Text = "60 tps";
             this.tpsToolStripMenuItem60.Click += new System.EventHandler(this.tpsToolStripMenuItem60_Click);
             // 
             // tpsToolStripMenuItem120
             // 
             this.tpsToolStripMenuItem120.Name = "tpsToolStripMenuItem120";
-            this.tpsToolStripMenuItem120.Size = new System.Drawing.Size(211, 30);
+            this.tpsToolStripMenuItem120.Size = new System.Drawing.Size(126, 22);
             this.tpsToolStripMenuItem120.Text = "120 tps";
             this.tpsToolStripMenuItem120.Click += new System.EventHandler(this.tpsToolStripMenuItem120_Click);
             // 
             // tpsToolStripMenuItemUnlimited
             // 
             this.tpsToolStripMenuItemUnlimited.Name = "tpsToolStripMenuItemUnlimited";
-            this.tpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(211, 30);
+            this.tpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(126, 22);
             this.tpsToolStripMenuItemUnlimited.Text = "Unlimited";
             this.tpsToolStripMenuItemUnlimited.Click += new System.EventHandler(this.tpsToolStripMenuItemUnlimited_Click);
             // 
             // toolStripMenuItem8
             // 
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(419, 6);
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(288, 6);
+            // 
+            // DownloadMPC
+            // 
+            this.DownloadMPC.Name = "DownloadMPC";
+            this.DownloadMPC.Size = new System.Drawing.Size(291, 22);
+            this.DownloadMPC.Text = "Download New Minor Planet Center Data";
+            this.DownloadMPC.Click += new System.EventHandler(this.DownloadMPC_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(288, 6);
             // 
             // saveCacheAsCabinetFileToolStripMenuItem
             // 
             this.saveCacheAsCabinetFileToolStripMenuItem.Name = "saveCacheAsCabinetFileToolStripMenuItem";
-            this.saveCacheAsCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.saveCacheAsCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.saveCacheAsCabinetFileToolStripMenuItem.Text = "Save Cache as Cabinet File...";
             this.saveCacheAsCabinetFileToolStripMenuItem.Click += new System.EventHandler(this.saveCacheAsCabinetFileToolStripMenuItem_Click);
             // 
             // restoreCacheFromCabinetFileToolStripMenuItem
             // 
             this.restoreCacheFromCabinetFileToolStripMenuItem.Name = "restoreCacheFromCabinetFileToolStripMenuItem";
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.restoreCacheFromCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.restoreCacheFromCabinetFileToolStripMenuItem.Text = "Restore Cache from Cabinet File...";
             this.restoreCacheFromCabinetFileToolStripMenuItem.Click += new System.EventHandler(this.restoreCacheFromCabinetFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator22
             // 
             this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new System.Drawing.Size(419, 6);
+            this.toolStripSeparator22.Size = new System.Drawing.Size(288, 6);
             // 
             // flushCacheToolStripMenuItem
             // 
             this.flushCacheToolStripMenuItem.Name = "flushCacheToolStripMenuItem";
-            this.flushCacheToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.flushCacheToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.flushCacheToolStripMenuItem.Text = "Flush Cache";
             this.flushCacheToolStripMenuItem.Click += new System.EventHandler(this.helpFlush_Click);
             // 
             // toolStripSeparator18
             // 
             this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new System.Drawing.Size(419, 6);
+            this.toolStripSeparator18.Size = new System.Drawing.Size(288, 6);
             // 
             // showPerformanceDataToolStripMenuItem
             // 
             this.showPerformanceDataToolStripMenuItem.CheckOnClick = true;
             this.showPerformanceDataToolStripMenuItem.Name = "showPerformanceDataToolStripMenuItem";
-            this.showPerformanceDataToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.showPerformanceDataToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.showPerformanceDataToolStripMenuItem.Text = "Show Performance Data";
             this.showPerformanceDataToolStripMenuItem.Click += new System.EventHandler(this.showPerformanceDataToolStripMenuItem_Click);
             // 
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(419, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(288, 6);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.MergeIndex = 1;
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(422, 30);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(291, 22);
             this.toolStripMenuItem2.Text = "Master Controller";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.menuMasterControler_Click);
             // 
             // multiChanelCalibrationToolStripMenuItem
             // 
             this.multiChanelCalibrationToolStripMenuItem.Name = "multiChanelCalibrationToolStripMenuItem";
-            this.multiChanelCalibrationToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.multiChanelCalibrationToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.multiChanelCalibrationToolStripMenuItem.Text = "Multi-Channel Calibration";
             this.multiChanelCalibrationToolStripMenuItem.Click += new System.EventHandler(this.multiChanelCalibrationToolStripMenuItem_Click);
             // 
             // clientNodeListToolStripMenuItem
             // 
             this.clientNodeListToolStripMenuItem.Name = "clientNodeListToolStripMenuItem";
-            this.clientNodeListToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.clientNodeListToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.clientNodeListToolStripMenuItem.Text = "Projector Server List";
             this.clientNodeListToolStripMenuItem.Click += new System.EventHandler(this.clientNodeListToolStripMenuItem_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(419, 6);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(288, 6);
             // 
             // sendLayersToProjectorServersToolStripMenuItem
             // 
             this.sendLayersToProjectorServersToolStripMenuItem.Name = "sendLayersToProjectorServersToolStripMenuItem";
-            this.sendLayersToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(422, 30);
+            this.sendLayersToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.sendLayersToProjectorServersToolStripMenuItem.Text = "Send Layers to Projector Servers";
             this.sendLayersToProjectorServersToolStripMenuItem.Click += new System.EventHandler(this.sendLayersToProjectorServersToolStripMenuItem_Click);
             // 
             // mIDIControllerSetupToolStripMenuItem
             // 
             this.mIDIControllerSetupToolStripMenuItem.Name = "mIDIControllerSetupToolStripMenuItem";
-            this.mIDIControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.mIDIControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.mIDIControllerSetupToolStripMenuItem.Text = "Controller Setup...";
             this.mIDIControllerSetupToolStripMenuItem.Click += new System.EventHandler(this.mIDIControllerSetupToolStripMenuItem_Click);
             // 
             // xBoxControllerSetupToolStripMenuItem
             // 
             this.xBoxControllerSetupToolStripMenuItem.Name = "xBoxControllerSetupToolStripMenuItem";
-            this.xBoxControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.xBoxControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.xBoxControllerSetupToolStripMenuItem.Text = "Xbox Controller Setup...";
             this.xBoxControllerSetupToolStripMenuItem.Click += new System.EventHandler(this.xBoxControllerSetupToolStripMenuItem_Click);
             // 
             // remoteAccessControlToolStripMenuItem
             // 
             this.remoteAccessControlToolStripMenuItem.Name = "remoteAccessControlToolStripMenuItem";
-            this.remoteAccessControlToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.remoteAccessControlToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.remoteAccessControlToolStripMenuItem.Text = "Remote Access Control...";
             this.remoteAccessControlToolStripMenuItem.Click += new System.EventHandler(this.remoteAccessControlToolStripMenuItem_Click);
             // 
             // toolStripMenuItem14
             // 
             this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-            this.toolStripMenuItem14.Size = new System.Drawing.Size(289, 6);
+            this.toolStripMenuItem14.Size = new System.Drawing.Size(203, 6);
             // 
             // selectLanguageToolStripMenuItem
             // 
             this.selectLanguageToolStripMenuItem.Name = "selectLanguageToolStripMenuItem";
-            this.selectLanguageToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.selectLanguageToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.selectLanguageToolStripMenuItem.Text = "Select Language...";
             this.selectLanguageToolStripMenuItem.Click += new System.EventHandler(this.selectLanguageToolStripMenuItem_Click);
             // 
             // regionalDataCacheToolStripMenuItem
             // 
             this.regionalDataCacheToolStripMenuItem.Name = "regionalDataCacheToolStripMenuItem";
-            this.regionalDataCacheToolStripMenuItem.Size = new System.Drawing.Size(292, 30);
+            this.regionalDataCacheToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
             this.regionalDataCacheToolStripMenuItem.Text = "Regional Data Cache...";
             this.regionalDataCacheToolStripMenuItem.Click += new System.EventHandler(this.regionalDataCacheToolStripMenuItem_Click);
             // 
@@ -4864,6 +4881,8 @@ namespace TerraViewer
             this.saveCurrentViewImageToFileToolStripMenuItem,
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem,
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem,
+            this.enableExport3dCitiesModeToolStripMenuItem,
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem,
             this.toolStripSeparator21,
             this.screenBroadcastToolStripMenuItem,
             this.toolStripSeparator14,
@@ -4878,7 +4897,7 @@ namespace TerraViewer
             this.lockVerticalSyncToolStripMenuItem,
             this.targetFrameRateToolStripMenuItem});
             this.viewMenu.Name = "contextMenuStrip1";
-            this.viewMenu.Size = new System.Drawing.Size(501, 634);
+            this.viewMenu.Size = new System.Drawing.Size(341, 540);
             this.viewMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.viewMenu.Opening += new System.ComponentModel.CancelEventHandler(this.viewMenu_Opening);
             this.viewMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4886,35 +4905,35 @@ namespace TerraViewer
             // resetCameraMenuItem
             // 
             this.resetCameraMenuItem.Name = "resetCameraMenuItem";
-            this.resetCameraMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.resetCameraMenuItem.Size = new System.Drawing.Size(340, 22);
             this.resetCameraMenuItem.Text = "Reset Camera";
             this.resetCameraMenuItem.Click += new System.EventHandler(this.resetCameraToolStripMenuItem_Click);
             // 
             // showTouchControlsToolStripMenuItem
             // 
             this.showTouchControlsToolStripMenuItem.Name = "showTouchControlsToolStripMenuItem";
-            this.showTouchControlsToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.showTouchControlsToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.showTouchControlsToolStripMenuItem.Text = "Show On-Screen Controls";
             this.showTouchControlsToolStripMenuItem.Click += new System.EventHandler(this.showTouchControlsToolStripMenuItem_Click);
             // 
             // monochromeStyleToolStripMenuItem
             // 
             this.monochromeStyleToolStripMenuItem.Name = "monochromeStyleToolStripMenuItem";
-            this.monochromeStyleToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.monochromeStyleToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.monochromeStyleToolStripMenuItem.Text = "Monochrome Style";
             this.monochromeStyleToolStripMenuItem.Click += new System.EventHandler(this.monochromeStyleToolStripMenuItem_Click);
             // 
             // allowUnconstrainedTiltToolStripMenuItem
             // 
             this.allowUnconstrainedTiltToolStripMenuItem.Name = "allowUnconstrainedTiltToolStripMenuItem";
-            this.allowUnconstrainedTiltToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.allowUnconstrainedTiltToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.allowUnconstrainedTiltToolStripMenuItem.Text = "Allow Unconstrained Tilt";
             this.allowUnconstrainedTiltToolStripMenuItem.Click += new System.EventHandler(this.allowUnconstrainedTiltToolStripMenuItem_Click);
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(497, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(337, 6);
             // 
             // startupToolStripMenuItem
             // 
@@ -4927,135 +4946,142 @@ namespace TerraViewer
             this.lastToolStripMenuItem,
             this.randomToolStripMenuItem});
             this.startupToolStripMenuItem.Name = "startupToolStripMenuItem";
-            this.startupToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.startupToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.startupToolStripMenuItem.Text = "Startup Look At";
             this.startupToolStripMenuItem.DropDownOpening += new System.EventHandler(this.startupToolStripMenuItem_DropDownOpening);
             // 
             // earthToolStripMenuItem
             // 
             this.earthToolStripMenuItem.Name = "earthToolStripMenuItem";
-            this.earthToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.earthToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.earthToolStripMenuItem.Text = "Earth";
             this.earthToolStripMenuItem.Click += new System.EventHandler(this.earthToolStripMenuItem_Click);
             // 
             // planetToolStripMenuItem
             // 
             this.planetToolStripMenuItem.Name = "planetToolStripMenuItem";
-            this.planetToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.planetToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.planetToolStripMenuItem.Text = "Planet";
             this.planetToolStripMenuItem.Click += new System.EventHandler(this.planetToolStripMenuItem_Click);
             // 
             // skyToolStripMenuItem
             // 
             this.skyToolStripMenuItem.Name = "skyToolStripMenuItem";
-            this.skyToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.skyToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.skyToolStripMenuItem.Text = "Sky";
             this.skyToolStripMenuItem.Click += new System.EventHandler(this.skyToolStripMenuItem_Click);
             // 
             // panoramaToolStripMenuItem
             // 
             this.panoramaToolStripMenuItem.Name = "panoramaToolStripMenuItem";
-            this.panoramaToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.panoramaToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.panoramaToolStripMenuItem.Text = "Panorama";
             this.panoramaToolStripMenuItem.Click += new System.EventHandler(this.panoramaToolStripMenuItem_Click);
             // 
             // solarSystemToolStripMenuItem
             // 
             this.solarSystemToolStripMenuItem.Name = "solarSystemToolStripMenuItem";
-            this.solarSystemToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.solarSystemToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.solarSystemToolStripMenuItem.Text = "Solar System";
             this.solarSystemToolStripMenuItem.Click += new System.EventHandler(this.solarSystemToolStripMenuItem_Click);
             // 
             // lastToolStripMenuItem
             // 
             this.lastToolStripMenuItem.Name = "lastToolStripMenuItem";
-            this.lastToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.lastToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.lastToolStripMenuItem.Text = "Last";
             this.lastToolStripMenuItem.Click += new System.EventHandler(this.lastToolStripMenuItem_Click);
             // 
             // randomToolStripMenuItem
             // 
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new System.Drawing.Size(199, 30);
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.randomToolStripMenuItem.Text = "Random";
             this.randomToolStripMenuItem.Click += new System.EventHandler(this.randomToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(497, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(337, 6);
             // 
             // copyCurrentViewToClipboardToolStripMenuItem
             // 
             this.copyCurrentViewToClipboardToolStripMenuItem.Name = "copyCurrentViewToClipboardToolStripMenuItem";
-            this.copyCurrentViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.copyCurrentViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.copyCurrentViewToClipboardToolStripMenuItem.Text = "Copy Current View Image";
             this.copyCurrentViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyCurrentViewToClipboardToolStripMenuItem_Click);
             // 
             // copyShortCutToThisViewToClipboardToolStripMenuItem
             // 
             this.copyShortCutToThisViewToClipboardToolStripMenuItem.Name = "copyShortCutToThisViewToClipboardToolStripMenuItem";
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.copyShortCutToThisViewToClipboardToolStripMenuItem.Text = "Copy Shortcut to this View";
             this.copyShortCutToThisViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyShortcutMenuItem_Click);
             // 
             // saveCurrentViewImageToFileToolStripMenuItem
             // 
             this.saveCurrentViewImageToFileToolStripMenuItem.Name = "saveCurrentViewImageToFileToolStripMenuItem";
-            this.saveCurrentViewImageToFileToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.saveCurrentViewImageToFileToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.saveCurrentViewImageToFileToolStripMenuItem.Text = "Save Current View Image to File...";
             this.saveCurrentViewImageToFileToolStripMenuItem.Click += new System.EventHandler(this.saveCurrentViewImageToFileToolStripMenuItem_Click);
             // 
             // setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem
             // 
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Name = "setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem";
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Text = "Set Current View as Windows Desktop Background";
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Click += new System.EventHandler(this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem_Click);
             // 
             // exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem
             // 
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Name = "exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem";
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Text = "Export Current View as STL File for 3D Printing...";
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Click += new System.EventHandler(this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem_Click);
+            // 
+            // exportCurrentCitiesViewAs3DMeshToolStripMenuItem
+            // 
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Name = "exportCurrentCitiesViewAs3DMeshToolStripMenuItem";
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Text = "Export Current Cities View as 3D Mesh...";
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Click += new System.EventHandler(this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem_Click);
             // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(497, 6);
+            this.toolStripSeparator21.Size = new System.Drawing.Size(337, 6);
             // 
             // screenBroadcastToolStripMenuItem
             // 
             this.screenBroadcastToolStripMenuItem.Name = "screenBroadcastToolStripMenuItem";
-            this.screenBroadcastToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.screenBroadcastToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.screenBroadcastToolStripMenuItem.Text = "Screen Broadcast...";
             this.screenBroadcastToolStripMenuItem.Click += new System.EventHandler(this.screenBroadcastToolStripMenuItem_Click);
             // 
             // toolStripSeparator14
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(497, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(337, 6);
             this.toolStripSeparator14.Visible = false;
             // 
             // imageStackToolStripMenuItem
             // 
             this.imageStackToolStripMenuItem.Name = "imageStackToolStripMenuItem";
-            this.imageStackToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.imageStackToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.imageStackToolStripMenuItem.Text = "Image Stack";
             this.imageStackToolStripMenuItem.Click += new System.EventHandler(this.imageStackToolStripMenuItem_Click);
             // 
             // showLayerManagerToolStripMenuItem
             // 
             this.showLayerManagerToolStripMenuItem.Name = "showLayerManagerToolStripMenuItem";
-            this.showLayerManagerToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.showLayerManagerToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.showLayerManagerToolStripMenuItem.Text = "Show Layer Manager";
             this.showLayerManagerToolStripMenuItem.Click += new System.EventHandler(this.showLayerManagerToolStripMenuItem_Click);
             // 
             // toolStripSeparator20
             // 
             this.toolStripSeparator20.Name = "toolStripSeparator20";
-            this.toolStripSeparator20.Size = new System.Drawing.Size(497, 6);
+            this.toolStripSeparator20.Size = new System.Drawing.Size(337, 6);
             // 
             // stereoToolStripMenuItem
             // 
@@ -5069,63 +5095,63 @@ namespace TerraViewer
             this.alternatingLinesEvenToolStripMenuItem,
             this.oculusRiftToolStripMenuItem});
             this.stereoToolStripMenuItem.Name = "stereoToolStripMenuItem";
-            this.stereoToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.stereoToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.stereoToolStripMenuItem.Text = "Stereo";
             this.stereoToolStripMenuItem.DropDownOpening += new System.EventHandler(this.stereoToolStripMenuItem_DropDownOpening);
             // 
             // enabledToolStripMenuItem
             // 
             this.enabledToolStripMenuItem.Name = "enabledToolStripMenuItem";
-            this.enabledToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.enabledToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.enabledToolStripMenuItem.Text = "Disabled";
             this.enabledToolStripMenuItem.Click += new System.EventHandler(this.enabledToolStripMenuItem_Click);
             // 
             // anaglyphToolStripMenuItem
             // 
             this.anaglyphToolStripMenuItem.Name = "anaglyphToolStripMenuItem";
-            this.anaglyphToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.anaglyphToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.anaglyphToolStripMenuItem.Text = "Anaglyph (Red-Cyan)";
             this.anaglyphToolStripMenuItem.Click += new System.EventHandler(this.anaglyphToolStripMenuItem_Click);
             // 
             // anaglyphYellowBlueToolStripMenuItem
             // 
             this.anaglyphYellowBlueToolStripMenuItem.Name = "anaglyphYellowBlueToolStripMenuItem";
-            this.anaglyphYellowBlueToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.anaglyphYellowBlueToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.anaglyphYellowBlueToolStripMenuItem.Text = "Anaglyph (Yellow-Blue)";
             this.anaglyphYellowBlueToolStripMenuItem.Click += new System.EventHandler(this.anaglyphYellowBlueToolStripMenuItem_Click);
             // 
             // sideBySideProjectionToolStripMenuItem
             // 
             this.sideBySideProjectionToolStripMenuItem.Name = "sideBySideProjectionToolStripMenuItem";
-            this.sideBySideProjectionToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.sideBySideProjectionToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.sideBySideProjectionToolStripMenuItem.Text = "Side by Side Projection";
             this.sideBySideProjectionToolStripMenuItem.Click += new System.EventHandler(this.sideBySideProjectionToolStripMenuItem_Click);
             // 
             // sideBySideCrossEyedToolStripMenuItem
             // 
             this.sideBySideCrossEyedToolStripMenuItem.Name = "sideBySideCrossEyedToolStripMenuItem";
-            this.sideBySideCrossEyedToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.sideBySideCrossEyedToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.sideBySideCrossEyedToolStripMenuItem.Text = "Side by Side Cross-Eyed";
             this.sideBySideCrossEyedToolStripMenuItem.Click += new System.EventHandler(this.sideBySideCrossEyedToolStripMenuItem_Click);
             // 
             // alternatingLinesOddToolStripMenuItem
             // 
             this.alternatingLinesOddToolStripMenuItem.Name = "alternatingLinesOddToolStripMenuItem";
-            this.alternatingLinesOddToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.alternatingLinesOddToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.alternatingLinesOddToolStripMenuItem.Text = "Alternating Lines Odd";
             this.alternatingLinesOddToolStripMenuItem.Click += new System.EventHandler(this.alternatingLinesOddToolStripMenuItem_Click);
             // 
             // alternatingLinesEvenToolStripMenuItem
             // 
             this.alternatingLinesEvenToolStripMenuItem.Name = "alternatingLinesEvenToolStripMenuItem";
-            this.alternatingLinesEvenToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.alternatingLinesEvenToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.alternatingLinesEvenToolStripMenuItem.Text = "Alternating Lines Even";
             this.alternatingLinesEvenToolStripMenuItem.Click += new System.EventHandler(this.alternatingLinesEvenToolStripMenuItem_Click);
             // 
             // oculusRiftToolStripMenuItem
             // 
             this.oculusRiftToolStripMenuItem.Name = "oculusRiftToolStripMenuItem";
-            this.oculusRiftToolStripMenuItem.Size = new System.Drawing.Size(289, 30);
+            this.oculusRiftToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.oculusRiftToolStripMenuItem.Text = "Oculus Rift";
             this.oculusRiftToolStripMenuItem.Click += new System.EventHandler(this.oculusRiftToolStripMenuItem_Click);
             // 
@@ -5135,21 +5161,21 @@ namespace TerraViewer
             this.monoModeToolStripMenuItem,
             this.startInOculusModeToolStripMenuItem});
             this.oculusVRHeadsetToolStripMenuItem.Name = "oculusVRHeadsetToolStripMenuItem";
-            this.oculusVRHeadsetToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.oculusVRHeadsetToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.oculusVRHeadsetToolStripMenuItem.Text = "Oculus VR Headset";
             this.oculusVRHeadsetToolStripMenuItem.DropDownOpening += new System.EventHandler(this.oculusVRHeadsetToolStripMenuItem_DropDownOpening);
             // 
             // monoModeToolStripMenuItem
             // 
             this.monoModeToolStripMenuItem.Name = "monoModeToolStripMenuItem";
-            this.monoModeToolStripMenuItem.Size = new System.Drawing.Size(263, 30);
+            this.monoModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.monoModeToolStripMenuItem.Text = "Mono Mode";
             this.monoModeToolStripMenuItem.Click += new System.EventHandler(this.monoModeToolStripMenuItem_Click);
             // 
             // startInOculusModeToolStripMenuItem
             // 
             this.startInOculusModeToolStripMenuItem.Name = "startInOculusModeToolStripMenuItem";
-            this.startInOculusModeToolStripMenuItem.Size = new System.Drawing.Size(263, 30);
+            this.startInOculusModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.startInOculusModeToolStripMenuItem.Text = "Start in Oculus Mode";
             this.startInOculusModeToolStripMenuItem.Click += new System.EventHandler(this.startInOculusModeToolStripMenuItem_Click);
             // 
@@ -5167,13 +5193,13 @@ namespace TerraViewer
             this.toolStripMenuItem10,
             this.fullDomePreviewToolStripMenuItem});
             this.expermentalToolStripMenuItem.Name = "expermentalToolStripMenuItem";
-            this.expermentalToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.expermentalToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.expermentalToolStripMenuItem.Text = "Single Channel Full Dome";
             // 
             // fullDomeToolStripMenuItem
             // 
             this.fullDomeToolStripMenuItem.Name = "fullDomeToolStripMenuItem";
-            this.fullDomeToolStripMenuItem.Size = new System.Drawing.Size(393, 30);
+            this.fullDomeToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.fullDomeToolStripMenuItem.Text = "Dome View";
             this.fullDomeToolStripMenuItem.Click += new System.EventHandler(this.fullDomeToolStripMenuItem_Click);
             // 
@@ -5189,14 +5215,14 @@ namespace TerraViewer
             this.monitorSevenToolStripMenuItem,
             this.monitorEightToolStripMenuItem});
             this.newFullDomeViewInstanceToolStripMenuItem.Name = "newFullDomeViewInstanceToolStripMenuItem";
-            this.newFullDomeViewInstanceToolStripMenuItem.Size = new System.Drawing.Size(393, 30);
+            this.newFullDomeViewInstanceToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.newFullDomeViewInstanceToolStripMenuItem.Text = "New Full Dome View Instance";
             this.newFullDomeViewInstanceToolStripMenuItem.DropDownOpening += new System.EventHandler(this.newFullDomeViewInstanceToolStripMenuItem_DropDownOpening);
             // 
             // monitorOneToolStripMenuItem
             // 
             this.monitorOneToolStripMenuItem.Name = "monitorOneToolStripMenuItem";
-            this.monitorOneToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorOneToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorOneToolStripMenuItem.Tag = "1";
             this.monitorOneToolStripMenuItem.Text = "Monitor One";
             this.monitorOneToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5204,7 +5230,7 @@ namespace TerraViewer
             // monitorTwoToolStripMenuItem
             // 
             this.monitorTwoToolStripMenuItem.Name = "monitorTwoToolStripMenuItem";
-            this.monitorTwoToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorTwoToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorTwoToolStripMenuItem.Tag = "2";
             this.monitorTwoToolStripMenuItem.Text = "Monitor Two";
             this.monitorTwoToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5212,7 +5238,7 @@ namespace TerraViewer
             // monitorThreeToolStripMenuItem
             // 
             this.monitorThreeToolStripMenuItem.Name = "monitorThreeToolStripMenuItem";
-            this.monitorThreeToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorThreeToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorThreeToolStripMenuItem.Tag = "3";
             this.monitorThreeToolStripMenuItem.Text = "Monitor Three";
             this.monitorThreeToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5220,7 +5246,7 @@ namespace TerraViewer
             // monitorFourToolStripMenuItem
             // 
             this.monitorFourToolStripMenuItem.Name = "monitorFourToolStripMenuItem";
-            this.monitorFourToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorFourToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorFourToolStripMenuItem.Tag = "4";
             this.monitorFourToolStripMenuItem.Text = "Monitor Four";
             this.monitorFourToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5228,7 +5254,7 @@ namespace TerraViewer
             // monitorFiveToolStripMenuItem
             // 
             this.monitorFiveToolStripMenuItem.Name = "monitorFiveToolStripMenuItem";
-            this.monitorFiveToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorFiveToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorFiveToolStripMenuItem.Tag = "5";
             this.monitorFiveToolStripMenuItem.Text = "Monitor Five";
             this.monitorFiveToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5236,7 +5262,7 @@ namespace TerraViewer
             // monitorSixToolStripMenuItem
             // 
             this.monitorSixToolStripMenuItem.Name = "monitorSixToolStripMenuItem";
-            this.monitorSixToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorSixToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorSixToolStripMenuItem.Tag = "6";
             this.monitorSixToolStripMenuItem.Text = "Monitor Six";
             this.monitorSixToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5244,7 +5270,7 @@ namespace TerraViewer
             // monitorSevenToolStripMenuItem
             // 
             this.monitorSevenToolStripMenuItem.Name = "monitorSevenToolStripMenuItem";
-            this.monitorSevenToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorSevenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorSevenToolStripMenuItem.Tag = "7";
             this.monitorSevenToolStripMenuItem.Text = "Monitor Seven";
             this.monitorSevenToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5252,7 +5278,7 @@ namespace TerraViewer
             // monitorEightToolStripMenuItem
             // 
             this.monitorEightToolStripMenuItem.Name = "monitorEightToolStripMenuItem";
-            this.monitorEightToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.monitorEightToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.monitorEightToolStripMenuItem.Tag = "8";
             this.monitorEightToolStripMenuItem.Text = "Monitor Eight";
             this.monitorEightToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5260,50 +5286,50 @@ namespace TerraViewer
             // toolStripMenuItem15
             // 
             this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-            this.toolStripMenuItem15.Size = new System.Drawing.Size(390, 6);
+            this.toolStripMenuItem15.Size = new System.Drawing.Size(268, 6);
             // 
             // domeSetupToolStripMenuItem
             // 
             this.domeSetupToolStripMenuItem.Name = "domeSetupToolStripMenuItem";
-            this.domeSetupToolStripMenuItem.Size = new System.Drawing.Size(393, 30);
+            this.domeSetupToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.domeSetupToolStripMenuItem.Text = "Dome Setup";
             this.domeSetupToolStripMenuItem.Click += new System.EventHandler(this.domeSetupToolStripMenuItem_Click);
             // 
             // listenUpBoysToolStripMenuItem
             // 
             this.listenUpBoysToolStripMenuItem.Name = "listenUpBoysToolStripMenuItem";
-            this.listenUpBoysToolStripMenuItem.Size = new System.Drawing.Size(393, 30);
+            this.listenUpBoysToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.listenUpBoysToolStripMenuItem.Text = "Start Listener";
             this.listenUpBoysToolStripMenuItem.Click += new System.EventHandler(this.listenUpBoysToolStripMenuItem_Click);
             // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(390, 6);
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(268, 6);
             // 
             // detachMainViewToSecondMonitor
             // 
             this.detachMainViewToSecondMonitor.Name = "detachMainViewToSecondMonitor";
-            this.detachMainViewToSecondMonitor.Size = new System.Drawing.Size(393, 30);
+            this.detachMainViewToSecondMonitor.Size = new System.Drawing.Size(271, 22);
             this.detachMainViewToSecondMonitor.Text = "Detach Main View to Second Monitor";
             this.detachMainViewToSecondMonitor.Click += new System.EventHandler(this.detatchMainViewMenuItem_Click);
             // 
             // detachMainViewToThirdMonitorToolStripMenuItem
             // 
             this.detachMainViewToThirdMonitorToolStripMenuItem.Name = "detachMainViewToThirdMonitorToolStripMenuItem";
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Size = new System.Drawing.Size(393, 30);
+            this.detachMainViewToThirdMonitorToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.detachMainViewToThirdMonitorToolStripMenuItem.Text = "Detach Main View to Third Monitor";
             this.detachMainViewToThirdMonitorToolStripMenuItem.Click += new System.EventHandler(this.detachMainViewToThirdMonitorToolStripMenuItem_Click);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(390, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(268, 6);
             // 
             // fullDomePreviewToolStripMenuItem
             // 
             this.fullDomePreviewToolStripMenuItem.Name = "fullDomePreviewToolStripMenuItem";
-            this.fullDomePreviewToolStripMenuItem.Size = new System.Drawing.Size(393, 30);
+            this.fullDomePreviewToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.fullDomePreviewToolStripMenuItem.Text = "Full Dome Preview";
             this.fullDomePreviewToolStripMenuItem.Click += new System.EventHandler(this.fullDomePreviewToolStripMenuItem_Click);
             // 
@@ -5312,7 +5338,7 @@ namespace TerraViewer
             this.toggleFullScreenModeF11ToolStripMenuItem.Name = "toggleFullScreenModeF11ToolStripMenuItem";
             this.toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeyDisplayString = "F11";
             this.toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
-            this.toggleFullScreenModeF11ToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.toggleFullScreenModeF11ToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.toggleFullScreenModeF11ToolStripMenuItem.Text = "Toggle Full Screen Mode";
             this.toggleFullScreenModeF11ToolStripMenuItem.Click += new System.EventHandler(this.toggleFullScreenModeF11ToolStripMenuItem_Click);
             // 
@@ -5323,35 +5349,35 @@ namespace TerraViewer
             this.fourSamplesToolStripMenuItem,
             this.eightSamplesToolStripMenuItem});
             this.multiSampleAntialiasingToolStripMenuItem.Name = "multiSampleAntialiasingToolStripMenuItem";
-            this.multiSampleAntialiasingToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.multiSampleAntialiasingToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.multiSampleAntialiasingToolStripMenuItem.Text = "Multi-Sample Antialiasing";
             this.multiSampleAntialiasingToolStripMenuItem.DropDownOpening += new System.EventHandler(this.multiSampleAntialiasingToolStripMenuItem_DropDownOpening);
             // 
             // noneToolStripMenuItem
             // 
             this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-            this.noneToolStripMenuItem.Size = new System.Drawing.Size(209, 30);
+            this.noneToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.noneToolStripMenuItem.Text = "None";
             this.noneToolStripMenuItem.Click += new System.EventHandler(this.noneToolStripMenuItem_Click);
             // 
             // fourSamplesToolStripMenuItem
             // 
             this.fourSamplesToolStripMenuItem.Name = "fourSamplesToolStripMenuItem";
-            this.fourSamplesToolStripMenuItem.Size = new System.Drawing.Size(209, 30);
+            this.fourSamplesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.fourSamplesToolStripMenuItem.Text = "Four Samples";
             this.fourSamplesToolStripMenuItem.Click += new System.EventHandler(this.fourSamplesToolStripMenuItem_Click);
             // 
             // eightSamplesToolStripMenuItem
             // 
             this.eightSamplesToolStripMenuItem.Name = "eightSamplesToolStripMenuItem";
-            this.eightSamplesToolStripMenuItem.Size = new System.Drawing.Size(209, 30);
+            this.eightSamplesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.eightSamplesToolStripMenuItem.Text = "Eight Samples";
             this.eightSamplesToolStripMenuItem.Click += new System.EventHandler(this.eightSamplesToolStripMenuItem_Click);
             // 
             // lockVerticalSyncToolStripMenuItem
             // 
             this.lockVerticalSyncToolStripMenuItem.Name = "lockVerticalSyncToolStripMenuItem";
-            this.lockVerticalSyncToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.lockVerticalSyncToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.lockVerticalSyncToolStripMenuItem.Text = "Lock Vertical Sync";
             this.lockVerticalSyncToolStripMenuItem.Click += new System.EventHandler(this.lockVerticalSyncToolStripMenuItem_Click);
             // 
@@ -5363,37 +5389,44 @@ namespace TerraViewer
             this.fPSToolStripMenuItem30,
             this.fPSToolStripMenuItem24});
             this.targetFrameRateToolStripMenuItem.Name = "targetFrameRateToolStripMenuItem";
-            this.targetFrameRateToolStripMenuItem.Size = new System.Drawing.Size(500, 30);
+            this.targetFrameRateToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.targetFrameRateToolStripMenuItem.Text = "Target Frame Rate";
             this.targetFrameRateToolStripMenuItem.DropDownOpening += new System.EventHandler(this.targetFrameRateToolStripMenuItem_DropDownOpening);
             // 
             // fpsToolStripMenuItemUnlimited
             // 
             this.fpsToolStripMenuItemUnlimited.Name = "fpsToolStripMenuItemUnlimited";
-            this.fpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(173, 30);
+            this.fpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(126, 22);
             this.fpsToolStripMenuItemUnlimited.Text = "Unlimited";
             this.fpsToolStripMenuItemUnlimited.Click += new System.EventHandler(this.fpsToolStripMenuItemUnlimited_Click);
             // 
             // fPSToolStripMenuItem60
             // 
             this.fPSToolStripMenuItem60.Name = "fPSToolStripMenuItem60";
-            this.fPSToolStripMenuItem60.Size = new System.Drawing.Size(173, 30);
+            this.fPSToolStripMenuItem60.Size = new System.Drawing.Size(126, 22);
             this.fPSToolStripMenuItem60.Text = "60 FPS";
             this.fPSToolStripMenuItem60.Click += new System.EventHandler(this.fPSToolStripMenuItem60_Click);
             // 
             // fPSToolStripMenuItem30
             // 
             this.fPSToolStripMenuItem30.Name = "fPSToolStripMenuItem30";
-            this.fPSToolStripMenuItem30.Size = new System.Drawing.Size(173, 30);
+            this.fPSToolStripMenuItem30.Size = new System.Drawing.Size(126, 22);
             this.fPSToolStripMenuItem30.Text = "30 FPS";
             this.fPSToolStripMenuItem30.Click += new System.EventHandler(this.fPSToolStripMenuItem30_Click);
             // 
             // fPSToolStripMenuItem24
             // 
             this.fPSToolStripMenuItem24.Name = "fPSToolStripMenuItem24";
-            this.fPSToolStripMenuItem24.Size = new System.Drawing.Size(173, 30);
+            this.fPSToolStripMenuItem24.Size = new System.Drawing.Size(126, 22);
             this.fPSToolStripMenuItem24.Text = "24 FPS";
             this.fPSToolStripMenuItem24.Click += new System.EventHandler(this.fPSToolStripMenuItem24_Click);
+            // 
+            // enableExport3dCitiesModeToolStripMenuItem
+            // 
+            this.enableExport3dCitiesModeToolStripMenuItem.Name = "enableExport3dCitiesModeToolStripMenuItem";
+            this.enableExport3dCitiesModeToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.enableExport3dCitiesModeToolStripMenuItem.Text = "Enable Export 3d Cities Mode";
+            this.enableExport3dCitiesModeToolStripMenuItem.Click += new System.EventHandler(this.enableExport3dCitiesModeToolStripMenuItem_Click);
             // 
             // StatupTimer
             // 
@@ -5468,24 +5501,12 @@ namespace TerraViewer
             this.menuTabs.Name = "menuTabs";
             this.menuTabs.SelectedTabIndex = 0;
             this.menuTabs.Size = new System.Drawing.Size(1442, 34);
-            this.menuTabs.StartX = 0;
+            this.menuTabs.StartX = 140;
             this.menuTabs.TabIndex = 4;
             this.menuTabs.TabClicked += new TerraViewer.TabClickedEventHandler(this.menuTabs_TabClicked);
             this.menuTabs.MenuClicked += new TerraViewer.MenuClickedEventHandler(this.menuTabs_MenuClicked);
             this.menuTabs.ControlEvent += new TerraViewer.ControlEventHandler(this.menuTabs_ControlEvent);
             this.menuTabs.Load += new System.EventHandler(this.menuTabs_Load);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(419, 6);
-            // 
-            // DownloadMPC
-            // 
-            this.DownloadMPC.Name = "DownloadMPC";
-            this.DownloadMPC.Size = new System.Drawing.Size(422, 30);
-            this.DownloadMPC.Text = "Download New Minor Planet Center Data";
-            this.DownloadMPC.Click += new System.EventHandler(this.DownloadMPC_Click);
             // 
             // Earth3d
             // 
@@ -7932,7 +7953,8 @@ namespace TerraViewer
                         {
                             SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
                             amount *= 10;
-                            stereoTranslate = Matrix3d.Translation(-pos.X * amount, -pos.Y * amount, pos.Z * amount);
+                            var pose = this.trackingState.HeadPose.ThePose.Position;
+                            stereoTranslate = Matrix3d.Translation((-pos.X+ pose.X*10) * amount, (pos.Y + pose.Y*10) * amount, (-pos.Z + pose.Z*10) * amount);
 
                             var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
                             matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
@@ -16249,9 +16271,11 @@ namespace TerraViewer
 
             }
         }
-
+        bool enable3dCitiesExport = false;
         private void viewMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            enableExport3dCitiesModeToolStripMenuItem.Visible = !enable3dCitiesExport;
+            exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Visible = enable3dCitiesExport;
             fullDomeToolStripMenuItem.Checked = Properties.Settings.Default.DomeView;
             detachMainViewToSecondMonitor.Enabled = Screen.AllScreens.Length > 1;
             detachMainViewToThirdMonitorToolStripMenuItem.Enabled = Screen.AllScreens.Length > 2;
@@ -18095,14 +18119,14 @@ namespace TerraViewer
 
 
 
-
+        OVRTypes.TrackingState trackingState;
         void GetRiftSample()
         {
 
 
             OVRTypes.Vector3f[] hmdToEyeViewOffsets = { eyeTextures[0].HmdToEyeViewOffset, eyeTextures[1].HmdToEyeViewOffset };
             double displayMidpoint = hmd.GetPredictedDisplayTime(0);
-            OVRTypes.TrackingState trackingState = hmd.GetTrackingState(displayMidpoint, true);
+            trackingState = hmd.GetTrackingState(displayMidpoint, true);
 
             // Calculate the position and orientation of each eye.
             wrap.CalcEyePoses(trackingState.HeadPose.ThePose, hmdToEyeViewOffsets, ref eyeRenderPose);
@@ -20461,6 +20485,42 @@ namespace TerraViewer
         private void DownloadMPC_Click(object sender, EventArgs e)
         {
             MinorPlanets.DownloadNewMPSCoreFile();
+        }
+
+        private void exportCurrentCitiesViewAs3DMeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                MercatorTile.SaveDsmDirectory = fbd.SelectedPath;
+                MercatorTile.SaveDsmTileList.Clear();
+                MercatorTile.SaveDsmTiles = true;
+                this.Render();
+                MercatorTile.SaveDsmTiles = false;
+
+                StringBuilder sb = new StringBuilder();
+
+                foreach(string item in MercatorTile.SaveDsmTileList)
+                {
+                    sb.AppendLine(item);
+                }
+
+                MercatorTile.SaveDsmTileList.Clear();
+
+                File.WriteAllText(string.Format("{0}\\SavedView.mesh", MercatorTile.SaveDsmDirectory), sb.ToString());
+            }
+
+        }
+
+        private void enableExport3dCitiesModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Enable 3d Cities Saving ** This is not on by default as it takes lots of memory, only works till end of session
+            IndexBuffer11.SaveIndexArray = true;
+            VertexBuffer11.SaveVertexArray = true;
+            Texture11.SaveStream = true;
+            TileCache.PurgeQueue();
+            TileCache.ClearCache();
+            // End 3d cities saving
         }
     }
 

@@ -265,13 +265,36 @@ namespace TerraViewer
 
         DSMTile dsm = null;
        
-
+        static public bool SaveDsmTiles = false;
+        static public string SaveDsmDirectory = "";
+        static public List<string> SaveDsmTileList = new List<string>();
+        static Vector3d SaveDsmLocalCenter = new Vector3d();
         public override void RenderPart(RenderContext11 renderContext, int part, float opacity, bool combine)
         {
             if (dsm != null && dsm.DsmIndex != null)
             {
                 renderContext.SetIndexBuffer(dsm.DsmIndex);
                 renderContext.SetVertexBuffer(dsm.VertexBuffer);
+
+                // This allows you to save currently viewed DSM tiles to a directory/mesh
+                if (SaveDsmTiles)
+                {
+                    if (!SaveDsmTileList.Contains(string.Format("{0}_{1}_{2}", level, x, y)))
+                    {
+                        if (SaveDsmTileList.Count == 0)
+                        {
+                            SaveDsmLocalCenter = localCenter;
+                        }
+
+                        Vector3d offset = localCenter - SaveDsmLocalCenter;
+                        dsm.VertexBuffer.SaveToFile(string.Format("{0}\\{1}_{2}_{3}.verts", SaveDsmDirectory, level, x, y), offset);
+                        dsm.DsmIndex.SaveToFile(string.Format("{0}\\{1}_{2}_{3}.index", SaveDsmDirectory, level, x, y));
+                        texture.SaveToFile(string.Format("{0}\\{1}_{2}_{3}.jpg", SaveDsmDirectory, level, x, y));
+                        SaveDsmTileList.Add(string.Format("{0}_{1}_{2}", level, x, y));
+                    }
+                }
+
+
                 if (dsm.Subsets.Length > 4)
                 {
                     switch (part)

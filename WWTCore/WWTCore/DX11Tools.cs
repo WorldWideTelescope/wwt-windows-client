@@ -16,6 +16,7 @@ using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using SharpDX.D3DCompiler;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace TerraViewer
 {
@@ -25,7 +26,7 @@ namespace TerraViewer
 
     public class VertexBuffer11 : IDisposable, IVertexBuffer11
     {
-    
+        public static bool SaveVertexArray = false;
         int vertCount = 0;
 
         public int Count
@@ -88,7 +89,33 @@ namespace TerraViewer
 
             BufferPool11.ReturnLockX2Buffer(vertexArray);
 
-            vertexArray = null;
+            if (!SaveVertexArray)
+            {
+                vertexArray = null;
+            }
+        }
+
+        public void SaveToFile(string filename, Vector3d offset)
+        {
+            BinaryWriter bw = new BinaryWriter(File.Create(filename));
+
+            bw.Write(vertexArray.Length);
+            foreach (var vert in vertexArray)
+            {
+                bw.Write((float)((double)vert.X + offset.X));
+                bw.Write((float)((double)vert.Y + offset.Y));
+                bw.Write((float)((double)vert.Z + offset.Z));
+                bw.Write(vert.Nx);
+                bw.Write(vert.Ny);
+                bw.Write(vert.Nz);
+                bw.Write(vert.Tu);
+                bw.Write(vert.Tv);
+                bw.Write(vert.Tu1);
+                bw.Write(vert.Tv1);
+            }
+
+            bw.Close();
+            bw.Dispose();
         }
 
         #region IDisposable Members
@@ -805,6 +832,8 @@ namespace TerraViewer
 
     public class IndexBuffer11 : IDisposable
     {
+        static public bool SaveIndexArray = false;
+
         public Buffer IndexBuffer;
 
         public IndexBuffer11 (Device device, uint[] indexes)
@@ -813,6 +842,10 @@ namespace TerraViewer
             indexCount = indexes.Length;
             format = Format.R32_UInt;
             this.device = device;
+            if (SaveIndexArray)
+            {
+                indexArray = indexes;
+            }
         }
 
         public IndexBuffer11 (Device device, short[] indexes)
@@ -821,6 +854,10 @@ namespace TerraViewer
             indexCount = indexes.Length;
             format = Format.R16_UInt;
             this.device = device;
+            if (SaveIndexArray)
+            {
+                indexArray = indexes;
+            }
         }
 
         public int Count
@@ -862,6 +899,34 @@ namespace TerraViewer
             return indexArray;
         }
 
+        public void SaveToFile(string filename)
+        {
+            BinaryWriter bw = new BinaryWriter(File.Create(filename));
+            
+            if (format == Format.R32_UInt)
+            {
+                UInt32[] array = (UInt32[])indexArray;
+
+                bw.Write(array.Length);
+                foreach(var item in array)
+                {
+                    bw.Write(item);
+                }
+            }
+            else
+            {
+                UInt16[] array = (UInt16[])indexArray;
+                bw.Write(array.Length);
+                foreach (var item in array)
+                {
+                    bw.Write(item);
+                }
+            }
+
+            bw.Close();
+            bw.Dispose();        
+        }
+
         public void Unlock()
         {
             if (format == Format.R32_UInt)
@@ -873,8 +938,12 @@ namespace TerraViewer
             {
                 IndexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.IndexBuffer, indexArray as ushort[]);
                 BufferPool11.ReturnUInt16Buffer(indexArray as UInt16[]);
-            } 
-            indexArray = null;
+            }
+
+            if (!SaveIndexArray)
+            {
+                indexArray = null;
+            }
         }
 
 
