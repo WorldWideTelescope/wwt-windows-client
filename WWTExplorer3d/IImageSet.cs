@@ -34,7 +34,7 @@ namespace TerraViewer
         string ThumbnailUrl { get; set; }
         string Url { get; set; }
         double WidthFactor { get; set; }
-        WcsImage WcsImage { get; set; }
+        Object WcsImage { get; set; }
         double MeanRadius { get; set; }
         string ReferenceFrame { get; set; }
         UInt16 InternalID { get; set; }

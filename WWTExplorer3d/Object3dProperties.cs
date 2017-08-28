@@ -39,7 +39,7 @@ namespace TerraViewer
         bool ignoreChanges = true;
         private void Object3dProperties_Load(object sender, EventArgs e)
         {
-            Earth3d.MainWindow.UiController = layer.GetEditUI();
+            Earth3d.MainWindow.UiController = layer.GetEditUI() as IUiController;
 
             layer.PropertiesChanged += new EventHandler(layer_PropertiesChanged);
 

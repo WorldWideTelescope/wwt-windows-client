@@ -493,14 +493,14 @@ namespace TerraViewer
 
             if (showFinder)
             {
-                if (Math.Abs(viewDec -  Earth3d.MainWindow.ViewLat) > .00001
-                    || Math.Abs(viewRA - Earth3d.MainWindow.RA) > .00001
-                    || Math.Abs(zoom - Earth3d.MainWindow.ZoomFactor) > .00001 )
+                if (Math.Abs(viewDec -  Earth3d.MainWindow.RenderEngine.ViewLat) > .00001
+                    || Math.Abs(viewRA - Earth3d.MainWindow.RenderEngine.RA) > .00001
+                    || Math.Abs(zoom - Earth3d.MainWindow.RenderEngine.ZoomFactor) > .00001 )
                 {
                     moved = true;
-                    viewDec = Earth3d.MainWindow.ViewLat;
-                    viewRA = Earth3d.MainWindow.RA;
-                    zoom = Earth3d.MainWindow.ZoomFactor;
+                    viewDec = Earth3d.MainWindow.RenderEngine.ViewLat;
+                    viewRA = Earth3d.MainWindow.RenderEngine.RA;
+                    zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
                 }
 
                 if (moved)
@@ -560,14 +560,14 @@ namespace TerraViewer
 
             if (Earth3d.MainWindow.SolarSystemMode)
             {
-                Point pt = loc;
+                Vector2d pt = new Vector2d(loc.X, loc.Y);
                 Vector3d PickRayOrig;
                 Vector3d PickRayDir;
                 Rectangle rect = Earth3d.MainWindow.RenderWindow.ClientRectangle;
 
-                Earth3d.MainWindow.TransformStarPickPointToWorldSpace(pt, rect.Width, rect.Height, out PickRayOrig, out PickRayDir);
+                Earth3d.MainWindow.RenderEngine.TransformStarPickPointToWorldSpace(pt, rect.Width, rect.Height, out PickRayOrig, out PickRayDir);
                 Vector3d temp = new Vector3d(PickRayOrig);
-                temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
+                temp.Subtract(Earth3d.MainWindow.RenderEngine.viewCamera.ViewTarget);
 
                 //closetPlace = Grids.FindClosestObject(temp , new Vector3d(PickRayDir));
                 CallFindClosestObject(temp, new Vector3d(PickRayDir));
@@ -580,12 +580,12 @@ namespace TerraViewer
                 result = Earth3d.MainWindow.GetCoordinatesForScreenPoint(loc.X, loc.Y);
                 string constellation = Earth3d.MainWindow.ConstellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                 //Place[] resultList = ContextSearch.FindClosestMatches(constellation, result.RA, result.Dec, ZoomFactor / 600, 5);
-                closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.DegreesPerPixel * 80);
+                closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.RenderEngine.DegreesPerPixel * 80);
 
                 if (closetPlace == null)
                 {
                    // closetPlace = Grids.FindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.DegreesPerPixel * 80);
-                    CallFindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.DegreesPerPixel * 80);
+                    CallFindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.RenderEngine.DegreesPerPixel * 80);
                     noPlaceDefault = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
                     //Earth3d.MainWindow.SetLabelText(null, false);
                     return;
@@ -727,7 +727,7 @@ namespace TerraViewer
 
         private void thumbnail_Click(object sender, EventArgs e)
         {
-            Earth3d.MainWindow.GotoTarget(target, false, false, true);
+            Earth3d.MainWindow.RenderEngine.GotoTarget(target, false, false, true);
             Close();
         }
 
@@ -768,7 +768,7 @@ namespace TerraViewer
 
         private void ShowObject_Click(object sender, EventArgs e)
         {
-            Earth3d.MainWindow.GotoTarget(target, false, false, true);
+            Earth3d.MainWindow.RenderEngine.GotoTarget(target, false, false, true);
             Close();
         }
 

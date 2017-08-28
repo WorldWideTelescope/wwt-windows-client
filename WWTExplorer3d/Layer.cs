@@ -213,7 +213,7 @@ namespace TerraViewer
         }
 
 
-        public virtual IUiController GetEditUI()
+        public virtual object GetEditUI()
         {
             return null;
         }

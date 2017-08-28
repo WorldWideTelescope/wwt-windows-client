@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
+#if !WINDOWS_UWP
 using System.Configuration;
-
+#endif
 namespace TerraViewer
 {
+#if !WINDOWS_UWP
     [TypeConverter(typeof(BlendStateConverter))]
     [SettingsSerializeAs(SettingsSerializeAs.String)]
+#endif
     public class BlendState
     {
         bool state;
@@ -239,7 +242,7 @@ namespace TerraViewer
             return blendState;
         }
     }
-
+#if !WINDOWS_UWP
     public class BlendStateConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -289,4 +292,5 @@ namespace TerraViewer
             return base.ConvertTo(context, culture, value, destinationType);
         }
     }
+#endif
 }

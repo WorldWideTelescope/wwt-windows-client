@@ -109,7 +109,7 @@ namespace TerraViewer
                 if (parent != null)
                 {
                     Lineset ls = (Lineset)parent.Tag;
-                    Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
+                    Earth3d.MainWindow.RenderEngine.constellationsFigures.ResetConstellation(ls.Name);
                 }
             }
             else
@@ -141,7 +141,7 @@ namespace TerraViewer
 
                 ls.Points.Remove((Linepoint)figureTree.SelectedNode.Tag);
                 parent.Nodes.Remove(figureTree.SelectedNode);
-                Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
+                Earth3d.MainWindow.RenderEngine.constellationsFigures.ResetConstellation(ls.Name);
             }
             else if (figureTree.SelectedNode.Tag != null && figureTree.SelectedNode.Tag is Lineset)
             {
@@ -150,7 +150,7 @@ namespace TerraViewer
                     Lineset ls = (Lineset)figureTree.SelectedNode.Tag;
                     ls.Points.Clear();
                     figureTree.SelectedNode.Nodes.Clear();
-                    Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
+                    Earth3d.MainWindow.RenderEngine.constellationsFigures.ResetConstellation(ls.Name);
                 }
                 
             }
@@ -170,7 +170,7 @@ namespace TerraViewer
 
             ls.Points.Remove((Linepoint)figureTree.SelectedNode.Tag);
             parent.Nodes.Remove(figureTree.SelectedNode);
-            Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
+            Earth3d.MainWindow.RenderEngine.constellationsFigures.ResetConstellation(ls.Name);
 
         }
 
@@ -208,7 +208,7 @@ namespace TerraViewer
             {
                 Lineset ls = (Lineset)figureTree.SelectedNode.Tag;
 
-                Earth3d.MainWindow.GotoTarget(Constellations.ConstellationCentroids[ls.Name], false, false, true);
+                Earth3d.MainWindow.RenderEngine.GotoTarget(Constellations.ConstellationCentroids[ls.Name], false, false, true);
             }
         }
 
@@ -254,7 +254,7 @@ namespace TerraViewer
                 child.Tag = pnt;
                 child.Checked = pnt.PointType != PointType.Move;
                 figureTree.SelectedNode = child;
-                Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
+                Earth3d.MainWindow.RenderEngine.constellationsFigures.ResetConstellation(ls.Name);
             }
             else
             {
@@ -265,7 +265,7 @@ namespace TerraViewer
                 child.Tag = pnt;
                 child.Checked = pnt.PointType != PointType.Move;
                 figureTree.SelectedNode = child;
-                Earth3d.MainWindow.constellationsFigures.ResetConstellation(ls.Name);
+                Earth3d.MainWindow.RenderEngine.constellationsFigures.ResetConstellation(ls.Name);
             }
         }
 

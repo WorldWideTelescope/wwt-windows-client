@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+#if WINDOWS_UWP
+using SysColor = Windows.UI.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
+
 using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
@@ -41,9 +45,9 @@ namespace TerraViewer
         public bool UseNonRotatingFrame = false;
    
         List<Vector3d> linePoints = new List<Vector3d>();
-        List<Color> lineColors = new List<Color>();
+        List<SysColor> lineColors = new List<SysColor>();
         List<Dates> lineDates = new List<Dates>();
-        public void AddLine(Vector3d v1, Vector3d v2, Color color, Dates date)
+        public void AddLine(Vector3d v1, Vector3d v2, SysColor color, Dates date)
         {
 
             linePoints.Add(v1);
@@ -54,7 +58,7 @@ namespace TerraViewer
 
         }
 
-        public void AddLine(Vector3d v1, Vector3d v2, Color color)
+        public void AddLine(Vector3d v1, Vector3d v2, SysColor color)
         {
 
             linePoints.Add(v1);
@@ -271,7 +275,7 @@ namespace TerraViewer
         Vector3d localCenter;
         public bool Sky = true;
         public bool aaFix = true;
-        public void DrawLines(RenderContext11 renderContext, float opacity, Color color)
+        public void DrawLines(RenderContext11 renderContext, float opacity, SysColor color)
         {
             if (linePoints.Count < 2)
             {
@@ -301,7 +305,7 @@ namespace TerraViewer
 
             renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
 
-            Color col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
+            SysColor col = SysColor.FromArgb((byte)(color.A * opacity), (byte)(color.R * opacity), (byte)(color.G * opacity), (byte)(color.B * opacity));
 
 
             SimpleLineShader11.Color = col;
@@ -443,7 +447,7 @@ namespace TerraViewer
         }
 
         List<Vector3> trianglePoints = new List<Vector3>();
-        List<Color> triangleColors = new List<Color>();
+        List<SysColor> triangleColors = new List<SysColor>();
         List<Dates> triangleDates = new List<Dates>();
 
         public bool TimeSeries = false;
@@ -456,7 +460,7 @@ namespace TerraViewer
         public bool AutoTime = true;
         public double JNow = 0;
         bool dataToDraw = false;
-        public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color color, Dates date)
+        public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, SysColor color, Dates date)
         {
             trianglePoints.Add(v1);
             trianglePoints.Add(v2);
@@ -465,7 +469,7 @@ namespace TerraViewer
             triangleDates.Add(date);
             EmptyTriangleBuffer();
         }
-        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, Color color, Dates date)
+        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, SysColor color, Dates date)
         {
             trianglePoints.Add(v1.Vector311);
             trianglePoints.Add(v2.Vector311);
@@ -474,7 +478,7 @@ namespace TerraViewer
             triangleDates.Add(date);
             EmptyTriangleBuffer();
         }
-        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, Color color, Dates date, int subdivisions)
+        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, SysColor color, Dates date, int subdivisions)
         {
             subdivisions--;
 
@@ -504,7 +508,7 @@ namespace TerraViewer
             }
         }
 
-        public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Color color, Dates date)
+        public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, SysColor color, Dates date)
         {
             trianglePoints.Add(v1);
             trianglePoints.Add(v3);
@@ -519,7 +523,7 @@ namespace TerraViewer
             EmptyTriangleBuffer();
         }
 
-        public void AddQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, Color color, Dates date)
+        public void AddQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, SysColor color, Dates date)
         {
             trianglePoints.Add(v1.Vector311);
             trianglePoints.Add(v3.Vector311);
@@ -691,11 +695,11 @@ namespace TerraViewer
         public Vector3 Position;
         public Vector3 Normal;
         public uint color;
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {
@@ -720,11 +724,11 @@ namespace TerraViewer
         public Vector3 Position;
         public float PointSize;
         public uint color;
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {

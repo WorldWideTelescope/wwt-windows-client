@@ -1,14 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System.IO;
 using System.Net;
-using System.IO;	
-using System.Threading;
 using System.Text;
-using System.Diagnostics;
+using System.Threading;
 
 namespace TerraViewer
 {
@@ -45,7 +40,7 @@ namespace TerraViewer
 
 		public static void ClearCache()
 		{
-            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Clear Cache"); }
+            if (Utils.Logging) { Utils.WriteLogMessage("Clear Cache"); }
             tileMutex.WaitOne();
             queueMutex.WaitOne();
             WaitingTileQueueMutex.WaitOne();
@@ -84,7 +79,7 @@ namespace TerraViewer
 
 		public static void PurgeQueue()
 		{
-            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Purging Queue"); }
+            if (Utils.Logging) { Utils.WriteLogMessage("Purging Queue"); }
             queueMutex.WaitOne();
             queue.Clear();
 			RequestCount = 0;
@@ -118,7 +113,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("GetTile: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("GetTile: Exception"); }
             }
             finally
             {
@@ -156,7 +151,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("GetTile: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("GetTile: Exception"); }
             }
             finally
             {
@@ -220,7 +215,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Initialize: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("Tile Initialize: Exception"); }
             }
             
 
@@ -499,9 +494,9 @@ namespace TerraViewer
 					{
                         Vector3d vectTemp = new Vector3d(t.SphereCenter);
 
-                        vectTemp.TransformCoordinate(Earth3d.WorldMatrix);
+                        vectTemp.TransformCoordinate(RenderEngine.WorldMatrix);
 
-                        if (Earth3d.MainWindow.Space)
+                        if (Earth3d.MainWindow.RenderEngine.Space)
                         {
                             vectTemp.Subtract(new Vector3d(0.0f, 0.0f, -1.0f));
                         }
@@ -601,7 +596,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("DecimateQueue: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("DecimateQueue: Exception"); }
             }
             finally
             {
@@ -822,7 +817,7 @@ namespace TerraViewer
                 catch 
                 {
                     //todo retry login on non - HTTP failuers.
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Download: Exception" ); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Tile Download: Exception" ); }
                     retTile.errored = true;
                 }
 			}
@@ -895,7 +890,7 @@ namespace TerraViewer
 			}
 			catch (System.Exception)
 			{
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Initialize: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("Tile Initialize: Exception"); }
 				retTile.errored = true;
 			}
 
@@ -976,7 +971,7 @@ namespace TerraViewer
                 }
                 catch
                 {
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Dem Download: Exception"); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Dem Download: Exception"); }
                     exists = false;
 
                 }

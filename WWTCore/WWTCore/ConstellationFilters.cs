@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if !WINDOWS_UWP
 using System.Configuration;
+#endif
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TerraViewer
 {
+#if !WINDOWS_UWP
     [TypeConverter(typeof(ConstellationFilterConverter))]
     [SettingsSerializeAs(SettingsSerializeAs.String)]
+#endif
     public class ConstellationFilter
     {
         public static Dictionary<String, int> BitIDs;
@@ -455,7 +459,7 @@ namespace TerraViewer
             return cf;
         }
     }
-
+#if !WINDOWS_UWP
     public class ConstellationFilterConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -483,7 +487,6 @@ namespace TerraViewer
 
             return base.ConvertTo(context, culture, value, destinationType);
         }
-
-
     }
+#endif
 }

@@ -24,9 +24,9 @@ namespace TerraViewer
             set { projection = value; }
         }
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private WcsImage wcsImage;
+        private object wcsImage;
 
-        public WcsImage WcsImage
+        public object WcsImage
         {
             get { return wcsImage; }
             set { wcsImage = value; }

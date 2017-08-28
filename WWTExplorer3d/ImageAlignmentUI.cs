@@ -11,11 +11,11 @@ namespace TerraViewer
         #region IUiController Members
 
 
-        public void PreRender(Earth3d window)
+        public void PreRender(RenderEngine renderEngine)
         {
             
         }
-        public void Render(Earth3d window)
+        public void Render(RenderEngine renderEngine)
         {
             if (popup == null)
             {
@@ -264,8 +264,8 @@ namespace TerraViewer
                     {
                         root.CleanUpGeometryRecursive();
                     }
-                    Earth3d.MainWindow.StudyImageset.CenterX = Earth3d.MainWindow.RA*15;
-                    Earth3d.MainWindow.StudyImageset.CenterY = Earth3d.MainWindow.Dec;
+                    Earth3d.MainWindow.StudyImageset.CenterX = Earth3d.MainWindow.RenderEngine.RA *15;
+                    Earth3d.MainWindow.StudyImageset.CenterY = Earth3d.MainWindow.RenderEngine.Dec;
                     return true;
                 case Keys.S:
                     //scale to view

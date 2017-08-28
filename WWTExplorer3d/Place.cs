@@ -533,9 +533,9 @@ namespace TerraViewer
                 
                 ImageSetHelper ish = ImageSetHelper.FromXMLNode(imageSet);
 
-                if (!String.IsNullOrEmpty(ish.Url) && Earth3d.ReplacementImageSets.ContainsKey(ish.Url))
+                if (!String.IsNullOrEmpty(ish.Url) && RenderEngine.ReplacementImageSets.ContainsKey(ish.Url))
                 {
-                    newPlace.backgroundImageSet = Earth3d.ReplacementImageSets[ish.Url];
+                    newPlace.backgroundImageSet = RenderEngine.ReplacementImageSets[ish.Url];
                 }
                 else
                 {
@@ -548,9 +548,9 @@ namespace TerraViewer
             {
                 ImageSetHelper ish = ImageSetHelper.FromXMLNode(study);
 
-                if (!String.IsNullOrEmpty(ish.Url) && Earth3d.ReplacementImageSets.ContainsKey(ish.Url))
+                if (!String.IsNullOrEmpty(ish.Url) && RenderEngine.ReplacementImageSets.ContainsKey(ish.Url))
                 {
-                    newPlace.studyImageset = Earth3d.ReplacementImageSets[ish.Url];
+                    newPlace.studyImageset = RenderEngine.ReplacementImageSets[ish.Url];
 
                 }
                 else

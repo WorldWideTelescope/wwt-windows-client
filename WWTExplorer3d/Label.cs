@@ -8,8 +8,8 @@ using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
 {
-    enum LabelSytle {Arrow, Telrad};
-    class SkyLabel : IDisposable
+    public enum LabelSytle {Arrow, Telrad};
+    public class SkyLabel : IDisposable
     {
         static Texture11 texture;
         public double RA;
@@ -108,7 +108,7 @@ namespace TerraViewer
 
         public void Draw(RenderContext11 renderContext, bool space3d)
         {
-            Vector3d cam = Vector3d.TransformCoordinate(Earth3d.MainWindow.RenderContext11.CameraPosition, Matrix3d.Invert(Earth3d.WorldMatrix));
+            Vector3d cam = Vector3d.TransformCoordinate(Earth3d.MainWindow.RenderContext11.CameraPosition, Matrix3d.Invert(RenderEngine.WorldMatrix));
 
             if (!space3d)
             {
@@ -121,7 +121,7 @@ namespace TerraViewer
 
             if (Earth3d.MainWindow.SolarSystemMode)
             {
-                temp.Add( Earth3d.MainWindow.viewCamera.ViewTarget);
+                temp.Add( Earth3d.MainWindow.RenderEngine.viewCamera.ViewTarget);
             }
 
             Matrix3d wvp = renderContext.World * renderContext.View * renderContext.Projection;

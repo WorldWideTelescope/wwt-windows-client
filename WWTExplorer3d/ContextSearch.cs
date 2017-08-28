@@ -67,7 +67,7 @@ namespace TerraViewer
                 if (child is IImageSet)
                 {
                     IImageSet childImageset = (IImageSet)child;
-                    if (Earth3d.ProjectorServer)
+                    if (RenderEngine.ProjectorServer)
                     {
                         Earth3d.AddImageSetToTable(childImageset.GetHash(), childImageset);
                     }
@@ -77,14 +77,14 @@ namespace TerraViewer
                     IPlace place = (IPlace)child;
                     if (place.StudyImageset != null)
                     {
-                        if (Earth3d.ProjectorServer)
+                        if (RenderEngine.ProjectorServer)
                         {
                             Earth3d.AddImageSetToTable(place.StudyImageset.GetHash(), place.StudyImageset);
                         }
                     }
                     if (place.BackgroundImageSet != null)
                     {
-                        if (Earth3d.ProjectorServer)
+                        if (RenderEngine.ProjectorServer)
                         {
                             Earth3d.AddImageSetToTable(place.BackgroundImageSet.GetHash(), place.BackgroundImageSet);
                         }

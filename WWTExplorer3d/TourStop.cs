@@ -31,14 +31,14 @@ namespace TerraViewer
                     if (keyFramed)
                     {
                         //Create Camera Keyframe
-                        CameraParameters savedCam = Earth3d.MainWindow.viewCamera;
+                        CameraParameters savedCam = Earth3d.MainWindow.RenderEngine.viewCamera;
                         DateTime savedDate = SpaceTimeController.Now;
                         AnimationTarget at = new AnimationTarget(this);
                         at.Target = this.KeyFrameMover;
                         at.TargetType = AnimationTarget.AnimationTargetTypes.Camera;
                         at.ParameterNames.AddRange(at.Target.GetParamNames());
 
-                        Earth3d.MainWindow.viewCamera = target.CamParams;
+                        Earth3d.MainWindow.RenderEngine.viewCamera = target.CamParams;
                         SpaceTimeController.Now = startTime;
 
                         at.CurrentParameters = at.Target.GetParams();
@@ -46,13 +46,13 @@ namespace TerraViewer
 
                         if (endTarget != null)
                         {
-                            Earth3d.MainWindow.viewCamera = endTarget.CamParams;
+                            Earth3d.MainWindow.RenderEngine.viewCamera = endTarget.CamParams;
                             SpaceTimeController.Now = endTime;
                             at.CurrentParameters = at.Target.GetParams();
                             at.SetKeyFrame(1, Key.KeyType.Linear);
 
                         }  
-                        Earth3d.MainWindow.viewCamera = savedCam;
+                        Earth3d.MainWindow.RenderEngine.viewCamera = savedCam;
                         SpaceTimeController.Now = savedDate; 
                         AnimationTargets.Add(at);
                         KeyFramer.ShowTimeline();
@@ -166,7 +166,7 @@ namespace TerraViewer
                 {
                     target.Tween(tweenPosition);
                 }
-                Earth3d.MainWindow.UpdateMover(KeyFrameMover);
+                Earth3d.MainWindow.RenderEngine.UpdateMover(KeyFrameMover);
                 SpaceTimeController.Now = KeyFrameMover.CurrentDateTime;
             }
         }

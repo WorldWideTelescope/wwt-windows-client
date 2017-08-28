@@ -2,7 +2,8 @@ using System;
 public static partial class GlobalMembersStdafx
 {
 
-	public static int mainTEST()
+#if !WINDOWS_UWP
+    public static int mainTEST()
 	{
         CAADate date;
         bool bLeap;
@@ -884,18 +885,5 @@ public static partial class GlobalMembersStdafx
 	  return 0;
 	}
 
-	#if _MSC_VER
-	//C++ TO C# CONVERTER TODO TASK: There is no equivalent to most C++ 'pragma' directives in C#:
-	//#pragma warning(pop)
-	#endif
-}
-
-
-#if _MSC_VER
-//C++ TO C# CONVERTER TODO TASK: There is no equivalent to most C++ 'pragma' directives in C#:
-//#pragma warning(push) //We're not interested in unreferrenced variables in this test app
-//C++ TO C# CONVERTER TODO TASK: There is no equivalent to most C++ 'pragma' directives in C#:
-//#pragma warning(disable : 4101)
-//C++ TO C# CONVERTER TODO TASK: There is no equivalent to most C++ 'pragma' directives in C#:
-//#pragma warning(disable : 4189)
 #endif
+}

@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{B9A04197-BC23-4A94-BFBF-06364CA133CF}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WWTHolographic</RootNamespace>
+    <AssemblyName>WWTHolographic</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>15</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>WWTHolographic_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\WWTExplorer3d\DEM\AdaptiveModel.cs">
+      <Link>Tiles\DEM\AdaptiveModel.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\BitIO.cs">
+      <Link>Tiles\DEM\BitIO.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\BitstreamDecoder.cs">
+      <Link>Tiles\DEM\BitstreamDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\CAdaptiveHuffman.cs">
+      <Link>Tiles\DEM\CAdaptiveHuffman.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\CCodingContext.cs">
+      <Link>Tiles\DEM\CCodingContext.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\ContainerDecoder.cs">
+      <Link>Tiles\DEM\ContainerDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\DemCodec.cs">
+      <Link>Tiles\DEM\DemCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\DemTile.cs">
+      <Link>Tiles\DEM\DemTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\HDPhotoBase.cs">
+      <Link>Tiles\DEM\HDPhotoBase.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\HDPhotoDecoder.cs">
+      <Link>Tiles\DEM\HDPhotoDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\PointerArray.cs">
+      <Link>Tiles\DEM\PointerArray.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DEM\SimpleBitIO.cs">
+      <Link>Tiles\DEM\SimpleBitIO.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IAnimatable.cs">
+      <Link>Rendering\IAnimatable.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IImageSet.cs">
+      <Link>Imagesets\IImageSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IPlace.cs">
+      <Link>Imagesets\IPlace.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IThumbnail.cs">
+      <Link>Imagesets\IThumbnail.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IViewMover.cs">
+      <Link>Rendering\IViewMover.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\MercatorTile.cs">
+      <Link>Tiles\MercatorTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\RenderEngine.cs">
+      <Link>Rendering\RenderEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Tile.cs">
+      <Link>Tiles\Tile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TileCache.cs">
+      <Link>Tiles\TileCache.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ToastTile.cs">
+      <Link>Tiles\ToastTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\UiControllerArgs.cs">
+      <Link>Utils\UiControllerArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ViewMover.cs">
+      <Link>Rendering\ViewMover.cs</Link>
+    </Compile>
+    <Compile Include="WWTHolographicMain.cs" />
+    <Compile Include="AppView.cs" />
+    <Compile Include="AppViewSource.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Common\CameraResources.cs" />
+    <Compile Include="Common\DeviceResources.cs" />
+    <Compile Include="Common\DirectXHelper.cs" />
+    <Compile Include="Common\Disposer.cs" />
+    <Compile Include="Common\InteropStatics.cs" />
+    <Compile Include="Common\StepTimer.cs" />
+    <Compile Include="Content\ShaderStructures.cs" />
+    <Compile Include="Content\SpatialInputHandler.cs" />
+    <Compile Include="Content\SpinningCubeRenderer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="WWTHolographic_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\Default.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <GeometryShader Include="Content\Shaders\GeometryShader.hlsl" />
+    <PixelShader Include="Content\Shaders\PixelShader.hlsl" />
+    <None Include="Content\Shaders\VertexShaderShared.hlsl" />
+    <VertexShader Include="Content\Shaders\VertexShader.hlsl" />
+    <VertexShader Include="Content\Shaders\VPRTVertexShader.hlsl" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="ms.fxcompile.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct2D1">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct3D11">
+      <Version>3.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Graphics\" />
+    <Folder Include="Layers\" />
+    <Folder Include="Tours\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WWTCoreUWP\WWTCoreUWP\WWTCoreUWP.csproj">
+      <Project>{c05266fe-6947-42f1-9863-7cdbeed60869}</Project>
+      <Name>WWTCoreUWP</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
+  </PropertyGroup>
+</Project>

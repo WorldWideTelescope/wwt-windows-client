@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.D3DCompiler;
 using SharpDX;
 using System.Runtime.InteropServices;
 using System.Reflection;
+#if WINDOWS_UWP
+using SysColor = Windows.UI.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
 
 namespace TerraViewer
 {
@@ -359,7 +363,7 @@ namespace TerraViewer
             }
         }
 
-        public void SetOverlayTextureColor(int overlayIndex, System.Drawing.Color color)
+        public void SetOverlayTextureColor(int overlayIndex, SysColor color)
         {
             Vector4 colorf = new Vector4(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
             switch (overlayIndex)
@@ -653,8 +657,10 @@ namespace TerraViewer
             ShaderFlags shaderFlags = 0;
 
             PlanetSurfaceStyle style = key.style;
-            System.Console.WriteLine("Building shader: " + key.ToString());
 
+#if !WINDOWS_UWP
+            System.Console.WriteLine("Building shader: " + key.ToString());
+#endif
             bool hasVertexColors = (key.flags & PlanetShaderKey.ShaderFlags.PerVertexColor) == PlanetShaderKey.ShaderFlags.PerVertexColor;
             bool needCameraSpacePosition = key.eclipseShadowCount > 0 || key.HasRingShadows;
             bool needObjectSpacePosition = true;
@@ -1524,6 +1530,8 @@ namespace TerraViewer
 
         void SavePrecompiledShaders()
         {
+
+#if !WINDOWS_UWP
             System.IO.FileStream fs = null;
             try
             {
@@ -1544,11 +1552,14 @@ namespace TerraViewer
                     fs.Close();
                 }
             }
+#endif
         }
 
 
         Dictionary<string, byte[]> LoadPrecompiledShaderLibrary(System.IO.Stream stream)
         {
+
+#if !WINDOWS_UWP
             Dictionary<String, byte[]> shaders = null;
 
             var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
@@ -1562,10 +1573,15 @@ namespace TerraViewer
             }
 
             return shaders;
+#else
+            return null;
+#endif
         }
 
         Dictionary<string, byte[]> LoadPrecompiledShaderLibrary()
         {
+
+#if !WINDOWS_UWP
             Dictionary<String, byte[]> shaders = null;
             System.IO.FileStream fs = null;
             try
@@ -1584,9 +1600,10 @@ namespace TerraViewer
                 {
                     fs.Close();
                 }
-            }
-
-            return shaders;
+            } return shaders;
+#else
+            return null;
+#endif
         }
 
         public static string PrecompiledShaderFile
@@ -1608,7 +1625,10 @@ namespace TerraViewer
             }
             catch (SharpDX.CompilationException e)
             {
+
+#if !WINDOWS_UWP
                 System.Console.WriteLine(e.Message);
+#endif
             }
 
             string libraryKey = profile + key;
@@ -1636,6 +1656,8 @@ namespace TerraViewer
     {
         public static void CompileAndSaveShaders()
         {
+
+#if !WINDOWS_UWP
             Type[] constructorSignature = {};
 
             Assembly thisAssembly = Assembly.GetAssembly(typeof(ShaderBundle));
@@ -1664,6 +1686,7 @@ namespace TerraViewer
                     }
                 }
             }
+#endif
         }
 
         private VertexShader vertexShader;
@@ -1805,7 +1828,7 @@ namespace TerraViewer
             }
         }
 
-        public static System.Drawing.Color Color
+        public static SysColor Color
         {
             set
             {
@@ -1859,7 +1882,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                     });
@@ -1969,7 +1992,7 @@ namespace TerraViewer
             }
         }
 
-        public static System.Drawing.Color Color
+        public static SysColor Color
         {
             set
             {
@@ -2001,7 +2024,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {     
                         new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new SharpDX.Direct3D11.InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
@@ -2158,7 +2181,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
@@ -2331,7 +2354,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
@@ -2521,7 +2544,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
@@ -2668,7 +2691,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
@@ -2810,7 +2833,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
@@ -3078,7 +3101,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),
@@ -3205,7 +3228,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
@@ -3482,7 +3505,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                     });
@@ -3711,7 +3734,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("TIME", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
@@ -3908,7 +3931,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 12, 0),
@@ -4226,7 +4249,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
@@ -4501,7 +4524,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
@@ -4818,7 +4841,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
@@ -5073,7 +5096,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
@@ -5373,7 +5396,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("POSITION", 1, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
@@ -5391,7 +5414,7 @@ namespace TerraViewer
             if (instancedLayout == null)
             {
                 // Layout from VertexShader input signature
-                instancedLayout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                instancedLayout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("CORNER",    0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
                         new InputElement("POSITION",  0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
@@ -5576,11 +5599,11 @@ namespace TerraViewer
             public float size;
             public uint corner;
 
-            public System.Drawing.Color Color
+            public SysColor Color
             {
                 get
                 {
-                    return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                    return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
                 }
                 set
                 {
@@ -5675,7 +5698,7 @@ namespace TerraViewer
 
             if (layout == null)
             {
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 12, 0),
@@ -5686,7 +5709,7 @@ namespace TerraViewer
 
             if (instancedLayout == null)
             {
-                instancedLayout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                instancedLayout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("CORNER",    0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
                         new InputElement("POSITION",  0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
@@ -5797,11 +5820,11 @@ namespace TerraViewer
             public Vector3 Position;
             public float PointSize;
             public uint color;
-            public System.Drawing.Color Color
+            public SysColor Color
             {
                 get
                 {
-                    return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                    return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
                 }
                 set
                 {
@@ -5868,7 +5891,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
                         new InputElement("POINTSIZE", 0, SharpDX.DXGI.Format.R32_Float, 12, 0),
@@ -5880,7 +5903,7 @@ namespace TerraViewer
 
             if (instancedLayout == null)
             {
-                instancedLayout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                instancedLayout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("CORNER",    0, SharpDX.DXGI.Format.R8G8B8A8_UNorm,   0, 0, InputClassification.PerVertexData,   0),
                         new InputElement("POSITION",  0, SharpDX.DXGI.Format.R32G32B32_Float,  0, 1, InputClassification.PerInstanceData, 1),
@@ -6160,7 +6183,7 @@ namespace TerraViewer
             if (layout == null)
             {
                 // Layout from VertexShader input signature
-                layout = new InputLayout(RenderContext11.PrepDevice, ShaderSignature.GetInputSignature(instance.VertexShaderBytecode), new[]
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
                     {
                         new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
                         new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 16, 0),

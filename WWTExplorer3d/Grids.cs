@@ -1381,7 +1381,7 @@ namespace TerraViewer
             currentSearchID++;
             int thisId = currentSearchID;
 
-            Vector3d target = Earth3d.MainWindow.viewCamera.ViewTarget;
+            Vector3d target = Earth3d.MainWindow.RenderEngine.viewCamera.ViewTarget;
 
             if (stars == null)
             {
@@ -1390,7 +1390,7 @@ namespace TerraViewer
             IPlace closest = stars[0].Place;
             double maxDot = -2;
 
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
             double distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
 
             int alpha = Math.Min(255, Math.Max(0, (int)distAlpha));
@@ -1518,7 +1518,7 @@ namespace TerraViewer
             
             IPlace closest = null;
             
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
 
             if (zoom > 30)
             {
@@ -1585,7 +1585,7 @@ namespace TerraViewer
 
         public static void DrawStars3D(RenderContext11 renderContext, float opacity)
         {
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
             //double distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
 
 
@@ -1856,7 +1856,7 @@ namespace TerraViewer
             SharpDX.Direct3D11.Device device = renderContext.Device;
 
             // Calculate the closest view angle 
-            Vector3 viewAngle = (Earth3d.ViewPoint - renderContext.CameraPosition).Vector3;
+            Vector3 viewAngle = (RenderEngine.ViewPoint - renderContext.CameraPosition).Vector3;
 
             viewAngle.Normalize();
 
@@ -1887,7 +1887,7 @@ namespace TerraViewer
                 }
             }
 
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
 
             if (zoom < 619926335)
             {
@@ -1955,7 +1955,7 @@ namespace TerraViewer
             renderContext.setRasterizerState(TriangleCullMode.Off);
             renderContext.BlendMode = BlendMode.Additive;
 
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
             double log = Math.Log(Math.Max(1, zoom), 4);
             double distAlpha = ((log) - 14) * 128;
 
@@ -2932,7 +2932,7 @@ namespace TerraViewer
         public static void DrawCosmos3D(RenderContext11 renderContext, float opacity)
         {
             SharpDX.Direct3D11.Device device = renderContext.Device;
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
             double distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
 
             int alpha =  Math.Min(255, Math.Max(0, (int)distAlpha));
@@ -3169,7 +3169,7 @@ namespace TerraViewer
             }
 
             SharpDX.Direct3D11.Device device = renderContext.Device;
-            double zoom = Earth3d.MainWindow.ZoomFactor;
+            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
             double distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
 
             int alpha = Math.Min(255, Math.Max(0, (int)distAlpha));

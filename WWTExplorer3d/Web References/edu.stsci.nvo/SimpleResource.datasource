@@ -6,5 +6,5 @@
     cause the file to be unrecognizable by the program.
 -->
 <GenericObjectDataSource DisplayName="SimpleResource" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>TerraViewer.edu.stsci.nvo.SimpleResource, WWTExplorer, Version=5.1.9.1, Culture=neutral, PublicKeyToken=null</TypeInfo>
+   <TypeInfo>TerraViewer.edu.stsci.nvo.SimpleResource, Web References.edu.stsci.nvo.Reference.cs.dll, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>

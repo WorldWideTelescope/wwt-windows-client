@@ -300,7 +300,7 @@ namespace TerraViewer
             }
         }
 
-        public override IUiController GetEditUI()
+        public override object GetEditUI()
         {
             return this as IUiController;
         }
@@ -863,13 +863,13 @@ namespace TerraViewer
             }
         }
 
-        public void Render(Earth3d window)
+        public void Render(RenderEngine renderEngine)
         {
             showEditUi = true;
             return ;
         }
         bool showEditUi = false;
-        public void PreRender(Earth3d window)
+        public void PreRender(RenderEngine renderEngine)
         {
             showEditUi = true;
             return ;

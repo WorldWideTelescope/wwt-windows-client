@@ -13,32 +13,6 @@ using System.Threading;
 
 namespace TerraViewer
 {
-    public enum SolarSystemObjects
-    {
-        Sun,
-        Mercury,
-        Venus,
-        Mars,
-        Jupiter,
-        Saturn,
-        Uranus,
-        Neptune,
-        Pluto,
-        Moon,
-        Io,
-        Europa,
-        Ganymede,
-        Callisto,
-        IoShadow,
-        EuropaShadow,
-        GanymedeShadow,
-        CallistoShadow,
-        SunEclipsed,
-        Earth,
-        Custom,
-        Undefined = 65536
-    };
-
     public struct BodyAngles
     {
         public double poleDec;
@@ -1279,7 +1253,7 @@ namespace TerraViewer
                 DrawPlanet3d(renderContext, planetId, centerPoint, opacity);               
             }
 
-            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
+            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.RenderEngine.SolarSystemCameraDistance);
 
 
             //double val1 = Math.Log(200000000, 10)-7.3;
@@ -1871,7 +1845,7 @@ namespace TerraViewer
             KmlLabels kmlMarkers = null;
             if (planetID == (int)SolarSystemObjects.Earth)
             {
-                kmlMarkers = Earth3d.MainWindow.KmlMarkers;
+                kmlMarkers = Earth3d.MainWindow.RenderEngine.KmlMarkers;
                 if (kmlMarkers != null)
                 {
                     kmlMarkers.ClearGroundOverlays();
@@ -2267,7 +2241,7 @@ namespace TerraViewer
             renderContext.HemisphereLightColor = Color.Black;
             
             renderContext.World = matOld;
-            Earth3d.MainWindow.MakeFrustum();
+            Earth3d.MainWindow.RenderEngine.MakeFrustum();
             
             RestoreDefaultMaterialState(renderContext);
             renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
@@ -2374,7 +2348,7 @@ namespace TerraViewer
             matLocal.Multiply(orientationAtEpoch);
 
 
-            if (planetID == (int)Earth3d.MainWindow.viewCamera.Target)
+            if (planetID == (int)Earth3d.MainWindow.RenderEngine.viewCamera.Target)
             {
                 EarthMatrix = Matrix3d.Identity;
                 EarthMatrix.Multiply(Matrix3d.RotationY(-rotationCurrent));
@@ -2392,7 +2366,7 @@ namespace TerraViewer
 
             if (makeFrustum)
             {
-                Earth3d.MainWindow.MakeFrustum();
+                Earth3d.MainWindow.RenderEngine.MakeFrustum();
             }
             matNonRotating.Scale(new Vector3d(radius, radius, radius));
             matNonRotating.Multiply(orientationAtEpoch);
@@ -2515,7 +2489,7 @@ namespace TerraViewer
 
             Texture11 currentPlanetTexture;
 
-            if (planetScales[planetID] < (Earth3d.MainWindow.ZoomFactor / 6.0) / 300)
+            if (planetScales[planetID] < (Earth3d.MainWindow.RenderEngine.ZoomFactor / 6.0) / 300)
             {
                 if (planetID < 14)
                 {
@@ -2803,7 +2777,7 @@ namespace TerraViewer
                     {
                         string planetName = GetNameFrom3dId(planetID);
                         string imageSetName = planetName == "Mars" ? "Visible Imagery" : planetName;
-                        planet = Earth3d.MainWindow.GetImagesetByName(imageSetName);
+                        planet = Earth3d.MainWindow.RenderEngine.GetImagesetByName(imageSetName);
                     }
 
                     if (planet != null)
@@ -2817,7 +2791,7 @@ namespace TerraViewer
                         }
                         renderContext.Shader.DiffuseColor = normColor;
                         renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
-                        Earth3d.MainWindow.DrawTiledSphere(planet, 100, Color.White);
+                        Earth3d.MainWindow.RenderEngine.DrawTiledSphere(planet, 100, Color.White);
 
                         if (planetID == (int)SolarSystemObjects.Earth && Properties.Settings.Default.ShowClouds.State)
                         {

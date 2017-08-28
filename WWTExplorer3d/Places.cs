@@ -118,9 +118,9 @@ namespace TerraViewer
 
                             newPlace.ThumbNail = UiTools.LoadThumbnailFromWeb(newImageset.ThumbnailUrl);
                             dataList.Add(newPlace);
-                            if (!String.IsNullOrEmpty(newImageset.AltUrl) && !Earth3d.ReplacementImageSets.ContainsKey(newImageset.AltUrl))
+                            if (!String.IsNullOrEmpty(newImageset.AltUrl) && !RenderEngine.ReplacementImageSets.ContainsKey(newImageset.AltUrl))
                             {
-                                Earth3d.ReplacementImageSets.Add(newImageset.AltUrl, newImageset);
+                                RenderEngine.ReplacementImageSets.Add(newImageset.AltUrl, newImageset);
                             }
                         }
 

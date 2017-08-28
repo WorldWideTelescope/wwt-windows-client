@@ -1193,7 +1193,7 @@ namespace TerraViewer
             return name;
         }
 
-        public IUiController GetEditUI()
+        public object GetEditUI()
         {
             return null;
         }

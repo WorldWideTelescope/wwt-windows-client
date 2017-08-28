@@ -25,7 +25,7 @@ namespace TerraViewer
         // Human readable name for the set
         string GetName();
 
-        IUiController GetEditUI();
+        object GetEditUI();
     }
 
     public enum BaseTweenType { Linear, Power, Log, Boolean, Constant, PlanetID }; 

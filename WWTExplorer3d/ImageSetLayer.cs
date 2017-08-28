@@ -55,9 +55,9 @@ namespace TerraViewer
 
             ImageSetHelper ish = ImageSetHelper.FromXMLNode(imageSetNode);
 
-            if (!String.IsNullOrEmpty(ish.Url) && Earth3d.ReplacementImageSets.ContainsKey(ish.Url))
+            if (!String.IsNullOrEmpty(ish.Url) && RenderEngine.ReplacementImageSets.ContainsKey(ish.Url))
             {
-                imageSet = Earth3d.ReplacementImageSets[ish.Url];
+                imageSet = RenderEngine.ReplacementImageSets[ish.Url];
             }
             else
             {
@@ -99,9 +99,9 @@ namespace TerraViewer
             }
             renderContext.WorldBase = renderContext.World ;
             renderContext.ViewBase = renderContext.View;
-            Earth3d.MainWindow.MakeFrustum();
+            Earth3d.MainWindow.RenderEngine.MakeFrustum();
             renderContext.MakeFrustum();
-            Earth3d.MainWindow.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
+            Earth3d.MainWindow.RenderEngine.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
 
      
             return true;
@@ -112,7 +112,7 @@ namespace TerraViewer
         {
             if (imageSet.WcsImage != null)
             {
-                xmlWriter.WriteAttributeString("Extension", Path.GetExtension(imageSet.WcsImage.Filename));
+                xmlWriter.WriteAttributeString("Extension", Path.GetExtension(((WcsImage)imageSet.WcsImage).Filename));
             }
 
             if (imageSet.WcsImage is FitsImage)
@@ -139,7 +139,7 @@ namespace TerraViewer
         {
             if (imageSet.WcsImage != null)
             {
-                string fName = imageSet.WcsImage.Filename;
+                string fName = ((WcsImage)imageSet.WcsImage).Filename;
 
                 bool copy = !fName.Contains(ID.ToString());
                 string extension = Path.GetExtension(fName);

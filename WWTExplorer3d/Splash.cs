@@ -47,7 +47,7 @@ namespace TerraViewer
                         progressCount = 100;
                     }
                     progressBar1.Value = progressCount / 10;
-                    if (Earth3d.Initialized || Earth3d.HideSplash)
+                    if (RenderEngine.Initialized || Earth3d.HideSplash)
                     {
                         splashState = SplashState.FadingOut;
                         timer1.Interval = 50;

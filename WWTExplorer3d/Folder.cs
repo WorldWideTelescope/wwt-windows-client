@@ -1037,10 +1037,10 @@ namespace TerraViewer
     public partial class ImageSet : IImageSet , IThumbnail
     {
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private WcsImage wcsImage;
+        private object wcsImage;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public WcsImage WcsImage
+        public object WcsImage
         {
             get { return wcsImage; }
             set { wcsImage = value; }

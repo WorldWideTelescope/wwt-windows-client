@@ -573,8 +573,8 @@ namespace TerraViewer
 
         private void FromEarthView_Click(object sender, EventArgs e)
         {
-            txtLat.Text = Coordinates.FormatDMS(Earth3d.MainWindow.ViewLat);
-            txtLong.Text = Coordinates.FormatDMS(Earth3d.MainWindow.ViewLong);
+            txtLat.Text = Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ViewLat);
+            txtLong.Text = Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ViewLong);
         }
 	}
 }

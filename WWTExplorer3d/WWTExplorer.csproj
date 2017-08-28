@@ -33,7 +33,7 @@
     <SignManifests>false</SignManifests>
     <OldToolsVersion>3.5</OldToolsVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -365,6 +365,7 @@
       <DependentUpon>OverlayList.cs</DependentUpon>
     </Compile>
     <Compile Include="PointSpriteSet.cs" />
+    <Compile Include="RenderEngine.cs" />
     <Compile Include="Reticle.cs" />
     <Compile Include="SettingsAnimator.cs" />
     <Compile Include="SpaceNavigator\3DxMouse.cs" />
@@ -748,6 +749,8 @@
     <Compile Include="TransitionsPopup.Designer.cs">
       <DependentUpon>TransitionsPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="UiControllerArgs.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="VisibleKey.cs" />
     <Compile Include="VoTableLayer.cs" />
     <Compile Include="WizardPropsBinding.cs" />

@@ -946,7 +946,7 @@ namespace TerraViewer
 
             if (flat && astronomical && (markerScale == MarkerScales.World))
             {
-                adjustedScale = (float)(scaleFactor / (Earth3d.MainWindow.ZoomFactor / 360));
+                adjustedScale = (float)(scaleFactor / (Earth3d.MainWindow.RenderEngine.ZoomFactor / 360));
             }             
             
             Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;

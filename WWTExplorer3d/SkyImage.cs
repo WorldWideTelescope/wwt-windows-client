@@ -196,13 +196,13 @@ namespace TerraViewer
                             Height = texture.Height;
                             if (dataset.WcsImage != null)
                             {
-                                if (dataset.WcsImage.SizeX != 0)
+                                if (((WcsImage)dataset.WcsImage).SizeX != 0)
                                 {
-                                    Width = dataset.WcsImage.SizeX;
+                                    Width = ((WcsImage)dataset.WcsImage).SizeX;
                                 }
-                                if (dataset.WcsImage.SizeY != 0)
+                                if (((WcsImage)dataset.WcsImage).SizeY != 0)
                                 {
-                                    Height = dataset.WcsImage.SizeY;
+                                    Height = ((WcsImage)dataset.WcsImage).SizeY;
                                 }
 
                             }
@@ -223,7 +223,7 @@ namespace TerraViewer
                     {
                         if (dataset.WcsImage is FitsImage)
                         {
-                            SetTexture(dataset.WcsImage.GetBitmap());
+                            SetTexture(((WcsImage)dataset.WcsImage).GetBitmap());
                             ReadyToRender = true;
                         }
                     }
@@ -234,7 +234,7 @@ namespace TerraViewer
                         {
                             if (dataset.WcsImage is FitsImage)
                             {
-                                SetTexture(dataset.WcsImage.GetBitmap());
+                                SetTexture(((WcsImage)dataset.WcsImage).GetBitmap());
                                 ReadyToRender = true;
                             }
                         }
@@ -244,8 +244,8 @@ namespace TerraViewer
                         paintColor = Color.White;
                         if (dataset.WcsImage != null)
                         {
-                            paintColor = dataset.WcsImage.Color;
-                            blend = !dataset.WcsImage.ColorCombine;
+                            paintColor = ((WcsImage)dataset.WcsImage).Color;
+                            blend = !((WcsImage)dataset.WcsImage).ColorCombine;
                         }
 
 
@@ -270,13 +270,13 @@ namespace TerraViewer
                                     Height = texture.Height;
                                     if (dataset.WcsImage != null)
                                     {
-                                        if (dataset.WcsImage.SizeX != 0)
+                                        if (((WcsImage)dataset.WcsImage).SizeX != 0)
                                         {
-                                            Width = dataset.WcsImage.SizeX;
+                                            Width = ((WcsImage)dataset.WcsImage).SizeX;
                                         }
-                                        if (dataset.WcsImage.SizeY != 0)
+                                        if (((WcsImage)dataset.WcsImage).SizeY != 0)
                                         {
-                                            Height = dataset.WcsImage.SizeY;
+                                            Height = ((WcsImage)dataset.WcsImage).SizeY;
                                         }
 
                                     }
@@ -292,13 +292,13 @@ namespace TerraViewer
                                     ReadyToRender = true;
                                     Width = texture.Width;
                                     Height = texture.Height;
-                                    if (dataset.WcsImage.SizeX != 0)
+                                    if (((WcsImage)dataset.WcsImage).SizeX != 0)
                                     {
-                                        Width = dataset.WcsImage.SizeX;
+                                        Width = ((WcsImage)dataset.WcsImage).SizeX;
                                     }
-                                    if (dataset.WcsImage.SizeY != 0)
+                                    if (((WcsImage)dataset.WcsImage).SizeY != 0)
                                     {
-                                        Height = dataset.WcsImage.SizeY;
+                                        Height = ((WcsImage)dataset.WcsImage).SizeY;
                                     }
                                 }
                                 catch

@@ -42,9 +42,9 @@ namespace TerraViewer
 
         public static void ShowFovSetup()
         {
-            if (Earth3d.MainWindow.Fov == null)
+            if (Earth3d.MainWindow.RenderEngine.Fov == null)
             {
-                Earth3d.MainWindow.Fov = new FieldOfView(Properties.Settings.Default.FovTelescope, Properties.Settings.Default.FovCamera, Properties.Settings.Default.FovEyepiece);
+                Earth3d.MainWindow.RenderEngine.Fov = new FieldOfView(Properties.Settings.Default.FovTelescope, Properties.Settings.Default.FovCamera, Properties.Settings.Default.FovEyepiece);
             }
 
             FieldOfViewSetup.ShowFovSetup(Earth3d.MainWindow);

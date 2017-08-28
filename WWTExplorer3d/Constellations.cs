@@ -393,7 +393,7 @@ namespace TerraViewer
 
                 if (bs.State)
                 {
-                    Earth3d.MainWindow.PaintLayerFullTint11(imageset, opacity * bs.Opacity * 100 * (drawColor.A / 255.0f), drawColor);
+                    Earth3d.MainWindow.RenderEngine.PaintLayerFullTint11(imageset, opacity * bs.Opacity * 100 * (drawColor.A / 255.0f), drawColor);
                 }
             }
             renderContext.BlendMode = BlendMode.Alpha;

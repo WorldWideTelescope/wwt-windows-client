@@ -132,7 +132,7 @@ namespace TerraViewer
             PointSpriteShader11.WVPMatrix = mvp;
             PointSpriteShader11.Color = SharpDX.Color.White;
 
-            float adjustedScale = (float)(1 / (Earth3d.MainWindow.ZoomFactor / 360));
+            float adjustedScale = (float)(1 / (Earth3d.MainWindow.RenderEngine.ZoomFactor / 360));
 
             PointSpriteShader11.ViewportScale = new SharpDX.Vector2((2.0f / renderContext.ViewPort.Width) * adjustedScale, (2.0f / renderContext.ViewPort.Height) * adjustedScale);
             PointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10000.0f);

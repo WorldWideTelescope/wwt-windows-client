@@ -671,8 +671,8 @@ namespace TerraViewer
                     targetState = Properties.Settings.Default.ShowFieldOfView.TargetState;
                     break;
                 case StockSkyOverlayTypes.FadeToBlack:
-                    opacity = Earth3d.MainWindow.Fader.Opacity;
-                    targetState = Earth3d.MainWindow.Fader.TargetState;
+                    opacity = Earth3d.MainWindow.RenderEngine.Fader.Opacity;
+                    targetState = Earth3d.MainWindow.RenderEngine.Fader.TargetState;
                     break;
                 default:
                     return new SettingParameter(false, -1, false, null);

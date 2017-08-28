@@ -93,7 +93,7 @@ namespace TerraViewer
 
 		public bool Startup()
 		{
-            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Starting Web Server"); }
+            if (Utils.Logging) { Utils.WriteLogMessage("Starting Web Server"); }
             SetAccessLists();
 
             if (!initializedOnce)
@@ -126,9 +126,9 @@ namespace TerraViewer
                         }
                         if (ipAdd.ToString() != "127.0.0.1")
                         {
-                            if (Earth3d.Logging)
+                            if (Utils.Logging)
                             {
-                                Earth3d.WriteLogMessage(" Web Server - Adding:" + ipAdd.ToString());
+                                Utils.WriteLogMessage(" Web Server - Adding:" + ipAdd.ToString());
                             }
                             listener = new WebListener(new ParameterizedThreadStart(ListenerThreadFunc), ipAdd);
                             listeners.Add(listener);
@@ -136,9 +136,9 @@ namespace TerraViewer
                         }
                     }
                 }
-                if (Earth3d.Logging)
+                if (Utils.Logging)
                 {
-                    Earth3d.WriteLogMessage(" Web Server - Adding Loopback");
+                    Utils.WriteLogMessage(" Web Server - Adding Loopback");
                 }
                 // Add Loopback localhost
                 listener = new WebListener(new ParameterizedThreadStart(ListenerThreadFunc), IPAddress.Loopback);
@@ -149,12 +149,12 @@ namespace TerraViewer
         	}
 			catch (Exception e)
 			{
-                if (Earth3d.Logging)
+                if (Utils.Logging)
                 {
-                    Earth3d.WriteLogMessage("Failed Starting Web Server");
-                    Earth3d.WriteLogMessage(e.Message);
-                    Earth3d.WriteLogMessage(e.Source);
-                    Earth3d.WriteLogMessage(e.StackTrace);
+                    Utils.WriteLogMessage("Failed Starting Web Server");
+                    Utils.WriteLogMessage(e.Message);
+                    Utils.WriteLogMessage(e.Source);
+                    Utils.WriteLogMessage(e.StackTrace);
 
                 }
                 _bQuit = true;
@@ -236,7 +236,7 @@ namespace TerraViewer
 
 		public void Shutdown()
 		{
-            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Shutting Down Web Server"); }
+            if (Utils.Logging) { Utils.WriteLogMessage("Shutting Down Web Server"); }
             _bQuit = true;
             foreach (WebListener wl in listeners)
             {
@@ -304,7 +304,7 @@ namespace TerraViewer
 				}
 				catch 
 				{
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Web Server Listener Exception"); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Web Server Listener Exception"); }
 				}
 			}
             _RunCount--;
@@ -417,7 +417,7 @@ namespace TerraViewer
 
                 try
                 {
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Web Request:" + sRequest); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Web Request:" + sRequest); }
                     RequestHandler rh = RequestHandler.GetHandler(sRequest);
                     if (rh != null)
                     {
@@ -434,7 +434,7 @@ namespace TerraViewer
                 }
                 catch (Exception ex)
                 {
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Web Server Request Exception" + ex.Message); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Web Server Request Exception" + ex.Message); }
                     sErrorMessage = "<H2>Error: " + ex.ToString() + "</H2>";
                     RequestHandler.SendHeader(RequestHandler.HttpVersion, "", sErrorMessage.Length, " 200 OK", ref mySocket);
                     RequestHandler.SendHeader(RequestHandler.HttpVersion, "", sErrorMessage.Length, " 404 Not Found", ref mySocket);

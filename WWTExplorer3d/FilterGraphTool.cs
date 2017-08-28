@@ -82,23 +82,23 @@ namespace TerraViewer
             set { stats = value; }
         }
 
-        public void PreRender(Earth3d window)
+        public void PreRender(RenderEngine renderEngine)
         {
 
         }
 
-        public void Render(Earth3d window)
+        public void Render(RenderEngine renderEngine)
         {
             //todo11 reanble this
             if (texture == null)
             {
                 Bitmap bmp = null;
-                bmp = GetChartImageBitmap(window);
+                bmp = GetChartImageBitmap(renderEngine);
                 bmp.Dispose();
             }
 
 
-            Sprite2d.Draw2D(window.RenderContext11, texture, new SizeF(texture.Width, texture.Height), new PointF(0, 0), 0, new PointF(Left + texture.Width / 2, Top + texture.Height / 2), Color.White);
+            Sprite2d.Draw2D(renderEngine.RenderContext11, texture, new SizeF(texture.Width, texture.Height), new PointF(0, 0), 0, new PointF(Left + texture.Width / 2, Top + texture.Height / 2), Color.White);
 
  
             if (!String.IsNullOrEmpty(HoverText))
@@ -110,7 +110,7 @@ namespace TerraViewer
             return;
         }
 
-        private Bitmap GetChartImageBitmap(Earth3d window)
+        private Bitmap GetChartImageBitmap(RenderEngine renderEngine)
         {
             Bitmap bmp = null;
             if (chartType == ChartTypes.Histogram)
@@ -151,8 +151,8 @@ namespace TerraViewer
 
             Width = bmp.Width;
             Height = bmp.Height;
-            Top = (int)window.RenderContext11.ViewPort.Height - (Height + 120);
-            Left = (int)window.RenderContext11.ViewPort.Width / 2 - (Width / 2);
+            Top = (int)renderEngine.RenderContext11.ViewPort.Height - (Height + 120);
+            Left = (int)renderEngine.RenderContext11.ViewPort.Width / 2 - (Width / 2);
             
             return bmp;
         }
@@ -378,9 +378,6 @@ namespace TerraViewer
 
             }
 
-
-
-
             brush.Dispose();
             pen.Dispose();
             g.Flush();
@@ -594,7 +591,7 @@ namespace TerraViewer
         void copyMenu_Click(object sender, EventArgs e)
         {
             Clipboard.Clear();
-            Clipboard.SetImage(GetChartImageBitmap(Earth3d.MainWindow));
+            Clipboard.SetImage(GetChartImageBitmap(Earth3d.MainWindow.RenderEngine));
         }
 
         void closeMenu_Click(object sender, EventArgs e)

@@ -36,8 +36,8 @@ namespace TerraViewer
             maxFileCount = 0;
             for (int level = layer.BaseLevel; level < (levelCount + 1); level++)
             {
-                int maxX = Earth3d.GetTilesXForLevel(layer, level);
-                int maxY = Earth3d.GetTilesYForLevel(layer, level);
+                int maxX = RenderEngine.GetTilesXForLevel(layer, level);
+                int maxY = RenderEngine.GetTilesYForLevel(layer, level);
 
                 for (int x = 0; x < maxX; x++)
                 {
@@ -52,8 +52,8 @@ namespace TerraViewer
 
             for (int level = layer.BaseLevel; level < (levelCount+1); level++)
             {
-                int maxX = Earth3d.GetTilesXForLevel(layer, level);
-                int maxY = Earth3d.GetTilesYForLevel(layer, level);
+                int maxX = RenderEngine.GetTilesXForLevel(layer, level);
+                int maxY = RenderEngine.GetTilesYForLevel(layer, level);
 
                 for (int x = 0; x < maxX; x++)
                 {

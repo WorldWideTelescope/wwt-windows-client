@@ -738,8 +738,8 @@ namespace TerraViewer
                         break;
                     case "state":
                         {
-                            CameraParameters cam = Earth3d.MainWindow.viewCamera;
-                            if (Earth3d.MainWindow.Space)
+                            CameraParameters cam = Earth3d.MainWindow.RenderEngine.viewCamera;
+                            if (Earth3d.MainWindow.RenderEngine.Space)
                             {
                                 data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><ViewState lookat=\"{7}\" ra=\"{0}\" dec=\"{1}\" zoom=\"{2}\" rotation=\"{4}\" time=\"{5}\" timerate=\"{6}\" ReferenceFrame=\"Sky\" ViewToken=\"SD8834DFA\" ZoomText=\"{8}\"></ViewState></LayerApi>",
                                     cam.RA, cam.Dec, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.contextPanel.ViewLabelText);
@@ -747,7 +747,7 @@ namespace TerraViewer
                             else
                             {
                                 data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><ViewState lookat=\"{7}\" lat=\"{0}\" lng=\"{1}\" zoom=\"{2}\" angle=\"{3}\" rotation=\"{4}\" time=\"{5}\" timerate=\"{6}\" ReferenceFrame=\"{8}\" ViewToken=\"{10}\" ZoomText=\"{9}\"></ViewState></LayerApi>",
-                                    cam.Lat, cam.Lng, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.FocusReferenceFrame(), Earth3d.MainWindow.contextPanel.ViewLabelText, Earth3d.MainWindow.viewCamera.ToToken());
+                                    cam.Lat, cam.Lng, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.FocusReferenceFrame(), Earth3d.MainWindow.contextPanel.ViewLabelText, Earth3d.MainWindow.RenderEngine.viewCamera.ToToken());
                             }
                         }
                         break;
@@ -842,18 +842,18 @@ namespace TerraViewer
                                         CameraParameters cameraParams;
                                         double lat = result.Lat;
                                         double lng = result.Lng;
-                                        double zoom = Convert.ToDouble(Earth3d.MainWindow.ZoomFactor);
-                                        double rotation = Convert.ToDouble(Earth3d.MainWindow.CameraRotate);
-                                        double angle = Convert.ToDouble(Earth3d.MainWindow.CameraAngle);
+                                        double zoom = Convert.ToDouble(Earth3d.MainWindow.RenderEngine.ZoomFactor);
+                                        double rotation = Convert.ToDouble(Earth3d.MainWindow.RenderEngine.CameraRotate);
+                                        double angle = Convert.ToDouble(Earth3d.MainWindow.RenderEngine.CameraAngle);
                                         cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
-                                        if (Earth3d.MainWindow.Space)
+                                        if (Earth3d.MainWindow.RenderEngine.Space)
                                         {
                                             cameraParams.RA = result.RA;
                                         }
 
                                         MethodInvoker doIt = delegate
                                         {
-                                            Earth3d.MainWindow.GotoTarget(cameraParams, false, instant);
+                                            Earth3d.MainWindow.RenderEngine.GotoTarget(cameraParams, false, instant);
                                         };
 
                                         if (Earth3d.MainWindow.InvokeRequired)
@@ -944,7 +944,7 @@ namespace TerraViewer
 
                                         double lat = double.Parse(latLng[0]);
                                         double lng = double.Parse(latLng[1]);
-                                        double alt = Earth3d.MainWindow.GetAltitudeForLatLong(lat, lng) - EGM96Geoid.Height(lat, lng);
+                                        double alt = Earth3d.MainWindow.RenderEngine.GetAltitudeForLatLong(lat, lng) - EGM96Geoid.Height(lat, lng);
                                         sb.Append(string.Format("<Coordinates Lat=\"{0}\" Lng=\"{1}\" Altitude=\"{2}\" />", lat, lng, alt));
 
                                     }
@@ -999,7 +999,7 @@ namespace TerraViewer
                     double rotation = Convert.ToDouble(lines[3]);
                     double angle = Convert.ToDouble(lines[4]);
                     cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
-                    if (Earth3d.MainWindow.Space)
+                    if (Earth3d.MainWindow.RenderEngine.Space)
                     {
                         cameraParams.RA = Convert.ToDouble(lines[1]);
                     }
@@ -1007,7 +1007,7 @@ namespace TerraViewer
 
                     MethodInvoker doIt = delegate
                     {
-                        Earth3d.MainWindow.GotoTarget(cameraParams, false, instant);
+                        Earth3d.MainWindow.RenderEngine.GotoTarget(cameraParams, false, instant);
                     };
 
                     if (Earth3d.MainWindow.InvokeRequired)
@@ -1069,7 +1069,7 @@ namespace TerraViewer
                             }
                             MethodInvoker doIt2 = delegate
                             {
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, instant);
+                                Earth3d.MainWindow.RenderEngine.GotoTarget(cameraParams, false, instant);
                             };
 
                             if (Earth3d.MainWindow.InvokeRequired)
@@ -1118,7 +1118,7 @@ namespace TerraViewer
 
                         MethodInvoker doIt = delegate
                         {
-                            Earth3d.MainWindow.GotoTarget(pl, false, false, true);
+                            Earth3d.MainWindow.RenderEngine.GotoTarget(pl, false, false, true);
                         };
 
                         if (Earth3d.MainWindow.InvokeRequired)

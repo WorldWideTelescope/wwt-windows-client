@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+#if WINDOWS_UWP
+using SysColor = Windows.UI.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
 using System.Text;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D;
@@ -41,9 +45,9 @@ namespace TerraViewer
 
     public struct Material
     {
-        public System.Drawing.Color Diffuse;
-        public System.Drawing.Color Ambient;
-        public System.Drawing.Color Specular;
+        public SysColor Diffuse;
+        public SysColor Ambient;
+        public SysColor Specular;
         public float SpecularSharpness;
         public float Opacity;
         public bool Default;
@@ -109,6 +113,22 @@ namespace TerraViewer
             }
         }
 
+        public int Width
+        {
+            get
+            {
+                return (int)viewPort.Width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return (int)viewPort.Height;
+            }
+        }
+
         public Viewport DisplayViewport
         {
             get { return displayViewPort; }
@@ -131,6 +151,7 @@ namespace TerraViewer
             get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
         }
 
+#if !WINDOWS_UWP
         public RenderContext11(System.Windows.Forms.Control control, bool forceNoSRGB = false)
         {
 
@@ -271,16 +292,85 @@ namespace TerraViewer
 
             initializeStates();
         }
+#else
 
-        Device1 dv1 = null;
-
-        public void SetLatency(int frames)
+        
+        internal RenderContext11(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory)
         {
-            if (dv1 != null)
+            //todo fix these to be real
+            int height = 1024;
+            int width = 1024;
+            WicImagingFactory = wicImagingFactory;
+
+
+            //todo redo this for Oasis
+
+
+            this.device = device;
+
+
+            devContext = device.ImmediateContext;
+
+            PrepDevice = device;
+
+
+            if (device.FeatureLevel == FeatureLevel.Level_9_3)
             {
-                dv1.MaximumFrameLatency = frames;
+                PixelProfile = "ps_4_0_level_9_3";
+                VertexProfile = "vs_4_0_level_9_3";
+                Downlevel = true;
             }
-        }
+            else if (device.FeatureLevel == FeatureLevel.Level_9_1)
+            {
+                PixelProfile = "ps_4_0_level_9_1";
+                VertexProfile = "vs_4_0_level_9_1";
+                Downlevel = true;
+            }
+
+            bool forceNoSRGB = false;
+
+            if (!Downlevel)
+            {
+                if (!forceNoSRGB)
+                {
+                    sRGB = true;
+                }
+            }
+
+           // New RenderTargetView from the backbuffer
+       //     backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
+        //    renderView = new RenderTargetView(device, backBuffer);
+
+
+        //    depthView = new DepthStencilView(device, depthBuffer);
+
+          
+                sampler = new SamplerState(device, new SamplerStateDescription()
+                {
+                    Filter = Filter.Anisotropic,
+                    AddressU = TextureAddressMode.Clamp,
+                    AddressV = TextureAddressMode.Clamp,
+                    AddressW = TextureAddressMode.Wrap,
+                    BorderColor = SharpDX.Color.Black,
+                    ComparisonFunction = Comparison.Never,
+                    MaximumAnisotropy = 16,
+                    MipLodBias = 0,
+                    MinimumLod = 0,
+                    MaximumLod = 16,
+                });
+ 
+            devContext.PixelShader.SetSampler(0, sampler);
+            // Prepare All the stages
+            displayViewPort = new Viewport(0, 0, width, height, 0.0f, 1.0f);
+            ViewPort = displayViewPort;
+       //     devContext.OutputMerger.SetTargets(depthView, renderView);
+
+            initializeStates();
+        }  
+        public static SharpDX.WIC.ImagingFactory2 WicImagingFactory = null;
+#endif
+
+
 
         private Viewport displayViewPort;
 
@@ -364,7 +454,8 @@ namespace TerraViewer
 
         }
 
-        public Bitmap GetScreenBitmap()
+#if !WINDOWS_UWP
+        public System.Drawing.Bitmap GetScreenBitmap()
         {
             MemoryStream ms = new MemoryStream();
 
@@ -397,13 +488,14 @@ namespace TerraViewer
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            Bitmap bmp = new Bitmap(ms);
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms);
 
             ms.Close();
             ms.Dispose();
 
             return bmp;
         }
+#endif
 
         public Texture11 GetScreenTexture()
         {
@@ -445,9 +537,9 @@ namespace TerraViewer
             }
         }
 
-        public void Resize(System.Windows.Forms.Control control)
+        public void Resize(int height, int width)
         {
-            if (control.ClientSize.Width * control.ClientSize.Height == 0)
+            if (width * height == 0)
             {
                 return;
             }
@@ -476,7 +568,7 @@ namespace TerraViewer
                 depthBuffer = null;
 
 
-                swapChain.ResizeBuffers(1, control.ClientSize.Width, control.ClientSize.Height, DefaultColorFormat, SwapChainFlags.None);
+                swapChain.ResizeBuffers(1, width, height, DefaultColorFormat, SwapChainFlags.None);
 
                 // New RenderTargetView from the backbuffer
                 backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
@@ -488,8 +580,8 @@ namespace TerraViewer
                     Format = DefaultDepthStencilFormat,
                     ArraySize = 1,
                     MipLevels = 1,
-                    Width = control.ClientSize.Width,
-                    Height = control.ClientSize.Height,
+                    Width = width,
+                    Height = height,
                     SampleDescription = backBuffer.Description.SampleDescription,
                     Usage = ResourceUsage.Default,
                     BindFlags = BindFlags.DepthStencil,
@@ -502,7 +594,7 @@ namespace TerraViewer
                 devContext.OutputMerger.SetTargets(depthView, renderView);
 
 
-                displayViewPort = new Viewport(0, 0, control.ClientSize.Width, control.ClientSize.Height, 0.0f, 1.0f);
+                displayViewPort = new Viewport(0, 0, width, height, 0.0f, 1.0f);
                 ViewPort = displayViewPort;
             }
         }
@@ -566,6 +658,10 @@ namespace TerraViewer
         {
             get { return shadersEnabled; }
         }
+
+        static public Matrix3d WorldMatrix;
+        static public Matrix3d ViewMatrix;
+        static public Matrix3d ProjMatrix;
 
         public Matrix3d View
         {
@@ -656,8 +752,6 @@ namespace TerraViewer
             }
         }
 
-
-
         public RenderContext11(Device device)
         {
             Device = device;
@@ -686,8 +780,8 @@ namespace TerraViewer
 
         public Vector3d CameraPosition;
 
-        private System.Drawing.Color ambientLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color AmbientLightColor
+        private SysColor ambientLightColor = SysColor.FromArgb(255, 0, 0, 0);
+        public SysColor AmbientLightColor
         {
             get
             {
@@ -701,8 +795,8 @@ namespace TerraViewer
             }
         }
 
-        private System.Drawing.Color hemiLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color HemisphereLightColor
+        private SysColor hemiLightColor = SysColor.FromArgb(255, 0, 0, 0);
+        public SysColor HemisphereLightColor
         {
             get
             {
@@ -732,8 +826,8 @@ namespace TerraViewer
         }
 
 
-        private System.Drawing.Color sunlightColor = System.Drawing.Color.White;
-        public System.Drawing.Color SunlightColor
+        private SysColor sunlightColor = SysColor.FromArgb(255, 255, 255, 255);
+        public SysColor SunlightColor
         {
             get
             {
@@ -762,8 +856,8 @@ namespace TerraViewer
             }
         }
 
-        private System.Drawing.Color reflectedLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color ReflectedLightColor
+        private SysColor reflectedLightColor = SysColor.FromArgb(255, 0, 0, 0);
+        public SysColor ReflectedLightColor
         {
             get
             {
@@ -1112,7 +1206,7 @@ ambientLightColor.B / 255.0f);
         public void SetMaterial(Material material, Texture11 diffuseTex, Texture11 specularTex, Texture11 normalMap, float opacity)
         {
             PlanetSurfaceStyle surfaceStyle = PlanetSurfaceStyle.Diffuse;
-            if (material.Specular != System.Drawing.Color.Black)
+            if (material.Specular != SysColor.FromArgb(255, 0, 0, 0))
             {
                 surfaceStyle = PlanetSurfaceStyle.Specular;
             }
@@ -1124,7 +1218,7 @@ ambientLightColor.B / 255.0f);
             }
 
             PlanetShaderKey key = new PlanetShaderKey(surfaceStyle, false, 0);
-            if (reflectedLightColor != System.Drawing.Color.Black)
+            if (reflectedLightColor != SysColor.FromArgb(255, 0, 0, 0))
             {
                 key.lightCount = 2;
             }
@@ -1186,7 +1280,7 @@ ambientLightColor.B / 255.0f);
             Device.ImmediateContext.PixelShader.Set(null);
         }
 
-        public void SetupBasicEffect(BasicEffect e, float opacity, System.Drawing.Color color)
+        public void SetupBasicEffect(BasicEffect e, float opacity, SysColor color)
         {
             Vector4 correctedColor;
             if (sRGB)
@@ -1297,7 +1391,7 @@ ambientLightColor.B / 255.0f);
         {
             swapChain.SetFullscreenState(fullScreen, null);
         }
-
+#if !WINDOWS_UWP
         public void SaveBackBuffer(string filename, ImageFileFormat format)
         {
             if (MultiSampleCount != 1)
@@ -1328,7 +1422,7 @@ ambientLightColor.B / 255.0f);
                 Texture2D.ToFile(devContext, backBuffer, format, filename);
             }
       }
-
+#endif
 
         public BlendMode BlendMode
         {
@@ -1599,5 +1693,8 @@ ambientLightColor.B / 255.0f);
                 return transparentBorderSampler;
             }
         }
+
+     
+
     }
 }

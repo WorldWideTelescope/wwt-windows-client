@@ -53,7 +53,7 @@ namespace TerraViewer
         public override bool PreDraw(RenderContext11 renderContext, float opacity)
         {
             Overlay.color = Color.FromArgb((int)(this.Opacity * opacity * Color.A), Color);
-            Earth3d.MainWindow.KmlMarkers.AddGroundOverlay(Overlay);
+            Earth3d.MainWindow.RenderEngine.KmlMarkers.AddGroundOverlay(Overlay);
             
             return true;
         }

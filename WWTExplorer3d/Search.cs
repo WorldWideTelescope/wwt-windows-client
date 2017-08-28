@@ -77,7 +77,7 @@ namespace TerraViewer
 
         private void SearchView_Click(object sender, EventArgs e)
         {
-            Coordinates[] corners = Earth3d.MainWindow.CurrentViewCorners;
+            Coordinates[] corners = Earth3d.MainWindow.RenderEngine.CurrentViewCorners;
 
             if (corners != null && !String.IsNullOrEmpty(Earth3d.MainWindow.Constellation))
             {
@@ -175,9 +175,9 @@ namespace TerraViewer
         {
             InitSearchTable();
 
-            if (Earth3d.MainWindow.Space != plotResults.Visible)
+            if (Earth3d.MainWindow.RenderEngine.Space != plotResults.Visible)
             {
-                plotResults.Visible = Earth3d.MainWindow.Space;
+                plotResults.Visible = Earth3d.MainWindow.RenderEngine.Space;
             }
 
 
@@ -385,13 +385,13 @@ namespace TerraViewer
                 }
             }
             
-            Earth3d.MainWindow.GotoTarget((IPlace)e, false, false, true);
+            Earth3d.MainWindow.RenderEngine.GotoTarget((IPlace)e, false, false, true);
 
         }
 
         private void searchResults_ItemDoubleClicked(object sender, Object e)
         {
-            Earth3d.MainWindow.GotoTarget((IPlace)e, false, true, true);
+            Earth3d.MainWindow.RenderEngine.GotoTarget((IPlace)e, false, true, true);
 
         }
 
@@ -426,12 +426,12 @@ namespace TerraViewer
 
                 if (imageset != null)
                 {
-                    Earth3d.MainWindow.PreviewImageset = imageset;
-                    Earth3d.MainWindow.PreviewBlend.TargetState = true;
+                    Earth3d.MainWindow.RenderEngine.PreviewImageset = imageset;
+                    Earth3d.MainWindow.RenderEngine.PreviewBlend.TargetState = true;
                 }
                 else
                 {
-                    Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                    Earth3d.MainWindow.RenderEngine.PreviewBlend.TargetState = false;
                 }
             }
             else
@@ -441,7 +441,7 @@ namespace TerraViewer
                     toolTips.SetToolTip(searchResults, ((IThumbnail)e).Name);
                 }
                 Earth3d.MainWindow.SetLabelText(null, false);
-                Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                Earth3d.MainWindow.RenderEngine.PreviewBlend.TargetState = false;
 
             }
 
@@ -585,7 +585,7 @@ namespace TerraViewer
 
         private void plotResults_CheckedChanged(object sender, EventArgs e)
         {
-            Earth3d.MainWindow.ShowKmlMarkers = plotResults.Checked;
+            Earth3d.MainWindow.RenderEngine.ShowKmlMarkers = plotResults.Checked;
 
             UpdateMarkers();
             
@@ -593,15 +593,15 @@ namespace TerraViewer
 
         private void UpdateMarkers()
         {
-            if (Earth3d.MainWindow.KmlMarkers != null)
+            if (Earth3d.MainWindow.RenderEngine.KmlMarkers != null)
             {
-                Earth3d.MainWindow.KmlMarkers.ClearPoints();
+                Earth3d.MainWindow.RenderEngine.KmlMarkers.ClearPoints();
                 if (plotResults.Checked)
                 {
                     foreach (object o in searchResults.Items)
                     {
                         IPlace p = (IPlace)o;
-                        Earth3d.MainWindow.KmlMarkers.AddPoint(p.Name, p.RA, p.Dec);
+                        Earth3d.MainWindow.RenderEngine.KmlMarkers.AddPoint(p.Name, p.RA, p.Dec);
                     }
                 }
             }
@@ -698,14 +698,14 @@ namespace TerraViewer
                     pnt.Normalize();
                     Vector2d radec = Coordinates.CartesianToLatLng(pnt);
 
-                    Earth3d.MainWindow.TargetLat = radec.Y;
-                    Earth3d.MainWindow.TargetLong = radec.X - 90;
+                    Earth3d.MainWindow.RenderEngine.TargetLat = radec.Y;
+                    Earth3d.MainWindow.RenderEngine.TargetLong = radec.X - 90;
 
                 }
                 else
                 {
 
-                    Earth3d.MainWindow.GotoTargetRADec(ra, dec, true, false);
+                    Earth3d.MainWindow.RenderEngine.GotoTargetRADec(ra, dec, true, false);
                 }
             }
         }

@@ -1,17 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.IO.Compression;
-using Microsoft.Bits.TileIO.GeometryEncoderDecoder;
-using DSMRender;
 
+#if !WINDOWS_UWP
+using DSMRender;
+#endif
+
+using System;
+using System.Collections.Generic;
+
+#if !WINDOWS_UWP
+using System.Drawing;
+#endif
+using System.Text;
 namespace TerraViewer
 {
     public class MercatorTile : Tile
@@ -242,6 +240,8 @@ namespace TerraViewer
 
         public override bool PreCreateGeometry(RenderContext11 renderContext)
         {
+
+#if !WINDOWS_UWP
             if (Properties.Settings.Default.Show3dCities)
             {
                 // Conditionalsupport for 3d Cities based on settings
@@ -260,17 +260,21 @@ namespace TerraViewer
                 }
 
             }
+#endif
             return false;
         }
 
+#if !WINDOWS_UWP
         DSMTile dsm = null;
-       
+#endif
         static public bool SaveDsmTiles = false;
         static public string SaveDsmDirectory = "";
         static public List<string> SaveDsmTileList = new List<string>();
         static Vector3d SaveDsmLocalCenter = new Vector3d();
         public override void RenderPart(RenderContext11 renderContext, int part, float opacity, bool combine)
         {
+
+#if !WINDOWS_UWP
             if (dsm != null && dsm.DsmIndex != null)
             {
                 renderContext.SetIndexBuffer(dsm.DsmIndex);
@@ -330,6 +334,7 @@ namespace TerraViewer
                 }
             }
             else
+ #endif
             {
                 base.RenderPart(renderContext, part, opacity, combine);
             }
@@ -827,7 +832,7 @@ namespace TerraViewer
         }
 
 
-        public static PointF GetCentrePointOffsetAsTileRatio(double lat, double lon, int zoom)
+        public static Vector2d GetCentrePointOffsetAsTileRatio(double lat, double lon, int zoom)
         {
             double metersX = AbsoluteLonToMetersAtZoom(lon, zoom);
 
@@ -839,7 +844,7 @@ namespace TerraViewer
             double relativeYIntoCell = (metersY / GRID_SIZE) -
                 Math.Floor(metersY / GRID_SIZE);
 
-            return (new PointF((float)relativeXIntoCell, (float)relativeYIntoCell));
+            return (new Vector2d(relativeXIntoCell, relativeYIntoCell));
         }
 
         public static double RelativeMetersToLatAtZoom(double y,
