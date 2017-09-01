@@ -2,12 +2,24 @@
 // Written by Jonathan Fay
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using PointF = Windows.Foundation.Point;
+using SizeF = Windows.Foundation.Size;
+using RectangleF = Windows.Foundation.Rect;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Text;
 using System.Xml;
+#endif
+
+using System.IO;
 namespace TerraViewer
 {
     public class FieldOfView
@@ -35,7 +47,7 @@ namespace TerraViewer
             doc.Load(Properties.Settings.Default.CahceDirectory + @"data\instruments.xml");
 
             
-            XmlNode root = doc["root"];
+            XmlNode root = doc.GetChildByName("root");
             XmlNode scopes = root.SelectSingleNode("Telescopes");
             foreach (XmlNode child in scopes.ChildNodes)
             {
@@ -57,7 +69,7 @@ namespace TerraViewer
                     child.InnerText.Trim(),
                     child.Attributes["ManufacturersURL"].Value.ToString()
                     );
-                foreach (XmlNode grandChild in child)
+                foreach (XmlNode grandChild in child.ChildNodes)
                 {
                     if (grandChild.Name != "#text")
                     {
@@ -134,7 +146,7 @@ namespace TerraViewer
 
         protected PositionColoredTextured[] points;
 
-        public Color DrawColor = Color.Gray;
+        public Color DrawColor = SystemColors.Gray;
     
         public Telescope Telescope= null;
         public Camera Camera = null;
@@ -155,7 +167,7 @@ namespace TerraViewer
 
         private void DrawFOV(RenderContext11 renderContext, float opacity, double ra, double dec)
         {
-            Color color = Color.FromArgb((int)(opacity*255f),Properties.Settings.Default.FovColor );
+            Color color = UiTools.FromArgb((int)(opacity * 255f), Properties.Settings.Default.FovColor);
 
             foreach (Imager chip in Camera.Chips)
             {
@@ -217,8 +229,8 @@ namespace TerraViewer
 
         int GetTransparentColor(int color, float opacity)
         {
-            Color inColor = Color.FromArgb(color);
-            Color outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
+            Color inColor = UiTools.FromArgb(color);
+            Color outColor = UiTools.FromArgb((byte)(opacity * 255f), inColor);
             return outColor.ToArgb();
         }
     }

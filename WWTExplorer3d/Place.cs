@@ -1,21 +1,29 @@
+using AstroCalc;
 using System;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.IO;
-using System.Collections.Generic;
 using System.Xml;
 using TerraViewer.org.worldwidetelescope.www;
-using AstroCalc;
+#endif
+
 
 
 
 namespace TerraViewer
 {
-    
 
-	/// <summary>
-	/// Summary description for Place.
-	/// </summary>
-	public class TourPlace : IDisposable, TerraViewer.IThumbnail, TerraViewer.IPlace
+
+    /// <summary>
+    /// Summary description for Place.
+    /// </summary>
+    public class TourPlace : IDisposable, TerraViewer.IThumbnail, TerraViewer.IPlace
 	{
 		public TourPlace()
 		{
@@ -74,6 +82,7 @@ namespace TerraViewer
         {
             get
             {
+#if !BASICWWT
                 if (Classification == Classification.SolarSystem && camParams.Target != SolarSystemObjects.Custom)
                 {
                     AstroRaDec raDec = Planets.GetPlanetLocation(Name);
@@ -81,7 +90,7 @@ namespace TerraViewer
                     camParams.Dec = raDec.Dec;
                     this.distnace = raDec.Distance;
                 }
-
+#endif
                 return camParams;
             }
             set { camParams = value; }
@@ -89,10 +98,12 @@ namespace TerraViewer
 
         public void UpdatePlanetLocation(double jNow)
         {
+#if !BASICWWT
             if (Target != SolarSystemObjects.Undefined && Target != SolarSystemObjects.Custom)
             {
                 camParams.ViewTarget = Planets.GetPlanetTargetPoint(Target, Lat, Lng, jNow);
             }
+#endif
         }
 
         Vector3d location3d = new Vector3d(0, 0, 0);
@@ -227,21 +238,24 @@ namespace TerraViewer
                     {
                         if (!String.IsNullOrEmpty(constellation) )
                         {
-                            if (Overview.ConstellationThumbnails.ContainsKey(constellation))
+                            if (ThumbnailCache.ConstellationThumbnails.ContainsKey(constellation))
                             {
                                 //todo clone this
-                                thumbNail = Overview.ConstellationThumbnails[constellation];
+                                thumbNail = ThumbnailCache.ConstellationThumbnails[constellation];
                             }
                         }      
                     }
                     else
                     {
+                        //todo uwp figure out how to extract thumbnails into resources of some kind
+#if !WINDOWS_UWP
                         thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
                         if (thumbNail == null)
                         {
                             object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
                             thumbNail = ((System.Drawing.Bitmap)(obj));
                         }
+#endif
                     }
                     //Stream s = this.GetType().Assembly.GetManifestResourceStream(String.Format("TerraViewer.Properties.Resources.{0}", Enum.GetName(typeof(DataSetType), Type)));
                     //thumbNail = new Bitmap( s );
@@ -394,7 +408,7 @@ namespace TerraViewer
 		}
 
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -406,9 +420,9 @@ namespace TerraViewer
         }
 
 
-        #endregion
+#endregion
 
-        internal void SaveToXml(System.Xml.XmlTextWriter xmlWriter, string elementName)
+        internal void SaveToXml(XmlTextWriter xmlWriter, string elementName)
         {
 
             xmlWriter.WriteStartElement(elementName);
@@ -560,43 +574,43 @@ namespace TerraViewer
             }
             return newPlace;
         }
-        internal static TourPlace FromAstroObjectsRow(AstroObjectsDataset.spGetAstroObjectsRow row)
-        {
-            TourPlace newPlace = new TourPlace();
+        //internal static TourPlace FromAstroObjectsRow(AstroObjectsDataset.spGetAstroObjectsRow row)
+        //{
+        //    TourPlace newPlace = new TourPlace();
 
-            string seperator = "";
+        //    string seperator = "";
 
-            string name = "";
+        //    string name = "";
             
-            if (!row.IsPopularName1Null() && !String.IsNullOrEmpty(row.PopularName1) )
-            {
-                name = ProperCaps(row.PopularName1);
-                seperator = ";";
-            }
+        //    if (!row.IsPopularName1Null() && !String.IsNullOrEmpty(row.PopularName1) )
+        //    {
+        //        name = ProperCaps(row.PopularName1);
+        //        seperator = ";";
+        //    }
 
-            if (!row.IsMessierNameNull() && !String.IsNullOrEmpty(row.MessierName))
-            {
-                name = name + seperator + row.MessierName;
-                seperator = ";";
-            }
+        //    if (!row.IsMessierNameNull() && !String.IsNullOrEmpty(row.MessierName))
+        //    {
+        //        name = name + seperator + row.MessierName;
+        //        seperator = ";";
+        //    }
 
-            if (!row.IsNGCNameNull() && !String.IsNullOrEmpty(row.NGCName))
-            {
-                name = name + seperator + row.NGCName;
-                seperator = ";";
-            }
+        //    if (!row.IsNGCNameNull() && !String.IsNullOrEmpty(row.NGCName))
+        //    {
+        //        name = name + seperator + row.NGCName;
+        //        seperator = ";";
+        //    }
 
-            newPlace.name = name;
-            newPlace.Type = ImageSetType.Sky;
-            newPlace.Lat = row.Dec2000;
-            newPlace.Lng = row.Ra2000/15;
-            newPlace.constellation = Constellations.Abbreviation(row.ConstellationName);
-            newPlace.Classification = Classification.Galaxy; //(Classification)Enum.Parse(typeof(Classification), place.Attributes["Classification"].Value);
-            newPlace.magnitude = row.IsVisualMagnitudeNull() ? row.VisualMagnitude : 0;
-            newPlace.AngularSize = 0; // todo fix this
-            newPlace.ZoomLevel = .00009;
-            return newPlace;
-        }   
+        //    newPlace.name = name;
+        //    newPlace.Type = ImageSetType.Sky;
+        //    newPlace.Lat = row.Dec2000;
+        //    newPlace.Lng = row.Ra2000/15;
+        //    newPlace.constellation = Constellations.Abbreviation(row.ConstellationName);
+        //    newPlace.Classification = Classification.Galaxy; //(Classification)Enum.Parse(typeof(Classification), place.Attributes["Classification"].Value);
+        //    newPlace.magnitude = row.IsVisualMagnitudeNull() ? row.VisualMagnitude : 0;
+        //    newPlace.AngularSize = 0; // todo fix this
+        //    newPlace.ZoomLevel = .00009;
+        //    return newPlace;
+        //}   
         static string ProperCaps(string name)
         {
             string[] list = name.Split(new char[] {' '});
@@ -612,7 +626,7 @@ namespace TerraViewer
         
         }
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
         Rectangle bounds; 
         public Rectangle Bounds
@@ -627,7 +641,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
         public bool IsImage
         {
             get
@@ -651,7 +665,7 @@ namespace TerraViewer
             get { return null; }
         }
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
 
         public bool ReadOnly
@@ -659,9 +673,9 @@ namespace TerraViewer
             get { return true; }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
         public SolarSystemObjects Target
         {
@@ -675,9 +689,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
 
         public bool IsCloudCommunityItem
@@ -685,6 +699,6 @@ namespace TerraViewer
             get { return false; }
         }
 
-        #endregion
+#endregion
     }
 }

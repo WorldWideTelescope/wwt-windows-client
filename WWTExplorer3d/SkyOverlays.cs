@@ -902,10 +902,10 @@ namespace TerraViewer
                     Grids.DrawPrecessionChart(renderContext, BlendState.Opacity * opacity, Color);
                     break;
                 case StockSkyOverlayTypes.ConstellationFigures:
-                    Earth3d.MainWindow.RenderEngine.constellationsFigures.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, Earth3d.MainWindow.Constellation, renderContext.RenderType != ImageSetType.Sky);
+                    RenderEngine.Engine.constellationsFigures.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, Earth3d.MainWindow.Constellation, renderContext.RenderType != ImageSetType.Sky);
                     break;
                 case StockSkyOverlayTypes.ConstellationBoundaries:
-                    Earth3d.MainWindow.RenderEngine.constellationsBoundries.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, Earth3d.MainWindow.Constellation, renderContext.RenderType != ImageSetType.Sky);
+                    RenderEngine.Engine.constellationsBoundries.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, Earth3d.MainWindow.Constellation, renderContext.RenderType != ImageSetType.Sky);
                     break;
                 case StockSkyOverlayTypes.ConstellationFocusedOnly:
                     break;
@@ -1164,7 +1164,7 @@ namespace TerraViewer
                 switch (StockType)
                 {
                     case StockSkyOverlayTypes.FadeToBlack:
-                         enLocal = Earth3d.MainWindow.RenderEngine.Fader.TargetState;
+                         enLocal = RenderEngine.Engine.Fader.TargetState;
                          break;
                     case StockSkyOverlayTypes.ScreenBroadcast:
                         enLocal = ScreenBroadcast.Capturing;
@@ -1313,7 +1313,7 @@ namespace TerraViewer
                         Properties.Settings.Default.ShowConstellationPictures.TargetState = value;
                         break;
                     case StockSkyOverlayTypes.FadeToBlack:
-                        Earth3d.MainWindow.RenderEngine.Fader.TargetState = value;
+                        RenderEngine.Engine.Fader.TargetState = value;
                         break;
                     case StockSkyOverlayTypes.ScreenBroadcast:
                         ScreenBroadcast.Capturing = value;

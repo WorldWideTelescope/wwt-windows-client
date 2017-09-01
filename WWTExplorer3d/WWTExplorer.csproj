@@ -241,8 +241,11 @@
     <Compile Include="ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
+    <Compile Include="IUiController.cs" />
+    <Compile Include="KmlLabels.cs" />
     <Compile Include="Ovr\EyeTexture.cs" />
     <Compile Include="Ovr\SharpDXHelpers.cs" />
+    <Compile Include="PortableUtilities.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -723,6 +726,7 @@
       <DependentUpon>Tab.cs</DependentUpon>
     </Compile>
     <Compile Include="Table.cs" />
+    <Compile Include="ThumbnailCache.cs" />
     <Compile Include="TimeLine.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -749,8 +753,8 @@
     <Compile Include="TransitionsPopup.Designer.cs">
       <DependentUpon>TransitionsPopup.cs</DependentUpon>
     </Compile>
-    <Compile Include="UiControllerArgs.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="VideoOutputType.cs" />
     <Compile Include="VisibleKey.cs" />
     <Compile Include="VoTableLayer.cs" />
     <Compile Include="WizardPropsBinding.cs" />
@@ -1202,6 +1206,7 @@
     <Compile Include="XBoxConfig.Designer.cs">
       <DependentUpon>XBoxConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="XmlAbstractions.cs" />
     <Compile Include="ZipArchive.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>

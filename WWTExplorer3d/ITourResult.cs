@@ -1,5 +1,6 @@
-﻿using System;
+﻿#if !WINDOWS_UWP
 using System.Drawing;
+#endif
 namespace TerraViewer
 {
     public interface ITourResult
@@ -9,7 +10,7 @@ namespace TerraViewer
         string AuthorContactText { get; set; }
         string AuthorEmail { get; set; }
         string AuthorEmailOther { get; set; }
-        System.Drawing.Bitmap AuthorImage { get; set; }
+        Bitmap AuthorImage { get; set; }
         string AuthorUrl { get; set; }
         double AverageUserRating { get; set; }
         string Description { get; set; }
@@ -17,7 +18,7 @@ namespace TerraViewer
         string OrganizationUrl { get; set; }
         string OrgName { get; set; }
         string OrgUrl { get; set; }
-        System.Drawing.Bitmap ThumbNail { get; set; }
+        Bitmap ThumbNail { get; set; }
         string Title { get; set; }
         Rectangle Bounds { get; set;}
         double LengthInSeconds { get; set;}

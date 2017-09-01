@@ -1,11 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct3D11;
-using Buffer = SharpDX.Direct3D11.Buffer;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
+using System.Xml;
+#endif
+
+using Buffer = SharpDX.Direct3D11.Buffer;
 namespace TerraViewer
 {
     public class Sprite2d
@@ -99,7 +107,7 @@ namespace TerraViewer
 
         }
 
-        public static void Draw2D(RenderContext11 renderContext, Texture11 srcTexture, SizeF size, PointF rotationCenter, float rotationAngle, PointF position, System.Drawing.Color color)
+        public static void Draw2D(RenderContext11 renderContext, Texture11 srcTexture, SizeF size, PointF rotationCenter, float rotationAngle, PointF position, Color color)
         {
 
             cornerPoints[0].Position = MakePosition(position.X, position.Y, -size.Width / 2, -size.Height / 2, rotationAngle).Vector4;

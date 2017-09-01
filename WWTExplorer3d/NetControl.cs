@@ -291,7 +291,7 @@ namespace TerraViewer
                                     if (LayerManager.CurrentSlideID > -1 && Earth3d.RestartedWithoutTour)
                                     {
                                         Earth3d.RestartedWithoutTour = false;
-                                        Earth3d.MainWindow.RenderEngine.SyncTourNeeded = true;
+                                        RenderEngine.Engine.SyncTourNeeded = true;
                                     }
 
                                     continue;
@@ -318,32 +318,32 @@ namespace TerraViewer
                                     url = "http://" + MasterAddress + url.Substring(url.IndexOf(":5050"));
 
 
-                                    if (Earth3d.MainWindow.RenderEngine.videoOverlay == null)
+                                    if (RenderEngine.Engine.videoOverlay == null)
                                     {
-                                        Earth3d.MainWindow.RenderEngine.videoOverlay = new ImageSetHelper("video", url, ImageSetType.Sky,
+                                        RenderEngine.Engine.videoOverlay = new ImageSetHelper("video", url, ImageSetType.Sky,
                                             BandPass.Visible, ProjectionType.SkyImage,
                                             Math.Abs(url.GetHashCode32()), 0, 0, 256, scale / 1000,
                                             ".tif", false, "", az, alt, 0, false, "", false, false, 2,
                                             960, 600, "", "", "", "", 0, "");
                                     }
                                     bool dirty = false;
-                                    if (Earth3d.MainWindow.RenderEngine.videoOverlay.CenterX != az)
+                                    if (RenderEngine.Engine.videoOverlay.CenterX != az)
                                     {
                                         dirty = true;
                                     }
-                                    if (Earth3d.MainWindow.RenderEngine.videoOverlay.CenterY != alt)
+                                    if (RenderEngine.Engine.videoOverlay.CenterY != alt)
                                     {
                                         dirty = true;
                                     }
-                                    if (Earth3d.MainWindow.RenderEngine.videoOverlay.BaseTileDegrees != scale / 1000)
+                                    if (RenderEngine.Engine.videoOverlay.BaseTileDegrees != scale / 1000)
                                     {
                                         dirty = true;
                                     }
 
-                                    Earth3d.MainWindow.RenderEngine.videoOverlay.CenterX = az;
-                                    Earth3d.MainWindow.RenderEngine.videoOverlay.CenterY = alt;
-                                    Earth3d.MainWindow.RenderEngine.videoOverlay.BaseTileDegrees = scale / 1000;
-                                    Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.RenderEngine.videoOverlay, null);
+                                    RenderEngine.Engine.videoOverlay.CenterX = az;
+                                    RenderEngine.Engine.videoOverlay.CenterY = alt;
+                                    RenderEngine.Engine.videoOverlay.BaseTileDegrees = scale / 1000;
+                                    Tile tile = TileCache.GetTile(0, 0, 0, RenderEngine.Engine.videoOverlay, null);
                                     tile.ReadyToRender = false;
                                     tile.Volitile = true;
                                     tile.TextureReady = false;
@@ -355,14 +355,14 @@ namespace TerraViewer
                                 }
                                 else
                                 {
-                                    if (Earth3d.MainWindow.RenderEngine.videoOverlay != null)
+                                    if (RenderEngine.Engine.videoOverlay != null)
                                     {
-                                        Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.RenderEngine.videoOverlay, null);
+                                        Tile tile = TileCache.GetTile(0, 0, 0, RenderEngine.Engine.videoOverlay, null);
                                         tile.CleanUp(false);
                                         TileCache.RemoveTile(tile);
                                     }
 
-                                    Earth3d.MainWindow.RenderEngine.videoOverlay = null;
+                                    RenderEngine.Engine.videoOverlay = null;
 
                                 }
                                 continue;
@@ -484,7 +484,7 @@ namespace TerraViewer
                                 double domeTilt = Convert.ToDouble(values[5]);
                                 double viewTilt = Convert.ToDouble(values[6]);
                                 string mode = values[7];
-                                Earth3d.MainWindow.RenderEngine.CameraAngle = viewTilt;
+                                RenderEngine.Engine.CameraAngle = viewTilt;
                                 if (Properties.Settings.Default.DomeView != dome)
                                 {
                                     Properties.Settings.Default.DomeView = dome;
@@ -513,7 +513,7 @@ namespace TerraViewer
                                 double domeTilt = Convert.ToDouble(values[7]);
                                 double viewTilt = Convert.ToDouble(values[8]);
                                 string mode = values[9];
-                                Earth3d.MainWindow.RenderEngine.CameraAngleTarget = viewTilt;
+                                RenderEngine.Engine.CameraAngleTarget = viewTilt;
                                 if (Properties.Settings.Default.DomeView != dome)
                                 {
                                     Properties.Settings.Default.DomeView = dome;
@@ -563,7 +563,7 @@ namespace TerraViewer
                                 double domeTilt = Convert.ToDouble(values[7]);
                                 double viewTilt = Convert.ToDouble(values[8]);
                                 string mode = values[9];
-                                Earth3d.MainWindow.RenderEngine.CameraAngleTarget = viewTilt;
+                                RenderEngine.Engine.CameraAngleTarget = viewTilt;
                                 if (Properties.Settings.Default.DomeView != dome)
                                 {
                                     Properties.Settings.Default.DomeView = dome;
@@ -603,7 +603,7 @@ namespace TerraViewer
                                     Reticle.Hide(retId, false);
                                 }
 
-                                Earth3d.MainWindow.RenderEngine.SetHeadPosition(new Vector3d(-double.Parse(values[15]) * 2, -double.Parse(values[16]) * 2, (double.Parse(values[17]) - 1.5)) * 6);
+                                RenderEngine.Engine.SetHeadPosition(new Vector3d(-double.Parse(values[15]) * 2, -double.Parse(values[16]) * 2, (double.Parse(values[17]) - 1.5)) * 6);
                             }
 
                         }
@@ -624,12 +624,12 @@ namespace TerraViewer
 
         private static void SyncLayers()
         {
-            Earth3d.MainWindow.RenderEngine.SyncLayerNeeded = true;
+            RenderEngine.Engine.SyncLayerNeeded = true;
         }
 
         private static void SyncTour()
         {
-            Earth3d.MainWindow.RenderEngine.SyncTourNeeded = true;
+            RenderEngine.Engine.SyncTourNeeded = true;
         }
 
         public static void SyncLayersUiThread()
@@ -649,7 +649,7 @@ namespace TerraViewer
             {
                 if (Utils.Logging) { Utils.WriteLogMessage("Exception loading Layers"); }
             }
-            Earth3d.MainWindow.RenderEngine.SyncLayerNeeded = false;
+            RenderEngine.Engine.SyncLayerNeeded = false;
         }
 
         static void layerClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
@@ -722,7 +722,7 @@ namespace TerraViewer
             {
                 ReportStatus(ClientNodeStatus.Online, "Layers Loaded", "Layer Load Failed:");
             }
-            Earth3d.MainWindow.RenderEngine.SyncTourNeeded = false;
+            RenderEngine.Engine.SyncTourNeeded = false;
         }
 
         static void client_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
@@ -907,8 +907,8 @@ namespace TerraViewer
             bw.Write(timeRate);
             bw.Write(Earth3d.MainWindow.Config.DomeTilt);
             bw.Write(Earth3d.MainWindow.Config.DomeAngle);
-            bw.Write((float)Earth3d.MainWindow.RenderEngine.viewCamera.DomeAlt);
-            bw.Write((float)Earth3d.MainWindow.RenderEngine.viewCamera.DomeAz);
+            bw.Write((float)RenderEngine.Engine.viewCamera.DomeAlt);
+            bw.Write((float)RenderEngine.Engine.viewCamera.DomeAz);
             bw.Write(Properties.Settings.Default.TileThrottling);
             bw.Write(Properties.Settings.Default.ColSettingsVersion);
             bw.Write(trackingFrame); //todo consider making this a hash id
@@ -1108,7 +1108,7 @@ namespace TerraViewer
             flags += Settings.Active.ShowPrecessionChart ? 262144 : 0;
             flags += Settings.Active.ShowConstellationPictures ? 524288 : 0;
             flags += Settings.Active.ShowConstellationLabels ? 1048576 : 0;
-            flags += Earth3d.MainWindow.RenderEngine.Fader.TargetState ? 2097152 : 0;
+            flags += RenderEngine.Engine.Fader.TargetState ? 2097152 : 0;
             flags += Settings.Active.ShowEquatorialGridText ? 4194304 : 0;
             flags += Properties.Settings.Default.ShowSkyOverlays.TargetState ? 8388608 : 0;
             flags += Properties.Settings.Default.Constellations.TargetState ? 16777216 : 0;
@@ -1144,7 +1144,7 @@ namespace TerraViewer
             data[18] = (byte)(Properties.Settings.Default.ShowPrecessionChart.Opacity * 255);
             data[19] = (byte)(Properties.Settings.Default.ShowConstellationPictures.Opacity * 255);
             data[20] = (byte)(Properties.Settings.Default.ShowConstellationLabels.Opacity * 255);
-            data[21] = (byte)(Earth3d.MainWindow.RenderEngine.Fader.Opacity * 255);
+            data[21] = (byte)(RenderEngine.Engine.Fader.Opacity * 255);
             data[22] = (byte)(Properties.Settings.Default.ShowEquatorialGridText.Opacity * 255);
             data[23] = (byte)(Properties.Settings.Default.ShowSkyOverlays.Opacity * 255);
             data[24] = (byte)(Properties.Settings.Default.Constellations.Opacity * 255);
@@ -1267,9 +1267,9 @@ namespace TerraViewer
                 Properties.Settings.Default.ShowConstellationLabels.TargetState = (settingsFlags & 1048576) == 1048576;
             }
 
-            if (Earth3d.MainWindow.RenderEngine.Fader.TargetState != ((settingsFlags & 2097152) == 2097152))
+            if (RenderEngine.Engine.Fader.TargetState != ((settingsFlags & 2097152) == 2097152))
             {
-                Earth3d.MainWindow.RenderEngine.Fader.TargetState = (settingsFlags & 2097152) == 2097152;
+                RenderEngine.Engine.Fader.TargetState = (settingsFlags & 2097152) == 2097152;
             }
 
             if (Properties.Settings.Default.ShowEquatorialGridText.TargetState != ((settingsFlags & 4194304) == 4194304))
@@ -1372,7 +1372,7 @@ namespace TerraViewer
             Properties.Settings.Default.ShowPrecessionChart.Opacity = (float)data[18] / 255.0f;
             Properties.Settings.Default.ShowConstellationPictures.Opacity = (float)data[19] / 255.0f;
             Properties.Settings.Default.ShowConstellationLabels.Opacity = (float)data[20] / 255.0f;
-            Earth3d.MainWindow.RenderEngine.Fader.Opacity = (float)data[21] / 255.0f;
+            RenderEngine.Engine.Fader.Opacity = (float)data[21] / 255.0f;
             Properties.Settings.Default.ShowEquatorialGridText.Opacity = (float)data[22] / 255.0f;
             Properties.Settings.Default.ShowSkyOverlays.Opacity = (float)data[23] / 255.0f;
             Properties.Settings.Default.Constellations.Opacity = (float)data[24] / 255.0f;
@@ -1520,7 +1520,7 @@ namespace TerraViewer
                     Properties.Settings.Default.ConstellationArtColor = SavedColor.Load(lines[index++]);
                     Properties.Settings.Default.ShowEarthSky.State = bool.Parse(lines[index++]);
                     Properties.Settings.Default.CloudMap8k =  bool.Parse(lines[index++]);
-                    Earth3d.MainWindow.RenderEngine.StereoMode = (RenderEngine.StereoModes)Enum.Parse(typeof(RenderEngine.StereoModes), lines[index++]);
+                    RenderEngine.Engine.StereoMode = (RenderEngine.StereoModes)Enum.Parse(typeof(RenderEngine.StereoModes), lines[index++]);
                     Properties.Settings.Default.FaceNorth = bool.Parse(lines[index++]);
 
                     Properties.Settings.Default.ColSettingsVersion = version;
@@ -1531,7 +1531,7 @@ namespace TerraViewer
             catch
             {
             }
-            Earth3d.MainWindow.RenderEngine.SyncLayerNeeded = false;
+            RenderEngine.Engine.SyncLayerNeeded = false;
         }
 
         internal static byte[] GetColorSettingsData()
@@ -1557,7 +1557,7 @@ namespace TerraViewer
                        SavedColor.Save(Properties.Settings.Default.ConstellationArtColor) + "," +
                        Properties.Settings.Default.ShowEarthSky.TargetState.ToString() + "," +
                        Properties.Settings.Default.CloudMap8k.ToString() + "," +
-                       Earth3d.MainWindow.RenderEngine.StereoMode.ToString() + "," +
+                       RenderEngine.Engine.StereoMode.ToString() + "," +
                        Properties.Settings.Default.FaceNorth.ToString();
 
             return Encoding.UTF8.GetBytes(data);

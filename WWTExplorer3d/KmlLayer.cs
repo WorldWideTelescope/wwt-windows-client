@@ -506,11 +506,11 @@ namespace TerraViewer
         {
             foreach (KmlGroundOverlay overlay in GroundOverlays)
             {
-                if (Earth3d.MainWindow.RenderEngine.KmlMarkers != null)
+                if (RenderEngine.Engine.KmlMarkers != null)
                 {
                     if (overlay.ShouldDisplay())
                     {
-                        Earth3d.MainWindow.RenderEngine.KmlMarkers.AddGroundOverlay(overlay);
+                        RenderEngine.Engine.KmlMarkers.AddGroundOverlay(overlay);
                     }
                 }
             }
@@ -807,7 +807,7 @@ namespace TerraViewer
                 {
                     if (feature.sky)
                     {
-                        Earth3d.MainWindow.RenderEngine.GotoTarget(new TourPlace(feature.Name, feature.LookAt.latitude, (feature.LookAt.longitude + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
+                        RenderEngine.Engine.GotoTarget(new TourPlace(feature.Name, feature.LookAt.latitude, (feature.LookAt.longitude + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
                     }
                     else
                     {
@@ -822,11 +822,11 @@ namespace TerraViewer
                         KmlCoordinate point = placemark.geometry.GetCenterPoint();
                         if (placemark.sky)
                         {
-                            Earth3d.MainWindow.RenderEngine.GotoTarget(new TourPlace(placemark.Name, point.Lat, (point.Lng + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
+                            RenderEngine.Engine.GotoTarget(new TourPlace(placemark.Name, point.Lat, (point.Lng + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
                         }
                         else
                         {
-                            Earth3d.MainWindow.RenderEngine.GotoTarget(new TourPlace(placemark.Name, point.Lat, point.Lng, Classification.Unidentified, "", ImageSetType.Earth, .8), false, false, true);
+                            RenderEngine.Engine.GotoTarget(new TourPlace(placemark.Name, point.Lat, point.Lng, Classification.Unidentified, "", ImageSetType.Earth, .8), false, false, true);
                         }
                     }
                     //if (placemark.geometry is KmlPoint)
@@ -959,7 +959,7 @@ namespace TerraViewer
             camera.Angle = -feature.LookAt.tilt / 180 * Math.PI;
             camera.Zoom = UiTools.MetersToZoom(feature.LookAt.range);
             TourPlace p = new TourPlace(feature.Name, camera, Classification.Unidentified, "", ImageSetType.Earth, SolarSystemObjects.Earth);
-            Earth3d.MainWindow.RenderEngine.GotoTarget(p, false, false, true);
+            RenderEngine.Engine.GotoTarget(p, false, false, true);
         }
 
 

@@ -15,13 +15,16 @@
 // 
 namespace TerraViewer
 {
+    using System;
     using System.Xml.Serialization;
 
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class AstroObject
@@ -198,8 +201,10 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class ImageSet
@@ -878,7 +883,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetGeneric
     {
@@ -894,7 +899,7 @@ namespace TerraViewer
 
     /// <remarks/>
     //[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    //[System.SerializableAttribute()]
+    //[SerializableAttribute()]
     //[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     //public enum ImageSetBandPass
     //{
@@ -929,7 +934,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetSparse
     {
@@ -943,7 +948,7 @@ namespace TerraViewer
 
     ///// <remarks/>
     //[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    //[System.SerializableAttribute()]
+    //[SerializableAttribute()]
     //[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     //public enum ImageSetProjection
     //{
@@ -967,7 +972,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetBottomsUp
     {
@@ -981,7 +986,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetFlipX
     {
@@ -995,7 +1000,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetFlipY
     {
@@ -1009,7 +1014,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetStockSet
     {
@@ -1023,7 +1028,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetElevationModel
     {
@@ -1037,7 +1042,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum ImageSetStudy
     {
@@ -1051,8 +1056,10 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class Place
@@ -1528,8 +1535,10 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class PlaceBackgroundImageSet
     {
@@ -1552,9 +1561,11 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     //System.Diagnostics.DebuggerStepThroughAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public partial class PlaceForegroundImageSet
     {
@@ -1579,7 +1590,7 @@ namespace TerraViewer
 
     ///// <remarks/>
     //[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    //[System.SerializableAttribute()]
+    //[SerializableAttribute()]
     //public enum Classification
     //{
     //    Star = 1,
@@ -1622,9 +1633,11 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     //System.Diagnostics.DebuggerStepThroughAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class LinePoint
@@ -1763,7 +1776,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum LinePointPointType
     {
@@ -1780,9 +1793,11 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     //System.Diagnostics.DebuggerStepThroughAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class LineSet
@@ -1823,9 +1838,11 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     //[System.Diagnostics.DebuggerStepThroughAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class Tour
@@ -2168,7 +2185,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum TourUserLevel
     {
@@ -2191,7 +2208,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum TourClassification
     {
@@ -2304,8 +2321,10 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
+#if !WINDOWS_UWP
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+#endif
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public partial class Folder
@@ -2660,7 +2679,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(IncludeInSchema = false)]
     public enum ItemsChoiceType
     {
@@ -2674,7 +2693,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum FolderGroup
     {
@@ -2712,7 +2731,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum FolderRefreshType
     {
@@ -2729,7 +2748,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum FolderBrowseable
     {
@@ -2743,7 +2762,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum FolderSearchable
     {
@@ -2757,7 +2776,7 @@ namespace TerraViewer
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.42")]
-    [System.SerializableAttribute()]
+    [SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public enum FolderType
     {

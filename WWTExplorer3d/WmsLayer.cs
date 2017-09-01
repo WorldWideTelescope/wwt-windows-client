@@ -65,7 +65,7 @@ namespace TerraViewer
             SetCurrentImage();
 
             Overlay.color = Color.FromArgb((int)(this.Opacity * opacity * Color.A), Color);
-            Earth3d.MainWindow.RenderEngine.KmlMarkers.AddGroundOverlay(Overlay);
+            RenderEngine.Engine.KmlMarkers.AddGroundOverlay(Overlay);
             return true;
         }
 

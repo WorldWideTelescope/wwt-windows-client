@@ -55,10 +55,10 @@ namespace TerraViewer
             verbosity.Items.Add(Language.GetLocalizedText(626, "High"));
 
             verbosity.SelectedIndex = Properties.Settings.Default.VOTableVerbosityDefault-1;
-            double raVal = Earth3d.MainWindow.RenderEngine.RA * 15;
+            double raVal = RenderEngine.Engine.RA * 15;
             ra.Text = raVal.ToString();
-            dec.Text = Earth3d.MainWindow.RenderEngine.Dec.ToString();
-            searchRadius.Text = Earth3d.MainWindow.RenderEngine.FovAngle.ToString();
+            dec.Text = RenderEngine.Engine.Dec.ToString();
+            searchRadius.Text = RenderEngine.Engine.FovAngle.ToString();
 
             if (registry != null)
             {
@@ -229,10 +229,10 @@ namespace TerraViewer
         {
             if (fromView.Checked)
             {
-                double raVal = Earth3d.MainWindow.RenderEngine.RA * 15;
+                double raVal = RenderEngine.Engine.RA * 15;
                 ra.Text = raVal.ToString();
-                dec.Text = Earth3d.MainWindow.RenderEngine.Dec.ToString();
-                searchRadius.Text = Earth3d.MainWindow.RenderEngine.FovAngle.ToString();
+                dec.Text = RenderEngine.Engine.Dec.ToString();
+                searchRadius.Text = RenderEngine.Engine.FovAngle.ToString();
 
                 ra.ReadOnly = true;
                 dec.ReadOnly = true;

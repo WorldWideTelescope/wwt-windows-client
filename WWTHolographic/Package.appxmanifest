@@ -1,44 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  IgnorableNamespaces="uap mp">
-
-  <Identity Name="WWTHolographic"
-            Publisher="CN=jfay"
-            Version="1.0.0.0" />
-
-  <mp:PhoneIdentity PhoneProductId="d4cfc84c-3da1-4cfa-b91c-c26646a4a246" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
-
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
+  <Identity Name="WWTHolographic" Publisher="CN=jfay" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="d4cfc84c-3da1-4cfa-b91c-c26646a4a246" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>WWTHolographic</DisplayName>
     <PublisherDisplayName>jfay</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.14393.0" MaxVersionTested="10.0.15063.0" />
   </Dependencies>
-
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="x-generate" />
   </Resources>
-
   <Applications>
-    <Application Id="App"
-        Executable="$targetnametoken$.exe"
-        EntryPoint="WWTHolographic.AppView">
-        <uap:VisualElements
-             DisplayName="WWTHolographic"
-             Square150x150Logo="Assets\Square150x150Logo.png" 
-             Square44x44Logo="Assets\Square44x44Logo.png" 
-             Description="WWTHolographic"
-             BackgroundColor="#464646">
-          <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-          <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        </uap:VisualElements>
-      </Application>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="WWTHolographic.AppView">
+      <uap:VisualElements DisplayName="WWTHolographic" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="WWTHolographic" BackgroundColor="#464646">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
+        </uap:DefaultTile>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+    </Application>
   </Applications>
+  <Capabilities>
+    <Capability Name="internetClientServer" />
+    <Capability Name="internetClient" />
+  </Capabilities>
 </Package>

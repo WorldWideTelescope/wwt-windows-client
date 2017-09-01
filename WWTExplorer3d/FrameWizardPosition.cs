@@ -53,12 +53,12 @@ namespace TerraViewer
 
         private void GetFromView_Click(object sender, EventArgs e)
         {
-            Vector2d point = Earth3d.MainWindow.RenderEngine.GetEarthCoordinates();
+            Vector2d point = RenderEngine.Engine.GetEarthCoordinates();
 
 
             Lattitude.Text = Coordinates.FormatDMS(point.Y);
             Longitude.Text = Coordinates.FormatDMS(point.X);
-            Altitude.Text = Earth3d.MainWindow.RenderEngine.GetEarthAltitude().ToString();
+            Altitude.Text = RenderEngine.Engine.GetEarthAltitude().ToString();
         }
     }
 }

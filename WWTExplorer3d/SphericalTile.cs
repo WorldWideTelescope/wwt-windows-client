@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.Text;
+using System.Collections.Generic;
 
+#if !WINDOWS_UWP
+using System.Drawing;
+#endif
 
 namespace TerraViewer
 {

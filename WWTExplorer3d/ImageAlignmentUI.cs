@@ -264,8 +264,8 @@ namespace TerraViewer
                     {
                         root.CleanUpGeometryRecursive();
                     }
-                    Earth3d.MainWindow.StudyImageset.CenterX = Earth3d.MainWindow.RenderEngine.RA *15;
-                    Earth3d.MainWindow.StudyImageset.CenterY = Earth3d.MainWindow.RenderEngine.Dec;
+                    Earth3d.MainWindow.StudyImageset.CenterX = RenderEngine.Engine.RA *15;
+                    Earth3d.MainWindow.StudyImageset.CenterY = RenderEngine.Engine.Dec;
                     return true;
                 case Keys.S:
                     //scale to view

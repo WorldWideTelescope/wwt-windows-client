@@ -1,15 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
 using System.Xml;
-
+#endif
 namespace TerraViewer
 {
-    public enum AltUnits { Meters, Feet, Inches, Miles, Kilometers, AstronomicalUnits, LightYears, Parsecs, MegaParsecs, Custom };
-    public enum FadeType { In, Out, Both, None };
+
     public abstract class Layer : IAnimatable
     {
         public virtual LayerUI GetPrimaryUI()
@@ -468,7 +474,7 @@ namespace TerraViewer
         }
 
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Layer");
             xmlWriter.WriteAttributeString("Id", ID.ToString());
@@ -486,12 +492,12 @@ namespace TerraViewer
 
             xmlWriter.WriteEndElement();
         }
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
 
         }    
         
-        internal static Layer FromXml(System.Xml.XmlNode layerNode, bool someFlag)
+        internal static Layer FromXml(XmlNode layerNode, bool someFlag)
         {
             string layerClassName = layerNode.Attributes["Type"].Value.ToString();
 
@@ -502,7 +508,7 @@ namespace TerraViewer
             return newLayer;
         }
 
-        private void FromXml(System.Xml.XmlNode node)
+        private void FromXml(XmlNode node)
         {
             ID = new Guid(node.Attributes["Id"].Value);
             Name = node.Attributes["Name"].Value;
@@ -545,7 +551,7 @@ namespace TerraViewer
             return;
         }
 
-        public virtual void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             return;
         }

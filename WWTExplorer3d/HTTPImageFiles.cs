@@ -87,7 +87,7 @@ namespace TerraViewer
             else if (request.Contains("/imageset/"))
             {
                 string[] parts = request.Split(new char[] { '/' });
-                IImageSet imageset = (IImageSet)Earth3d.ImagesetHashTable[Convert.ToInt32(parts[2])];
+                IImageSet imageset = (IImageSet)RenderEngine.ImagesetHashTable[Convert.ToInt32(parts[2])];
                 if (imageset != null)
                 {
                     data = ReadBinaryWebFileFromDisk(imageset.Url);

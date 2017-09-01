@@ -1,8 +1,17 @@
 using System;
-using System.Xml;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
+using System.Xml;
+#endif
 
 // Written by Jonathan Fay
 // Next Media Research
@@ -273,8 +282,6 @@ namespace TerraViewer
             {
                 ImageSetType type = ImageSetType.Sky;
 
-
-
                 ProjectionType projection = ProjectionType.Tangent;
                 if (node.Attributes["DataSetType"] != null)
                 {
@@ -419,7 +426,7 @@ namespace TerraViewer
             }
         }
 
-        public static void SaveToXml(System.Xml.XmlTextWriter xmlWriter, IImageSet imageset, string alternateUrl)
+        public static void SaveToXml(XmlTextWriter xmlWriter, IImageSet imageset, string alternateUrl)
         {
             xmlWriter.WriteStartElement("ImageSet");
 
@@ -600,7 +607,7 @@ namespace TerraViewer
             matrix.Multiply(Matrix3d.RotationZ(((CenterY) / 180f * Math.PI)));
             matrix.Multiply(Matrix3d.RotationY((((360 - CenterX) + 180) / 180f * Math.PI)));
 
-            Earth3d.AddImageSetToTable(this.GetHash(), this);
+            RenderEngine.AddImageSetToTable(this.GetHash(), this);
 
         }
 
@@ -705,7 +712,7 @@ namespace TerraViewer
             ComputeMatrix();
             //if (Earth3d.multiMonClient)
             {
-                Earth3d.AddImageSetToTable(this.GetHash(), this);
+                RenderEngine.AddImageSetToTable(this.GetHash(), this);
             }
         }
 
@@ -776,10 +783,12 @@ namespace TerraViewer
                     {
                         return new SkyImageTile(level, x, y, imageset, parent);
                     }
+#if !WINDOWS_UWP
                 case ProjectionType.Plotted:
                     {
                         return new PlotTile(level, x, y, imageset, parent);
                     }
+#endif
                 default:
                 case ProjectionType.Tangent:
                     {

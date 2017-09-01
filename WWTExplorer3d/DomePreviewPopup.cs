@@ -117,7 +117,7 @@ namespace TerraViewer
                     points[i].Y = centerf.Y - (float)(Math.Sin((cornersAltAz[i].Az+90) * RC) * Math.Cos(cornersAltAz[i].Alt * RC) * radius);
                     g.DrawLine(Pens.Yellow, points[i], centerf);
                 }
-                if (Earth3d.MainWindow.RenderEngine.Alt > 0)
+                if (RenderEngine.Engine.Alt > 0)
                 {
                     g.FillPolygon(yellowBrush, points);
                 }

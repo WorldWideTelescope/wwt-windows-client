@@ -11,20 +11,7 @@ using System.Text;
 namespace TerraViewer
 {
 
-    public interface IUiController
-    {
-        void Render(RenderEngine renderEngine);
-        void PreRender(RenderEngine renderEngine);
-        bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool Click(object sender, EventArgs e);
-        bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e);
-        bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e);
-        bool Hover(Point pnt);
-    }
+  
 
     public class TourEditor : IUiController , IDisposable
     {

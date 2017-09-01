@@ -1,21 +1,26 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using System.Linq;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;	
-using System.Threading;
-using System.Text;
 using System.Xml;
-using System.Windows.Forms;
+#endif
 namespace TerraViewer
 {
-	/// <summary>
-	/// Summary description for DataSetManager.
-	/// </summary>
-	public class DataSetManager
+    /// <summary>
+    /// Summary description for DataSetManager.
+    /// </summary>
+    public class DataSetManager
 	{
         static Dictionary<string,DataSet> dataSets = null;
 		public DataSetManager()
@@ -34,11 +39,11 @@ namespace TerraViewer
 
                     dataSets = new Dictionary<string, DataSet>();
 
-                    XmlNode root = doc["root"];
+                    XmlNode root = doc.GetChildByName("root");
                     XmlNode datasets = root.FirstChild;
                     foreach (XmlNode dataset in datasets.ChildNodes)
                     {
-                        DataSet ds = new DataSet(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, false, DataSetType.Place);
+                        DataSet ds = new DataSet(dataset.Attributes["name"].InnerText, dataset.Attributes["url"].InnerText, false, DataSetType.Place);
                         dataSets.Add(ds.Name,ds);
                     }
                     citiesLoaded = true;
@@ -67,13 +72,13 @@ namespace TerraViewer
                     doc.Load(Properties.Settings.Default.CahceDirectory + @"data\spaceCatalogs.xml");
 
 
-                    XmlNode root = doc["root"];
+                    XmlNode root = doc.GetChildByName("root");
                     XmlNode datasets = root.FirstChild;
                     foreach (XmlNode dataset in datasets.ChildNodes)
                     {
 
 
-                        DataSet ds = new DataSet(dataset.Attributes["name"].InnerXml, dataset.Attributes["url"].InnerXml, true, DataSetType.Place);
+                        DataSet ds = new DataSet(dataset.Attributes["name"].InnerText, dataset.Attributes["url"].InnerText, true, DataSetType.Place);
                         dataSets.Add(ds.Name, ds);
                     }
                     datasetsLoaded = true;
@@ -91,15 +96,32 @@ namespace TerraViewer
 
         public static bool DataFresh = false;
 
+        public static string[] ReadAllFileLines(string filename)
+        {
+#if !WINDOWS_UWP
+            return System.IO.File.ReadAllLines(filename);
+#else
+            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+
+            var asfi = storageFolder.GetFileAsync(filename);
+
+            var aa = asfi.AsTask();
+            var file = aa.Result;
+
+            return Windows.Storage.FileIO.ReadLinesAsync(file).AsTask().Result.ToArray();
+#endif
+        }
+
 
         public static bool DownloadFile(string url, string fileName, bool noCheckFresh, bool versionDependent)
         {
+#if !WINDOWS_UWP
 
             if (string.IsNullOrEmpty(url))
             {
                 return false;
             }
- 
+
             bool didDownload = false;
 
             System.Net.WebRequest request = null;
@@ -123,7 +145,7 @@ namespace TerraViewer
                     if ((DataFresh && versionDependent) || noCheckFresh)
                     {
                         return false;
-                    }  
+                    }
                     if (File.Exists(fileName + ".etag"))
                     {
                         etag = File.ReadAllText(fileName + ".etag");
@@ -199,6 +221,31 @@ namespace TerraViewer
             }
             return didDownload;
         }
+#else
+          //  try
+            {
+                System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+                Task<byte[]> task = client.GetByteArrayAsync(url);
+                byte[] buffer = task.Result;
+
+                var cfa = Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
+                var cfaTask = cfa.AsTask();
+                var file = cfaTask.Result;
+
+                using (var stream = file.OpenStreamForWriteAsync().Result)
+                {
+                    stream.WriteAsync(buffer, 0, buffer.Length).Wait();
+                }
+
+                return true;
+            }
+       //     catch
+            {
+                return false;
+            }
+        }
+#endif
+
 
         public static Dictionary<string, DataSet> GetDataSets()
 		{

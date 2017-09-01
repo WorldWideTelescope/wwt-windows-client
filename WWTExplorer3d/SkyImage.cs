@@ -1,20 +1,26 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
+using System.Xml;
+#endif
 using System.IO;
-using System.IO.Compression;
-using System.Text;
 
 namespace TerraViewer
 {
     //todo11 Verify and test SkyImage tile
     class SkyImageTile : Tile
     {
-        Color paintColor = Color.White;
+        Color paintColor = SystemColors.White;
         bool blend = true;
         public SkyImageTile(int level, int x, int y, IImageSet dataset, Tile parent)
         {
@@ -170,6 +176,7 @@ namespace TerraViewer
         
         public override bool CreateGeometry(RenderContext11 renderContext, bool uiThread)
         {
+#if !WINDOWS_UWP
             if (texture == null || (Volitile && !ReadyToRender))
             {
                 GetParameters();
@@ -241,7 +248,7 @@ namespace TerraViewer
 
                     if (TextureReady)
                     {
-                        paintColor = Color.White;
+                        paintColor = SystemColors.White;
                         if (dataset.WcsImage != null)
                         {
                             paintColor = ((WcsImage)dataset.WcsImage).Color;
@@ -310,7 +317,7 @@ namespace TerraViewer
                         }
                     }
                 }
-                
+ 
             }
 
             if (vertexBuffer == null)
@@ -324,7 +331,7 @@ namespace TerraViewer
                 
 
             
-            
+#endif              
             return true;
         }
         public override bool IsTileInFrustum(PlaneD[] frustum)

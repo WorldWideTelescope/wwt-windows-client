@@ -1039,7 +1039,7 @@ namespace TerraViewer
                 if (pos != TweenPosition)
                 {
                     SetTweenPosition(pos);
-                    Earth3d.MainWindow.RenderEngine.Render();
+                    RenderEngine.Engine.Render();
                     int oldScroll = offset + (pixelsPerSecond * startSecond);
                     EnsureVisible();
                     int newScroll = offset + (pixelsPerSecond * startSecond);

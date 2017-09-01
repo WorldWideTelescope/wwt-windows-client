@@ -71,7 +71,7 @@ namespace TerraViewer
             double width = Overlay.east - Overlay.west;
             double height = Overlay.north - Overlay.south;
 
-            double altitude = 1+Earth3d.MainWindow.RenderEngine.GetScaledAltitudeForLatLong((Overlay.north + Overlay.south) / 2, (Overlay.east + Overlay.west) / 2);
+            double altitude = 1+RenderEngine.Engine.GetScaledAltitudeForLatLong((Overlay.north + Overlay.south) / 2, (Overlay.east + Overlay.west) / 2);
 
             Vector3d topLeftA = Coordinates.GeoTo3dDouble(Overlay.north - height / 20, Overlay.west, altitude);
             Vector3d topLeftB = Coordinates.GeoTo3dDouble(Overlay.north, Overlay.west, altitude);

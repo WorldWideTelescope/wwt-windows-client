@@ -43,7 +43,7 @@ namespace TerraViewer
                         {
                             if (places != null)
                             {
-                                ArrayList placeList = places.GetPlaceList();
+                                List<TourPlace> placeList = places.GetPlaceList();
                                 foreach (IPlace place in placeList)
                                 {
                                     if (place.StudyImageset != null && (place.StudyImageset.Projection == ProjectionType.Toast || place.StudyImageset.Projection == ProjectionType.Equirectangular))
@@ -69,7 +69,7 @@ namespace TerraViewer
                     IImageSet childImageset = (IImageSet)child;
                     if (RenderEngine.ProjectorServer)
                     {
-                        Earth3d.AddImageSetToTable(childImageset.GetHash(), childImageset);
+                        RenderEngine.AddImageSetToTable(childImageset.GetHash(), childImageset);
                     }
                 }
                 if (child is IPlace)
@@ -79,14 +79,14 @@ namespace TerraViewer
                     {
                         if (RenderEngine.ProjectorServer)
                         {
-                            Earth3d.AddImageSetToTable(place.StudyImageset.GetHash(), place.StudyImageset);
+                            RenderEngine.AddImageSetToTable(place.StudyImageset.GetHash(), place.StudyImageset);
                         }
                     }
                     if (place.BackgroundImageSet != null)
                     {
                         if (RenderEngine.ProjectorServer)
                         {
-                            Earth3d.AddImageSetToTable(place.BackgroundImageSet.GetHash(), place.BackgroundImageSet);
+                            RenderEngine.AddImageSetToTable(place.BackgroundImageSet.GetHash(), place.BackgroundImageSet);
                         }
                     }
 

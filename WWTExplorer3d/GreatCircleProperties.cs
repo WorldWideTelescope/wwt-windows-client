@@ -34,14 +34,14 @@ namespace TerraViewer
         private void StartFromView_Click(object sender, EventArgs e)
         {
 
-            Vector2d pnt = Earth3d.MainWindow.RenderEngine.GetEarthCoordinates();
+            Vector2d pnt = RenderEngine.Engine.GetEarthCoordinates();
             StartLat.Text = Coordinates.FormatDMS(pnt.Y);
             StartLng.Text = Coordinates.FormatDMS(pnt.X);
         }
 
         private void EndFromView_Click(object sender, EventArgs e)
         {
-            Vector2d pnt = Earth3d.MainWindow.RenderEngine.GetEarthCoordinates();
+            Vector2d pnt = RenderEngine.Engine.GetEarthCoordinates();
             EndLat.Text = Coordinates.FormatDMS(pnt.Y);
             EndLng.Text = Coordinates.FormatDMS(pnt.X);
         }

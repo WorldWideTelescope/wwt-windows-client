@@ -131,7 +131,7 @@ namespace TerraViewer.Callibration
                         {
                             MethodInvoker InvalidateMe = delegate
                             {
-                                Earth3d.MainWindow.RenderEngine.CreateWarpVertexBuffer();
+                                RenderEngine.Engine.CreateWarpVertexBuffer();
                             };
                             try
                             {
@@ -143,7 +143,7 @@ namespace TerraViewer.Callibration
                         }
                         else
                         {
-                            Earth3d.MainWindow.RenderEngine.CreateWarpVertexBuffer();
+                            RenderEngine.Engine.CreateWarpVertexBuffer();
                         }
 
                     }
@@ -201,7 +201,7 @@ namespace TerraViewer.Callibration
 
 
 
-                Earth3d.MainWindow.RenderEngine.refreshWarp = true;
+                RenderEngine.Engine.refreshWarp = true;
             }
         }
 

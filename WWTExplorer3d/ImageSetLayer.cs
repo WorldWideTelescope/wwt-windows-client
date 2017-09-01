@@ -99,9 +99,9 @@ namespace TerraViewer
             }
             renderContext.WorldBase = renderContext.World ;
             renderContext.ViewBase = renderContext.View;
-            Earth3d.MainWindow.RenderEngine.MakeFrustum();
+            RenderEngine.Engine.MakeFrustum();
             renderContext.MakeFrustum();
-            Earth3d.MainWindow.RenderEngine.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
+            RenderEngine.Engine.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
 
      
             return true;

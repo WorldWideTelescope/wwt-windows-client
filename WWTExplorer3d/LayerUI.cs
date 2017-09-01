@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-
+using System.Xml;
+#endif
 namespace TerraViewer
 {
 

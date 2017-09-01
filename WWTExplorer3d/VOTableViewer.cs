@@ -227,7 +227,7 @@ namespace TerraViewer
                 }
 
                 TourPlace pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
-                Earth3d.MainWindow.RenderEngine.GotoTarget(pl, false, true, false);
+                RenderEngine.Engine.GotoTarget(pl, false, true, false);
             }
         }
 
@@ -289,7 +289,7 @@ namespace TerraViewer
                     }
 
                     TourPlace pl = new TourPlace(id, dec, ra, Classification.Star, Constellations.Containment.FindConstellationForPoint(ra, dec), ImageSetType.Sky, -1);
-                    Earth3d.MainWindow.RenderEngine.GotoTarget(pl, false, false, false);
+                    RenderEngine.Engine.GotoTarget(pl, false, false, false);
                 }
                 catch
                 {

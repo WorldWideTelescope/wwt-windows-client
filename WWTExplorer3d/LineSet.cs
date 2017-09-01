@@ -1,18 +1,15 @@
 // Copyright Microsoft Copr 2006
 // Written by Jonathan Fay
 
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace TerraViewer
 {
-	/// <summary>
-	/// Summary description for LineSet.
-	/// </summary>
-   
-	public class Lineset
+    /// <summary>
+    /// Summary description for LineSet.
+    /// </summary>
+
+    public class Lineset
 	{
         string name;
 

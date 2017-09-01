@@ -1,7 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
+using System.Xml;
+#endif
+
 
 namespace TerraViewer
 {
@@ -11,12 +21,12 @@ namespace TerraViewer
 
         public SavedColor()
         {
-            Color = Color.White;
+            Color = SystemColors.White;
         }
 
         public SavedColor(int argb)
         {
-            Color = Color.FromArgb(argb);
+            Color = UiTools.FromArgb(argb);
         }
 
         public enum ColorFormat
@@ -42,10 +52,12 @@ namespace TerraViewer
 
         public static string Save(Color color)
         {
+#if !WINDOWS_UWP
             if (color.IsNamedColor)
                 return string.Format("{0}:{1}",
                     ColorFormat.NamedColor, color.Name);
             else
+#endif
                 return string.Format("{0}:{1}:{2}:{3}:{4}",
                     ColorFormat.ARGBColor,
                     color.A, color.R, color.G, color.B);
@@ -63,8 +75,12 @@ namespace TerraViewer
             switch (colorType)
             {
                 case ColorFormat.NamedColor:
+#if !WINDOWS_UWP
                     return Color.FromName(pieces[1]);
-
+#else
+                    //todo uwp fix this! Really bad.
+                    return SystemColors.Red;
+#endif
                 case ColorFormat.ARGBColor:
                     a = byte.Parse(pieces[1]);
                     r = byte.Parse(pieces[2]);
@@ -73,7 +89,7 @@ namespace TerraViewer
 
                     return Color.FromArgb(a, r, g, b);
             }
-            return Color.Empty;
+            return Color.FromArgb(0,0,0,0);
         }
     }
 }

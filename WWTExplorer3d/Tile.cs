@@ -604,10 +604,12 @@ namespace TerraViewer
                         iTileBuildCount++;
 
                         string localFilename = FileName;
+#if !WINDOWS_UWP
                         if (GrayscaleStyle)
                         {
                             localFilename = UiTools.MakeGrayScaleImage(localFilename);
                         }
+#endif
 
                         if (FileExists)
                         {
@@ -714,6 +716,7 @@ namespace TerraViewer
                 {
                     hdTile = DemCodec.Decompress(demStream);
                     demStream.Close();
+                    demStream.Dispose();
                 }
                    
             }
@@ -872,7 +875,7 @@ namespace TerraViewer
 
                 float lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
 
-                float testLength = (400 - ((Earth3d.MainWindow.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality));
+                float testLength = (400 - ((RenderEngine.Engine.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality));
 
                 if (Properties.Settings.Default.OverSampleTerrain)
                 {

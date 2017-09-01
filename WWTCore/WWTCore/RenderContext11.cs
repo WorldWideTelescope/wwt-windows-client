@@ -756,6 +756,8 @@ namespace TerraViewer
         {
             Device = device;
             devContext = device.ImmediateContext;
+
+            displayViewPort = new Viewport(0, 0, 1440, 1440, 0.0f, 1.0f);
         }
 
 

@@ -1,10 +1,8 @@
 
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Xml;
-using System.IO;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -13,7 +11,8 @@ namespace TerraViewer
     {
         public Config()
         {
-
+#if !WINDOWS_UWP
+            //We don't use this in UWP apps
             if (File.Exists(@"c:\wwtconfig\config.xml"))
             {
                 saveFilename = @"c:\wwtconfig\config.xml";
@@ -29,6 +28,7 @@ namespace TerraViewer
                 saveFilename = @"c:\wwtconfig\config.xml";
                 ReadFromXML(saveFilename);
             }
+#endif
         }
 
         public int MonitorCountX = 1;
@@ -126,8 +126,8 @@ namespace TerraViewer
             }
             set { nodeDiplayName = value; }
         }
-
-
+        public Matrix3d ViewMatrix = Matrix3d.Identity;
+#if !WINDOWS_UWP
 
         public void ReadFromXML(string path)
         {
@@ -264,7 +264,6 @@ namespace TerraViewer
             return;
         }
 
-        public Matrix3d ViewMatrix = Matrix3d.Identity;
 
         private void ParseConfigFile()
         {
@@ -325,6 +324,8 @@ namespace TerraViewer
             MatrixValid = true;
 
         }
+
+
 
         //It's a binary file with the following format
         //fileid: 3c
@@ -498,9 +499,10 @@ namespace TerraViewer
         }
 
         string saveFilename = @"c:\wwtconfig\config.xml";
-
+#endif
         public bool SaveToXml()
         {
+#if !WINDOWS_UWP
             try
             {
                 StringBuilder sb = new StringBuilder();
@@ -529,6 +531,8 @@ namespace TerraViewer
             {
                 return false;
             }
+#endif
+            return true;
         }
     }
     public struct Vector6

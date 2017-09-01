@@ -1639,7 +1639,7 @@ namespace TerraViewer
             IPlace place = Search.FindCatalogObjectExact(target.Frame.Reference.ToString());
             if (place != null)
             {
-                Earth3d.MainWindow.RenderEngine.GotoTarget(place, false, false, true);
+                RenderEngine.Engine.GotoTarget(place, false, false, true);
             }
         }
 
@@ -2001,9 +2001,9 @@ namespace TerraViewer
         {
             LayerMap target = (LayerMap)layerTree.SelectedNode.Tag;
 
-            Earth3d.MainWindow.RenderEngine.SolarSystemTrack = SolarSystemObjects.Custom;
-            Earth3d.MainWindow.RenderEngine.TrackingFrame = target.Name;
-            Earth3d.MainWindow.RenderEngine.viewCamera.Zoom = Earth3d.MainWindow.RenderEngine.targetViewCamera.Zoom = .000000001;
+            RenderEngine.Engine.SolarSystemTrack = SolarSystemObjects.Custom;
+            RenderEngine.Engine.TrackingFrame = target.Name;
+            RenderEngine.Engine.viewCamera.Zoom = RenderEngine.Engine.targetViewCamera.Zoom = .000000001;
 
 
         }
@@ -3466,7 +3466,7 @@ namespace TerraViewer
 
                             double dd = renderContext.NominalRadius;
                             
-                            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.RenderEngine.SolarSystemCameraDistance);
+                            double distss = UiTools.SolarSystemToMeters(RenderEngine.Engine.SolarSystemCameraDistance);
 
 
 
@@ -3484,8 +3484,8 @@ namespace TerraViewer
 
 
 
-                            float fade = (float)Math.Min(1, Math.Max(Math.Log(UiTools.SolarSystemToMeters(Earth3d.MainWindow.RenderEngine.SolarSystemCameraDistance), 10) - 7.3, 0));
-                            if (Earth3d.MainWindow.RenderEngine.TrackingFrame == map.Frame.Name)
+                            float fade = (float)Math.Min(1, Math.Max(Math.Log(UiTools.SolarSystemToMeters(RenderEngine.Engine.SolarSystemCameraDistance), 10) - 7.3, 0));
+                            if (RenderEngine.Engine.TrackingFrame == map.Frame.Name)
                             {
                                 double ratio = map.Frame.MeanRadius / distss;
 
@@ -3524,10 +3524,10 @@ namespace TerraViewer
                             }
                             Matrix3d matSaved = renderContext.World;
                             renderContext.World = thisMap.Frame.WorldMatrix * renderContext.WorldBaseNonRotating;
-                            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.RenderEngine.SolarSystemCameraDistance);
+                            double distss = UiTools.SolarSystemToMeters(RenderEngine.Engine.SolarSystemCameraDistance);
 
                             float fade = (float)Math.Min(1, Math.Max(Math.Log(distss, 10) - 7.3, 0));
-                            if (Earth3d.MainWindow.RenderEngine.TrackingFrame == map.Frame.Name)
+                            if (RenderEngine.Engine.TrackingFrame == map.Frame.Name)
                             {
                                 double ratio = map.Frame.MeanRadius / distss;
 
@@ -4189,10 +4189,10 @@ namespace TerraViewer
             GroundOverlayLayer layer = new GroundOverlayLayer();
 
             layer.CreateFromFile(path);
-            layer.Overlay.north = Earth3d.MainWindow.RenderEngine.viewCamera.Lat + 5;
-            layer.Overlay.south = Earth3d.MainWindow.RenderEngine.viewCamera.Lat - 5;
-            layer.Overlay.west = Earth3d.MainWindow.RenderEngine.viewCamera.Lng - 5;
-            layer.Overlay.east = Earth3d.MainWindow.RenderEngine.viewCamera.Lng + 5;
+            layer.Overlay.north = RenderEngine.Engine.viewCamera.Lat + 5;
+            layer.Overlay.south = RenderEngine.Engine.viewCamera.Lat - 5;
+            layer.Overlay.west = RenderEngine.Engine.viewCamera.Lng - 5;
+            layer.Overlay.east = RenderEngine.Engine.viewCamera.Lng + 5;
 
             layer.Enabled = true;
             layer.Name = path.Substring(path.LastIndexOf('\\') + 1);
@@ -4219,10 +4219,10 @@ namespace TerraViewer
             GreatCirlceRouteLayer layer = new GreatCirlceRouteLayer();
 
 
-            layer.LatStart = Earth3d.MainWindow.RenderEngine.viewCamera.Lat;
-            layer.LatEnd = Earth3d.MainWindow.RenderEngine.viewCamera.Lat - 5;
-            layer.LngStart = Earth3d.MainWindow.RenderEngine.viewCamera.Lng;
-            layer.LngEnd = Earth3d.MainWindow.RenderEngine.viewCamera.Lng + 5;
+            layer.LatStart = RenderEngine.Engine.viewCamera.Lat;
+            layer.LatEnd = RenderEngine.Engine.viewCamera.Lat - 5;
+            layer.LngStart = RenderEngine.Engine.viewCamera.Lng;
+            layer.LngEnd = RenderEngine.Engine.viewCamera.Lng + 5;
             layer.Width = 4;
             layer.Enabled = true;
             layer.Name = Language.GetLocalizedText(1144, "Great Circle Route");

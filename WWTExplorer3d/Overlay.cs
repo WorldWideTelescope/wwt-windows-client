@@ -1017,12 +1017,12 @@ namespace TerraViewer
                 isDynamic = true;
                 text = text.Replace("{$DATE}", SpaceTimeController.Now.ToString("yyyy/MM/dd"));
                 text = text.Replace("{$TIME}", SpaceTimeController.Now.ToString("HH:mm:ss"));
-                text = text.Replace("{$DIST}", UiTools.FormatDistance(Earth3d.MainWindow.RenderEngine.SolarSystemCameraDistance));
-                text = text.Replace("{$LAT}", Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ViewLat));
-                text = text.Replace("{$LNG}", Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ViewLong));
-                text = text.Replace("{$RA}", Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.RA));
-                text = text.Replace("{$DEC}", Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.Dec));
-                text = text.Replace("{$FOV}", Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.FovAngle));
+                text = text.Replace("{$DIST}", UiTools.FormatDistance(RenderEngine.Engine.SolarSystemCameraDistance));
+                text = text.Replace("{$LAT}", Coordinates.FormatDMS(RenderEngine.Engine.ViewLat));
+                text = text.Replace("{$LNG}", Coordinates.FormatDMS(RenderEngine.Engine.ViewLong));
+                text = text.Replace("{$RA}", Coordinates.FormatDMS(RenderEngine.Engine.RA));
+                text = text.Replace("{$DEC}", Coordinates.FormatDMS(RenderEngine.Engine.Dec));
+                text = text.Replace("{$FOV}", Coordinates.FormatDMS(RenderEngine.Engine.FovAngle));
             }
             else
             {

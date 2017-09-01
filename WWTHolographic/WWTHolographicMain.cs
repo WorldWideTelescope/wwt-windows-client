@@ -40,6 +40,7 @@ namespace WWTHolographic
         private SpatialInputHandler         spatialInputHandler;
 #endif
 
+        TerraViewer.RenderEngine renderEngine;
         // Cached reference to device resources.
         private DeviceResources             deviceResources;
 
@@ -102,6 +103,9 @@ namespace WWTHolographic
             // 
             // TODO: Add code here to initialize your content.
             // 
+
+            renderEngine = new TerraViewer.RenderEngine();
+
 
 #if DRAW_SAMPLE_CONTENT
             // Initialize the sample hologram.

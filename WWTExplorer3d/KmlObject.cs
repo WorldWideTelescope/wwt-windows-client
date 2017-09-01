@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
 using System.Xml;
-using System.Drawing;
-using System.Net;
+#endif
 using System.IO;
 using System.Threading;
 
@@ -1188,7 +1192,7 @@ namespace TerraViewer
     public class KmlPlacemark : KmlFeature
     {
         public KmlGeometry geometry = null;
-        public Rectangle hitTestRect = Rectangle.Empty;
+        public RectangleF hitTestRect = RectangleF.Empty;
         public KmlPoint Point = null;
         private bool selected = false;
 
@@ -1804,10 +1808,10 @@ namespace TerraViewer
             }
         }
 
-        private Stream GetStream()
-        {
-            return Owner.GetFileStream(Href);
-        }
+        //private Stream GetStream()
+        //{
+        //    return Owner.GetFileStream(Href);
+        //}
 
         // Icon Cache functions & Members
         static Dictionary<string, IconCacheEntry> IconCache = new Dictionary<string, IconCacheEntry>();
@@ -1866,25 +1870,6 @@ namespace TerraViewer
                 
 
                 string filename = dir + ((uint)entry.Href.GetHashCode32()).ToString() + ".png";
-
-                //if (File.Exists(filename))
-                //{
-                //    FileInfo fi = new FileInfo(filename);
-
-                //    if (fi.Length != 8 && fi.Length < 100)
-                //    {
-                //        try
-                //        {
-                //            File.Delete(filename);
-                //        }
-                //        catch
-                //        {
-                //        }
-                //    }
-                //}
-
-			
-                //Client.DownloadFile(CacheProxy.GetCacheUrl(url), filename);
 
                 Stream stream = null;
                 if (entry.Owner == null)

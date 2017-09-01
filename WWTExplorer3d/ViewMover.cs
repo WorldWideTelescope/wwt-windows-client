@@ -395,7 +395,7 @@ namespace TerraViewer
                     return to;
                 }
 
-                if (Earth3d.MainWindow.RenderEngine.Space && Settings.Active.GalacticMode)
+                if (RenderEngine.Engine.Space && Settings.Active.GalacticMode)
                 {
 
                     return CameraParameters.InterpolateGreatCircle(from, to, alpha, InterpolationType);
@@ -507,7 +507,7 @@ namespace TerraViewer
             double latDist = Math.Abs(from.Lat - to.Lat);
             double distance = Math.Sqrt(latDist * latDist + lngDist * lngDist);
 
-            if (Earth3d.MainWindow.RenderEngine.Space)
+            if (RenderEngine.Engine.Space)
             {
                 zoomUpTarget = (distance / 3) * 20;
             }
@@ -526,7 +526,7 @@ namespace TerraViewer
                 zoomUpTarget = from.Zoom;
             }
 
-            if (Earth3d.MainWindow.RenderEngine.Space)
+            if (RenderEngine.Engine.Space)
             {
                 travelTime = (distance / 180.0) * (360 / zoomUpTarget) * travelTimeFactor;
             }
@@ -586,7 +586,7 @@ namespace TerraViewer
                 {
                     elapsedSeconds -= upTargetTime;
                     // interpolate linear fromTop and toTop
-                    if (Earth3d.MainWindow.RenderEngine.Space && Settings.Active.GalacticMode)
+                    if (RenderEngine.Engine.Space && Settings.Active.GalacticMode)
                     {
 
                         return CameraParameters.InterpolateGreatCircle(fromTop, toTop, elapsedSeconds / (downTargetTime - upTargetTime), InterpolationType.EaseInOut);
@@ -724,7 +724,7 @@ namespace TerraViewer
 
         public double[] GetParams()
         {
-            currentCamera = Earth3d.MainWindow.RenderEngine.viewCamera;
+            currentCamera = RenderEngine.Engine.viewCamera;
             jDate = SpaceTimeController.JNow;
             double[] paramList = new double[13];
             paramList[0] = jDate;     

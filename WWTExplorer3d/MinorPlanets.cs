@@ -174,7 +174,7 @@ namespace TerraViewer
         // ** Begin 
         public static void DrawMPC3D(RenderContext11 renderContext, float opacity, Vector3d centerPoint)
         {
-            double zoom = Earth3d.MainWindow.RenderEngine.ZoomFactor;
+            double zoom = RenderEngine.Engine.ZoomFactor;
             double distAlpha = ((Math.Log(Math.Max(1, zoom), 4)) - 15.5) * 90;
   
             int alpha = Math.Min(255, Math.Max(0, (int)distAlpha));

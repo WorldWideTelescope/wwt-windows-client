@@ -104,10 +104,10 @@ namespace TerraViewer
 
         private void fromView_Click(object sender, EventArgs e)
         {
-            ra.Text = Coordinates.FormatHMS(Earth3d.MainWindow.RenderEngine.RA);
-            dec.Text = Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.Dec);
+            ra.Text = Coordinates.FormatHMS(RenderEngine.Engine.RA);
+            dec.Text = Coordinates.FormatDMS(RenderEngine.Engine.Dec);
             mag.Text = editTarget.Magnitude.ToString();
-            zoom.Text = Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ZoomFactor / 6);
+            zoom.Text = Coordinates.FormatDMS(RenderEngine.Engine.ZoomFactor / 6);
         }
     }
 }

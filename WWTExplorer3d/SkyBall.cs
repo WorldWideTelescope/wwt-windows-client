@@ -226,7 +226,7 @@ namespace TerraViewer
                     points[i].Y = centerf.Y - (float)(Math.Sin((cornersAltAz[i].Az+90) * RC) * Math.Cos(cornersAltAz[i].Alt * RC) * radius);
                     g.DrawLine(Pens.Yellow, points[i], centerf);
                 }
-                if (Earth3d.MainWindow.RenderEngine.Alt > 0)
+                if (RenderEngine.Engine.Alt > 0)
                 {
                     g.FillPolygon(yellowBrush, points);
                 }
@@ -388,7 +388,7 @@ namespace TerraViewer
 
             if (e.Delta != 0)
             {                
-                Earth3d.MainWindow.RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                RenderEngine.Engine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                 if (e.Delta < 0)
                 {
                     Earth3d.MainWindow.ZoomOut();

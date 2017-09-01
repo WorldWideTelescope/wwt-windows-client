@@ -52,4 +52,7 @@ namespace TerraViewer
     public enum StockSkyOverlayTypes { Empty, EquatorialGrid, EquatorialGridText, GalacticGrid, GalacticGridText, EclipticGrid, EclipticGridText, EclipticOverview, EclipticOverviewText, PrecessionChart, AltAzGrid, AltAzGridText, ConstellationFigures, ConstellationBoundaries, ConstellationFocusedOnly, ConstellationNames, ConstellationPictures, FadeToBlack, FadeToLogo, FadeToGradient, ScreenBroadcast, FadeRemoteOnly, SkyGrids, Constellations, SolarSystemStars, SolarSystemMilkyWay, SolarSystemCosmos, SolarSystemOrbits, SolarSystemPlanets, SolarSystemAsteroids, SolarSystemLighting, SolarSystemMinorOrbits, ShowEarthCloudLayer, ShowElevationModel, ShowAtmosphere, MultiResSolarSystemBodies, AuroraBorialis, EarthCutAway, Show3dCities, ShowSolarSystem, Clouds8k, FiledOfView, ShowISSModel, SolarSystemCMB, VolumetricMilkyWay, MPCZone1, MPCZone2, MPCZone3, MPCZone4, MPCZone5, MPCZone6, MPCZone7, OrbitFilters };
 
     public enum ZoomSpeeds { SLOW = 0, MEDIUM, FAST };
+
+    public enum AltUnits { Meters, Feet, Inches, Miles, Kilometers, AstronomicalUnits, LightYears, Parsecs, MegaParsecs, Custom };
+    public enum FadeType { In, Out, Both, None };
 }

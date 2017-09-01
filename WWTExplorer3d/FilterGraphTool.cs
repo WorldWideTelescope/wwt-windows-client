@@ -591,7 +591,7 @@ namespace TerraViewer
         void copyMenu_Click(object sender, EventArgs e)
         {
             Clipboard.Clear();
-            Clipboard.SetImage(GetChartImageBitmap(Earth3d.MainWindow.RenderEngine));
+            Clipboard.SetImage(GetChartImageBitmap(RenderEngine.Engine));
         }
 
         void closeMenu_Click(object sender, EventArgs e)

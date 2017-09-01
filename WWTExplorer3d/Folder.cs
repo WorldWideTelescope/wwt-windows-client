@@ -1,12 +1,21 @@
+using AstroCalc;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Drawing;
-using AstroCalc;
-
+#endif
 
 
 namespace TerraViewer
@@ -96,12 +105,17 @@ namespace TerraViewer
 
         public static Folder LoadFromFileStream(Stream stream, bool versionDependent)
         {
+#if !WINDOWS_UWP
             XmlSerializer serializer = new XmlSerializer(typeof(Folder));
             Folder newFolder = (Folder)serializer.Deserialize(stream);
             newFolder.dirty = false;
             newFolder.VersionDependent = versionDependent;
-
             return newFolder;
+ #else
+            return null;
+            //todo uwp mape a uwp compatible version
+#endif
+
         }
 
         public void Save()
@@ -119,6 +133,7 @@ namespace TerraViewer
 
         public void SaveToFile(string filename)
         {
+#if !WINDOWS_UWP
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
             ns.Add("", "");
             using (FileStream writer = File.Open(filename,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -126,7 +141,10 @@ namespace TerraViewer
                 XmlSerializer serializer = new XmlSerializer(typeof(Folder));
                 serializer.Serialize(writer, this, ns);
                 writer.Close();
-            }            
+            }
+#else
+            //todo uwp mape a uwp compatible version
+#endif
         }
 
         public void AddChildFolder(Folder child)
@@ -161,7 +179,7 @@ namespace TerraViewer
 
         Bitmap thumbnail = null;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public System.Drawing.Bitmap ThumbNail
+        public Bitmap ThumbNail
         {
             get
             {
@@ -175,11 +193,14 @@ namespace TerraViewer
                     {
 
                     }
+
+                    //todo uwp impliment folder icon
+#if !WINDOWS_UWP
                     if (thumbnail == null)
                     {
                         thumbnail = Properties.Resources.Folder;
                     }
-
+#endif
                 }
                 return thumbnail;
             }
@@ -238,7 +259,7 @@ namespace TerraViewer
 
         public void Refresh()
         {
-            Folder temp = Folder.LoadFromUrl(Earth3d.MainWindow.PrepareUrl(urlField), VersionDependent);
+            Folder temp = Folder.LoadFromUrl(RenderEngine.Engine.PrepareUrl(urlField), VersionDependent);
             if (temp != null)
             {
                 proxyFolder = temp;
@@ -308,7 +329,7 @@ namespace TerraViewer
     {
         Bitmap thumbnail = null;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public System.Drawing.Bitmap ThumbNail
+        public Bitmap ThumbNail
         {
             get
             {
@@ -405,7 +426,7 @@ namespace TerraViewer
             get { return true; }
         }
 
-        #region ITourResult Members
+#region ITourResult Members
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public string AttributesAndCredits
@@ -550,7 +571,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
     public partial class Place : IPlace
@@ -634,7 +655,7 @@ namespace TerraViewer
             get { return tour; }
             set { tour = value; }
         }
-        #region IPlace Members
+#region IPlace Members
 
         private string url;
 
@@ -719,6 +740,7 @@ namespace TerraViewer
         {
             get
             {
+#if !BASICWWT
                 if (Classification == Classification.SolarSystem)
                 {
                     AstroRaDec raDec = Planets.GetPlanetLocation(Name);
@@ -728,6 +750,7 @@ namespace TerraViewer
                         decField = raDec.Dec;
                     }
                 }
+#endif
                 return decField;
             }
             set
@@ -809,6 +832,7 @@ namespace TerraViewer
         {
             get
             {
+#if !BASICWWT
                 if (Classification == Classification.SolarSystem)
                 {
                     AstroRaDec raDec = Planets.GetPlanetLocation(Name);
@@ -817,6 +841,7 @@ namespace TerraViewer
                     decField = raDec.Dec;
                     this.distanceField = raDec.Distance;
                 }
+#endif
                 return raField;
             }
             set
@@ -839,9 +864,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
         Bitmap thumbNail = null;
 
@@ -875,21 +900,24 @@ namespace TerraViewer
                     {
                         if (!String.IsNullOrEmpty(constellationField))
                         {
-                            if (Overview.ConstellationThumbnails.ContainsKey(constellationField))
+                            if (ThumbnailCache.ConstellationThumbnails.ContainsKey(constellationField))
                             {
                                 //todo clone this
-                                thumbNail = Overview.ConstellationThumbnails[constellationField];
+                                thumbNail = ThumbnailCache.ConstellationThumbnails[constellationField];
                             }
                         }
                     }
                     else
                     {
+                        //todo uwp find anther way to do this.
+#if !WINDOWS_UWP
                         thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
                         if (thumbNail == null)
                         {
                             object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
-                            thumbNail = ((System.Drawing.Bitmap)(obj));
+                            thumbNail = ((Bitmap)(obj));
                         }
+#endif
                     }
                 }
 
@@ -952,9 +980,9 @@ namespace TerraViewer
             get { return null; }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
 
         private double searchDistance = 0;
@@ -966,9 +994,9 @@ namespace TerraViewer
             set { searchDistance = value; }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
@@ -997,9 +1025,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public IImageSet StudyImageset
@@ -1026,13 +1054,13 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
 
 
-        #endregion
+#endregion
     }
     public partial class ImageSet : IImageSet , IThumbnail
     {
@@ -1126,7 +1154,7 @@ namespace TerraViewer
             return newset;
         }
 
-        #region IImageSet Members
+#region IImageSet Members
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public int BaseLevel
@@ -1366,9 +1394,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
         Bitmap thumbnail = null;
 
@@ -1445,9 +1473,9 @@ namespace TerraViewer
             get { return null; }
         }
 
-        #endregion
+#endregion
 
-        #region IImageSet Members
+#region IImageSet Members
         private string demUrl;
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "anyURI")]
 
@@ -1467,6 +1495,6 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 }

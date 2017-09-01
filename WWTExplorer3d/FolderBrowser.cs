@@ -1018,9 +1018,9 @@ namespace TerraViewer
                         //if (p.StudyImageset.Projection != ProjectionType.SkyImage && p.StudyImageset.Projection != ProjectionType.Tangent)
                         if (p.RA == 0 && p.Dec == 0)
                         {
-                            Earth3d.MainWindow.RenderEngine.GotoTarget(p, false, doubleClick, true);
+                            RenderEngine.Engine.GotoTarget(p, false, doubleClick, true);
                             //Earth3d.MainWindow.SetStudyImageset(imageSet, null);
-                            Earth3d.MainWindow.RenderEngine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
+                            RenderEngine.Engine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
                             return;
                         }
                     }
@@ -1037,7 +1037,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        Earth3d.MainWindow.RenderEngine.GotoTarget(p, false, doubleClick, true);
+                        RenderEngine.Engine.GotoTarget(p, false, doubleClick, true);
                     }
 
                 }
@@ -1050,8 +1050,8 @@ namespace TerraViewer
                     IImageSet imageSet = (IImageSet)e;
                     if (imageSet.Projection == ProjectionType.SkyImage || imageSet.Projection == ProjectionType.Tangent)
                     {
-                        Earth3d.MainWindow.RenderEngine.GotoTarget(new TourPlace("", imageSet.CenterY, imageSet.CenterX / 15, Classification.Unidentified, "UMA", ImageSetType.Sky, imageSet.BaseTileDegrees * 10), false, doubleClick, true);
-                        Earth3d.MainWindow.RenderEngine.SetStudyImageset(imageSet, null);
+                        RenderEngine.Engine.GotoTarget(new TourPlace("", imageSet.CenterY, imageSet.CenterX / 15, Classification.Unidentified, "UMA", ImageSetType.Sky, imageSet.BaseTileDegrees * 10), false, doubleClick, true);
+                        RenderEngine.Engine.SetStudyImageset(imageSet, null);
 
                     }
                     else
@@ -1490,12 +1490,12 @@ namespace TerraViewer
 
                 if (imageset != null)
                 {
-                    Earth3d.MainWindow.RenderEngine.PreviewImageset = imageset;
-                    Earth3d.MainWindow.RenderEngine.PreviewBlend.TargetState = true;
+                    RenderEngine.Engine.PreviewImageset = imageset;
+                    RenderEngine.Engine.PreviewBlend.TargetState = true;
                 }
                 else
                 {
-                    Earth3d.MainWindow.RenderEngine.PreviewBlend.TargetState = false;
+                    RenderEngine.Engine.PreviewBlend.TargetState = false;
                 }
             }
             else
@@ -1505,7 +1505,7 @@ namespace TerraViewer
                     toolTips.SetToolTip(BrowseList, ((IThumbnail)e).Name);
                 }
                 Earth3d.MainWindow.SetLabelText(null, false);
-                Earth3d.MainWindow.RenderEngine.PreviewBlend.TargetState = false;
+                RenderEngine.Engine.PreviewBlend.TargetState = false;
 
             }
         }
@@ -1516,7 +1516,7 @@ namespace TerraViewer
             {
                 IPlace p = (IPlace)e;
 
-                Earth3d.MainWindow.RenderEngine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
+                RenderEngine.Engine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
             }
             
         }

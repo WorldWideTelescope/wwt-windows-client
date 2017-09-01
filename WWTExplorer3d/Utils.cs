@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace TerraViewer
 {
@@ -16,6 +11,7 @@ namespace TerraViewer
             get { return logging; }
             set
             {
+#if !WINDOWS_UWP
                 if (logging != value)
                 {
                     logging = value;
@@ -33,12 +29,14 @@ namespace TerraViewer
                         logFilestream.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", "Frame Number", "Master Frame", "Render Time", "Tiles Loaded", "Textures", "Garbage Collections", "Memory", "Status Report");
                     }
                 }
+#endif
             }
         }
 
         private static System.Threading.Mutex logMutex = new System.Threading.Mutex();
         public static void WriteLogMessage(string message)
         {
+#if !WINDOWS_UWP
             if (logging)
             {
                 long ticks = HiResTimer.TickCount - lastRender;
@@ -49,6 +47,7 @@ namespace TerraViewer
                 logFilestream.WriteLine("{0}\t{1}\t{2}\t{3}", frameNumber, masterSyncFrameNumber, ms, message);
                 logMutex.ReleaseMutex();
             }
+#endif
         }
 
         public static StreamWriter logFilestream = null;

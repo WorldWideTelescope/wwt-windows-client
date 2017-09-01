@@ -63,78 +63,6 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\WWTExplorer3d\DEM\AdaptiveModel.cs">
-      <Link>Tiles\DEM\AdaptiveModel.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\BitIO.cs">
-      <Link>Tiles\DEM\BitIO.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\BitstreamDecoder.cs">
-      <Link>Tiles\DEM\BitstreamDecoder.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\CAdaptiveHuffman.cs">
-      <Link>Tiles\DEM\CAdaptiveHuffman.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\CCodingContext.cs">
-      <Link>Tiles\DEM\CCodingContext.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\ContainerDecoder.cs">
-      <Link>Tiles\DEM\ContainerDecoder.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\DemCodec.cs">
-      <Link>Tiles\DEM\DemCodec.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\DemTile.cs">
-      <Link>Tiles\DEM\DemTile.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\HDPhotoBase.cs">
-      <Link>Tiles\DEM\HDPhotoBase.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\HDPhotoDecoder.cs">
-      <Link>Tiles\DEM\HDPhotoDecoder.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\PointerArray.cs">
-      <Link>Tiles\DEM\PointerArray.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\DEM\SimpleBitIO.cs">
-      <Link>Tiles\DEM\SimpleBitIO.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\IAnimatable.cs">
-      <Link>Rendering\IAnimatable.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\IImageSet.cs">
-      <Link>Imagesets\IImageSet.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\IPlace.cs">
-      <Link>Imagesets\IPlace.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\IThumbnail.cs">
-      <Link>Imagesets\IThumbnail.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\IViewMover.cs">
-      <Link>Rendering\IViewMover.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\MercatorTile.cs">
-      <Link>Tiles\MercatorTile.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\RenderEngine.cs">
-      <Link>Rendering\RenderEngine.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\Tile.cs">
-      <Link>Tiles\Tile.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\TileCache.cs">
-      <Link>Tiles\TileCache.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\ToastTile.cs">
-      <Link>Tiles\ToastTile.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\UiControllerArgs.cs">
-      <Link>Utils\UiControllerArgs.cs</Link>
-    </Compile>
-    <Compile Include="..\WWTExplorer3d\ViewMover.cs">
-      <Link>Rendering\ViewMover.cs</Link>
-    </Compile>
     <Compile Include="WWTHolographicMain.cs" />
     <Compile Include="AppView.cs" />
     <Compile Include="AppViewSource.cs" />
@@ -194,12 +122,12 @@
       <Version>3.0.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Graphics\" />
-    <Folder Include="Layers\" />
-    <Folder Include="Tours\" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\UwpRenderEngine\UwpRenderEngine.csproj">
+      <Project>{d088c806-c0aa-44a5-ad5d-ce9ae754727c}</Project>
+      <Name>UwpRenderEngine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WWTCoreUWP\WWTCoreUWP\WWTCoreUWP.csproj">
       <Project>{c05266fe-6947-42f1-9863-7cdbeed60869}</Project>
       <Name>WWTCoreUWP</Name>

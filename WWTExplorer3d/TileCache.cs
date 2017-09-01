@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace TerraViewer
 {
@@ -164,7 +165,7 @@ namespace TerraViewer
             if (!retTile.ReadyToRender)
             {
                 TileCache.GetTileFromWeb(retTile, false);
-                retTile.CreateGeometry(Earth3d.MainWindow.RenderContext11, false);
+                retTile.CreateGeometry(RenderEngine.Engine.RenderContext11, false);
             }
 
 
@@ -467,11 +468,15 @@ namespace TerraViewer
         static DateTime lastLRUPurge = DateTime.Now;
 		public static void QueueThread()
 		{
-            
+ #if !WINDOWS_UWP
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
             bool fileOnly = fileOnlyThreadID == Thread.CurrentThread.ManagedThreadId;
-			while (running)
+#else
+            bool fileOnly = false;
+#endif
+            while (running)
 			{
+#if !WINDOWS_UWP
                 if (queue.Count < 1)
                 {
                     System.Threading.Thread.Sleep(50);
@@ -480,6 +485,10 @@ namespace TerraViewer
                 {
                     System.Threading.Thread.Sleep(1);
                 }
+#else
+                Task.Delay(TimeSpan.FromSeconds(30)).Wait();
+#endif
+
 
                 double minDistance = 1000000000000000000; 
                 bool overlayTile = false;
@@ -496,13 +505,13 @@ namespace TerraViewer
 
                         vectTemp.TransformCoordinate(RenderEngine.WorldMatrix);
 
-                        if (Earth3d.MainWindow.RenderEngine.Space)
+                        if (RenderEngine.Engine.Space)
                         {
                             vectTemp.Subtract(new Vector3d(0.0f, 0.0f, -1.0f));
                         }
                         else
                         {
-                            vectTemp.Subtract(Earth3d.MainWindow.RenderContext11.CameraPosition);
+                            vectTemp.Subtract(RenderEngine.Engine.RenderContext11.CameraPosition);
                         }
 
                         double distTemp = Math.Max(0,vectTemp.Length()-t.SphereRadius);
@@ -526,8 +535,12 @@ namespace TerraViewer
                                     test.FileExists = false;
                                 }
                             }
-
+                            //todo uwp Test this for sure... threads are not really same
+#if !WINDOWS_UWP
                             if (test.FileExists || (!test.FileExists && !fileOnly))
+#else
+                            if (test.FileExists )
+#endif
                             {
                                 minDistance = distTemp;
                                 maxKey = t.Key;
@@ -607,9 +620,32 @@ namespace TerraViewer
 
 		}
 
-
 		public static int THREAD_COUNT = 5;
-		static Thread[] queueThreads = new Thread[THREAD_COUNT];
+#if WINDOWS_UWP
+        public static void StartQueue()
+        {
+            if (!TileCache.running)
+            {
+                TileCache.running = true;
+                for (int i = 0; i < THREAD_COUNT; i++)
+                {
+                    var t = Task.Run(() => QueueThread());
+                }
+            }
+        }
+
+
+        public static void ShutdownQueue()
+        {
+            if (TileCache.running)
+            {
+                TileCache.running = false;
+            }
+            return;
+        }
+#else
+
+        static Thread[] queueThreads = new Thread[THREAD_COUNT];
         static int fileOnlyThreadID = 0;
 
 		public static void StartQueue()
@@ -648,8 +684,8 @@ namespace TerraViewer
 			}
 			return;
 		}
+#endif
 
-       
         public static void InitializeTile(Tile tile)
         {      
             bool loaded = false;
@@ -672,7 +708,7 @@ namespace TerraViewer
                 {
                     if (tile != null)
                     {
-                        tile.CreateGeometry(Earth3d.MainWindow.RenderContext11, false);
+                        tile.CreateGeometry(RenderEngine.Engine.RenderContext11, false);
                         tilesLoadedThisFrame++;
                     }
                 }
@@ -691,6 +727,7 @@ namespace TerraViewer
         public static Tile GetTileFromWeb(Tile retTile, bool Initialize)
 		{
             WebClient Client = null;
+ #if !WINDOWS_UWP
             if (retTile.Dataset.Projection == ProjectionType.SkyImage && retTile.Dataset.Url.EndsWith("/screenshot.png"))
             {
                 SkyImageTile tile = retTile as SkyImageTile;
@@ -706,7 +743,7 @@ namespace TerraViewer
                 Client.Dispose();
                 return retTile;
             }
-
+#endif
             Tile parent = retTile.Parent;
 
             if (retTile.DemEnabled && (parent == null || (parent != null && parent.DemGeneration == 0)))
@@ -718,15 +755,17 @@ namespace TerraViewer
                 retTile.DemReady = true;
             }
 
+            //todo uwp enable fits images sometime
+#if !WINDOWS_UWP
             if (retTile.Dataset.WcsImage != null && retTile.Dataset.WcsImage is FitsImage)
             {
                 retTile.TextureReady = true;
                 InitializeTile(retTile);
                 return retTile;
             }
+#endif
 
-
-			string directory = retTile.Directory;
+            string directory = retTile.Directory;
 	
 			if (!Directory.Exists(directory))
 			{
@@ -831,7 +870,7 @@ namespace TerraViewer
 						return retTile;
 					}			
 				}
-
+#if !WINDOWS_UWP
                 // todo 3d Cities remove support for 3d Cities for now
                 if (retTile.Dataset.Projection == ProjectionType.Mercator && Properties.Settings.Default.Show3dCities)
                 {
@@ -877,6 +916,7 @@ namespace TerraViewer
                         }
                     }
                 }
+#endif
 
                 retTile.FileExists = true;
                 

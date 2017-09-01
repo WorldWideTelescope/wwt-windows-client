@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D088C806-C0AA-44A5-AD5D-CE9AE754727C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UwpRenderEngine</RootNamespace>
+    <AssemblyName>UwpRenderEngine</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\WWTExplorer3d\Camera.cs">
+      <Link>Layers\Camera.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Config.cs">
+      <Link>Utilities\Config.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Constellations.cs">
+      <Link>Layers\Constellations.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Dataset.cs">
+      <Link>Imagesets\Dataset.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DataSetManager.cs">
+      <Link>Imagesets\DataSetManager.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\AdaptiveModel.cs">
+      <Link>Tiles\DEM\AdaptiveModel.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\BitIO.cs">
+      <Link>Tiles\DEM\BitIO.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\BitstreamDecoder.cs">
+      <Link>Tiles\DEM\BitstreamDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\CAdaptiveHuffman.cs">
+      <Link>Tiles\DEM\CAdaptiveHuffman.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\CCodingContext.cs">
+      <Link>Tiles\DEM\CCodingContext.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\ContainerDecoder.cs">
+      <Link>Tiles\DEM\ContainerDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\DemCodec.cs">
+      <Link>Tiles\DEM\DemCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\DemTile.cs">
+      <Link>Tiles\DEM\DemTile.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\HDPhotoBase.cs">
+      <Link>Tiles\DEM\HDPhotoBase.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\HDPhotoDecoder.cs">
+      <Link>Tiles\DEM\HDPhotoDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\PointerArray.cs">
+      <Link>Tiles\DEM\PointerArray.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\SimpleBitIO.cs">
+      <Link>Tiles\DEM\SimpleBitIO.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\EquirectangularTile.cs">
+      <Link>Tiles\EquirectangularTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FieldOfView.cs">
+      <Link>Layers\FieldOfView.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\FileCabnet.cs">
+      <Link>Utilities\FileCabnet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Folder.cs">
+      <Link>Imagesets\Folder.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Folder_Metadata.cs">
+      <Link>Imagesets\Folder_Metadata.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IAnimatable.cs">
+      <Link>Rendering\IAnimatable.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IImageSet.cs">
+      <Link>Imagesets\IImageSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Imager.cs">
+      <Link>Layers\Imager.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ImageSet.cs">
+      <Link>Imagesets\ImageSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IPlace.cs">
+      <Link>Imagesets\IPlace.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IThumbnail.cs">
+      <Link>Imagesets\IThumbnail.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ITourResult.cs">
+      <Link>Imagesets\ITourResult.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IUiController.cs">
+      <Link>Rendering\IUiController.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IViewMover.cs">
+      <Link>Rendering\IViewMover.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Language.cs">
+      <Link>Utilities\Language.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LineSet.cs">
+      <Link>Layers\LineSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\MercatorTile.cs">
+      <Link>Tiles\MercatorTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Place.cs">
+      <Link>Imagesets\Place.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Places.cs">
+      <Link>Imagesets\Places.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\PortableUtilities.cs">
+      <Link>Utilities\PortableUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\RenderEngine.cs">
+      <Link>Rendering\RenderEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SavedColor.cs">
+      <Link>Utilities\SavedColor.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Settings.cs">
+      <Link>Utilities\Settings.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SkyImage.cs">
+      <Link>Tiles\SkyImage.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SkyText.cs">
+      <Link>Layers\SkyText.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SphericalTile.cs">
+      <Link>Tiles\SphericalTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Sprite2d.cs">
+      <Link>Rendering\Sprite2d.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TangentTile.cs">
+      <Link>Tiles\TangentTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Telescope.cs">
+      <Link>Layers\Telescope.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TextObject.cs">
+      <Link>Layers\TextObject.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ThumbnailCache.cs">
+      <Link>Utilities\ThumbnailCache.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Tile.cs">
+      <Link>Tiles\Tile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TileCache.cs">
+      <Link>Tiles\TileCache.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ToastTile.cs">
+      <Link>Tiles\ToastTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\UiTools.cs">
+      <Link>Utilities\UiTools.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Utils.cs">
+      <Link>Utilities\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\VideoOutputType.cs">
+      <Link>Utilities\VideoOutputType.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ViewMover.cs">
+      <Link>Rendering\ViewMover.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\XmlAbstractions.cs">
+      <Link>Utilities\XmlAbstractions.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\ZipArchive.cs">
+      <Link>Utilities\ZipArchive.cs</Link>
+    </Compile>
+    <Compile Include="Class1.cs" />
+    <Compile Include="CompatibleTypes\ApplicationScopedSettingAttribute.cs" />
+    <Compile Include="CompatibleTypes\Bitmap.cs" />
+    <Compile Include="CompatibleTypes\DefaultSettingValueAttribute.cs" />
+    <Compile Include="CompatibleTypes\Properties.Settings.cs" />
+    <Compile Include="CompatibleTypes\UserScopedSettingAttribute.cs" />
+    <Compile Include="CompatibleTypes\WebClient.cs" />
+    <Compile Include="CompatibleTypes\WinformsTypes.cs" />
+    <Compile Include="CompatibleTypes\XmlNode.cs" />
+    <Compile Include="CompatibleTypes\XmlTextWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\ThumbMenuNode.cs" />
+    <EmbeddedResource Include="Properties\UwpRenderEngine.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.2.3</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.D3DCompiler">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct2D1">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct3D11">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics">
+      <Version>3.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WWTCoreUWP\WWTCoreUWP\WWTCoreUWP.csproj">
+      <Project>{c05266fe-6947-42f1-9863-7cdbeed60869}</Project>
+      <Name>WWTCoreUWP</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

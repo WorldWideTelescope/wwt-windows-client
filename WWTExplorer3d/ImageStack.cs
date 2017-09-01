@@ -28,7 +28,7 @@ namespace TerraViewer
             {
                 stackList.Add((IThumbnail)ImageSet.FromIImage(Earth3d.MainWindow.CurrentImageSet));
             }
-            foreach (ImageSet set in Earth3d.MainWindow.RenderEngine.ImageStackList)
+            foreach (ImageSet set in RenderEngine.Engine.ImageStackList)
             {
                 stackList.Add((IThumbnail)ImageSet.FromIImage(set));
             }
@@ -61,7 +61,7 @@ namespace TerraViewer
             closeBox.Image = Properties.Resources.CloseHover;
             this.Close();
             Earth3d.MainWindow.ImageStackVisible = false;
-            Earth3d.MainWindow.RenderEngine.ImageStackList.Clear();
+            RenderEngine.Engine.ImageStackList.Clear();
             Earth3d.MainWindow.Stack = null;
         }
         private void fadeTimer_Tick(object sender, EventArgs e)

@@ -182,8 +182,8 @@ namespace TerraViewer
                 // If there are more slides then move on..
                 if (tour.CurrentTourStop.EndTarget != null)
                 {
-                    Earth3d.MainWindow.RenderEngine.GotoTarget(false, true, tour.CurrentTourStop.EndTarget.CamParams, tour.CurrentTourStop.Target.StudyImageset, tour.CurrentTourStop.Target.BackgroundImageSet);
-                    Earth3d.MainWindow.RenderEngine.Mover = null;
+                    RenderEngine.Engine.GotoTarget(false, true, tour.CurrentTourStop.EndTarget.CamParams, tour.CurrentTourStop.Target.StudyImageset, tour.CurrentTourStop.Target.BackgroundImageSet);
+                    RenderEngine.Engine.Mover = null;
                 }
                 onTarget = false;
 
@@ -270,7 +270,7 @@ namespace TerraViewer
                     instant = true;
                 }
 
-                Earth3d.MainWindow.RenderEngine.GotoTarget(tour.CurrentTourStop.Target, false, Earth3d.NoUi ? true : instant, false);
+                RenderEngine.Engine.GotoTarget(tour.CurrentTourStop.Target, false, Earth3d.NoUi ? true : instant, false);
 
                 slideStartTime = SpaceTimeController.MetaNow;
                 // Move to new settings
@@ -301,7 +301,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    Earth3d.MainWindow.RenderEngine.FreezeView();
+                    RenderEngine.Engine.FreezeView();
                     if (TourEnded != null)
                     {
                         TourEnded.Invoke(this, new EventArgs());
@@ -391,7 +391,7 @@ namespace TerraViewer
 
                 }
                
-                Earth3d.MainWindow.RenderEngine.GotoTarget(tour.CurrentTourStop.Target, false, Earth3d.NoUi ? false : true, false);
+                RenderEngine.Engine.GotoTarget(tour.CurrentTourStop.Target, false, Earth3d.NoUi ? false : true, false);
 
             }
 
@@ -544,14 +544,14 @@ namespace TerraViewer
                 double elapsedSeconds = tour.CurrentTourStop.TweenPosition * tour.CurrentTourStop.Duration.TotalSeconds;
                 if (slideChanging)
                 {
-                    Earth3d.MainWindow.RenderEngine.CrossFadeFrame = false;
+                    RenderEngine.Engine.CrossFadeFrame = false;
                 }
 
                 switch (tour.CurrentTourStop.Transition)
                 {
                     case TransitionType.Slew:
                         tour.CurrentTourStop.FaderOpacity = 0;
-                        Earth3d.MainWindow.RenderEngine.CrossFadeFrame = false;
+                        RenderEngine.Engine.CrossFadeFrame = false;
                         break;
                     case TransitionType.CrossCut:
                         {
@@ -562,20 +562,20 @@ namespace TerraViewer
                             }
                             if (elapsedSeconds < (elapsedSeconds - tour.CurrentTourStop.TransitionHoldTime))
                             {
-                                Earth3d.MainWindow.RenderEngine.CrossFadeFrame = true;
+                                RenderEngine.Engine.CrossFadeFrame = true;
                                 tour.CurrentTourStop.FaderOpacity = 1;
                                
                             }
                             else
                             {
                                 tour.CurrentTourStop.FaderOpacity = 0;
-                                Earth3d.MainWindow.RenderEngine.CrossFadeFrame = false;
+                                RenderEngine.Engine.CrossFadeFrame = false;
                             }
                         }
                         break;
                     case TransitionType.CrossFade:
                         {
-                            Earth3d.MainWindow.RenderEngine.CrossFadeFrame = true;
+                            RenderEngine.Engine.CrossFadeFrame = true;
                             double opacity = Math.Max(0, 1 - Math.Min(1, (elapsedSeconds-tour.CurrentTourStop.TransitionHoldTime) / tour.CurrentTourStop.TransitionTime));
                             tour.CurrentTourStop.FaderOpacity = (float)opacity;
                             if (slideChanging)
@@ -588,13 +588,13 @@ namespace TerraViewer
                     case TransitionType.FadeOutIn:
                     case TransitionType.FadeIn:
                         {
-                            Earth3d.MainWindow.RenderEngine.CrossFadeFrame = false;
+                            RenderEngine.Engine.CrossFadeFrame = false;
                             double opacity = Math.Max(0, 1 - Math.Min(1, (elapsedSeconds - tour.CurrentTourStop.TransitionHoldTime) / tour.CurrentTourStop.TransitionTime));
                             tour.CurrentTourStop.FaderOpacity = (float)opacity;
                         }
                         break;
                     case TransitionType.FadeOut:
-                        Earth3d.MainWindow.RenderEngine.CrossFadeFrame = false;
+                        RenderEngine.Engine.CrossFadeFrame = false;
                         break;
 
                     default:
@@ -615,7 +615,7 @@ namespace TerraViewer
                             {
                                 if (tour.CurrentTourStop.FaderOpacity == 0)
                                 {
-                                    Earth3d.MainWindow.RenderEngine.CrossFadeFrame = false;
+                                    RenderEngine.Engine.CrossFadeFrame = false;
                                     double opacity = Math.Max(0, 1 - Math.Min(1, (tour.CurrentTourStop.Duration.TotalSeconds - elapsedSeconds) / nextTransTime));
                                     tour.CurrentTourStop.FaderOpacity = (float)opacity;
                                 }

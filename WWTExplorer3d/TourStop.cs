@@ -31,14 +31,14 @@ namespace TerraViewer
                     if (keyFramed)
                     {
                         //Create Camera Keyframe
-                        CameraParameters savedCam = Earth3d.MainWindow.RenderEngine.viewCamera;
+                        CameraParameters savedCam = RenderEngine.Engine.viewCamera;
                         DateTime savedDate = SpaceTimeController.Now;
                         AnimationTarget at = new AnimationTarget(this);
                         at.Target = this.KeyFrameMover;
                         at.TargetType = AnimationTarget.AnimationTargetTypes.Camera;
                         at.ParameterNames.AddRange(at.Target.GetParamNames());
 
-                        Earth3d.MainWindow.RenderEngine.viewCamera = target.CamParams;
+                        RenderEngine.Engine.viewCamera = target.CamParams;
                         SpaceTimeController.Now = startTime;
 
                         at.CurrentParameters = at.Target.GetParams();
@@ -46,13 +46,13 @@ namespace TerraViewer
 
                         if (endTarget != null)
                         {
-                            Earth3d.MainWindow.RenderEngine.viewCamera = endTarget.CamParams;
+                            RenderEngine.Engine.viewCamera = endTarget.CamParams;
                             SpaceTimeController.Now = endTime;
                             at.CurrentParameters = at.Target.GetParams();
                             at.SetKeyFrame(1, Key.KeyType.Linear);
 
                         }  
-                        Earth3d.MainWindow.RenderEngine.viewCamera = savedCam;
+                        RenderEngine.Engine.viewCamera = savedCam;
                         SpaceTimeController.Now = savedDate; 
                         AnimationTargets.Add(at);
                         KeyFramer.ShowTimeline();
@@ -166,7 +166,7 @@ namespace TerraViewer
                 {
                     target.Tween(tweenPosition);
                 }
-                Earth3d.MainWindow.RenderEngine.UpdateMover(KeyFrameMover);
+                RenderEngine.Engine.UpdateMover(KeyFrameMover);
                 SpaceTimeController.Now = KeyFrameMover.CurrentDateTime;
             }
         }
@@ -835,7 +835,7 @@ namespace TerraViewer
 
         public void SyncSettings()
         {
-            Earth3d.ignoreChanges = true;
+            Settings.ignoreChanges = true;
             LayerManager.ProcessingUpdate = true;
             Properties.Settings.Default.ActualPlanetScale = actualPlanetScale;
             Properties.Settings.Default.LocationAltitude = locationAltitude;
@@ -900,7 +900,7 @@ namespace TerraViewer
             Properties.Settings.Default.ConstellationBoundariesFilter.Clone(constellationBoundariesFilter);
             Properties.Settings.Default.ConstellationNamesFilter.Clone(constellationNamesFilter);
             Properties.Settings.Default.ConstellationArtFilter.Clone(constellationArtFilter);
-            Earth3d.ignoreChanges = false;
+            Settings.ignoreChanges = false;
             LayerManager.ProcessingUpdate = false;
             Properties.Settings.Default.PulseMeForUpdate = !Properties.Settings.Default.PulseMeForUpdate;
         }

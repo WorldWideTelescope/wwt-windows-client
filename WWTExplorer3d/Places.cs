@@ -1,19 +1,23 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
+#if WINDOWS_UWP
+using Color = Windows.UI.Color;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;	
-using System.Threading;
-using System.Text;
 using System.Xml;
+#endif
+using System.IO;
 namespace TerraViewer
 {
-	/// <summary>
-	/// Summary description for Places.
-	/// </summary>
-	public class Places : IThumbnail
+    /// <summary>
+    /// Summary description for Places.
+    /// </summary>
+    public class Places : IThumbnail
 	{
         string name;
 
@@ -23,7 +27,7 @@ namespace TerraViewer
             set { name = value; }
         }
 		string url;
-		System.Collections.ArrayList dataList;
+		List<TourPlace> dataList;
         private bool sky;
 
         public bool Sky
@@ -63,27 +67,25 @@ namespace TerraViewer
             this.dataSetType = type;
 		}
 
-		public ArrayList GetPlaceList()
+        public List<TourPlace> GetPlaceList()
 		{
 			if (dataList == null || CheckExpiration())
 			{
-                dataList = new System.Collections.ArrayList();
+                dataList = new List<TourPlace>();
                 if (dataSetType == DataSetType.Place)
                 {
                     DataSetManager.DownloadFile(url, Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".txt", false, true);
 
 
                     TourPlace place;
-                    StreamReader sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".txt");
-                    string line;
-                    while (sr.Peek() >= 0)
-                    {
-                        line = sr.ReadLine();
+                    string[] fileLines = DataSetManager.ReadAllFileLines(Properties.Settings.Default.CahceDirectory + @"data\places\" + name + ".txt");
 
+                    foreach(string line in fileLines)
+                    {
                         place = new TourPlace(line, sky);
                         dataList.Add(place);
                     }
-                    sr.Close();
+
                 }
                 else if (dataSetType == DataSetType.Imageset)
                 {
@@ -102,10 +104,10 @@ namespace TerraViewer
                         Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory + @"thumbnails\");
                     }
 
-                    XmlNode imageSets = doc["ImageSets"];
+                    XmlNode imageSets = doc.GetChildByName("ImageSets");
                     if (imageSets == null)
                     {
-                        imageSets = doc["Folder"];
+                        imageSets = doc.GetChildByName("Folder");
                     }
 
                     foreach (XmlNode imageset in imageSets.ChildNodes)
@@ -213,7 +215,7 @@ namespace TerraViewer
         {
             get
             {
-                ArrayList list = GetPlaceList();
+                var list = GetPlaceList();
 
                 object[] array = new object[list.Count];
                 for(int i = 0 ; i< list.Count;i++)

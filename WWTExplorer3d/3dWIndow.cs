@@ -118,7 +118,7 @@ namespace TerraViewer
                     if (value != null)
                     {
                         int hash = value.GetHash();
-                        AddImageSetToTable(hash, value);
+                        RenderEngine.AddImageSetToTable(hash, value);
                     }
                 }
             }
@@ -1516,7 +1516,7 @@ namespace TerraViewer
 
                     if (RenderEngine.constellationCheck != null)
                     {
-                        constellation = RenderEngine.constellationCheck.FindConstellationForPoint(RenderEngine.RA, RenderEngine.Dec);
+                        RenderEngine.Constellation = RenderEngine.constellationCheck.FindConstellationForPoint(RenderEngine.RA, RenderEngine.Dec);
                         contextPanel.Constellation = Constellations.FullName(Constellation);
                     }
                 }
@@ -2718,11 +2718,11 @@ namespace TerraViewer
             }
         }
         int changeCount = 0;
-        public static bool ignoreChanges = false;
+       
 
         void Default_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (ignoreChanges)
+            if (Settings.ignoreChanges)
             {
                 return;
             }
@@ -2751,12 +2751,12 @@ namespace TerraViewer
 
         public void SuspendChanges()
         {
-            ignoreChanges = true;
+            Settings.ignoreChanges = true;
         }
 
         public void ProcessChanged()
         {
-            ignoreChanges = false;
+            Settings.ignoreChanges = false;
 
 
             Planets.ShowActualSize = Settings.Active.ActualPlanetScale;
@@ -2845,27 +2845,16 @@ namespace TerraViewer
         }
 
 
-        static public Dictionary<int, IImageSet> ImagesetHashTable = new Dictionary<int, IImageSet>();
-
-        public static void AddImageSetToTable(int hash, IImageSet set)
-        {
-            if (!ImagesetHashTable.ContainsKey(hash))
-            {
-                if (set != null)
-                {
-                    ImagesetHashTable.Add(hash, set);
-                }
-            }
-        }
+        
 
         public static int bgImagesetGets = 0;
         public static int bgImagesetFails = 0;
 
         private void SetImageSetByHash(int backgroundImageSetHash)
         {
-            if (ImagesetHashTable.ContainsKey(backgroundImageSetHash))
+            if (RenderEngine.ImagesetHashTable.ContainsKey(backgroundImageSetHash))
             {
-                CurrentImageSet = ImagesetHashTable[backgroundImageSetHash];
+                CurrentImageSet = RenderEngine.ImagesetHashTable[backgroundImageSetHash];
             }
             else
             {
@@ -2903,9 +2892,9 @@ namespace TerraViewer
 
         private void SetStudyImagesetByHash(int foregroundImageSetHash)
         {
-            if (ImagesetHashTable.ContainsKey(foregroundImageSetHash))
+            if (RenderEngine.ImagesetHashTable.ContainsKey(foregroundImageSetHash))
             {
-                StudyImageset = ImagesetHashTable[foregroundImageSetHash];
+                StudyImageset = RenderEngine.ImagesetHashTable[foregroundImageSetHash];
             }
             else
             {
@@ -5502,12 +5491,9 @@ namespace TerraViewer
         }
 
 
-
-        string constellation;
-
         public string Constellation
         {
-            get { return constellation; }
+            get { return RenderEngine.Constellation; }
         }
 
      
@@ -5646,7 +5632,7 @@ namespace TerraViewer
 
         public void UpdateNetworkStatus()
         {
-            ignoreChanges = true;
+            Settings.ignoreChanges = true;
             NetControl.SetSettingsBelndStates();
             NetControl.SetSolarSystemsSettingsBlendStates();
 
@@ -5692,7 +5678,7 @@ namespace TerraViewer
             {
                 NetControl.GetColorSettings();
             }
-            ignoreChanges = false;
+            Settings.ignoreChanges = false;
         }
 
         
@@ -5943,9 +5929,6 @@ namespace TerraViewer
         [STAThread]
         static void Main(string[] args)
         {
-
-
-
             CultureInfo culture = new CultureInfo("en-US", false);
             System.Threading.Thread.CurrentThread.CurrentCulture = culture;
             Application.CurrentCulture = culture;
@@ -6199,7 +6182,7 @@ namespace TerraViewer
                 {
                     if (Earth3d.MainWindow != null)
                     {
-                        Earth3d.MainWindow.RenderEngine.Render();
+                        RenderEngine.Engine.Render();
                     }
                 }
             }
@@ -7786,73 +7769,73 @@ namespace TerraViewer
 
         }
 
-        /*
-         * Place Holder             Meaning
-         * RA                       Main View Center RA in decimal degrees
-         * DEC                      Main View Center DEC in degrees degrees
-         * FOV                      Main View Height in Decimal Degrees
-         * UL.RA                    Upper Left RA
-         * UL.DEC                   Upper Left Dec
-         * UL, UR, LL, LR           Corners of view display
-         * JD                       Decimal Julian Date
-         * ROTATION                 Rotation angle East of North Decimal Degrees
-         * OBJECT                   Catalog Name of Selected Object
-         * SR                       Search Cone Radius that will Cover
-         * LAT                      View From Latitude
-         * LNG                      View From Longitude
-         * ELEV                     View From Elevation
-         * WIDTH                    Screen Width in Pixels
-         * HEIGHT                   Screen Height in Pixels
-         * CONST                    Current Constellation Abbreviation (Three letter codes)
-         * ALT                      Local Altitude
-         * AZ                       Local Azimuth
-         * l                        Galactic Lat
-         * b                        Galactic Long
-         * CP1(a:b)Label            CP1, CP2, CP3, CP4 are custome sliders that show up when a folder specifies them
-         *                          Slider values are send on each update, and URL refreshes with slider change
+        ///*
+        // * Place Holder             Meaning
+        // * RA                       Main View Center RA in decimal degrees
+        // * DEC                      Main View Center DEC in degrees degrees
+        // * FOV                      Main View Height in Decimal Degrees
+        // * UL.RA                    Upper Left RA
+        // * UL.DEC                   Upper Left Dec
+        // * UL, UR, LL, LR           Corners of view display
+        // * JD                       Decimal Julian Date
+        // * ROTATION                 Rotation angle East of North Decimal Degrees
+        // * OBJECT                   Catalog Name of Selected Object
+        // * SR                       Search Cone Radius that will Cover
+        // * LAT                      View From Latitude
+        // * LNG                      View From Longitude
+        // * ELEV                     View From Elevation
+        // * WIDTH                    Screen Width in Pixels
+        // * HEIGHT                   Screen Height in Pixels
+        // * CONST                    Current Constellation Abbreviation (Three letter codes)
+        // * ALT                      Local Altitude
+        // * AZ                       Local Azimuth
+        // * l                        Galactic Lat
+        // * b                        Galactic Long
+        // * CP1(a:b)Label            CP1, CP2, CP3, CP4 are custome sliders that show up when a folder specifies them
+        // *                          Slider values are send on each update, and URL refreshes with slider change
          
-         * */
-        /// <summary>
-        /// Substitudes placeholders with live values in URL
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public string PrepareUrl(string url)
-        {
-            url = url.Replace("{RA}", (RenderEngine.RA * 15).ToString());
-            url = url.Replace("{DEC}", RenderEngine.Dec.ToString());
-            url = url.Replace("{FOV}", RenderEngine.FovAngle.ToString());
-            if (RenderEngine.CurrentViewCorners != null)
-            {
-                url = url.Replace("{UL.RA}", (RenderEngine.CurrentViewCorners[0].RA * 15).ToString());
-                url = url.Replace("{UL.DEC}", (RenderEngine.CurrentViewCorners[0].Dec).ToString());
-                url = url.Replace("{UR.RA}", (RenderEngine.CurrentViewCorners[1].RA * 15).ToString());
-                url = url.Replace("{UR.DEC}", (RenderEngine.CurrentViewCorners[1].Dec).ToString());
-                url = url.Replace("{LL.RA}", (RenderEngine.CurrentViewCorners[2].RA * 15).ToString());
-                url = url.Replace("{LL.DEC}", (RenderEngine.CurrentViewCorners[2].Dec).ToString());
-                url = url.Replace("{LR.RA}", (RenderEngine.CurrentViewCorners[3].RA * 15).ToString());
-                url = url.Replace("{LR.DEC}", (RenderEngine.CurrentViewCorners[3].Dec).ToString());
-            }
+        // * */
+        ///// <summary>
+        ///// Substitudes placeholders with live values in URL
+        ///// </summary>
+        ///// <param name="url"></param>
+        ///// <returns></returns>
+        //public string PrepareUrl(string url)
+        //{
+        //    url = url.Replace("{RA}", (RenderEngine.RA * 15).ToString());
+        //    url = url.Replace("{DEC}", RenderEngine.Dec.ToString());
+        //    url = url.Replace("{FOV}", RenderEngine.FovAngle.ToString());
+        //    if (RenderEngine.CurrentViewCorners != null)
+        //    {
+        //        url = url.Replace("{UL.RA}", (RenderEngine.CurrentViewCorners[0].RA * 15).ToString());
+        //        url = url.Replace("{UL.DEC}", (RenderEngine.CurrentViewCorners[0].Dec).ToString());
+        //        url = url.Replace("{UR.RA}", (RenderEngine.CurrentViewCorners[1].RA * 15).ToString());
+        //        url = url.Replace("{UR.DEC}", (RenderEngine.CurrentViewCorners[1].Dec).ToString());
+        //        url = url.Replace("{LL.RA}", (RenderEngine.CurrentViewCorners[2].RA * 15).ToString());
+        //        url = url.Replace("{LL.DEC}", (RenderEngine.CurrentViewCorners[2].Dec).ToString());
+        //        url = url.Replace("{LR.RA}", (RenderEngine.CurrentViewCorners[3].RA * 15).ToString());
+        //        url = url.Replace("{LR.DEC}", (RenderEngine.CurrentViewCorners[3].Dec).ToString());
+        //    }
 
-            url = url.Replace("{JD}", SpaceTimeController.JNow.ToString());
-            url = url.Replace("{ROTATION}", RenderEngine.CameraRotate.ToString());
-            url = url.Replace("{SR}", (RenderEngine.FovAngle * 1.5).ToString());
-            url = url.Replace("{LAT}", SpaceTimeController.Location.Lat.ToString());
-            url = url.Replace("{LNG}", SpaceTimeController.Location.Lng.ToString());
-            url = url.Replace("{ELEV}", SpaceTimeController.Altitude.ToString());
-            url = url.Replace("{WIDTH}", this.renderWindow.ClientRectangle.Width.ToString());
-            url = url.Replace("{HEIGHT}", this.renderWindow.ClientRectangle.Height.ToString());
-            url = url.Replace("{CONST}", this.constellation);
-            url = url.Replace("{ALT}", RenderEngine.Alt.ToString());
-            url = url.Replace("{AZ}", RenderEngine.Az.ToString());
-            //          url = url.Replace("{LiveToken}", CloudCommunities.GetTokenFromId(true));
-            double[] gal = J2000toGalactic(RenderEngine.RA * 15, RenderEngine.Dec);
+        //    url = url.Replace("{JD}", SpaceTimeController.JNow.ToString());
+        //    url = url.Replace("{ROTATION}", RenderEngine.CameraRotate.ToString());
+        //    url = url.Replace("{SR}", (RenderEngine.FovAngle * 1.5).ToString());
+        //    url = url.Replace("{LAT}", SpaceTimeController.Location.Lat.ToString());
+        //    url = url.Replace("{LNG}", SpaceTimeController.Location.Lng.ToString());
+        //    url = url.Replace("{ELEV}", SpaceTimeController.Altitude.ToString());
+        //    url = url.Replace("{WIDTH}", this.renderWindow.ClientRectangle.Width.ToString());
+        //    url = url.Replace("{HEIGHT}", this.renderWindow.ClientRectangle.Height.ToString());
+        //    url = url.Replace("{CONST}", this.constellation);
+        //    url = url.Replace("{ALT}", RenderEngine.Alt.ToString());
+        //    url = url.Replace("{AZ}", RenderEngine.Az.ToString());
+        //    //          url = url.Replace("{LiveToken}", CloudCommunities.GetTokenFromId(true));
+        //    double[] gal = J2000toGalactic(RenderEngine.RA * 15, RenderEngine.Dec);
 
-            url = url.Replace("{l}", gal[0].ToString());
-            url = url.Replace("{b}", gal[1].ToString());
+        //    url = url.Replace("{l}", gal[0].ToString());
+        //    url = url.Replace("{b}", gal[1].ToString());
 
-            return url;
-        }
+        //    return url;
+        //}
 
         private void startQueue_Click(object sender, System.EventArgs e)
         {

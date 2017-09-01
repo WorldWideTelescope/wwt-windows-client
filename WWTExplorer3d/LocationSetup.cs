@@ -517,7 +517,7 @@ namespace TerraViewer
                 if (places != null)
                 {
                     this.PlacesList.Items.Clear();
-                    ArrayList placeList = places.GetPlaceList();
+                    List<TourPlace> placeList = places.GetPlaceList();
                     foreach (TourPlace place in placeList)
                     {
                         this.PlacesList.Items.Add(place);
@@ -573,8 +573,8 @@ namespace TerraViewer
 
         private void FromEarthView_Click(object sender, EventArgs e)
         {
-            txtLat.Text = Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ViewLat);
-            txtLong.Text = Coordinates.FormatDMS(Earth3d.MainWindow.RenderEngine.ViewLong);
+            txtLat.Text = Coordinates.FormatDMS(RenderEngine.Engine.ViewLat);
+            txtLong.Text = Coordinates.FormatDMS(RenderEngine.Engine.ViewLong);
         }
 	}
 }

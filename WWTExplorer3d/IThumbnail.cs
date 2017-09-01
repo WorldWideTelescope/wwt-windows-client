@@ -6,8 +6,8 @@ namespace TerraViewer
     {
         string Name { get; }
 #if WINDOWS_UWP
-        object ThumbNail { get; set; }
-        Windows.Foundation.Rect Bounds { get; set; }
+        Bitmap ThumbNail { get; set; }
+        Rectangle Bounds { get; set; }
 #else
         System.Drawing.Bitmap ThumbNail { get; set; }
         System.Drawing.Rectangle Bounds { get; set;}
