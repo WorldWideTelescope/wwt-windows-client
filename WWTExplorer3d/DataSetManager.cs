@@ -101,13 +101,18 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             return System.IO.File.ReadAllLines(filename);
 #else
-            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            //Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            var asfi = storageFolder.GetFileAsync(filename);
+            //var asfi = storageFolder.GetFileAsync(filename);
+
+            //var aa = asfi.AsTask();
+            //var file = aa.Result;
+
+            var asfi = Windows.Storage.StorageFile.GetFileFromPathAsync(filename);
 
             var aa = asfi.AsTask();
             var file = aa.Result;
-
+            
             return Windows.Storage.FileIO.ReadLinesAsync(file).AsTask().Result.ToArray();
 #endif
         }
@@ -228,11 +233,20 @@ namespace TerraViewer
                 Task<byte[]> task = client.GetByteArrayAsync(url);
                 byte[] buffer = task.Result;
 
-                var cfa = Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
-                var cfaTask = cfa.AsTask();
-                var file = cfaTask.Result;
 
-                using (var stream = file.OpenStreamForWriteAsync().Result)
+                //var cfa = Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
+                //var cfaTask = cfa.AsTask();
+                //var file = cfaTask.Result;
+
+                //using (var stream = file.OpenStreamForWriteAsync().Result)
+
+                string path = Path.GetDirectoryName(fileName);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                using (System.IO.Stream stream = System.IO.File.Create(fileName))
                 {
                     stream.WriteAsync(buffer, 0, buffer.Length).Wait();
                 }

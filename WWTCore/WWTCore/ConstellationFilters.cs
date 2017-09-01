@@ -197,7 +197,10 @@ namespace TerraViewer
             Families.Add("Heavenly Waters", HeavenlyWaters);
             Families.Add("Bayer Family", BayerFamily);
             Families.Add("La Caille Family", LaCaileFamily);
+            //todo uwp support custom filters some day
+#if !WINDOWS_UWP
             LoadCustomFilters();
+#endif
         }
 
         public static void SaveCustomFilters()

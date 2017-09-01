@@ -295,11 +295,11 @@ namespace TerraViewer
 #else
 
         
-        internal RenderContext11(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory)
+        public RenderContext11(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory)
         {
             //todo fix these to be real
-            int height = 1024;
-            int width = 1024;
+            int height = 1440;
+            int width = 1440;
             WicImagingFactory = wicImagingFactory;
 
 
@@ -376,12 +376,16 @@ namespace TerraViewer
 
         public void SetDisplayRenderTargets()
         {
+#if !WINDOWS_UWP
             devContext.OutputMerger.ResetTargets();
             ViewPort = displayViewPort;
             devContext.OutputMerger.SetTargets(depthView, renderView);
             currentTargetView = renderView;
             currentDepthView = depthView;
-
+#else
+            //var views = devContext.OutputMerger.GetRenderTargets(2);
+            //currentTargetView = views[0];
+#endif
         }
         RenderTargetView currentTargetView;
         DepthStencilView currentDepthView;
@@ -525,7 +529,11 @@ namespace TerraViewer
             {
                 devContext.ClearDepthStencilView(currentDepthView, DepthStencilClearFlags.Depth, 1.0f, 0);
             }
-            devContext.ClearRenderTargetView(currentTargetView, color);
+
+            if (currentTargetView != null)
+            {
+                devContext.ClearRenderTargetView(currentTargetView, color);               
+            }
         }
 
         public void ClearStencilOnly()
@@ -757,7 +765,7 @@ namespace TerraViewer
             Device = device;
             devContext = device.ImmediateContext;
 
-            displayViewPort = new Viewport(0, 0, 1440, 1440, 0.0f, 1.0f);
+
         }
 
 
@@ -1357,8 +1365,11 @@ ambientLightColor.B / 255.0f);
                 // Set the combined world/view/projection matrix in the shader
                 Matrix3d worldMatrix = World;
                 Matrix3d viewMatrix = View;
-
+#if WINDOWS_UWP
+                Matrix wvp = (worldMatrix * viewMatrix).Matrix;
+#else
                 Matrix wvp = (worldMatrix * viewMatrix * Projection).Matrix;
+#endif
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 

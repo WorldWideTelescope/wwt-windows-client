@@ -28,9 +28,14 @@ namespace TerraViewer
 
         public static void Load(this Windows.Data.Xml.Dom.XmlDocument doc, string filename)
         {
-            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            //Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            var asfi = storageFolder.GetFileAsync(filename);
+            //var asfi = storageFolder.GetFileAsync(filename);
+
+            //var aa = asfi.AsTask();
+            //var file = aa.Result;
+
+            var asfi = Windows.Storage.StorageFile.GetFileFromPathAsync(filename);
 
             var aa = asfi.AsTask();
             var file = aa.Result;

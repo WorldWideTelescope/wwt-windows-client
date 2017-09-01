@@ -734,7 +734,10 @@ namespace TerraViewer
                     vsIn +=
                         "     float4 Color : COLOR0;                \n";
                 }
-
+#if WINDOWS_UWP
+                vsIn +=
+                        "     uint   instId   : SV_InstanceID;       \n  ";
+#endif
                 vsIn +=
                     " };                                           \n";
             }
@@ -762,7 +765,10 @@ namespace TerraViewer
                     vsIn +=
                         "     float4 Color : COLOR0;                \n";
                 }
-
+#if WINDOWS_UWP
+                vsIn +=
+                        "     uint   instId   : SV_InstanceID;       \n  ";
+#endif
                 vsIn +=
                     " };                                           \n";
             }
@@ -825,6 +831,10 @@ namespace TerraViewer
                 psIn +=
                     "     float2 OverlayTexCoord" + overlayIndex + " : TEXCOORD" + overlayTexCoordIndex(overlayIndex) + ";  \n";
             }
+#if WINDOWS_UWP
+    //        psIn +=
+    //                 "     uint        viewId  : TEXCOORD" + (key.overlayTextureCount+1) + ";               \n";
+#endif
 
             psIn +=
                     " };                                           \n";
@@ -863,13 +873,23 @@ namespace TerraViewer
                     declareConstant("float4x4", "matOverlayTexture" + overlayIndex, 32 + 4 * overlayIndex);
             }
 
+
+
             // Generate the body of the vertex shader
             vertexShaderText +=
                     " VS_OUT VSMain(VS_IN In)              \n" +
                     " {                                            \n" +
                     "     VS_OUT Out;                              \n" +
+#if WINDOWS_UWP  
+                    "     int idx = In.instId % 2;                  \n" +
+                    "     float4 p = mul(In.ObjPos,  matWVP );      \n" + // Transform vertex into                  
+  //                  "     Out.ProjPos = mul(p, viewProjection[idx]); \n" +
+                    "     Out.ProjPos = mul(p, viewProjection[0]); \n" +
+  //                  "       Out.viewId = idx;                        \n" +
+#else
                     "     Out.ProjPos = mul(In.ObjPos, matWVP);    \n" + // Transform vertex from world into device coordinates
-                    "     Out.TexCoord = In.TexCoord;              \n";
+#endif
+            "     Out.TexCoord = In.TexCoord;              \n";
 
             if (needCameraSpacePosition)
             {
@@ -1368,7 +1388,15 @@ namespace TerraViewer
                 shaderConstantDecl +
                 "};\n";
 
-
+#if WINDOWS_UWP
+            shaderConstantDecl +=(
+                // A constant buffer that stores each set of view and projection matrices in column-major format.
+                  "  cbuffer ViewProjectionConstantBuffer : register(b1)    \n" +
+                  "  {                                                      \n" +
+                  "                  float4x4 viewProjection[2];            \n" +
+                  "  };                                                     \n" +
+                  "                                                         \n");
+#endif
             string pixelShaderSource = psIn + "\n" +
                                        shaderConstantDecl + "\n" +
                                        textureDecl + "\n" +

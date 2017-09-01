@@ -105,7 +105,8 @@ namespace WWTHolographic
             // 
 
             renderEngine = new TerraViewer.RenderEngine();
-
+            renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory);
+         
 
 #if DRAW_SAMPLE_CONTENT
             // Initialize the sample hologram.
@@ -350,6 +351,7 @@ namespace WWTHolographic
                     // Only render world-locked content when positional tracking is active.
                     if (cameraActive)
                     {
+                        renderEngine.Render();
                         // Draw the sample hologram.
                         spinningCubeRenderer.Render();
                     }

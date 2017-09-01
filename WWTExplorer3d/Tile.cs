@@ -470,7 +470,12 @@ namespace TerraViewer
             TrianglesRendered += partCount;
 
             renderContext.SetIndexBuffer(GetIndexBuffer(part, accomidation));
+#if WINDOWS_UWP
+     //       renderContext.devContext.DrawInstanced(partCount * 3, 2, 0, 0);
+               renderContext.devContext.DrawIndexed(partCount*3, 0, 0);
+#else
             renderContext.devContext.DrawIndexed(partCount*3, 0, 0);
+#endif
         }
  
         public int DemGeneration = 0;
@@ -1606,7 +1611,7 @@ namespace TerraViewer
 
 
 
-        #region
+#region
         static SysColor[] ColorTable = {
 										SysColor.FromArgb(255,255,0,0),
 										SysColor.FromArgb(255,255,4,0),
@@ -2623,7 +2628,7 @@ namespace TerraViewer
 
 
 		};
-        #endregion
+#endregion
        
     }
 

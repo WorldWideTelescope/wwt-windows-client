@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 #if WINDOWS_UWP
 using SysColor = Windows.UI.Color;
-
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
 using SysColor = System.Drawing.Color;
 using Bitmap = System.Drawing.Bitmap;
+using System.Xml;
 using System.Windows.Forms;
 using WwtDataUtils;
 using OculusWrap;
@@ -33,8 +34,9 @@ namespace TerraViewer
         }
 
 #if WINDOWS_UWP
-        public void InitializeForUwp(Device device)
+        public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory)
         {
+            
             //from constructor
             config = new Config();
 
@@ -48,8 +50,8 @@ namespace TerraViewer
 
 
             RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-            RenderContext11 = new RenderContext11(device);
-            
+            RenderContext11 = new RenderContext11(device,wicImagingFactory);
+            AppSettings.SettingsBase = Properties.Settings.Default;
 
             //from form load
             Constellations.InitializeConstellationNames();
@@ -65,8 +67,13 @@ namespace TerraViewer
             Properties.Settings.Default.HighPercitionPlanets = true;
             Properties.Settings.Default.ShowMoonsAsPointSource = false;
             Properties.Settings.Default.ShowSolarSystem.TargetState = true;
+            InitializeImageSets();
             ReadyToRender = true;
             RenderEngine.Initialized = true;
+
+            //currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
+            currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
+            TileCache.StartQueue();
         }
 
         public static void BackgroundInit()
@@ -79,7 +86,7 @@ namespace TerraViewer
 #endif
         }
 #endif
-            const float FOVMULT = 343.774f;
+        const float FOVMULT = 343.774f;
         internal Config config;
 
 
@@ -963,6 +970,47 @@ namespace TerraViewer
                 fadeImageSet.TargetState = false;
             }
             currentImageSetfield = newImageSet;
+        }
+
+        public bool InitializeImageSets()
+        {
+
+            string url = Properties.Settings.Default.ImageSetUrl;
+            string filename = String.Format(@"{0}data\imagesets_5_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
+
+            try
+            {
+                ImageSets.Clear();
+                DataSetManager.DownloadFile(url, filename, false, true);
+                XmlDocument doc = new XmlDocument();
+
+                doc.Load(filename);
+                XmlNode node = doc.GetChildByName("Folder");
+
+                foreach (XmlNode child in node.ChildNodes)
+                {
+                    ImageSetHelper ish = ImageSetHelper.FromXMLNode(child);
+
+                    ImageSets.Add(ish);
+                    if (!String.IsNullOrEmpty(ish.AltUrl))
+                    {
+                        ReplacementImageSets.Add(ish.AltUrl, ish);
+                    }
+                }
+
+                ImageSets.Add(new ImageSetHelper("SandBox", "", ImageSetType.Sandbox, BandPass.Visible, ProjectionType.Toast, 0, 0, 0, 0, 0, "", false, "", 0, 0, 0, false, "", false, false, 0, 0, 0, "", "", "", "", 1, "SandBox"));
+                return true;
+            }
+            catch
+            {
+#if !WINDOWS_UWP
+                File.Delete(filename);
+                UiTools.ShowMessageBox(Language.GetLocalizedText(93, "The Imagery data file could not be downloaded or has been corrupted. WorldWide Telescope must close. You need a working internet connection to update this file. Try again later"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
+#endif
+                return false;
+            }
+
+
         }
 
         public IImageSet GetImagesetByName(string name)
@@ -4098,8 +4146,9 @@ namespace TerraViewer
             }
             else
             {
-#if !BASICWWT
+
                 SpaceTimeController.UpdateClock();
+#if !BASICWWT            
                 LayerManager.UpdateLayerTime();
 #endif
             }
@@ -5595,8 +5644,9 @@ namespace TerraViewer
                     RenderContext11.SetDisplayRenderTargets();
                 }
             }
-
+#if !WINDOWS_UWP
             PresentFrame11(offscreenRender);
+#endif
         }
 
 

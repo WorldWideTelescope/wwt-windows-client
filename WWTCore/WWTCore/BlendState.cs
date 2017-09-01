@@ -208,7 +208,33 @@ namespace TerraViewer
             this.delayTime = delayTime;
         }
 
+        public static BlendState FromString(string value)
+        {
+            string[] parts = ((string)value).Split(new char[] { ',' });
 
+            bool state = false;
+            float opacity = 0;
+            double delay = 2000;
+            try
+            {
+                state = bool.Parse(parts[0]);
+                if (parts.Length > 1)
+                {
+                    opacity = float.Parse(parts[1]);
+                }
+
+                if (parts.Length > 2)
+                {
+                    delay = int.Parse(parts[2]);
+                }
+            }
+            catch
+            {
+            }
+            BlendState blendState = new BlendState(state, delay, opacity);
+            blendState.SettingsOwned = true;
+            return blendState;
+        }
 
         public override string ToString()
         {

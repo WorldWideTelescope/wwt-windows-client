@@ -597,9 +597,9 @@ namespace TerraViewer
 
         static Constellations()
         {
-            try
+          //  try
             {
-
+#if !WINDOWS_UWP
                 if (!Directory.Exists(Properties.Settings.Default.CahceDirectory))
                 {
                     Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory);
@@ -609,6 +609,7 @@ namespace TerraViewer
                 {
                     Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory + @"data");
                 }
+#endif
                 ConstellationCentroids = new Dictionary<string, IPlace>();
                 DataSetManager.DownloadFile("http://www.worldwidetelescope.org/data/constellationNames_RADEC_EN.txt", Properties.Settings.Default.CahceDirectory + @"data\constellationNamesRADEC.txt", true, true);
                 FullNames = new Dictionary<string, string>();
@@ -631,7 +632,7 @@ namespace TerraViewer
 
                 ConstellationNamePositions = new Dictionary<string, IPlace>();
                 DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?q=ConstellationNamePositions_EN", Properties.Settings.Default.CahceDirectory + @"data\ConstellationNamePositions.txt", true, true);
-
+                fileLines = DataSetManager.ReadAllFileLines(Properties.Settings.Default.CahceDirectory + @"data\ConstellationNamePositions.txt");
 
                 foreach (string line in fileLines)
                 {
@@ -640,15 +641,17 @@ namespace TerraViewer
                 }
 
                 string path = ArtworkPath;
+#if !WINDOWS_UWP
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
+#endif
                 DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=hevelius", ArtworkPath + "default.wtml", false, true);
                 AddAllNameMappings();
                 ConstellationFilter.InitSets();
             }
-            catch
+          //  catch
             {
             }
         }

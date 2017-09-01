@@ -67,8 +67,10 @@ namespace TerraViewer
                 var children = Node.ChildNodes;
                 foreach (var child in children)
                 {
-
-                    childList.Add(new XmlNode(child));
+                    if (child.LocalName != null)
+                    {
+                        childList.Add(new XmlNode(child));
+                    }
                 }
                 return childList;
             }
@@ -122,7 +124,12 @@ namespace TerraViewer
         {
             get
             {
-                return new XmlNode(Map.GetNamedItem(key));
+                IXmlNode attribute = Map.GetNamedItem(key);
+                if (attribute != null)
+                {
+                    return new XmlNode(attribute);
+                }
+                return null;
             }
         }
 

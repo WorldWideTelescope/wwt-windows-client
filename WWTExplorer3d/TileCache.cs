@@ -486,7 +486,7 @@ namespace TerraViewer
                     System.Threading.Thread.Sleep(1);
                 }
 #else
-                Task.Delay(TimeSpan.FromSeconds(30)).Wait();
+                Task.Delay(TimeSpan.FromMilliseconds(30)).Wait();
 #endif
 
 
@@ -528,7 +528,7 @@ namespace TerraViewer
                             {
 
 
-                                test.FileExists = File.Exists(test.FileName);
+                                test.FileExists = FileExists(test.FileName);
                                 test.FileChecked = true;
                                 if (test.Volitile)
                                 {
@@ -538,8 +538,6 @@ namespace TerraViewer
                             //todo uwp Test this for sure... threads are not really same
 #if !WINDOWS_UWP
                             if (test.FileExists || (!test.FileExists && !fileOnly))
-#else
-                            if (test.FileExists )
 #endif
                             {
                                 minDistance = distTemp;
@@ -766,25 +764,27 @@ namespace TerraViewer
 #endif
 
             string directory = retTile.Directory;
-	
+#if !WINDOWS_UWP
 			if (!Directory.Exists(directory))
 			{
 				Directory.CreateDirectory(directory);
 			}
-
+#endif
 			string filename = retTile.FileName;
 			Client = new WebClient();
 
-            FileInfo fi = new FileInfo(filename);
+
+            FileInfo fi = GetFileInfo(filename);
             bool exists = fi.Exists;
 
+ 
             if (exists)
 			{
                 if (fi.Length != 8 && fi.Length < 100 || retTile.Volitile)
 				{
 					try
 					{
-						File.Delete(filename);
+						FileDelete(filename);
 					}
 					catch
 					{
@@ -802,7 +802,7 @@ namespace TerraViewer
                     if (retTile.Dataset.IsMandelbrot)
                     {
                         retTile.ComputeMandel();
-                        fi = new FileInfo(filename);
+                        fi = GetFileInfo(filename);
                         exists = fi.Exists;
                     }
                     else
@@ -822,20 +822,20 @@ namespace TerraViewer
                             Client.DownloadFile(CacheProxy.GetCacheUrl(url), dlFile);
                             try
                             {
-                                if (File.Exists(dlFile))
+                                if (FileExists(dlFile))
                                 {
-                                    if (File.Exists(filename))
+                                    if (FileExists(filename))
                                     {
-                                        File.Delete(filename);
+                                        FileDelete(filename);
                                     }
-                                    File.Move(dlFile, filename);
+                                    FileMove(dlFile, filename);
                                 }
                             }
                             catch
                             {
                              //   UiTools.ShowMessageBox("File Download collision catch");
                             }
-                            fi = new FileInfo(filename);
+                            fi = GetFileInfo(filename);
                             exists = fi.Exists;
                         }
                         // Code for drawing tile it onto tile for debuggin
@@ -885,7 +885,7 @@ namespace TerraViewer
                         {
                             string meshFilename = retTile.FileName + ".mesh";
 
-                            if (!File.Exists(meshFilename))
+                            if (!FileExists(meshFilename))
                             {
                                 Client.Headers.Add("User-Agent", "Win8Microsoft.BingMaps.3DControl/2.214.2315.0 (;;;;x64 Windows RT)");
 
@@ -896,13 +896,13 @@ namespace TerraViewer
 
                                 try
                                 {
-                                    if (File.Exists(dlFile))
+                                    if (FileExists(dlFile))
                                     {
-                                        if (File.Exists(meshFilename))
+                                        if (FileExists(meshFilename))
                                         {
-                                            File.Delete(meshFilename);
+                                            FileDelete(meshFilename);
                                         }
-                                        File.Move(dlFile, meshFilename);
+                                        FileMove(dlFile, meshFilename);
                                     }
                                 }
                                 catch
@@ -936,6 +936,46 @@ namespace TerraViewer
 
 			return retTile;
 		}
+        public static FileInfo GetFileInfo(string filename)
+        {
+
+
+#if WINDOWS_UWP
+           // string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
+         //   filename = dir + filename;
+#endif
+            return new FileInfo(filename);
+        }
+
+        public static void FileDelete(string filename)
+        {
+
+
+#if WINDOWS_UWP
+          //  string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
+          //  filename = dir + filename;
+#endif
+            FileDelete(filename);
+        }
+
+        public static void FileMove(string source, string destination)
+        {
+
+
+#if WINDOWS_UWP
+          //  string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
+          //  source = dir + source;
+          //  destination = dir + destination;
+#endif
+            File.Move(source, destination);
+        }
+
+        public static bool FileExists(string filename)
+        {
+            return GetFileInfo(filename).Exists;
+        }
+
+
         static Mutex WaitingTileQueueMutex = new Mutex();
         static Queue<Tile> WaitingTileQueue = new Queue<Tile>();
         static double CountToLoad = 10;
@@ -961,7 +1001,7 @@ namespace TerraViewer
             }
 
             string filename = retTile.DemFilename;
-            FileInfo fi = new FileInfo(filename);
+            FileInfo fi = GetFileInfo(filename);
             bool exists = fi.Exists;
 
             if (exists)
@@ -970,7 +1010,7 @@ namespace TerraViewer
                 {
                     try
                     {
-                        File.Delete(filename);
+                        FileDelete(filename);
                     }
                     catch
                     {
@@ -993,20 +1033,20 @@ namespace TerraViewer
                     Client.DownloadFile(CacheProxy.GetCacheUrl(retTile.DemURL), dlFile);
                     try
                     {
-                        if (File.Exists(dlFile))
+                        if (FileExists(dlFile))
                         {
-                            if (File.Exists(filename))
+                            if (FileExists(filename))
                             {
-                                File.Delete(filename);
+                                FileDelete(filename);
                             }
-                            File.Move(dlFile, filename);
+                            FileMove(dlFile, filename);
                         }
                     }
                     catch
                     {
                        
                     }
-                    fi = new FileInfo(filename);
+                    fi = GetFileInfo(filename);
                     exists = fi.Exists;
                 }
                 catch

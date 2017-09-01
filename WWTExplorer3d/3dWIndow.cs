@@ -28,7 +28,7 @@ using OculusWrap;
 
 namespace TerraViewer
 {
-    public class Earth3d : Form, IScriptable, IAppSettings
+    public class Earth3d : Form, IScriptable
     {
         const float FOVMULT = 343.774f;
        
@@ -1149,7 +1149,7 @@ namespace TerraViewer
         public static bool HideSplash = false;
         public Earth3d()
         {
-            AppSettings.SettingsBase = this;
+
             AudioPlayer.Initialize();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
@@ -1203,7 +1203,7 @@ namespace TerraViewer
 
 
 
-            if (!InitializeImageSets())
+            if (!RenderEngine.InitializeImageSets())
             {
                 Close();
             }
@@ -6037,6 +6037,7 @@ namespace TerraViewer
                     return;
                 }
             }
+            AppSettings.SettingsBase = new SettingsWrapper();
 
             PulseMe.PulseForUpdate = Earth3d.PulseForUpdate;
 
@@ -7727,115 +7728,6 @@ namespace TerraViewer
             NetControl.SendMoveBinary(RenderEngine.ViewLat, RenderEngine.ViewLong, RenderEngine.ZoomFactor, RenderEngine.CameraRotate, RenderEngine.CameraAngle, fgHash, bgHash, RenderEngine.StudyOpacity, autoUpdate, autoFlush, Settings.Active.LocalHorizonMode, (int)RenderEngine.SolarSystemTrack, RenderEngine.viewCamera.ViewTarget, Settings.Active.SolarSystemScale, RenderEngine.targetHeight, RenderEngine.TrackingFrame, Properties.Settings.Default.ReticleAlt, Properties.Settings.Default.ReticleAz);
             autoFlush = false;
         }
-
-
-       
-        public bool InitializeImageSets()
-        {
-
-            string url = Properties.Settings.Default.ImageSetUrl;
-            string filename = String.Format(@"{0}data\imagesets_5_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
-
-            try
-            {
-                RenderEngine.ImageSets.Clear();
-                DataSetManager.DownloadFile(url, filename, false, true);
-                XmlDocument doc = new XmlDocument();
-
-                doc.Load(filename);
-                XmlNode node = doc.SelectSingleNode("Folder");
-
-                foreach (XmlNode child in node.ChildNodes)
-                {
-                    ImageSetHelper ish = ImageSetHelper.FromXMLNode(child);
-
-                    RenderEngine.ImageSets.Add(ish);
-                    if (!String.IsNullOrEmpty(ish.AltUrl))
-                    {
-                        RenderEngine.ReplacementImageSets.Add(ish.AltUrl, ish);
-                    }
-                }
-
-                RenderEngine.ImageSets.Add(new ImageSetHelper("SandBox", "", ImageSetType.Sandbox, BandPass.Visible, ProjectionType.Toast, 0, 0, 0, 0, 0, "", false, "", 0, 0, 0, false, "", false, false, 0, 0, 0, "", "", "", "", 1, "SandBox"));
-                return true;
-            }
-            catch
-            {
-                File.Delete(filename);
-                UiTools.ShowMessageBox(Language.GetLocalizedText(93, "The Imagery data file could not be downloaded or has been corrupted. WorldWide Telescope must close. You need a working internet connection to update this file. Try again later"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
-                return false;
-            }
-
-
-        }
-
-        ///*
-        // * Place Holder             Meaning
-        // * RA                       Main View Center RA in decimal degrees
-        // * DEC                      Main View Center DEC in degrees degrees
-        // * FOV                      Main View Height in Decimal Degrees
-        // * UL.RA                    Upper Left RA
-        // * UL.DEC                   Upper Left Dec
-        // * UL, UR, LL, LR           Corners of view display
-        // * JD                       Decimal Julian Date
-        // * ROTATION                 Rotation angle East of North Decimal Degrees
-        // * OBJECT                   Catalog Name of Selected Object
-        // * SR                       Search Cone Radius that will Cover
-        // * LAT                      View From Latitude
-        // * LNG                      View From Longitude
-        // * ELEV                     View From Elevation
-        // * WIDTH                    Screen Width in Pixels
-        // * HEIGHT                   Screen Height in Pixels
-        // * CONST                    Current Constellation Abbreviation (Three letter codes)
-        // * ALT                      Local Altitude
-        // * AZ                       Local Azimuth
-        // * l                        Galactic Lat
-        // * b                        Galactic Long
-        // * CP1(a:b)Label            CP1, CP2, CP3, CP4 are custome sliders that show up when a folder specifies them
-        // *                          Slider values are send on each update, and URL refreshes with slider change
-         
-        // * */
-        ///// <summary>
-        ///// Substitudes placeholders with live values in URL
-        ///// </summary>
-        ///// <param name="url"></param>
-        ///// <returns></returns>
-        //public string PrepareUrl(string url)
-        //{
-        //    url = url.Replace("{RA}", (RenderEngine.RA * 15).ToString());
-        //    url = url.Replace("{DEC}", RenderEngine.Dec.ToString());
-        //    url = url.Replace("{FOV}", RenderEngine.FovAngle.ToString());
-        //    if (RenderEngine.CurrentViewCorners != null)
-        //    {
-        //        url = url.Replace("{UL.RA}", (RenderEngine.CurrentViewCorners[0].RA * 15).ToString());
-        //        url = url.Replace("{UL.DEC}", (RenderEngine.CurrentViewCorners[0].Dec).ToString());
-        //        url = url.Replace("{UR.RA}", (RenderEngine.CurrentViewCorners[1].RA * 15).ToString());
-        //        url = url.Replace("{UR.DEC}", (RenderEngine.CurrentViewCorners[1].Dec).ToString());
-        //        url = url.Replace("{LL.RA}", (RenderEngine.CurrentViewCorners[2].RA * 15).ToString());
-        //        url = url.Replace("{LL.DEC}", (RenderEngine.CurrentViewCorners[2].Dec).ToString());
-        //        url = url.Replace("{LR.RA}", (RenderEngine.CurrentViewCorners[3].RA * 15).ToString());
-        //        url = url.Replace("{LR.DEC}", (RenderEngine.CurrentViewCorners[3].Dec).ToString());
-        //    }
-
-        //    url = url.Replace("{JD}", SpaceTimeController.JNow.ToString());
-        //    url = url.Replace("{ROTATION}", RenderEngine.CameraRotate.ToString());
-        //    url = url.Replace("{SR}", (RenderEngine.FovAngle * 1.5).ToString());
-        //    url = url.Replace("{LAT}", SpaceTimeController.Location.Lat.ToString());
-        //    url = url.Replace("{LNG}", SpaceTimeController.Location.Lng.ToString());
-        //    url = url.Replace("{ELEV}", SpaceTimeController.Altitude.ToString());
-        //    url = url.Replace("{WIDTH}", this.renderWindow.ClientRectangle.Width.ToString());
-        //    url = url.Replace("{HEIGHT}", this.renderWindow.ClientRectangle.Height.ToString());
-        //    url = url.Replace("{CONST}", this.constellation);
-        //    url = url.Replace("{ALT}", RenderEngine.Alt.ToString());
-        //    url = url.Replace("{AZ}", RenderEngine.Az.ToString());
-        //    //          url = url.Replace("{LiveToken}", CloudCommunities.GetTokenFromId(true));
-        //    double[] gal = J2000toGalactic(RenderEngine.RA * 15, RenderEngine.Dec);
-
-        //    url = url.Replace("{l}", gal[0].ToString());
-        //    url = url.Replace("{b}", gal[1].ToString());
-
-        //    return url;
-        //}
 
         private void startQueue_Click(object sender, System.EventArgs e)
         {
@@ -11655,17 +11547,17 @@ namespace TerraViewer
 
         private OAuthTicket Connection { get; set; }
 
-        object IAppSettings.this[string key]
-        {
-            get
-            {
-                return Properties.Settings.Default[key];
-            }
-            set
-            {
-                Properties.Settings.Default[key] = value;
-            }
-        }
+        //object IAppSettings.this[string key]
+        //{
+        //    get
+        //    {
+        //        return Properties.Settings.Default[key];
+        //    }
+        //    set
+        //    {
+        //        Properties.Settings.Default[key] = value;
+        //    }
+        //}
 
         private async Task SignIn()
         {

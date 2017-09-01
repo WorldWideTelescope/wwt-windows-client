@@ -19,15 +19,25 @@ namespace TerraViewer
                 Task<byte[]> task = client.GetByteArrayAsync(url);
                 byte[] buffer = task.Result;
 
-                var cfa = Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.ReplaceExisting);
-                var cfaTask = cfa.AsTask();
-                var file = cfaTask.Result;
+                //var cfa = Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.ReplaceExisting);
+                //var cfaTask = cfa.AsTask();
+                //var file = cfaTask.Result;
 
-                using (var stream = file.OpenStreamForWriteAsync().Result)
+                //using (var stream = file.OpenStreamForWriteAsync().Result)
+                //{
+                //    stream.WriteAsync(buffer, 0, buffer.Length).Wait();
+                //}
+
+                string path = Path.GetDirectoryName(filename);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                using (System.IO.Stream stream = System.IO.File.Create(filename))
                 {
                     stream.WriteAsync(buffer, 0, buffer.Length).Wait();
                 }
-
                 return true;
             }
             catch

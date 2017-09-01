@@ -371,6 +371,7 @@
     <Compile Include="RenderEngine.cs" />
     <Compile Include="Reticle.cs" />
     <Compile Include="SettingsAnimator.cs" />
+    <Compile Include="SettingsWrapper.cs" />
     <Compile Include="SpaceNavigator\3DxMouse.cs" />
     <Compile Include="Sprite2d.cs" />
     <Compile Include="ClearCache.cs">

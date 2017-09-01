@@ -1,5 +1,8 @@
 ﻿using Color = Windows.UI.Color;
 using System.Collections.Generic;
+using System;
+using System.Reflection;
+using Windows.UI;
 
 namespace TerraViewer.Properties
 {
@@ -7,8 +10,17 @@ namespace TerraViewer.Properties
 
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
-    internal sealed partial class Settings
+    internal sealed partial class Settings : IAppSettings
     {
+        static Dictionary<Color, string> ColorNames = new Dictionary<Color, string>();
+        static Settings ()
+        {
+            
+            foreach (var color in typeof(Colors).GetRuntimeProperties())
+            {
+                ColorNames[(Color)color.GetValue(null)] = color.Name;
+            }
+        }
 
         private static Settings defaultInstance = new Settings();
         Dictionary<string, object> settingsTable = new Dictionary<string, object>();
@@ -22,9 +34,54 @@ namespace TerraViewer.Properties
                 }
                 else
                 {
-                    //todo fix impliment reflection
-                    //get default with reflection
-                    return null;
+                    try
+                    {
+
+                        Type thisType = Properties.Settings.Default.GetType();
+                        PropertyInfo pi = thisType.GetProperty(index);
+
+                        var attrs = pi.GetCustomAttributes(true);
+                        foreach (var attr in attrs)
+                        {
+                            DefaultSettingValueAttribute def = attr as DefaultSettingValueAttribute;
+                            if (def != null)
+                            {
+                                string value = def.DefaultValue;
+
+
+                                if (pi.PropertyType.BaseType() == typeof(Enum))
+                                {
+                                    return settingsTable[index] = Enum.Parse(pi.PropertyType, value);
+                                }
+                                else if (pi.PropertyType == typeof(TimeSpan))
+                                {
+                                    return settingsTable[index] = TimeSpan.Parse(value);
+                                }
+                                else if (pi.PropertyType == typeof(BlendState))
+                                {
+                                    return settingsTable[index] = BlendState.FromString(value);                   
+                                }
+                                else if (pi.PropertyType == typeof(ConstellationFilter))
+                                {
+                                    ConstellationFilter cf = ConstellationFilter.Parse(value);
+                                    cf.SettingsOwned = true;
+                                    return settingsTable[index] = cf;
+                                   
+                                }
+                                else
+                                {
+                                    return Convert.ChangeType(value, pi.PropertyType);
+                                }
+                            }
+                        }
+
+
+                        return null;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
                 }
             }
             set
@@ -300,7 +357,7 @@ namespace TerraViewer.Properties
         {
             get
             {
-                return "CahceDirectory";
+                return Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\CahceDirectory\\";
             }
             set
             {

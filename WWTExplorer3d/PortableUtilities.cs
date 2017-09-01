@@ -13,10 +13,10 @@ namespace TerraViewer
 
     public class HttpWebLoader
     {
-        public static bool DownloadFile(string url, string fileName, bool noCheckFresh, bool versionDependent)
+        public static bool DownloadFile(string url, string filename, bool noCheckFresh, bool versionDependent)
         {
 #if !WINDOWS_UWP
-           return DataSetManager.DownloadFile(url, fileName, noCheckFresh, versionDependent);
+           return DataSetManager.DownloadFile(url, filename, noCheckFresh, versionDependent);
         }
 #else
             try
@@ -25,11 +25,13 @@ namespace TerraViewer
                 Task<byte[]> task = client.GetByteArrayAsync(url);
                 byte[] buffer = task.Result;
 
-                var cfa = Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
-                var cfaTask = cfa.AsTask();
-                var file = cfaTask.Result;
+                string path = Path.GetDirectoryName(filename);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
 
-                using (var stream = file.OpenStreamForWriteAsync().Result)
+                using (System.IO.Stream stream = System.IO.File.Create(filename))
                 {
                     stream.WriteAsync(buffer, 0, buffer.Length).Wait();
                 }
