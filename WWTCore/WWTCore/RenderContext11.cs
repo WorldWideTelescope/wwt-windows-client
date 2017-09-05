@@ -1099,7 +1099,11 @@ ambientLightColor.B / 255.0f);
                     shader.WorldViewMatrix = worldViewMatrix.Matrix;
 
                     // Set the combined world/view/projection matrix in the shader
+#if WINDOWS_UWP
+                    Matrix wvp = (worldViewMatrix).Matrix;
+#else
                     Matrix wvp = (worldViewMatrix * Projection).Matrix;
+#endif
                     shader.WVPMatrix = wvp;
 
                     // For view-dependent lighting (e.g. specular), we need the position of the camera

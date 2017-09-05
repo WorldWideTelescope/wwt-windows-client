@@ -835,7 +835,11 @@ namespace TerraViewer
 
         virtual public bool IsTileBigEnough(RenderContext11 renderContext)
         {
+#if !WINDOWS_UWP
             if (level > 1)
+#else
+             if (level > 3)
+#endif
             {
 
                 SharpDX.Vector3 topLeftScreen;

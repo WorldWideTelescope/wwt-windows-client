@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WWTExplorer", "WWTExplorer3d\WWTExplorer.csproj", "{733C84E7-58F2-4E09-AC82-58AFD7E7BDD3}"
 EndProject
@@ -27,6 +27,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WWTCoreUWP", "WWTCoreUWP\WWTCoreUWP\WWTCoreUWP.csproj", "{C05266FE-6947-42F1-9863-7CDBEED60869}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpRenderEngine", "UwpRenderEngine\UwpRenderEngine.csproj", "{D088C806-C0AA-44A5-AD5D-CE9AE754727C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldWideTelescope", "WorldWideTelescope\WorldWideTelescope.csproj", "{FD08BC69-A3B9-43DA-95B3-6D674A801742}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -224,8 +226,43 @@ Global
 		{D088C806-C0AA-44A5-AD5D-CE9AE754727C}.Release|x64.Build.0 = Release|x64
 		{D088C806-C0AA-44A5-AD5D-CE9AE754727C}.Release|x86.ActiveCfg = Release|x86
 		{D088C806-C0AA-44A5-AD5D-CE9AE754727C}.Release|x86.Build.0 = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|ARM.ActiveCfg = Debug|ARM
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|ARM.Build.0 = Debug|ARM
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|ARM.Deploy.0 = Debug|ARM
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Mixed Platforms.Deploy.0 = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Win32.ActiveCfg = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Win32.Build.0 = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|Win32.Deploy.0 = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|x64.ActiveCfg = Debug|x64
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|x64.Build.0 = Debug|x64
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|x64.Deploy.0 = Debug|x64
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|x86.ActiveCfg = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|x86.Build.0 = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Debug|x86.Deploy.0 = Debug|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Any CPU.ActiveCfg = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|ARM.ActiveCfg = Release|ARM
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|ARM.Build.0 = Release|ARM
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|ARM.Deploy.0 = Release|ARM
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Mixed Platforms.Build.0 = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Mixed Platforms.Deploy.0 = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Win32.ActiveCfg = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Win32.Build.0 = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|Win32.Deploy.0 = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|x64.ActiveCfg = Release|x64
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|x64.Build.0 = Release|x64
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|x64.Deploy.0 = Release|x64
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|x86.ActiveCfg = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|x86.Build.0 = Release|x86
+		{FD08BC69-A3B9-43DA-95B3-6D674A801742}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E59FCE9B-0FD4-4D6D-8E60-B6AA5B7A92DF}
 	EndGlobalSection
 EndGlobal

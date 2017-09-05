@@ -1744,7 +1744,11 @@ namespace TerraViewer
                 Matrix3d worldMatrix = renderContext.World;
                 Matrix3d viewMatrix = renderContext.View;
 
+#if WINDOWS_UWP
+                SharpDX.Matrix wvp = (worldMatrix * viewMatrix).Matrix11;
+#else
                 SharpDX.Matrix wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
+#endif
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, opacity);
 
