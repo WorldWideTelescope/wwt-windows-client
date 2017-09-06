@@ -4,7 +4,8 @@
     "SharpDX": "3.0.2",
     "SharpDX.D3DCompiler": "3.0.2",
     "SharpDX.Direct2D1": "3.0.2",
-    "SharpDX.Direct3D11": "3.0.2"
+    "SharpDX.Direct3D11": "3.0.2",
+    "SharpDX.DXGI": "3.0.2"
   },
   "frameworks": {
     "uap10.0.14393": {}

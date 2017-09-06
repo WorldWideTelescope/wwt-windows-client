@@ -34,7 +34,7 @@ namespace TerraViewer
         }
 
 #if WINDOWS_UWP
-        public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory)
+        public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
             
             //from constructor
@@ -48,9 +48,15 @@ namespace TerraViewer
             monitorWidth = config.Width;
             bezelSpacing = (float)config.Bezel;
 
+            //RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
+            RenderContext11.MultiSampleCount = 1;
+            RenderContext11 = new RenderContext11(device,wicImagingFactory, width, height);
+            if (device !=null)
+            {
+                RenderContext11.ExternalProjection = true;
+            }
 
-            RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-            RenderContext11 = new RenderContext11(device,wicImagingFactory);
+
             AppSettings.SettingsBase = Properties.Settings.Default;
 
             //from form load
@@ -68,12 +74,12 @@ namespace TerraViewer
             Properties.Settings.Default.ShowMoonsAsPointSource = false;
             Properties.Settings.Default.ShowSolarSystem.TargetState = true;
             InitializeImageSets();
-            ReadyToRender = true;
-            RenderEngine.Initialized = true;
 
-            //currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
-            currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
+            currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
+            //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
             TileCache.StartQueue();
+            RenderEngine.Initialized = true;
+            ReadyToRender = true;
         }
 
         public static void BackgroundInit()
@@ -448,8 +454,10 @@ namespace TerraViewer
                             this.ViewLat = this.TargetLat;
                             this.ViewLong = this.TargetLong;
 
-
-                            NotifyMoveComplete();
+                            if (NotifyMoveComplete != null)
+                            {
+                                NotifyMoveComplete();
+                            }
                         }
                         deltaLat = 0;
                         deltaLong = 0;
@@ -5427,7 +5435,7 @@ namespace TerraViewer
                         KmlMarkers.SetupGroundOverlays(RenderContext11);
                     }
 #endif
-                    if (PlanetLike)
+                    //if (PlanetLike)
                     {
                         RenderContext11.setRasterizerState(TriangleCullMode.Off);
                     }
@@ -6395,7 +6403,7 @@ namespace TerraViewer
             Tile.wvp = (RenderContext11.WorldBase * RenderContext11.ViewBase * RenderContext11.Projection).Matrix11;
 
             RenderContext11.PreDraw();
-
+#if !WINDOWS_UWP
             if (layer.DataSetType == ImageSetType.Sky)
             {
                 HDRPixelShader.constants.a = brightness;
@@ -6405,7 +6413,7 @@ namespace TerraViewer
 
                 HDRPixelShader.Use(RenderContext11.devContext);
             }
-
+#endif
             if (Properties.Settings.Default.EarthCutawayView.State && !SolarSystemMode && !Space && layer.DataSetType == ImageSetType.Earth)
             {
 
@@ -6432,7 +6440,8 @@ namespace TerraViewer
                     if (Properties.Settings.Default.EarthCutawayView.Opacity != 1.0)
                     {
                         tile = TileCache.GetTile(layer.BaseLevel + 1, 0, 1, layer, null);
-                        if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
+
+                        if (tile != null && (RenderContext11.ExternalProjection || tile.IsTileInFrustum(RenderContext11.Frustum)))
                         {
                             RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1.0f - Properties.Settings.Default.EarthCutawayView.Opacity, SysColor.FromArgb(255, 255, 255, 255));
                             tile.Draw3D(RenderContext11, opacity, null);
@@ -6495,7 +6504,7 @@ namespace TerraViewer
                     for (int y = 0; y < maxY; y++)
                     {
                         Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                        if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
+                        if (tile != null && (RenderContext11.ExternalProjection || tile.IsTileInFrustum(RenderContext11.Frustum)))
                         {
                             tile.Draw3D(RenderContext11, opacity, null);
                         }

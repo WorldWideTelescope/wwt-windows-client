@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 2,
   "targets": {
     "UAP,Version=v10.0.14393": {
       "Microsoft.CSharp/4.0.1": {
@@ -371,6 +371,18 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
+        }
+      },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
       "System.AppContext/4.1.0": {
@@ -2227,6 +2239,43 @@
             "rid": "aot"
           }
         }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
+        }
       }
     },
     "UAP,Version=v10.0.14393/win10-arm": {
@@ -2853,6 +2902,18 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
+        }
+      },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
       "System.AppContext/4.1.0": {
@@ -4538,6 +4599,43 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
+        }
       }
     },
     "UAP,Version=v10.0.14393/win10-arm-aot": {
@@ -5118,6 +5216,9 @@
       },
       "runtime.win10-arm-aot.runtime.native.System.IO.Compression/4.0.1": {
         "type": "package",
+        "compile": {
+          "runtimes/win10-arm-aot/lib/netcore50/_._": {}
+        },
         "runtime": {
           "runtimes/win10-arm-aot/lib/netcore50/clrcompression.dll": {}
         }
@@ -5200,6 +5301,18 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
+        }
+      },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
       "System.AppContext/4.1.0": {
@@ -6884,6 +6997,43 @@
         },
         "runtime": {
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
         }
       }
     },
@@ -7522,6 +7672,18 @@
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
         }
       },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
       "System.AppContext/4.1.0": {
         "type": "package",
         "dependencies": {
@@ -9205,6 +9367,43 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
+        }
       }
     },
     "UAP,Version=v10.0.14393/win10-x64-aot": {
@@ -9788,6 +9987,9 @@
       },
       "runtime.win10-x64-aot.runtime.native.System.IO.Compression/4.0.1": {
         "type": "package",
+        "compile": {
+          "runtimes/win10-x64-aot/lib/netcore50/_._": {}
+        },
         "runtime": {
           "runtimes/win10-x64-aot/lib/netcore50/clrcompression.dll": {}
         }
@@ -9876,6 +10078,18 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
+        }
+      },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
       "System.AppContext/4.1.0": {
@@ -11560,6 +11774,43 @@
         },
         "runtime": {
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
         }
       }
     },
@@ -12198,6 +12449,18 @@
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
         }
       },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        }
+      },
       "System.AppContext/4.1.0": {
         "type": "package",
         "dependencies": {
@@ -13881,6 +14144,43 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
+        }
       }
     },
     "UAP,Version=v10.0.14393/win10-x86-aot": {
@@ -14464,6 +14764,9 @@
       },
       "runtime.win10-x86-aot.runtime.native.System.IO.Compression/4.0.1": {
         "type": "package",
+        "compile": {
+          "runtimes/win10-x86-aot/lib/netcore50/_._": {}
+        },
         "runtime": {
           "runtimes/win10-x86-aot/lib/netcore50/clrcompression.dll": {}
         }
@@ -14552,6 +14855,18 @@
         },
         "runtime": {
           "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.dll": {}
+        }
+      },
+      "SharpDX.Mathematics/3.0.2": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "3.0.2"
+        },
+        "compile": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll": {}
         }
       },
       "System.AppContext/4.1.0": {
@@ -16236,6 +16551,43 @@
         },
         "runtime": {
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
+        }
+      },
+      "UwpRenderEngine/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.10586",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2",
+          "WWTCoreUWP": "1.0.0"
+        }
+      },
+      "WWTCoreUWP/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+          "SharpDX": "3.0.2",
+          "SharpDX.D3DCompiler": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "SharpDX.Mathematics": "3.0.2"
+        }
+      },
+      "WWTHolographic/1.0.0": {
+        "type": "project",
+        "framework": "UAP,Version=v10.0.14393",
+        "dependencies": {
+          "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+          "SharpDX": "3.0.2",
+          "SharpDX.Direct2D1": "3.0.2",
+          "SharpDX.Direct3D11": "3.0.2",
+          "UwpRenderEngine": "1.0.0",
+          "WWTCoreUWP": "1.0.0"
         }
       }
     }
@@ -17568,6 +17920,19 @@
         "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.DXGI.xml",
         "sharpdx.dxgi.3.0.2.nupkg.sha512",
         "sharpdx.dxgi.nuspec"
+      ]
+    },
+    "SharpDX.Mathematics/3.0.2": {
+      "sha512": "caQdkExWT4I8Treso4uYdk16Igyi7B8aptxBI3j7oaPfwz0vTYt7RU1vYqIXDZtDgkUVeACLgH69Zd20RtU7lA==",
+      "type": "package",
+      "path": "sharpdx.mathematics/3.0.2",
+      "files": [
+        "lib/net45/SharpDX.Mathematics.dll",
+        "lib/net45/SharpDX.Mathematics.xml",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.dll",
+        "lib/portable-net45+netcore45+wpa81+MonoAndroid1+MonoTouch1/SharpDX.Mathematics.xml",
+        "sharpdx.mathematics.3.0.2.nupkg.sha512",
+        "sharpdx.mathematics.nuspec"
       ]
     },
     "System.AppContext/4.1.0": {
@@ -22471,6 +22836,21 @@
         "system.xml.xmlserializer.4.0.11.nupkg.sha512",
         "system.xml.xmlserializer.nuspec"
       ]
+    },
+    "UwpRenderEngine/1.0.0": {
+      "type": "project",
+      "path": "../UwpRenderEngine/UwpRenderEngine.csproj",
+      "msbuildProject": "../UwpRenderEngine/UwpRenderEngine.csproj"
+    },
+    "WWTCoreUWP/1.0.0": {
+      "type": "project",
+      "path": "../WWTCoreUWP/WWTCoreUWP/WWTCoreUWP.csproj",
+      "msbuildProject": "../WWTCoreUWP/WWTCoreUWP/WWTCoreUWP.csproj"
+    },
+    "WWTHolographic/1.0.0": {
+      "type": "project",
+      "path": "../WWTHolographic/WWTHolographic.csproj",
+      "msbuildProject": "../WWTHolographic/WWTHolographic.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -22478,6 +22858,7 @@
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.2.3",
       "SharpDX >= 3.0.2",
       "SharpDX.D3DCompiler >= 3.0.2",
+      "SharpDX.DXGI >= 3.0.2",
       "SharpDX.Direct2D1 >= 3.0.2",
       "SharpDX.Direct3D11 >= 3.0.2"
     ],
@@ -22488,21 +22869,25 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "C:\\github\\WorldWideTelescope\\WorldWideTelescope.csproj",
+      "projectUniqueName": "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WorldWideTelescope\\WorldWideTelescope.csproj",
       "projectName": "WorldWideTelescope",
-      "projectPath": "C:\\github\\WorldWideTelescope\\WorldWideTelescope.csproj",
-      "projectJsonPath": "C:\\github\\WorldWideTelescope\\project.json",
-      "packagesPath": "C:\\Users\\jfay.REDMOND\\.nuget\\packages\\",
-      "outputPath": "C:\\github\\WorldWideTelescope\\obj\\",
+      "projectPath": "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WorldWideTelescope\\WorldWideTelescope.csproj",
+      "projectJsonPath": "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WorldWideTelescope\\project.json",
       "projectStyle": "ProjectJson",
-      "configFilePaths": [
-        "C:\\github\\.nuget\\NuGet.Config",
-        "C:\\Users\\jfay.REDMOND\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-      ],
-      "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+      "frameworks": {
+        "uap10.0.14393": {
+          "projectReferences": {
+            "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\UwpRenderEngine\\UwpRenderEngine.csproj": {
+              "projectPath": "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\UwpRenderEngine\\UwpRenderEngine.csproj"
+            },
+            "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WWTCoreUWP\\WWTCoreUWP\\WWTCoreUWP.csproj": {
+              "projectPath": "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WWTCoreUWP\\WWTCoreUWP\\WWTCoreUWP.csproj"
+            },
+            "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WWTHolographic\\WWTHolographic.csproj": {
+              "projectPath": "C:\\Users\\jfay.REDMOND\\Documents\\GitHub\\wwt-windows-client\\WWTHolographic\\WWTHolographic.csproj"
+            }
+          }
+        }
       }
     },
     "dependencies": {
@@ -22510,7 +22895,8 @@
       "SharpDX": "3.0.2",
       "SharpDX.D3DCompiler": "3.0.2",
       "SharpDX.Direct2D1": "3.0.2",
-      "SharpDX.Direct3D11": "3.0.2"
+      "SharpDX.Direct3D11": "3.0.2",
+      "SharpDX.DXGI": "3.0.2"
     },
     "frameworks": {
       "uap10.0.14393": {}

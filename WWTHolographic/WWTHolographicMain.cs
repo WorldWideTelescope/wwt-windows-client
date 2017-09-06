@@ -103,10 +103,10 @@ namespace WWTHolographic
             // 
             // TODO: Add code here to initialize your content.
             // 
-
-            renderEngine = new TerraViewer.RenderEngine();
-            renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory);
-         
+            var t = Task.Run(() => { 
+                renderEngine = new TerraViewer.RenderEngine();
+                renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory, 1440, 1440);
+            });
 
 #if DRAW_SAMPLE_CONTENT
             // Initialize the sample hologram.
@@ -203,6 +203,9 @@ namespace WWTHolographic
                 if (null != pointerState)
                 {
                     pose = pointerState.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
+
+     //               var ISP = pose.TryGetInteractionSourcePose(pointerState.Source);
+
                 }
                 else if (pointerPressed)
                 {
@@ -347,14 +350,23 @@ namespace WWTHolographic
                     // Attach the view/projection constant buffer for this camera to the graphics pipeline.
                     bool cameraActive = cameraResources.AttachViewProjectionBuffer(deviceResources);
 
-#if DRAW_SAMPLE_CONTENT
-                    // Only render world-locked content when positional tracking is active.
+
                     if (cameraActive)
                     {
-                        renderEngine.Render();
-                        // Draw the sample hologram.
-                        spinningCubeRenderer.Render();
+                        if (renderEngine != null)
+                        {
+                            renderEngine.Render();
+                        }
+
                     }
+
+#if DRAW_SAMPLE_CONTENT
+                    // Only render world-locked content when positional tracking is active.
+                    //if (cameraActive)
+                    //{
+                    //    // Draw the sample hologram.
+                    //    spinningCubeRenderer.Render();
+                    //}
 #endif
                     atLeastOneCameraRendered = true;
                 }

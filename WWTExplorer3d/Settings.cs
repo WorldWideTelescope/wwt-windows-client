@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace TerraViewer
 {
-    class Settings : TerraViewer.ISettings, IScriptable
+    public class Settings : TerraViewer.ISettings, IScriptable
     {
         static public Dictionary<string, ScriptableProperty> SettingsList;
 
@@ -106,7 +106,7 @@ namespace TerraViewer
 
         static ISettings active = new Settings();
 
-        internal static ISettings Ambient
+        public static ISettings Ambient
         {
             get
             {
@@ -114,7 +114,7 @@ namespace TerraViewer
             }
         }
 
-        internal static ISettings Active
+        public static ISettings Active
         {
             get
             {
@@ -132,7 +132,7 @@ namespace TerraViewer
 
         static ISettings tourSettings = null;
 
-        internal static ISettings TourSettings
+        public static ISettings TourSettings
         {
             get { return Settings.tourSettings; }
             set

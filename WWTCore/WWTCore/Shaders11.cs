@@ -22,8 +22,11 @@ namespace TerraViewer
 
         private PixelShader pixelShader = null;
         private VertexShader vertexShader = null;
+        private GeometryShader geometryShader = null;
         private byte[] pixelShaderBytecode;
         private byte[] vertexShaderBytecode;
+        private byte[] geometryShaderBytecode;
+
 
         private PlanetShaderKey key;
 
@@ -228,6 +231,14 @@ namespace TerraViewer
             }
         }
 
+        public GeometryShader GeometryShader
+        {
+            get
+            {
+                return geometryShader;
+            }
+        }
+
         public PixelShader PixelShader
         {
             get
@@ -262,8 +273,10 @@ namespace TerraViewer
 
             context.VertexShader.SetConstantBuffer(0, constantBuffer);
             context.PixelShader.SetConstantBuffer(0, constantBuffer);
+            context.GeometryShader.SetConstantBuffer(0, constantBuffer);
             context.VertexShader.Set(vertexShader);
             context.PixelShader.Set(pixelShader);
+            context.GeometryShader.SetShader(geometryShader, null, 0);
 
             // Set vertex shader
         }
@@ -666,9 +679,11 @@ namespace TerraViewer
             bool needObjectSpacePosition = true;
             bool needSurfaceNormals = style != PlanetSurfaceStyle.Emissive;
             bool needSurfaceTangents = needSurfaceNormals && key.hasTexture(PlanetShaderKey.SurfaceProperty.Normal);
-                 
+
             string vsIn;                // Vertex shader input
-            string psIn;                // Vertex shader output / pixel shader input
+            string vsOut;                // Vertex shader output 
+            string gsOut;               //Geometry shader output
+            string psIn;                //  pixel shader input
             string shaderConstantDecl = "";  // Shader constant declarations
             string textureDecl = "";
             string vertexShaderText = "";    // Vertex shader source
@@ -734,10 +749,11 @@ namespace TerraViewer
                     vsIn +=
                         "     float4 Color : COLOR0;                \n";
                 }
-#if WINDOWS_UWP
-                vsIn +=
-                        "     uint   instId   : SV_InstanceID;       \n  ";
-#endif
+                if (RenderContext11.ExternalProjection)
+                {
+                    vsIn +=
+                            "     uint   instId   : SV_InstanceID;       \n  ";
+                }
                 vsIn +=
                     " };                                           \n";
             }
@@ -765,10 +781,11 @@ namespace TerraViewer
                     vsIn +=
                         "     float4 Color : COLOR0;                \n";
                 }
-#if WINDOWS_UWP
-                vsIn +=
+                if (RenderContext11.ExternalProjection)
+                {
+                    vsIn +=
                         "     uint   instId   : SV_InstanceID;       \n  ";
-#endif
+                }
                 vsIn +=
                     " };                                           \n";
             }
@@ -831,13 +848,36 @@ namespace TerraViewer
                 psIn +=
                     "     float2 OverlayTexCoord" + overlayIndex + " : TEXCOORD" + overlayTexCoordIndex(overlayIndex) + ";  \n";
             }
-#if WINDOWS_UWP
-    //        psIn +=
-    //                 "     uint        viewId  : TEXCOORD" + (key.overlayTextureCount+1) + ";               \n";
-#endif
+
+            vsOut = psIn;
+            gsOut = psIn;
+
+            if (RenderContext11.ExternalProjection)
+            {
+                vsOut +=
+                     "     uint        viewId  : TEXCOORD" + (key.overlayTextureCount + 1) + ";               \n";
+                gsOut +=
+                     "     uint        rtvId  : SV_RenderTargetArrayIndex;               \n";
+            } 
 
             psIn +=
                     " };                                           \n";
+
+            vsOut +=
+                " };                                           \n";
+
+            gsOut +=
+                " };                                           \n";
+
+            gsOut = gsOut.Replace("struct VS_OUT", "struct GS_OUT");
+
+            bool buildGeometryShader = false;
+            string geometryShaderSource = "";
+            if (RenderContext11.ExternalProjection)
+            {
+                buildGeometryShader = true;
+                geometryShaderSource = MakePassThruGeometry(vsOut, gsOut);
+            }
 
             shaderConstantDecl =
                 declareConstant("float4x4", "matWVP", 0) +
@@ -873,24 +913,33 @@ namespace TerraViewer
                     declareConstant("float4x4", "matOverlayTexture" + overlayIndex, 32 + 4 * overlayIndex);
             }
 
-
-
-            // Generate the body of the vertex shader
-            vertexShaderText +=
+            if (RenderContext11.ExternalProjection)
+            {
+                // Generate the body of the vertex shader
+                vertexShaderText +=
                     " VS_OUT VSMain(VS_IN In)              \n" +
                     " {                                            \n" +
                     "     VS_OUT Out;                              \n" +
-#if WINDOWS_UWP  
+
                     "     int idx = In.instId % 2;                  \n" +
                     "     float4 p = mul(In.ObjPos,  matWVP );      \n" + // Transform vertex into                  
-  //                  "     Out.ProjPos = mul(p, viewProjection[idx]); \n" +
-                    "     Out.ProjPos = mul(p, viewProjection[0]); \n" +
-  //                  "       Out.viewId = idx;                        \n" +
-#else
-                    "     Out.ProjPos = mul(In.ObjPos, matWVP);    \n" + // Transform vertex from world into device coordinates
-#endif
-            "     Out.TexCoord = In.TexCoord;              \n";
+                                                                          //                  "     Out.ProjPos = mul(p, viewProjection[idx]); \n" +
+                    "     Out.ProjPos = mul(p, viewProjection[idx]); \n" +
+                    "     Out.viewId = idx;                        \n" +
+                    "     Out.TexCoord = In.TexCoord;              \n";
+            }
+            else
+            {
 
+                // Generate the body of the vertex shader
+                vertexShaderText +=
+                        " VS_OUT VSMain(VS_IN In)              \n" +
+                        " {                                            \n" +
+                        "     VS_OUT Out;                              \n" +
+                        "     Out.ProjPos = mul(In.ObjPos, matWVP);    \n" + // Transform vertex from world into device coordinates
+                        "     Out.TexCoord = In.TexCoord;              \n";
+
+            }
             if (needCameraSpacePosition)
             {
                 vertexShaderText +=
@@ -1118,21 +1167,21 @@ namespace TerraViewer
 
             // End of pixel shader constants
 
-            pixelShaderText +=
-                " struct PS_OUT {\n" +
-                "     float4 color : SV_Target0;\n" +
-//                "     float depth : SV_Depth;\n" +
-                " };\n";
+//            pixelShaderText +=
+//                " struct PS_OUT {\n" +
+//                "     float4 color : SV_Target0;\n" +
+////                "     float depth : SV_Depth;\n" +
+//                " };\n";
             if (key.TwoSidedLighting)
             {
                 pixelShaderText +=
-                    " PS_OUT PSMain(VS_OUT In, bool face : SV_IsFrontFace)  \n" +
+                    " float4 PSMain(VS_OUT In, bool face : SV_IsFrontFace) : SV_TARGET \n" +
                     " {                                                     \n";
             }
             else
             {
                 pixelShaderText +=
-                    " PS_OUT PSMain(VS_OUT In)                      \n" +
+                    " float4 PSMain(VS_OUT In) : SV_TARGET                     \n" +
                     " {                                             \n";
             }
 
@@ -1358,26 +1407,30 @@ namespace TerraViewer
                     "    color *= shadow;   \n";
             }
 
-            pixelShaderText +=
-                    "    PS_OUT Out;\n";
+            //pixelShaderText +=
+            //        "    PS_OUT Out;\n";
             if (key.HasAtmosphere)
             {
                 pixelShaderText +=
-                    "    Out.color = color * float4(In.AtmosphereExtinction.rgb, 1.0) + In.AtmosphereInscatter * shadow * (In.AtmosphereExtinction.a < -0.001 ? 0.0 : 1.0);   \n";
+ //                   "    Out.color = color * float4(In.AtmosphereExtinction.rgb, 1.0) + In.AtmosphereInscatter * shadow * (In.AtmosphereExtinction.a < -0.001 ? 0.0 : 1.0);   \n";
+                    "    color = color * float4(In.AtmosphereExtinction.rgb, 1.0) + In.AtmosphereInscatter * shadow * (In.AtmosphereExtinction.a < -0.001 ? 0.0 : 1.0);   \n";
             }
-            else
-            {
-                pixelShaderText +=
-                    "    Out.color = color;\n";
-            }
+            //else
+            //{
+            //    pixelShaderText +=
+            //        "    Out.color = color;\n";
+            //        "    Out.color = color;\n";
+            //}
 
             /*
             pixelShaderText +=
                 "     Out.depth = 0.0;\n";
             */
 
+            //pixelShaderText +=
+            //    "     return Out;\n";
             pixelShaderText +=
-                "     return Out;\n";
+                "     return color;\n";
 
             pixelShaderText +=
                     " }\n";
@@ -1388,27 +1441,109 @@ namespace TerraViewer
                 shaderConstantDecl +
                 "};\n";
 
-#if WINDOWS_UWP
-            shaderConstantDecl +=(
+            if (RenderContext11.ExternalProjection)
+            {
+                shaderConstantDecl += (
                 // A constant buffer that stores each set of view and projection matrices in column-major format.
+                  "                                                        \n" +
                   "  cbuffer ViewProjectionConstantBuffer : register(b1)    \n" +
                   "  {                                                      \n" +
                   "                  float4x4 viewProjection[2];            \n" +
                   "  };                                                     \n" +
                   "                                                         \n");
-#endif
+            }
+
             string pixelShaderSource = psIn + "\n" +
                                        shaderConstantDecl + "\n" +
                                        textureDecl + "\n" +
                                        samplerStateText + "\n" +
                                        pixelShaderText + "\n";
             string vertexShaderSource = vsIn + "\n" +
-                                        psIn + "\n" +
+                                        vsOut + "\n" +
                                         shaderConstantDecl + "\n" +
                                         vertexShaderText;
 
             pixelShaderBytecode = ShaderLibrary.Instance.getShaderBytecode(key.ToString(), pixelShaderSource, "PSMain", pixelProfile);
             vertexShaderBytecode = ShaderLibrary.Instance.getShaderBytecode(key.ToString(), vertexShaderSource, "VSMain", vertexProfile);
+            if (RenderContext11.ExternalProjection && buildGeometryShader)
+            {
+                geometryShaderBytecode  = ShaderLibrary.Instance.getShaderBytecode(key.ToString(), geometryShaderSource, "GSMain", "gs_4_0");
+            }
+        }
+
+        private string MakePassThruGeometry(string vsOut, string gsOut)
+        {
+
+            string code = vsOut;
+
+            code += " \n";
+            code += gsOut;
+
+            code += " \n";
+
+            code +=
+             "   [maxvertexcount(3)]                                                                                              \n" +
+             "   void GSMain(triangle VS_OUT input[3], inout TriangleStream< GS_OUT > outStream)         \n" +
+             "   {                                                                                                                \n" +
+             "                   GS_OUT output;                                                                     \n" +
+             "       [unroll(3)]                                                                                                  \n" +
+             "       for (int i = 0; i< 3; ++i)                                                                                   \n" +
+             "       {                                                                                                            \n";
+            //"           output.pos = input[i].pos;                                                                               \n" +
+            //"           output.color = input[i].color;                                                                           \n" +
+            //"           output.rtvId = input[i].instId;                                                                          \n" +
+
+            string[] inputs = GetMembersList(vsOut);
+            string[] outputs = GetMembersList(gsOut);
+
+            if (inputs.Length != outputs.Length)
+            {
+                throw new InvalidOperationException("Input and output shader structures must have the same number of members and have colons");
+            }
+
+            for(int i = 0; i < inputs.Length; i++)
+            {
+                code += string.Format("     output.{0} = input[i].{1}; \n", outputs[i], inputs[i]);
+            }
+
+            code +=
+             "           outStream.Append(output);                                                                                \n" +
+             "       }                                                                                                            \n" +
+             "   } \n";
+
+            return code;      
+        }
+
+        private static string[] GetMembersList(string structCode)
+        {
+            string[] lines = structCode.Split(new char[] { '\n' });
+
+            List<string> members = new List<string>();
+            foreach(string line in lines)
+            {
+                if (line.Contains(":"))
+                {
+                    string[] parts = line.Split(new char[] { ' ' });
+                    string name="";
+                    foreach(string part in parts)
+                    {
+                        if (part == ":")
+                        {
+                            members.Add(name);
+                            break;
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(part))
+                            {
+                                name = part;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return members.ToArray();
         }
 
         // Actually create the Direct3D resources for this shader on a device
@@ -1421,6 +1556,10 @@ namespace TerraViewer
             if (vertexShaderBytecode != null)
             {
                 vertexShader = new VertexShader(RenderContext11.PrepDevice, vertexShaderBytecode);
+            }
+            if (geometryShaderBytecode != null)
+            {
+                geometryShader = new GeometryShader(RenderContext11.PrepDevice, geometryShaderBytecode);
             }
             constantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<PlanetShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
@@ -6046,7 +6185,7 @@ namespace TerraViewer
                 "Texture2D starTexture;                        \n" +
                 "SamplerState starSampler;                     \n" +
                 "                                              \n" +
-                " float4 PS( PS_IN In ) : SV_Target            \n" +
+                " float4 PS( PS_IN In ) : SV_TARGET            \n" +
                 " {                                            \n" +
                 "     return In.Color * starTexture.Sample(starSampler, In.TexCoord);\n" +
                 " }                                            ";

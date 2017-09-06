@@ -357,13 +357,14 @@ namespace TerraViewer
                         if ((renderPart[i].State && opacity == 1.0) || renderPart[i].TargetState)
                         {
                             renderContext.LocalCenter = localCenter;
-                            renderContext.PreDraw();      
+                            renderContext.PreDraw();
+#if !WINDOWS_UWP
                             if (dataset.DataSetType == ImageSetType.Sky)
                             {
                                 HDRPixelShader.constants.opacity = renderPart[i].Opacity * opacity;
                                 HDRPixelShader.Use(renderContext.devContext);
                             }
-                            
+#endif    
                             RenderPart(renderContext, i, renderPart[i].Opacity * opacity, false);
                         }
 
@@ -374,11 +375,13 @@ namespace TerraViewer
                         {
                             renderContext.LocalCenter = localCenter;
                             renderContext.PreDraw();
+#if !WINDOWS_UWP
                             if (dataset.DataSetType == ImageSetType.Sky)
                             {
                                 HDRPixelShader.constants.opacity = opacity;
                                 HDRPixelShader.Use(renderContext.devContext);
                             }
+#endif
                             RenderPart(renderContext, i, opacity, false);
                         }
                     }
@@ -470,12 +473,16 @@ namespace TerraViewer
             TrianglesRendered += partCount;
 
             renderContext.SetIndexBuffer(GetIndexBuffer(part, accomidation));
-#if WINDOWS_UWP
-     //       renderContext.devContext.DrawInstanced(partCount * 3, 2, 0, 0);
-               renderContext.devContext.DrawIndexed(partCount*3, 0, 0);
-#else
-            renderContext.devContext.DrawIndexed(partCount*3, 0, 0);
-#endif
+
+            if (RenderContext11.ExternalProjection)
+            {
+                //draw instaced for stereo
+                renderContext.devContext.DrawIndexedInstanced(partCount * 3, 2, 0, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.DrawIndexed(partCount * 3, 0, 0);
+            }
         }
  
         public int DemGeneration = 0;
@@ -908,8 +915,13 @@ namespace TerraViewer
         public static int imageQuality = 50;
         public static int lastDeepestLevel = 0;
         public static int deepestLevel = 0;
-        virtual public bool IsTileInFrustum(PlaneD[]frustum)
+        virtual public bool IsTileInFrustum(PlaneD[] frustum)
         {
+            if (RenderContext11.ExternalProjection)
+            {
+                return true;
+            }
+
             InViewFrustum = false;
             Vector3d center = sphereCenter;
 
