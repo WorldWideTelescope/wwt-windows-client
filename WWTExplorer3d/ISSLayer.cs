@@ -52,13 +52,19 @@ namespace TerraViewer
                     float radiusInPixels = (float)(radius * pixelsPerUnit);
                     if (radiusInPixels > 0.5f)
                     {
+                       
+#if WINDOWS_UWP
+                        var t = System.Threading.Tasks.Task.Run(() =>
+                        {
+                            LoadBackground();
+                        });
+#else
                         BackInitDelegate initBackground = LoadBackground;
                         initBackground.BeginInvoke(null, null);
+#endif
                     }
                 }
-
-
-               
+       
             }
 
             object3d = issmodel;
@@ -116,7 +122,7 @@ namespace TerraViewer
             }
 
             loading = true;
-            string path = Properties.Settings.Default.CahceDirectory + @"\mdl\155\";
+            string path = Properties.Settings.Default.CahceDirectory + @"mdl\155\";
             string filename = path + "mdl.zip";
             if (!Directory.Exists(path))
             {
@@ -139,6 +145,8 @@ namespace TerraViewer
                     CopyStream(input, output);
                     input.Close();
                     output.Close();
+                    input.Dispose();
+                    output.Dispose();
                 }
             }
 

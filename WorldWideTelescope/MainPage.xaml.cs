@@ -78,6 +78,10 @@ namespace WorldWideTelescope
                 {
                     RenderEngine.currentImageSetfield = RenderEngine.GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
                 }
+                if (e.Key == Windows.System.VirtualKey.I)
+                {
+                    RenderEngine.TrackISS();
+                }
             }
         }
 

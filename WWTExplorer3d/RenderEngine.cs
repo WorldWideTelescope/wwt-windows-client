@@ -99,12 +99,16 @@ namespace TerraViewer
             Properties.Settings.Default.ShowEcliptic.TargetState = false;
             Properties.Settings.Default.ShowConstellationPictures.TargetState = true;
             Properties.Settings.Default.ConstellationArtColor = Color.FromArgb(128, 255, 255, 255);
+            Properties.Settings.Default.ShowISSModel = true;
             Catalogs.InitSearchTable();
 
             LayerManager.InitLayers();
             TileCache.StartQueue();
             RenderEngine.Initialized = true;
             ReadyToRender = true;
+
+
+
         }
 #endif
         public static void BackgroundInit()
@@ -115,6 +119,15 @@ namespace TerraViewer
             Grids.InitCosmosVertexBuffer();
             Planets.InitPlanetResources();
 
+        }
+
+        public void TrackISS()
+        {
+            LayerMap target = LayerManager.AllMaps["ISS"];
+
+            RenderEngine.Engine.SolarSystemTrack = SolarSystemObjects.Custom;
+            RenderEngine.Engine.TrackingFrame = target.Name;
+            RenderEngine.Engine.viewCamera.Zoom = RenderEngine.Engine.targetViewCamera.Zoom = .000000001;
         }
 
         const float FOVMULT = 343.774f;
@@ -671,11 +684,9 @@ namespace TerraViewer
                         }
                         else
                         {
-#if !BASICWWT
+
                             camTo.ViewTarget = Planets.GetPlanet3dLocation(target, SpaceTimeController.GetJNowForFutureTime(jumpTime));
-#else
-                            camTo.ViewTarget = new Vector3d();
-#endif
+
                             switch (target)
                             {
                                 case SolarSystemObjects.Sun:
@@ -771,14 +782,13 @@ namespace TerraViewer
                             camTo.Lat = viewCamera.Lat;
                             camTo.Lng = viewCamera.Lng;
                         }
-#if !BASICWWT
+
                         if (target != SolarSystemObjects.Custom)
                         {
                             // replace with planet surface
                             camTo.ViewTarget = Planets.GetPlanetTargetPoint(target, camTo.Lat, camTo.Lng, SpaceTimeController.GetJNowForFutureTime(jumpTime));
-
                         }
-#endif
+
 
 
                         ViewMoverKenBurnsStyle solarMover = new ViewMoverKenBurnsStyle(fromParams, camTo, jumpTime, SpaceTimeController.Now, SpaceTimeController.GetTimeForFutureTime(jumpTime), InterpolationType.EaseInOut);
@@ -1227,7 +1237,7 @@ namespace TerraViewer
         {
             if (SolarSystemMode)
             {
-#if !BASICWWT
+
                 Vector3d pnt = Coordinates.GeoTo3dDouble(ViewLat, ViewLong + 90);
 
                 Matrix3d EarthMat = Planets.EarthMatrixInv;
@@ -1238,9 +1248,6 @@ namespace TerraViewer
                 Vector2d point = Coordinates.CartesianToLatLng(pnt);
 
                 return GetAltitudeForLatLongForPlanet((int)viewCamera.Target, point.Y, point.X);
-#else
-                return 0;
-#endif
 
             }
             else if (currentImageSetfield.DataSetType == ImageSetType.Earth)
@@ -1261,16 +1268,13 @@ namespace TerraViewer
         {
             if (SolarSystemMode)
             {
-#if !BASICWWT
                 Vector3d pnt = Coordinates.GeoTo3dDouble(ViewLat, ViewLong + 90);
                 Matrix3d EarthMat = Planets.EarthMatrixInv;
                 pnt = Vector3d.TransformCoordinate(pnt, EarthMat);
                 pnt.Normalize();
 
                 return Coordinates.CartesianToLatLng(pnt);
-#else
-                return new Vector2d(ViewLat,ViewLong);
-#endif
+
             }
             else if (currentImageSetfield.DataSetType == ImageSetType.Earth || currentImageSetfield.DataSetType == ImageSetType.Planet)
             {
@@ -2937,7 +2941,7 @@ namespace TerraViewer
 
         public double GetAltitudeForLatLongForPlanet(int planetID, double viewLat, double viewLong)
         {
-#if !BASICWWT
+
             IImageSet layer = GetImagesetByName(Planets.GetNameFrom3dId(planetID));
 
             if (layer == null)
@@ -2962,7 +2966,6 @@ namespace TerraViewer
                     }
                 }
             }
-#endif
             return 0;
         }
 
@@ -3147,7 +3150,7 @@ namespace TerraViewer
 
         private void SetupMatricesSolarSystem11(bool forStars, RenderTypes renderType)
         {
-#if !BASICWWT
+
             if (SandboxMode)
             {
                 if (SolarSystemTrack != SolarSystemObjects.Custom && SolarSystemTrack != SolarSystemObjects.Undefined)
@@ -3162,7 +3165,6 @@ namespace TerraViewer
                     viewCamera.ViewTarget = Planets.GetPlanetTargetPoint(SolarSystemTrack, ViewLat, ViewLong, 0);
                 }
             }
-#endif
 
 
             double cameraDistance = SolarSystemCameraDistance;
@@ -3413,11 +3415,8 @@ namespace TerraViewer
                 CustomTrackingParams.Rotation = dotU;// -Math.PI / 2;
             }
 
-#if !BASICWWT
+
             double radius = Planets.GetAdjustedPlanetRadius((int)SolarSystemTrack);
-#else
-            double radius =   (1 + (3 * (Settings.Active.SolarSystemScale - 1)));
-#endif
 
             if (cameraDistance < radius * 2.0 && !forStars)
             {
@@ -3555,12 +3554,11 @@ namespace TerraViewer
         public float iod = .07f;
         private void SetupMatricesSpaceDome(bool forStars, RenderTypes renderType)
         {
-#if !BASICWWT
+
             if (SolarSystemTrack != SolarSystemObjects.Custom && SolarSystemTrack != SolarSystemObjects.Undefined)
             {
                 viewCamera.ViewTarget = Planets.GetPlanetTargetPoint(SolarSystemTrack, ViewLat, ViewLong, 0);
             }
-#endif
 
             double camLocal = CameraRotate;
             if ((Settings.Active.LocalHorizonMode && !Settings.Active.GalacticMode) && currentImageSetfield.DataSetType == ImageSetType.Sky)

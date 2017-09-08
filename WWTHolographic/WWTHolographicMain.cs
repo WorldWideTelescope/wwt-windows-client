@@ -217,6 +217,7 @@ namespace WWTHolographic
                 else if (pointerPressed)
                 {
                     pose = SpatialPointerPose.TryGetAtTimestamp(stationaryReferenceFrame.CoordinateSystem, prediction.Timestamp);
+                    renderEngine.TrackISS();
                 }
                 pointerPressed = false;
 

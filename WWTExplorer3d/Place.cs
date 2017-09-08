@@ -81,7 +81,6 @@ namespace TerraViewer
         {
             get
             {
-#if !BASICWWT
                 if (Classification == Classification.SolarSystem && camParams.Target != SolarSystemObjects.Custom)
                 {
                     AstroRaDec raDec = Planets.GetPlanetLocation(Name);
@@ -89,7 +88,6 @@ namespace TerraViewer
                     camParams.Dec = raDec.Dec;
                     this.distnace = raDec.Distance;
                 }
-#endif
                 return camParams;
             }
             set { camParams = value; }
@@ -97,12 +95,11 @@ namespace TerraViewer
 
         public void UpdatePlanetLocation(double jNow)
         {
-#if !BASICWWT
+
             if (Target != SolarSystemObjects.Undefined && Target != SolarSystemObjects.Custom)
             {
                 camParams.ViewTarget = Planets.GetPlanetTargetPoint(Target, Lat, Lng, jNow);
             }
-#endif
         }
 
         Vector3d location3d = new Vector3d(0, 0, 0);

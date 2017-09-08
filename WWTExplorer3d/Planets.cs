@@ -272,16 +272,30 @@ namespace TerraViewer
             {
                 if (!loading8k)
                 {
+#if WINDOWS_UWP
+                    var t = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        LoadBackground8k();
+                    });
+#else
                     BackInitDelegate initBackground = LoadBackground8k;
                     initBackground.BeginInvoke(null, null);
+#endif
                 }
             }
             else
             {
                 if (!loading)
                 {
+#if WINDOWS_UWP
+                    var t = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        LoadBackground();
+                    });
+#else
                     BackInitDelegate initBackground = LoadBackground;
                     initBackground.BeginInvoke(null, null);
+#endif
                 }
             }
         }
@@ -2422,7 +2436,13 @@ namespace TerraViewer
 
             if (PlanetShadow == null)
             {
+#if WINDOWS_UWP
+
+                PlanetShadow = Planets.LoadPlanetTexture(Properties.Resources.planetShadow);
+
+#else
                 PlanetShadow = Texture11.FromBitmap(device, Properties.Resources.planetShadow);
+#endif
             }
 
             Matrix3d invViewCam = renderContext.View;

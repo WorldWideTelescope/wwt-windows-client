@@ -750,7 +750,6 @@ namespace TerraViewer
         {
             get
             {
-#if !BASICWWT
                 if (Classification == Classification.SolarSystem)
                 {
                     AstroRaDec raDec = Planets.GetPlanetLocation(Name);
@@ -760,7 +759,6 @@ namespace TerraViewer
                         decField = raDec.Dec;
                     }
                 }
-#endif
                 return decField;
             }
             set
@@ -842,7 +840,6 @@ namespace TerraViewer
         {
             get
             {
-#if !BASICWWT
                 if (Classification == Classification.SolarSystem)
                 {
                     AstroRaDec raDec = Planets.GetPlanetLocation(Name);
@@ -851,7 +848,6 @@ namespace TerraViewer
                     decField = raDec.Dec;
                     this.distanceField = raDec.Distance;
                 }
-#endif
                 return raField;
             }
             set

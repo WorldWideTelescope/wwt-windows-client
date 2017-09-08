@@ -886,7 +886,7 @@ namespace TerraViewer
 
         public Vector3d CameraPosition;
 
-        private SysColor ambientLightColor = SysColor.FromArgb(255, 0, 0, 0);
+        private SysColor ambientLightColor = SysColor.Black;
         public SysColor AmbientLightColor
         {
             get
@@ -901,7 +901,7 @@ namespace TerraViewer
             }
         }
 
-        private SysColor hemiLightColor = SysColor.FromArgb(255, 0, 0, 0);
+        private SysColor hemiLightColor = SysColor.Black;
         public SysColor HemisphereLightColor
         {
             get
@@ -932,7 +932,7 @@ namespace TerraViewer
         }
 
 
-        private SysColor sunlightColor = SysColor.FromArgb(255, 255, 255, 255);
+        private SysColor sunlightColor = SysColor.White;
         public SysColor SunlightColor
         {
             get
@@ -962,7 +962,7 @@ namespace TerraViewer
             }
         }
 
-        private SysColor reflectedLightColor = SysColor.FromArgb(255, 0, 0, 0);
+        private SysColor reflectedLightColor = SysColor.Black;
         public SysColor ReflectedLightColor
         {
             get
