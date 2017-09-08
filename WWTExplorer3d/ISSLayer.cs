@@ -1,10 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using SharpDX;
 
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+using Point = TerraViewer.Point;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using Point = System.Drawing.Point;
+using System.Drawing;
+using System.Xml;
+using System.Windows.Forms;
+#endif
 
 namespace TerraViewer
 {
@@ -135,7 +145,7 @@ namespace TerraViewer
             filename = path + "mdl.3ds";
             if (File.Exists(filename))
             {
-                Object3d o3d = new Object3d(filename, true, false, true, System.Drawing.Color.White);
+                Object3d o3d = new Object3d(filename, true, false, true, Color.White);
                 if (o3d != null)
                 {
                     o3d.ISSLayer = true;

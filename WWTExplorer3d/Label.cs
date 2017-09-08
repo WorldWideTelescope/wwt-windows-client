@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 #else
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;

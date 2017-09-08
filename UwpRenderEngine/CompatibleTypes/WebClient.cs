@@ -46,6 +46,16 @@ namespace TerraViewer
             }
         }
 
+        public string DownloadString(string url)
+        {
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+
+            //todo uwp figure out a way to add headers to this
+            Task<string> task = client.GetStringAsync(url);
+            return task.Result;
+        }
+
+
         public HeaderList Headers = new HeaderList();
 
         public class HeaderList
@@ -56,6 +66,15 @@ namespace TerraViewer
             {
                 headers[key] = value;
             }
+        }
+
+        internal byte[] DownloadData(string url)
+        {
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+
+            //todo uwp figure out a way to add headers to this
+            Task<byte[]> task = client.GetByteArrayAsync(url);
+            return task.Result;
         }
     }
 

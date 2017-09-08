@@ -1,7 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D11;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else

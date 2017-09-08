@@ -88,13 +88,7 @@ namespace TerraViewer.Callibration
       
     }
 
-    class SolverFunction
-    {
-        public virtual double Calculate()
-        {
-            return 0;
-        }
-    }
+
 
     class Coorespondence : SolverFunction
     {

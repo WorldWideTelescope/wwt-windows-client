@@ -1,6 +1,5 @@
 using System;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
@@ -21,12 +20,12 @@ namespace TerraViewer
 
         public SavedColor()
         {
-            Color = SystemColors.White;
+            Color = Color.White;
         }
 
         public SavedColor(int argb)
         {
-            Color = UiTools.FromArgb(argb);
+            Color = Color.FromArgb(argb);
         }
 
         public enum ColorFormat
@@ -69,26 +68,42 @@ namespace TerraViewer
 
             string[] pieces = color.Split(new char[] { ':' });
 
-            ColorFormat colorType = (ColorFormat)
-                Enum.Parse(typeof(ColorFormat), pieces[0], true);
-
-            switch (colorType)
+            if (pieces.Length > 2)
             {
-                case ColorFormat.NamedColor:
-#if !WINDOWS_UWP
-                    return Color.FromName(pieces[1]);
-#else
-                    //todo uwp fix this! Really bad.
-                    return SystemColors.Red;
-#endif
-                case ColorFormat.ARGBColor:
-                    a = byte.Parse(pieces[1]);
-                    r = byte.Parse(pieces[2]);
-                    g = byte.Parse(pieces[3]);
-                    b = byte.Parse(pieces[4]);
+                ColorFormat colorType = (ColorFormat)
+                    Enum.Parse(typeof(ColorFormat), pieces[0], true);
 
-                    return Color.FromArgb(a, r, g, b);
+
+                switch (colorType)
+                {
+                    case ColorFormat.NamedColor:
+                        return Color.FromName(pieces[1]);
+                    case ColorFormat.ARGBColor:
+                        a = byte.Parse(pieces[1]);
+                        r = byte.Parse(pieces[2]);
+                        g = byte.Parse(pieces[3]);
+                        b = byte.Parse(pieces[4]);
+
+                        return Color.FromArgb(a, r, g, b);
+                }
             }
+            else
+            {
+                pieces = color.Split(new char[] { ',' });
+                if (pieces.Length == 4)
+                {
+                    return Color.FromArgb(int.Parse(pieces[0]), int.Parse(pieces[1]), int.Parse(pieces[2]), int.Parse(pieces[3]));
+                }
+                else if (pieces.Length == 3)
+                {
+                    return Color.FromArgb(255,int.Parse(pieces[0]), int.Parse(pieces[1]), int.Parse(pieces[2]));
+                }
+                else
+                {
+                    return Color.FromName(pieces[0]);
+                }
+            }
+
             return Color.FromArgb(0,0,0,0);
         }
     }

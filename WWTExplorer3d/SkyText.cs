@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 #else
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;
@@ -56,7 +55,13 @@ namespace TerraViewer
             SimpleGeometryShader11.Color = col;
 
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
             mat.Transpose();
+
 
             SimpleGeometryShader11.WVPMatrix = mat;
 
@@ -78,8 +83,14 @@ namespace TerraViewer
  
             renderContext.SetVertexBuffer(vertexBuffer);
 
-            renderContext.devContext.Draw(vertexBuffer.Count, 0);
-
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawInstanced(vertexBuffer.Count, 2, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.Draw(vertexBuffer.Count, 0);
+            }
             renderContext.DepthStencilMode = dm;
 
             renderContext.BlendMode = bm;
@@ -446,14 +457,15 @@ namespace TerraViewer
             Init();
         }
 
-        public async void Init()
+        public void Init()
         {
 
-            string testureFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "Assets/glyphs1.png");
+            string testureFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine\\Resources\\glyphs1.png");
             texture = Texture11.FromFile(testureFilename);
-            var folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Assets");
-            var file = await folder.GetFileAsync("glyphs1.xml");
-            var doc = await Windows.Data.Xml.Dom.XmlDocument.LoadFromFileAsync(file);
+
+            string xmlFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine\\Resources\\glyphs1.xml");
+            var doc = new Windows.Data.Xml.Dom.XmlDocument();
+            doc.Load(xmlFilename);
             LoadXmlGlyph(doc);
         }
 
@@ -727,7 +739,7 @@ namespace TerraViewer
         Matrix3d rtbMat;
         bool matInit = false;
 
-        public Color Color = SystemColors.White;
+        public Color Color = Color.White;
         public bool sky = true;
         public Vector3d center;
         public Vector3d up;

@@ -2,7 +2,6 @@ using AstroCalc;
 using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 #else
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;
@@ -199,8 +198,11 @@ namespace TerraViewer
             //temp = TextureLoader.FromStream(device, ms, bmp.Width, bmp.Height, 0, Usage.None, Format.Unknown, Pool.Managed, Filter.None, Filter.Box, 0);
             //ms.Dispose();
             //GC.SuppressFinalize(ms);
-
+#if WINDOWS_UWP
+            temp = new Texture11(bmp.FileName);
+#else
             temp = Texture11.FromBitmap(RenderContext11.PrepDevice, bmp);
+#endif
 
             return temp;
         }
@@ -1744,11 +1746,14 @@ namespace TerraViewer
                 Matrix3d worldMatrix = renderContext.World;
                 Matrix3d viewMatrix = renderContext.View;
 
-#if WINDOWS_UWP
-                SharpDX.Matrix wvp = (worldMatrix * viewMatrix).Matrix11;
-#else
+
                 SharpDX.Matrix wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
-#endif
+
+                if (RenderContext11.ExternalProjection)
+                {
+                    wvp = wvp * RenderContext11.ExternalScalingFactor;
+                }
+
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, opacity);
 

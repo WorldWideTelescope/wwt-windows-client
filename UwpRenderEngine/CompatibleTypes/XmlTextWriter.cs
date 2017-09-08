@@ -9,11 +9,27 @@ namespace TerraViewer
     public class XmlTextWriter : IDisposable
     {
         System.IO.StringWriter sw = null;
-
+        System.IO.Stream stream = null;
         public XmlTextWriter(System.IO.StringWriter stringWriter)
         {
             sw = stringWriter;
         }
+
+        public XmlTextWriter(System.IO.Stream streamIn, System.Text.Encoding encoding)
+        {
+            this.stream = streamIn;
+        }
+
+        System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+
+        public XmlTextWriter(string filename, System.Text.Encoding encoding)
+        {
+            this.encoding = encoding;
+
+            stream = System.IO.File.Create(filename);
+
+        }
+
 
         public XmlTextWriter()
         {
@@ -146,6 +162,13 @@ namespace TerraViewer
             if (sw != null)
             {
                 sw.Write(Body);
+            }
+
+            if (stream != null)
+            {
+                var sw = new System.IO.StreamWriter(stream, encoding);
+                sw.Write(Body);
+                sw.Dispose();
             }
         }
 

@@ -234,6 +234,7 @@
     <Compile Include="Authentication\OAuthAuthenticator.cs" />
     <Compile Include="Authentication\OAuthTicket.cs" />
     <Compile Include="Authentication\UserObject.cs" />
+    <Compile Include="Catalogs.cs" />
     <Compile Include="CoverageMap.cs" />
     <Compile Include="ExportSTL.cs">
       <SubType>Form</SubType>
@@ -243,6 +244,11 @@
     </Compile>
     <Compile Include="IUiController.cs" />
     <Compile Include="KmlLabels.cs" />
+    <Compile Include="LayerInfo.cs" />
+    <Compile Include="LayerManagerCore.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LayerMap.cs" />
     <Compile Include="Ovr\EyeTexture.cs" />
     <Compile Include="Ovr\SharpDXHelpers.cs" />
     <Compile Include="PortableUtilities.cs" />
@@ -370,6 +376,7 @@
     <Compile Include="PointSpriteSet.cs" />
     <Compile Include="RenderEngine.cs" />
     <Compile Include="Reticle.cs" />
+    <Compile Include="SearchCriteria.cs" />
     <Compile Include="SettingsAnimator.cs" />
     <Compile Include="SettingsWrapper.cs" />
     <Compile Include="SpaceNavigator\3DxMouse.cs" />

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 #else
 using Color = System.Drawing.Color;
 using System.Drawing;
@@ -529,8 +528,8 @@ namespace TerraViewer
       
         int GetTransparentColor(int color, float opacity)
         {
-            Color inColor = UiTools.FromArgb(color);
-            Color outColor = UiTools.FromArgb((byte)(opacity * 255f), inColor);
+            Color inColor = Color.FromArgb(color);
+            Color outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
             return outColor.ToArgb();
         }
 
@@ -597,7 +596,7 @@ namespace TerraViewer
 
         static Constellations()
         {
-          //  try
+            try
             {
 #if !WINDOWS_UWP
                 if (!Directory.Exists(Properties.Settings.Default.CahceDirectory))
@@ -651,7 +650,7 @@ namespace TerraViewer
                 AddAllNameMappings();
                 ConstellationFilter.InitSets();
             }
-          //  catch
+            catch
             {
             }
         }

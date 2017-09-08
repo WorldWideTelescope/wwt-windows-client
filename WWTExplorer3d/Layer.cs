@@ -3,8 +3,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;
@@ -203,7 +203,7 @@ namespace TerraViewer
             if (paramList.Length == 5)
             {
                 opacity = (float)paramList[4];
-                color = Color.FromArgb((int)(paramList[3] * 255), (int)(paramList[0] * 255), (int)(paramList[1]*255), (int)(paramList[2]*255));
+                color = Color.FromArgb((byte)(paramList[3] * 255), (byte)(paramList[0] * 255), (byte)(paramList[1]*255), (byte)(paramList[2]*255));
             }
         }
 
@@ -263,7 +263,7 @@ namespace TerraViewer
             PropertyInfo pi = thisType.GetProperty(name);
             bool safeToSet = false;
             Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
+            var attributes = pi.GetCustomAttributes(false);
             foreach (object var in attributes)
             {
                 if (var.GetType() == layerPropType)
@@ -276,7 +276,7 @@ namespace TerraViewer
             if (safeToSet)
             {
                 //Convert.ChangeType(
-                if (pi.PropertyType.BaseType == typeof(Enum))
+                if (pi.PropertyType.BaseType() == typeof(Enum))
                 {
                     pi.SetValue(this, Enum.Parse(pi.PropertyType, value), null);
                 }
@@ -304,10 +304,14 @@ namespace TerraViewer
             doc.LoadXml(xml);
 
 
-            XmlNode root = doc["LayerApi"];
+            XmlNode root = doc.GetChildByName("LayerApi");
 
             XmlNode LayerNode = root["Layer"];
-            foreach (XmlAttribute attrib in LayerNode.Attributes)
+#if WINDOWS_UWP
+            foreach (var attrib in LayerNode.Attributes)
+#else
+            foreach(XmlAttribute attrib in  LayerNode.Attributes)
+#endif
             {
                 if (attrib.Name == "Class")
                 {
@@ -328,10 +332,10 @@ namespace TerraViewer
             PropertyInfo pi = thisType.GetProperty(name);
             bool safeToGet = false;
             Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var attr in attributes)
             {
-                if (var.GetType() == layerPropType)
+                if (attr.GetType() == layerPropType)
                 {
                     safeToGet = true;
                     break;
@@ -369,10 +373,10 @@ namespace TerraViewer
                 {
                     bool safeToGet = false;
 
-                    object[] attributes = pi.GetCustomAttributes(false);
-                    foreach (object var in attributes)
+                    var attributes = pi.GetCustomAttributes(false);
+                    foreach (var attr in attributes)
                     {
-                        if (var.GetType() == layerPropType)
+                        if (attr.GetType() == layerPropType)
                         {
                             safeToGet = true;
                             break;

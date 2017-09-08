@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
@@ -20,7 +19,7 @@ namespace TerraViewer
     //todo11 Verify and test SkyImage tile
     class SkyImageTile : Tile
     {
-        Color paintColor = SystemColors.White;
+        Color paintColor = Color.White;
         bool blend = true;
         public SkyImageTile(int level, int x, int y, IImageSet dataset, Tile parent)
         {
@@ -95,8 +94,16 @@ namespace TerraViewer
             renderContext.SetIndexBuffer(indexBuffer);
             renderContext.PreDraw();
             renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            renderContext.devContext.DrawIndexed(6, 0, 0);
-
+            
+            if (RenderContext11.ExternalProjection)
+            {
+                //draw instaced for stereo
+                renderContext.devContext.DrawIndexedInstanced(6, 2, 0, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.DrawIndexed(6, 0, 0);
+            }
 
             return true;
         }
@@ -176,7 +183,6 @@ namespace TerraViewer
         
         public override bool CreateGeometry(RenderContext11 renderContext, bool uiThread)
         {
-#if !WINDOWS_UWP
             if (texture == null || (Volitile && !ReadyToRender))
             {
                 GetParameters();
@@ -248,7 +254,7 @@ namespace TerraViewer
 
                     if (TextureReady)
                     {
-                        paintColor = SystemColors.White;
+                        paintColor = Color.White;
                         if (dataset.WcsImage != null)
                         {
                             paintColor = ((WcsImage)dataset.WcsImage).Color;
@@ -266,7 +272,7 @@ namespace TerraViewer
 
                             try
                             {
-                                texture = Texture11.FromFile(RenderContext11.PrepDevice, FileName);
+                                texture = Texture11.FromFileImediate(RenderContext11.PrepDevice, FileName);
                                 ReadyToRender = true;
            
 
@@ -293,9 +299,7 @@ namespace TerraViewer
                             {
                                 try
                                 {
-                                    //texture = Texture.FromBitmap(prepDevice, bmp, Usage.AutoGenerateMipMap, Tile.PoolToUse);
-
-                                    texture = Texture11.FromFile(RenderContext11.PrepDevice, FileName);
+                                    texture = Texture11.FromFileImediate(RenderContext11.PrepDevice, FileName);
                                     ReadyToRender = true;
                                     Width = texture.Width;
                                     Height = texture.Height;
@@ -328,10 +332,7 @@ namespace TerraViewer
                 this.OnCreateVertexBuffer(vertexBuffer);
 
             }
-                
-
-            
-#endif              
+                          
             return true;
         }
         public override bool IsTileInFrustum(PlaneD[] frustum)

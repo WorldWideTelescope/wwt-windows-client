@@ -335,6 +335,7 @@
       <Link>Triangle.cs</Link>
     </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableAttribute.cs" />
     <EmbeddedResource Include="Properties\WWTCoreUWP.rd.xml" />

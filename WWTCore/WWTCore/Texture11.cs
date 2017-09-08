@@ -1,8 +1,8 @@
 ﻿using System;
 using SharpDX.Direct3D11;
 using System.IO;
+using System.Threading.Tasks;
 #if WINDOWS_UWP
-using SysColor = Windows.UI.Color;
 #else
 using SysColor = System.Drawing.Color;
 #endif
@@ -19,14 +19,29 @@ namespace TerraViewer
             get { return texture; }
             set { texture = value; }
         }
-        private ShaderResourceView resourceView;
+
+        private ShaderResourceView resourceView = null;
+
         public int Id = nextID++;
         public Texture11(Texture2D t)
         {
             texture = t;
             resourceView = new ShaderResourceView(texture.Device, texture);
         }
+#if WINDOWS_UWP
+        public Texture11(string filename)
+        {
+            var t = Task.Run(() =>
+            {
+                using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, filename))
+                {
+                   texture = TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap);
+                   resourceView = new ShaderResourceView(texture.Device, texture);
+                }
 
+            });
+        }
+#endif
         public ShaderResourceView ResourceView
         {
             get
@@ -39,7 +54,11 @@ namespace TerraViewer
         {
             get
             {
-                return texture.Description.Width;
+                if (texture != null)
+                {
+                    return texture.Description.Width;
+                }
+                return 0;
             }
         }
 
@@ -47,7 +66,11 @@ namespace TerraViewer
         {
             get
             {
-                return texture.Description.Height;
+                if (texture != null)
+                {
+                    return texture.Description.Height;
+                }
+                return 0;
             }
         }
 
@@ -70,10 +93,11 @@ namespace TerraViewer
 
         static public Texture11 FromFile(string fileName)
         {
-            
-            
-                return FromFile(RenderContext11.PrepDevice, fileName);
-           
+#if WINODWS_UWP
+            return new Texture11(filename);
+#else
+            return FromFile(RenderContext11.PrepDevice, fileName);
+#endif
         }
 
         static SharpDX.DXGI.Format promoteFormatToSRGB(SharpDX.DXGI.Format format)
@@ -123,13 +147,27 @@ namespace TerraViewer
             AssumeSRgb = 0x1,
         };
 
-        static public Texture11 FromFile(Device device, string fileName, LoadOptions options = LoadOptions.AssumeSRgb)
+        static public Texture11 FromFileImediate(Device device,string filename, LoadOptions options = LoadOptions.AssumeSRgb)
         {
 #if WINDOWS_UWP
-            using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, fileName))
+            using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, filename))
             {
                 return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
             }
+#else
+            return FromFile(device, filename, options);
+#endif
+        }
+
+
+        static public Texture11 FromFile(Device device, string fileName, LoadOptions options = LoadOptions.AssumeSRgb)
+        {
+#if WINDOWS_UWP
+            return new Texture11(fileName);
+            //using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, fileName))
+            //{
+            //    return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
+            //}
 #else
 
             try
@@ -232,7 +270,7 @@ namespace TerraViewer
             bitmap.MakeTransparent(SysColor.FromArgb((int) transparentColor));
             return FromBitmap(RenderContext11.PrepDevice, bitmap);
 #else
-               //todo fix this 
+
             return null;
 #endif
         }

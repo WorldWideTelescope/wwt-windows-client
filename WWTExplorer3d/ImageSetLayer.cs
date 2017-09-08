@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 using System.IO;
+#if WINDOWS_UWP
 
+#else
+using System.Xml;
+#endif
 namespace TerraViewer
 {
     class ImageSetLayer : Layer
@@ -49,7 +50,7 @@ namespace TerraViewer
             }
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             XmlNode imageSetNode = node["ImageSet"];
 
@@ -108,7 +109,7 @@ namespace TerraViewer
 
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             if (imageSet.WcsImage != null)
             {

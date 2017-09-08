@@ -1245,7 +1245,7 @@ namespace TerraViewer
 
         public static void SearchInit()
         {
-            Search.InitSearchTable();
+            Catalogs.InitSearchTable();
         }
 
 
@@ -5438,11 +5438,10 @@ namespace TerraViewer
                 e.Cancel = true;
             }
         }
-        KmlViewInformation kmlViewInfo = new KmlViewInformation();
-         public KmlViewInformation KmlViewInfo
+        public KmlViewInformation KmlViewInfo
         {
-            get { return kmlViewInfo; }
-            set { kmlViewInfo = value; }
+            get { return RenderEngine.KmlViewInfo; }
+            set { RenderEngine.kmlViewInfo = value; }
         }
 
 
@@ -12707,70 +12706,70 @@ namespace TerraViewer
                             break;
                         case NavigationActions.GotoSun:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Sun");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Sun");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoMercury:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Mercury");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Mercury");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoVenus:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Venus");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Venus");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoEarth:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Earth");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Earth");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoMars:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Mars");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Mars");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoJupiter:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Jupiter");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Jupiter");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoSaturn:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Saturn");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Saturn");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoUranus:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Uranus");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Uranus");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoNeptune:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Neptune");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Neptune");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoPluto:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Pluto");
+                                IPlace place = Catalogs.FindCatalogObjectExact("Pluto");
                                 RenderEngine.GotoTarget(place, false, false, true);
 
                             }
@@ -13115,7 +13114,7 @@ namespace TerraViewer
                 }
                 try
                 {
-                    IPlace place = Search.FindCatalogObjectExact(name);
+                    IPlace place = Catalogs.FindCatalogObjectExact(name);
                     RenderEngine.GotoTarget(place, false, false, true);
                 }
                 catch

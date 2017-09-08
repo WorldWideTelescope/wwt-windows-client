@@ -1,7 +1,7 @@
 ﻿using Microsoft.Maps.ElevationAdjustmentService.HDPhoto;
 using System;
 #if WINDOWS_UWP
-using SysColor = Windows.UI.Color;
+using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
 #endif

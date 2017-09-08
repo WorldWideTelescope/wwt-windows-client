@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 #else
 using Color = System.Drawing.Color;

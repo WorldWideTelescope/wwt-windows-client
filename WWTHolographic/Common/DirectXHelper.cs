@@ -35,23 +35,23 @@ namespace WWTHolographic.Common
         }
 
 #if DEBUG
-        /// <summary>
-        /// Check for SDK Layer support.
-        /// </summary>
-        internal static bool SdkLayersAvailable()
-        {
-            try
-            {
-                using (var device = new SharpDX.Direct3D11.Device(SharpDX.Direct3D.DriverType.Null, SharpDX.Direct3D11.DeviceCreationFlags.Debug))
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        ///// <summary>
+        ///// Check for SDK Layer support.
+        ///// </summary>
+        //internal static bool SdkLayersAvailable()
+        //{
+        //    try
+        //    {
+        //        using (var device = new SharpDX.Direct3D11.Device(SharpDX.Direct3D.DriverType.Null, SharpDX.Direct3D11.DeviceCreationFlags.Debug))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
 #endif
     }
 }

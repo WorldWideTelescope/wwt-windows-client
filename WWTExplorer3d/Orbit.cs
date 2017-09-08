@@ -1,13 +1,10 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-
-using System.Windows.Forms;
-
+#if WINDOWS_UWP
+using Color = TerraViewer.Color;
+#else
+using Color = System.Drawing.Color;
+#endif
 namespace TerraViewer
 {
     public class Orbit

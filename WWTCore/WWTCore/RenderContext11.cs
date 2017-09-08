@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using SysColor = Windows.UI.Color;
+using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
 #endif
@@ -1131,6 +1131,8 @@ namespace TerraViewer
             return new Vector3((float)v.X, (float)v.Y, (float)v.Z);
         }
 
+                            
+        public static Matrix ExternalScalingFactor = Matrix.Scaling(10, 10, -10);
 
         private void updateShaderTransformLightingConstants()
         {
@@ -1199,7 +1201,7 @@ ambientLightColor.B / 255.0f);
                     Matrix wvp = (worldViewMatrix * Projection).Matrix;
                     if (RenderContext11.ExternalProjection)
                     {
-                        wvp = wvp * Matrix.Scaling(10, 10, -10);
+                        wvp = wvp * ExternalScalingFactor;
                     }
 
                     shader.WVPMatrix = wvp;
@@ -1470,7 +1472,7 @@ ambientLightColor.B / 255.0f);
                 Matrix wvp = (worldMatrix * viewMatrix * Projection).Matrix;
                 if (RenderContext11.ExternalProjection)
                 {
-                    wvp = wvp * Matrix.Scaling(1, 1, -1);
+                    wvp = wvp * ExternalScalingFactor;
                 }
 
 

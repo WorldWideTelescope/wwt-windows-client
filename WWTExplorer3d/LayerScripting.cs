@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -58,6 +55,8 @@ namespace TerraViewer
                 }
 
         }
+
+
 
         void IScriptable.SetProperty(string name, string value)
         {

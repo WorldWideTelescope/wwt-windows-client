@@ -2,9 +2,9 @@ using AstroCalc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Serialization;
 
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
@@ -111,9 +111,12 @@ namespace TerraViewer
             newFolder.dirty = false;
             newFolder.VersionDependent = versionDependent;
             return newFolder;
- #else
-            return null;
-            //todo uwp mape a uwp compatible version
+#else
+            XmlSerializer serializer = new XmlSerializer(typeof(Folder));
+            Folder newFolder = (Folder)serializer.Deserialize(stream);
+            newFolder.dirty = false;
+            newFolder.VersionDependent = versionDependent;
+            return newFolder;
 #endif
 
         }
@@ -143,7 +146,14 @@ namespace TerraViewer
                 writer.Close();
             }
 #else
-            //todo uwp mape a uwp compatible version
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
+            using (FileStream writer = File.Open(filename,FileMode.Create,FileAccess.Write,FileShare.None))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Folder));
+                serializer.Serialize(writer, this, ns);
+                writer.Close();
+            }
 #endif
         }
 

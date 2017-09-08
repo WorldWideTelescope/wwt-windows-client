@@ -1,8 +1,8 @@
-﻿using Color = Windows.UI.Color;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.Reflection;
 using Windows.UI;
+using TerraViewer;
 
 namespace TerraViewer.Properties
 {
@@ -12,14 +12,14 @@ namespace TerraViewer.Properties
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
     public partial class Settings : IAppSettings
     {
-        static Dictionary<Color, string> ColorNames = new Dictionary<Color, string>();
+        //static Dictionary<Color, string> ColorNames = new Dictionary<Color, string>();
         static Settings ()
         {
             
-            foreach (var color in typeof(Colors).GetRuntimeProperties())
-            {
-                ColorNames[(Color)color.GetValue(null)] = color.Name;
-            }
+            //foreach (var color in typeof(Colors).GetRuntimeProperties())
+            //{
+            //    ColorNames[(Color)color.GetValue(null)] = color.Name;
+            //}
         }
 
         private static Settings defaultInstance = new Settings();
@@ -67,6 +67,10 @@ namespace TerraViewer.Properties
                                     cf.SettingsOwned = true;
                                     return settingsTable[index] = cf;
                                    
+                                }
+                                else if (pi.PropertyType == typeof(Color))
+                                {
+                                    return TerraViewer.SavedColor.Load(value);
                                 }
                                 else
                                 {

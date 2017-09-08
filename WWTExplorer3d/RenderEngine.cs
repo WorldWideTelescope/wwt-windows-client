@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using SysColor = Windows.UI.Color;
+using SysColor = TerraViewer.Color;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
 using SysColor = System.Drawing.Color;
@@ -34,9 +34,10 @@ namespace TerraViewer
         }
 
 #if WINDOWS_UWP
+        DataSetManager dsm;
         public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
-            
+    
             //from constructor
             config = new Config();
 
@@ -58,6 +59,16 @@ namespace TerraViewer
 
 
             AppSettings.SettingsBase = Properties.Settings.Default;
+            Text3dBatch hold;
+            hold = new Text3dBatch(80);
+            hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), " 0hr123456789-+", 80, .0001f));
+            hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "JanuyFebMcApilg", 80, .0001f));
+            hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "stSmOoNvDBCEdqV", 80, .0001f));
+            hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "jxGHILPRTU", 80, .0001f));
+            hold.PrepareBatch();
+
+            this.dsm = new DataSetManager();
+            ContextSearch.InitializeDatabase(true);
 
             //from form load
             Constellations.InitializeConstellationNames();
@@ -75,23 +86,37 @@ namespace TerraViewer
             Properties.Settings.Default.ShowSolarSystem.TargetState = true;
             InitializeImageSets();
 
-            currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
+            //currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
+            currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
+            BackgroundInit();
+            //set settings to test
+            Properties.Settings.Default.ShowGrid.TargetState = true;
+            Properties.Settings.Default.ShowEclipticGridText.TargetState = true;
+            Properties.Settings.Default.ShowConstellationLabels.TargetState = true;
+            Properties.Settings.Default.ShowConstellationFigures.TargetState = true;
+            Properties.Settings.Default.ShowConstellationBoundries.TargetState = false;
+            Properties.Settings.Default.ShowEcliptic.TargetState = false;
+            Properties.Settings.Default.ShowConstellationPictures.TargetState = true;
+            Properties.Settings.Default.ConstellationArtColor = Color.FromArgb(128, 255, 255, 255);
+            Catalogs.InitSearchTable();
+
+            LayerManager.InitLayers();
             TileCache.StartQueue();
             RenderEngine.Initialized = true;
             ReadyToRender = true;
         }
-
+#endif
         public static void BackgroundInit()
         {
-#if !BASICWWT
+
             Grids.InitStarVertexBuffer(RenderContext11.PrepDevice);
             Grids.MakeMilkyWay(RenderContext11.PrepDevice);
             Grids.InitCosmosVertexBuffer();
             Planets.InitPlanetResources();
-#endif
+
         }
-#endif
+
         const float FOVMULT = 343.774f;
         internal Config config;
 
@@ -3026,7 +3051,7 @@ namespace TerraViewer
             }
             else
             {
-                SkyColor = SystemColors.Black;
+                SkyColor = SysColor.Black;
             }
 
             WorldMatrix = Matrix3d.RotationY(((this.ViewLong + 90f) / 180f * Math.PI));
@@ -3163,7 +3188,7 @@ namespace TerraViewer
 
 
             bool activeTrackingFrame = false;
-#if !BASICWWT
+
             if (SolarSystemTrack == SolarSystemObjects.Custom && !string.IsNullOrEmpty(TrackingFrame))
             {
                 activeTrackingFrame = true;
@@ -3173,7 +3198,7 @@ namespace TerraViewer
             {
                 TrackingFrame = "";
             }
-#endif
+
 
             Vector3d center = viewCamera.ViewTarget;
             Vector3d lightPosition = -center;
@@ -4156,9 +4181,9 @@ namespace TerraViewer
             {
 
                 SpaceTimeController.UpdateClock();
-#if !BASICWWT            
+          
                 LayerManager.UpdateLayerTime();
-#endif
+
             }
 
             if (uiController != null)
@@ -4167,7 +4192,7 @@ namespace TerraViewer
                     uiController.PreRender(this);
                 }
             }
-#if !BASICWWT
+
             if (Space)
             {
                 Planets.UpdatePlanetLocations(false);
@@ -4178,7 +4203,7 @@ namespace TerraViewer
                 Planets.UpdatePlanetLocations(true);
                 Planets.UpdateOrbits(0);
             }
-#endif
+
 
             if (PreRenderStage != null)
             {
@@ -4205,20 +4230,19 @@ namespace TerraViewer
 
             if (SolarSystemMode)
             {
-#if !BASICWWT
+
                 if (SolarSystemTrack != SolarSystemObjects.Custom)
                 {
                     viewCamera.ViewTarget = Planets.GetPlanet3dLocation(SolarSystemTrack);
                 }
-#endif
             }
 
             ClampZoomValues();
 
 
-#if !BASICWWT
+
             LayerManager.PrepTourLayers();
-#endif
+
             if (PostRenderStage != null)
             {
                 PostRenderStage();
@@ -5043,10 +5067,10 @@ namespace TerraViewer
         public SimpleLineList11 measureLines = null;
 #if !WINDOWS_UWP
         public SkyLabel label = null;
-
+#endif
 
         public KmlLabels KmlMarkers = null;
-#endif
+
         public bool ShowKmlMarkers = true;
         IImageSet milkyWayBackground = null;
         IImageSet cmbBackground = null;
@@ -5059,6 +5083,13 @@ namespace TerraViewer
         {
             get { return currentViewCorners; }
             set { currentViewCorners = value; }
+        }
+
+        public KmlViewInformation kmlViewInfo = new KmlViewInformation();
+        public KmlViewInformation KmlViewInfo
+        {
+            get { return kmlViewInfo; }
+            set { kmlViewInfo = value; }
         }
 
         bool hemisphereView = false;
@@ -5093,16 +5124,21 @@ namespace TerraViewer
                 RenderContext11.BlendMode = BlendMode.Alpha;
                 if (currentImageSetfield.DataSetType == ImageSetType.Sandbox)
                 {
-#if !BASICWWT
+
                     // Start Sandbox mode
+                    if (RenderContext11.ExternalProjection)
+                    {
+                        RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
+                    }
+
                     RenderContext11.SunPosition = LayerManager.GetPrimarySandboxLight();
                     RenderContext11.SunlightColor = LayerManager.GetPrimarySandboxLightColor();
-#endif
+
                     RenderContext11.ReflectedLightColor = SysColor.FromArgb(255, 0, 0, 0);
                     RenderContext11.HemisphereLightColor = SysColor.FromArgb(255, 0, 0, 0);
 
                     SkyColor = SysColor.FromArgb(255, 0, 0, 0);
-#if !BASICWWT
+
                     if ((int)SolarSystemTrack < (int)SolarSystemObjects.Custom)
                     {
                         double radius = Planets.GetAdjustedPlanetRadius((int)SolarSystemTrack);
@@ -5119,7 +5155,7 @@ namespace TerraViewer
                         }
                     }
                     else
-#endif
+
                     {
                         planetFovWidth = Math.PI;
                     }
@@ -5139,9 +5175,9 @@ namespace TerraViewer
                     MakeFrustum();
 
                     double zoom = ZoomFactor;
-#if !BASICWWT
+
                     LayerManager.Draw(RenderContext11, 1.0f, false, "Sandbox", true, false);
-#endif
+
                     //todo uwp replace labels with uwp friendly ones
 #if !WINDOWS_UWP
                     if ((SolarSystemMode) && label != null && !TourPlayer.Playing)
@@ -5154,9 +5190,13 @@ namespace TerraViewer
                 }
                 else if (currentImageSetfield.DataSetType == ImageSetType.SolarSystem)
                 {
+                    if (RenderContext11.ExternalProjection)
+                    {
+                        RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
+                    }
                     {
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0); //black
-#if !BASICWWT
+
                         if ((int)SolarSystemTrack < (int)SolarSystemObjects.Custom)
                         {
                             double radius = Planets.GetAdjustedPlanetRadius((int)SolarSystemTrack);
@@ -5173,29 +5213,28 @@ namespace TerraViewer
                             }
                         }
                         else
-#endif
+
                         {
                             planetFovWidth = Math.PI;
                         }
 
-#if !BASICWWT
+
                         if (trackingObject == null)
                         {
-                            trackingObject = Search.FindCatalogObjectExact("Sun");
+                            trackingObject = Catalogs.FindCatalogObjectExact("Sun");
                         }
-#endif
+
                         SetupMatricesSolarSystem11(true, renderType);
 
 
-#if !BASICWWT
+
                         float skyOpacity = 1.0f - Planets.CalculateSkyBrightnessFactor(RenderContext11.View, viewCamera.ViewTarget);
                         if (float.IsNaN(skyOpacity))
                         {
                             skyOpacity = 0f;
                         }
-#else
-                        float skyOpacity = 1f;
-#endif
+
+
                         double zoom = ZoomFactor;
                         float milkyWayBlend = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 8.4)) / 4.2);
                         float milkyWayBlendIn = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 17.9)) / 2.3);
@@ -5284,7 +5323,7 @@ namespace TerraViewer
                             matLocal.Multiply(Matrix3d.Translation(viewCamera.ViewTarget));
                             RenderContext11.World = matLocal;
                             MakeFrustum();
-#if !BASICWWT
+
                             if (Properties.Settings.Default.SolarSystemCosmos.State)
                             {
                                 RenderContext11.DepthStencilMode = DepthStencilMode.Off;
@@ -5293,7 +5332,7 @@ namespace TerraViewer
                                 RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
                             }
 
-
+#if !WINDOWS_UWP
                             if (true)
                             {
                                 RenderContext11.DepthStencilMode = DepthStencilMode.Off;
@@ -5303,7 +5342,7 @@ namespace TerraViewer
                                 RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
                             }
 
-
+#endif
                             if (Properties.Settings.Default.SolarSystemMilkyWay.State && milkyWayBlendIn > 0)
                             {
                                 Grids.DrawGalaxy3D(RenderContext11, Properties.Settings.Default.SolarSystemMilkyWay.Opacity * skyOpacity * milkyWayBlendIn);
@@ -5317,7 +5356,7 @@ namespace TerraViewer
 
 
                             LayerManager.Draw(RenderContext11, 1.0f, true, "Sky", true, false);
-#endif
+
                             RenderContext11.World = matOld;
                             MakeFrustum();
                         }
@@ -5332,21 +5371,21 @@ namespace TerraViewer
                             {
                                 MinorPlanets.DrawMPC3D(RenderContext11, Properties.Settings.Default.SolarSystemMinorPlanets.Opacity, viewCamera.ViewTarget);
                             }
-
-                            Planets.DrawPlanets3D(RenderContext11, Properties.Settings.Default.SolarSystemPlanets.Opacity, viewCamera.ViewTarget);
 #endif
+                            Planets.DrawPlanets3D(RenderContext11, Properties.Settings.Default.SolarSystemPlanets.Opacity, viewCamera.ViewTarget);
+
                         }
 
                         double p = Math.Log(zoom);
                         double d = (180 / SolarSystemCameraDistance) * 100;
 
                         float sunAtDistance = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 7.5)) / 3);
-#if !BASICWWT
+
                         if (sunAtDistance > 0 && Settings.Active.SolarSystemPlanets)
                         {
                             Planets.DrawPointPlanet(RenderContext11, new Vector3d(0, 0, 0), (float)d * sunAtDistance, SysColor.FromArgb(192, 191, 128), false, 1);
                         }
-#endif
+
                         //todo uwp replace with uwp method
 #if !WINDOWS_UWP
                         if ((SolarSystemMode) && label != null && !TourPlayer.Playing)
@@ -5363,6 +5402,11 @@ namespace TerraViewer
 
                     if (currentImageSetfield.DataSetType == ImageSetType.Panorama || currentImageSetfield.DataSetType == ImageSetType.Sky)
                     {
+                        if (RenderContext11.ExternalProjection)
+                        {
+                            RenderContext11.ExternalScalingFactor = Matrix.Scaling(10, 10, -10);
+                        }
+
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0);
 
                         if ((int)renderType < 5)
@@ -5377,6 +5421,10 @@ namespace TerraViewer
                     }
                     else
                     {
+                        if (RenderContext11.ExternalProjection)
+                        {
+                            RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
+                        }
 
                         if (Settings.DomeView)
                         {
@@ -5415,19 +5463,19 @@ namespace TerraViewer
 #endif
                     string referenceFrame = GetCurrentReferenceFrame();
 
-#if !BASICWWT
+
                     if (PlanetLike || Space)
                     {
                         LayerManager.PreDraw(RenderContext11, 1.0f, Space, referenceFrame, true);
                     }
-#endif
 
-#if !BASICWWT
+
+
                     if (Properties.Settings.Default.EarthCutawayView.State && !Space && currentImageSetfield.DataSetType == ImageSetType.Earth)
                     {
                         Grids.DrawEarthStructure(RenderContext11, 1f);
                     }
-#endif
+
                     RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, SysColor.FromArgb(255, 255, 255, 255));
 #if !WINDOWS_UWP
                     if (KmlMarkers != null)
@@ -5483,7 +5531,7 @@ namespace TerraViewer
                         previewImageset = null;
                     }
 
-#if !BASICWWT
+
                     if (Space && (currentImageSetfield.Name == "Plotted Sky"))
                     {
 
@@ -5494,7 +5542,7 @@ namespace TerraViewer
                     {
                         Planets.DrawPlanets(RenderContext11, Properties.Settings.Default.ShowSolarSystem.Opacity);
                     }
-#endif
+
 
                     if (PlanetLike || Space)
                     {
@@ -5511,16 +5559,15 @@ namespace TerraViewer
                             RenderContext11.NominalRadius = currentImageSetfield.MeanRadius;
                             RenderContext11.DepthStencilMode = DepthStencilMode.Off;
                         }
-#if !BASICWWT
+
                         LayerManager.Draw(RenderContext11, 1.0f, Space, referenceFrame, true, Space);
-#endif
                     }
-#if !BASICWWT
+
                     if (Space && !hemisphereView && Settings.Active.LocalHorizonMode && !Settings.DomeView && !ProjectorServer)
                     {
                         Grids.DrawHorizon(RenderContext11, 1f);
                     }
-#endif
+
                     if (Settings.Active.ShowClouds && !Space && currentImageSetfield.DataSetType == ImageSetType.Earth)
                     {
                         DrawClouds();

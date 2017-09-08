@@ -55,4 +55,40 @@ namespace TerraViewer
 
     public enum AltUnits { Meters, Feet, Inches, Miles, Kilometers, AstronomicalUnits, LightYears, Parsecs, MegaParsecs, Custom };
     public enum FadeType { In, Out, Both, None };
+
+    public enum ScaleTypes { Linear, Log, Power, SquareRoot, HistogramEqualization };
+    public enum DataTypes { Byte, Int16, Int32, Float, Double, None };
+
+    public class SolverFunction
+    {
+        public virtual double Calculate()
+        {
+            return 0;
+        }
+    }
+
+    public enum ReferenceFrames
+    {
+        Sky,
+        Ecliptic,
+        Galactic,
+        Sun,
+        Mercury,
+        Venus,
+        Earth,
+        Mars,
+        Jupiter,
+        Saturn,
+        Uranus,
+        Neptune,
+        Pluto,
+        Moon,
+        Io,
+        Europa,
+        Ganymede,
+        Callisto,
+        Custom,
+        Identity,
+        Sandbox
+    };
 }

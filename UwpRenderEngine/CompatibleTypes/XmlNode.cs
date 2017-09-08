@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -110,7 +111,7 @@ namespace TerraViewer
         }
     }
 
-    public class XmlAttrributeList
+    public class XmlAttrributeList : IEnumerable<XmlNode>
     {
         public XmlNamedNodeMap Map = null;
 
@@ -133,11 +134,27 @@ namespace TerraViewer
             }
         }
 
-         public XmlNode GetNamedItem(string key)
+        public IEnumerator<XmlNode> GetEnumerator()
+        {
+            List<XmlNode> attributeList = new List<XmlNode>();
+
+            foreach(var item in Map)
+            {
+                attributeList.Add(new XmlNode(item));
+            }
+
+            return attributeList.GetEnumerator();
+        }
+
+        public XmlNode GetNamedItem(string key)
         {
             return new XmlNode(Map.GetNamedItem(key));
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

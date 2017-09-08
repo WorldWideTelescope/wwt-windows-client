@@ -1,6 +1,5 @@
 using System;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlNode = Windows.Data.Xml.Dom.IXmlNode;
 #else
 using Color = System.Drawing.Color;

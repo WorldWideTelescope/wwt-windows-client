@@ -8,7 +8,7 @@ using SharpDX.DXGI;
 #endif
 
 #if WINDOWS_UWP
-using SysColor = Windows.UI.Color;
+using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
 #endif

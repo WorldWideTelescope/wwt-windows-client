@@ -1,8 +1,10 @@
 using System;
+#if WINDOWS_UWP
+using TerraViewer;
+#else
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Diagnostics;
-
+#endif
 namespace WwtDataUtils
 {
     public struct PixelData

@@ -47,7 +47,7 @@ namespace TerraViewer
                     string[] keywords = tour.Keywords.Split(new char[] { ';', ':'});
                     foreach (string id in keywords)
                     {
-                        IPlace place = Search.FindCatalogObject(id);
+                        IPlace place = Catalogs.FindCatalogObject(id);
                         if (place != null)
                         {
                             Place tourPlace = Place.FromIPlace(place);
@@ -56,7 +56,7 @@ namespace TerraViewer
                             tourPlace.Classification = Classification.Unidentified;
                             tourPlace.Tour = tour;
                             ContextSearch.AddPlaceToContextSearch(tourPlace);
-                            Search.AddParts(place.Name, tourPlace);
+                            Catalogs.AddParts(place.Name, tourPlace);
                         }
                     }
                 }

@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
@@ -40,7 +39,7 @@ namespace TerraViewer
                     dataSets = new Dictionary<string, DataSet>();
 
                     XmlNode root = doc.GetChildByName("root");
-                    XmlNode datasets = root.FirstChild;
+                    XmlNode datasets = root["datasets"];
                     foreach (XmlNode dataset in datasets.ChildNodes)
                     {
                         DataSet ds = new DataSet(dataset.Attributes["name"].InnerText, dataset.Attributes["url"].InnerText, false, DataSetType.Place);
@@ -73,7 +72,7 @@ namespace TerraViewer
 
 
                     XmlNode root = doc.GetChildByName("root");
-                    XmlNode datasets = root.FirstChild;
+                    XmlNode datasets = root["datasets"];
                     foreach (XmlNode dataset in datasets.ChildNodes)
                     {
 

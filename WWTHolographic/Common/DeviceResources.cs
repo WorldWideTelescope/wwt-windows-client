@@ -68,10 +68,10 @@ namespace WWTHolographic.Common
             // Initialize Direct2D resources.
             var debugLevel = SharpDX.Direct2D1.DebugLevel.None;
 #if DEBUG
-            if (DirectXHelper.SdkLayersAvailable())
-            {
-                debugLevel = SharpDX.Direct2D1.DebugLevel.Information;
-            }
+            //if (DirectXHelper.SdkLayersAvailable())
+            //{
+            //    debugLevel = SharpDX.Direct2D1.DebugLevel.Information;
+            //}
 #endif
 
             // Initialize the Direct2D Factory.
@@ -150,11 +150,11 @@ namespace WWTHolographic.Common
             DeviceCreationFlags creationFlags = DeviceCreationFlags.BgraSupport;
 
 #if DEBUG
-            if (DirectXHelper.SdkLayersAvailable())
-            {
-                // If the project is in a debug build, enable debugging via SDK Layers with this flag.
-                creationFlags |= DeviceCreationFlags.Debug;
-            }
+            //if (DirectXHelper.SdkLayersAvailable())
+            //{
+            //    // If the project is in a debug build, enable debugging via SDK Layers with this flag.
+            //    creationFlags |= DeviceCreationFlags.Debug;
+            //}
 #endif
 
             // This array defines the set of DirectX hardware feature levels this app will support.

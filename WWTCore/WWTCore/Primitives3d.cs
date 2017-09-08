@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using SysColor = Windows.UI.Color;
+using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
 #endif
@@ -311,8 +311,14 @@ namespace TerraViewer
             SimpleLineShader11.Color = col;
             
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
-            mat.Transpose();
+ 
 
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
+
+            mat.Transpose();
             SimpleLineShader11.WVPMatrix = mat;
             SimpleLineShader11.CameraPosition = Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector3;
             SimpleLineShader11.ShowFarSide = true;
@@ -339,7 +345,14 @@ namespace TerraViewer
             {
                 renderContext.SetVertexBuffer(lineBuffer);
                 renderContext.SetIndexBuffer(null);
-                renderContext.devContext.Draw(lineBuffer.Count, 0);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.devContext.DrawInstanced(lineBuffer.Count, 2, 0, 0);
+                }
+                else
+                {
+                    renderContext.devContext.Draw(lineBuffer.Count, 0);
+                }
             }
 
             if (aaFix)

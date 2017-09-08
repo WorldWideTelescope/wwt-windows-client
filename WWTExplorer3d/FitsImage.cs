@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
-using System.Text;
-using System.IO;
+#if WINDOWS_UWP
+#else
 using System.Drawing;
-using WwtDataUtils;
+#endif
+using System.IO;
 using System.IO.Compression;
+using System.Text;
+using WwtDataUtils;
 
 
 
 namespace TerraViewer
 {
-    public enum ScaleTypes { Linear, Log, Power, SquareRoot, HistogramEqualization };
-    public enum DataTypes { Byte, Int16, Int32, Float, Double, None };
+
     public class FitsImage : WcsImage
     {
         Dictionary<String, String> header = new Dictionary<string, string>();
@@ -293,7 +294,7 @@ namespace TerraViewer
 
             if (galactic)
             {
-                double[] result = Earth3d.GalactictoJ2000(centerX, centerY);
+                double[] result = Coordinates.GalactictoJ2000(centerX, centerY);
                 centerX = result[0];
                 centerY = result[1];
             }
@@ -323,6 +324,9 @@ namespace TerraViewer
 
         public Bitmap GetHistogramBitmap(int max)
         {
+
+            //todo UWP fix for UWP
+#if !WINDOWS_UWP
             Bitmap bmp = new Bitmap(Histogram.Length, 150);
             Graphics g = Graphics.FromImage(bmp);
             g.Clear(Color.FromArgb(68, 82, 105));
@@ -344,6 +348,9 @@ namespace TerraViewer
             g.Dispose();
 
             return bmp;
+#else
+            return null;
+#endif
         }
 
         public int[] ComputeHistogram(int count, out int maxCount)

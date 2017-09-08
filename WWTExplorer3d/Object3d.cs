@@ -1,11 +1,23 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
-using System.Text;
+
 using System.IO;
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+using Point = TerraViewer.Point;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using Point = System.Drawing.Point;
 using System.Drawing;
-using SharpDX;
-using SharpDX.Direct3D11;
+using System.Xml;
 using System.Windows.Forms;
+#endif
+
 namespace TerraViewer
 {
     public class Object3dLayer : Layer , IUiController
@@ -221,7 +233,7 @@ namespace TerraViewer
 
         public bool ObjType = false;
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("FlipV", FlipV.ToString());
             xmlWriter.WriteAttributeString("FlipHandedness", FlipHandedness.ToString());
@@ -283,7 +295,7 @@ namespace TerraViewer
                 translate.Z = paramList[8];
 
                 Opacity = (float)paramList[13];
-                System.Drawing.Color color = System.Drawing.Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[9] * 255), (int)(paramList[10] * 255), (int)(paramList[11] * 255));
+                Color color = Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[9] * 255), (int)(paramList[10] * 255), (int)(paramList[11] * 255));
                 Color = color;
 
             }
@@ -305,7 +317,7 @@ namespace TerraViewer
             return this as IUiController;
         }
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             FlipV = Boolean.Parse(node.Attributes["FlipV"].Value);
 
@@ -386,17 +398,17 @@ namespace TerraViewer
                 Vector3d pnt1 = new Vector3d(1 - rad * 4, 0, 0);
                 Vector3d pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
                 Vector3d pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Red, new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Red, new Dates());
             }
             for (double a = 0; a < twoPi; a += step)
             {
                 Vector3d pnt1 = new Vector3d(1, 0, 0);
                 Vector3d pnt3 = new Vector3d(1 - rad * 4, Math.Cos(a) * rad, Math.Sin(a) * rad);
                 Vector3d pnt2 = new Vector3d(1 - rad * 4, Math.Cos(a + step) * rad, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), System.Drawing.Color.Red);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), Color.Red);
 
             // Y
             for (double a = 0; a < twoPi; a += step)
@@ -404,7 +416,7 @@ namespace TerraViewer
                 Vector3d pnt1 = new Vector3d(0, 1 - rad * 4, 0);
                 Vector3d pnt3 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
                 Vector3d pnt2 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Green, new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Green, new Dates());
             }
 
             for (double a = 0; a < twoPi; a += step)
@@ -412,10 +424,10 @@ namespace TerraViewer
                 Vector3d pnt1 = new Vector3d(0, 1, 0);
                 Vector3d pnt2 = new Vector3d(Math.Cos(a) * rad, 1 - rad * 4, Math.Sin(a) * rad);
                 Vector3d pnt3 = new Vector3d(Math.Cos(a + step) * rad, 1 - rad * 4, Math.Sin(a + step) * rad);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), 255, Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), 255, Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), System.Drawing.Color.Green);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 1, 0), Color.Green);
 
             // Z
             for (double a = 0; a < twoPi; a += step)
@@ -423,7 +435,7 @@ namespace TerraViewer
                 Vector3d pnt1 = new Vector3d(0, 0, 1 - rad * 4);
                 Vector3d pnt2 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
                 Vector3d pnt3 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.Blue, new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.Blue, new Dates());
             }
 
             for (double a = 0; a < twoPi; a += step)
@@ -431,10 +443,10 @@ namespace TerraViewer
                 Vector3d pnt1 = new Vector3d(0, 0, 1);
                 Vector3d pnt3 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1 - rad * 4);
                 Vector3d pnt2 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1 - rad * 4);
-                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, System.Drawing.Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128)), 255), new Dates());
+                TranslateUI.AddTriangle(pnt1, pnt2, pnt3, Color.FromArgb(Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128)), 255), new Dates());
             }
 
-            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), System.Drawing.Color.Blue);
+            TranslateUILines.AddLine(new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), Color.Blue);
             InitRotateUI();
             InitScaleUI();
         }
@@ -452,17 +464,17 @@ namespace TerraViewer
 
             // X
 
-            MakeCube(ScaleUI, new Vector3d(1 - rad * 2, 0, 0), rad * 2, System.Drawing.Color.Red);
-            MakeCube(ScaleUI, new Vector3d(0, 1 - rad * 2, 0), rad * 2, System.Drawing.Color.Green);
-            MakeCube(ScaleUI, new Vector3d(0, 0, 1 - rad * 2), rad * 2, System.Drawing.Color.Blue);
+            MakeCube(ScaleUI, new Vector3d(1 - rad * 2, 0, 0), rad * 2, Color.Red);
+            MakeCube(ScaleUI, new Vector3d(0, 1 - rad * 2, 0), rad * 2, Color.Green);
+            MakeCube(ScaleUI, new Vector3d(0, 0, 1 - rad * 2), rad * 2, Color.Blue);
 
         }
 
-        static void MakeCube(TriangleList tl, Vector3d center, double size, System.Drawing.Color color)
+        static void MakeCube(TriangleList tl, Vector3d center, double size, Color color)
         {
 
-            System.Drawing.Color dark = System.Drawing.Color.FromArgb((int)(color.R * .6), (color.G), (int)(color.B * .6));
-            System.Drawing.Color med = System.Drawing.Color.FromArgb((int)(color.R * .8), (int)(color.G * .8), (int)(color.B * .8));
+            Color dark =Color.FromArgb((int)(color.R * .6), (color.G), (int)(color.B * .6));
+            Color med = Color.FromArgb((int)(color.R * .8), (int)(color.G * .8), (int)(color.B * .8));
 
 
             tl.AddQuad(
@@ -532,8 +544,8 @@ namespace TerraViewer
                 Vector3d pnt2 = new Vector3d(-rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
                 Vector3d pnt3 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
                 Vector3d pnt4 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkRed), new Dates());
-                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.FromArgb(192, Color.DarkRed), new Dates());
+                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
 
@@ -546,8 +558,8 @@ namespace TerraViewer
                 Vector3d pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), -rad * (start ? 0 : (end ? 1.5 : 1)));
                 Vector3d pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
                 Vector3d pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkBlue), new Dates());
-                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.FromArgb(192, Color.DarkBlue), new Dates());
+                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
 
@@ -560,8 +572,8 @@ namespace TerraViewer
                 Vector3d pnt2 = new Vector3d(Math.Cos(a), -rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
                 Vector3d pnt3 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
                 Vector3d pnt4 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, System.Drawing.Color.DarkGreen), new Dates());
-                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(192, Color.DarkGreen), new Dates());
+                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(192, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
 
@@ -575,8 +587,8 @@ namespace TerraViewer
                 Vector3d pnt2 = new Vector3d(rad * (start ? 0 : (end ? 1.5 : 1)), Math.Cos(a), Math.Sin(a));
                 Vector3d pnt3 = new Vector3d(-rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
                 Vector3d pnt4 = new Vector3d(rad * (start ? 1.5 : (end ? 0 : 1)), Math.Cos(a + step), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.Red, new Dates());
-                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.Red, new Dates());
+                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
 
@@ -592,8 +604,8 @@ namespace TerraViewer
                 Vector3d pnt2 = new Vector3d(Math.Cos(a), Math.Sin(a), rad * (start ? 0 : (end ? 1.5 : 1)));
                 Vector3d pnt3 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)));
                 Vector3d pnt4 = new Vector3d(Math.Cos(a + step), Math.Sin(a + step), rad * (start ? 1.5 : (end ? 0 : 1)));
-                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, System.Drawing.Color.Blue, new Dates());
-                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                RotateUi.AddQuad(pnt1, pnt3, pnt2, pnt4, Color.Blue, new Dates());
+                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
 
@@ -609,8 +621,8 @@ namespace TerraViewer
                 Vector3d pnt2 = new Vector3d(Math.Cos(a), rad * (start ? 0 : (end ? 1.5 : 1)), Math.Sin(a));
                 Vector3d pnt3 = new Vector3d(Math.Cos(a + step), -rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
                 Vector3d pnt4 = new Vector3d(Math.Cos(a + step), rad * (start ? 1.5 : (end ? 0 : 1)), Math.Sin(a + step));
-                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.Green, new Dates());
-                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, System.Drawing.Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
+                RotateUi.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.Green, new Dates());
+                //TranslateUI.AddQuad(pnt1, pnt2, pnt3, pnt4, Color.FromArgb(255, Math.Max(0, (int)(Math.Sin(a) * 128)), Math.Max(0, (int)(Math.Sin(a) * 128))), new Dates());
                 index++;
             }
         }
@@ -879,13 +891,13 @@ namespace TerraViewer
 
         Draging dragMode = Draging.None;
 
-        System.Drawing.Point pntDown = new System.Drawing.Point();
+        Point pntDown = new Point();
         double valueOnDown = 0;
         double valueOnDown2 = 0;
 
         double hitDist = 20;
 
-        public bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDown(object sender, MouseEventArgs e)
         {
             pntDown = e.Location;
 
@@ -983,7 +995,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseUp(object sender, MouseEventArgs e)
         {
             if (dragMode != Draging.None)
             {
@@ -997,7 +1009,7 @@ namespace TerraViewer
         bool lockPreferedAxis = false;
         bool preferY = false;
 
-        public bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseMove(object sender, MouseEventArgs e)
         {
 
             //pntDown = e.Location;
@@ -1046,13 +1058,13 @@ namespace TerraViewer
                     case Draging.None:
                         break;
                     case Draging.X:
-                        this.translate.X = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        this.translate.X = valueOnDown + (12 * uiScale * (dist / RenderEngine.Engine.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.Y:
-                        this.translate.Y = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        this.translate.Y = valueOnDown + (12 * uiScale * (dist / RenderEngine.Engine.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.Z:
-                        this.translate.Z = valueOnDown + (12 * uiScale * (dist / Earth3d.MainWindow.RenderContext11.ViewPort.Width));
+                        this.translate.Z = valueOnDown + (12 * uiScale * (dist / RenderEngine.Engine.RenderContext11.ViewPort.Width));
                         break;
                     case Draging.HP:
                         this.heading = valueOnDown - distX / 4;
@@ -1123,7 +1135,7 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseClick(object sender, MouseEventArgs e)
         {
 
 
@@ -1135,22 +1147,22 @@ namespace TerraViewer
             return false;
         }
 
-        public bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        public bool MouseDoubleClick(object sender, MouseEventArgs e)
         {
             return false;
         }
 
-        public bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyDown(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        public bool KeyUp(object sender, KeyEventArgs e)
         {
             return false;
         }
 
-        public bool Hover(System.Drawing.Point pnt)
+        public bool Hover(Point pnt)
         {
             return false;
         }
@@ -1522,9 +1534,9 @@ namespace TerraViewer
         List<Texture11> meshNormalMaps = new List<Texture11>(); // Normal maps for our mesh
         public List<String> meshFilenames = new List<string>(); // filenames for meshes
 
-        public System.Drawing.Color Color = System.Drawing.Color.White;
+        public Color Color = Color.White;
 
-        public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, System.Drawing.Color color)
+        public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, Color color)
         {
             Color = color;
             Smooth = smooth;
@@ -1983,11 +1995,11 @@ namespace TerraViewer
 
         // Load a color chunk from a 3ds file
         // Colors may be stored in a 3ds file either as 3 floats or 3 bytes
-        private System.Drawing.Color LoadColorChunk(BinaryReader br)
+        private Color LoadColorChunk(BinaryReader br)
         {
             ushort chunkID = br.ReadUInt16();
             uint chunkLength = br.ReadUInt32();
-            System.Drawing.Color color = System.Drawing.Color.Black;
+            Color color = Color.Black;
 
             if ((chunkID == 0x0010 || chunkID == 0x0013) && chunkLength == 18)
             {
@@ -1996,11 +2008,11 @@ namespace TerraViewer
                 float r = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
                 float g = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
                 float b = Math.Max(0.0f, Math.Min(1.0f, br.ReadSingle()));
-                color = System.Drawing.Color.FromArgb(255, (int)(255.0f * r), (int)(255.0f * g), (int)(255.0f * b));
+                color = Color.FromArgb(255, (int)(255.0f * r), (int)(255.0f * g), (int)(255.0f * b));
             }
             else if ((chunkID == 0x0011 || chunkID == 0x0012) && chunkLength == 9)
             {
-                color = System.Drawing.Color.FromArgb(255, br.ReadByte(), br.ReadByte(), br.ReadByte());
+                color = Color.FromArgb(255, br.ReadByte(), br.ReadByte(), br.ReadByte());
             }
             else
             {
@@ -2084,7 +2096,7 @@ namespace TerraViewer
             currentMaterial = new Material();
             currentMaterial.Diffuse = Color;
             currentMaterial.Ambient = Color;
-            currentMaterial.Specular = System.Drawing.Color.White;
+            currentMaterial.Specular = Color.White;
             currentMaterial.SpecularSharpness = 30.0f;
             currentMaterial.Opacity = 1.0f;
             currentMaterial.Default = true;
@@ -2486,19 +2498,19 @@ namespace TerraViewer
                                     }
 
                                     currentMaterial = new Material();
-                                    currentMaterial.Diffuse = System.Drawing.Color.White;
-                                    currentMaterial.Ambient = System.Drawing.Color.White;
-                                    currentMaterial.Specular = System.Drawing.Color.Black;
+                                    currentMaterial.Diffuse = Color.White;
+                                    currentMaterial.Ambient = Color.White;
+                                    currentMaterial.Specular = Color.Black;
                                     currentMaterial.SpecularSharpness = 30.0f;
                                     currentMaterial.Opacity = 1.0f;
                                     materialName = parts[1];
                                     break;
                                 case "Ka":
-                                    currentMaterial.Ambient = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
+                                    currentMaterial.Ambient = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
                                     break;
                                 case "map_Kd":
                                     //ENDURE TEXTURES ARE NOT BLACK!    
-                                    currentMaterial.Diffuse = System.Drawing.Color.White;
+                                    currentMaterial.Diffuse = Color.White;
 
                                     string textureFilename = parts[1];
                                     for (int i = 2; i < parts.Length; i++)
@@ -2520,10 +2532,10 @@ namespace TerraViewer
                                     }
                                     break;
                                 case "Kd":
-                                    currentMaterial.Diffuse = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
+                                    currentMaterial.Diffuse = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255, 255)), (int)(Math.Min(float.Parse(parts[2]) * 255, 255)), (int)(Math.Min(float.Parse(parts[3]) * 255, 255)));
                                     break;
                                 case "Ks":
-                                    currentMaterial.Specular = System.Drawing.Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255,255)), (int)(Math.Min(float.Parse(parts[2]) * 255,255)), (int)(Math.Min(float.Parse(parts[3]) * 255,255)));
+                                    currentMaterial.Specular = Color.FromArgb((int)(Math.Min(float.Parse(parts[1]) * 255,255)), (int)(Math.Min(float.Parse(parts[2]) * 255,255)), (int)(Math.Min(float.Parse(parts[3]) * 255,255)));
                                     break;
                                 case "d":
                                     // Where does this map?
@@ -2827,9 +2839,9 @@ namespace TerraViewer
                                 currentMaterialIndex++;
 
                                 currentMaterial = new Material();
-                                currentMaterial.Diffuse = System.Drawing.Color.White;
-                                currentMaterial.Ambient = System.Drawing.Color.White;
-                                currentMaterial.Specular = System.Drawing.Color.Black;
+                                currentMaterial.Diffuse = Color.White;
+                                currentMaterial.Ambient = Color.White;
+                                currentMaterial.Specular = Color.Black;
                                 currentMaterial.SpecularSharpness = 30.0f;
                                 currentMaterial.Opacity = 1.0f;
                             }
@@ -2895,7 +2907,7 @@ namespace TerraViewer
                                         // The ISS model has black for the diffuse color; to work around this
                                         // we'll set the diffuse color to white when there's a texture present.
                                         // The correct fix is to modify the 3ds model of ISS.
-                                        currentMaterial.Diffuse = System.Drawing.Color.White;
+                                        currentMaterial.Diffuse = Color.White;
                                     }
                                     else
                                     {
@@ -2990,7 +3002,7 @@ namespace TerraViewer
 
                                         // Set the current specular color from the specular texture strength
                                         int gray = (int)(255.99f * strength / 100.0f);
-                                        currentMaterial.Specular = System.Drawing.Color.FromArgb(255, gray, gray, gray);
+                                        currentMaterial.Specular = Color.FromArgb(255, gray, gray, gray);
                                     }
                                     else
                                     {
@@ -3376,7 +3388,7 @@ namespace TerraViewer
                         sunlightFactor = Math.Max(minimumShadow, (d - u) / (penumbraRadius - u));
 
                         int gray = (int)(255.99f * sunlightFactor);
-                        renderContext.SunlightColor = System.Drawing.Color.FromArgb(gray, gray, gray);
+                        renderContext.SunlightColor = Color.FromArgb(gray, gray, gray);
 
                         // Reduce sky-scattered light as well
                         hemiLightFactor *= (float)sunlightFactor;
@@ -3384,10 +3396,10 @@ namespace TerraViewer
                 }
             }
 
-            renderContext.ReflectedLightColor = System.Drawing.Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
+            renderContext.ReflectedLightColor = Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
                                                                                (int)(renderContext.ReflectedLightColor.G * reflectedLightFactor),
                                                                                (int)(renderContext.ReflectedLightColor.B * reflectedLightFactor));
-            renderContext.HemisphereLightColor = System.Drawing.Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
+            renderContext.HemisphereLightColor = Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
                                                                                (int)(renderContext.HemisphereLightColor.G * hemiLightFactor),
                                                                                (int)(renderContext.HemisphereLightColor.B * hemiLightFactor));
         }
@@ -3447,15 +3459,15 @@ namespace TerraViewer
             if (Properties.Settings.Default.SolarSystemLighting)
             {
                 SetupLighting(renderContext);
-                renderContext.AmbientLightColor = System.Drawing.Color.FromArgb(11, 11, 11);
+                renderContext.AmbientLightColor = Color.FromArgb(11, 11, 11);
             }
             else
             {
                 // No lighting: set ambient light to white and turn off all other light sources
-                renderContext.SunlightColor = System.Drawing.Color.Black;
-                renderContext.ReflectedLightColor = System.Drawing.Color.Black;
-                renderContext.HemisphereLightColor = System.Drawing.Color.Black;
-                renderContext.AmbientLightColor = System.Drawing.Color.White;
+                renderContext.SunlightColor = Color.Black;
+                renderContext.ReflectedLightColor = Color.Black;
+                renderContext.HemisphereLightColor = Color.Black;
+                renderContext.AmbientLightColor = Color.White;
             }
 
             SharpDX.Direct3D11.Device device = renderContext.Device;
@@ -3467,7 +3479,7 @@ namespace TerraViewer
             }
 
 
-            //Object3dLayer.sketch.DrawLines(renderContext, 1.0f, System.Drawing.Color.Red);
+            //Object3dLayer.sketch.DrawLines(renderContext, 1.0f, Color.Red);
 
             renderContext.DepthStencilMode = DepthStencilMode.ZReadWrite;
             renderContext.BlendMode = BlendMode.Alpha;
@@ -3523,7 +3535,7 @@ namespace TerraViewer
             renderContext.SunlightColor = savedSunlightColor;
             renderContext.ReflectedLightColor = savedReflectedColor;
             renderContext.HemisphereLightColor = savedHemiColor;
-            renderContext.AmbientLightColor = System.Drawing.Color.Black;
+            renderContext.AmbientLightColor = Color.Black;
 
 
 

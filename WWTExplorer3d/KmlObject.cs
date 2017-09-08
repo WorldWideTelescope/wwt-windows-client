@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 #else
 using Color = System.Drawing.Color;
@@ -167,9 +167,10 @@ namespace TerraViewer
             }
 
             XmlDocument doc = new XmlDocument();
+#if !WINDOWS_UWP
             XmlNamespaceManager NamespaceManager = new XmlNamespaceManager(doc.NameTable);
             NamespaceManager.AddNamespace("atom", "http://www.w3.org/2005/Atom");
-
+#endif
             if (filename.ToLower().Contains(".kmz"))
             {
                 if (Uri.IsWellFormedUriString(filename, UriKind.Absolute))
@@ -212,7 +213,7 @@ namespace TerraViewer
                 {
                 }
             }
-            XmlNode kml = doc["kml"];
+            XmlNode kml = doc.GetChildByName("kml");
             if (kml == null)
             {
                 return;
@@ -641,7 +642,7 @@ namespace TerraViewer
         public DateTime EndTime = new DateTime(3999, 1, 1);
         public bool UnBoundedBegin = true;
         public bool UnBoundedEnd = true;
-        public void LoadDetails(XmlElement node, KmlRoot owner)
+        public void LoadDetails(XmlNode node, KmlRoot owner)
         {
             if (node["begin"] != null)
             {
@@ -1843,8 +1844,11 @@ namespace TerraViewer
                 {
                     Requested = true;
                     // Do a background load on this
+#if !WINDOWS_UWP
                     ThreadPool.QueueUserWorkItem(new WaitCallback(LoadTexture), this);
+#else
 
+#endif
                 }
                 LastRequestFrame = CurrentFrame;
                 return texture;
@@ -1865,8 +1869,7 @@ namespace TerraViewer
                 {
                     Directory.CreateDirectory(dir);
                 }
-                // This is a expanded timeout version of WebClient
-                MyWebClient Client = new MyWebClient();
+                
                 
 
                 string filename = dir + ((uint)entry.Href.GetHashCode32()).ToString() + ".png";
@@ -1877,7 +1880,14 @@ namespace TerraViewer
 
                     if (Uri.IsWellFormedUriString(entry.Href, UriKind.Absolute))
                     {
+#if !WINDOWS_UWP
+                        // This is a expanded timeout version of WebClient
+                        MyWebClient Client = new MyWebClient();
                         byte[] data = Client.DownloadData(entry.Href);
+#else
+                        WebClient Client = new WebClient();
+                        byte[] data = Client.DownloadData(entry.Href);
+#endif
                         stream = new MemoryStream(data);
                     }
                     else

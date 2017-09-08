@@ -33,6 +33,469 @@ namespace TerraViewer
         XButton2 = 16777216
     }
 
+    public class Cursor
+    {
+        static Cursor current = Cursors.Arrow;
+        public static Cursor Current
+        {
+            get
+            {
+                return current;
+            }
+            set
+            {
+                Current = value;
+            }
+        }
+    }
+
+    //
+    // Summary:
+    //     Provides a collection of System.Windows.Forms.Cursor objects for use by a Windows
+    //     Forms application.
+    public class Cursors
+    {
+        static Cursor Empty = new Cursor();
+        //
+        // Summary:
+        //     Gets the cursor that appears when an application starts.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears when
+        //     an application starts.
+        public static Cursor AppStarting
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+         //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling horizontally and vertically downward and to the left.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling horizontally
+        //     and vertically downward and to the left.
+        public static Cursor PanSW
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling vertically in a downward direction.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling vertically
+        //     in a downward direction.
+        public static Cursor PanSouth
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling horizontally and vertically downward and to the right.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling horizontally
+        //     and vertically downward and to the right.
+        public static Cursor PanSE
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling horizontally and vertically upward and to the left.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling horizontally
+        //     and vertically upward and to the left.
+        public static Cursor PanNW
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling vertically in an upward direction.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling vertically
+        //     in an upward direction.
+        public static Cursor PanNorth
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling horizontally and vertically upward and to the right.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling horizontally
+        //     and vertically upward and to the right.
+        public static Cursor PanNE
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling horizontally to the right.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling horizontally
+        //     to the right.
+        public static Cursor PanEast
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is not moving,
+        //     but the window can be scrolled in a vertical direction.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is not moving.
+        public static Cursor NoMoveVert
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is not moving,
+        //     but the window can be scrolled in a horizontal direction.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is not moving.
+        public static Cursor NoMoveHoriz
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is not moving,
+        //     but the window can be scrolled in both a horizontal and vertical direction.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is not moving.
+        public static Cursor NoMove2D
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears when the mouse is positioned over a vertical splitter
+        //     bar.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears when
+        //     the mouse is positioned over a vertical splitter bar.
+        public static Cursor VSplit
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears when the mouse is positioned over a horizontal splitter
+        //     bar.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears when
+        //     the mouse is positioned over a horizontal splitter bar.
+        public static Cursor HSplit
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the Help cursor, which is a combination of an arrow and a question mark.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the Help cursor.
+        public static Cursor Help
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the wait cursor, typically an hourglass shape.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the wait cursor.
+        public static Cursor WaitCursor
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the up arrow cursor, typically used to identify an insertion point.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the up arrow cursor.
+        public static Cursor UpArrow
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the two-headed horizontal (west/east) sizing cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the two-headed horizontal (west/east)
+        //     sizing cursor.
+        public static Cursor SizeWE
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the two-headed diagonal (northwest/southeast) sizing cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the two-headed diagonal (northwest/southeast)
+        //     sizing cursor.
+        public static Cursor SizeNWSE
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the two-headed vertical (north/south) sizing cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the two-headed vertical (north/south)
+        //     sizing cursor.
+        public static Cursor SizeNS
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the two-headed diagonal (northeast/southwest) sizing cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents two-headed diagonal (northeast/southwest)
+        //     sizing cursor.
+        public static Cursor SizeNESW
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the four-headed sizing cursor, which consists of four joined arrows that
+        //     point north, south, east, and west.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the four-headed sizing cursor.
+        public static Cursor SizeAll
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that indicates that a particular region is invalid for the current
+        //     operation.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that indicates that
+        //     a particular region is invalid for the current operation.
+        public static Cursor No
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the I-beam cursor, which is used to show where the text cursor appears when
+        //     the mouse is clicked.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the I-beam cursor.
+        public static Cursor IBeam
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the default cursor, which is usually an arrow cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the default cursor.
+        public static Cursor Default
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the crosshair cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the crosshair cursor.
+        public static Cursor Cross
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the arrow cursor.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the arrow cursor.
+        public static Cursor Arrow
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the cursor that appears during wheel operations when the mouse is moving
+        //     and the window is scrolling horizontally to the left.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the cursor that appears during
+        //     wheel operations when the mouse is moving and the window is scrolling horizontally
+        //     to the left.
+        public static Cursor PanWest
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+        //
+        // Summary:
+        //     Gets the hand cursor, typically used when hovering over a Web link.
+        //
+        // Returns:
+        //     The System.Windows.Forms.Cursor that represents the hand cursor.
+        public static Cursor Hand
+        {
+            get
+            {
+                return Empty;
+            }
+        }
+    }
+
+    public class Control
+    {
+        public static Keys ModifierKeys
+        {
+            get
+            {
+                var shift = Windows.UI.Xaml.Window.Current.CoreWindow.GetKeyState(Windows.System.VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+                var cntrl = Windows.UI.Xaml.Window.Current.CoreWindow.GetKeyState(Windows.System.VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+                var alt = Windows.UI.Xaml.Window.Current.CoreWindow.GetKeyState(Windows.System.VirtualKey.Menu).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+                Keys mods = Keys.None;
+
+                if (shift)
+                {
+                    mods = mods | Keys.Shift;
+                }
+
+                if (alt)
+                {
+                    mods = mods | Keys.Alt;
+                }
+
+                if (cntrl)
+                {
+                    mods = mods | Keys.Control;
+                }
+
+                return mods;
+            }
+        }
+    }
     public class MouseEventArgs
     {
         //
@@ -1304,7 +1767,11 @@ namespace TerraViewer
         //
         // Returns:
         //     The System.Drawing.PointF that results from the conversion.
-       // public static implicit operator PointF(Point p);
+        public static implicit operator PointF(Point p)
+        {
+            return new PointF(p.X, p.Y);
+        }
+
         //
         // Summary:
         //     Converts the specified System.Drawing.Point structure to a System.Drawing.Size
@@ -1614,7 +2081,10 @@ namespace TerraViewer
         // Returns:
         //     This method returns true if the point defined by x and y is contained within
         //     this System.Drawing.RectangleF structure; otherwise false.
-       // public bool Contains(float x, float y);
+        public bool Contains(float x, float y)
+        {
+            return (x > X && x < (X + Width) && y > Y && y < (Y + Height));
+        }
         //
         // Summary:
         //     Determines if the specified point is contained within this System.Drawing.RectangleF
@@ -1627,7 +2097,10 @@ namespace TerraViewer
         // Returns:
         //     This method returns true if the point represented by the pt parameter is contained
         //     within this System.Drawing.RectangleF structure; otherwise false.
-        //public bool Contains(PointF pt);
+        public bool Contains(PointF pt)
+        {
+            return (pt.X > X && pt.X < (X + Width) && pt.Y > Y && pt.Y < (Y + Height));
+        }
         //
         // Summary:
         //     Determines if the rectangular region represented by rect is entirely contained
@@ -2885,11 +3358,26 @@ namespace TerraViewer
         {
 
         }
-        
-        public static int ToArgb (this Windows.UI.Color color)
+
+
+        public static byte[] GetBuffer(this System.IO.MemoryStream ms)
         {
-            return (int)((uint)color.A << 24 | (uint)color.R << 16 | (uint)color.G << 8 | (uint)color.B);
+            System.ArraySegment<byte> segment = new System.ArraySegment<byte>();
+
+            bool sucsess = ms.TryGetBuffer(out segment);
+
+            if (sucsess)
+            {
+                return segment.Array;
+            }
+
+            return new byte[0];
         }
+   
+        //public static int ToArgb (this Windows.UI.Color color)
+        //{
+        //    return (int)((uint)color.A << 24 | (uint)color.R << 16 | (uint)color.G << 8 | (uint)color.B);
+        //}
 
       
     }

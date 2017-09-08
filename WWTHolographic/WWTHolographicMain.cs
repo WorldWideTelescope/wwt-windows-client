@@ -95,7 +95,8 @@ namespace WWTHolographic
                 OnGamepadAdded(null, gamepad);
             }
         }
-
+        bool setupStarted = false;
+        bool setupFinished = false;
         public void SetHolographicSpace(HolographicSpace holographicSpace)
         {
             this.holographicSpace = holographicSpace;
@@ -103,11 +104,17 @@ namespace WWTHolographic
             // 
             // TODO: Add code here to initialize your content.
             // 
-            var t = Task.Run(() => { 
-                renderEngine = new TerraViewer.RenderEngine();
-                renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory, 1440, 1440);
-            });
+            if (!setupStarted)
+            {
+                setupStarted = true;
 
+                var t = Task.Run(() =>
+                {
+                    renderEngine = new TerraViewer.RenderEngine();
+                    renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory, 1440, 1440);
+                    setupFinished = true;
+                });
+            }
 #if DRAW_SAMPLE_CONTENT
             // Initialize the sample hologram.
             spinningCubeRenderer = new SpinningCubeRenderer(deviceResources);
@@ -353,7 +360,7 @@ namespace WWTHolographic
 
                     if (cameraActive)
                     {
-                        if (renderEngine != null)
+                        if (renderEngine != null && setupFinished)
                         {
                             renderEngine.Render();
                         }

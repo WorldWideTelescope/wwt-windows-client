@@ -4,10 +4,6 @@
 using System;
 using System.Collections.Generic;
 #if WINDOWS_UWP
-using Color = Windows.UI.Color;
-using PointF = Windows.Foundation.Point;
-using SizeF = Windows.Foundation.Size;
-using RectangleF = Windows.Foundation.Rect;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
@@ -146,7 +142,7 @@ namespace TerraViewer
 
         protected PositionColoredTextured[] points;
 
-        public Color DrawColor = SystemColors.Gray;
+        public Color DrawColor = Color.Gray;
     
         public Telescope Telescope= null;
         public Camera Camera = null;
@@ -167,7 +163,7 @@ namespace TerraViewer
 
         private void DrawFOV(RenderContext11 renderContext, float opacity, double ra, double dec)
         {
-            Color color = UiTools.FromArgb((int)(opacity * 255f), Properties.Settings.Default.FovColor);
+            Color color = Color.FromArgb((int)(opacity * 255f), Properties.Settings.Default.FovColor);
 
             foreach (Imager chip in Camera.Chips)
             {
@@ -229,8 +225,8 @@ namespace TerraViewer
 
         int GetTransparentColor(int color, float opacity)
         {
-            Color inColor = UiTools.FromArgb(color);
-            Color outColor = UiTools.FromArgb((byte)(opacity * 255f), inColor);
+            Color inColor = Color.FromArgb(color);
+            Color outColor = Color.FromArgb((byte)(opacity * 255f), inColor);
             return outColor.ToArgb();
         }
     }

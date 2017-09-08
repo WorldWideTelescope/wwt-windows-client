@@ -1,12 +1,18 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+#if !WINDOWS_UWP
+using System.Drawing;
+#endif
+
+
 namespace TerraViewer
 {
     public abstract class WcsImage 
     {
         public static WcsImage FromFile(string fileName)
         {
+#if !WINDOWS_UWP
             string extension = Path.GetExtension(fileName);
 
             switch (extension.ToLower())
@@ -20,6 +26,9 @@ namespace TerraViewer
                     return new VampWCSImageReader(fileName);
                 
             }
+#else
+            return null;
+#endif
         }
 
         protected string copyright;
@@ -200,9 +209,9 @@ namespace TerraViewer
             set { filename = value; }
         }
 
-        private System.Drawing.Color color = System.Drawing.Color.White;
+        private Color color = Color.White;
 
-        public System.Drawing.Color Color
+        public Color Color
         {
             get { return color; }
             set { color = value; }
@@ -218,6 +227,6 @@ namespace TerraViewer
         }
 
 
-        abstract public System.Drawing.Bitmap GetBitmap();
+        abstract public Bitmap GetBitmap();
     }
 }

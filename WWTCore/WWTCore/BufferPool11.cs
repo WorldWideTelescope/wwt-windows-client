@@ -449,7 +449,7 @@ namespace TerraViewer
 
         public static Texture11 GetTexture(string filename)
         {
-            return Texture11.FromFile(RenderContext11.PrepDevice, filename);
+            return Texture11.FromFileImediate(RenderContext11.PrepDevice, filename);
         }
 
         public static Texture11 GetTexture(Stream stream)
