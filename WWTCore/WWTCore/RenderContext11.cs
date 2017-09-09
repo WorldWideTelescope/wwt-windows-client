@@ -332,8 +332,7 @@ namespace TerraViewer
                             Width = width,
                             Height = height,
                             Format = Format.R8G8B8A8_UNorm,
-                            SampleDescription = new SampleDescription(1, 0), // new SampleDescription(MultiSampleCount, 0),
-
+                            SampleDescription = new SampleDescription(MultiSampleCount, 0),
                             Scaling = Scaling.Stretch,
                             Stereo = false,
                             SwapEffect = SwapEffect.FlipSequential, //was discard?

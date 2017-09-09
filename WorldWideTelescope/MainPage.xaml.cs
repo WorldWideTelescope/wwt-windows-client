@@ -38,7 +38,10 @@ namespace WorldWideTelescope
         double Width = 1;
         double Height = 1;
 
-
+        public void Run()
+        {
+            int i = 1;
+        }
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
         {
             float pixelScale = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().LogicalDpi / 96.0f;
@@ -583,7 +586,8 @@ namespace WorldWideTelescope
 
                 RenderEngine.Render();
 
-                RenderEngine.RenderContext11.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
+                RenderEngine.RenderContext11.swapChain.Present(0, DXGI.PresentFlags.None, new DXGI.PresentParameters());
+
             }
         }
     }

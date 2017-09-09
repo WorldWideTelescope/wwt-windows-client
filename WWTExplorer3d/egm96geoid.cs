@@ -37,7 +37,13 @@ namespace TerraViewer
             BinaryReader br = new BinaryReader(fs);
             return br.ReadBytes((int)fs.Length);
 #else
-            return null;
+
+            string name = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine\\Resources\\cosmos.bin");
+            Stream fs = File.OpenRead(name);
+
+            long len = fs.Length;
+            BinaryReader br = new BinaryReader(fs);
+            return br.ReadBytes((int)fs.Length);
 #endif
         }
         /// <summary>

@@ -842,11 +842,14 @@ namespace TerraViewer
 
         virtual public bool IsTileBigEnough(RenderContext11 renderContext)
         {
-#if !WINDOWS_UWP
-            if (level > 1)
-#else
-             if (level > 3)
-#endif
+            int min = 1;
+            //todo UWP fix this to use HMD view frustrum
+            if (RenderContext11.ExternalProjection)
+            {
+                min = 3;
+            }
+
+            if (level > min)
             {
 
                 SharpDX.Vector3 topLeftScreen;

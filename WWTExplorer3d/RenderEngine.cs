@@ -49,13 +49,16 @@ namespace TerraViewer
             monitorWidth = config.Width;
             bezelSpacing = (float)config.Bezel;
 
-            //RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-            RenderContext11.MultiSampleCount = 1;
-            RenderContext11 = new RenderContext11(device,wicImagingFactory, width, height);
+            RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
+            RenderContext11.MultiSampleCount = 1;            
             if (device !=null)
             {
+
                 RenderContext11.ExternalProjection = true;
             }
+
+            RenderContext11 = new RenderContext11(device,wicImagingFactory, width, height);
+
 
 
             AppSettings.SettingsBase = Properties.Settings.Default;
@@ -66,6 +69,9 @@ namespace TerraViewer
             hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "stSmOoNvDBCEdqV", 80, .0001f));
             hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "jxGHILPRTU", 80, .0001f));
             hold.PrepareBatch();
+
+            // Load the EGM model
+            EGM96Geoid.Height(0, 0);
 
             this.dsm = new DataSetManager();
             ContextSearch.InitializeDatabase(true);
@@ -100,6 +106,8 @@ namespace TerraViewer
             Properties.Settings.Default.ShowConstellationPictures.TargetState = true;
             Properties.Settings.Default.ConstellationArtColor = Color.FromArgb(128, 255, 255, 255);
             Properties.Settings.Default.ShowISSModel = true;
+            Properties.Settings.Default.CloudMap8k = true;
+            Properties.Settings.Default.ShowSolarSystem.TargetState = false;
             Catalogs.InitSearchTable();
 
             LayerManager.InitLayers();
