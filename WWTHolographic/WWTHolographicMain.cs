@@ -297,6 +297,8 @@ namespace WWTHolographic
             if (state != null)
             {
                 var source = state.Source;
+
+                var h = state.Source.Handedness;
                 var controller = source.Controller;
                 var x = controller.ProductId;
                 var spp = state.Properties.TryGetLocation(stationaryReferenceFrame.CoordinateSystem);

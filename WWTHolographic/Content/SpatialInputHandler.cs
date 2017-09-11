@@ -42,37 +42,61 @@ namespace WWTHolographic.Common
         private void InteractionManager_SourceLost(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
         {
             LastController = args.State.Source;
-            if (LeftController != null && LastController.Id == LeftController.Id)
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {
-                LeftController = RightController;
+                LeftController = null;
+            }
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Right)
+            {
                 RightController = null;
             }
-            else if (RightController != null && LastController.Id == RightController.Id)
-            {
-                RightController = null;
-            }
+
+
+            //if (LeftController != null && LastController.Id == LeftController.Id)
+            //{
+            //    LeftController = RightController;
+            //    RightController = null;
+            //}
+            //else if (RightController != null && LastController.Id == RightController.Id)
+            //{
+            //    RightController = null;
+            //}
         }
 
         private void InteractionManager_SourceDetected(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
         {
             LastController = args.State.Source;
 
-            if (LeftController == null)
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {
                 LeftController = LastController;
             }
-            else if (RightController == null)
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Right)
             {
-                if (LastController.Id > LeftController.Id)
-                {
-                    RightController = LastController;
-                }
-                else
-                {
-                    RightController = LeftController;
-                    LeftController = LastController;
-                }
+                RightController = LastController;
             }
+
+
+
+            //if (LeftController == null)
+            //{
+            //    LeftController = LastController;
+            //}
+            //else if (RightController == null)
+            //{
+            //    if (LastController.Id > LeftController.Id)
+            //    {
+            //        RightController = LastController;
+            //    }
+            //    else
+            //    {
+            //        RightController = LeftController;
+            //        LeftController = LastController;
+            //    }
+            //}
         }
         // Checks if the user performed an input gesture since the last call to this method.
         // Allows the main update loop to check for asynchronous changes to the user

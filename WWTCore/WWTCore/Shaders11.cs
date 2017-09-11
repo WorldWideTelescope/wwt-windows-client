@@ -855,7 +855,8 @@ namespace TerraViewer
             if (RenderContext11.ExternalProjection)
             {
                 vsOut +=
-                     "     uint        viewId  : TEXCOORD" + (key.overlayTextureCount + 1) + ";               \n";
+                  //   "     uint        viewId  : TEXCOORD" + (key.overlayTextureCount + 1) + ";               \n";
+                     "     uint        viewId  : TEXCOORD" + (8) + ";               \n";
                 gsOut +=
                      "     uint        rtvId  : SV_RenderTargetArrayIndex;               \n";
             } 

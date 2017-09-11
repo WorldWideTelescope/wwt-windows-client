@@ -281,6 +281,19 @@ namespace TerraViewer
             AllMaps["ISS"].Open = true;
         }
 
+        static void AddIssToSandbox()
+        {
+            ISSLayer layer = new ISSLayer();
+
+            layer.Name = Language.GetLocalizedText(1314, "ISS Model");
+            layer.Enabled = true;
+            layer.ID = new Guid();
+            LayerList.Add(layer.ID, layer);
+            layer.ReferenceFrame = "Sandbox";
+            AllMaps["Sandbox"].Layers.Add(layer);
+            
+        }
+
         static public Vector3d GetPrimarySandboxLight()
         {
             LayerMap sandbox = AllMaps["Sandbox"];
@@ -397,7 +410,7 @@ namespace TerraViewer
 
             if (!TourLayers)
             {
-            //    LayerMaps["Sun"].ChildMaps["Earth"].AddChild(iss);
+                LayerMaps["Sun"].ChildMaps["Earth"].AddChild(iss);
             }
             LayerMaps["Sun"].ChildMaps["Earth"].AddChild(ol);
             LayerMaps["Sun"].ChildMaps["Earth"].AddChild(l1);
@@ -426,9 +439,6 @@ namespace TerraViewer
 
             LayerMaps.Add("Sandbox", new LayerMap("Sandbox", ReferenceFrames.Sandbox));
 
-            //todo UWP remove this for ship test only
-            LayerMaps["Sandbox"].AddChild(iss);
-
             LayerMaps.Add("Dome", new LayerMap("Dome", ReferenceFrames.Identity));
             LayerMaps["Dome"].Layers.Add(new SkyOverlays(SkyOverlaysType.Dome));
             LayerMaps["Dome"].Open = true;
@@ -443,6 +453,10 @@ namespace TerraViewer
             {
                 AddIss();
             }
+
+
+            AddIssToSandbox();
+
             version++;
             LoadTree();
 

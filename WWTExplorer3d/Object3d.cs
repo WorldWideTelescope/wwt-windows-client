@@ -1319,7 +1319,14 @@ namespace TerraViewer
                     {
                         if (group.materialIndex == materialIndex)
                         {
-                            devContext.DrawIndexed(group.indexCount, group.startIndex, 0);
+                            if (RenderContext11.ExternalProjection)
+                            {
+                                devContext.DrawIndexedInstanced(group.indexCount, 2, group.startIndex,0,0);
+                            }
+                            else
+                            {
+                                devContext.DrawIndexed(group.indexCount, group.startIndex, 0);
+                            }
                         }
                     }
                 }

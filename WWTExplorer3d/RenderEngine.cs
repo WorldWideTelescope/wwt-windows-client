@@ -117,7 +117,7 @@ namespace TerraViewer
             RenderEngine.Initialized = true;
             ReadyToRender = true;
 
-
+            //TargetZoom = .8;
 
         }
 #endif
@@ -5650,6 +5650,12 @@ namespace TerraViewer
                     SimpleLineList11 list = new SimpleLineList11();
                     if (LeftController.Active)
                     {
+                        if (LeftController.Trigger > 0)
+                        {
+                            TargetZoom *= .95;
+                        }
+
+
                         var leftPos = LeftController.Position;
                         var endPos = LeftController.Forward;
 
