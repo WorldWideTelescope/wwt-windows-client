@@ -205,12 +205,27 @@ namespace WWTHolographic
                     gamepads[i].buttonAWasPressedLastFrame = buttonDownThisUpdate;
                 }
 
+                if (renderEngine != null)
+                {
+                    if (spatialInputHandler.LeftController != null)
+                    {
+                        this.SetControllerState(renderEngine.LeftController, spatialInputHandler.LeftController.TryGetStateAtTimestamp(prediction.Timestamp));
+                    }
+
+                    if (spatialInputHandler.RightController != null)
+                    {
+                        this.SetControllerState(renderEngine.RightController, spatialInputHandler.RightController.TryGetStateAtTimestamp(prediction.Timestamp));
+                    }
+                }
+
+
                 SpatialInteractionSourceState pointerState = spatialInputHandler.CheckForInput();
                 SpatialPointerPose pose = null;
                 if (null != pointerState)
                 {
                     pose = pointerState.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
 
+                   
      //               var ISP = pose.TryGetInteractionSourcePose(pointerState.Source);
 
                 }
@@ -273,6 +288,47 @@ namespace WWTHolographic
             // to present the swap chain.
             return holographicFrame;
         }
+
+        void SetControllerState(TerraViewer.HandController handController, SpatialInteractionSourceState state)
+        {
+            // Inactive until proven otherwise
+            handController.Active = false;
+
+            if (state != null)
+            {
+                var source = state.Source;
+                var controller = source.Controller;
+                var x = controller.ProductId;
+                var spp = state.Properties.TryGetLocation(stationaryReferenceFrame.CoordinateSystem);
+                var ip = state?.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
+
+                var ipsp = ip?.TryGetInteractionSourcePose(source);
+                if (ipsp != null)
+                {
+                    handController.Active = true;
+                    handController.Position = new TerraViewer.Vector3d(ipsp.Position.Z, ipsp.Position.Y, ipsp.Position.X);
+                    handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.Z, ipsp.UpDirection.Y, ipsp.UpDirection.X);
+                    handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.Z, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.X);
+                    handController.Grip = state.IsGrasped ? 1 : 0;
+                    handController.Trigger = state.SelectPressedValue;
+                    handController.Menu = state.IsMenuPressed;
+                    if (source.Controller.HasThumbstick)
+                    {
+                        handController.ThumbX = state.ControllerProperties.ThumbstickX;
+                        handController.ThumbY = state.ControllerProperties.ThumbstickX;
+                        handController.ThumbDown = state.ControllerProperties.IsThumbstickPressed;
+                    }
+                    if (source.Controller.HasTouchpad)
+                    {
+                        handController.TouchX = state.ControllerProperties.TouchpadX;
+                        handController.TouchY = state.ControllerProperties.TouchpadY;
+                        handController.TouchDown = state.ControllerProperties.IsTouchpadPressed;
+                        handController.Touched = state.ControllerProperties.IsTouchpadTouched;
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Renders the current frame to each holographic display, according to the 

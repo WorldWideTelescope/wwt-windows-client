@@ -12,6 +12,10 @@ namespace WWTHolographic.Common
         // Used to indicate that a Pressed input event was received this frame.
         private SpatialInteractionSourceState sourceState;
 
+        private SpatialInteractionSource LastController;
+        public SpatialInteractionSource LeftController;
+        public SpatialInteractionSource RightController;
+
         // Creates and initializes a GestureRecognizer that listens to a Person.
         public SpatialInputHandler()
         {
@@ -21,13 +25,55 @@ namespace WWTHolographic.Common
 
             // Bind a handler to the SourcePressed event.
             interactionManager.SourcePressed += this.OnSourcePressed;
-
+            interactionManager.SourceDetected += InteractionManager_SourceDetected;
+            interactionManager.SourceLost += InteractionManager_SourceLost;
+            interactionManager.InteractionDetected += InteractionManager_InteractionDetected;
             //
             // TODO: Expand this class to use other gesture-based input events as applicable to
             //       your app.
             //
         }
 
+        private void InteractionManager_InteractionDetected(SpatialInteractionManager sender, SpatialInteractionDetectedEventArgs args)
+        {
+            int x = 1;
+        }
+
+        private void InteractionManager_SourceLost(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
+        {
+            LastController = args.State.Source;
+            if (LeftController != null && LastController.Id == LeftController.Id)
+            {
+                LeftController = RightController;
+                RightController = null;
+            }
+            else if (RightController != null && LastController.Id == RightController.Id)
+            {
+                RightController = null;
+            }
+        }
+
+        private void InteractionManager_SourceDetected(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
+        {
+            LastController = args.State.Source;
+
+            if (LeftController == null)
+            {
+                LeftController = LastController;
+            }
+            else if (RightController == null)
+            {
+                if (LastController.Id > LeftController.Id)
+                {
+                    RightController = LastController;
+                }
+                else
+                {
+                    RightController = LeftController;
+                    LeftController = LastController;
+                }
+            }
+        }
         // Checks if the user performed an input gesture since the last call to this method.
         // Allows the main update loop to check for asynchronous changes to the user
         // input state.
@@ -47,5 +93,7 @@ namespace WWTHolographic.Common
             //       input events in your input class or event handler.
             //
         }
+
+        
     }
 }

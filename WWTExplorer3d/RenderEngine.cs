@@ -3,6 +3,8 @@ using System.Collections.Generic;
 #if WINDOWS_UWP
 using SysColor = TerraViewer.Color;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+using Windows.UI.Input.Spatial;
+
 #else
 using SysColor = System.Drawing.Color;
 using Bitmap = System.Drawing.Bitmap;
@@ -20,7 +22,6 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using System.IO;
-
 
 namespace TerraViewer
 {
@@ -92,9 +93,10 @@ namespace TerraViewer
             Properties.Settings.Default.ShowSolarSystem.TargetState = true;
             InitializeImageSets();
 
-            //currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
+            currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
-            currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
+            //currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
+            //currentImageSetfield = GetDefaultImageset(ImageSetType.Sandbox, BandPass.Visible);
             BackgroundInit();
             //set settings to test
             Properties.Settings.Default.ShowGrid.TargetState = true;
@@ -5642,6 +5644,42 @@ namespace TerraViewer
                     measureLines.DrawLines(RenderContext11, 1.0f, SysColor.FromArgb(255, 255, 255, 0));
 
                 }
+
+                if (LeftController.Active || RightController.Active)
+                {
+                    SimpleLineList11 list = new SimpleLineList11();
+                    if (LeftController.Active)
+                    {
+                        var leftPos = LeftController.Position;
+                        var endPos = LeftController.Forward;
+
+                        float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
+                        Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+
+                        var end = new Vector3d((pos.X + endPos.X), pos.Y + endPos.Y, (pos.Z + endPos.Z));
+                        list.AddLine(pos, end);
+                    }
+
+                    if (RightController.Active)
+                    {
+                        var rightPos = RightController.Position;
+                        var endPos = RightController.Forward;
+
+                        float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
+                        Vector3d pos = new Vector3d(rightPos.X * scale, rightPos.Y * scale, rightPos.Z * scale);
+
+                        var end = new Vector3d((pos.X + endPos.X), pos.Y + endPos.Y, (pos.Z + endPos.Z));
+                        list.AddLine(pos, end);
+                    }
+
+
+
+                    list.DepthBuffered = false;
+                    list.DrawLines(RenderContext11, 1, SysColor.Green);
+
+                }
+
+
 #if !BASICWWT
                 if (Properties.Settings.Default.ShowCrosshairs && !TourPlayer.Playing && renderType == RenderTypes.Normal && !megaFrameDump)
                 {
@@ -6411,7 +6449,8 @@ namespace TerraViewer
             set { zoomMin = value; }
         }
 
-
+        public HandController LeftController { get; set; } = new HandController(HandType.Left);
+        public HandController RightController { get; set; } = new HandController(HandType.Right);
 
         public double zoomMin = 0.001373291015625;
         public double zoomMinSolarSystem = 1E-06;

@@ -198,6 +198,9 @@
     <Compile Include="..\WWTExplorer3d\GroundOverlayLayer.cs">
       <Link>Layers\GroundOverlayLayer.cs</Link>
     </Compile>
+    <Compile Include="..\WWTExplorer3d\HandController.cs">
+      <Link>Utilities\HandController.cs</Link>
+    </Compile>
     <Compile Include="..\WWTExplorer3d\IAnimatable.cs">
       <Link>Rendering\IAnimatable.cs</Link>
     </Compile>

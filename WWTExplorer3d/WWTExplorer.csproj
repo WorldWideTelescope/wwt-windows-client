@@ -242,6 +242,7 @@
     <Compile Include="ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
+    <Compile Include="HandController.cs" />
     <Compile Include="IUiController.cs" />
     <Compile Include="KmlLabels.cs" />
     <Compile Include="LayerInfo.cs" />
