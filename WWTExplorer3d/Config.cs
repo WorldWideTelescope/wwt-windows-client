@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
+
 namespace TerraViewer
 {
 
@@ -12,7 +13,7 @@ namespace TerraViewer
     {
         public Config()
         {
-            
+
             if (File.Exists(@"c:\wwtconfig\config.xml"))
             {
                 saveFilename = @"c:\wwtconfig\config.xml";
@@ -23,17 +24,17 @@ namespace TerraViewer
                 saveFilename = @"c:\config.xml";
                 ReadFromXML(saveFilename);
             }
-            else  if (File.Exists(@"c:\wwtconfig\config.xml"))
+            else if (File.Exists(@"c:\wwtconfig\config.xml"))
             {
                 saveFilename = @"c:\wwtconfig\config.xml";
                 ReadFromXML(saveFilename);
             }
         }
 
-        public int MonitorCountX=1;
-        public int MonitorCountY=1;
-        public int MonitorX=0;
-        public int MonitorY=0;
+        public int MonitorCountX = 1;
+        public int MonitorCountY = 1;
+        public int MonitorX = 0;
+        public int MonitorY = 0;
         public bool Master = true;
         public int Width = 1920;
         public int Height = 1200;
@@ -42,6 +43,9 @@ namespace TerraViewer
         public string ConfigFile;
         public string BlendFile;
         public string DistortionGrid;
+        public int DistortionGridWidth = 1;
+        public int DistortionGridHeight = 1;
+        public bool UsingSgcWarpMap = false;
         public bool MultiProjector = false;
         public bool MatrixValid = false;
         private bool MultiChannelDome = false;
@@ -50,7 +54,7 @@ namespace TerraViewer
         public bool MultiChannelDome1
         {
             get
-            { 
+            {
                 return MultiChannelDome | (MultiProjector && !MatrixValid);
             }
             set { MultiChannelDome = value; }
@@ -95,6 +99,8 @@ namespace TerraViewer
         public float DiffTilt;
         public float UpFov;
         public float DownFov;
+        public float LeftFov;
+        public float RightFov;
         public float Aspect = 1.39053104f;
         public int NodeID = -1;
         public int ClusterID = 0;
@@ -247,8 +253,8 @@ namespace TerraViewer
                 }
 
                 MultiProjector = !(String.IsNullOrEmpty(ConfigFile) || String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
-               // UseDistrotionAndBlend = !( String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
-               // MultiProjector = true;
+                // UseDistrotionAndBlend = !( String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
+                // MultiProjector = true;
             }
             catch
             {
@@ -257,7 +263,7 @@ namespace TerraViewer
 
             return;
         }
-        
+
         public Matrix3d ViewMatrix = Matrix3d.Identity;
 
         private void ParseConfigFile()
@@ -267,18 +273,24 @@ namespace TerraViewer
                 return;
             }
 
+            if (ConfigFile.ToLower().EndsWith(".sgc"))
+            {
+                ReadSGCFile(ConfigFile);
+                return;
+            }
+
             string[] configFileData = File.ReadAllLines(ConfigFile);
-            for (int i=0; i < configFileData.Length; i++)
+            for (int i = 0; i < configFileData.Length; i++)
             {
                 configFileData[i] = configFileData[i].Trim();
             }
 
-            
-            for (int i=0; i < configFileData.Length; i++)
+
+            for (int i = 0; i < configFileData.Length; i++)
             {
                 if (configFileData[i].StartsWith("Frustum"))
                 {
-                    string[] frustParts = configFileData[i].Split( new char[] {' ',';'});
+                    string[] frustParts = configFileData[i].Split(new char[] { ' ', ';' });
                     if (frustParts.Length == 8)
                     {
                         Left = Convert.ToSingle(frustParts[1]);
@@ -292,14 +304,14 @@ namespace TerraViewer
 
                 if (configFileData[i].StartsWith("Rotate"))
                 {
-                    string[] frustParts = configFileData[i].Split(new char[] { ' ',';' });
+                    string[] frustParts = configFileData[i].Split(new char[] { ' ', ';' });
                     float angle = 0;
                     float x = 0;
                     float y = 0;
                     float z = 0;
                     if (frustParts.Length == 6)
                     {
-                        angle = (float)(Convert.ToDouble(frustParts[1])/180*Math.PI);
+                        angle = (float)(Convert.ToDouble(frustParts[1]) / 180 * Math.PI);
                         x = Convert.ToSingle(frustParts[2]);
                         y = Convert.ToSingle(frustParts[3]);
                         z = Convert.ToSingle(frustParts[4]);
@@ -312,6 +324,177 @@ namespace TerraViewer
 
             MatrixValid = true;
 
+        }
+
+        //It's a binary file with the following format
+        //fileid: 3c
+        //version: B
+        //distortionType: I
+        //Quaternion: 4f
+        //position: 3f
+        //fov: 4f
+        //mesh width: I
+        //mesh height: I
+        //vertices: 3f per vertex
+        //numindices: I
+        //indices: I per index
+
+        public Vector6[,] DistortionGridVertices = null;
+
+        void ReadSGCFile(string filename)
+        {
+            FileStream s = new FileStream(filename, FileMode.Open);
+            BinaryReader br = new BinaryReader(s);
+            byte[] fileID = br.ReadBytes(3);
+            byte version = br.ReadByte();
+            Int32 distortionType = br.ReadInt32();
+            float[] quat = new float[4];
+            for (int i = 0; i < 4; i++)
+            {
+                quat[i] = br.ReadSingle();
+            }
+
+            float[] pos = new float[3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                pos[i] = br.ReadSingle();
+            }
+
+            float up = br.ReadSingle();
+            float down = br.ReadSingle();
+            float left = br.ReadSingle();
+            float right = br.ReadSingle();
+
+            int meshWidth = br.ReadInt32();
+            int meshHeight = br.ReadInt32();
+
+            DistortionGridVertices = new Vector6[meshWidth, meshHeight];
+
+            Vector4d quaternion = new Vector4d(quat[0], quat[1], quat[2], quat[3]);
+
+            double roll=0;
+            double heading=0;
+            double pitch=0;
+
+            ToEulerianAngle(quaternion, out pitch, out roll, out heading);
+
+            float num2 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(up) / 180.0) * Math.PI))) / 2.0);
+            float num3 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(down) / 180.0) * Math.PI))) / 2.0);
+            float num4 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(right) / 180.0) * Math.PI))) / 2.0);
+            float num5 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(left) / 180.0) * Math.PI))) / 2.0);
+
+            Aspect = (num4 + num5) / (num2 + num3);
+
+            UpFov = Math.Abs(up);
+            DownFov = Math.Abs(down);
+
+            RightFov = Math.Abs(right);
+            LeftFov = Math.Abs(left);
+
+            Heading = (float)heading;
+            Pitch = (float)pitch;
+            Roll = -(float)roll;
+
+            DistortionGridWidth = meshWidth;
+            DistortionGridHeight = meshHeight;
+
+            UsingSgcWarpMap = true;
+
+            for (int y = 0; y < meshHeight; y++)
+            {
+                for (int x = 0; x < meshWidth; x++)
+                {
+                    DistortionGridVertices[x, y] = new Vector6(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
+                }
+            }
+
+            int indexCount = br.ReadInt32();
+
+            int[] indices = new int[indexCount];
+
+            for (int i = 0; i < indexCount; i++)
+            {
+                indices[i] = br.ReadInt32();
+            }
+
+            int t = meshHeight * meshWidth;
+
+            br.Close();
+        }
+
+        static void ToEulerianAngle(Vector4d self, out double bank, out double attitude, out double heading)
+        {
+            double t = self.X * self.Y + self.Z * self.W;
+            if (t > 0.4999)
+            {
+                heading = 2 * Math.Atan2(self.X, self.W);
+                attitude = Math.PI / 2;
+                bank = 0;
+            }
+            else if (t < -0.4999)
+            {
+                heading = -2 * Math.Atan2(self.X, self.W);
+                attitude = -Math.PI / 2;
+                bank = 0;
+            }
+            else
+            {
+                double sqx = self.X * self.X;
+                double sqy = self.Y * self.Y;
+                double sqz = self.Z * self.Z;
+                heading = Math.Atan2(2 * self.Y * self.W - 2 * self.X * self.Z, 1 - 2 * sqy - 2 * sqz);
+                attitude = Math.Asin(2 * t);
+                bank = Math.Atan2(2 * self.X * self.W - 2 * self.Y * self.Z, 1 - 2 * sqx - 2 * sqz);
+            }
+            bank = bank / Math.PI * 180;
+            attitude = attitude / Math.PI * 180;
+            heading = heading / Math.PI * 180;
+
+            return;
+
+
+
+
+
+            //double ysqr = q.Y * q.Y;
+
+            //// roll (x-axis rotation)
+            //double t0 = +2.0 * (q.W * q.X + q.Y * q.Z);
+            //double t1 = +1.0 - 2.0 * (q.X * q.X + ysqr);
+            //roll = Math.Atan2(t0, t1) / Math.PI * 180;
+
+            //// pitch (y-axis rotation)
+            //double t2 = +2.0 * (q.W * q.Y - q.Z * q.X);
+            //t2 = ((t2 > 1.0) ? 1.0 : t2);
+            //t2 = ((t2 < -1.0) ? -1.0 : t2);
+            //pitch = Math.Asin(t2) / Math.PI * 180;
+
+            //// yaw (z-axis rotation)
+            //double t3 = +2.0 * (q.W * q.Z + q.X * q.Y);
+            //double t4 = +1.0 - 2.0 * (ysqr + q.Z * q.Z);
+            //yaw = Math.Atan2(t3, t4) / Math.PI * 180;
+        }
+
+        static void ToEulerianAngle2(Vector4d q, out double roll, out double pitch, out double yaw)
+        {
+            double ysqr = q.Y * q.Y;
+
+            // roll (x-axis rotation)
+            double t0 = +2.0 * (q.W * q.X + q.Y * q.Z);
+            double t1 = +1.0 - 2.0 * (q.X * q.X + ysqr);
+            roll = Math.Atan2(t0, t1) / Math.PI * 180;
+
+            // pitch (y-axis rotation)
+            double t2 = +2.0 * (q.W * q.Y - q.Z * q.X);
+            t2 = ((t2 > 1.0) ? 1.0 : t2);
+            t2 = ((t2 < -1.0) ? -1.0 : t2);
+            pitch = Math.Asin(t2) / Math.PI * 180;
+
+            // yaw (z-axis rotation)
+            double t3 = +2.0 * (q.W * q.Z + q.X * q.Y);
+            double t4 = +1.0 - 2.0 * (ysqr + q.Z * q.Z);
+            yaw = Math.Atan2(t3, t4) / Math.PI * 180;
         }
 
         string saveFilename = @"c:\wwtconfig\config.xml";
@@ -346,6 +529,71 @@ namespace TerraViewer
             {
                 return false;
             }
+        }
+    }
+    public struct Vector6
+    {
+        public float X;
+        public float Y;
+        public float Z;
+        public float T;
+        public float U;
+        public float V;
+        public Vector6(float x, float y, float z, float t, float u, float v)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            U = u;
+            V = v;
+            T = t;
+
+        }
+    }
+
+    public class GridSampler
+    {
+        Vector6[,] vertices = null;
+
+        public int Width = 0;
+        public int Height = 0;
+
+        public int GridWidth = 0;
+        public int GridHeight = 0;
+        public float xFac = 1;
+        public float yFac = 1;
+
+        public GridSampler(int width, int height, int gridWidth, int gridHeight, Vector6[,] verts)
+        {
+            vertices = verts;
+            Width = width;
+            Height = height;
+            GridHeight = gridHeight;
+            GridWidth = gridWidth;
+
+            xFac = ((float)GridWidth - 1) / (Width - 1);
+            yFac = ((float)GridHeight - 1) / (Height - 1);
+        }
+
+        public SharpDX.Vector2 Sample(int x, int y)
+        {
+            float xf = x * xFac;
+            float yf = y * yFac;
+
+            int x1 = (int)xf; // Whole part
+            int y1 = (int)yf; // Whole Part
+
+            float xa = xf - x1; //remainder
+            float ya = yf - y1; //remainder
+
+            //interpolate left to right
+            float ut = (vertices[x1, y1].T * (1 - xa)) + (vertices[Math.Min(GridWidth - 1, x1 + 1), y1].T * xa);
+            float ub = (vertices[x1, Math.Min(GridHeight - 1, y1 + 1)].T * (1 - xa)) + (vertices[Math.Min(GridWidth - 1, x1 + 1), Math.Min(GridHeight - 1, y1 + 1)].T * xa);
+
+            float vt = (vertices[x1, y1].U * (1 - xa)) + (vertices[Math.Min(GridWidth - 1, x1 + 1), y1].U * xa);
+            float vb = (vertices[x1, Math.Min(GridHeight - 1, y1 + 1)].U * (1 - xa)) + (vertices[Math.Min(GridWidth - 1, x1 + 1), Math.Min(GridHeight - 1, y1 + 1)].U * xa);
+
+            return new SharpDX.Vector2(ut * (1 - ya) + (ub * ya), vt * (1 - ya) + (vb * ya));
         }
     }
 }

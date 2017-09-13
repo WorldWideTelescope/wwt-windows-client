@@ -1501,6 +1501,13 @@ namespace TerraViewer
 
         private void MakeDistortionGrid()
         {
+            if (Config.UsingSgcWarpMap)
+            {
+                //MakeDistortionGridSgc();
+                MakeDistortionGridSgcWithBlend();
+                return;
+            }
+
             Bitmap bmpBlend = new Bitmap(config.BlendFile);
             FastBitmap fastBlend = new FastBitmap(bmpBlend);
             Bitmap bmpDistort = new Bitmap(config.DistortionGrid);
@@ -1608,6 +1615,318 @@ namespace TerraViewer
             GC.SuppressFinalize(fastBlend);
         }
 
+        private void MakeDistortionGridSgc()
+        {
+            int subX = config.DistortionGridWidth-1;
+            int subY = config.DistortionGridHeight-1;
+
+            if (distortIndexBuffer != null)
+            {
+                distortIndexBuffer.Dispose();
+                GC.SuppressFinalize(distortIndexBuffer);
+            }
+
+            if (distortVertexBuffer != null)
+            {
+                distortVertexBuffer.Dispose();
+                GC.SuppressFinalize(distortVertexBuffer);
+            }
+
+
+            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
+            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
+
+            distortVertexCount = (subX + 1) * (subY + 1);
+
+
+            int index = 0;
+
+
+            // Create a vertex buffer 
+            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+            int x1, y1;
+
+            unsafe
+            {
+                double maxU = 0;
+                double maxV = 0;
+                double textureStepX = 1.0f / subX;
+                double textureStepY = 1.0f / subY;
+                for (y1 = 0; y1 <= subY; y1++)
+                {
+                    double tv;
+                    for (x1 = 0; x1 <= subX; x1++)
+                    {
+                        double tu;
+
+
+                        index = y1 * (subX + 1) + x1;
+                        Vector6 vec = config.DistortionGridVertices[x1, y1];
+                        tu = vec.T;
+                        tv = 1-vec.U;
+
+                        //tu = (tu - .5f) * 1.7777778 + .5f;
+
+                        if (tu > maxU)
+                        {
+                            maxU = tu;
+                        }
+                        if (tv > maxV)
+                        {
+                            maxV = tv;
+                        }
+                        float xx = ((float)x1 / subX) - .5f;
+                        float yy = (((float)y1 / subY)) - .5f;
+
+                        float difX = xx - vec.X;
+                        float difY = vec.Y+yy;
+
+                        verts[index].Position = new SharpDX.Vector4(xx,yy, .9f, 1f);
+                        verts[index].Tu = (float)tu;
+                        verts[index].Tv = (float)tv;
+                        
+
+                        verts[index].Color = Color.FromArgb(255, 255, 255, 255);
+
+                    }
+                }
+                distortVertexBuffer.Unlock();
+                distortTriangleCount = (subX) * (subY) * 2;
+                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
+                index = 0;
+                for (y1 = 0; y1 < subY; y1++)
+                {
+                    for (x1 = 0; x1 < subX; x1++)
+                    {
+                        // First triangle in quad
+                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
+                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
+
+                        // Second triangle in quad
+                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
+                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
+                        index += 6;
+                    }
+                }
+                this.distortIndexBuffer.Unlock();
+            }
+         
+      
+        }
+        private void MakeDistortionGridSgcWithBlend()
+        {
+
+            Bitmap bmpBlend = new Bitmap(config.BlendFile);
+            FastBitmap fastBlend = new FastBitmap(bmpBlend);
+          
+
+            fastBlend.LockBitmapRgb();
+      
+            int subX = bmpBlend.Width - 1;
+            int subY = bmpBlend.Height -1;
+
+            if (distortIndexBuffer != null)
+            {
+                distortIndexBuffer.Dispose();
+                GC.SuppressFinalize(distortIndexBuffer);
+            }
+
+            if (distortVertexBuffer != null)
+            {
+                distortVertexBuffer.Dispose();
+                GC.SuppressFinalize(distortVertexBuffer);
+            }
+
+            GridSampler gridSampler = new GridSampler(bmpBlend.Width, bmpBlend.Height, config.DistortionGridWidth, config.DistortionGridHeight, config.DistortionGridVertices);
+
+            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
+            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
+
+            distortVertexCount = (subX + 1) * (subY + 1);
+
+
+            int index = 0;
+
+
+            // Create a vertex buffer 
+            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+            int x1, y1;
+
+            unsafe
+            {
+                double maxU = 0;
+                double maxV = 0;
+                double textureStepX = 1.0f / subX;
+                double textureStepY = 1.0f / subY;
+                for (y1 = 0; y1 <= subY; y1++)
+                {
+                    double tv;
+                    for (x1 = 0; x1 <= subX; x1++)
+                    {
+                        double tu;
+
+
+                        index = y1 * (subX + 1) + x1;
+                        
+                        SharpDX.Vector2 sample = gridSampler.Sample(x1, y1);
+
+                        tu = sample.X;
+                        tv = 1-sample.Y;
+
+                        if (tu > maxU)
+                        {
+                            maxU = tu;
+                        }
+                        if (tv > maxV)
+                        {
+                            maxV = tv;
+                        }
+
+                        verts[index].Position = new SharpDX.Vector4(((float)x1 / subX) - .5f, (((float)y1 / subY)) - .5f, .9f, 1f);
+                        verts[index].Tu = (float)tu;
+                        verts[index].Tv = (float)tv;
+                        PixelDataRgb* pPixel = fastBlend.GetRgbPixel(x1, subY-y1);
+
+                        verts[index].Color = Color.FromArgb(255, pPixel->red, pPixel->green, pPixel->blue);
+
+                    }
+                }
+                distortVertexBuffer.Unlock();
+                distortTriangleCount = (subX) * (subY) * 2;
+                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
+                index = 0;
+                for (y1 = 0; y1 < subY; y1++)
+                {
+                    for (x1 = 0; x1 < subX; x1++)
+                    {
+                        // First triangle in quad
+                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
+                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
+
+                        // Second triangle in quad
+                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
+                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
+                        index += 6;
+                    }
+                }
+                this.distortIndexBuffer.Unlock();
+            }
+            
+            fastBlend.UnlockBitmap();
+            fastBlend.Dispose();
+            GC.SuppressFinalize(fastBlend);
+        }
+
+
+        private void MakeDistortionGridSgcWithBlend2()
+        {
+
+            Bitmap bmpBlend = new Bitmap(config.BlendFile);
+            FastBitmap fastBlend = new FastBitmap(bmpBlend);
+
+
+            fastBlend.LockBitmapRgb();
+
+            int subX = bmpBlend.Width - 1;
+            int subY = bmpBlend.Height - 1;
+
+            if (distortIndexBuffer != null)
+            {
+                distortIndexBuffer.Dispose();
+                GC.SuppressFinalize(distortIndexBuffer);
+            }
+
+            if (distortVertexBuffer != null)
+            {
+                distortVertexBuffer.Dispose();
+                GC.SuppressFinalize(distortVertexBuffer);
+            }
+
+            GridSampler gridSampler = new GridSampler(bmpBlend.Width, bmpBlend.Height, config.DistortionGridWidth, config.DistortionGridHeight, config.DistortionGridVertices);
+
+            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
+            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
+
+            distortVertexCount = (subX + 1) * (subY + 1);
+
+
+            int index = 0;
+
+
+            // Create a vertex buffer 
+            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+            int x1, y1;
+
+            unsafe
+            {
+                double maxU = 0;
+                double maxV = 0;
+                double textureStepX = 1.0f / subX;
+                double textureStepY = 1.0f / subY;
+                for (y1 = 0; y1 <= subY; y1++)
+                {
+                    double tv;
+                    for (x1 = 0; x1 <= subX; x1++)
+                    {
+                        double tu;
+
+
+                        index = y1 * (subX + 1) + x1;
+
+                        SharpDX.Vector2 sample = gridSampler.Sample(x1, y1);
+
+                        tu = sample.X;
+                        tv = sample.Y;
+
+                        if (tu > maxU)
+                        {
+                            maxU = tu;
+                        }
+                        if (tv > maxV)
+                        {
+                            maxV = tv;
+                        }
+
+                        verts[index].Position = new SharpDX.Vector4(((float)x1 / subX) - .5f, (1f - ((float)y1 / subY)) - .5f, .9f, 1f);
+                        verts[index].Tu = (float)tu;
+                        verts[index].Tv = (float)tv;
+                        PixelDataRgb* pPixel = fastBlend.GetRgbPixel(x1, y1);
+
+                        verts[index].Color = Color.FromArgb(255, pPixel->red, pPixel->green, pPixel->blue);
+
+                    }
+                }
+                distortVertexBuffer.Unlock();
+                distortTriangleCount = (subX) * (subY) * 2;
+                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
+                index = 0;
+                for (y1 = 0; y1 < subY; y1++)
+                {
+                    for (x1 = 0; x1 < subX; x1++)
+                    {
+                        // First triangle in quad
+                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
+                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
+
+                        // Second triangle in quad
+                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
+                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
+                        index += 6;
+                    }
+                }
+                this.distortIndexBuffer.Unlock();
+            }
+
+            fastBlend.UnlockBitmap();
+            fastBlend.Dispose();
+            GC.SuppressFinalize(fastBlend);
+        }
         public static void BackgroundInit()
         {
             Grids.InitStarVertexBuffer(RenderContext11.PrepDevice);
@@ -8082,6 +8401,7 @@ namespace TerraViewer
                 double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
                 double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
                 double left = -right;
+
 
                 ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
                     left,
@@ -20520,7 +20840,7 @@ namespace TerraViewer
             Texture11.SaveStream = true;
             TileCache.PurgeQueue();
             TileCache.ClearCache();
-            // End 3d cities saving
+            enable3dCitiesExport = true;
         }
     }
 

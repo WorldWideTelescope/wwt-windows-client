@@ -3,7 +3,7 @@
 Prerequisites
 -------------
 
-If you do not have Visual Studio 2015 installed, you may download the free Community Edition at http://www.visualstiudio.com
+If you do not have Visual Studio 2015 installed, you may download the free Community Edition at http://www.visualstudio.com
 
 To build the installer, you will also need the Visual Studio 2015 Installer Projects add-in found here:
 https://visualstudiogallery.msdn.microsoft.com/f1cc3f3e-c300-40a7-8797-c509fb8933b9
