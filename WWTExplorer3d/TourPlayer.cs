@@ -93,15 +93,13 @@ namespace TerraViewer
                             tour.CurrentTourStop.Target.UpdatePlanetLocation(SpaceTimeController.UtcToJulian(tour.CurrentTourStop.StartTime));
                             tour.CurrentTourStop.EndTarget.UpdatePlanetLocation(SpaceTimeController.UtcToJulian(tour.CurrentTourStop.EndTime));
                         }
-                        
+
 
                         Earth3d.MainWindow.Mover = new ViewMoverKenBurnsStyle(tour.CurrentTourStop.Target.CamParams, tour.CurrentTourStop.EndTarget.CamParams, tour.CurrentTourStop.Duration.TotalMilliseconds / 1000.0, tour.CurrentTourStop.StartTime, tour.CurrentTourStop.EndTime, tour.CurrentTourStop.InterpolationType);
 
                     }
 
-                    Settings.TourSettings = tour.CurrentTourStop;
-                    SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
-                    SpaceTimeController.SyncToClock = false;
+                    UpdateSettingsForTourstop();
                 }
             }
 
@@ -128,6 +126,20 @@ namespace TerraViewer
                     overlay.Draw3D(window.RenderContext11, overlayBlend.Opacity, false);
                 }
             }     
+        }
+
+        private void UpdateSettingsForTourstop()
+        {
+            Settings.TourSettings = tour.CurrentTourStop;
+            SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
+            SpaceTimeController.SyncToClock = false;
+            Settings ambient = Settings.Ambient as Settings;
+            if (ambient != null)
+            {
+                ambient.LocationAltitude = tour.CurrentTourStop.LocationAltitude;
+                ambient.LocationLat = tour.CurrentTourStop.LocationLat;
+                ambient.LocationLng = tour.CurrentTourStop.LocationLng;
+            }        
         }
 
         TourDocument tour = null;
@@ -274,9 +286,7 @@ namespace TerraViewer
 
                 slideStartTime = SpaceTimeController.MetaNow;
                 // Move to new settings
-                Settings.TourSettings = tour.CurrentTourStop;
-                SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
-                SpaceTimeController.SyncToClock = false;
+                UpdateSettingsForTourstop();
 
 
             }

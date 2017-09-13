@@ -7954,7 +7954,7 @@ namespace TerraViewer
                             SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
                             amount *= 10;
                             var pose = this.trackingState.HeadPose.ThePose.Position;
-                            stereoTranslate = Matrix3d.Translation((-pos.X+ pose.X*10) * amount, (pos.Y + pose.Y*10) * amount, (-pos.Z + pose.Z*10) * amount);
+                            stereoTranslate = Matrix3d.Translation((-pos.X- pose.X) * amount, (-pos.Y - pose.Y) * amount, (-pos.Z + pose.Z*10) * amount);
 
                             var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
                             matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
