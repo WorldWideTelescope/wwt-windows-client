@@ -252,6 +252,7 @@
     <Compile Include="LayerMap.cs" />
     <Compile Include="Ovr\EyeTexture.cs" />
     <Compile Include="Ovr\SharpDXHelpers.cs" />
+    <Compile Include="PointerRay.cs" />
     <Compile Include="PortableUtilities.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -377,6 +378,7 @@
     <Compile Include="PointSpriteSet.cs" />
     <Compile Include="RenderEngine.cs" />
     <Compile Include="Reticle.cs" />
+    <Compile Include="RingMenu.cs" />
     <Compile Include="SearchCriteria.cs" />
     <Compile Include="SettingsAnimator.cs" />
     <Compile Include="SettingsWrapper.cs" />

@@ -308,9 +308,9 @@ namespace WWTHolographic
                 if (ipsp != null)
                 {
                     handController.Active = true;
-                    handController.Position = new TerraViewer.Vector3d(ipsp.Position.Z, ipsp.Position.Y, ipsp.Position.X);
-                    handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.Z, ipsp.UpDirection.Y, ipsp.UpDirection.X);
-                    handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.Z, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.X);
+                    handController.Position = new TerraViewer.Vector3d(ipsp.Position.X, ipsp.Position.Y, ipsp.Position.Z);
+                    handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.X, ipsp.UpDirection.Y, ipsp.UpDirection.Z);
+                    handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.X, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.Z);
                     handController.Grip = state.IsGrasped ? 1 : 0;
                     handController.Trigger = state.SelectPressedValue;
                     handController.Menu = state.IsMenuPressed;

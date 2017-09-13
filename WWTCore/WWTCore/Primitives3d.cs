@@ -668,37 +668,51 @@ namespace TerraViewer
             if (AutoTime)
             {
                 DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
-                LineShaderNormalDates11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
+                TriangleShaderNormalDates11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
             }
             else
             {
-                LineShaderNormalDates11.Constants.JNow = (float)JNow;
+                TriangleShaderNormalDates11.Constants.JNow = (float)JNow;
             }
 
-            LineShaderNormalDates11.Constants.Sky = 0 ;
-            LineShaderNormalDates11.Constants.ShowFarSide = ShowFarSide ? 1 : 0;
+            TriangleShaderNormalDates11.Constants.Sky = 0 ;
+            TriangleShaderNormalDates11.Constants.ShowFarSide = ShowFarSide ? 1 : 0;
             if (TimeSeries)
             {
-                LineShaderNormalDates11.Constants.Decay = (float)Decay;
+                TriangleShaderNormalDates11.Constants.Decay = (float)Decay;
             }
             else
             {
-                LineShaderNormalDates11.Constants.Decay = 0;
+                TriangleShaderNormalDates11.Constants.Decay = 0;
             }
-            LineShaderNormalDates11.Constants.Opacity = opacity;
-            LineShaderNormalDates11.Constants.CameraPosition = new SharpDX.Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
+            TriangleShaderNormalDates11.Constants.Opacity = opacity;
+            TriangleShaderNormalDates11.Constants.CameraPosition = new SharpDX.Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
 
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
+
+
             mat.Transpose();
 
-            LineShaderNormalDates11.Constants.WorldViewProjection = mat;
+            TriangleShaderNormalDates11.Constants.WorldViewProjection = mat;
 
-            LineShaderNormalDates11.Use(renderContext.devContext);
+            TriangleShaderNormalDates11.Use(renderContext.devContext);
 
             foreach (TimeSeriesLineVertexBuffer11 vertBuffer in triangleBuffers)
             {
                 renderContext.SetVertexBuffer(vertBuffer);
-                renderContext.devContext.Draw(vertBuffer.Count, 0);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.devContext.DrawInstanced(vertBuffer.Count, 2, 0, 0);
+                }
+                else
+                {
+                    renderContext.devContext.Draw(vertBuffer.Count, 0);
+                }
             }
   
         }

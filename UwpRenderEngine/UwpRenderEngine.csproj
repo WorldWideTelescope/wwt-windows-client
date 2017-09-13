@@ -294,6 +294,9 @@
     <Compile Include="..\WWTExplorer3d\Planets.cs">
       <Link>Layers\Planets.cs</Link>
     </Compile>
+    <Compile Include="..\WWTExplorer3d\PointerRay.cs">
+      <Link>Rendering\PointerRay.cs</Link>
+    </Compile>
     <Compile Include="..\WWTExplorer3d\PointSpriteSet.cs">
       <Link>Rendering\PointSpriteSet.cs</Link>
     </Compile>
@@ -305,6 +308,9 @@
     </Compile>
     <Compile Include="..\WWTExplorer3d\RenderEngine.cs">
       <Link>Rendering\RenderEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\RingMenu.cs">
+      <Link>Rendering\RingMenu.cs</Link>
     </Compile>
     <Compile Include="..\WWTExplorer3d\SavedColor.cs">
       <Link>Utilities\SavedColor.cs</Link>

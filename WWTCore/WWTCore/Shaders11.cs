@@ -2526,6 +2526,13 @@ namespace TerraViewer
             context.UpdateSubresource(ref Constants, contantBuffer);
 
             context.PixelShader.Set(PixelShader);
+
+            if (RenderContext11.ExternalProjection)
+            {
+                context.GeometryShader.SetConstantBuffer(0, contantBuffer);
+
+                context.GeometryShader.SetShader(instance.CompiledGeometryShader, null, 0);
+            }
         }
 
         protected override string GetPixelShaderSource(string profile)
@@ -2547,7 +2554,7 @@ namespace TerraViewer
 
         protected override string GetVertexShaderSource(string profile)
         {
-            return
+            string source =
                   " float4x4 matWVP;              " +
                   " float4 camPos : POSITION;  ;                               " +
                   " float1 opacity;              " +
@@ -2560,13 +2567,31 @@ namespace TerraViewer
                   "     float4 ObjPos   : POSITION;              " + // Object space position 
                   "     float4 ObjNor   : NORMAL;               " + // Object space position 
                   "     float4 Color    : COLOR;                 " + // Vertex color       
-                  "     float2 Time   : TEXCOORD0;              " + // Object Point size 
+                  "     float2 Time   : TEXCOORD0;              "; // Object Point size 
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                     "     uint   instId   : SV_InstanceID;         \n";
+            }
+            source +=
                   " };                                           " +
                   "                                              " +
                   " struct VS_OUT                                " +
                   " {                                            " +
                   "     float4 ProjPos  : SV_POSITION;              " + // Projected space position 
-                  "     float4 Color    : COLOR;                 " +
+                  "     float4 Color    : COLOR;                 ";
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                     "     uint        viewId  : TEXCOORD0;          \n" +
+                     " };                                            \n" +
+                     " cbuffer ViewProjectionConstantBuffer : register(b1) \n" +
+                     " {                                             \n" +
+                     "      float4x4 viewProjection[2];              \n";
+            }
+
+            source +=
                   " };                                           " +
                   "                                              " +
                   " VS_OUT VS( VS_IN In )                      " +
@@ -2582,8 +2607,23 @@ namespace TerraViewer
                   "               dAlpha = 1;                     " +
                   "          }                                    " +
                   "                                               " +
-                  "     }                                        " +
-                  "     Out.ProjPos = mul(In.ObjPos,  matWVP );  " + // Transform vertex into
+                  "     }                                        ";
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                    "     int idx = In.instId % 2;             \n" +
+                    "     Out.viewId = idx;                     \n" +
+                    "     float4 p = mul(In.ObjPos,  matWVP );  \n" +
+                    "     Out.ProjPos = mul(p, viewProjection[idx]); \n";
+            }
+            else
+            {
+                source +=
+                    "     Out.ProjPos = mul(In.ObjPos,  matWVP );  \n";
+            }
+
+            source +=
                   "     if (showFarSide == 0 && (dotCam * sky) < 0 || (jNow < In.Time.x && decay > 0))   " +
                   "     {                                        " +
                   "        Out.Color.a = 0;                     " +
@@ -2598,6 +2638,44 @@ namespace TerraViewer
                   "     return Out;                              " + // Transfer color
                   " }                                            ";
 
+            return source;
+        }
+
+        protected override string GetGeometryShaderSource(string profile)
+        {
+            return
+
+            "    struct GeometryShaderInput                                                                                 \n " +
+            "    {                                                                                                          \n " +
+            "        float4 pos     : SV_POSITION;                                                                          \n     " +
+            "        float4 color   : COLOR0;                                                                               \n    " +
+            "        uint instId  : TEXCOORD0;                                                                              \n " +
+            "    };                                                                                                         \n " +
+            "                                                                                                               \n " +
+            "    // Per-vertex data passed to the rasterizer.                                                               \n " +
+            "    struct GeometryShaderOutput                                                                                \n " +
+            "    {                                                                                                          \n " +
+            "        float4 pos     : SV_POSITION;                                                                          \n  " +
+            "        float4 color   : COLOR0;                                                                               \n   " +
+            "        uint rtvId   : SV_RenderTargetArrayIndex;                                                              \n " +
+            "    };                                                                                                         \n " +
+            "                                                                                                               \n " +
+            "    // This geometry shader is a pass-through that leaves the geometry unmodified                              \n " +
+            "    // and sets the render target array index.                                                                 \n " +
+            "    [maxvertexcount(2)]                                                                                        \n " +
+            "    void GS(line GeometryShaderInput input[2], inout LineStream<GeometryShaderOutput> outStream)          \n " +
+            "    {                                                                                                          \n " +
+            "        GeometryShaderOutput output;                                                                           \n " +
+            "        [unroll(2)]                                                                                            \n " +
+            "        for (int i = 0; i< 2; ++i)                                                                             \n " +
+            "        {                                                                                                      \n " +
+            "            output.pos = input[i].pos;                                                                         \n " +
+            "            output.color = input[i].color;                                                                     \n " +
+            "            output.rtvId = input[i].instId;                                                                    \n " +
+            "            outStream.Append(output);                                                                          \n " +
+            "        }                                                                                                      \n " +
+            "   }                                                                                                           \n" +
+            "                                                                                                               \n ";
         }
 
         static void initialize()
@@ -2607,6 +2685,234 @@ namespace TerraViewer
             contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderNormalDatesConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
         }
 
+    }
+
+    public class TriangleShaderNormalDates11 : ShaderBundle
+    {
+        private static TriangleShaderNormalDates11 instance;
+        public static LineShaderNormalDatesConstants Constants;
+        private static InputLayout layout;
+
+        public static VertexShader Shader
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    initialize();
+                }
+                return instance.CompiledVertexShader;
+            }
+
+        }
+
+        public static PixelShader PixelShader
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    initialize();
+                }
+                return instance.CompiledPixelShader;
+            }
+        }
+
+
+        public static Matrix WVPMatrix
+        {
+            set
+            {
+                Constants.WorldViewProjection = value;
+            }
+        }
+
+        public static void Use(DeviceContext context)
+        {
+            if (instance == null)
+            {
+                initialize();
+            }
+
+            if (layout == null)
+            {
+                // Layout from VertexShader input signature
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
+                    {
+                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0),
+                        new InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float, 12, 0),
+                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 24, 0),
+                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 28, 0),
+                    });
+            }
+
+            context.InputAssembler.InputLayout = layout;
+
+            context.VertexShader.Set(Shader);
+
+            context.VertexShader.SetConstantBuffer(0, contantBuffer);
+
+            context.UpdateSubresource(ref Constants, contantBuffer);
+
+            context.PixelShader.Set(PixelShader);
+
+            if (RenderContext11.ExternalProjection)
+            {
+                context.GeometryShader.SetConstantBuffer(0, contantBuffer);
+
+                context.GeometryShader.SetShader(instance.CompiledGeometryShader, null, 0);
+            }
+        }
+
+        protected override string GetPixelShaderSource(string profile)
+        {
+            return
+                " struct VS_OUT                                \n" +
+                " {                                            \n" +
+                "     float4 ProjPos  : SV_POSITION;              \n" + // Projected space position 
+                "     float4 Color    : COLOR;                 \n" +
+                " };                                           \n" +
+                "                                              \n" +
+                " float4 PS(VS_OUT In) : SV_Target               \n" +
+                " {                                            \n" +
+                "     return In.Color;                         \n" +
+                " }                                            ";
+        }
+
+        static SharpDX.Direct3D11.Buffer contantBuffer;
+
+        protected override string GetVertexShaderSource(string profile)
+        {
+            string source =
+                  " float4x4 matWVP;              " +
+                  " float4 camPos : POSITION;  ;                               " +
+                  " float1 opacity;              " +
+                  " float1 jNow;                               " +
+                  " float1 decay;                               " +
+                  " float1 sky;                         " +
+                  " float1 showFarSide;                         " +
+                  " struct VS_IN                                 " +
+                  " {                                            " +
+                  "     float4 ObjPos   : POSITION;              " + // Object space position 
+                  "     float4 ObjNor   : NORMAL;               " + // Object space position 
+                  "     float4 Color    : COLOR;                 " + // Vertex color       
+                  "     float2 Time   : TEXCOORD0;              "; // Object Point size 
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                     "     uint   instId   : SV_InstanceID;         \n";
+            }
+            source +=
+                  " };                                           " +
+                  "                                              " +
+                  " struct VS_OUT                                " +
+                  " {                                            " +
+                  "     float4 ProjPos  : SV_POSITION;              " + // Projected space position 
+                  "     float4 Color    : COLOR;                 ";
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                     "     uint        viewId  : TEXCOORD0;          \n" +
+                     " };                                            \n" +
+                     " cbuffer ViewProjectionConstantBuffer : register(b1) \n" +
+                     " {                                             \n" +
+                     "      float4x4 viewProjection[2];              \n";
+            }
+
+            source +=
+                  " };                                           " +
+                  "                                              " +
+                  " VS_OUT VS( VS_IN In )                      " +
+                  " {                                            " +
+                  "     float dotCam = dot((camPos.xyz - In.ObjPos.xyz), In.ObjNor.xyz);   " +
+                  "     VS_OUT Out;                              " +
+                  "     float dAlpha = 1;                         " +
+                  "     if ( decay > 0)                           " +
+                  "     {                                        " +
+                  "          dAlpha = 1 - ((jNow - In.Time.y) / decay);          " +
+                  "          if (dAlpha > 1 )           " +
+                  "          {                                     " +
+                  "               dAlpha = 1;                     " +
+                  "          }                                    " +
+                  "                                               " +
+                  "     }                                        ";
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                    "     int idx = In.instId % 2;             \n" +
+                    "     Out.viewId = idx;                     \n" +
+                    "     float4 p = mul(In.ObjPos,  matWVP );  \n" +
+                    "     Out.ProjPos = mul(p, viewProjection[idx]); \n";
+            }
+            else
+            {
+                source +=
+                    "     Out.ProjPos = mul(In.ObjPos,  matWVP );  \n";
+            }
+
+            source +=
+                  "     if (showFarSide == 0 && (dotCam * sky) < 0 || (jNow < In.Time.x && decay > 0))   " +
+                  "     {                                        " +
+                  "        Out.Color.a = 0;                     " +
+                  "     }                                        " +
+                  "     else                                     " +
+                  "     {                                        " +
+                  "        Out.Color.a = In.Color.a * dAlpha * opacity;    " +
+                  "     }                                        " +
+                  "     Out.Color.r = In.Color.r;              " +
+                  "     Out.Color.g = In.Color.g;              " +
+                  "     Out.Color.b = In.Color.b;              " +
+                  "     return Out;                              " + // Transfer color
+                  " }                                            ";
+
+            return source;
+        }
+
+        protected override string GetGeometryShaderSource(string profile)
+        {
+            return
+
+            "    struct GeometryShaderInput                                                                                 \n " +
+            "    {                                                                                                          \n " +
+            "        float4 pos     : SV_POSITION;                                                                          \n     " +
+            "        float4 color   : COLOR0;                                                                               \n    " +
+            "        uint instId  : TEXCOORD0;                                                                              \n " +
+            "    };                                                                                                         \n " +
+            "                                                                                                               \n " +
+            "    // Per-vertex data passed to the rasterizer.                                                               \n " +
+            "    struct GeometryShaderOutput                                                                                \n " +
+            "    {                                                                                                          \n " +
+            "        float4 pos     : SV_POSITION;                                                                          \n  " +
+            "        float4 color   : COLOR0;                                                                               \n   " +
+            "        uint rtvId   : SV_RenderTargetArrayIndex;                                                              \n " +
+            "    };                                                                                                         \n " +
+            "                                                                                                               \n " +
+            "    // This geometry shader is a pass-through that leaves the geometry unmodified                              \n " +
+            "    // and sets the render target array index.                                                                 \n " +
+            "    [maxvertexcount(3)]                                                                                        \n " +
+            "    void GS(triangle GeometryShaderInput input[3], inout TriangleStream<GeometryShaderOutput> outStream)          \n " +
+            "    {                                                                                                          \n " +
+            "        GeometryShaderOutput output;                                                                           \n " +
+            "        [unroll(3)]                                                                                            \n " +
+            "        for (int i = 0; i< 3; ++i)                                                                             \n " +
+            "        {                                                                                                      \n " +
+            "            output.pos = input[i].pos;                                                                         \n " +
+            "            output.color = input[i].color;                                                                     \n " +
+            "            output.rtvId = input[i].instId;                                                                    \n " +
+            "            outStream.Append(output);                                                                          \n " +
+            "        }                                                                                                      \n " +
+            "   }                                                                                                           \n" +
+            "                                                                                                               \n ";
+        }
+
+        static void initialize()
+        {
+            instance = new TriangleShaderNormalDates11();
+            instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
+            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<LineShaderNormalDatesConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+        }
     }
 
 

@@ -5647,7 +5647,7 @@ namespace TerraViewer
 
                 if (LeftController.Active || RightController.Active)
                 {
-                    SimpleLineList11 list = new SimpleLineList11();
+
                     if (LeftController.Active)
                     {
                         if (LeftController.Trigger > 0)
@@ -5658,30 +5658,60 @@ namespace TerraViewer
 
                         var leftPos = LeftController.Position;
                         var endPos = LeftController.Forward;
-
+                        var up = LeftController.Up;
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
                         Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
 
-                        var end = new Vector3d((pos.X + endPos.X), pos.Y + endPos.Y, (pos.Z + endPos.Z));
-                        list.AddLine(pos, end);
+                        Matrix3d worldSaved = RenderContext11.World;
+                        Matrix3d localWorld = new Matrix3d();
+
+                        Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
+                        m1.Invert();
+                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y,-pos.Z).Vector3));
+
+                        localWorld.Matrix = m1;
+                        RenderContext11.World = localWorld;
+                        RenderContext11.View = Matrix3d.Identity;
+
+                        leftPointerRay.Draw(RenderContext11, 1, SysColor.Green);
+
+                        RingMenu rm = new RingMenu();
+                        rm.Draw(RenderContext11, 1, SysColor.BlueViolet);
+
+                        RenderContext11.World = worldSaved;
                     }
 
                     if (RightController.Active)
                     {
+                        if (LeftController.Trigger > 0)
+                        {
+                            TargetZoom *= .95;
+                        }
+
                         var rightPos = RightController.Position;
                         var endPos = RightController.Forward;
-
+                        var up = RightController.Up;
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
                         Vector3d pos = new Vector3d(rightPos.X * scale, rightPos.Y * scale, rightPos.Z * scale);
 
-                        var end = new Vector3d((pos.X + endPos.X), pos.Y + endPos.Y, (pos.Z + endPos.Z));
-                        list.AddLine(pos, end);
+                        Matrix3d worldSaved = RenderContext11.World;
+                        Matrix3d localWorld = new Matrix3d();
+
+                        Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
+                        m1.Invert();
+                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+
+                        localWorld.Matrix = m1;
+                        RenderContext11.World = localWorld;
+                        RenderContext11.View = Matrix3d.Identity;
+
+                        rightPointerRay.Draw(RenderContext11, 1, SysColor.BlueViolet);
+
+
+
+                        RenderContext11.World = worldSaved;
                     }
 
-
-
-                    list.DepthBuffered = false;
-                    list.DrawLines(RenderContext11, 1, SysColor.Green);
 
                 }
 
@@ -6457,6 +6487,9 @@ namespace TerraViewer
 
         public HandController LeftController { get; set; } = new HandController(HandType.Left);
         public HandController RightController { get; set; } = new HandController(HandType.Right);
+
+        PointerRay leftPointerRay = new PointerRay();
+        PointerRay rightPointerRay = new PointerRay();
 
         public double zoomMin = 0.001373291015625;
         public double zoomMinSolarSystem = 1E-06;
