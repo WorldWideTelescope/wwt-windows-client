@@ -1778,6 +1778,19 @@ namespace TerraViewer
             hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "jxGHILPRTU", 80, .0001f));
             hold.PrepareBatch();
 
+
+            Text3dBatch asciiTable;
+            asciiTable = new Text3dBatch(12);
+            string table = "";
+            for (char c = ' '; c < 127; c++)
+            {
+                table += c;
+            }
+
+            asciiTable.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), table, 80, .0001f));
+            asciiTable.PrepareBatch();
+            asciiTable.Draw(RenderContext11, 1, Color.White);
+
             Constellations.InitializeConstellationNames();
 
             if (Properties.Settings.Default.ShowClientNodeList && !RenderEngine.ProjectorServer)

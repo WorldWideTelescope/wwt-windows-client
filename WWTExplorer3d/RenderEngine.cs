@@ -79,7 +79,7 @@ namespace TerraViewer
 
             //from form load
             Constellations.InitializeConstellationNames();
-
+            Constellations.Containment = constellationCheck;
             viewCamera.Target = SolarSystemObjects.Sun;
             SpaceTimeController.Altitude = Properties.Settings.Default.LocationAltitude;
             SpaceTimeController.Location = Coordinates.FromLatLng(Properties.Settings.Default.LocationLat, Properties.Settings.Default.LocationLng);
@@ -92,6 +92,20 @@ namespace TerraViewer
             Properties.Settings.Default.ShowMoonsAsPointSource = false;
             Properties.Settings.Default.ShowSolarSystem.TargetState = true;
             InitializeImageSets();
+
+            ContextSearch.InitializeDatabase(true);
+            Catalogs.InitSearchTable();
+
+            LoadExploreRoot();
+            if (explorerRoot != null)
+            {
+                ContextSearch.AddFolderToSearch(explorerRoot, true);
+            }
+            ContextSearch.AddCatalogs(true);
+
+
+            ringMenu = new RingMenu();
+            ringMenu.Initialize();
 
             currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
@@ -110,17 +124,26 @@ namespace TerraViewer
             Properties.Settings.Default.ShowISSModel = true;
             Properties.Settings.Default.CloudMap8k = true;
             Properties.Settings.Default.ShowSolarSystem.TargetState = false;
-            Catalogs.InitSearchTable();
 
             LayerManager.InitLayers();
             TileCache.StartQueue();
             RenderEngine.Initialized = true;
             ReadyToRender = true;
 
-            //TargetZoom = .8;
+            TargetZoom = .8;
 
         }
+
+        Folder explorerRoot = null;
+        private void LoadExploreRoot()
+        {
+            string url = Properties.Settings.Default.ExploreRootUrl;
+            string filename = string.Format(@"{0}data\exploreRoot_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
+            DataSetManager.DownloadFile(url, filename, false, true);
+            explorerRoot = Folder.LoadFromFile(filename, true);
+        }
 #endif
+        RingMenu ringMenu = null;
         public static void BackgroundInit()
         {
 
@@ -5648,6 +5671,7 @@ namespace TerraViewer
                 if (LeftController.Active || RightController.Active)
                 {
 
+
                     if (LeftController.Active)
                     {
                         if (LeftController.Trigger > 0)
@@ -5659,15 +5683,39 @@ namespace TerraViewer
                         var leftPos = LeftController.Position;
                         var endPos = LeftController.Forward;
                         var up = LeftController.Up;
+
+                        Coordinates result = new Coordinates();
+
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
                         Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+
+                        bool inThere = SphereIntersectRay(pos, endPos, out result);
+                        result.RA = 6 - result.RA;
+
+
+                        string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                        var v = Constellations.FullName(constellation);
+                        // System.Diagnostics.Debug.WriteLine(v);
+                        RenderEngine.pointerConstellation = v;
+                        IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, ZoomFactor / 1300);
+
+                        if (closetPlace == null)
+                        {
+                            closetPlace = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
+                        }
+                        else
+                        {
+                            int o = 0;
+                        }
+
+
 
                         Matrix3d worldSaved = RenderContext11.World;
                         Matrix3d localWorld = new Matrix3d();
 
                         Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
                         m1.Invert();
-                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y,-pos.Z).Vector3));
+                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
 
                         localWorld.Matrix = m1;
                         RenderContext11.World = localWorld;
@@ -5675,8 +5723,10 @@ namespace TerraViewer
 
                         leftPointerRay.Draw(RenderContext11, 1, SysColor.Green);
 
-                        RingMenu rm = new RingMenu();
-                        rm.Draw(RenderContext11, 1, SysColor.BlueViolet);
+                        if (LeftController.Grip > 0)
+                        {
+                            ringMenu.Draw(RenderContext11, 1, SysColor.BlueViolet);
+                        }
 
                         RenderContext11.World = worldSaved;
                     }
@@ -5691,8 +5741,10 @@ namespace TerraViewer
                         var rightPos = RightController.Position;
                         var endPos = RightController.Forward;
                         var up = RightController.Up;
+
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
                         Vector3d pos = new Vector3d(rightPos.X * scale, rightPos.Y * scale, rightPos.Z * scale);
+
 
                         Matrix3d worldSaved = RenderContext11.World;
                         Matrix3d localWorld = new Matrix3d();
@@ -5707,12 +5759,8 @@ namespace TerraViewer
 
                         rightPointerRay.Draw(RenderContext11, 1, SysColor.BlueViolet);
 
-
-
                         RenderContext11.World = worldSaved;
                     }
-
-
                 }
 
 
@@ -5784,7 +5832,7 @@ namespace TerraViewer
 #endif
         }
 
-
+        static public string pointerConstellation = "";
 
         public Coordinates GetCoordinatesForScreenPoint(int x, int y)
         {

@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16278.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -310,7 +310,7 @@
       <Link>Rendering\RenderEngine.cs</Link>
     </Compile>
     <Compile Include="..\WWTExplorer3d\RingMenu.cs">
-      <Link>Rendering\RingMenu.cs</Link>
+      <Link>UI\RingMenu.cs</Link>
     </Compile>
     <Compile Include="..\WWTExplorer3d\SavedColor.cs">
       <Link>Utilities\SavedColor.cs</Link>
@@ -413,6 +413,7 @@
     <Compile Include="CompatibleTypes\WinformsTypes.cs" />
     <Compile Include="CompatibleTypes\XmlNode.cs" />
     <Compile Include="CompatibleTypes\XmlTextWriter.cs" />
+    <Compile Include="Layers\GltfModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DataRow.cs" />
     <Compile Include="Utilities\ThumbMenuNode.cs" />
@@ -2241,6 +2242,9 @@
     <EmbeddedResource Include="Properties\UwpRenderEngine.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="glTF2Loader">
+      <Version>1.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>5.2.3</Version>
     </PackageReference>
@@ -2627,6 +2631,12 @@
     <Content Include="..\WWTExplorer3d\Resources\glyphs1.xml">
       <Link>Resources\glyphs1.xml</Link>
     </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyphs2.png">
+      <Link>Resources\glyphs2.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyphs2.xml">
+      <Link>Resources\glyphs2.xml</Link>
+    </Content>
     <Content Include="..\WWTExplorer3d\Resources\glyph_close.png">
       <Link>Resources\glyph_close.png</Link>
     </Content>
@@ -2893,6 +2903,12 @@
     </Content>
     <Content Include="..\WWTExplorer3d\Resources\RightArrowHS.png">
       <Link>Resources\RightArrowHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RingMenu\Collections.png">
+      <Link>Resources\RingMenu\Collections.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RingMenu\Hubble.png">
+      <Link>Resources\RingMenu\Hubble.png</Link>
     </Content>
     <Content Include="..\WWTExplorer3d\Resources\ringShadow.png">
       <Link>Resources\ringShadow.png</Link>
