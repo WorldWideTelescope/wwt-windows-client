@@ -459,11 +459,12 @@ namespace TerraViewer
 
         public void Init()
         {
+            bool big = cellHeight > 20;
 
-            string testureFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine\\Resources\\glyphs1.png");
-            texture = Texture11.FromFile(testureFilename);
+            string textureFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, big ? "UwpRenderEngine\\Resources\\glyphs1.png" : "UwpRenderEngine\\Resources\\glyphs2.png");
+            string xmlFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, big ? "UwpRenderEngine\\Resources\\glyphs1.xml" : "UwpRenderEngine\\Resources\\glyphs2.xml");
 
-            string xmlFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine\\Resources\\glyphs1.xml");
+            texture = Texture11.FromFile(textureFilename);
             var doc = new Windows.Data.Xml.Dom.XmlDocument();
             doc.Load(xmlFilename);
             LoadXmlGlyph(doc);
@@ -733,6 +734,20 @@ namespace TerraViewer
             }
         }
 
+        public Text3d(Vector3d facing, Vector3d center, Vector3d up, string text, float fontsize, double scale)
+        {
+            Text = text;
+            this.up = up;
+            this.center = center;
+            this.scale = scale;
+            this.Facing = facing;
+            this.flat = true;
+            if (fontsize < 0)
+            {
+                sky = false;
+            }
+        }
+
         public double Rotation = 0;
         public double Tilt = 0;
         public double Bank = 0;
@@ -750,6 +765,11 @@ namespace TerraViewer
         public double width = 1;
         public double height = 1;
 
+        private bool flat = false;
+
+        // alternate baseline for flat text
+        public Vector3d Facing = new Vector3d();
+
         public enum Alignment
         {
             Center,
@@ -765,11 +785,23 @@ namespace TerraViewer
             Vector3d left = Vector3d.Cross(center, up);
             Vector3d right = Vector3d.Cross(up, center);
 
+            if (flat)
+            {
+                left = Vector3d.Cross(Facing, up);
+                right = Vector3d.Cross(up, Facing);
+            }
+
+
             left.Normalize();
             right.Normalize();
             up.Normalize();
 
             Vector3d upTan = Vector3d.Cross(center, right);
+
+            if (flat)
+            {
+                upTan = Vector3d.Cross(Facing, right);
+            }
 
             upTan.Normalize();
 

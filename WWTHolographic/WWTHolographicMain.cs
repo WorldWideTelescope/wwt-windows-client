@@ -19,6 +19,7 @@ using WWTHolographic.Common;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using System.Collections.Generic;
+using System.IO;
 
 #if DRAW_SAMPLE_CONTENT
 using WWTHolographic.Content;
@@ -297,6 +298,12 @@ namespace WWTHolographic
             if (state != null)
             {
                 var source = state.Source;
+
+               // var modelStream = await source.Controller.TryGetRenderableModelAsync();
+
+                //TerraViewer.GltfModel model = new TerraViewer.GltfModel();
+                //model.LoadModel(modelStream.AsStream());
+
 
                 var h = state.Source.Handedness;
                 var controller = source.Controller;

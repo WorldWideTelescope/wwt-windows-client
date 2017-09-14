@@ -32,6 +32,11 @@ namespace TerraViewer
             renderContext.BlendMode = BlendMode.Alpha;
             renderContext.setRasterizerState(TriangleCullMode.Off);
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
+
             mat.Transpose();
 
             WarpOutputShader.MatWVP = mat;
@@ -51,7 +56,16 @@ namespace TerraViewer
             {
                 renderContext.devContext.PixelShader.SetShaderResource(0, null);
             }
-            renderContext.devContext.Draw(count, 0);
+
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawInstanced(count, 2, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.Draw(count, 0);
+            }
+
         }
 
         public static void DrawForScreen(RenderContext11 renderContext, PositionColoredTextured[] points, int count, Texture11 texture, SharpDX.Direct3D.PrimitiveTopology primitiveType)
