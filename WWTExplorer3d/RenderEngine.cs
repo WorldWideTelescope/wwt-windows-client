@@ -7811,6 +7811,11 @@ namespace TerraViewer
             // Calculate the position and orientation of each eye.
             wrap.CalcEyePoses(trackingState.HeadPose.ThePose, hmdToEyeViewOffsets, ref eyeRenderPose);
 
+            LeftController.Position = new Vector3d(trackingState.HandPoses[0].ThePose.Position.ToVector3());
+            LeftController.Active = true;
+            LeftController.Forward = new Vector3d(0, 0, 1);
+            LeftController.Up = new Vector3d(0, 1, 0);
+
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
                 OVRTypes.EyeType eye = (OVRTypes.EyeType)eyeIndex;
