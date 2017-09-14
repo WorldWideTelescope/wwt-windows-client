@@ -134,6 +134,7 @@ namespace TerraViewer
 
         }
 
+
         Folder explorerRoot = null;
         private void LoadExploreRoot()
         {
@@ -143,6 +144,22 @@ namespace TerraViewer
             explorerRoot = Folder.LoadFromFile(filename, true);
         }
 #endif
+
+        ImageSetType LookAtType = ImageSetType.Sky;
+
+        public void NextView()
+        {
+            int next = (((int)LookAtType) + 1) % 6;
+            LookAtType = (ImageSetType)next;
+            currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
+        }
+
+        public void PreviousView()
+        {
+            int next = (((int)LookAtType) + 5) % 6;
+            LookAtType = (ImageSetType)next;
+            currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
+        }
         RingMenu ringMenu = null;
         public static void BackgroundInit()
         {
@@ -5679,6 +5696,16 @@ namespace TerraViewer
                             TargetZoom *= .95;
                         }
 
+                        if (LeftController.Events.HasFlag(HandControllerStatus.StickLeft))
+                        {
+                            PreviousView();
+                        }
+
+                        if (LeftController.Events.HasFlag(HandControllerStatus.StickRight))
+                        {
+                            NextView();
+                        }
+
 
                         var leftPos = LeftController.Position;
                         var endPos = LeftController.Forward;
@@ -5687,7 +5714,8 @@ namespace TerraViewer
                         Coordinates result = new Coordinates();
 
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
-                        Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+                        //Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+                        Vector3d pos = new Vector3d(leftPos.X , leftPos.Y , leftPos.Z );
 
                         bool inThere = SphereIntersectRay(pos, endPos, out result);
                         result.RA = 6 - result.RA;
@@ -5716,6 +5744,11 @@ namespace TerraViewer
                         Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
                         m1.Invert();
                         m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+                        if (scale != 1)
+                        {
+                            m1 = m1 * Matrix.Scaling(scale);
+                        }
+
 
                         localWorld.Matrix = m1;
                         RenderContext11.World = localWorld;

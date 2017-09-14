@@ -95,13 +95,13 @@ namespace TerraViewer
                 PositionColoredTextured[] points = new PositionColoredTextured[4];
 
                 points[0] = new PositionColoredTextured(0, 0, 0, SysColor.White, 1, 0, 1);
-                points[3] = new PositionColoredTextured(.02f, .024f, 0, SysColor.White, 1, 1, 0);
-                points[2] = new PositionColoredTextured(0, .024f, 0, SysColor.White, 1, 0, 0);
-                points[1] = new PositionColoredTextured(.02f, 0, 0, SysColor.White, 1, 1, 1);
+                points[3] = new PositionColoredTextured(.2f, .24f, 0, SysColor.White, 1, 1, 0);
+                points[2] = new PositionColoredTextured(0, .24f, 0, SysColor.White, 1, 0, 0);
+                points[1] = new PositionColoredTextured(.2f, 0, 0, SysColor.White, 1, 1, 1);
                 Sprite2d.Draw(renderContext, points, 4, image, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
 
                 Text3dBatch batch = new Text3dBatch(12);
-                Text3d text = new Text3d(new Vector3d(0, 0, 1), new Vector3d(.01, .011, 0), new Vector3d(0, 1, 0), RenderEngine.pointerConstellation, 12, .0001);
+                Text3d text = new Text3d(new Vector3d(0, 0, 1), new Vector3d(.1, .11, 0), new Vector3d(0, 1, 0), RenderEngine.pointerConstellation, 12, .001);
                 //text.Rotation = 90;
                 //text.Bank = 90;
                 batch.Add(text);

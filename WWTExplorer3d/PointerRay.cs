@@ -22,7 +22,7 @@ namespace TerraViewer
             {
                 double twoPi = Math.PI * 2;
                 double step = twoPi / 45;
-                double rad = .001;
+                double rad = .01;
 
                 for (double a = 0; a < twoPi; a += step)
                 {
@@ -30,8 +30,8 @@ namespace TerraViewer
                     Vector3d pnt1 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 0);
                     Vector3d pnt2 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 0);
 
-                    Vector3d pnt3 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 1);
-                    Vector3d pnt4 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 1);
+                    Vector3d pnt3 = new Vector3d(Math.Cos(a) * rad, Math.Sin(a) * rad, 10);
+                    Vector3d pnt4 = new Vector3d(Math.Cos(a + step) * rad, Math.Sin(a + step) * rad, 10);
 
                     triangles.AddTriangle(pnt1, pnt2, pnt3, SysColor.FromArgb(128 + Math.Max(0, (int)(Math.Sin(b) * color.R / 2)), 128 + Math.Max(0, (int)(Math.Sin(b) * color.G / 2)), 128 + Math.Max(0, (int)(Math.Sin(b) * color.B / 2))), new Dates());
                     triangles.AddTriangle(pnt3, pnt2, pnt4, SysColor.FromArgb(128 + Math.Max(0, (int)(Math.Sin(b) * color.R / 2)), 128 + Math.Max(0, (int)(Math.Sin(b) * color.G / 2)), 128 + Math.Max(0, (int)(Math.Sin(b) * color.B / 2))), new Dates());
