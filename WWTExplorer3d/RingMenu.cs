@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
+using System.Windows.Forms;
+using System.Drawing;
 #endif
 
 namespace TerraViewer
@@ -15,6 +17,15 @@ namespace TerraViewer
     {
         List<RingMenuPanel> panels = new List<RingMenuPanel>();
 
+        RingMenuPanel activePanel = null;
+
+
+        public void AddPanel( RingMenuPanel panel)
+        {
+            panels.Add(panel);
+            activePanel = panel;
+        }
+
         public void Initialize()
         {
 #if WINDOWS_UWP
@@ -22,9 +33,57 @@ namespace TerraViewer
 #else
             string path = "hi";
 #endif
-            panels.Add(new Collections(path));
+           // panels.Add(new Collections(path));
 
         }
+
+        bool draggging = false;
+
+        Point cursorLocation = new Point(0, 0);
+        Vector2d pointTouched = new Vector2d();
+
+        public void HandleControlerInput(HandController controller)
+        {
+            if (controller.Events.HasFlag(HandControllerStatus.TouchDown))
+            {
+ //               Point pnt = new Point((int)((controller.TouchX + 1) * 200), (int)((-controller.TouchY + 1) * 250));
+                activePanel.MouseClick(this, new MouseEventArgs(MouseButtons.Left, 0, cursorLocation.X,cursorLocation.Y, 0));
+            }
+
+            if (controller.Events.HasFlag(HandControllerStatus.Touched))
+            {
+                pointTouched = new Vector2d(controller.TouchY, controller.TouchY);
+                draggging = true;
+            }
+
+            if (controller.Events.HasFlag(HandControllerStatus.UnTouch))
+            {
+                draggging = false;
+            }
+
+            if (controller.Touched)
+            {
+                double deltaX = controller.TouchX - pointTouched.X;
+                double deltaY = controller.TouchY - pointTouched.Y;
+
+                int x = cursorLocation.X + (int)(deltaX * touchFactor*5);
+                int y = cursorLocation.Y - (int)(deltaY * touchFactor*5);
+
+                x = Math.Min(x, 400);
+                y = Math.Min(y, 500);
+
+                x = Math.Max(0, x);
+                y = Math.Max(0, y);
+
+                cursorLocation = new Point(x,y);
+
+                activePanel.MouseMove(this, new MouseEventArgs(MouseButtons.Left, 0, cursorLocation.X, cursorLocation.Y, 0));
+                pointTouched = new Vector2d(controller.TouchX, controller.TouchY);
+            }
+     
+        }
+
+        const double touchFactor = 25;
 
         TriangleList triangles = new TriangleList();
 
@@ -60,7 +119,10 @@ namespace TerraViewer
             //triangles.Draw(renderContext, opacity, TriangleList.CullMode.None);
             foreach(var p in panels)
             {
-                p.Draw(renderContext);
+                UiGraphics g = new UiGraphics(renderContext);
+                g.Prep();
+                p.Draw(g);
+                g.Flush();
             }
         }
 
@@ -73,42 +135,64 @@ namespace TerraViewer
     public class RingMenuPanel
     {
  
-        virtual public void Draw(RenderContext11 renderContext)
+        virtual public void Draw(UiGraphics g)
         {
 
         }
 
-    }
-
-    public class Collections : RingMenuPanel
-    {
-        Texture11 image;
-        public Collections(string imageFile)
+        virtual public void MouseClick(object ringMenu, MouseEventArgs mouseEventArgs)
         {
-            image = Texture11.FromFile(imageFile);
+            throw new NotImplementedException();
         }
 
-        public override void Draw(RenderContext11 renderContext)
+        virtual public void MouseMove(object ringMenu, MouseEventArgs mouseEventArgs)
         {
-            if (image.Texture != null)
-            {
-                PositionColoredTextured[] points = new PositionColoredTextured[4];
-
-                points[0] = new PositionColoredTextured(0, 0, 0, SysColor.White, 1, 0, 1);
-                points[3] = new PositionColoredTextured(.2f, .24f, 0, SysColor.White, 1, 1, 0);
-                points[2] = new PositionColoredTextured(0, .24f, 0, SysColor.White, 1, 0, 0);
-                points[1] = new PositionColoredTextured(.2f, 0, 0, SysColor.White, 1, 1, 1);
-                Sprite2d.Draw(renderContext, points, 4, image, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
-
-                Text3dBatch batch = new Text3dBatch(12);
-                Text3d text = new Text3d(new Vector3d(0, 0, 1), new Vector3d(.1, .11, 0), new Vector3d(0, 1, 0), RenderEngine.pointerConstellation, 12, .001);
-                //text.Rotation = 90;
-                //text.Bank = 90;
-                batch.Add(text);
-                batch.Draw(renderContext, 1, SysColor.Red);
-            }
+            throw new NotImplementedException();
         }
     }
+
+    //public class Collections : RingMenuPanel
+    //{
+    //    Texture11 image;
+    //    public Collections(string imageFile)
+    //    {
+    //        image = Texture11.FromFile(imageFile);
+    //    }
+
+    //    public override void Draw(RenderContext11 renderContext)
+    //    {
+    //        if (image.Texture != null)
+    //        {
+    //            PositionColoredTextured[] points = new PositionColoredTextured[4];
+
+    //            points[0] = new PositionColoredTextured(0, 0, 0, SysColor.White, 1, 0, 1);
+    //            points[3] = new PositionColoredTextured(.2f, .24f, 0, SysColor.White, 1, 1, 0);
+    //            points[2] = new PositionColoredTextured(0, .24f, 0, SysColor.White, 1, 0, 0);
+    //            points[1] = new PositionColoredTextured(.2f, 0, 0, SysColor.White, 1, 1, 1);
+    //            Sprite2d.Draw(renderContext, points, 4, image, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
+
+    //            Text3dBatch batch = new Text3dBatch(12);
+    //            Text3d text = new Text3d(new Vector3d(0, 0, 1), new Vector3d(.1, .11, 0), new Vector3d(0, 1, 0), RenderEngine.pointerConstellation, 12, .001);
+    //            //text.Rotation = 90;
+    //            //text.Bank = 90;
+    //            batch.Add(text);
+    //            batch.Draw(renderContext, 1, SysColor.Red);
+    //        }
+    //    }
+    //}
+
+    //public class FolderViewer : RingMenuPanel
+    //{
+    //    List<IThumbnail> items = new List<IThumbnail>();
+    //    public FolderViewer (IThumbnail folder)
+    //    {
+
+    //    }
+    //    public override void Draw(RenderContext11 renderContext)
+    //    {
+            
+    //    }
+    //}
 
    
 }

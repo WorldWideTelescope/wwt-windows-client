@@ -31,12 +31,35 @@ namespace TerraViewer
 #if WINDOWS_UWP
         public Texture11(string filename)
         {
+            if (String.IsNullOrWhiteSpace(filename))
+            {
+                int o = 0;
+            }
             var t = Task.Run(() =>
             {
                 using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, filename))
                 {
                    texture = TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap);
                    resourceView = new ShaderResourceView(texture.Device, texture);
+                }
+
+            });
+        }
+#endif
+
+#if WINDOWS_UWP
+        public Texture11(System.IO.Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new InvalidDataException("Stream can not be null");
+            }
+            var t = Task.Run(() =>
+            {
+                using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, stream))
+                {
+                    texture = TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap);
+                    resourceView = new ShaderResourceView(texture.Device, texture);
                 }
 
             });

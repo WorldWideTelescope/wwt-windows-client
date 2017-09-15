@@ -325,7 +325,6 @@ namespace TerraViewer
 #endif
         static public Bitmap LoadThumbnailFromWeb(string url)
         {
-#if !WINDOWS_UWP
             if (String.IsNullOrEmpty(url))
             {
                 return null;
@@ -335,7 +334,7 @@ namespace TerraViewer
             {
                 string name = url.Substring(url.LastIndexOf("/") + 1).Replace(".jpg", "").Replace(".png", "");
 
-                Bitmap bmp = WWTThumbnails.WWTThmbnail.GetThumbnail(name);
+                Bitmap bmp = ThumbnailCache.LoadThumbnail(name);
                 if (bmp != null)
                 {
                     return bmp;
@@ -347,35 +346,59 @@ namespace TerraViewer
             {
                 string name = url.Replace("http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=", "");
 
-                Bitmap bmp = WWTThumbnails.WWTThmbnail.GetThumbnail(name);
+                Bitmap bmp = ThumbnailCache.LoadThumbnail(name);
                 if (bmp != null)
                 {
                     return bmp;
                 }
 
             }
+
             int id = Math.Abs(url.GetHashCode32());
 
             string filename = id.ToString() + ".jpg";
 
             return LoadThumbnailFromWeb(url, filename);
-#else
-            //todo uwp make a version for uwp
-            return new Bitmap();
-#endif
-        }
-#if !WINDOWS_UWP
 
+        }
+
+        static public Texture11 TextureFromBitmap(Bitmap bmp)
+        {
+            if (bmp==null)
+            {
+                return null;
+            }
+
+#if WINDOWS_UWP
+            if (!string.IsNullOrWhiteSpace(bmp.FileName))
+            {
+                return new Texture11(bmp.FileName);
+            }
+            
+            if (bmp.Stream != null)
+            {
+                return new Texture11(bmp.Stream);
+            }
+
+            return null;
+#else
+            return Texture11.FromBitmap(bmp);
+#endif
+
+        }
 
         static public Bitmap LoadThumbnailFromWeb(string url, string filename)
         {
 
             try
             {
-                DataSetManager.DownloadFile(CacheProxy.GetCacheUrl(url), Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename, true, true);
-
+                string fullPath = Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename;
+                DataSetManager.DownloadFile(CacheProxy.GetCacheUrl(url), fullPath, true, true);
+#if !WINDOWS_UWP
                 return UiTools.LoadBitmap(Properties.Settings.Default.CahceDirectory + @"thumbnails\" + filename);
-
+#else
+                return new Bitmap(fullPath);
+#endif
             }
             catch
             {
@@ -383,7 +406,7 @@ namespace TerraViewer
             }
 
         }
-#endif
+
         static public string GetNamesStringFromArray(string[] array)
         {
             string names = "";
@@ -1545,7 +1568,7 @@ namespace TerraViewer
     }
 #endif
 
-    #region Colors
+#region Colors
     //public static class SystemColors
     //{
     //    public static Color MediumPurple { get { return Color.FromArgb(0xFF, 0x93, 0x70, 0xDB); } }
@@ -1691,7 +1714,7 @@ namespace TerraViewer
     //    public static Color DarkViolet { get { return Color.FromArgb(0xFF, 0x94, 0x00, 0xD3); } }
 
     //}
-    #endregion
+#endregion
 }
 
 

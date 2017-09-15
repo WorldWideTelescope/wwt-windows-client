@@ -8,9 +8,7 @@ using System.Windows.Forms;
 
 namespace TerraViewer
 {
-    public enum PageChange {Back, Next, First, Last};
 
-    public delegate void PageChangedEventHandler(object sender, PageChange e);
   
     public partial class Paginator : UserControl
     {

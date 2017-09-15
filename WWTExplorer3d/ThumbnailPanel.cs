@@ -1,13 +1,25 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+
+#if WINDOWS_UWP
+using SysColor = TerraViewer.Color;
+
+#else
+using SysColor = System.Drawing.Color;
 using System.Drawing;
 using System.Windows.Forms;
+#endif
 
 namespace TerraViewer
 {
+    public delegate void ItemClickedEventHandler(object sender, Object e);
 
-    public partial class ThumbnailList : UserControl
+    public enum ThumbnailItemType { Category, Item };
+    public enum ThumbnailSize { Small, Big };
+    public class ThumbnailPanel
     {
+
         public event ItemClickedEventHandler ItemHover;
         public event ItemClickedEventHandler ItemClicked;
         public event ItemClickedEventHandler ItemDoubleClicked;
@@ -15,27 +27,25 @@ namespace TerraViewer
         public event ItemClickedEventHandler ItemContextMenu;
         public event ItemClickedEventHandler AddNewItem;
 
-        public ThumbnailList()
-        {
-            InitializeComponent();
-            if (Height < 65)
-            {
-                Height = 65;
-            }
-            items = new List<Object>();
-            SetStyle(ControlStyles.ResizeRedraw, true);
+        public int Height = 500;
+        public int Width = 400;
 
+        private bool dirty = true;
+
+        public void Invalidate()
+        {
+            dirty = true;
         }
 
-        public void AddRange( IEnumerable<Object>  addItems)
+        public void AddRange(IEnumerable<Object> addItems)
         {
             items.AddRange(addItems);
             UpdatePaginator();
-            Invalidate();    
+            Invalidate();
         }
         public void Insert(Object newItem)
         {
-            items.Insert(0,newItem);
+            items.Insert(0, newItem);
             UpdatePaginator();
             Invalidate();
         }
@@ -87,7 +97,7 @@ namespace TerraViewer
             get { return items.Count; }
         }
 
-        private List<Object> items;
+        private List<Object> items = new List<Object>();
 
         public List<Object> Items
         {
@@ -95,11 +105,13 @@ namespace TerraViewer
             set { items = value; }
         }
 
-        static Bitmap bmpBackground = global::TerraViewer.Properties.Resources.thumbBackground;
-        static Bitmap bmpBackgroundHover = global::TerraViewer.Properties.Resources.ThumbBackgroundHover;
-        static Bitmap bmpBackgroundWide = global::TerraViewer.Properties.Resources.thumbBackgroundWide;
-        static Bitmap bmpBackgroundWideHover = global::TerraViewer.Properties.Resources.ThumbBackgroundWideHover;
-        static Bitmap bmpDropInsertMarker = global::TerraViewer.Properties.Resources.DragInsertMarker;
+        static Dictionary<Bitmap, Texture11> map = new Dictionary<Bitmap, Texture11>();
+
+        static Texture11 bmpBackground = GetTextureForThumbnail(TerraViewer.Properties.Resources.thumbBackground);
+        static Texture11 bmpBackgroundHover = GetTextureForThumbnail(TerraViewer.Properties.Resources.ThumbBackgroundHover);
+        static Texture11 bmpBackgroundWide = GetTextureForThumbnail(TerraViewer.Properties.Resources.thumbBackgroundWide);
+        static Texture11 bmpBackgroundWideHover = GetTextureForThumbnail(TerraViewer.Properties.Resources.ThumbBackgroundWideHover);
+        static Texture11 bmpDropInsertMarker = GetTextureForThumbnail(TerraViewer.Properties.Resources.DragInsertMarker);
 
         public void PageChanged(object sender, PageChange e)
         {
@@ -180,9 +192,9 @@ namespace TerraViewer
 
         public int CurrentPage
         {
-            get 
+            get
             {
-                return  startIndex / ItemsPerPage;
+                return startIndex / ItemsPerPage;
             }
         }
 
@@ -195,29 +207,29 @@ namespace TerraViewer
             }
         }
 
-        Paginator paginator;
+        //Paginator paginator;
 
-        public Paginator Paginator
-        {
-            get
-            {
-                return paginator;
-            }
-            set
-            {
-                if (paginator != null)
-                {
-                    paginator.PageChanged -= new PageChangedEventHandler(PageChanged);
-                }    
-                
-                paginator = value;
-                
-                if (paginator != null)
-                {
-                    paginator.PageChanged += new PageChangedEventHandler(PageChanged);
-                }
-            }
-        }
+        //public Paginator Paginator
+        //{
+        //    get
+        //    {
+        //        return paginator;
+        //    }
+        //    set
+        //    {
+        //        if (paginator != null)
+        //        {
+        //            paginator.PageChanged -= new PageChangedEventHandler(PageChanged);
+        //        }
+
+        //        paginator = value;
+
+        //        if (paginator != null)
+        //        {
+        //            paginator.PageChanged += new PageChangedEventHandler(PageChanged);
+        //        }
+        //    }
+        //}
 
         int HorzSpacing = 110;
         int VertSpacing = 75;
@@ -225,13 +237,12 @@ namespace TerraViewer
         int ThumbWidth = 110;
         float horzMultiple = 110;
 
-        private void ThumbnailList_Paint(object sender, PaintEventArgs e)
+        public void Draw(UiGraphics g)
         {
-            Graphics g = e.Graphics;
             RowCount = Math.Max(Height / ThumbHeight, 1);
             ColCount = Math.Max(Width / HorzSpacing, 1);
 
-            horzMultiple = ((float)Width+13) / (float)ColCount;
+            horzMultiple = ((float)Width + 13) / (float)ColCount;
 
             startIndex = (startIndex / ItemsPerPage) * ItemsPerPage;
 
@@ -249,50 +260,48 @@ namespace TerraViewer
                             rectf = new RectangleF((float)x * horzMultiple + 3f, y * VertSpacing, ThumbWidth - 10, 64);
                             g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWide : bmpBackground, (int)((float)x * horzMultiple), y * VertSpacing);
 
-                            g.DrawString(showAddButton ? addText : emptyText, UiTools.StandardRegular, (addButtonHover && showAddButton) ? UiTools.YellowTextBrush : UiTools.StadardTextBrush, rectf, UiTools.StringFormatCenterCenter);
-                            
-                        }          
+                            g.DrawString(showAddButton ? addText : emptyText, 8, (addButtonHover && showAddButton) ? SysColor.Yellow : SysColor.White, rectf, UiGraphics.TextAlignment.Center);
+
+                        }
                         break;
                     }
 
 
-                    rectf = new RectangleF((float)x * horzMultiple + 3f, y * VertSpacing, ThumbWidth-14, 64);
-                    Brush textBrush = UiTools.StadardTextBrush;
+                    rectf = new RectangleF((float)x * horzMultiple + 3f, y * VertSpacing, ThumbWidth - 14, 64);
+                    SysColor textBrush = SysColor.White;
                     if (index == hoverItem || (index == selectedItem && hoverItem == -1))
                     {
                         g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWideHover : bmpBackgroundHover, (int)((float)x * horzMultiple), y * VertSpacing);
-                        textBrush = UiTools.YellowTextBrush;
+                        textBrush = SysColor.White;
                     }
                     else
                     {
                         g.DrawImage(thumbnailSize == ThumbnailSize.Big ? bmpBackgroundWide : bmpBackground, (int)((float)x * horzMultiple), y * VertSpacing);
                     }
 
-                    ((IThumbnail)items[index]).Bounds = RectangleToScreen(new Rectangle((int)(x * horzMultiple), (int)(y * VertSpacing), (int)horzMultiple, (int)VertSpacing));
-                    try
-                    {
-                        Bitmap bmpThumb = ((IThumbnail)items[index]).ThumbNail;
+                    //todo uwp
+                    //((IThumbnail)items[index]).Bounds = RectangleToScreen(new Rectangle((int)(x * horzMultiple), (int)(y * VertSpacing), (int)horzMultiple, (int)VertSpacing));
+
+                        Texture11 bmpThumb = GetTextureForThumbnail(((IThumbnail)items[index]).ThumbNail);
                         if (bmpThumb != null)
                         {
-                            g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3,bmpThumb.Width,bmpThumb.Height), new Rectangle(0,0,bmpThumb.Width,bmpThumb.Height),GraphicsUnit.Pixel);
-                            g.DrawRectangle(Pens.Black, (int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, ((IThumbnail)items[index]).ThumbNail.Width, ((IThumbnail)items[index]).ThumbNail.Height);
+                            g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, bmpThumb.Width, bmpThumb.Height), new Rectangle(0, 0, bmpThumb.Width, bmpThumb.Height), GraphicsUnit.Pixel);
+                            //todo uwp add black rect
+                            //g.DrawRectangle(Pens.Black, (int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, ((IThumbnail)items[index]).ThumbNail.Width, ((IThumbnail)items[index]).ThumbNail.Height);
                         }
-                        
-                    }
-                        // TODO FIX this! 
-                    catch
-                    {
-                    }
+
+
 
                     if (((IThumbnail)items[index]).IsImage)
                     {
-                        g.DrawImage(Properties.Resources.InsertPictureHS, (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                        g.DrawImage(GetTextureForThumbnail(Properties.Resources.InsertPictureHS), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                     }
                     if (((IThumbnail)items[index]).IsTour)
                     {
-                        g.DrawImage(Properties.Resources.TourIcon, (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                        g.DrawImage(GetTextureForThumbnail(Properties.Resources.TourIcon), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                     }
-                    g.DrawString(((IThumbnail)items[index]).Name, UiTools.StandardRegular, textBrush, rectf, UiTools.StringFormatThumbnails);
+                    RectangleF textRect = new RectangleF(rectf.X, rectf.Y + 44, rectf.Width, rectf.Height - 44);
+                    g.DrawString(((IThumbnail)items[index]).Name, 8, textBrush, textRect, UiGraphics.TextAlignment.Left);
 
 
                     index++;
@@ -302,6 +311,17 @@ namespace TerraViewer
                     break;
                 }
             }
+        }
+
+
+
+        static private Texture11 GetTextureForThumbnail(Bitmap bmp)
+        {
+            if (!map.ContainsKey(bmp))
+            {
+                map[bmp] = UiTools.TextureFromBitmap(bmp);
+            }
+            return map[bmp];
         }
 
         bool showAddButton = false;
@@ -321,6 +341,11 @@ namespace TerraViewer
         }
 
         string addText = "Add New Item";
+
+        internal void Focus()
+        {
+            throw new NotImplementedException();
+        }
 
         public string AddText
         {
@@ -351,7 +376,7 @@ namespace TerraViewer
             {
                 return -1;
             }
-            
+
             if (ypos < 0)
             {
                 return -1;
@@ -368,7 +393,7 @@ namespace TerraViewer
                 addButtonHover = false;
             }
 
-            if (index > items.Count-1)
+            if (index > items.Count - 1)
             {
                 return -1;
             }
@@ -380,9 +405,9 @@ namespace TerraViewer
 
             return index;
         }
-            
 
-        private void ThumbnailList_MouseClick(object sender, MouseEventArgs e)
+
+        public void MouseClick(object sender, MouseEventArgs e)
         {
             bool imageClicked;
             int index = GetItemIndexFromCursor(e.Location, out imageClicked);
@@ -425,7 +450,7 @@ namespace TerraViewer
             }
         }
 
-        private void ThumbnailList_MouseDoubleClick(object sender, MouseEventArgs e)
+        public void MouseDoubleClick(object sender, MouseEventArgs e)
         {
             bool imageClicked;
             int index = GetItemIndexFromCursor(e.Location, out imageClicked);
@@ -433,10 +458,10 @@ namespace TerraViewer
             {
                 ItemDoubleClicked.Invoke(this, items[index]);
             }
- 
+
         }
 
-        private void ThumbnailList_MouseLeave(object sender, EventArgs e)
+        public void MouseLeave(object sender, EventArgs e)
         {
             hoverItem = -1;
             addButtonHover = false;
@@ -448,10 +473,10 @@ namespace TerraViewer
 
         }
 
-        private void ThumbnailList_MouseMove(object sender, MouseEventArgs e)
+        public void MouseMove(object sender, MouseEventArgs e)
         {
             bool imageClicked;
-           
+
             int newHover = GetItemIndexFromCursor(e.Location, out imageClicked);
             if (hoverItem != newHover)
             {
@@ -471,35 +496,22 @@ namespace TerraViewer
             Invalidate();
         }
 
-        private void ThumbnailList_MouseEnter(object sender, EventArgs e)
+        public void ThumbnailList_MouseEnter(object sender, EventArgs e)
         {
-            if (!Focused && !dontStealFocus)
-            {
-                if (Earth3d.MainWindow.IsWindowOrChildFocused() || Parent.Focused)
-                {
-                    Focus();
-                }
-            }
+
         }
 
+
+        //todo uwp add paginator display
         private void UpdatePaginator()
         {
-            if (paginator != null)
-            {
-                paginator.TotalPages = PageCount;
-                paginator.CurrentPage = CurrentPage;
-            }
+            //if (paginator != null)
+            //{
+            //    paginator.TotalPages = PageCount;
+            //    paginator.CurrentPage = CurrentPage;
+            //}
         }
 
-        private void ThumbnailList_Scroll(object sender, ScrollEventArgs e)
-        {
-           
-        }
-
-        private void ThumbnailList_Load(object sender, EventArgs e)
-        {
-            this.MouseWheel += new MouseEventHandler(ThumbnailList_MouseWheel);
-        }
 
         void ThumbnailList_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -519,10 +531,10 @@ namespace TerraViewer
 
         private void ThumbnailList_VisibleChanged(object sender, EventArgs e)
         {
-            if (paginator != null)
-            {
-                paginator.Visible = this.Visible;
-            }
+            //if (paginator != null)
+            //{
+            //    paginator.Visible = this.Visible;
+            //}
         }
 
         private void ThumbnailList_KeyDown(object sender, KeyEventArgs e)
@@ -540,11 +552,11 @@ namespace TerraViewer
                     }
                     else
                     {
-                        selectedItem = items.Count-1;
+                        selectedItem = items.Count - 1;
                     }
                     break;
                 case Keys.End:
-                    selectedItem = items.Count-1;
+                    selectedItem = items.Count - 1;
                     break;
                 case Keys.Enter:
                     if (ItemClicked != null)
@@ -563,11 +575,11 @@ namespace TerraViewer
                     }
                     break;
                 case Keys.Right:
-                    if (selectedItem < items.Count-1)
+                    if (selectedItem < items.Count - 1)
                     {
                         selectedItem++;
                     }
-                    break;          
+                    break;
                 case Keys.PageDown:
                     this.PageChanged(this, PageChange.Next);
                     if (selectedItem + ColCount * RowCount < items.Count)
@@ -600,7 +612,7 @@ namespace TerraViewer
                         selectedItem = 0;
                     }
                     break;
-                 default:
+                default:
                     break;
             }
 
@@ -632,7 +644,7 @@ namespace TerraViewer
         public bool ShowNext(bool fromStart, bool doubleClick)
         {
             int wrappedCount = 0;
-            if ((items != null && items.Count > 0 ))
+            if ((items != null && items.Count > 0))
             {
                 do
                 {
@@ -668,7 +680,7 @@ namespace TerraViewer
                         ItemDoubleClicked.Invoke(this, items[selectedItem]);
                     }
                 }
-                else 
+                else
                 {
                     if (ItemClicked != null)
                     {
@@ -731,18 +743,20 @@ namespace TerraViewer
         }
 
 
-        protected override bool ProcessDialogKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Up:
-                case Keys.Down:
-                case Keys.Left:
-                case Keys.Right:
-                    return false;
-            }
-            return base.ProcessDialogKey(keyData);
-        }
+        //protected override bool ProcessDialogKey(Keys keyData)
+        //{
+        //    switch (keyData)
+        //    {
+        //        case Keys.Up:
+        //        case Keys.Down:
+        //        case Keys.Left:
+        //        case Keys.Right:
+        //            return false;
+        //    }
+        //    return base.ProcessDialogKey(keyData);
+        //}
+
+
         internal object Selected
         {
             get
@@ -780,6 +794,8 @@ namespace TerraViewer
             set { dontStealFocus = value; }
         }
 
+        public bool Focused { get; private set; }
+
         private void ThumbnailList_MouseDown(object sender, MouseEventArgs e)
         {
             dontStealFocus = false;
@@ -787,7 +803,7 @@ namespace TerraViewer
 
         private void ThumbnailList_MouseUp(object sender, MouseEventArgs e)
         {
-           
+
 
         }
     }

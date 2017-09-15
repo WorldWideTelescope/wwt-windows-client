@@ -205,12 +205,10 @@ namespace TerraViewer
                     }
 
                     //todo uwp impliment folder icon
-#if !WINDOWS_UWP
                     if (thumbnail == null)
                     {
                         thumbnail = Properties.Resources.Folder;
                     }
-#endif
                 }
                 return thumbnail;
             }
@@ -906,24 +904,20 @@ namespace TerraViewer
                     {
                         if (!String.IsNullOrEmpty(constellationField))
                         {
-                            if (ThumbnailCache.ConstellationThumbnails.ContainsKey(constellationField))
-                            {
-                                //todo clone this
-                                thumbNail = ThumbnailCache.ConstellationThumbnails[constellationField];
-                            }
+                            thumbNail = ThumbnailCache.GetConstellationThumbnail(constellationField);
                         }
                     }
                     else
                     {
                         //todo uwp find anther way to do this.
-#if !WINDOWS_UWP
-                        thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
+
+                        thumbNail = ThumbnailCache.LoadThumbnail(Name);
                         if (thumbNail == null)
                         {
-                            object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
+                            object obj = TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
                             thumbNail = ((Bitmap)(obj));
                         }
-#endif
+
                     }
                 }
 
@@ -938,6 +932,8 @@ namespace TerraViewer
                 thumbNail = value;
             }
         }
+
+
         Rectangle bounds;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]

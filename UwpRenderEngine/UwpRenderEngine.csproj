@@ -186,6 +186,12 @@
     <Compile Include="..\WWTExplorer3d\Folder.cs">
       <Link>Imagesets\Folder.cs</Link>
     </Compile>
+    <Compile Include="..\WWTExplorer3d\FolderPanel.cs">
+      <Link>UI\FolderPanel.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FolderUp.cs">
+      <Link>UI\FolderUp.cs</Link>
+    </Compile>
     <Compile Include="..\WWTExplorer3d\Folder_Metadata.cs">
       <Link>Imagesets\Folder_Metadata.cs</Link>
     </Compile>
@@ -360,6 +366,9 @@
     <Compile Include="..\WWTExplorer3d\ThumbnailCache.cs">
       <Link>Utilities\ThumbnailCache.cs</Link>
     </Compile>
+    <Compile Include="..\WWTExplorer3d\ThumbnailPanel.cs">
+      <Link>UI\ThumbnailPanel.cs</Link>
+    </Compile>
     <Compile Include="..\WWTExplorer3d\Tile.cs">
       <Link>Tiles\Tile.cs</Link>
     </Compile>
@@ -380,6 +389,9 @@
     </Compile>
     <Compile Include="..\WWTExplorer3d\TreeDictionaryValueEnumerator.cs">
       <Link>Data\TreeDictionaryValueEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\UiGraphics.cs">
+      <Link>UI\UiGraphics.cs</Link>
     </Compile>
     <Compile Include="..\WWTExplorer3d\UiTools.cs">
       <Link>Utilities\UiTools.cs</Link>
@@ -3195,6 +3207,11 @@
     <Content Include="..\WWTExplorer3d\WW15MGH.DAC">
       <Link>Resources\WW15MGH.DAC</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WWTThumbnails">
+      <HintPath>..\WWTExplorer3d\WWTThumbnails.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

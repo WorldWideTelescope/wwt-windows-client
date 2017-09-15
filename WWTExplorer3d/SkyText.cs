@@ -459,7 +459,7 @@ namespace TerraViewer
 
         public void Init()
         {
-            bool big = cellHeight > 20;
+            bool big = cellHeight > 40;
 
             string textureFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, big ? "UwpRenderEngine\\Resources\\glyphs1.png" : "UwpRenderEngine\\Resources\\glyphs2.png");
             string xmlFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, big ? "UwpRenderEngine\\Resources\\glyphs1.xml" : "UwpRenderEngine\\Resources\\glyphs2.xml");

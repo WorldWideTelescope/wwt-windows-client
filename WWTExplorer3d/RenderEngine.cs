@@ -96,22 +96,36 @@ namespace TerraViewer
             ContextSearch.InitializeDatabase(true);
             Catalogs.InitSearchTable();
 
-            LoadExploreRoot();
-            if (explorerRoot != null)
-            {
-                ContextSearch.AddFolderToSearch(explorerRoot, true);
-            }
-            ContextSearch.AddCatalogs(true);
-
-
             ringMenu = new RingMenu();
             ringMenu.Initialize();
+            folderPanel = new FolderPanel();
+            ringMenu.AddPanel(folderPanel);
 
+            var t = System.Threading.Tasks.Task.Run(() =>
+            {
+
+                LoadExploreRoot();
+                if (explorerRoot != null)
+                {
+                    ContextSearch.AddFolderToSearch(explorerRoot, true);
+                }
+                ContextSearch.AddCatalogs(true);
+                ContextSearch.Initialized = true;
+            });
+
+
+
+
+            
             currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Sandbox, BandPass.Visible);
-            BackgroundInit();
+            var t1 = System.Threading.Tasks.Task.Run(() =>
+            {
+                BackgroundInit();
+            });
+
             //set settings to test
             Properties.Settings.Default.ShowGrid.TargetState = true;
             Properties.Settings.Default.ShowEclipticGridText.TargetState = true;
@@ -142,9 +156,11 @@ namespace TerraViewer
             string filename = string.Format(@"{0}data\exploreRoot_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
             DataSetManager.DownloadFile(url, filename, false, true);
             explorerRoot = Folder.LoadFromFile(filename, true);
+            folderPanel.LoadRootFoder(explorerRoot);
+
         }
 #endif
-
+        FolderPanel folderPanel;
         ImageSetType LookAtType = ImageSetType.Sky;
 
         public void NextView()
@@ -160,7 +176,9 @@ namespace TerraViewer
             LookAtType = (ImageSetType)next;
             currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
         }
+
         RingMenu ringMenu = null;
+
         public static void BackgroundInit()
         {
 
@@ -4858,7 +4876,10 @@ namespace TerraViewer
                 Mover = null;
                 //Todo Notify interested parties that move is complete
 
-                NotifyMoveComplete();
+                if (NotifyMoveComplete != null)
+                {
+                    NotifyMoveComplete();
+                }
             }
         }
 
@@ -5758,6 +5779,23 @@ namespace TerraViewer
 
                         if (LeftController.Grip > 0)
                         {
+                            ringMenu.HandleControlerInput(LeftController);
+
+                            m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
+                            m1.Invert();
+                            m1 = Matrix.Scaling(1, -1, 1) * m1;
+                            m1 = Matrix.Translation(-200, -500, 0) * m1;
+
+                       
+                            m1 = m1 * Matrix.Scaling(.00037f);
+
+                            m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+                            if (scale != 1)
+                            {
+                                m1 = m1 * Matrix.Scaling(scale );
+                            }
+                            localWorld.Matrix = m1;
+                            RenderContext11.World = localWorld;
                             ringMenu.Draw(RenderContext11, 1, SysColor.BlueViolet);
                         }
 

@@ -234,24 +234,20 @@ namespace TerraViewer
                     {
                         if (!String.IsNullOrEmpty(constellation) )
                         {
-                            if (ThumbnailCache.ConstellationThumbnails.ContainsKey(constellation))
-                            {
-                                //todo clone this
-                                thumbNail = ThumbnailCache.ConstellationThumbnails[constellation];
-                            }
+                            thumbNail = ThumbnailCache.GetConstellationThumbnail(constellation);                           
                         }      
                     }
                     else
                     {
                         //todo uwp figure out how to extract thumbnails into resources of some kind
-#if !WINDOWS_UWP
-                        thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
+
+                        thumbNail = ThumbnailCache.LoadThumbnail(Name);
                         if (thumbNail == null)
                         {
                             object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
-                            thumbNail = ((System.Drawing.Bitmap)(obj));
+                            thumbNail = ((Bitmap)(obj));
                         }
-#endif
+
                     }
                     //Stream s = this.GetType().Assembly.GetManifestResourceStream(String.Format("TerraViewer.Properties.Resources.{0}", Enum.GetName(typeof(DataSetType), Type)));
                     //thumbNail = new Bitmap( s );

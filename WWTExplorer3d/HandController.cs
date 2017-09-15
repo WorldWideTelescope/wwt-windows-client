@@ -129,6 +129,26 @@ namespace TerraViewer
                         Events = Events | HandControllerStatus.StickDown;
                     }
                 }
+
+                if (!lastState.TouchDown && TouchDown )
+                {
+                    Events = Events | HandControllerStatus.TouchDown;
+                }
+
+                if (TouchDown)
+                {
+                    Status = Status | HandControllerStatus.TouchDown;
+                }
+
+                if (!lastState.Touched && Touched)
+                {
+                    Events = Events | HandControllerStatus.Touched;
+                }
+
+                if (lastState.Touched && !Touched)
+                {
+                    Events = Events | HandControllerStatus.UnTouch;
+                }
             }
 
             lastState.CopyState(this);

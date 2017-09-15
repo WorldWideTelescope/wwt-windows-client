@@ -226,7 +226,7 @@ namespace TerraViewer
             return didDownload;
         }
 #else
-          //  try
+            try
             {
                 System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
                 Task<byte[]> task = client.GetByteArrayAsync(url);
@@ -252,7 +252,7 @@ namespace TerraViewer
 
                 return true;
             }
-       //     catch
+            catch
             {
                 return false;
             }
