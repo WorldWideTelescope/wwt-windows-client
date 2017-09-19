@@ -119,7 +119,7 @@ namespace TerraViewer
             
             currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
-            //currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
+            currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Sandbox, BandPass.Visible);
             var t1 = System.Threading.Tasks.Task.Run(() =>
             {
@@ -1508,7 +1508,6 @@ namespace TerraViewer
         public bool showWireFrame = false;
 
         SysColor SkyColor = SysColor.FromArgb(255, 0, 0, 0);
-        public static PlaneD[] frustum = new PlaneD[6];
         public static double front = -1;
         public static double back = 0;
         public static Vector3d cameraTarget = new Vector3d(0f, 0f, 1f);
@@ -2546,56 +2545,9 @@ namespace TerraViewer
         }
 #endif
 
-        public static Matrix3d inverseWorld;
-
         public void MakeFrustum()
         {
-            Matrix3d viewProjection = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection);
 
-            inverseWorld = RenderContext11.World;
-            inverseWorld.Invert();
-
-            // Left plane 
-            frustum[0].A = (float)(viewProjection.M14 + viewProjection.M11);
-            frustum[0].B = (float)(viewProjection.M24 + viewProjection.M21);
-            frustum[0].C = (float)(viewProjection.M34 + viewProjection.M31);
-            frustum[0].D = (float)(viewProjection.M44 + viewProjection.M41);
-
-            // Right plane 
-            frustum[1].A = (float)(viewProjection.M14 - viewProjection.M11);
-            frustum[1].B = (float)(viewProjection.M24 - viewProjection.M21);
-            frustum[1].C = (float)(viewProjection.M34 - viewProjection.M31);
-            frustum[1].D = (float)(viewProjection.M44 - viewProjection.M41);
-
-            // Top plane 
-            frustum[2].A = (float)(viewProjection.M14 - viewProjection.M12);
-            frustum[2].B = (float)(viewProjection.M24 - viewProjection.M22);
-            frustum[2].C = (float)(viewProjection.M34 - viewProjection.M32);
-            frustum[2].D = (float)(viewProjection.M44 - viewProjection.M42);
-
-            // Bottom plane 
-            frustum[3].A = (float)(viewProjection.M14 + viewProjection.M12);
-            frustum[3].B = (float)(viewProjection.M24 + viewProjection.M22);
-            frustum[3].C = (float)(viewProjection.M34 + viewProjection.M32);
-            frustum[3].D = (float)(viewProjection.M44 + viewProjection.M42);
-
-            // Near plane 
-            frustum[4].A = (float)(viewProjection.M13);
-            frustum[4].B = (float)(viewProjection.M23);
-            frustum[4].C = (float)(viewProjection.M33);
-            frustum[4].D = (float)(viewProjection.M43);
-
-            // Far plane 
-            frustum[5].A = (float)(viewProjection.M14 - viewProjection.M13);
-            frustum[5].B = (float)(viewProjection.M24 - viewProjection.M23);
-            frustum[5].C = (float)(viewProjection.M34 - viewProjection.M33);
-            frustum[5].D = (float)(viewProjection.M44 - viewProjection.M43);
-
-            // Normalize planes 
-            for (int i = 0; i < 6; i++)
-            {
-                frustum[i].Normalize();
-            }
             RenderContext11.MakeFrustum();
         }
 
@@ -3864,18 +3816,18 @@ namespace TerraViewer
             MakeFrustum();
         }
 
-        public bool IsSphereInViewFrustum(SharpDX.Vector3 center, float radius)
-        {
-            Vector4d centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
-            for (int i = 0; i < 6; i++)
-            {
-                if (frustum[i].Dot(centerV4) + radius < 0)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        //public bool IsSphereInViewFrustum(SharpDX.Vector3 center, float radius)
+        //{
+        //    Vector4d centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
+        //    for (int i = 0; i < 6; i++)
+        //    {
+        //        if (frustum[i].Dot(centerV4) + radius < 0)
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    return true;
+        //}
 
         public bool SphereIntersectRay(Vector3d pickRayOrig, Vector3d pickRayDir, out Coordinates pointCoordinate)
         {
@@ -5708,13 +5660,11 @@ namespace TerraViewer
 
                 if (LeftController.Active || RightController.Active)
                 {
-
-
                     if (LeftController.Active)
                     {
                         if (LeftController.Trigger > 0)
                         {
-                            TargetZoom *= .95;
+                            TargetZoom *= .75;
                         }
 
                         if (LeftController.Events.HasFlag(HandControllerStatus.StickLeft))
@@ -5806,7 +5756,7 @@ namespace TerraViewer
                     {
                         if (LeftController.Trigger > 0)
                         {
-                            TargetZoom *= .95;
+                            TargetZoom /= .75;
                         }
 
                         var rightPos = RightController.Position;
@@ -6606,6 +6556,8 @@ namespace TerraViewer
 
         public HandController LeftController { get; set; } = new HandController(HandType.Left);
         public HandController RightController { get; set; } = new HandController(HandType.Right);
+        public static Matrix3d ExternalProjectionLeft { get; set; }
+        public static Matrix3d ExternalProjectionRight { get; set; }
 
         PointerRay leftPointerRay = new PointerRay();
         PointerRay rightPointerRay = new PointerRay();

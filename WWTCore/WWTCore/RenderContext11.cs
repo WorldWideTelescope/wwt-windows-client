@@ -1304,7 +1304,15 @@ ambientLightColor.B / 255.0f);
 
         public void MakeFrustum()
         {
-            Matrix3d viewProjection = World * View * Projection;
+            Matrix3d viewProjection;
+            if (ExternalProjection)
+            {
+                viewProjection = (World * View * ExternalProjectionLeft);
+            }
+            else
+            {
+                viewProjection = (World * View * Projection);
+            }
 
             Matrix3d inverseWorld = World;
             inverseWorld.Invert();
@@ -1812,7 +1820,7 @@ ambientLightColor.B / 255.0f);
             }
         }
 
-     
-
+        public static Matrix3d ExternalProjectionLeft { get; set; }
+        public static Matrix3d ExternalProjectionRight { get; set; }
     }
 }
