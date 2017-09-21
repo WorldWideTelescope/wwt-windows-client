@@ -846,7 +846,7 @@ namespace TerraViewer
             //todo UWP fix this to use HMD view frustrum
             if (RenderContext11.ExternalProjection)
             {
-                min = 3;
+                min = 2;
             }
 
             if (level > min)
@@ -920,10 +920,10 @@ namespace TerraViewer
         public static int deepestLevel = 0;
         virtual public bool IsTileInFrustum(PlaneD[] frustum)
         {
-            if (RenderContext11.ExternalProjection)
-            {
-                return true;
-            }
+            //if (RenderContext11.ExternalProjection)
+            //{
+            //    return true;
+            //}
 
             InViewFrustum = false;
             Vector3d center = sphereCenter;

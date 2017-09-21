@@ -1617,12 +1617,18 @@ namespace TerraViewer
 
             ContextSearch.InitializeDatabase(true);
 
-            LoadExploreRoot();
-            if (explorerRoot != null)
+            var t = System.Threading.Tasks.Task.Run(() =>
             {
-                ContextSearch.AddFolderToSearch(explorerRoot, true);
-            }
-            ContextSearch.AddCatalogs(true);
+
+                LoadExploreRoot();
+                if (explorerRoot != null)
+                {
+                    ContextSearch.AddFolderToSearch(explorerRoot, true);
+                }
+                ContextSearch.AddCatalogs(true);
+                ContextSearch.Initialized = true;
+            });
+
 
             BackInitDelegate initBackground = SearchInit;
 

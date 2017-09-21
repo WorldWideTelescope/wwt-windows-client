@@ -164,8 +164,15 @@ namespace TerraViewer
             }
         }
 
+        public static bool Initialized = false;
+
         public static IPlace FindClosestMatch(string constellationID, double ra, double dec, double maxRadius)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
+
             if (!constellationObjects.ContainsKey(constellationID))
             {
                 return null;
@@ -341,6 +348,11 @@ namespace TerraViewer
 
         public static IPlace[] FindConteallationObjects(string constellationID, Coordinates[] corners, Classification type)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
+
             if (!constellationObjects.ContainsKey(constellationID))
             {
                 return null;
@@ -423,6 +435,11 @@ namespace TerraViewer
         }
         public static IPlace[] FindConteallationObjectsInCone(string constellationID, double ra, double dec, float distance, Classification type)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
+
             Vector3d center = Coordinates.RADecTo3d(ra, dec,1);
 
             if (!constellationObjects.ContainsKey(constellationID))
@@ -482,6 +499,10 @@ namespace TerraViewer
         }
         public static IPlace[] FindAllObjects(string constellationID, Classification type)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
 
             if (!constellationObjects.ContainsKey(constellationID))
             {

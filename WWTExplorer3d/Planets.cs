@@ -104,7 +104,7 @@ namespace TerraViewer
             duration = pathDuration;
             if (vertexBuffer != null)
             {
-                double dt = coverageDuration / ((int) pointCount - 1);
+                double dt = coverageDuration / ((int)pointCount - 1);
                 double t0 = points[0].jd;
                 int firstPoint = (int)Math.Floor((t0 - jd) / dt);
                 firstPoint = Math.Max(0, firstPoint);
@@ -121,7 +121,14 @@ namespace TerraViewer
 
                 OrbitTraceShader.UseShader(renderContext, new SharpDX.Color(color.R, color.G, color.B, color.A), savedWorld, positionNow, timeOffset, 1.5);
                 renderContext.SetVertexBuffer(vertexBuffer);
-                renderContext.Device.ImmediateContext.Draw(drawCount, firstPoint);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.Device.ImmediateContext.DrawInstanced(drawCount, 2, firstPoint, 0);
+                }
+                else
+                {
+                    renderContext.Device.ImmediateContext.Draw(drawCount, firstPoint);
+                }
 
                 renderContext.World = savedWorld;
             }

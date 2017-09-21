@@ -91,4 +91,8 @@ namespace TerraViewer
         Identity,
         Sandbox
     };
+
+    public enum PageChange { Back, Next, First, Last };
+
+    public delegate void PageChangedEventHandler(object sender, PageChange e);
 }

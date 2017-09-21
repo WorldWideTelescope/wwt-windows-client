@@ -154,6 +154,9 @@ namespace WWTHolographic.Common
                     BindFlags.ConstantBuffer,
                     ref viewProjectionConstantBufferData));
             }
+
+            TerraViewer.RenderContext11.externalTargetView = d3dRenderTargetView;
+            TerraViewer.RenderContext11.externalDepthView = d3dDepthStencilView;
         }
 
         /// <summary>
@@ -184,18 +187,18 @@ namespace WWTHolographic.Common
         /// matrices for the current frame.
         /// </summary>
         public void UpdateViewProjectionBuffer(
-            DeviceResources         deviceResources,
-            HolographicCameraPose   cameraPose,
+            DeviceResources deviceResources,
+            HolographicCameraPose cameraPose,
             SpatialCoordinateSystem coordinateSystem
             )
         {
             // The system changes the viewport on a per-frame basis for system optimizations.
-            d3dViewport.X           = (float)cameraPose.Viewport.Left;
-            d3dViewport.Y           = (float)cameraPose.Viewport.Top;
-            d3dViewport.Width       = (float)cameraPose.Viewport.Width;
-            d3dViewport.Height      = (float)cameraPose.Viewport.Height;
-            d3dViewport.MinDepth    = 0;
-            d3dViewport.MaxDepth    = 1;
+            d3dViewport.X = (float)cameraPose.Viewport.Left;
+            d3dViewport.Y = (float)cameraPose.Viewport.Top;
+            d3dViewport.Width = (float)cameraPose.Viewport.Width;
+            d3dViewport.Height = (float)cameraPose.Viewport.Height;
+            d3dViewport.MinDepth = 0;
+            d3dViewport.MaxDepth = 1;
 
             // The projection transform for each frame is provided by the HolographicCameraPose.
             HolographicStereoTransform cameraProjectionTransform = cameraPose.ProjectionTransform;
@@ -203,7 +206,7 @@ namespace WWTHolographic.Common
             // Get a container object with the view and projection matrices for the given
             // pose in the given coordinate system.
             HolographicStereoTransform? viewTransformContainer = cameraPose.TryGetViewTransform(coordinateSystem);
-            
+
             // If TryGetViewTransform returns null, that means the pose and coordinate system
             // cannot be understood relative to one another; content cannot be rendered in this 
             // coordinate system for the duration of the current frame.
@@ -220,12 +223,15 @@ namespace WWTHolographic.Common
                 // Update the view matrices. Holographic cameras (such as Microsoft HoloLens) are
                 // constantly moving relative to the world. The view matrices need to be updated
                 // every frame.
-                viewProjectionConstantBufferData.viewProjectionLeft  = Matrix4x4.Transpose(
-                    viewCoordinateSystemTransform.Left * cameraProjectionTransform.Left
-                    );
-                viewProjectionConstantBufferData.viewProjectionRight = Matrix4x4.Transpose(
-                    viewCoordinateSystemTransform.Right * cameraProjectionTransform.Right
-                    );
+
+                var left = viewCoordinateSystemTransform.Left * cameraProjectionTransform.Left;
+                var right = viewCoordinateSystemTransform.Right * cameraProjectionTransform.Right;
+                var scale = TerraViewer.Matrix3d.Scaling(1, 1, -1);
+                TerraViewer.RenderContext11.ExternalProjectionLeft = scale * FromMatrix4x4(left);
+                TerraViewer.RenderContext11.ExternalProjectionRight = scale * FromMatrix4x4(right);
+
+                viewProjectionConstantBufferData.viewProjectionLeft = Matrix4x4.Transpose(left);
+                viewProjectionConstantBufferData.viewProjectionRight = Matrix4x4.Transpose(right);
             }
 
             // Use the D3D device context to update Direct3D device-based resources.
@@ -243,6 +249,11 @@ namespace WWTHolographic.Common
 
                 framePending = true;
             }
+        }
+
+        TerraViewer.Matrix3d FromMatrix4x4(Matrix4x4 mat)
+        {
+            return new TerraViewer.Matrix3d(mat.M11, mat.M12, mat.M13, mat.M14, mat.M21, mat.M22, mat.M23, mat.M24, mat.M31, mat.M32, mat.M33, mat.M34, mat.M41, mat.M42, mat.M43, mat.M44);
         }
 
         /// <summary>
@@ -264,6 +275,8 @@ namespace WWTHolographic.Common
 
             // Set the viewport for this camera.
             context.Rasterizer.SetViewport(Viewport);
+
+            TerraViewer.RenderContext11.externalViewport = Viewport;
 
             // Send the constant buffer to the vertex shader.
             context.VertexShader.SetConstantBuffers(1, viewProjectionConstantBuffer);

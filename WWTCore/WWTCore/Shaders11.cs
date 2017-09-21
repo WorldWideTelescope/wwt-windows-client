@@ -1789,6 +1789,7 @@ namespace TerraViewer
             byte[] bytecode = null;
             try
             {
+
                 bytecode = ShaderBytecode.Compile(sourceText, entryPoint, profile);
             }
             catch (SharpDX.CompilationException e)
@@ -4425,10 +4426,19 @@ namespace TerraViewer
             PositionNow = positionNow;
 
             Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            if (RenderContext11.ExternalProjection)
+            {
+                matrixWVP = matrixWVP * RenderContext11.ExternalScalingFactor;
+            }
+
             matrixWVP.Transpose();
             MatWVP = matrixWVP;
 
             Matrix positionWVP = (world * renderContext.View * renderContext.Projection).Matrix11;
+            if (RenderContext11.ExternalProjection)
+            {
+                positionWVP = positionWVP * RenderContext11.ExternalScalingFactor;
+            }
             positionWVP.Transpose();
 
             MatPositionWVP = positionWVP;
@@ -4463,6 +4473,13 @@ namespace TerraViewer
             context.UpdateSubresource(ref constants, constantBuffer);
 
             context.PixelShader.Set(PixelShader);
+
+            if (RenderContext11.ExternalProjection)
+            {
+                context.GeometryShader.SetConstantBuffer(0, constantBuffer);
+
+                context.GeometryShader.SetShader(instance.CompiledGeometryShader, null, 0);
+            }
         }
 
 
@@ -4485,7 +4502,7 @@ namespace TerraViewer
 
         protected override string GetVertexShaderSource(string profile)
         {
-            return
+            string source =
               " float4x4 matWVP;                             \n" +
               " float4x4 matPositionWVP;                     \n" +
               " float4 positionNow;                          \n" +
@@ -4495,27 +4512,119 @@ namespace TerraViewer
               " struct VS_IN                                 \n" +
               " {                                            \n" +
               "     float4 position   : POSITION;            \n" +
-              "     float time        : TIME;                \n" +
+              "     float time        : TIME;                \n"; 
+            
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                     "     uint   instId   : SV_InstanceID;         \n";
+            }
+            source +=
               " };                                           \n" +
               "                                              \n" +
               " struct VS_OUT                                \n" +
               " {                                            \n" +
               "     float4 ProjPos   : SV_POSITION;          \n" + // Projected space position 
-              "     float4 Color     : COLOR;                \n" +
+              "     float4 Color     : COLOR;                \n";
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                     "     uint        viewId  : TEXCOORD0;          \n" +
+                     " };                                            \n" +
+                     " cbuffer ViewProjectionConstantBuffer : register(b1) \n" +
+                     " {                                             \n" +
+                     "      float4x4 viewProjection[2];              \n";
+            }
+
+            source +=
               " };                                           \n" +
               "\n" +
               " VS_OUT VS(VS_IN In)                        \n" +
               " {                                            \n" +
-              "     VS_OUT Out;                              \n" +
-              "\n" +
+              "     VS_OUT Out;                              \n";
+              ;
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                    "     int idx = In.instId % 2;             \n" +
+                    "     Out.viewId = idx;                     \n";
+            }
+
+
+            source +=
+              "                                                                         \n" +
               "     float fade = 1.0 - (In.time - timeOffset) * 1.5;                       \n" +
-              "     if (In.time - timeOffset < 0)                                        \n" +
-              "         Out.ProjPos = mul(positionNow, matPositionWVP);                  \n" +
-              "     else                                                                 \n" +
-              "         Out.ProjPos = mul(In.position, matWVP);                             \n" +
+              "     if (In.time - timeOffset < 0)                                        \n";
+
+
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                    "     {                                                                  \n" +
+                    "       float4 p = mul(In.position,  matPositionWVP );                  \n" +
+                    "       Out.ProjPos = mul(p, viewProjection[idx]);                      \n" +
+                    "     }                                                                 \n" +
+                    "     else                                                              \n" +
+                    "     {                                                                 \n" +
+                    "       float4 p = mul(In.position,  matWVP );                           \n" +
+                    "       Out.ProjPos = mul(p, viewProjection[idx]);                      \n" +
+                    "     }                                                                 \n";
+            }
+            else
+            {
+                source +=
+                    "         Out.ProjPos = mul(positionNow, matPositionWVP);                  \n" +
+                    "     else                                                                 \n" +
+                    "         Out.ProjPos = mul(In.position, matWVP);                             \n";
+            }
+
+            source +=
+
+
               "     Out.Color = float4(color.rgb, fade * color.a);                       \n" +
               "     return Out;                                                          \n" +
               " }\n";
+
+            return source;
+        }
+
+        protected override string GetGeometryShaderSource(string profile)
+        {
+            return
+
+            "    struct GeometryShaderInput                                                                                 \n " +
+            "    {                                                                                                          \n " +
+            "        float4 pos     : SV_POSITION;                                                                          \n     " +
+            "        float4 color   : COLOR0;                                                                               \n    " +
+            "        uint instId  : TEXCOORD0;                                                                              \n " +
+            "    };                                                                                                         \n " +
+            "                                                                                                               \n " +
+            "    // Per-vertex data passed to the rasterizer.                                                               \n " +
+            "    struct GeometryShaderOutput                                                                                \n " +
+            "    {                                                                                                          \n " +
+            "        float4 pos     : SV_POSITION;                                                                          \n  " +
+            "        float4 color   : COLOR0;                                                                               \n   " +
+            "        uint rtvId   : SV_RenderTargetArrayIndex;                                                              \n " +
+            "    };                                                                                                         \n " +
+            "                                                                                                               \n " +
+            "    // This geometry shader is a pass-through that leaves the geometry unmodified                              \n " +
+            "    // and sets the render target array index.                                                                 \n " +
+            "    [maxvertexcount(2)]                                                                                        \n " +
+            "    void GS(line GeometryShaderInput input[2], inout LineStream<GeometryShaderOutput> outStream)          \n " +
+            "    {                                                                                                          \n " +
+            "        GeometryShaderOutput output;                                                                           \n " +
+            "        [unroll(2)]                                                                                            \n " +
+            "        for (int i = 0; i< 2; ++i)                                                                             \n " +
+            "        {                                                                                                      \n " +
+            "            output.pos = input[i].pos;                                                                         \n " +
+            "            output.color = input[i].color;                                                                     \n " +
+            "            output.rtvId = input[i].instId;                                                                    \n " +
+            "            outStream.Append(output);                                                                          \n " +
+            "        }                                                                                                      \n " +
+            "   }                                                                                                           \n" +
+            "                                                                                                               \n ";
         }
 
         static void initialize()
@@ -4663,92 +4772,183 @@ namespace TerraViewer
             context.UpdateSubresource(ref constants, constantBuffer);
         }
 
-        static string VertexInput =
-            " struct VS_IN                                 \n" +
-            " {                                            \n" +
-            "     float4 Position   : POSITION;            \n" +
-            "     float4 Color      : COLOR;               \n" +
-            "     float PointSize   : POINTSIZE;           \n" +
-            " };                                           \n";
+        static string VertexInput
+        {
+            get
+            {
+                string source =
+                    " struct VS_IN                                 \n" +
+                    " {                                            \n" +
+                    "     float4 Position   : POSITION;            \n" +
+                    "     float4 Color      : COLOR;               \n" +
+                    "     float PointSize   : POINTSIZE;           \n";
+                if (RenderContext11.ExternalProjection)
+                {
+                    source +=
+                         "     uint   instId   : SV_InstanceID;         \n";
+                }
+                source +=
+                        " };                                           \n";
 
-        static string GeometryInput =
-            " struct GS_IN                                 \n" +
-            " {                                            \n" +
-            "     float4 Center     : POSITION;            \n" +
-            "     float2 PointSize  : POINTSIZE;           \n" +
-            "     float4 Color      : COLOR;               \n" +
-            " };                                           \n";
+                return source;
+            }
+        }
 
-        static string PixelInput =
-            " struct PS_IN                                 \n" +
-            " {                                            \n" +
-            "     float4 ProjPos   : SV_POSITION;          \n" +
-            "     float4 Color     : COLOR;                \n" +
-            "     float2 TexCoord  : TEXCOORD0;            \n" +
-            " };                                           \n";
+        static string GeometryInput
+        {
+            get
+            {
+                string source = 
+                    " struct GS_IN                                 \n" +
+                    " {                                            \n" +
+                    "     float4 Center     : POSITION;            \n" +
+                    "     float2 PointSize  : POINTSIZE;           \n" +
+                    "     float4 Color      : COLOR;               \n";
+                if (RenderContext11.ExternalProjection)
+                {
+                    source +=
+                         "       uint        viewId  : TEXCOORD1;          \n";
+                }
+                source +=
+                        " };                                           \n";
 
-        static string ConstantDeclarations =
-            " float4x4 matWVP;                             \n" +
-            " float4 color : COLOR;                        \n" +
-            " float4 pointScaleFactors;                    \n" +
-            " float2 viewportScale;                        \n" +
-            " float minPointSize;                        \n";
+                return source;
+            }
+        }
 
+
+        static string PixelInput
+        {
+            get
+            {
+                string source =
+                    " struct PS_IN                                 \n" +
+                    " {                                            \n" +
+                    "     float4 ProjPos   : SV_POSITION;          \n" +
+                    "     float4 Color     : COLOR;                \n" +
+                    "     float2 TexCoord  : TEXCOORD0;            \n";
+
+                if (RenderContext11.ExternalProjection)
+                {
+                    source +=
+                    "       uint rtvId   : SV_RenderTargetArrayIndex;           \n";
+                }
+
+                source +=
+                    " };                                           \n";
+
+                return source;
+            }
+        }
+
+        static string ConstantDeclarations
+        {
+            get
+            {
+                string source =
+                    " float4x4 matWVP;                             \n" +
+                    " float4 color : COLOR;                        \n" +
+                    " float4 pointScaleFactors;                    \n" +
+                    " float2 viewportScale;                        \n" +
+                    " float minPointSize;                          \n";
+
+                if (RenderContext11.ExternalProjection)
+                {
+                    source +=
+                        " cbuffer ViewProjectionConstantBuffer : register(b1) \n" +
+                         " {                                             \n" +
+                         "      float4x4 viewProjection[2];              \n" +
+                         " };                                            \n";
+                }
+
+                return source;
+            }
+        }
+        
         protected override string GetVertexShaderSource(string profile)
         {
-            return
+            string source =
                     ConstantDeclarations +
                     VertexInput +
                     GeometryInput +
-                    "                                                 \n" +
-                    " GS_IN VS( VS_IN In )                            \n" +
-                    " {                                               \n" +
-                    "     GS_IN Out;                                  \n" +
-                    "     float4 center = mul(In.Position, matWVP);   \n" +
-                    "     Out.Center = center;                        \n" +
-                    "     float d = 1.0 / length(center.xyz);               \n" +
+                    "                                                                       \n" +
+                    " GS_IN VS( VS_IN In )                                                  \n" +
+                    " {                                                                     \n" +
+                    "     GS_IN Out;                                                        \n";
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                    "     int idx = In.instId % 2;                                          \n" +
+                    "     Out.viewId = idx;                                                 \n" +
+                    "     float4 p = mul(In.Position,  matWVP );                            \n" +
+                    "     float4 center = mul(p, viewProjection[idx]);                      \n" +
+                    "     Out.Center = center;                                              \n";
+            }
+            else
+            {
+                source +=
+                    "     float4 center = mul(In.Position, matWVP);                         \n" +
+                    "     Out.Center = center;                                              \n";
+            }
+
+            source +=
+
+                    "     float d = 1.0 / length(center.xyz);                                       \n" +
                     "     float pointScale = sqrt(pointScaleFactors.x + pointScaleFactors.y * d + pointScaleFactors.z * d * d); \n" +
-                    "     float a = pointScale * In.PointSize; \n" +
+                    "     float a = pointScale * In.PointSize;                                      \n" +
                     "     Out.PointSize = max(minPointSize, In.PointSize * pointScale) * viewportScale;            \n" +
-                    "     Out.Color = In.Color * color;                                    \n" +
-                    "     Out.Color.a = max(0, min(1, (1024-a)/512)) * Out.Color.a;           \n" +
-                    "     return Out;                                                      \n" +
-                    " }                                                                    \n";
+                    "     Out.Color = In.Color * color;                                                     \n" +
+                    "     Out.Color.a = max(0, min(1, (1024-a)/512)) * Out.Color.a;                         \n" +
+                    "     return Out;                                                                       \n" +
+                    " }                                                                                     \n";
+
+            return source;
         }
 
         protected override string GetGeometryShaderSource(string profile)
         {
-            return
+            string source =
                 GeometryInput +
                 PixelInput +
-                " [maxvertexcount(4)]                                                    \n" +
-                " void GS(point GS_IN In[1], inout TriangleStream<PS_IN> stream)         \n" +
-                " {                                                                      \n" +
-                "     float4 center = In[0].Center;                                      \n" +
-                "     float2 halfSize = 0.5 * In[0].PointSize * center.w;                \n" +
-                "     float4 p0 = center + float4( halfSize.x, -halfSize.y, 0.0f, 0.0f); \n" +
-                "     float4 p1 = center + float4( halfSize.x,  halfSize.y, 0.0f, 0.0f); \n" +
-                "     float4 p2 = center + float4(-halfSize.x, -halfSize.y, 0.0f, 0.0f); \n" +
-                "     float4 p3 = center + float4(-halfSize.x,  halfSize.y, 0.0f, 0.0f); \n" +
-                "     if ( In[0].Color.a < .002f)                        \n" +
-                "     {                                        \n" +
-                "           return;                            \n" +
-                "     }                                        \n" +
-                "     PS_IN Out;                               \n" +
-                "     Out.Color = In[0].Color;                 \n" +
-                "     Out.ProjPos = p0;                        \n" +
-                "     Out.TexCoord = float2(1, 1);             \n" +
-                "     stream.Append(Out);                      \n" +
-                "     Out.ProjPos = p1;                        \n" +
-                "     Out.TexCoord = float2(1, 0);             \n" +
-                "     stream.Append(Out);                      \n" +
-                "     Out.ProjPos = p2;                        \n" +
-                "     Out.TexCoord = float2(0, 1);             \n" +
-                "     stream.Append(Out);                      \n" +
-                "     Out.ProjPos = p3;                        \n" +
-                "     Out.TexCoord = float2(0, 0);             \n" +
-                "     stream.Append(Out);                      \n" +
-                " }                                            \n";
+                " [maxvertexcount(4)]                                                                           \n" +
+                " void GS(point GS_IN In[1], inout TriangleStream<PS_IN> stream)                                \n" +
+                " {                                                                                             \n" +
+                "     float4 center = In[0].Center;                                                             \n" +
+                "     float2 halfSize = 0.5 * In[0].PointSize * center.w;                                       \n" +
+                "     float4 p0 = center + float4( halfSize.x, -halfSize.y, 0.0f, 0.0f);                        \n" +
+                "     float4 p1 = center + float4( halfSize.x,  halfSize.y, 0.0f, 0.0f);                        \n" +
+                "     float4 p2 = center + float4(-halfSize.x, -halfSize.y, 0.0f, 0.0f);                        \n" +
+                "     float4 p3 = center + float4(-halfSize.x,  halfSize.y, 0.0f, 0.0f);                        \n" +
+                "     if ( In[0].Color.a < .002f)                                                               \n" +
+                "     {                                                                                         \n" +
+                "           return;                                                                             \n" +
+                "     }                                                                                         \n";
+
+            source +=
+                "     PS_IN Out;                                                                                \n";
+            if (RenderContext11.ExternalProjection)
+            {
+                source +=
+                "     Out.rtvId = In[0].viewId;                                                                    \n ";
+            }
+
+            source +=  
+                "     Out.Color = In[0].Color;                                                                  \n" +
+                "     Out.ProjPos = p0;                                                                         \n" +
+                "     Out.TexCoord = float2(1, 1);                                                              \n" +
+                "     stream.Append(Out);                                                                       \n" +
+                "     Out.ProjPos = p1;                                                                         \n" +
+                "     Out.TexCoord = float2(1, 0);                                                              \n" +
+                "     stream.Append(Out);                                                                       \n" +
+                "     Out.ProjPos = p2;                                                                         \n" +
+                "     Out.TexCoord = float2(0, 1);                                                              \n" +
+                "     stream.Append(Out);                                                                       \n" +
+                "     Out.ProjPos = p3;                                                                         \n" +
+                "     Out.TexCoord = float2(0, 0);                                                              \n" +
+                "     stream.Append(Out);                                                                       \n" +
+                " }                                                                                             \n";
+
+            return source;
         }
 
         //protected override string GetGeometryShaderSource(string profile)

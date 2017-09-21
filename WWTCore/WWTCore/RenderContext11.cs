@@ -152,12 +152,19 @@ namespace TerraViewer
 
         public static SharpDX.DXGI.Format DefaultColorFormat
         {
-            get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
+            get
+            {
+#if WINDOWS_UWP
+                return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.B8G8R8A8_UNorm;
+#else
+                return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm;
+#endif
+            }
         }
 
         public static SharpDX.DXGI.Format DefaultTextureFormat
         {
-            get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
+            get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.B8G8R8A8_UNorm; }
         }
 
 #if !WINDOWS_UWP
@@ -458,6 +465,8 @@ namespace TerraViewer
 
         public void SetDisplayRenderTargets()
         {
+            devContext.Flush();
+
             if (renderView != null)
             {
                 devContext.OutputMerger.ResetTargets();
@@ -466,6 +475,15 @@ namespace TerraViewer
                 currentTargetView = renderView;
                 currentDepthView = depthView;
             }
+            else if (externalTargetView != null)
+            {
+                devContext.OutputMerger.ResetTargets();
+                //ViewPort = externalViewport;
+                devContext.OutputMerger.SetTargets(externalDepthView, externalTargetView);
+                currentTargetView = externalTargetView;
+                currentDepthView = externalDepthView;
+            }
+
             //var views = devContext.OutputMerger.GetRenderTargets(2);
             //currentTargetView = views[0];
 
@@ -473,6 +491,9 @@ namespace TerraViewer
         RenderTargetView currentTargetView;
         DepthStencilView currentDepthView;
 
+        public static RenderTargetView externalTargetView;
+        public static DepthStencilView externalDepthView;
+        public static ViewportF externalViewport;
 
         // Return true if this vertex instancing is supported
         public static bool SupportsInstancing
@@ -489,7 +510,7 @@ namespace TerraViewer
         {
             currentTargetView = targetTexture.renderView;
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 currentDepthView = depthBuffer.DepthView;
             }
@@ -501,7 +522,7 @@ namespace TerraViewer
             devContext.OutputMerger.ResetTargets();
             ViewPort = new Viewport(0, 0, targetTexture.Width, targetTexture.Height, 0.0f, 1.0f);
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 devContext.OutputMerger.SetTargets(depthBuffer.DepthView, targetTexture.renderView);
             }
@@ -517,7 +538,7 @@ namespace TerraViewer
         {
             currentTargetView = targetTextureView;
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 currentDepthView = depthBufferView;
             }
@@ -529,7 +550,7 @@ namespace TerraViewer
             devContext.OutputMerger.ResetTargets();
             ViewPort = new Viewport(0, 0, width, height, 0.0f, 1.0f);
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 devContext.OutputMerger.SetTargets(depthBufferView, targetTextureView);
             }
@@ -617,7 +638,7 @@ namespace TerraViewer
             {
                 devContext.ClearRenderTargetView(currentTargetView, color);               
                 //for debug paint red
-                //devContext.ClearRenderTargetView(currentTargetView, Color.FromAbgr(0xFF0000FF));               
+                //devContext.ClearRenderTargetView(currentTargetView, new SharpDX.Color4(1,0,0,1));               
             }
         }
 
@@ -1304,7 +1325,15 @@ ambientLightColor.B / 255.0f);
 
         public void MakeFrustum()
         {
-            Matrix3d viewProjection = World * View * Projection;
+            Matrix3d viewProjection;
+            if (ExternalProjection)
+            {
+                viewProjection = (World * View * ExternalProjectionLeft);
+            }
+            else
+            {
+                viewProjection = (World * View * Projection);
+            }
 
             Matrix3d inverseWorld = World;
             inverseWorld.Invert();
@@ -1812,7 +1841,7 @@ ambientLightColor.B / 255.0f);
             }
         }
 
-     
-
+        public static Matrix3d ExternalProjectionLeft { get; set; }
+        public static Matrix3d ExternalProjectionRight { get; set; }
     }
 }

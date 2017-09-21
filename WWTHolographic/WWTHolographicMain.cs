@@ -334,6 +334,7 @@ namespace WWTHolographic
                         handController.TouchDown = state.ControllerProperties.IsTouchpadPressed;
                         handController.Touched = state.ControllerProperties.IsTouchpadTouched;
                     }
+                    handController.UpdateEvents();
                 }
             }
         }

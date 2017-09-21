@@ -44,7 +44,7 @@ namespace TerraViewer
             }
             set
             {
-                Current = value;
+                current = value;
             }
         }
     }
@@ -518,14 +518,14 @@ namespace TerraViewer
         //
         //   delta:
         //     A signed count of the number of detents the wheel has rotated.
-        public MouseEventArgs(MouseButtons button, int clicks, int x, int y, int delta, Point location)
+        public MouseEventArgs(MouseButtons button, int clicks, int x, int y, int delta)
         {
             Button = button;
             Clicks = clicks;
             X = x;
             Y = y;
             Delta = delta;
-            Location = location;
+            Location = new Point(x,y);
         }
 
         //

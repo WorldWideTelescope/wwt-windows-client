@@ -242,6 +242,8 @@
     <Compile Include="ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
+    <Compile Include="FolderPanel.cs" />
+    <Compile Include="FolderUp.cs" />
     <Compile Include="HandController.cs" />
     <Compile Include="IUiController.cs" />
     <Compile Include="KmlLabels.cs" />
@@ -738,6 +740,7 @@
     </Compile>
     <Compile Include="Table.cs" />
     <Compile Include="ThumbnailCache.cs" />
+    <Compile Include="ThumbnailPanel.cs" />
     <Compile Include="TimeLine.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -764,6 +767,7 @@
     <Compile Include="TransitionsPopup.Designer.cs">
       <DependentUpon>TransitionsPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="UiGraphics.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VideoOutputType.cs" />
     <Compile Include="VisibleKey.cs" />

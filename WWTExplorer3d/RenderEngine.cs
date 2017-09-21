@@ -51,7 +51,7 @@ namespace TerraViewer
             bezelSpacing = (float)config.Bezel;
 
             RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-            RenderContext11.MultiSampleCount = 1;            
+            RenderContext11.MultiSampleCount = 8;            
             if (device !=null)
             {
 
@@ -96,22 +96,36 @@ namespace TerraViewer
             ContextSearch.InitializeDatabase(true);
             Catalogs.InitSearchTable();
 
-            LoadExploreRoot();
-            if (explorerRoot != null)
-            {
-                ContextSearch.AddFolderToSearch(explorerRoot, true);
-            }
-            ContextSearch.AddCatalogs(true);
-
-
             ringMenu = new RingMenu();
             ringMenu.Initialize();
+            folderPanel = new FolderPanel();
+            ringMenu.AddPanel(folderPanel);
 
+            var t = System.Threading.Tasks.Task.Run(() =>
+            {
+
+                LoadExploreRoot();
+                if (explorerRoot != null)
+                {
+                    ContextSearch.AddFolderToSearch(explorerRoot, true);
+                }
+                ContextSearch.AddCatalogs(true);
+                ContextSearch.Initialized = true;
+            });
+
+
+
+
+            
             currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Sandbox, BandPass.Visible);
-            BackgroundInit();
+            var t1 = System.Threading.Tasks.Task.Run(() =>
+            {
+                BackgroundInit();
+            });
+
             //set settings to test
             Properties.Settings.Default.ShowGrid.TargetState = true;
             Properties.Settings.Default.ShowEclipticGridText.TargetState = true;
@@ -134,6 +148,7 @@ namespace TerraViewer
 
         }
 
+
         Folder explorerRoot = null;
         private void LoadExploreRoot()
         {
@@ -141,9 +156,29 @@ namespace TerraViewer
             string filename = string.Format(@"{0}data\exploreRoot_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
             DataSetManager.DownloadFile(url, filename, false, true);
             explorerRoot = Folder.LoadFromFile(filename, true);
+            folderPanel.LoadRootFoder(explorerRoot);
+
         }
 #endif
+        FolderPanel folderPanel;
+        ImageSetType LookAtType = ImageSetType.Sky;
+
+        public void NextView()
+        {
+            int next = (((int)LookAtType) + 1) % 6;
+            LookAtType = (ImageSetType)next;
+            currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
+        }
+
+        public void PreviousView()
+        {
+            int next = (((int)LookAtType) + 5) % 6;
+            LookAtType = (ImageSetType)next;
+            currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
+        }
+
         RingMenu ringMenu = null;
+
         public static void BackgroundInit()
         {
 
@@ -1473,7 +1508,6 @@ namespace TerraViewer
         public bool showWireFrame = false;
 
         SysColor SkyColor = SysColor.FromArgb(255, 0, 0, 0);
-        public static PlaneD[] frustum = new PlaneD[6];
         public static double front = -1;
         public static double back = 0;
         public static Vector3d cameraTarget = new Vector3d(0f, 0f, 1f);
@@ -2511,56 +2545,9 @@ namespace TerraViewer
         }
 #endif
 
-        public static Matrix3d inverseWorld;
-
         public void MakeFrustum()
         {
-            Matrix3d viewProjection = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection);
 
-            inverseWorld = RenderContext11.World;
-            inverseWorld.Invert();
-
-            // Left plane 
-            frustum[0].A = (float)(viewProjection.M14 + viewProjection.M11);
-            frustum[0].B = (float)(viewProjection.M24 + viewProjection.M21);
-            frustum[0].C = (float)(viewProjection.M34 + viewProjection.M31);
-            frustum[0].D = (float)(viewProjection.M44 + viewProjection.M41);
-
-            // Right plane 
-            frustum[1].A = (float)(viewProjection.M14 - viewProjection.M11);
-            frustum[1].B = (float)(viewProjection.M24 - viewProjection.M21);
-            frustum[1].C = (float)(viewProjection.M34 - viewProjection.M31);
-            frustum[1].D = (float)(viewProjection.M44 - viewProjection.M41);
-
-            // Top plane 
-            frustum[2].A = (float)(viewProjection.M14 - viewProjection.M12);
-            frustum[2].B = (float)(viewProjection.M24 - viewProjection.M22);
-            frustum[2].C = (float)(viewProjection.M34 - viewProjection.M32);
-            frustum[2].D = (float)(viewProjection.M44 - viewProjection.M42);
-
-            // Bottom plane 
-            frustum[3].A = (float)(viewProjection.M14 + viewProjection.M12);
-            frustum[3].B = (float)(viewProjection.M24 + viewProjection.M22);
-            frustum[3].C = (float)(viewProjection.M34 + viewProjection.M32);
-            frustum[3].D = (float)(viewProjection.M44 + viewProjection.M42);
-
-            // Near plane 
-            frustum[4].A = (float)(viewProjection.M13);
-            frustum[4].B = (float)(viewProjection.M23);
-            frustum[4].C = (float)(viewProjection.M33);
-            frustum[4].D = (float)(viewProjection.M43);
-
-            // Far plane 
-            frustum[5].A = (float)(viewProjection.M14 - viewProjection.M13);
-            frustum[5].B = (float)(viewProjection.M24 - viewProjection.M23);
-            frustum[5].C = (float)(viewProjection.M34 - viewProjection.M33);
-            frustum[5].D = (float)(viewProjection.M44 - viewProjection.M43);
-
-            // Normalize planes 
-            for (int i = 0; i < 6; i++)
-            {
-                frustum[i].Normalize();
-            }
             RenderContext11.MakeFrustum();
         }
 
@@ -3829,18 +3816,18 @@ namespace TerraViewer
             MakeFrustum();
         }
 
-        public bool IsSphereInViewFrustum(SharpDX.Vector3 center, float radius)
-        {
-            Vector4d centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
-            for (int i = 0; i < 6; i++)
-            {
-                if (frustum[i].Dot(centerV4) + radius < 0)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        //public bool IsSphereInViewFrustum(SharpDX.Vector3 center, float radius)
+        //{
+        //    Vector4d centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
+        //    for (int i = 0; i < 6; i++)
+        //    {
+        //        if (frustum[i].Dot(centerV4) + radius < 0)
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    return true;
+        //}
 
         public bool SphereIntersectRay(Vector3d pickRayOrig, Vector3d pickRayDir, out Coordinates pointCoordinate)
         {
@@ -4708,12 +4695,45 @@ namespace TerraViewer
                 else
 #endif
                 {
-                    if (RenderContext11.Height != RenderContext11.DisplayViewport.Height ||
-                                RenderContext11.Width != RenderContext11.DisplayViewport.Width)
+                    if (RenderContext11.ExternalProjection && RenderContext11.MultiSampleCount > 1)
                     {
-                        RenderContext11.Resize(RenderContext11.Height, RenderContext11.Width);
+
+                        // When multisample anti-aliasing is enabled, render to an offscreen buffer and then
+                        // resolve to the left and then the right eye textures. 
+                        if (stereoRenderTextureBoth == null)
+                        {
+                            stereoRenderTextureBoth = new RenderTargetTexture(ViewWidth, ViewHeight, true);
+                        }
+
+                        if (stereoDepthBufferBoth == null)
+                        {
+                            stereoDepthBufferBoth = new DepthBuffer(ViewWidth, ViewHeight, true);
+                        }
+
+
+                        RenderFrame(stereoRenderTextureBoth.renderView, stereoDepthBufferBoth.DepthView, RenderTypes.Normal, ViewWidth, ViewHeight);
+
+                        RenderContext11.devContext.OutputMerger.ResetTargets();
+                        SharpDX.Direct3D11.Resource dest = RenderContext11.externalTargetView.Resource;
+                        RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureBoth.RenderTexture.Texture, 0,
+                                                                                        dest, 0,
+                                                                                       RenderContext11.DefaultColorFormat);
+
+                        RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureBoth.RenderTexture.Texture, 1,
+                                                                            dest, 1,
+                                                                           RenderContext11.DefaultColorFormat);
+
                     }
-                    RenderFrame(null, null, RenderTypes.Normal, RenderContext11.DisplayViewport.Width, RenderContext11.DisplayViewport.Height);
+                    else
+                    {
+
+                        if (RenderContext11.Height != RenderContext11.DisplayViewport.Height ||
+                                    RenderContext11.Width != RenderContext11.DisplayViewport.Width)
+                        {
+                            RenderContext11.Resize(RenderContext11.Height, RenderContext11.Width);
+                        }
+                        RenderFrame(null, null, RenderTypes.Normal, RenderContext11.DisplayViewport.Width, RenderContext11.DisplayViewport.Height);
+                    }
                 }
             }
 
@@ -4841,7 +4861,10 @@ namespace TerraViewer
                 Mover = null;
                 //Todo Notify interested parties that move is complete
 
-                NotifyMoveComplete();
+                if (NotifyMoveComplete != null)
+                {
+                    NotifyMoveComplete();
+                }
             }
         }
 
@@ -5088,6 +5111,8 @@ namespace TerraViewer
         DepthBuffer leftDepthBuffer = null;
         DepthBuffer rightDepthBuffer = null;
 #endif
+        RenderTargetTexture stereoRenderTextureBoth= null;
+        DepthBuffer stereoDepthBufferBoth = null;
         public enum StereoModes { Off, AnaglyphRedCyan, AnaglyphYellowBlue, AnaglyphMagentaGreen, CrossEyed, SideBySide, InterlineEven, InterlineOdd, OculusRift, Right, Left };
         enum RenderTypes { DomeFront, DomeRight, DomeUp, DomeLeft, DomeBack, Normal, RightEye, LeftEye };
 
@@ -5670,13 +5695,21 @@ namespace TerraViewer
 
                 if (LeftController.Active || RightController.Active)
                 {
-
-
                     if (LeftController.Active)
                     {
                         if (LeftController.Trigger > 0)
                         {
-                            TargetZoom *= .95;
+                            TargetZoom *= .75;
+                        }
+
+                        if (LeftController.Events.HasFlag(HandControllerStatus.StickLeft))
+                        {
+                            PreviousView();
+                        }
+
+                        if (LeftController.Events.HasFlag(HandControllerStatus.StickRight))
+                        {
+                            NextView();
                         }
 
 
@@ -5687,7 +5720,8 @@ namespace TerraViewer
                         Coordinates result = new Coordinates();
 
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
-                        Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+                        //Vector3d pos = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+                        Vector3d pos = new Vector3d(leftPos.X , leftPos.Y , leftPos.Z );
 
                         bool inThere = SphereIntersectRay(pos, endPos, out result);
                         result.RA = 6 - result.RA;
@@ -5716,6 +5750,11 @@ namespace TerraViewer
                         Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
                         m1.Invert();
                         m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+                        if (scale != 1)
+                        {
+                            m1 = m1 * Matrix.Scaling(scale);
+                        }
+
 
                         localWorld.Matrix = m1;
                         RenderContext11.World = localWorld;
@@ -5725,6 +5764,23 @@ namespace TerraViewer
 
                         if (LeftController.Grip > 0)
                         {
+                            ringMenu.HandleControlerInput(LeftController);
+
+                            m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
+                            m1.Invert();
+                            m1 = Matrix.Scaling(1, -1, 1) * m1;
+                            m1 = Matrix.Translation(-200, -500, 0) * m1;
+
+                       
+                            m1 = m1 * Matrix.Scaling(.00037f);
+
+                            m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+                            if (scale != 1)
+                            {
+                                m1 = m1 * Matrix.Scaling(scale );
+                            }
+                            localWorld.Matrix = m1;
+                            RenderContext11.World = localWorld;
                             ringMenu.Draw(RenderContext11, 1, SysColor.BlueViolet);
                         }
 
@@ -5735,7 +5791,7 @@ namespace TerraViewer
                     {
                         if (LeftController.Trigger > 0)
                         {
-                            TargetZoom *= .95;
+                            TargetZoom /= .75;
                         }
 
                         var rightPos = RightController.Position;
@@ -6535,6 +6591,8 @@ namespace TerraViewer
 
         public HandController LeftController { get; set; } = new HandController(HandType.Left);
         public HandController RightController { get; set; } = new HandController(HandType.Right);
+        public static Matrix3d ExternalProjectionLeft { get; set; }
+        public static Matrix3d ExternalProjectionRight { get; set; }
 
         PointerRay leftPointerRay = new PointerRay();
         PointerRay rightPointerRay = new PointerRay();

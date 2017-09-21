@@ -24,9 +24,16 @@ namespace TerraViewer
 
         }
 
+        public System.IO.Stream Stream;
+
+        public Bitmap(System.IO.Stream stream)
+        {
+            Stream = stream;
+        }
+
         public Bitmap(string filename)
         {
-
+            this.FileName = filename;
         }
 
         //todo UWP impliment a mapping to a real BITMAP 
