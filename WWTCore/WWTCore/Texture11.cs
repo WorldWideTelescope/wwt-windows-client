@@ -530,7 +530,6 @@ namespace TerraViewer
             int width = bitmapSource.Size.Width;
             int height = bitmapSource.Size.Height;
             int levels = CountMips(width, height);
-            int size = CalculateMipSize(width, height);
             int w = width;
             int h = height;
 
@@ -630,31 +629,31 @@ namespace TerraViewer
         }
 
 
-        static int CalculateMipSize(int width, int height)
-        {
-            int size = 0;
+        //static int CalculateMipSize(int width, int height)
+        //{
+        //    int size = 0;
 
-            int mipLevels = 1;
+        //    int mipLevels = 1;
 
-            while (height > 1 || width > 1)
-            {
-                size += width * height;
-                if (height > 1)
-                {
-                    height >>= 1;
-                }
+        //    while (height > 1 || width > 1)
+        //    {
+        //        size += width * height;
+        //        if (height > 1)
+        //        {
+        //            height >>= 1;
+        //        }
 
-                if (width > 1)
-                {
+        //        if (width > 1)
+        //        {
 
-                    width >>= 1;
-                }
+        //            width >>= 1;
+        //        }
 
-                mipLevels++;
-            }
+        //        mipLevels++;
+        //    }
 
-            return size;
-        }
+        //    return size;
+        //}
 
 
         static int CountMips(int width, int height)

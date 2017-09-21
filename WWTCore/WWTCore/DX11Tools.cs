@@ -1513,14 +1513,15 @@ namespace TerraViewer
  
         public int Width;
         public int Height;
-        public RenderTargetTexture(int width, int height)
+        public RenderTargetTexture(int width, int height, bool stereo = false)
         {
+            int count = stereo ? 2 : 1;
             this.Width = width;
             this.Height = height;
             RenderTexture = new Texture11(new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
                 Format = RenderContext11.DefaultColorFormat,
-                ArraySize = 1,
+                ArraySize = count,
                 MipLevels = 1,
                 Width = width,
                 Height = height,
@@ -1531,7 +1532,21 @@ namespace TerraViewer
                 OptionFlags = ResourceOptionFlags.None
             }));
 
-            renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
+            if (stereo)
+            {
+                renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
+
+                //RenderTargetViewDescription description = renderView.Description;
+                //description.Dimension = stereo ? RenderTargetViewDimension.Texture2DMultisampledArray : RenderTargetViewDimension.Texture2D;
+                //description.Texture2DMSArray.ArraySize = stereo ? 2 : 0;
+                //renderView.Dispose();
+
+                //renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture, description);
+            }
+            else
+            {
+                renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
+            }
         }
 
         public RenderTargetTexture(int width, int height, Format format)
@@ -1602,14 +1617,15 @@ namespace TerraViewer
         public Texture2D DepthTexture;
         public int Width;
         public int Height;
-        public DepthBuffer(int width, int height)
+        public DepthBuffer(int width, int height, bool stereo = false)
         {
+            int count = stereo ? 2 : 1;
             this.Width = width;
             this.Height = height;
             DepthTexture = new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
                 Format = RenderContext11.DefaultDepthStencilFormat,
-                ArraySize = 1,
+                ArraySize = count,
                 MipLevels = 1,
                 Width = width,
                 Height = height,
@@ -1620,7 +1636,21 @@ namespace TerraViewer
                 OptionFlags = ResourceOptionFlags.None
             });
 
-            DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture);
+            if (stereo)
+            {
+                DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture);
+                var depthStencilViewDesc = DepthView.Description;
+                depthStencilViewDesc.Dimension = stereo ? DepthStencilViewDimension.Texture2DMultisampledArray : DepthStencilViewDimension.Texture2D;
+                depthStencilViewDesc.Texture2DMSArray.ArraySize = stereo ? 2 : 0;
+                DepthView.Dispose();
+                DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture, depthStencilViewDesc);
+            }
+            else
+
+            {
+                DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture);
+
+            }
         }
 
         public void Dispose()

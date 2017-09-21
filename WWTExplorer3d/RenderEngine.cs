@@ -51,7 +51,7 @@ namespace TerraViewer
             bezelSpacing = (float)config.Bezel;
 
             RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-            RenderContext11.MultiSampleCount = 1;            
+            RenderContext11.MultiSampleCount = 8;            
             if (device !=null)
             {
 
@@ -119,7 +119,7 @@ namespace TerraViewer
             
             currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
-            currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
+            //currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Sandbox, BandPass.Visible);
             var t1 = System.Threading.Tasks.Task.Run(() =>
             {
@@ -4695,12 +4695,45 @@ namespace TerraViewer
                 else
 #endif
                 {
-                    if (RenderContext11.Height != RenderContext11.DisplayViewport.Height ||
-                                RenderContext11.Width != RenderContext11.DisplayViewport.Width)
+                    if (RenderContext11.ExternalProjection && RenderContext11.MultiSampleCount > 1)
                     {
-                        RenderContext11.Resize(RenderContext11.Height, RenderContext11.Width);
+
+                        // When multisample anti-aliasing is enabled, render to an offscreen buffer and then
+                        // resolve to the left and then the right eye textures. 
+                        if (stereoRenderTextureBoth == null)
+                        {
+                            stereoRenderTextureBoth = new RenderTargetTexture(ViewWidth, ViewHeight, true);
+                        }
+
+                        if (stereoDepthBufferBoth == null)
+                        {
+                            stereoDepthBufferBoth = new DepthBuffer(ViewWidth, ViewHeight, true);
+                        }
+
+
+                        RenderFrame(stereoRenderTextureBoth.renderView, stereoDepthBufferBoth.DepthView, RenderTypes.Normal, ViewWidth, ViewHeight);
+
+                        RenderContext11.devContext.OutputMerger.ResetTargets();
+                        SharpDX.Direct3D11.Resource dest = RenderContext11.externalTargetView.Resource;
+                        RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureBoth.RenderTexture.Texture, 0,
+                                                                                        dest, 0,
+                                                                                       RenderContext11.DefaultColorFormat);
+
+                        RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureBoth.RenderTexture.Texture, 1,
+                                                                            dest, 1,
+                                                                           RenderContext11.DefaultColorFormat);
+
                     }
-                    RenderFrame(null, null, RenderTypes.Normal, RenderContext11.DisplayViewport.Width, RenderContext11.DisplayViewport.Height);
+                    else
+                    {
+
+                        if (RenderContext11.Height != RenderContext11.DisplayViewport.Height ||
+                                    RenderContext11.Width != RenderContext11.DisplayViewport.Width)
+                        {
+                            RenderContext11.Resize(RenderContext11.Height, RenderContext11.Width);
+                        }
+                        RenderFrame(null, null, RenderTypes.Normal, RenderContext11.DisplayViewport.Width, RenderContext11.DisplayViewport.Height);
+                    }
                 }
             }
 
@@ -5078,6 +5111,8 @@ namespace TerraViewer
         DepthBuffer leftDepthBuffer = null;
         DepthBuffer rightDepthBuffer = null;
 #endif
+        RenderTargetTexture stereoRenderTextureBoth= null;
+        DepthBuffer stereoDepthBufferBoth = null;
         public enum StereoModes { Off, AnaglyphRedCyan, AnaglyphYellowBlue, AnaglyphMagentaGreen, CrossEyed, SideBySide, InterlineEven, InterlineOdd, OculusRift, Right, Left };
         enum RenderTypes { DomeFront, DomeRight, DomeUp, DomeLeft, DomeBack, Normal, RightEye, LeftEye };
 
