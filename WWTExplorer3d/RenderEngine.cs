@@ -127,6 +127,8 @@ namespace TerraViewer
             });
 
             //set settings to test
+
+          //  Properties.Settings.Default.ConstellationArtColor = SysColor.FromArgb(20, 255, 255, 255);
             Properties.Settings.Default.ShowGrid.TargetState = true;
             Properties.Settings.Default.ShowEclipticGridText.TargetState = true;
             Properties.Settings.Default.ShowConstellationLabels.TargetState = true;
@@ -134,7 +136,7 @@ namespace TerraViewer
             Properties.Settings.Default.ShowConstellationBoundries.TargetState = false;
             Properties.Settings.Default.ShowEcliptic.TargetState = false;
             Properties.Settings.Default.ShowConstellationPictures.TargetState = true;
-            Properties.Settings.Default.ConstellationArtColor = Color.FromArgb(128, 255, 255, 255);
+            Properties.Settings.Default.ConstellationArtColor = Color.FromArgb(96, 255, 255, 255);
             Properties.Settings.Default.ShowISSModel = true;
             Properties.Settings.Default.CloudMap8k = true;
             Properties.Settings.Default.ShowSolarSystem.TargetState = false;
@@ -2168,7 +2170,7 @@ namespace TerraViewer
             else
 #endif
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)RenderContext11.Height, .1, -2.0);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)RenderContext11.Height, .1, -200.0);
 
             }
             RenderContext11.PerspectiveFov = (localZoomFactor) / FOVMULT;
@@ -2547,7 +2549,7 @@ namespace TerraViewer
 
         public void MakeFrustum()
         {
-
+            RenderContext11.UpdateProjectionConstantBuffers();
             RenderContext11.MakeFrustum();
         }
 
@@ -4717,11 +4719,11 @@ namespace TerraViewer
                         SharpDX.Direct3D11.Resource dest = RenderContext11.externalTargetView.Resource;
                         RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureBoth.RenderTexture.Texture, 0,
                                                                                         dest, 0,
-                                                                                       RenderContext11.DefaultColorFormat);
+                                                                                        Format.B8G8R8A8_UNorm);
 
                         RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureBoth.RenderTexture.Texture, 1,
-                                                                            dest, 1,
-                                                                           RenderContext11.DefaultColorFormat);
+                                                                                        dest, 1,
+                                                                                        Format.B8G8R8A8_UNorm);
 
                     }
                     else
@@ -5460,7 +5462,7 @@ namespace TerraViewer
                     {
                         if (RenderContext11.ExternalProjection)
                         {
-                            RenderContext11.ExternalScalingFactor = Matrix.Scaling(10, 10, -10);
+                            RenderContext11.ExternalScalingFactor = Matrix.Scaling(100, 100, -100);
                         }
 
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0);
@@ -5762,17 +5764,23 @@ namespace TerraViewer
 
                         leftPointerRay.Draw(RenderContext11, 1, SysColor.Green);
 
-                        if (LeftController.Grip > 0)
+                        if (LeftController.Events.HasFlag(HandControllerStatus.GripDown))
+                        {
+                            showRingMenu = !showRingMenu;
+                        }
+
+                        if (showRingMenu)
                         {
                             ringMenu.HandleControlerInput(LeftController);
 
                             m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
                             m1.Invert();
+                            m1 = Matrix.RotationX(.5f) * m1;
                             m1 = Matrix.Scaling(1, -1, 1) * m1;
                             m1 = Matrix.Translation(-200, -500, 0) * m1;
 
                        
-                            m1 = m1 * Matrix.Scaling(.00037f);
+                            m1 = m1 * Matrix.Scaling(.00050f);
 
                             m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
                             if (scale != 1)
@@ -7702,6 +7710,7 @@ namespace TerraViewer
 
         //oculus rift specifc code  
         public bool rift = false;
+        private bool showRingMenu;
 #if !WINDOWS_UWP
 
         bool riftInit = false;

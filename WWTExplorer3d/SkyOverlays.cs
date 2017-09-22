@@ -21,6 +21,12 @@ namespace TerraViewer
 
         }
 
+        public override object[] GetChildren()
+        {
+            return Children.ToArray();
+        }
+       
+
         public SkyOverlays(SkyOverlaysType overlayType)
         {
             switch (overlayType)
@@ -682,8 +688,40 @@ namespace TerraViewer
     }
 
 
-    public class SkyOverlay
+    public class SkyOverlay : IThumbnail
     {
+
+        string IThumbnail.Name => Name;
+
+        Bitmap IThumbnail.ThumbNail
+        {
+            get => ThumbnailCache.LoadThumbnail(Name);
+            set
+            {
+
+            }
+        }
+
+        Rectangle bounds = new Rectangle();
+        Rectangle IThumbnail.Bounds
+        {
+            get => bounds;
+            set => bounds = value;
+        }
+
+        bool IThumbnail.IsImage => false;
+
+        bool IThumbnail.IsTour => false;
+
+        bool IThumbnail.IsFolder => Children.Count > 0;
+
+        bool IThumbnail.IsCloudCommunityItem => false;
+
+        bool IThumbnail.ReadOnly => true;
+
+        object[] IThumbnail.Children =>Children.ToArray();
+
+
         public List<SkyOverlay> Children = new List<SkyOverlay>();
         public SkyOverlay()
         {

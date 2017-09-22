@@ -16,7 +16,7 @@ using System.Xml;
 namespace TerraViewer
 {
 
-    public abstract class Layer : IAnimatable
+    public abstract class Layer : IAnimatable, IThumbnail
     {
         public virtual LayerUI GetPrimaryUI()
         {
@@ -477,6 +477,7 @@ namespace TerraViewer
             }
         }
 
+    
 
         public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
@@ -561,19 +562,50 @@ namespace TerraViewer
         }
 
 
-/* End Load Save Support
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         */
-        
+        /* End Load Save Support
+                 * 
+                 * 
+                 * 
+                 * 
+                 * 
+                 * 
+                 */
 
 
+        string IThumbnail.Name => Name;
 
+        Bitmap IThumbnail.ThumbNail
+        {
+            get => ThumbnailCache.LoadThumbnail(Name);
+            set
+            {
 
+            }
+        }
+
+        Rectangle bounds = new Rectangle();
+        Rectangle IThumbnail.Bounds
+        {
+            get => bounds;
+            set => bounds = value;
+        }
+
+        bool IThumbnail.IsImage => false;
+
+        bool IThumbnail.IsTour => false;
+
+        bool IThumbnail.IsFolder => false;
+
+        bool IThumbnail.IsCloudCommunityItem => false;
+
+        bool IThumbnail.ReadOnly => true;
+
+        object[] IThumbnail.Children => GetChildren();
+
+        public virtual object[] GetChildren()
+        {
+            return null;
+        }
     }
     class LayerCollection : Layer
     {

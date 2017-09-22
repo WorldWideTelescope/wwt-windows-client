@@ -153,6 +153,7 @@ namespace WWTHolographic.Common
                     device,
                     BindFlags.ConstantBuffer,
                     ref viewProjectionConstantBufferData));
+                TerraViewer.RenderContext11.viewProjectionConstantBuffer = viewProjectionConstantBuffer;
             }
 
             TerraViewer.RenderContext11.externalTargetView = d3dRenderTargetView;
@@ -223,6 +224,10 @@ namespace WWTHolographic.Common
                 // Update the view matrices. Holographic cameras (such as Microsoft HoloLens) are
                 // constantly moving relative to the world. The view matrices need to be updated
                 // every frame.
+                TerraViewer.RenderContext11.ExternalViewLeft = FromMatrix4x4(viewCoordinateSystemTransform.Left);
+                TerraViewer.RenderContext11.ExternalViewRight = FromMatrix4x4(viewCoordinateSystemTransform.Right);
+                TerraViewer.RenderContext11.ExternalProjLeft = FromMatrix4x4(cameraProjectionTransform.Left);
+                TerraViewer.RenderContext11.ExternalProjRight = FromMatrix4x4(cameraProjectionTransform.Right);
 
                 var left = viewCoordinateSystemTransform.Left * cameraProjectionTransform.Left;
                 var right = viewCoordinateSystemTransform.Right * cameraProjectionTransform.Right;
@@ -249,6 +254,14 @@ namespace WWTHolographic.Common
 
                 framePending = true;
             }
+        }
+
+        Matrix4x4 SetNearAndFarPlanes(Matrix4x4 matrix, float near, float far)
+        {
+            float q = far / (far - near);
+            matrix.M43 = -q * near;
+            matrix.M33 = -q;
+            return matrix;
         }
 
         TerraViewer.Matrix3d FromMatrix4x4(Matrix4x4 mat)

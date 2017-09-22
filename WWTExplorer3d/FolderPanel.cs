@@ -39,6 +39,16 @@ namespace TerraViewer
 
         }
 
+        public override void Navigate(int upDown, int leftRight)
+        {
+            BrowseList.Navigate(upDown, leftRight);
+        }
+
+        public override void Select()
+        {
+            this.SelectItem();
+        }
+
         public override void MouseClick(object ringMenu, MouseEventArgs mouseEventArgs)
         {
             BrowseList.MouseClick(ringMenu, mouseEventArgs);
@@ -198,25 +208,22 @@ namespace TerraViewer
         {
             Cursor.Current = Cursors.WaitCursor;
 
-                string filename = Properties.Settings.Default.CahceDirectory + @"data\tours.wtml";
+            string filename = Properties.Settings.Default.CahceDirectory + @"data\tours.wtml";
 
-                DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/gettours.aspx", filename, false, false);
+            DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/gettours.aspx", filename, false, false);
 
-                Tours = Folder.LoadFromFile(filename, false);
-                Tours.Name = Language.GetLocalizedText(492, "Tours");
-                Folder loadFolder = null;
+            Tours = Folder.LoadFromFile(filename, false);
+            Tours.Name = Language.GetLocalizedText(492, "Tours");
+            Folder loadFolder = null;
 
+            loadFolder = Tours;
 
-                loadFolder = Tours;
+            LoadRootFoder(loadFolder);
+            this.BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
 
-
-                    LoadRootFoder(loadFolder);
-                    this.BrowseList.EmptyAddText = Language.GetLocalizedText(162, "No Results");
-
-                AddToursToSearch();
+            AddToursToSearch();
 
             Cursor.Current = Cursors.Default;
-
         }
 
         public static void LaunchTour(ITourResult result)

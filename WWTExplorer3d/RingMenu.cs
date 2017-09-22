@@ -47,12 +47,13 @@ namespace TerraViewer
             if (controller.Events.HasFlag(HandControllerStatus.TouchDown))
             {
  //               Point pnt = new Point((int)((controller.TouchX + 1) * 200), (int)((-controller.TouchY + 1) * 250));
-                activePanel.MouseClick(this, new MouseEventArgs(MouseButtons.Left, 0, cursorLocation.X,cursorLocation.Y, 0));
+                //activePanel.MouseClick(this, new MouseEventArgs(MouseButtons.Left, 0, cursorLocation.X,cursorLocation.Y, 0));
+                activePanel.Select();
             }
 
             if (controller.Events.HasFlag(HandControllerStatus.Touched))
             {
-                pointTouched = new Vector2d(controller.TouchY, controller.TouchY);
+                pointTouched = new Vector2d(controller.TouchX, controller.TouchY);
                 draggging = true;
             }
 
@@ -77,8 +78,17 @@ namespace TerraViewer
 
                 cursorLocation = new Point(x,y);
 
-                activePanel.MouseMove(this, new MouseEventArgs(MouseButtons.Left, 0, cursorLocation.X, cursorLocation.Y, 0));
-                pointTouched = new Vector2d(controller.TouchX, controller.TouchY);
+                //activePanel.MouseMove(this, new MouseEventArgs(MouseButtons.Left, 0, cursorLocation.X, cursorLocation.Y, 0));
+                double minStep = .3;
+                if (Math.Abs(deltaX) > minStep || Math.Abs(deltaY) > minStep)
+                {
+                    int leftRight = (int)(deltaX * 1.25 / minStep);
+                    int upDown = -(int)(deltaY * 1.25 / minStep);
+
+                    activePanel.Navigate(upDown, leftRight);
+                    pointTouched = new Vector2d(controller.TouchX, controller.TouchY);
+                }
+   
             }
      
         }
@@ -148,6 +158,16 @@ namespace TerraViewer
         virtual public void MouseMove(object ringMenu, MouseEventArgs mouseEventArgs)
         {
             throw new NotImplementedException();
+        }
+
+        virtual public void Select()
+        {
+
+        }
+
+        virtual public void Navigate(int upDown, int leftRight)
+        {
+
         }
     }
 

@@ -300,7 +300,7 @@ namespace TerraViewer
                     {
                         g.DrawImage(GetTextureForThumbnail(Properties.Resources.TourIcon), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                     }
-                    RectangleF textRect = new RectangleF(rectf.X, rectf.Y + 44, rectf.Width, rectf.Height - 44);
+                    RectangleF textRect = new RectangleF(rectf.X, rectf.Y + 46, rectf.Width, rectf.Height - 46);
                     g.DrawString(((IThumbnail)items[index]).Name, 8, textBrush, textRect, UiGraphics.TextAlignment.Left);
 
 
@@ -317,6 +317,11 @@ namespace TerraViewer
 
         static private Texture11 GetTextureForThumbnail(Bitmap bmp)
         {
+            if (bmp == null)
+            {
+                return null;
+            }
+
             if (!map.ContainsKey(bmp))
             {
                 map[bmp] = UiTools.TextureFromBitmap(bmp);
@@ -734,11 +739,50 @@ namespace TerraViewer
             return false;
         }
 
+        public bool Navigate(int upDown, int leftRight)
+        {
+            int col = selectedItem % ColCount;
+
+            leftRight = Math.Max(-col, leftRight);
+            leftRight = Math.Min((ColCount - col)-1, leftRight);
+            
+
+
+            if ((items != null && items.Count > 0))
+            {
+                selectedItem += leftRight;
+                selectedItem += upDown * ColCount;
+                selectedItem = Math.Max(0, Math.Min(items.Count - 1, selectedItem));
+
+                startIndex = ((selectedItem) / ColCount) * ColCount;
+                Invalidate();
+                UpdatePaginator();
+                hoverItem = selectedItem;
+                if (ItemHover != null)
+                {
+                    if (hoverItem > -1)
+                    {
+                        ItemHover.Invoke(this, items[hoverItem]);
+                    }
+                    else
+                    {
+                        ItemHover.Invoke(this, null);
+                    }
+                }
+                return selectedItem > -1;
+            }
+            return false;
+        }
+
         public void SelectItem()
         {
-            if (ItemClicked != null)
+            selectedItem = Math.Min(selectedItem, items.Count - 1);
+            if (items.Count > 0)
             {
-                ItemClicked.Invoke(this, items[selectedItem]);
+                if (ItemClicked != null)
+                {
+                    ItemClicked.Invoke(this, items[selectedItem]);
+                }
             }
         }
 

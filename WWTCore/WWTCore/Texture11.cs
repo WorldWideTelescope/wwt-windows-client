@@ -28,6 +28,16 @@ namespace TerraViewer
             texture = t;
             resourceView = new ShaderResourceView(texture.Device, texture);
         }
+
+        public Texture11(Texture2D t, bool noResourceView)
+        {
+            texture = t;
+            if (!noResourceView)
+            {
+                resourceView = new ShaderResourceView(texture.Device, texture);
+            }
+        }
+
 #if WINDOWS_UWP
         public Texture11(string filename)
         {
@@ -551,9 +561,9 @@ namespace TerraViewer
                     var po = data[i];
                     var pi = (byte*)boxes[i - 1].DataPointer.ToPointer();
                     var in1 = pi;
-                    var in2 = in1 + 4;
-                    var in3 = pi + 8 * w;
-                    var in4 = in3 + 4;
+                    var in2 = in1 + ((w > 1) ? 4 : 0);
+                    var in3 = (h>1) ? (pi + 8 * w) : in1;
+                    var in4 = in3 + ((w > 1) ? 4 : 0);
                     int index = 0;
                     for(int y = 0; y < h; y++)
                     {                     
@@ -613,7 +623,7 @@ namespace TerraViewer
                 BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource,
                 Usage = SharpDX.Direct3D11.ResourceUsage.Immutable,
                 CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
-                Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                Format = RenderContext11.DefaultTextureFormat,
                 MipLevels = levels,
                 OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None,
                 SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),

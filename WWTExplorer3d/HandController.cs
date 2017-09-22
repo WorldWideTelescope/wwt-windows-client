@@ -149,6 +149,24 @@ namespace TerraViewer
                 {
                     Events = Events | HandControllerStatus.UnTouch;
                 }
+
+                // up and down
+                if (lastState.Status.HasFlag(HandControllerStatus.GripDown))
+                {
+                    if (Grip > low)
+                    {
+                        Status = Status | HandControllerStatus.GripDown;
+                    }
+                }
+                else
+                {
+                    if (Grip > high)
+                    {
+                        Status = Status | HandControllerStatus.GripDown;
+                        Events = Events | HandControllerStatus.GripDown;
+                    }
+                }
+
             }
 
             lastState.CopyState(this);

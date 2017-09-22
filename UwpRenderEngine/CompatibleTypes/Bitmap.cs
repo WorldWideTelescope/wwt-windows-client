@@ -21,7 +21,7 @@ namespace TerraViewer
 
         public Bitmap()
         {
-
+            
         }
 
         public System.IO.Stream Stream;
@@ -29,11 +29,13 @@ namespace TerraViewer
         public Bitmap(System.IO.Stream stream)
         {
             Stream = stream;
+            HashCode = stream.GetHashCode();
         }
 
         public Bitmap(string filename)
         {
             this.FileName = filename;
+            HashCode = filename.GetHashCode();
         }
 
         //todo UWP impliment a mapping to a real BITMAP 
@@ -41,6 +43,8 @@ namespace TerraViewer
         public int Height { get;  set; }
 
         public string FileName { get; set; }
+        public int HashCode { get; internal set; }
+
         public void Dispose()
         {
         }
@@ -66,6 +70,25 @@ namespace TerraViewer
 
             return new RectangleF();
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode;
+        }
+
+        public override bool Equals(object obj)
+        {
+            Bitmap other = obj as Bitmap;
+
+            if (other != null)
+            {
+                return HashCode == other.HashCode;
+            }
+
+            return false;
+        }
+
+       
     }
 
     //
@@ -517,9 +540,7 @@ namespace TerraViewer
                 {
                     string path = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine");
                     string[] parts = val.Split(new char[] { ';' });
-                    Bitmap bmp = new Bitmap();
-                    bmp.FileName = parts[0].Replace("..", path);
-                    return bmp;
+                    return new Bitmap(parts[0].Replace("..", path));
                 }
                 return val;
             }

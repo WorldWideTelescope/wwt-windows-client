@@ -36,7 +36,11 @@ namespace TerraViewer
                 return null;
             }
 
-            return new Bitmap(stream);
+            var bitmap = new Bitmap(stream);
+#if WINDOWS_UWP
+            bitmap.HashCode = name.GetHashCode();
+#endif  
+            return bitmap;
         }
     }
 }

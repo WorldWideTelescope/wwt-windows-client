@@ -155,7 +155,7 @@ namespace TerraViewer
             get
             {
 #if WINDOWS_UWP
-                return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.B8G8R8A8_UNorm;
+                return sRGB ? Format.B8G8R8A8_UNorm_SRgb : Format.B8G8R8A8_UNorm;
 #else
                 return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm;
 #endif
@@ -818,6 +818,10 @@ namespace TerraViewer
                 projection = value;
                 frustumDirty = true;
                 transformStateDirty = true;
+                if (ExternalProjection)
+                {
+                    SetProjectionClippingPlanes();
+                }
             }
         }
         private Matrix3d world;
@@ -1841,7 +1845,93 @@ ambientLightColor.B / 255.0f);
             }
         }
 
+
+        //for external projection
+        public static SharpDX.Direct3D11.Buffer viewProjectionConstantBuffer;
+
         public static Matrix3d ExternalProjectionLeft { get; set; }
         public static Matrix3d ExternalProjectionRight { get; set; }
+
+        static Matrix3d externalViewLeft;
+
+        public static Matrix3d ExternalViewLeft
+        {
+            set
+            {
+                externalViewLeft = value;
+            }
+        }
+
+        static Matrix3d externalViewRight;
+        public static Matrix3d ExternalViewRight
+        {
+            set
+            {
+                externalViewRight = value;
+            }
+        }
+
+        static Matrix3d externalProjLeft;
+        public static Matrix3d ExternalProjLeft
+        {
+            set
+            {
+                externalProjLeft = value;
+            }
+        }
+
+        static Matrix3d externalProjRight;
+        public static Matrix3d ExternalProjRight
+        {
+            set
+            {
+                externalProjRight = value;
+            }
+        }
+
+
+        void SetProjectionClippingPlanes()
+        {
+            externalProjLeft.M33 = -projection.M33;
+            externalProjLeft.M43 = projection.M43;
+             
+            externalProjRight.M33 = -projection.M33;
+            externalProjRight.M43 = projection.M43;
+        }
+
+        Matrix3d SetNearAndFarPlanes(Matrix3d matrix, float near, float far)
+        {
+            float q = far / (far - near);
+            matrix.M43 = -q * near;
+            matrix.M33 = -q;
+            return matrix;
+        }
+
+        public static void UpdateProjectionConstantBuffers()
+        {
+            if (ExternalProjection)
+            {
+                ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
+
+
+                var left = externalViewLeft * externalProjLeft;
+                var right = externalViewRight * externalProjRight;
+                var scale = TerraViewer.Matrix3d.Scaling(1, 1, -1);
+                TerraViewer.RenderContext11.ExternalProjectionLeft = scale * left;
+                TerraViewer.RenderContext11.ExternalProjectionRight = scale * right;
+
+                left.Transpose();
+                right.Transpose();
+
+                viewProjectionConstantBufferData.viewProjectionLeft = left.Matrix;
+                viewProjectionConstantBufferData.viewProjectionRight = right.Matrix;
+                PrepDevice.ImmediateContext.UpdateSubresource(ref viewProjectionConstantBufferData, viewProjectionConstantBuffer);
+            }
+        }
+    }
+    internal struct ViewProjectionConstantBuffer
+    {
+        public SharpDX.Matrix viewProjectionLeft;
+        public SharpDX.Matrix viewProjectionRight;
     }
 }

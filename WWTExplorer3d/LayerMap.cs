@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+#if !WINDOWS_UWP
+using System.Drawing;
+#endif
+using System.Linq;
 
 namespace TerraViewer
 {
-    public class LayerMap
+    public class LayerMap : IThumbnail
     {
         public LayerMap(string name, ReferenceFrames reference)
         {
@@ -95,6 +100,35 @@ namespace TerraViewer
             set { Frame.Name = value; }
         }
 
+        string IThumbnail.Name => Name;
+
+        Bitmap IThumbnail.ThumbNail
+        {
+            get => ThumbnailCache.LoadThumbnail(Name);
+            set
+            {
+
+            }
+        }
+
+        Rectangle bounds = new Rectangle();
+        Rectangle IThumbnail.Bounds
+        {
+            get => bounds;
+            set => bounds = value;
+        }
+
+        bool IThumbnail.IsImage => false;
+
+        bool IThumbnail.IsTour => false;
+
+        bool IThumbnail.IsFolder => true;
+
+        bool IThumbnail.IsCloudCommunityItem => false;
+
+        bool IThumbnail.ReadOnly => true;
+
+        object[] IThumbnail.Children => ChildMaps.Values.ToArray();
 
         public ReferenceFrame Frame = new ReferenceFrame();
         public void ComputeFrame(RenderContext11 renderContext)

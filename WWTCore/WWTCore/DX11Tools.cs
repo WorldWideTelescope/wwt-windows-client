@@ -1520,7 +1520,7 @@ namespace TerraViewer
             this.Height = height;
             RenderTexture = new Texture11(new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
-                Format = RenderContext11.DefaultColorFormat,
+                Format = stereo ? SharpDX.DXGI.Format.B8G8R8A8_Typeless : RenderContext11.DefaultColorFormat,
                 ArraySize = count,
                 MipLevels = 1,
                 Width = width,
@@ -1530,18 +1530,16 @@ namespace TerraViewer
                 BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
                 OptionFlags = ResourceOptionFlags.None
-            }));
+            }), true);
 
             if (stereo)
             {
-                renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
-
-                //RenderTargetViewDescription description = renderView.Description;
-                //description.Dimension = stereo ? RenderTargetViewDimension.Texture2DMultisampledArray : RenderTargetViewDimension.Texture2D;
-                //description.Texture2DMSArray.ArraySize = stereo ? 2 : 0;
-                //renderView.Dispose();
-
-                //renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture, description);
+                RenderTargetViewDescription description = new RenderTargetViewDescription();
+                description.Format = Format.B8G8R8A8_UNorm_SRgb;
+                description.Dimension = stereo ? RenderTargetViewDimension.Texture2DMultisampledArray : RenderTargetViewDimension.Texture2D;
+                description.Texture2DMSArray.ArraySize = stereo ? 2 : 0;
+                renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture, description);
+ 
             }
             else
             {
