@@ -1752,6 +1752,10 @@ namespace TerraViewer
             {
                 return Load3dModelFile(filename, parentFrame);
             }
+            else if (filename.ToLower().EndsWith(".glb"))
+            {
+                return Load3dModelFile(filename, parentFrame);
+            }
             else if (filename.ToLower().EndsWith(".wtml"))
             {
                 return LoadWtmlFile(filename, parentFrame);

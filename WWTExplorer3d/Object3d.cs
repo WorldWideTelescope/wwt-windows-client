@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 
 using System.IO;
+using glTFLoader;
+using glTFLoader.Schema;
 #if WINDOWS_UWP
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
@@ -870,7 +872,14 @@ namespace TerraViewer
                 }
                 else
                 {
-                    object3d = new Object3d(path.Replace(".txt", ".3ds"), FlipV, flipHandedness, true, Color);
+                    if (path.ToLower().EndsWith(".glb"))
+                    {
+                        object3d = new Object3d(path, FlipV, flipHandedness, true, Color);
+                    }
+                    else
+                    {
+                        object3d = new Object3d(path.Replace(".txt", ".3ds"), FlipV, flipHandedness, true, Color);
+                    }
                 }
             }
         }
@@ -1554,6 +1563,11 @@ namespace TerraViewer
             {
                 LoadMeshFromObj(Filename);
             }
+            else if (Filename.ToLower().EndsWith(".glb"))
+            {
+                var model = glTFLoader.Interface.LoadModel(filename);
+                LoadMeshFromGlTF(model, filename);
+            }
             else
             {
                 LoadMeshFrom3ds(Filename, 1.0f);
@@ -1568,6 +1582,11 @@ namespace TerraViewer
                 if (Filename.ToLower().EndsWith(".obj"))
                 {
                     LoadMeshFromObj(Filename);
+                }
+                else if (Filename.ToLower().EndsWith(".glb"))
+                {
+                    var model = glTFLoader.Interface.LoadModel(Filename);
+                    LoadMeshFromGlTF(model, Filename);
                 }
                 else
                 {
@@ -2054,6 +2073,170 @@ namespace TerraViewer
             }
 
             return percentage;
+        }
+
+        private void LoadMeshFromGlTF(Gltf model, string gltfFilePath)
+        {
+            // If there's no default scene to load, don't load.
+            if (!model.Scene.HasValue)
+            {
+                return;
+            }
+            var sceneToLoad = model.Scenes[model.Scene.Value];
+
+            // Force garbage collection to ensure that unmanaged resources are released.
+            // Temporary workaround until unmanaged resource leak is identified
+            GC.Collect();
+
+            List<ObjectNode> topLevelObjects = new List<ObjectNode>();
+            Dictionary<Node, ObjectNode> map = new Dictionary<Node, ObjectNode>();
+            List<PositionNormalTextured> vertexList = new List<PositionNormalTextured>();
+            List<int> indexList = new List<int>();
+            int currentIndex = 0;
+
+            // Loop of Nodes to create ObjectNode and fill in the properties
+            foreach (var node in model.Nodes)
+            {
+                ObjectNode currentObject = new ObjectNode();
+                currentObject.Name = node.Name;
+                currentObject.LocalMat = new Matrix3d(
+                    node.Matrix[0], node.Matrix[1], node.Matrix[2], node.Matrix[3],
+                    node.Matrix[4], node.Matrix[5], node.Matrix[6], node.Matrix[7],
+                    node.Matrix[8], node.Matrix[9], node.Matrix[10], node.Matrix[11],
+                    node.Matrix[12], node.Matrix[13], node.Matrix[14], node.Matrix[15]);
+
+                // If it has a Mesh, add the geometry
+                if (node.Mesh.HasValue)
+                {
+                    var mesh = model.Meshes[node.Mesh.Value];
+                    foreach (var primitive in mesh.Primitives)
+                    {
+                        var indicesBufferView = model.BufferViews[model.Accessors[primitive.Indices.Value].BufferView.Value];
+                        var normalBufferView = model.BufferViews[model.Accessors[primitive.Attributes["NORMAL"]].BufferView.Value];
+                        var positionBufferView = model.BufferViews[model.Accessors[primitive.Attributes["POSITION"]].BufferView.Value];
+                        var texCoord0BufferView = model.BufferViews[model.Accessors[primitive.Attributes["TEXCOORD_0"]].BufferView.Value];
+
+                        byte[] indicesBuffer = Interface.LoadBinaryBuffer(model, indicesBufferView.Buffer, gltfFilePath);
+                        byte[] normalBuffer = Interface.LoadBinaryBuffer(model, normalBufferView.Buffer, gltfFilePath);
+                        byte[] positionBuffer = Interface.LoadBinaryBuffer(model, positionBufferView.Buffer, gltfFilePath);
+                        byte[] texCoord0Buffer = Interface.LoadBinaryBuffer(model, texCoord0BufferView.Buffer, gltfFilePath);
+
+                        ushort[] indices = new ushort[indicesBufferView.ByteLength / sizeof(ushort)];
+                        float[] normal = new float[normalBufferView.ByteLength / sizeof(float)];
+                        float[] position = new float[positionBufferView.ByteLength / sizeof(float)];
+                        float[] texCoord0 = new float[texCoord0BufferView.ByteLength / sizeof(float)];
+
+                        System.Buffer.BlockCopy(indicesBuffer, indicesBufferView.ByteOffset, indices, 0, indicesBufferView.ByteLength);
+                        System.Buffer.BlockCopy(normalBuffer, normalBufferView.ByteOffset, normal, 0, normalBufferView.ByteLength);
+                        System.Buffer.BlockCopy(positionBuffer, positionBufferView.ByteOffset, position, 0, positionBufferView.ByteLength);
+                        System.Buffer.BlockCopy(texCoord0Buffer, texCoord0BufferView.ByteOffset, texCoord0, 0, texCoord0BufferView.ByteLength);
+
+                        // Fill vertex list
+                        int vertexIndexOffset = vertexList.Count;
+                        int vertexCount = model.Accessors[primitive.Attributes["NORMAL"]].Count;
+                        for (int i = 0; i < vertexCount; i++)
+                        {
+                            var positionNormalTextured = new PositionNormalTextured(
+                                new Vector3(position[3 * i + 0], position[3 * i + 1], position[3 * i + 2]),
+                                new Vector3(normal[3 * i + 0], normal[3 * i + 1], normal[3 * i + 2]),
+                                new Vector2(texCoord0[2 * i + 0], texCoord0[2 * i + 1]));
+                            vertexList.Add(positionNormalTextured);
+                        }
+
+                        // Fill index list
+                        int indicesCount = indices.Length;
+                        int polygonCount = indicesCount / 3;
+                        for (int i = 0; i < polygonCount; i++)
+                        {
+                            if (FlipHandedness)
+                            {
+                                indexList.Add(indices[3 * i] + vertexIndexOffset);
+                                indexList.Add(indices[3 * i + 2] + vertexIndexOffset);
+                                indexList.Add(indices[3 * i + 1] + vertexIndexOffset);
+                            }
+                            else
+                            {
+                                indexList.Add(indices[3 * i] + vertexIndexOffset);
+                                indexList.Add(indices[3 * i + 1] + vertexIndexOffset);
+                                indexList.Add(indices[3 * i + 2] + vertexIndexOffset);
+                            }
+                        }
+
+                        // Create and add (draw) group
+                        Mesh.Group group;
+                        group.startIndex = currentIndex;
+                        group.indexCount = indices.Length;
+                        group.materialIndex = primitive.Material.Value;
+
+                        currentObject.DrawGroup.Add(group);
+                        currentIndex += group.indexCount;
+                    }
+                }
+
+                // Map used to construct parent-child relation
+                map[node] = currentObject;
+            }
+
+            // Set the relation between root nodes and the children recursively. 
+            foreach (var rootNodeIndex in sceneToLoad.Nodes)
+            {
+                Node rootNode = model.Nodes[rootNodeIndex];
+                ObjectNode rootObjectNode = map[rootNode];
+                rootObjectNode.Level = 0;
+                SetLevel(map, rootNode, model.Nodes, rootObjectNode.Level);
+                topLevelObjects.Add(rootObjectNode);
+            }
+
+
+            // Texture
+
+
+            // Material
+            Material currentMaterial = new Material();
+            currentMaterial.Diffuse = Color.White;
+            currentMaterial.Ambient = Color.White;
+            currentMaterial.Specular = Color.White;
+            currentMaterial.SpecularSharpness = 30.0f;
+            currentMaterial.Opacity = 1.0f;
+            currentMaterial.Default = true;
+            addMaterial(currentMaterial);
+
+            //// Root object
+            ObjectNode rootDummy = new ObjectNode();
+            rootDummy.Name = "Root";
+            rootDummy.Parent = null;
+            rootDummy.Level = -1;
+            rootDummy.DrawGroup = null;
+            rootDummy.Children = topLevelObjects;
+            Objects = new List<ObjectNode>();
+            Objects.Add(rootDummy);
+
+            // Setting mesh to device
+            mesh = new Mesh(vertexList.ToArray(), indexList.ToArray());
+            mesh.setObjects(Objects);
+            mesh.commitToDevice(RenderContext11.PrepDevice);
+
+            dirty = false;
+            GC.Collect();
+        }
+
+        private void SetLevel(Dictionary<Node, ObjectNode> map, Node parent, Node[] nodes, int parentLevel)
+        {
+            ObjectNode parentObjectNode = map[parent];
+            if (parent.Children != null)
+            {
+                int childLevel = parentLevel + 1;
+                foreach (var child in parent.Children)
+                {
+                    Node childNode = nodes[child];
+                    ObjectNode childObjectNode = map[childNode];
+                    parentObjectNode.Children.Add(childObjectNode);
+                    childObjectNode.Parent = parentObjectNode;
+                    childObjectNode.Level = childLevel;
+
+                    SetLevel(map, childNode, nodes, childLevel);
+                }
+            }
         }
 
         Dictionary<string, Texture11> TextureCache = new Dictionary<string, Texture11>();

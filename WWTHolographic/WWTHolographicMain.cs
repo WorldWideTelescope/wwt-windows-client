@@ -210,6 +210,9 @@ namespace WWTHolographic
 
                 if (renderEngine != null)
                 {
+                    //// Temp to bypass the actual device
+                    //this.SetControllerState(renderEngine.RightController, null);
+
                     if (spatialInputHandler.LeftController != null)
                     {
                         this.SetControllerState(renderEngine.LeftController, spatialInputHandler.LeftController.TryGetStateAtTimestamp(prediction.Timestamp));
@@ -292,51 +295,100 @@ namespace WWTHolographic
             return holographicFrame;
         }
 
+        private static bool controllerLoaded = false;
         void SetControllerState(TerraViewer.HandController handController, SpatialInteractionSourceState state)
         {
-            // Inactive until proven otherwise
-            handController.Active = false;
-
-            if (state != null)
+            if (!controllerLoaded)
             {
-                var source = state.Source;
+                controllerLoaded = true;
 
-               // var modelStream = await source.Controller.TryGetRenderableModelAsync();
+                // Inactive until proven otherwise
+                handController.Active = false;
 
-                //TerraViewer.GltfModel model = new TerraViewer.GltfModel();
-                //model.LoadModel(modelStream.AsStream());
-
-
-                var h = state.Source.Handedness;
-                var controller = source.Controller;
-                var x = controller.ProductId;
-                var spp = state.Properties.TryGetLocation(stationaryReferenceFrame.CoordinateSystem);
-                var ip = state?.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
-
-                var ipsp = ip?.TryGetInteractionSourcePose(source);
-                if (ipsp != null)
+                if (state == null)
                 {
-                    handController.Active = true;
-                    handController.Position = new TerraViewer.Vector3d(ipsp.Position.X, ipsp.Position.Y, ipsp.Position.Z);
-                    handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.X, ipsp.UpDirection.Y, ipsp.UpDirection.Z);
-                    handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.X, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.Z);
-                    handController.Grip = state.IsGrasped ? 1 : 0;
-                    handController.Trigger = state.SelectPressedValue;
-                    handController.Menu = state.IsMenuPressed;
-                    if (source.Controller.HasThumbstick)
+                    Task.Run(async delegate
                     {
-                        handController.ThumbX = state.ControllerProperties.ThumbstickX;
-                        handController.ThumbY = state.ControllerProperties.ThumbstickX;
-                        handController.ThumbDown = state.ControllerProperties.IsThumbstickPressed;
-                    }
-                    if (source.Controller.HasTouchpad)
+                        TerraViewer.GltfModel model = new TerraViewer.GltfModel();
+                        const string modelFileName = "model.bin";
+                        try
+                        {
+                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
+                            var modelStream = await file.OpenStreamForReadAsync();
+                            model.LoadModel(modelStream);
+                            return;
+                        }
+                        catch (Exception)   // File not found
+                        {
+                        }
+                    });
+                }
+
+                if (state != null)
+                {
+                    var source = state.Source;
+                    Task.Run(async delegate
                     {
-                        handController.TouchX = state.ControllerProperties.TouchpadX;
-                        handController.TouchY = state.ControllerProperties.TouchpadY;
-                        handController.TouchDown = state.ControllerProperties.IsTouchpadPressed;
-                        handController.Touched = state.ControllerProperties.IsTouchpadTouched;
+                        TerraViewer.GltfModel model = new TerraViewer.GltfModel();
+                        const string modelFileName = "model.glb";
+                        try
+                        {
+                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
+                            var modelStream = await file.OpenStreamForReadAsync();
+                            model.LoadModel(modelStream);
+                            return;
+                        }
+                        catch (Exception)   // File not found
+                        {
+                            var modelStream = await source.Controller.TryGetRenderableModelAsync().AsTask();
+                            model.LoadModel(modelStream.AsStream());
+
+                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(modelFileName);
+                            using (Stream fileStram = await file.OpenStreamForWriteAsync())
+                            {
+                                const int BUFFER_SIZE = 1024;
+                                byte[] buf = new byte[BUFFER_SIZE];
+
+                                int bytesread = 0;
+                                while ((bytesread = await modelStream.AsStream().ReadAsync(buf, 0, BUFFER_SIZE)) > 0)
+                                {
+                                    await fileStram.WriteAsync(buf, 0, bytesread);
+                                }
+                            }
+                        }
+                    });
+
+                    var h = state.Source.Handedness;
+                    var controller = source.Controller;
+                    var x = controller.ProductId;
+                    var spp = state.Properties.TryGetLocation(stationaryReferenceFrame.CoordinateSystem);
+                    var ip = state?.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
+
+                    var ipsp = ip?.TryGetInteractionSourcePose(source);
+                    if (ipsp != null)
+                    {
+                        handController.Active = true;
+                        handController.Position = new TerraViewer.Vector3d(ipsp.Position.X, ipsp.Position.Y, ipsp.Position.Z);
+                        handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.X, ipsp.UpDirection.Y, ipsp.UpDirection.Z);
+                        handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.X, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.Z);
+                        handController.Grip = state.IsGrasped ? 1 : 0;
+                        handController.Trigger = state.SelectPressedValue;
+                        handController.Menu = state.IsMenuPressed;
+                        if (source.Controller.HasThumbstick)
+                        {
+                            handController.ThumbX = state.ControllerProperties.ThumbstickX;
+                            handController.ThumbY = state.ControllerProperties.ThumbstickX;
+                            handController.ThumbDown = state.ControllerProperties.IsThumbstickPressed;
+                        }
+                        if (source.Controller.HasTouchpad)
+                        {
+                            handController.TouchX = state.ControllerProperties.TouchpadX;
+                            handController.TouchY = state.ControllerProperties.TouchpadY;
+                            handController.TouchDown = state.ControllerProperties.IsTouchpadPressed;
+                            handController.Touched = state.ControllerProperties.IsTouchpadTouched;
+                        }
+                        handController.UpdateEvents();
                     }
-                    handController.UpdateEvents();
                 }
             }
         }

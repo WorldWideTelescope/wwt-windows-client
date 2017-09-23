@@ -11502,7 +11502,7 @@ namespace TerraViewer
         public static void LoadLayerFile(bool referenceFrameRightClick)
         {
             OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "All Data Files|*.wwtl;*.txt;*.csv;*.tdf;*.3ds;*.obj;*.shp;*.png;*.jpg;*.tle|WorldWide Telescope Layer File(*.wwtl)|*.wwtl|Data Table(*.txt;*.csv;*.tdf)|*.txt;*.csv;*.tdf|ESRI Shape File(*.shp)|*.shp|3d Model(*.3ds;*.obj)|*.3ds;*.obj|Image Overlays (*.png;*.jpg)|*.png;*.jpg";
+            openFile.Filter = "All Data Files|*.wwtl;*.txt;*.csv;*.tdf;*.3ds;*.obj;*.shp;*.png;*.jpg;*.tle;*.glb|WorldWide Telescope Layer File(*.wwtl)|*.wwtl|Data Table(*.txt;*.csv;*.tdf)|*.txt;*.csv;*.tdf|ESRI Shape File(*.shp)|*.shp|3d Model(*.3ds;*.obj;*.gltfmodel)|*.3ds;*.obj;*.glb|Image Overlays (*.png;*.jpg)|*.png;*.jpg";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 string filename = openFile.FileName;
