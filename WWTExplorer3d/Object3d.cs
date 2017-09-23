@@ -2099,6 +2099,7 @@ namespace TerraViewer
             List<PositionNormalTextured> vertexList = new List<PositionNormalTextured>();
             List<int> indexList = new List<int>();
             int currentIndex = 0;
+            int handednessMultiplier = FlipHandedness ? -1 : 1;
 
             // Loop of Nodes to create ObjectNode and fill in the properties
             foreach (var node in model.Nodes)
@@ -2143,8 +2144,8 @@ namespace TerraViewer
                         for (int i = 0; i < vertexCount; i++)
                         {
                             positions.Add(new Vector3d(position[3 * i + 0], position[3 * i + 1], position[3 * i + 2]));
-                            normals.Add(new Vector3(normal[3 * i + 0], normal[3 * i + 1], normal[3 * i + 2]));
-                            texCoord0s.Add(new Vector2(texCoord0[2 * i + 0], texCoord0[2 * i + 1]));
+                            normals.Add(new Vector3(handednessMultiplier * normal[3 * i + 0], normal[3 * i + 1], normal[3 * i + 2]));
+                            texCoord0s.Add(new Vector2(texCoord0[2 * i + 0], FlipV ? texCoord0[2 * i + 1] : 1 - texCoord0[2 * i + 1]));
                         }
                         vertexIndexOffsetForPrimitives.Add(vertexIndexOffset);
                         vertexCountForPrimitives.Add(vertexCount);
@@ -2206,8 +2207,10 @@ namespace TerraViewer
                 int endId = startId + vertexCountForPrimitives[nodeId];
                 for (int i = startId; i < endId; i++)
                 {
+                    var transformedPosition = transformToWorld.Transform(positions[i]);
+                    transformedPosition.X *= handednessMultiplier;
                     var positionNormalTextured = new PositionNormalTextured(
-                        transformToWorld.Transform(positions[i]).Vector311,
+                        transformedPosition.Vector311,
                         normals[i],
                         texCoord0s[i]);
                     vertexList.Add(positionNormalTextured);
