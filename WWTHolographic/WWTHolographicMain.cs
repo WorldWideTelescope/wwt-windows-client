@@ -38,7 +38,7 @@ namespace WWTHolographic
         // is used to demonstrate world-locked rendering.
         private SpinningCubeRenderer        spinningCubeRenderer;
         
-        private SpatialInputHandler         spatialInputHandler;
+        public SpatialInputHandler         spatialInputHandler;
 #endif
 
         TerraViewer.RenderEngine renderEngine;
@@ -102,6 +102,8 @@ namespace WWTHolographic
         {
             this.holographicSpace = holographicSpace;
 
+            
+
             // 
             // TODO: Add code here to initialize your content.
             // 
@@ -120,7 +122,7 @@ namespace WWTHolographic
             // Initialize the sample hologram.
             spinningCubeRenderer = new SpinningCubeRenderer(deviceResources);
 
-            spatialInputHandler = new SpatialInputHandler();
+            
 #endif
 
             // Subscribe for notifications about changes to the state of the default HolographicDisplay 

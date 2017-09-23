@@ -36,9 +36,19 @@ namespace TerraViewer
             }
         }
 
-        internal void DrawString(string text, int fontSize, SysColor color, RectangleF rectf, TextAlignment center)
+        internal void DrawString(string text, int fontSize, SysColor color, RectangleF rectf, TextAlignment alignment)
         {
-            Text3d text3d = new Text3d(new Vector3d(0, 0, -1), new Vector3d(rectf.X + rectf.Width/2, rectf.Y + rectf.Height/2, 0), new Vector3d(0, -1, 0), text, fontSize, 1.5);
+            Text3d text3d = new Text3d(
+                new Vector3d(0, 0, -1),
+                alignment == TextAlignment.Left
+                          ? new Vector3d(rectf.X, rectf.Y + rectf.Height / 2, 0)
+                          : new Vector3d(rectf.X + rectf.Width / 2, rectf.Y + rectf.Height / 2, 0),
+                new Vector3d(0, -1, 0), text, fontSize, 1.5);
+            text3d.alignment = alignment == TextAlignment.Left ? Text3d.Alignment.Left : Text3d.Alignment.Center;
+            if (alignment == TextAlignment.Left)
+            {
+                text3d.TextLength = rectf.Width;
+            }
             batch.Add(text3d);
         }
 

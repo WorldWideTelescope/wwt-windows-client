@@ -323,12 +323,33 @@ namespace TerraViewer
 
         }
 #endif
+        static Dictionary<string, Bitmap> ThunbnailMap = new Dictionary<string, Bitmap>();
+        static public Bitmap LoadThumbnailByName(string name)
+        {
+            string thumbUrl = "http://www.worldwidetelescope.org/wwtweb/thumbnail.aspx?name=" + name.Replace(" ", "");
+
+            var t=  LoadThumbnailFromWeb(thumbUrl);
+
+            if (t == null)
+            {
+                System.Diagnostics.Debug.WriteLine(name);
+            }
+
+            return t;
+        }
+
         static public Bitmap LoadThumbnailFromWeb(string url)
         {
             if (String.IsNullOrEmpty(url))
             {
                 return null;
             }
+
+            if (ThunbnailMap.ContainsKey(url))
+            {
+                return ThunbnailMap[url];
+            }
+            
 
             if (url.StartsWith(@"http://www.worldwidetelescope.org/hst/") || url.StartsWith(@"http://www.worldwidetelescope.org/thumbnails/") || url.StartsWith(@"http://www.worldwidetelescope.org/spitzer/"))
             {
@@ -337,7 +358,7 @@ namespace TerraViewer
                 Bitmap bmp = ThumbnailCache.LoadThumbnail(name);
                 if (bmp != null)
                 {
-                    return bmp;
+                    return ThunbnailMap[url] = bmp;
                 }
 
             }
@@ -349,7 +370,7 @@ namespace TerraViewer
                 Bitmap bmp = ThumbnailCache.LoadThumbnail(name);
                 if (bmp != null)
                 {
-                    return bmp;
+                    return ThunbnailMap[url] = bmp;
                 }
 
             }
@@ -358,8 +379,7 @@ namespace TerraViewer
 
             string filename = id.ToString() + ".jpg";
 
-            return LoadThumbnailFromWeb(url, filename);
-
+            return ThunbnailMap[url] = LoadThumbnailFromWeb(url, filename);
         }
 
         static public Texture11 TextureFromBitmap(Bitmap bmp)

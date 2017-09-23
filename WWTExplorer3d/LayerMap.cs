@@ -104,7 +104,7 @@ namespace TerraViewer
 
         Bitmap IThumbnail.ThumbNail
         {
-            get => ThumbnailCache.LoadThumbnail(Name);
+            get => UiTools.LoadThumbnailByName(Name);
             set
             {
 

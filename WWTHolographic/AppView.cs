@@ -51,6 +51,7 @@ namespace WWTHolographic
         /// </summary>
         public void Initialize(CoreApplicationView applicationView)
         {
+            
             applicationView.Activated += this.OnViewActivated;
 
             // Register event handlers for app lifecycle.
@@ -62,6 +63,7 @@ namespace WWTHolographic
             deviceResources = new DeviceResources();
 
             main = new WWTHolographicMain(deviceResources);
+            
         }
 
         /// <summary>
@@ -69,6 +71,7 @@ namespace WWTHolographic
         /// </summary>
         public void SetWindow(CoreWindow window)
         {
+            main.spatialInputHandler = new SpatialInputHandler();
             // Register for keypress notifications.
             window.KeyDown += this.OnKeyPressed;
 

@@ -25,7 +25,11 @@ namespace TerraViewer
         {
             return Children.ToArray();
         }
-       
+
+        public override bool HasChildren()
+        {
+            return Children.Count > 0;
+        }
 
         public SkyOverlays(SkyOverlaysType overlayType)
         {
@@ -695,7 +699,7 @@ namespace TerraViewer
 
         Bitmap IThumbnail.ThumbNail
         {
-            get => ThumbnailCache.LoadThumbnail(Name);
+            get => UiTools.LoadThumbnailByName(Name);
             set
             {
 

@@ -576,7 +576,7 @@ namespace TerraViewer
 
         Bitmap IThumbnail.ThumbNail
         {
-            get => ThumbnailCache.LoadThumbnail(Name);
+            get => UiTools.LoadThumbnailByName(Name);
             set
             {
 
@@ -594,7 +594,7 @@ namespace TerraViewer
 
         bool IThumbnail.IsTour => false;
 
-        bool IThumbnail.IsFolder => false;
+        bool IThumbnail.IsFolder => HasChildren();
 
         bool IThumbnail.IsCloudCommunityItem => false;
 
@@ -605,6 +605,11 @@ namespace TerraViewer
         public virtual object[] GetChildren()
         {
             return null;
+        }
+
+        public virtual bool HasChildren()
+        {
+            return false;
         }
     }
     class LayerCollection : Layer

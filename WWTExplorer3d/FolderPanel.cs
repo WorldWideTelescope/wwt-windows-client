@@ -1001,7 +1001,11 @@ namespace TerraViewer
 
 
             IThumbnail item = (IThumbnail)e;
-            if (item.IsFolder)
+            if (item is SkyOverlay)
+            {
+                ((SkyOverlay)item).Enabled = !((SkyOverlay)item).Enabled;
+            }
+            else if (item.IsFolder)
             {
                 LoadFolder(item);
             }

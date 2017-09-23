@@ -185,7 +185,11 @@ namespace TerraViewer
 #if WINDOWS_UWP
             using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, filename))
             {
-                return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
+                if (bitmap != null)
+                {
+                    return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
+                }
+                return null;
             }
 #else
             return FromFile(device, filename, options);
@@ -460,10 +464,14 @@ namespace TerraViewer
         /// <returns></returns>
         public static SharpDX.WIC.BitmapSource LoadBitmap(SharpDX.WIC.ImagingFactory2 factory, string filename)
         {
-            return LoadBitmap(factory, new SharpDX.WIC.BitmapDecoder(
-                factory,
-                filename,
-                SharpDX.WIC.DecodeOptions.CacheOnDemand));
+            if (File.Exists(filename))
+            {
+                return LoadBitmap(factory, new SharpDX.WIC.BitmapDecoder(
+                    factory,
+                    filename,
+                    SharpDX.WIC.DecodeOptions.CacheOnDemand));
+            }
+            return null;
         }
 
         public static SharpDX.WIC.BitmapSource LoadBitmap(SharpDX.WIC.ImagingFactory2 factory, System.IO.Stream stream)
@@ -542,6 +550,8 @@ namespace TerraViewer
             int levels = CountMips(width, height);
             int w = width;
             int h = height;
+            int lw = width;
+            int lh = height;
 
             SharpDX.DataBox[] boxes = new SharpDX.DataBox[levels];
             SharpDX.DataStream[] ds = new SharpDX.DataStream[levels];
@@ -561,9 +571,9 @@ namespace TerraViewer
                     var po = data[i];
                     var pi = (byte*)boxes[i - 1].DataPointer.ToPointer();
                     var in1 = pi;
-                    var in2 = in1 + ((w > 1) ? 4 : 0);
-                    var in3 = (h>1) ? (pi + 8 * w) : in1;
-                    var in4 = in3 + ((w > 1) ? 4 : 0);
+                    var in2 = in1 + ((lw > 1) ? 4 : 0);
+                    var in3 = (h>1) ? (pi + 4 * lw) : in1;
+                    var in4 = in3 + ((lw > 1) ? 4 : 0);
                     int index = 0;
                     for(int y = 0; y < h; y++)
                     {                     
@@ -584,10 +594,10 @@ namespace TerraViewer
                             in4 += 4;
                         }
 
-                        in1 += (w * 8);
-                        in2 += (w * 8);
-                        in3 += (w * 8);
-                        in4 += (w * 8);
+                        in1 += (lw * 4);
+                        in2 += (lw * 4);
+                        in3 += (lw * 4);
+                        in4 += (lw * 4);
                     }
                 }
 
@@ -597,6 +607,9 @@ namespace TerraViewer
                 boxes[i].DataPointer = ds[i].DataPointer;
 
                 boxes[i].RowPitch = w * 4;
+                lh = h;
+                lw = w;
+
 
                 if (w > 1)
                 {

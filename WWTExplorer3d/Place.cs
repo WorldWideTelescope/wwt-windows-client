@@ -241,7 +241,7 @@ namespace TerraViewer
                     {
                         //todo uwp figure out how to extract thumbnails into resources of some kind
 
-                        thumbNail = ThumbnailCache.LoadThumbnail(Name);
+                        thumbNail = UiTools.LoadThumbnailByName(Name);
                         if (thumbNail == null)
                         {
                             object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);

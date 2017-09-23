@@ -157,6 +157,16 @@ namespace TerraViewer
 #endif
         }
 
+        public void AddChildThumbnail(IThumbnail child)
+        {
+            if (child != null)
+            {
+                this.thumbnails.Add(child);
+                dirty = true;
+            }
+        }
+        
+
         public void AddChildFolder(Folder child)
         {
             folders.Add(child);
@@ -300,11 +310,15 @@ namespace TerraViewer
                     {
                         returnList.AddRange(this.Tour);
                     }
-
                     if (LineSet != null)
                     {
                         returnList.AddRange(this.LineSet);
                     }
+                    if (thumbnails != null)
+                    {
+                        returnList.AddRange(thumbnails);
+                    }
+
                     return returnList.ToArray();
                 }
                 else
@@ -911,7 +925,7 @@ namespace TerraViewer
                     {
                         //todo uwp find anther way to do this.
 
-                        thumbNail = ThumbnailCache.LoadThumbnail(Name);
+                        thumbNail = UiTools.LoadThumbnailByName(Name);
                         if (thumbNail == null)
                         {
                             object obj = TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);

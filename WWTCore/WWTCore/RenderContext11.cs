@@ -1907,15 +1907,25 @@ ambientLightColor.B / 255.0f);
             return matrix;
         }
 
+        public static Matrix3d ExternalViewScale = Matrix3d.Identity;
+
         public static void UpdateProjectionConstantBuffers()
         {
             if (ExternalProjection)
             {
                 ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
+                ExternalViewScale = Matrix3d.Identity;
 
+                var left = externalViewLeft * ExternalViewScale * externalProjLeft;
+                var right = externalViewRight * ExternalViewScale * externalProjRight;
 
-                var left = externalViewLeft * externalProjLeft;
-                var right = externalViewRight * externalProjRight;
+                //left.M41 = 0;
+                //left.M42 = 0;
+                //left.M43 = 0;
+                //right.M41 = 0;
+                //right.M42 = 0;
+                //right.M43 = 0;
+
                 var scale = TerraViewer.Matrix3d.Scaling(1, 1, -1);
                 TerraViewer.RenderContext11.ExternalProjectionLeft = scale * left;
                 TerraViewer.RenderContext11.ExternalProjectionRight = scale * right;

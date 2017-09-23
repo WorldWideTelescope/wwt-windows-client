@@ -2368,6 +2368,7 @@ namespace TerraViewer
         private List<Folder> folders = new List<Folder>();
         private List<Place> places = new List<Place>();
         private List<ImageSet> imagesets = new List<ImageSet>();
+        private List<IThumbnail> thumbnails = new List<IThumbnail>();
         /// <remarks/>
         /// 
 

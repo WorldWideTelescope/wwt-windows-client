@@ -153,6 +153,7 @@ namespace TerraViewer
                 t3d.width = size.X * (float)t3d.scale * factor * fntAdjust;
                 t3d.height = size.Y * (float)t3d.scale * factor * fntAdjust;
 
+                float maxLength = (float)(t3d.TextLength/2 );
 
                 int charsLeft = text.Length;
 
@@ -164,6 +165,10 @@ namespace TerraViewer
                         RectangleF position = new RectangleF(left * (float)t3d.scale * factor, 0 * (float)t3d.scale * factor, item.Extents.Width * fntAdjust * (float)t3d.scale * factor, item.Extents.Height * fntAdjust * (float)t3d.scale * factor);
                         left += (float)(item.Extents.Width * fntAdjust);
 
+                        if (left > maxLength)
+                        {
+                            break;
+                        }
                         //System.Diagnostics.Debug.WriteLine((position.Width/position1.Width).ToString() + ", " + (position.Height / position1.Height).ToString());
 
                         t3d.AddGlyphPoints(verts, item.Size, position, item.UVRect);
@@ -748,6 +753,7 @@ namespace TerraViewer
             }
         }
 
+        public double TextLength = double.MaxValue;
         public double Rotation = 0;
         public double Tilt = 0;
         public double Bank = 0;

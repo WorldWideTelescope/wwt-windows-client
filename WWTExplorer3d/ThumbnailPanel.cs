@@ -266,7 +266,6 @@ namespace TerraViewer
                         break;
                     }
 
-
                     rectf = new RectangleF((float)x * horzMultiple + 3f, y * VertSpacing, ThumbWidth - 14, 64);
                     SysColor textBrush = SysColor.White;
                     if (index == hoverItem || (index == selectedItem && hoverItem == -1))
@@ -282,20 +281,35 @@ namespace TerraViewer
                     //todo uwp
                     //((IThumbnail)items[index]).Bounds = RectangleToScreen(new Rectangle((int)(x * horzMultiple), (int)(y * VertSpacing), (int)horzMultiple, (int)VertSpacing));
 
-                        Texture11 bmpThumb = GetTextureForThumbnail(((IThumbnail)items[index]).ThumbNail);
-                        if (bmpThumb != null)
+                    Texture11 bmpThumb = GetTextureForThumbnail(((IThumbnail)items[index]).ThumbNail);
+                    if (bmpThumb != null)
+                    {
+                        g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, bmpThumb.Width, bmpThumb.Height), new Rectangle(0, 0, bmpThumb.Width, bmpThumb.Height), GraphicsUnit.Pixel);
+                        //todo uwp add black rect
+                        //g.DrawRectangle(Pens.Black, (int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, ((IThumbnail)items[index]).ThumbNail.Width, ((IThumbnail)items[index]).ThumbNail.Height);
+                    }
+
+                    bool showCheckbox = (items[index] is SkyOverlay);
+                    bool checkBoxChecked = showCheckbox ? ((SkyOverlay)items[index]).Enabled : false;
+
+
+                    if (showCheckbox)
+                    {
+                        if (checkBoxChecked)
                         {
-                            g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, bmpThumb.Width, bmpThumb.Height), new Rectangle(0, 0, bmpThumb.Width, bmpThumb.Height), GraphicsUnit.Pixel);
-                            //todo uwp add black rect
-                            //g.DrawRectangle(Pens.Black, (int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, ((IThumbnail)items[index]).ThumbNail.Width, ((IThumbnail)items[index]).ThumbNail.Height);
+                            g.DrawImage(GetTextureForThumbnail(Properties.Resources.checkbox_checked_rest), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                         }
-
-
+                        else
+                        {
+                            g.DrawImage(GetTextureForThumbnail(Properties.Resources.checkbox_unchecked_rest), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                        }
+                    }
 
                     if (((IThumbnail)items[index]).IsImage)
                     {
                         g.DrawImage(GetTextureForThumbnail(Properties.Resources.InsertPictureHS), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                     }
+
                     if (((IThumbnail)items[index]).IsTour)
                     {
                         g.DrawImage(GetTextureForThumbnail(Properties.Resources.TourIcon), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
@@ -777,7 +791,7 @@ namespace TerraViewer
         public void SelectItem()
         {
             selectedItem = Math.Min(selectedItem, items.Count - 1);
-            if (items.Count > 0)
+            if (selectedItem > -1 && items.Count > 0)
             {
                 if (ItemClicked != null)
                 {

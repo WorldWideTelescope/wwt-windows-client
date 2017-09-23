@@ -151,17 +151,19 @@ namespace TerraViewer
         }
 
 
-        Folder explorerRoot = null;
+       
         private void LoadExploreRoot()
         {
             string url = Properties.Settings.Default.ExploreRootUrl;
             string filename = string.Format(@"{0}data\exploreRoot_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
             DataSetManager.DownloadFile(url, filename, false, true);
             explorerRoot = Folder.LoadFromFile(filename, true);
-            folderPanel.LoadRootFoder(explorerRoot);
+            MakeRingMenuFolder();
+            folderPanel.LoadRootFoder(RingMenuRoot);
 
         }
 #endif
+        Folder explorerRoot = null;
         FolderPanel folderPanel;
         ImageSetType LookAtType = ImageSetType.Sky;
 
@@ -189,6 +191,32 @@ namespace TerraViewer
             Grids.InitCosmosVertexBuffer();
             Planets.InitPlanetResources();
 
+        }
+
+        Folder RingMenuRoot;
+
+        public void MakeRingMenuFolder()
+        {
+            RingMenuRoot = new Folder();
+            RingMenuRoot.Name = "Root Menu";
+            var sky = new Folder();
+            sky.Name = "Sky";
+            var experiences = new Folder();
+            experiences.Name = "Experiences";
+            var settings = new Folder();
+            settings.Name = "Settings";
+
+            RingMenuRoot.AddChildFolder(sky);
+            RingMenuRoot.AddChildFolder(experiences);
+            RingMenuRoot.AddChildFolder(settings);
+
+            settings.AddChildThumbnail(LayerManager.AllMaps["Sky"].Layers.Find(x => x.Name == "Overlays"));
+            settings.AddChildThumbnail(LayerManager.AllMaps["Sky"].Layers.Find(x => x.Name == "2D Sky"));
+            settings.AddChildThumbnail(LayerManager.AllMaps["Sky"].Layers.Find(x => x.Name == "3d Solar System"));
+            foreach(var child in explorerRoot.Children)
+            {
+                sky.AddChildThumbnail(child as IThumbnail);
+            }
         }
 
         public void TrackISS()
@@ -5159,7 +5187,7 @@ namespace TerraViewer
             bool offscreenRender = targetTextureView != null;
 
             Tile.deepestLevel = 0;
-
+            RenderContext11.ExternalViewScale = Matrix3d.Identity;
             try
             {
                 if (offscreenRender)
@@ -5251,6 +5279,8 @@ namespace TerraViewer
                     if (RenderContext11.ExternalProjection)
                     {
                         RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
+                        double sf = 1/(UiTools.MetersToSolarSystemDistance(1) / SolarSystemCameraDistance);
+                        RenderContext11.ExternalViewScale = Matrix3d.Scaling(sf,sf,sf);
                     }
                     {
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0); //black
@@ -5697,6 +5727,7 @@ namespace TerraViewer
 
                 if (LeftController.Active || RightController.Active)
                 {
+                    RenderContext11.ExternalViewScale = Matrix3d.Identity;
                     if (LeftController.Active)
                     {
                         if (LeftController.Trigger > 0)
