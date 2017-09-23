@@ -2090,6 +2090,12 @@ namespace TerraViewer
 
             List<ObjectNode> topLevelObjects = new List<ObjectNode>();
             Dictionary<Node, ObjectNode> map = new Dictionary<Node, ObjectNode>();
+            List<int> vertexIndexOffsetForPrimitives = new List<int>();
+            List<int> vertexCountForPrimitives = new List<int>();
+            List<Vector3d> positions = new List<Vector3d>();
+            List<Vector3> normals = new List<Vector3>();
+            List<Vector2> texCoord0s = new List<Vector2>();
+            List<ObjectNode> nodesWithMesh = new List<ObjectNode>();
             List<PositionNormalTextured> vertexList = new List<PositionNormalTextured>();
             List<int> indexList = new List<int>();
             int currentIndex = 0;
@@ -2132,16 +2138,17 @@ namespace TerraViewer
                         System.Buffer.BlockCopy(texCoord0Buffer, texCoord0BufferView.ByteOffset, texCoord0, 0, texCoord0BufferView.ByteLength);
 
                         // Fill vertex list
-                        int vertexIndexOffset = vertexList.Count;
+                        int vertexIndexOffset = normals.Count;
                         int vertexCount = model.Accessors[primitive.Attributes["NORMAL"]].Count;
                         for (int i = 0; i < vertexCount; i++)
                         {
-                            var positionNormalTextured = new PositionNormalTextured(
-                                new Vector3(position[3 * i + 0], position[3 * i + 1], position[3 * i + 2]),
-                                new Vector3(normal[3 * i + 0], normal[3 * i + 1], normal[3 * i + 2]),
-                                new Vector2(texCoord0[2 * i + 0], texCoord0[2 * i + 1]));
-                            vertexList.Add(positionNormalTextured);
+                            positions.Add(new Vector3d(position[3 * i + 0], position[3 * i + 1], position[3 * i + 2]));
+                            normals.Add(new Vector3(normal[3 * i + 0], normal[3 * i + 1], normal[3 * i + 2]));
+                            texCoord0s.Add(new Vector2(texCoord0[2 * i + 0], texCoord0[2 * i + 1]));
                         }
+                        vertexIndexOffsetForPrimitives.Add(vertexIndexOffset);
+                        vertexCountForPrimitives.Add(vertexCount);
+                        nodesWithMesh.Add(currentObject);
 
                         // Fill index list
                         int indicesCount = indices.Length;
@@ -2187,11 +2194,30 @@ namespace TerraViewer
                 topLevelObjects.Add(rootObjectNode);
             }
 
+            // Adjust for the relative coordinates. 
+            // Currently, the rendering code does not use Local transform (LocalMat), so we do it manually here.
+            int nodesWithMeshCount = nodesWithMesh.Count;
+            for (int nodeId = 0; nodeId < nodesWithMeshCount; nodeId++)
+            {
+                ObjectNode currentObject = nodesWithMesh[nodeId];
+                Matrix3d transformToWorld = GetTransformMatrixToWorld(currentObject);
+
+                int startId = vertexIndexOffsetForPrimitives[nodeId];
+                int endId = startId + vertexCountForPrimitives[nodeId];
+                for (int i = startId; i < endId; i++)
+                {
+                    var positionNormalTextured = new PositionNormalTextured(
+                        transformToWorld.Transform(positions[i]).Vector311,
+                        normals[i],
+                        texCoord0s[i]);
+                    vertexList.Add(positionNormalTextured);
+                }
+            }
 
             // Texture
 
 
-            // Material
+            // Material - it currently uses default material
             Material currentMaterial = new Material();
             currentMaterial.Diffuse = Color.White;
             currentMaterial.Ambient = Color.White;
@@ -2218,6 +2244,18 @@ namespace TerraViewer
 
             dirty = false;
             GC.Collect();
+        }
+
+        private Matrix3d GetTransformMatrixToWorld(ObjectNode node)
+        {
+            if (node == null)
+            {
+                return Matrix3d.Identity;
+            }
+            else
+            {
+                return node.LocalMat * GetTransformMatrixToWorld(node.Parent);
+            }
         }
 
         private void SetLevel(Dictionary<Node, ObjectNode> map, Node parent, Node[] nodes, int parentLevel)
