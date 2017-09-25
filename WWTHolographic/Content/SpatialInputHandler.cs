@@ -12,7 +12,7 @@ namespace WWTHolographic.Common
         // Used to indicate that a Pressed input event was received this frame.
         private SpatialInteractionSourceState sourceState;
 
-        private SpatialInteractionSource LastController;
+        //private SpatialInteractionSource LastController;
         public SpatialInteractionSource LeftController;
         public SpatialInteractionSource RightController;
 
@@ -41,22 +41,22 @@ namespace WWTHolographic.Common
 
         private void InteractionManager_SourceLost(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
         {
-            LastController = args.State.Source;
+            SpatialInteractionSource LastController = args.State.Source;
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {
-                LeftController = null;
+         //       LeftController = null;
             }
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Right)
             {
-                RightController = null;
+           //     RightController = null;
             }
         }
 
         private void InteractionManager_SourceDetected(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
         {
-            LastController = args.State.Source;
+            SpatialInteractionSource LastController = args.State.Source;
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {

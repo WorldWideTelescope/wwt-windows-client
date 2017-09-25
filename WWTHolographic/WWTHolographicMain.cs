@@ -307,56 +307,56 @@ namespace WWTHolographic
 
                 if (state == null)
                 {
-                    Task.Run(async delegate
-                    {
-                        TerraViewer.GltfModel model = new TerraViewer.GltfModel();
-                        const string modelFileName = "model.bin";
-                        try
-                        {
-                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
-                            var modelStream = await file.OpenStreamForReadAsync();
-                            model.LoadModel(modelStream);
-                            return;
-                        }
-                        catch (Exception)   // File not found
-                        {
-                        }
-                    });
+                    //Task.Run(async delegate
+                    //{
+                    //    TerraViewer.GltfModel model = new TerraViewer.GltfModel();
+                    //    const string modelFileName = "model.bin";
+                    //    try
+                    //    {
+                    //        var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
+                    //        var modelStream = await file.OpenStreamForReadAsync();
+                    //        model.LoadModel(modelStream);
+                    //        return;
+                    //    }
+                    //    catch (Exception)   // File not found
+                    //    {
+                    //    }
+                    //});
                 }
 
                 if (state != null)
                 {
                     var source = state.Source;
-                    Task.Run(async delegate
-                    {
-                        TerraViewer.GltfModel model = new TerraViewer.GltfModel();
-                        const string modelFileName = "model.glb";
-                        try
-                        {
-                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
-                            var modelStream = await file.OpenStreamForReadAsync();
-                            model.LoadModel(modelStream);
-                            return;
-                        }
-                        catch (Exception)   // File not found
-                        {
-                            var modelStream = await source.Controller.TryGetRenderableModelAsync().AsTask();
-                            model.LoadModel(modelStream.AsStream());
+                    //Task.Run(async delegate
+                    //{
+                    //    TerraViewer.GltfModel model = new TerraViewer.GltfModel();
+                    //    const string modelFileName = "model.glb";
+                    //    try
+                    //    {
+                    //        var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
+                    //        var modelStream = await file.OpenStreamForReadAsync();
+                    //        model.LoadModel(modelStream);
+                    //        return;
+                    //    }
+                    //    catch (Exception)   // File not found
+                    //    {
+                    //        var modelStream = await source.Controller.TryGetRenderableModelAsync().AsTask();
+                    //        model.LoadModel(modelStream.AsStream());
 
-                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(modelFileName);
-                            using (Stream fileStram = await file.OpenStreamForWriteAsync())
-                            {
-                                const int BUFFER_SIZE = 1024;
-                                byte[] buf = new byte[BUFFER_SIZE];
+                    //        var file = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(modelFileName);
+                    //        using (Stream fileStram = await file.OpenStreamForWriteAsync())
+                    //        {
+                    //            const int BUFFER_SIZE = 1024;
+                    //            byte[] buf = new byte[BUFFER_SIZE];
 
-                                int bytesread = 0;
-                                while ((bytesread = await modelStream.AsStream().ReadAsync(buf, 0, BUFFER_SIZE)) > 0)
-                                {
-                                    await fileStram.WriteAsync(buf, 0, bytesread);
-                                }
-                            }
-                        }
-                    });
+                    //            int bytesread = 0;
+                    //            while ((bytesread = await modelStream.AsStream().ReadAsync(buf, 0, BUFFER_SIZE)) > 0)
+                    //            {
+                    //                await fileStram.WriteAsync(buf, 0, bytesread);
+                    //            }
+                    //        }
+                    //    }
+                    //});
 
                     var h = state.Source.Handedness;
                     var controller = source.Controller;
