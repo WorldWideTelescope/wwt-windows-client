@@ -346,20 +346,45 @@ namespace TerraViewer
         }
 
         static Text3dBatch NamesBatch;
+        static Text3dBatch[] IndividualNameBatches = new Text3dBatch[89];
+
         public static void DrawConstellationNames(RenderContext11 renderContext, float opacity, Color drawColor)
         {
             if (NamesBatch == null)
             {
                 InitializeConstellationNames();
             }
-            NamesBatch.Draw(renderContext, opacity, drawColor);
+
+            if (DrawNamesFiltered)
+            {
+                int index = 0;
+                foreach (var abrv in Abbreviations.Values)
+                {
+                    BlendState bs = PictureBlendStates[abrv];
+                    bs.TargetState = Settings.Active.ConstellationNamesFilter.IsSet(abrv);
+
+                    if (bs.State)
+                    {
+                        IndividualNameBatches[index].Draw(renderContext, opacity, drawColor);
+                    }
+                    index++;
+                }
+            }
+            else
+            {
+                NamesBatch.Draw(renderContext, opacity, drawColor);
+            }
         }
+
+        public static bool DrawNamesFiltered = false;
 
         public static void InitializeConstellationNames()
         {
             NamesBatch = new Text3dBatch(80);
+            int index = 0;
             foreach (IPlace centroid in ConstellationNamePositions.Values)
             {
+                IndividualNameBatches[index] = new Text3dBatch(80);
                 Vector3d center = Coordinates.RADecTo3d(centroid.RA + 12, centroid.Dec, 1);
                 Vector3d up = new Vector3d(0, 1, 0);
                 string name = centroid.Name;
@@ -371,6 +396,8 @@ namespace TerraViewer
                     name = name.Replace(" ", "\n   ");
                 }
                 NamesBatch.Add(new Text3d(center, up, name, 80, .000125));
+                IndividualNameBatches[index].Add(new Text3d(center, up, name, 80, .000125));
+                index++;
             }
         }
 

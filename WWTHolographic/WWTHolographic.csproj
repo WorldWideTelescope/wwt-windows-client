@@ -75,7 +75,6 @@
     <Compile Include="Common\StepTimer.cs" />
     <Compile Include="Content\ShaderStructures.cs" />
     <Compile Include="Content\SpatialInputHandler.cs" />
-    <Compile Include="Content\SpinningCubeRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -531,16 +531,26 @@ namespace TerraViewer
             int count = resourceMap.Count;
         }
 
+        Dictionary<string, Bitmap> bitmapCache = new Dictionary<string, Bitmap>();
+
         public object GetObject(string name, System.Globalization.CultureInfo culture)
         {
             if (resourceMap.ContainsKey(name))
             {
+                if (bitmapCache.ContainsKey(name))
+                {
+                    return bitmapCache[name];
+                }
+
                 string val = resourceMap[name];
+
                 if (val.Contains("System.Drawing.Bitmap"))
                 {
                     string path = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine");
                     string[] parts = val.Split(new char[] { ';' });
-                    return new Bitmap(parts[0].Replace("..", path));
+                    var bmp =  new Bitmap(parts[0].Replace("..", path));
+                    bitmapCache[name] = bmp;
+                    return bmp;
                 }
                 return val;
             }

@@ -13,12 +13,16 @@ namespace TerraViewer
         {
             get { return Language.GetLocalizedText(946, "Up Level"); }
         }
-
+        Bitmap thumbnail = null;
         public Bitmap ThumbNail
         {
             get
             {
-                return Properties.Resources.FolderUp;
+                if (thumbnail == null)
+                {
+                    thumbnail = Properties.Resources.FolderUp;
+                }
+                return thumbnail;
             }
             set
             {

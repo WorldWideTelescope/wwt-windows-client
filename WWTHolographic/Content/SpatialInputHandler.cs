@@ -7,7 +7,7 @@ namespace WWTHolographic.Common
     public class SpatialInputHandler
     {
         // API objects used to process gesture input, and generate gesture events.
-        private SpatialInteractionManager interactionManager;
+        public SpatialInteractionManager interactionManager;
 
         // Used to indicate that a Pressed input event was received this frame.
         private SpatialInteractionSourceState sourceState;
@@ -36,7 +36,17 @@ namespace WWTHolographic.Common
 
         private void InteractionManager_InteractionDetected(SpatialInteractionManager sender, SpatialInteractionDetectedEventArgs args)
         {
-            int x = 1;
+            SpatialInteractionSource LastController = args.InteractionSource;
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
+            {
+                LeftController = LastController;
+            }
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Right)
+            {
+                RightController = LastController;
+            }
         }
 
         private void InteractionManager_SourceLost(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
@@ -45,12 +55,12 @@ namespace WWTHolographic.Common
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {
-         //       LeftController = null;
+                LeftController = null;
             }
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Right)
             {
-           //     RightController = null;
+                RightController = null;
             }
         }
 

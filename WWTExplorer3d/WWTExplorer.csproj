@@ -244,6 +244,7 @@
     <Compile Include="ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
+    <Compile Include="FinderPanel.cs" />
     <Compile Include="FolderPanel.cs" />
     <Compile Include="FolderUp.cs" />
     <Compile Include="HandController.cs" />
@@ -1386,6 +1387,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\HandControllerRight.glb" />
     <None Include="Terms_of_use_Nov_2011.rtf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 #if WINDOWS_UWP
 using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
+using Rectangle = System.Drawing.Rectangle;
+using GraphicsUnit = System.Drawing.GraphicsUnit;
 using System.Windows.Forms;
 #endif
 
@@ -61,6 +61,7 @@ namespace TerraViewer
 
         public override void Draw(UiGraphics g)
         {
+            g.DrawImage(Properties.Resources.PropertiesBackgroundNoFinder, new Rectangle(-10, -10, 400, 535), new Rectangle(0, 0, 292, 315), GraphicsUnit.Pixel, SysColor.FromArgb(128,255,255,255));
             //todo draw other stuff here
             BrowseList.Draw(g);
         }

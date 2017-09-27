@@ -181,6 +181,9 @@
     <Compile Include="..\wwtexplorer3d\FileCabnet.cs">
       <Link>Utilities\FileCabnet.cs</Link>
     </Compile>
+    <Compile Include="..\WWTExplorer3d\FinderPanel.cs">
+      <Link>UI\FinderPanel.cs</Link>
+    </Compile>
     <Compile Include="..\WWTExplorer3d\FitsImage.cs">
       <Link>Layers\FitsImage.cs</Link>
     </Compile>
@@ -3213,6 +3216,11 @@
     <Reference Include="WWTThumbnails">
       <HintPath>..\WWTExplorer3d\WWTThumbnails.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\WWTExplorer3d\Resources\HandControllerRight.glb">
+      <Link>Resources\HandControllerRight.glb</Link>
+    </Content>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

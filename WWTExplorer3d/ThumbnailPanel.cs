@@ -105,13 +105,12 @@ namespace TerraViewer
             set { items = value; }
         }
 
-        static Dictionary<Bitmap, Texture11> map = new Dictionary<Bitmap, Texture11>();
-
-        static Texture11 bmpBackground = GetTextureForThumbnail(TerraViewer.Properties.Resources.thumbBackground);
-        static Texture11 bmpBackgroundHover = GetTextureForThumbnail(TerraViewer.Properties.Resources.ThumbBackgroundHover);
-        static Texture11 bmpBackgroundWide = GetTextureForThumbnail(TerraViewer.Properties.Resources.thumbBackgroundWide);
-        static Texture11 bmpBackgroundWideHover = GetTextureForThumbnail(TerraViewer.Properties.Resources.ThumbBackgroundWideHover);
-        static Texture11 bmpDropInsertMarker = GetTextureForThumbnail(TerraViewer.Properties.Resources.DragInsertMarker);
+    
+        static Bitmap bmpBackground = TerraViewer.Properties.Resources.thumbBackground;
+        static Bitmap bmpBackgroundHover = TerraViewer.Properties.Resources.ThumbBackgroundHover;
+        static Bitmap bmpBackgroundWide = TerraViewer.Properties.Resources.thumbBackgroundWide;
+        static Bitmap bmpBackgroundWideHover = TerraViewer.Properties.Resources.ThumbBackgroundWideHover;
+        static Bitmap bmpDropInsertMarker = TerraViewer.Properties.Resources.DragInsertMarker;
 
         public void PageChanged(object sender, PageChange e)
         {
@@ -281,10 +280,10 @@ namespace TerraViewer
                     //todo uwp
                     //((IThumbnail)items[index]).Bounds = RectangleToScreen(new Rectangle((int)(x * horzMultiple), (int)(y * VertSpacing), (int)horzMultiple, (int)VertSpacing));
 
-                    Texture11 bmpThumb = GetTextureForThumbnail(((IThumbnail)items[index]).ThumbNail);
+                    Bitmap bmpThumb = ((IThumbnail)items[index]).ThumbNail;
                     if (bmpThumb != null)
                     {
-                        g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, bmpThumb.Width, bmpThumb.Height), new Rectangle(0, 0, bmpThumb.Width, bmpThumb.Height), GraphicsUnit.Pixel);
+                        g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, bmpThumb.Width, bmpThumb.Height), new Rectangle(0, 0, bmpThumb.Width, bmpThumb.Height), GraphicsUnit.Pixel, SysColor.White);
                         //todo uwp add black rect
                         //g.DrawRectangle(Pens.Black, (int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, ((IThumbnail)items[index]).ThumbNail.Width, ((IThumbnail)items[index]).ThumbNail.Height);
                     }
@@ -297,22 +296,22 @@ namespace TerraViewer
                     {
                         if (checkBoxChecked)
                         {
-                            g.DrawImage(GetTextureForThumbnail(Properties.Resources.checkbox_checked_rest), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                            g.DrawImage(Properties.Resources.checkbox_checked_rest, (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                         }
                         else
                         {
-                            g.DrawImage(GetTextureForThumbnail(Properties.Resources.checkbox_unchecked_rest), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                            g.DrawImage(Properties.Resources.checkbox_unchecked_rest, (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                         }
                     }
 
                     if (((IThumbnail)items[index]).IsImage)
                     {
-                        g.DrawImage(GetTextureForThumbnail(Properties.Resources.InsertPictureHS), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                        g.DrawImage(Properties.Resources.InsertPictureHS, (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                     }
 
                     if (((IThumbnail)items[index]).IsTour)
                     {
-                        g.DrawImage(GetTextureForThumbnail(Properties.Resources.TourIcon), (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
+                        g.DrawImage(Properties.Resources.TourIcon, (int)((float)x * horzMultiple) + 79, y * VertSpacing + 1);
                     }
                     RectangleF textRect = new RectangleF(rectf.X, rectf.Y + 46, rectf.Width, rectf.Height - 46);
                     g.DrawString(((IThumbnail)items[index]).Name, 8, textBrush, textRect, UiGraphics.TextAlignment.Left);
@@ -329,19 +328,7 @@ namespace TerraViewer
 
 
 
-        static private Texture11 GetTextureForThumbnail(Bitmap bmp)
-        {
-            if (bmp == null)
-            {
-                return null;
-            }
-
-            if (!map.ContainsKey(bmp))
-            {
-                map[bmp] = UiTools.TextureFromBitmap(bmp);
-            }
-            return map[bmp];
-        }
+       
 
         bool showAddButton = false;
 

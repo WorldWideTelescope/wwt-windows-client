@@ -166,6 +166,22 @@ namespace TerraViewer
                         Events = Events | HandControllerStatus.GripDown;
                     }
                 }
+                // up and down
+                if (lastState.Status.HasFlag(HandControllerStatus.TriggerDown))
+                {
+                    if (Trigger > low)
+                    {
+                        Status = Status | HandControllerStatus.TriggerDown;
+                    }
+                }
+                else
+                {
+                    if (Trigger > high)
+                    {
+                        Status = Status | HandControllerStatus.TriggerDown;
+                        Events = Events | HandControllerStatus.TriggerDown;
+                    }
+                }
 
             }
 
