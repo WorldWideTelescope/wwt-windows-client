@@ -115,15 +115,19 @@ namespace TerraViewer
                 ContextSearch.Initialized = true;
             });
 
+            var t1 = System.Threading.Tasks.Task.Run(() =>
+            {
+                settingModel = Object3d.LoadFromModelFileFromUrl("http://www.worldwidetelescope.org/data/sh.mdl.txt");
+                SpaceTimeController.TimeRate = 100;
+            });
 
 
 
-            
             currentImageSetfield = GetDefaultImageset(ImageSetType.Sky, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Earth, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
             //currentImageSetfield = GetDefaultImageset(ImageSetType.Sandbox, BandPass.Visible);
-            var t1 = System.Threading.Tasks.Task.Run(() =>
+            var t2 = System.Threading.Tasks.Task.Run(() =>
             {
                 BackgroundInit();
             });
@@ -142,7 +146,7 @@ namespace TerraViewer
             Properties.Settings.Default.ShowISSModel = true;
             Properties.Settings.Default.CloudMap8k = true;
             Properties.Settings.Default.ShowSolarSystem.TargetState = false;
-           
+            Properties.Settings.Default.LocalHorizonMode = true;
             Properties.Settings.Default.ConstellationArtFilter = new ConstellationFilter();
             Properties.Settings.Default.ConstellationBoundariesFilter = new ConstellationFilter();
             Constellations.DrawNamesFiltered = true;
@@ -153,9 +157,9 @@ namespace TerraViewer
             ReadyToRender = true;
 
             TargetZoom = .8;
-
+           
         }
-
+        
 
        
         private void LoadExploreRoot()
@@ -169,6 +173,8 @@ namespace TerraViewer
 
         }
 #endif
+
+        Object3d settingModel = null;
         Folder explorerRoot = null;
         FolderPanel folderPanel;
         FinderPanel finderPanel;
@@ -2205,7 +2211,7 @@ namespace TerraViewer
             else
 #endif
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)RenderContext11.Height, .1, -200.0);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)RenderContext11.Height, .1, -120.0);
 
             }
             RenderContext11.PerspectiveFov = (localZoomFactor) / FOVMULT;
@@ -5732,6 +5738,23 @@ namespace TerraViewer
 
                 }
 
+                if (Space)
+                {
+                    if (settingModel != null)
+                    {
+                        Matrix3d worldSaved = RenderContext11.World;
+                        Matrix3d viewSaved = RenderContext11.View;
+                        RenderContext11.SunlightColor = SysColor.FromArgb(255,13,13,13);
+                        RenderContext11.SunPosition = new Vector3d(0, 30,0);
+                        RenderContext11.View = Matrix3d.RotationX(-Math.PI/2) * Matrix3d.Scaling(.54,.54,.54);
+                        RenderContext11.World = Matrix3d.Identity;
+
+                        settingModel.Render(RenderContext11, 1);
+                        RenderContext11.World = worldSaved;
+                        RenderContext11.View = viewSaved;
+                    }
+                }
+
                 if (LeftController.Active || RightController.Active)
                 {
                     RenderContext11.ExternalViewScale = Matrix3d.Identity;
@@ -5765,8 +5788,19 @@ namespace TerraViewer
                         Vector3d pos1 = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
                         Vector3d pos = new Vector3d(leftPos.X, leftPos.Y, leftPos.Z);
 
-                        bool inThere = SphereIntersectRay(pos1, endPos, out result);
-                        result.RA = 6 - result.RA;
+                        var mwv = RenderContext11.World * RenderContext11.View;
+                        mwv.Invert();
+                        var pos1t =  new Vector3d(pos1.X, pos1.Y, -pos1.Z);
+                        var endPost = new Vector3d(endPos.X, endPos.Y, -endPos.Z);
+
+                        pos1t.TransformCoordinate(mwv);
+                        mwv.MultiplyVector(ref endPost);
+
+                        pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
+                        endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
+
+                        bool inThere = SphereIntersectRay(pos1t, endPost, out result);
+                        //result.RA = 6 - result.RA;
 
 
                         string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
@@ -5777,7 +5811,7 @@ namespace TerraViewer
                         Properties.Settings.Default.ConstellationNamesFilter = filter;
                         // System.Diagnostics.Debug.WriteLine(v);
                         RenderEngine.pointerConstellation = v;
-                        if (LeftController.Events.HasFlag(HandControllerStatus.TriggerDown))
+                        if (LeftController.Status.HasFlag(HandControllerStatus.TriggerDown))
                         {
                             IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, .5f);
 
@@ -5874,15 +5908,26 @@ namespace TerraViewer
                         var endPos = RightController.Forward;
                         var up = RightController.Up;
 
+
                         Coordinates result = new Coordinates();
 
                         float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
                         Vector3d pos1 = new Vector3d(rightPos.X * scale, rightPos.Y * scale, rightPos.Z * scale);
                         Vector3d pos = new Vector3d(rightPos.X, rightPos.Y, rightPos.Z);
 
-                        bool inThere = SphereIntersectRay(pos1, endPos, out result);
-                        result.RA = 6 - result.RA;
+                        var mwv = RenderContext11.World * RenderContext11.View;
+                        mwv.Invert();
+                        var pos1t = new Vector3d(pos1.X, pos1.Y, -pos1.Z);
+                        var endPost = new Vector3d(endPos.X, endPos.Y, -endPos.Z);
 
+                        pos1t.TransformCoordinate(mwv);
+                        mwv.MultiplyVector(ref endPost);
+
+                        pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
+                        endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
+
+                        bool inThere = SphereIntersectRay(pos1t, endPost, out result);
+                        //result.RA = 6 - result.RA;
 
                         string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                         var v = Constellations.FullName(constellation);
@@ -6108,8 +6153,8 @@ namespace TerraViewer
 
                 Matrix m2 = Matrix.RotationY((float)Math.PI);
                 Matrix m3 = Matrix.Scaling(.106f,.106f,.104f);
-                Matrix m4 = Matrix.RotationX(.616f);
-                Matrix m5 = Matrix.Translation(left ? -.125f : .125f, .15f, .43f);
+                Matrix m4 = Matrix.RotationX(.612f);
+                Matrix m5 = Matrix.Translation(left ? -.112f : .112f, .185f, .48f);
                     m1 = m2 * m1;
                 m1 = m3 * m1;
                 m1 = m4 * m1;

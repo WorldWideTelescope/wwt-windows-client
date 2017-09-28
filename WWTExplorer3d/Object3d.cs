@@ -1552,6 +1552,67 @@ namespace TerraViewer
 
         public Color Color = Color.White;
 
+
+        public static Object3d LoadFromModelFileFromUrl(string url)
+        {
+            int hash = url.GetHashCode();
+
+            Object3d model = null;
+
+            string path = Properties.Settings.Default.CahceDirectory + @"mdl\" + hash.ToString() + @"\";
+            string filename = path + hash + ".mdl";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            if (!File.Exists(filename))
+            {
+                DataSetManager.DownloadFile(url, filename, false, true);
+            }
+            string objFile = "";
+
+            using (Stream s = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                ZipArchive zip = new ZipArchive(s);
+                foreach (ZipEntry zFile in zip.Files)
+                {
+                    Stream output = File.Open(path + zFile.Filename, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+                    Stream input = zFile.GetFileStream();
+                    CopyStream(input, output);
+                    input.Close();
+                    output.Close();
+                    input.Dispose();
+                    output.Dispose();
+                    if (zFile.Filename.ToLower().EndsWith(".obj"))
+                    {
+                        objFile = path + zFile.Filename;
+                    }
+                }
+            }
+
+            if (File.Exists(objFile))
+            {
+                Object3d o3d = new Object3d(objFile, true, false, true, Color.White);
+                if (o3d != null)
+                {
+                    model = o3d;
+                }
+            }
+
+            return model;
+        }
+
+        public static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[8192];
+            int len;
+            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, len);
+            }
+        }
+
         public Object3d(string filename, bool flipV, bool flipHandedness, bool smooth, Color color)
         {
             Color = color;

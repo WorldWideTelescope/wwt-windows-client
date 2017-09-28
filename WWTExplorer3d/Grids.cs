@@ -1242,6 +1242,13 @@ namespace TerraViewer
 
 
             Color color = Color.FromArgb((int)(255f * opacity), 0, 0, 32);
+
+            if (RenderContext11.ExternalProjection)
+            {
+                color = Color.FromArgb((int)(255f * opacity), 1, 2, 1);
+            }
+
+
             int count = 90;
 
 

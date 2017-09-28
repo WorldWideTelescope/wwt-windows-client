@@ -39,9 +39,9 @@ namespace TerraViewer
 
                 dirty = false;
                 triangles.ShowFarSide = true;
-                triangles.DepthBuffered = false;
+                triangles.DepthBuffered = true;
                 triangles.TimeSeries = false;
-                triangles.WriteZbuffer = false;
+                triangles.WriteZbuffer = true;
             }
 
             triangles.Draw(renderContext, opacity, TriangleList.CullMode.CounterClockwise);

@@ -12,7 +12,18 @@ namespace TerraViewer
 {
     public class FinderPanel : RingMenuPanel
     {
-        public IPlace Target = null;
+        public IPlace target = null;
+        public IPlace Target
+        {
+            get
+            {
+                return target;
+            }
+            set
+            {
+                target = value;
+            }
+        }
 
         public override void Draw(UiGraphics g)
         {
@@ -30,18 +41,84 @@ namespace TerraViewer
             g.DrawString(FriendlyName(Target.Classification.ToString()), 8, SysColor.White, new RectangleF(113, 39, 186, 17), UiGraphics.TextAlignment.Left);
             g.DrawString(Language.GetLocalizedText(280, "in ") + Constellations.FullName(Target.Constellation),
                             8, SysColor.White, new RectangleF(113, 57, 200, 17), UiGraphics.TextAlignment.Left);
-            g.DrawString(Language.GetLocalizedText(271, "RA : "), 8, SysColor.White, new RectangleF(6, 222, 31, 15), UiGraphics.TextAlignment.Left);
-            g.DrawString(Coordinates.FormatHMS(Target.RA), 8, SysColor.White, new RectangleF(41, 222, 78, 15), UiGraphics.TextAlignment.Left);
-            g.DrawString(Language.GetLocalizedText(270, "Dec : "), 8, SysColor.White, new RectangleF(6, 238, 31, 15), UiGraphics.TextAlignment.Left);
-            g.DrawString(Coordinates.FormatDMSWide(Target.Dec), 8, SysColor.White, new RectangleF(41, 238, 78, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Language.GetLocalizedText(271, "RA : "), 8, SysColor.White, new RectangleF(6, 122, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Coordinates.FormatHMS(Target.RA), 8, SysColor.White, new RectangleF(41, 122, 78, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Language.GetLocalizedText(270, "Dec : "), 8, SysColor.White, new RectangleF(6, 138, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Coordinates.FormatDMSWide(Target.Dec), 8, SysColor.White, new RectangleF(41, 138, 78, 15), UiGraphics.TextAlignment.Left);
 
             Coordinates altAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(Target.RA, Target.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
-          
-            g.DrawString(Language.GetLocalizedText(269, "Alt : "), 8, SysColor.White, new RectangleF(6, 254, 31, 15), UiGraphics.TextAlignment.Left);
-            g.DrawString(Coordinates.FormatDMSWide(altAz.Alt), 8, SysColor.White, new RectangleF(41, 254, 78, 15), UiGraphics.TextAlignment.Left);
-            g.DrawString(Language.GetLocalizedText(268, "Az :"), 8, SysColor.White, new RectangleF(6, 270, 31, 15), UiGraphics.TextAlignment.Left);
-            g.DrawString(Coordinates.FormatDMSWide(altAz.Az), 8, SysColor.White, new RectangleF(41, 270, 78, 15), UiGraphics.TextAlignment.Left);
-            
+
+            g.DrawString(Language.GetLocalizedText(269, "Alt : "), 8, SysColor.White, new RectangleF(6, 154, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Coordinates.FormatDMSWide(altAz.Alt), 8, SysColor.White, new RectangleF(41, 154, 78, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Language.GetLocalizedText(268, "Az :"), 8, SysColor.White, new RectangleF(6, 170, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Coordinates.FormatDMSWide(altAz.Az), 8, SysColor.White, new RectangleF(41, 170, 78, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Language.GetLocalizedText(265, "Magnitude:"), 8, SysColor.White, new RectangleF(125, 120, 91, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Target.Magnitude != 0 ? Target.Magnitude.ToString() : Language.GetLocalizedText(281, "n/a"), 8, SysColor.White, new RectangleF(223, 120, 78, 15), UiGraphics.TextAlignment.Left);
+
+            g.DrawString(Language.GetLocalizedText(633, "Distance:"), 8, SysColor.White, new RectangleF(125, 136, 91, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(Target.Distance != 0 ? Target.Magnitude.ToString() : Language.GetLocalizedText(281, "n/a"), 8, SysColor.White, new RectangleF(223, 136, 78, 15), UiGraphics.TextAlignment.Left);
+
+            AstroCalc.RiseSetDetails details;
+            string riseText;
+            string setText;
+            string transitText;
+
+            if (target.Classification == Classification.SolarSystem)
+            {
+
+                double jNow = ((int)((int)SpaceTimeController.JNow) + .5);
+                AstroCalc.AstroRaDec p1 = Planets.GetPlanetLocation(target.Name, jNow - 1);
+                AstroCalc.AstroRaDec p2 = Planets.GetPlanetLocation(target.Name, jNow);
+                AstroCalc.AstroRaDec p3 = Planets.GetPlanetLocation(target.Name, jNow + 1);
+
+                int type = 0;
+                switch (target.Name)
+                {
+                    case "Sun":
+                        type = 1;
+                        break;
+                    case "Moon":
+                        type = 2;
+                        break;
+                    default:
+                        type = 0;
+                        break;
+                }
+                details = AstroCalc.AstroCalc.GetRiseTrinsitSet(jNow, SpaceTimeController.Location.Lat, -SpaceTimeController.Location.Lng, p1.RA, p1.Dec, p2.RA, p2.Dec, p3.RA, p3.Dec, type);
+            }
+            else
+            {
+                details = AstroCalc.AstroCalc.GetRiseTrinsitSet(((int)SpaceTimeController.JNow) + .5, SpaceTimeController.Location.Lat, -SpaceTimeController.Location.Lng, target.RA, Target.Dec, target.RA, Target.Dec, target.RA, Target.Dec, 0);
+            }
+
+
+            if (details.bValid)
+            {
+                riseText = UiTools.FormatDecimalHours(details.Rise);
+                transitText = UiTools.FormatDecimalHours(details.Transit);
+                setText = UiTools.FormatDecimalHours(details.Set);
+            }
+            else
+            {
+                if (details.bNeverRises)
+                {
+                    riseText = transitText = setText = Language.GetLocalizedText(934, "Never Rises");
+                }
+                else
+                {
+                    riseText = transitText = setText = Language.GetLocalizedText(935, "Never Sets");
+                }
+            }
+
+
+            g.DrawString(Language.GetLocalizedText(273, "Rise:"), 8, SysColor.White, new RectangleF(125, 152, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(riseText, 8, SysColor.White, new RectangleF(223, 152, 78, 15), UiGraphics.TextAlignment.Left);
+
+            g.DrawString(Language.GetLocalizedText(275, "Transit:"), 8, SysColor.White, new RectangleF(125, 168, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(transitText, 8, SysColor.White, new RectangleF(223, 168, 78, 15), UiGraphics.TextAlignment.Left);
+
+            g.DrawString(Language.GetLocalizedText(274, "Set:"), 8, SysColor.White, new RectangleF(125, 185, 31, 15), UiGraphics.TextAlignment.Left);
+            g.DrawString(setText, 8, SysColor.White, new RectangleF(223, 185, 78, 15), UiGraphics.TextAlignment.Left);
 
         }
 
