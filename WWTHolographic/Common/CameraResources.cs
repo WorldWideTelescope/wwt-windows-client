@@ -289,7 +289,7 @@ namespace WWTHolographic.Common
             // Set the viewport for this camera.
             context.Rasterizer.SetViewport(Viewport);
 
-            TerraViewer.RenderContext11.externalViewport = Viewport;
+            //TerraViewer.RenderContext11.externalViewport = Viewport;
 
             // Send the constant buffer to the vertex shader.
             context.VertexShader.SetConstantBuffers(1, viewProjectionConstantBuffer);

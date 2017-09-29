@@ -114,19 +114,19 @@ namespace TerraViewer
                     }
                 }
 
-                if (lastState.Status.HasFlag(HandControllerStatus.StickDown))
+                if (lastState.Status.HasFlag(HandControllerStatus.StickUp))
                 {
                     if (ThumbY > low)
                     {
-                        Status = Status | HandControllerStatus.StickDown;
+                        Status = Status | HandControllerStatus.StickUp;
                     }
                 }
                 else
                 {
                     if (ThumbY > high)
                     {
-                        Status = Status | HandControllerStatus.StickDown;
-                        Events = Events | HandControllerStatus.StickDown;
+                        Status = Status | HandControllerStatus.StickUp;
+                        Events = Events | HandControllerStatus.StickUp;
                     }
                 }
 
@@ -166,7 +166,47 @@ namespace TerraViewer
                         Events = Events | HandControllerStatus.GripDown;
                     }
                 }
+                // up and down
+                if (lastState.Status.HasFlag(HandControllerStatus.TriggerDown))
+                {
+                    if (Trigger > low)
+                    {
+                        Status = Status | HandControllerStatus.TriggerDown;
+                    }
+                }
+                else
+                {
+                    if (Trigger > high)
+                    {
+                        Status = Status | HandControllerStatus.TriggerDown;
+                        Events = Events | HandControllerStatus.TriggerDown;
+                    }
+                }
 
+                if (lastState.Status.HasFlag(HandControllerStatus.MenuDown))
+                {
+                    if (Menu)
+                    {
+                        Status = Status | HandControllerStatus.MenuDown;
+                    }
+                    else
+                    {
+                        Events = Events | HandControllerStatus.MenuUp;
+                        Status = Status | HandControllerStatus.MenuUp;
+                    }
+                }
+                else
+                {
+                    if (Menu)
+                    {
+                        Status = Status | HandControllerStatus.MenuDown;
+                        Events = Events | HandControllerStatus.MenuDown;
+                    }
+                    else
+                    {
+                        Status = Status | HandControllerStatus.MenuUp;
+                    }
+                }
             }
 
             lastState.CopyState(this);

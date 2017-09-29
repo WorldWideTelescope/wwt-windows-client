@@ -120,6 +120,7 @@ namespace TerraViewer
 
             if (!ReadyToRender)
             {
+                this.HighPriority = MakeHighPriority;
                 TileCache.AddTileToQueue(this);
 
                 return false;

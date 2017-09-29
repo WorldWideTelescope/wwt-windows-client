@@ -26,6 +26,11 @@ namespace TerraViewer
             activePanel = panel;
         }
 
+        public void SetActivePanel(int index)
+        {
+            activePanel = panels[index];
+        }
+
         public void Initialize()
         {
 #if WINDOWS_UWP
@@ -127,11 +132,11 @@ namespace TerraViewer
             //}
 
             //triangles.Draw(renderContext, opacity, TriangleList.CullMode.None);
-            foreach(var p in panels)
+            //foreach(var p in panels)
             {
                 UiGraphics g = new UiGraphics(renderContext);
                 g.Prep();
-                p.Draw(g);
+                activePanel.Draw(g);
                 g.Flush();
             }
         }

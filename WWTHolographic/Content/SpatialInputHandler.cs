@@ -7,12 +7,12 @@ namespace WWTHolographic.Common
     public class SpatialInputHandler
     {
         // API objects used to process gesture input, and generate gesture events.
-        private SpatialInteractionManager interactionManager;
+        public SpatialInteractionManager interactionManager;
 
         // Used to indicate that a Pressed input event was received this frame.
         private SpatialInteractionSourceState sourceState;
 
-        private SpatialInteractionSource LastController;
+        //private SpatialInteractionSource LastController;
         public SpatialInteractionSource LeftController;
         public SpatialInteractionSource RightController;
 
@@ -36,12 +36,22 @@ namespace WWTHolographic.Common
 
         private void InteractionManager_InteractionDetected(SpatialInteractionManager sender, SpatialInteractionDetectedEventArgs args)
         {
-            int x = 1;
+            SpatialInteractionSource LastController = args.InteractionSource;
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
+            {
+                LeftController = LastController;
+            }
+
+            if (LastController.Handedness == SpatialInteractionSourceHandedness.Right)
+            {
+                RightController = LastController;
+            }
         }
 
         private void InteractionManager_SourceLost(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
         {
-            LastController = args.State.Source;
+            SpatialInteractionSource LastController = args.State.Source;
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {
@@ -56,7 +66,7 @@ namespace WWTHolographic.Common
 
         private void InteractionManager_SourceDetected(SpatialInteractionManager sender, SpatialInteractionSourceEventArgs args)
         {
-            LastController = args.State.Source;
+            SpatialInteractionSource LastController = args.State.Source;
 
             if (LastController.Handedness == SpatialInteractionSourceHandedness.Left)
             {

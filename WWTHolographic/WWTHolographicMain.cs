@@ -32,14 +32,7 @@ namespace WWTHolographic
     /// </summary>
     internal class WWTHolographicMain : IDisposable
     {
-
-#if DRAW_SAMPLE_CONTENT
-        // Renders a colorful holographic cube that's 20 centimeters wide. This sample content
-        // is used to demonstrate world-locked rendering.
-        private SpinningCubeRenderer        spinningCubeRenderer;
-        
         public SpatialInputHandler         spatialInputHandler;
-#endif
 
         TerraViewer.RenderEngine renderEngine;
         // Cached reference to device resources.
@@ -118,12 +111,6 @@ namespace WWTHolographic
                     setupFinished = true;
                 });
             }
-#if DRAW_SAMPLE_CONTENT
-            // Initialize the sample hologram.
-            spinningCubeRenderer = new SpinningCubeRenderer(deviceResources);
-
-            
-#endif
 
             // Subscribe for notifications about changes to the state of the default HolographicDisplay 
             // and its SpatialLocator.
@@ -163,13 +150,7 @@ namespace WWTHolographic
 
         public void Dispose()
         {
-#if DRAW_SAMPLE_CONTENT
-            if (spinningCubeRenderer != null)
-            {
-                spinningCubeRenderer.Dispose();
-                spinningCubeRenderer = null;
-            }
-#endif
+
         }
 
         /// <summary>
@@ -194,7 +175,6 @@ namespace WWTHolographic
             // resource views and depth buffers as needed.
             deviceResources.EnsureCameraResources(holographicFrame, prediction);
 
-#if DRAW_SAMPLE_CONTENT
             if (stationaryReferenceFrame != null)
             {
                 // Check for new input state since the last frame.
@@ -222,6 +202,10 @@ namespace WWTHolographic
                     {
                         this.SetControllerState(renderEngine.RightController, spatialInputHandler.RightController.TryGetStateAtTimestamp(prediction.Timestamp));
                     }
+
+                    var rr = spatialInputHandler.interactionManager.GetDetectedSourcesAtTimestamp(prediction.Timestamp);
+
+                    int x = rr.Count;
                 }
 
 
@@ -242,11 +226,9 @@ namespace WWTHolographic
                 }
                 pointerPressed = false;
 
-                // When a Pressed gesture is detected, the sample hologram will be repositioned
-                // two meters in front of the user.
-                spinningCubeRenderer.PositionHologram(pose);
+
             }
-#endif
+
 
             timer.Tick(() => 
             {
@@ -258,16 +240,14 @@ namespace WWTHolographic
                 // run as many times as needed to get to the current step.
                 //
 
-#if DRAW_SAMPLE_CONTENT
-                spinningCubeRenderer.Update(timer);
-#endif
+
             });
 
             // We complete the frame update by using information about our content positioning
             // to set the focus point.
             foreach (var cameraPose in prediction.CameraPoses)
             {
-#if DRAW_SAMPLE_CONTENT
+
                 // The HolographicCameraRenderingParameters class provides access to set
                 // the image stabilization parameters.
                 HolographicCameraRenderingParameters renderingParameters = holographicFrame.GetRenderingParameters(cameraPose);
@@ -280,14 +260,14 @@ namespace WWTHolographic
                 // since that is the only hologram available for the user to focus on.
                 // You can also set the relative velocity and facing of that content; the sample
                 // hologram is at a fixed point so we only need to indicate its position.
-                if (stationaryReferenceFrame != null)
-                {
-                    renderingParameters.SetFocusPoint(
-                        stationaryReferenceFrame.CoordinateSystem,
-                        spinningCubeRenderer.Position
-                        );
-                }
-#endif
+                //if (stationaryReferenceFrame != null)
+                //{
+                //    renderingParameters.SetFocusPoint(
+                //        stationaryReferenceFrame.CoordinateSystem,
+                //        spinningCubeRenderer.Position
+                //        );
+                //}
+
             }
 
             // The holographic frame will be used to get up-to-date view and projection matrices and
@@ -298,100 +278,66 @@ namespace WWTHolographic
         private static bool controllerLoaded = false;
         void SetControllerState(TerraViewer.HandController handController, SpatialInteractionSourceState state)
         {
-            if (!controllerLoaded)
+            // Inactive until proven otherwise
+            handController.Active = false;
+
+            if (state == null)
             {
-                controllerLoaded = true;
+                //Task.Run(async delegate
+                //{
+                //    TerraViewer.GltfModel model = new TerraViewer.GltfModel();
+                //    const string modelFileName = "model.bin";
+                //    try
+                //    {
+                //        var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
+                //        var modelStream = await file.OpenStreamForReadAsync();
+                //        model.LoadModel(modelStream);
+                //        return;
+                //    }
+                //    catch (Exception)   // File not found
+                //    {
+                //    }
+                //});
+            }
 
-                // Inactive until proven otherwise
-                handController.Active = false;
+            if (state != null)
+            {
+                var source = state.Source;
 
-                if (state == null)
+                var h = state.Source.Handedness;
+                var controller = source.Controller;
+                var x = controller.ProductId;
+                var spp = state.Properties.TryGetLocation(stationaryReferenceFrame.CoordinateSystem);
+                var ip = state?.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
+                var cpose = state.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
+                var ipsp = ip?.TryGetInteractionSourcePose(source);
+                if (ipsp != null)
                 {
-                    Task.Run(async delegate
+                    handController.Active = true;
+                    handController.Position = new TerraViewer.Vector3d(ipsp.Position.X, ipsp.Position.Y, ipsp.Position.Z);
+                    handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.X, ipsp.UpDirection.Y, ipsp.UpDirection.Z);
+                    handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.X, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.Z);
+                    handController.Grip = state.IsGrasped ? 1 : 0;
+                    handController.Trigger = state.SelectPressedValue;
+                    handController.Menu = state.IsMenuPressed;
+                    if (source.Controller.HasThumbstick)
                     {
-                        TerraViewer.GltfModel model = new TerraViewer.GltfModel();
-                        const string modelFileName = "model.bin";
-                        try
-                        {
-                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
-                            var modelStream = await file.OpenStreamForReadAsync();
-                            model.LoadModel(modelStream);
-                            return;
-                        }
-                        catch (Exception)   // File not found
-                        {
-                        }
-                    });
-                }
-
-                if (state != null)
-                {
-                    var source = state.Source;
-                    Task.Run(async delegate
-                    {
-                        TerraViewer.GltfModel model = new TerraViewer.GltfModel();
-                        const string modelFileName = "model.glb";
-                        try
-                        {
-                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(modelFileName);
-                            var modelStream = await file.OpenStreamForReadAsync();
-                            model.LoadModel(modelStream);
-                            return;
-                        }
-                        catch (Exception)   // File not found
-                        {
-                            var modelStream = await source.Controller.TryGetRenderableModelAsync().AsTask();
-                            model.LoadModel(modelStream.AsStream());
-
-                            var file = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFileAsync(modelFileName);
-                            using (Stream fileStram = await file.OpenStreamForWriteAsync())
-                            {
-                                const int BUFFER_SIZE = 1024;
-                                byte[] buf = new byte[BUFFER_SIZE];
-
-                                int bytesread = 0;
-                                while ((bytesread = await modelStream.AsStream().ReadAsync(buf, 0, BUFFER_SIZE)) > 0)
-                                {
-                                    await fileStram.WriteAsync(buf, 0, bytesread);
-                                }
-                            }
-                        }
-                    });
-
-                    var h = state.Source.Handedness;
-                    var controller = source.Controller;
-                    var x = controller.ProductId;
-                    var spp = state.Properties.TryGetLocation(stationaryReferenceFrame.CoordinateSystem);
-                    var ip = state?.TryGetPointerPose(stationaryReferenceFrame.CoordinateSystem);
-
-                    var ipsp = ip?.TryGetInteractionSourcePose(source);
-                    if (ipsp != null)
-                    {
-                        handController.Active = true;
-                        handController.Position = new TerraViewer.Vector3d(ipsp.Position.X, ipsp.Position.Y, ipsp.Position.Z);
-                        handController.Up = new TerraViewer.Vector3d(ipsp.UpDirection.X, ipsp.UpDirection.Y, ipsp.UpDirection.Z);
-                        handController.Forward = new TerraViewer.Vector3d(ipsp.ForwardDirection.X, ipsp.ForwardDirection.Y, ipsp.ForwardDirection.Z);
-                        handController.Grip = state.IsGrasped ? 1 : 0;
-                        handController.Trigger = state.SelectPressedValue;
-                        handController.Menu = state.IsMenuPressed;
-                        if (source.Controller.HasThumbstick)
-                        {
-                            handController.ThumbX = state.ControllerProperties.ThumbstickX;
-                            handController.ThumbY = state.ControllerProperties.ThumbstickX;
-                            handController.ThumbDown = state.ControllerProperties.IsThumbstickPressed;
-                        }
-                        if (source.Controller.HasTouchpad)
-                        {
-                            handController.TouchX = state.ControllerProperties.TouchpadX;
-                            handController.TouchY = state.ControllerProperties.TouchpadY;
-                            handController.TouchDown = state.ControllerProperties.IsTouchpadPressed;
-                            handController.Touched = state.ControllerProperties.IsTouchpadTouched;
-                        }
-                        handController.UpdateEvents();
+                        handController.ThumbX = state.ControllerProperties.ThumbstickX;
+                        handController.ThumbY = state.ControllerProperties.ThumbstickY;
+                        handController.ThumbDown = state.ControllerProperties.IsThumbstickPressed;
                     }
+                    if (source.Controller.HasTouchpad)
+                    {
+                        handController.TouchX = state.ControllerProperties.TouchpadX;
+                        handController.TouchY = state.ControllerProperties.TouchpadY;
+                        handController.TouchDown = state.ControllerProperties.IsTouchpadPressed;
+                        handController.Touched = state.ControllerProperties.IsTouchpadTouched;
+                    }
+                    handController.UpdateEvents();
                 }
             }
         }
+  
 
 
         /// <summary>
@@ -488,14 +434,6 @@ namespace WWTHolographic
 
                     }
 
-#if DRAW_SAMPLE_CONTENT
-                    // Only render world-locked content when positional tracking is active.
-                    //if (cameraActive)
-                    //{
-                    //    // Draw the sample hologram.
-                    //    spinningCubeRenderer.Render();
-                    //}
-#endif
                     atLeastOneCameraRendered = true;
                 }
 
@@ -534,9 +472,6 @@ namespace WWTHolographic
         public void OnDeviceLost(Object sender, EventArgs e)
         {
 
-#if DRAW_SAMPLE_CONTENT
-            spinningCubeRenderer.ReleaseDeviceDependentResources();
-#endif
 
         }
 
@@ -545,9 +480,7 @@ namespace WWTHolographic
         /// </summary>
         public void OnDeviceRestored(Object sender, EventArgs e)
         {
-#if DRAW_SAMPLE_CONTENT
-            spinningCubeRenderer.CreateDeviceDependentResourcesAsync();
-#endif
+
         }
 
         void OnLocatabilityChanged(SpatialLocator sender, Object args)

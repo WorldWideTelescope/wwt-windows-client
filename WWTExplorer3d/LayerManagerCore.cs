@@ -291,6 +291,7 @@ namespace TerraViewer
             LayerList.Add(layer.ID, layer);
             layer.ReferenceFrame = "Sandbox";
             AllMaps["Sandbox"].Layers.Add(layer);
+            layer.Scale = new Vector3d(50, 50, 50);
             
         }
 
@@ -454,9 +455,9 @@ namespace TerraViewer
                 AddIss();
             }
 
-
+#if WINDOWS_UWP
             AddIssToSandbox();
-
+#endif
             version++;
             LoadTree();
 

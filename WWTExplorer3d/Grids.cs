@@ -1242,6 +1242,14 @@ namespace TerraViewer
 
 
             Color color = Color.FromArgb((int)(255f * opacity), 0, 0, 32);
+            Color inside = Color.FromArgb((int)(255f * opacity), 0, 0, 32);
+            if (RenderContext11.ExternalProjection)
+            {
+                color = Color.FromArgb((int)(255f * opacity), 4, 16, 16);
+                inside = Color.FromArgb((int)(255f * opacity), 0, 0, 1);
+            }
+
+
             int count = 90;
 
 
@@ -1261,7 +1269,7 @@ namespace TerraViewer
                                                  (float)(.9 * Math.Sin(((double)i * Math.PI * 2.0) / (double)count))), mat), 1);
 
 
-                points[index++].Color = color;
+                points[index++].Color = inside;
 
                 points[index++] = points[0];
 
@@ -1854,7 +1862,9 @@ namespace TerraViewer
             // Calculate the closest view angle 
             Vector3 viewAngle = (RenderEngine.ViewPoint - renderContext.CameraPosition).Vector3;
 
+
             viewAngle.Normalize();
+
 
             // Draw Milky Way image
             float fadeOut = (float)(Math.Min(.1, Math.Abs(Vector3.Dot(viewAngle, MilkyWayNormal))) * 10);

@@ -61,6 +61,8 @@ namespace TerraViewer
                 y = value;
             }
         }
+        public static bool MakeHighPriority = false;
+        public bool HighPriority = false;
         public bool FileChecked = false;
         public bool FileExists = false;
 
@@ -225,12 +227,14 @@ namespace TerraViewer
                     {
                         TextureReady = false;
                         DemReady = false;
+                        this.HighPriority = MakeHighPriority;
                         TileCache.AddTileToQueue(this);
                         return false;
                     }
                 }
                 else
                 {
+                    this.HighPriority = MakeHighPriority;
                     TileCache.AddTileToQueue(this);
                     return false;
                 }
@@ -352,7 +356,7 @@ namespace TerraViewer
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (blendMode) //|| ShowElevation == false)
+                    if (blendMode && !NoBlend) //|| ShowElevation == false)
                     {
                         if ((renderPart[i].State && opacity == 1.0) || renderPart[i].TargetState)
                         {
@@ -398,6 +402,7 @@ namespace TerraViewer
             }
             return true;
         }
+        public static bool NoBlend = false;
         public int RenderedGeneration = 0;
         private void PurgeTextureAndDemFiles()
         {
@@ -488,7 +493,10 @@ namespace TerraViewer
         public int DemGeneration = 0;
         public virtual void CleanUp(bool removeFromParent)
         {
-
+            if (HighPriority)
+            {
+                int x = 0;
+            }
             ReadyToRender = false;
             TextureReady = false;
 
@@ -922,7 +930,7 @@ namespace TerraViewer
         {
             //if (RenderContext11.ExternalProjection)
             //{
-            //    return true;
+              //  return true;
             //}
 
             InViewFrustum = false;
