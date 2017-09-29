@@ -94,6 +94,7 @@ namespace TerraViewer
             RenderedGeneration = CurrentRenderGeneration;
             if (!ReadyToRender)
             {
+                this.HighPriority = MakeHighPriority;
                 TileCache.AddTileToQueue(this);
                 return false;
             }

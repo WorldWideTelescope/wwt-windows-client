@@ -1242,10 +1242,11 @@ namespace TerraViewer
 
 
             Color color = Color.FromArgb((int)(255f * opacity), 0, 0, 32);
-
+            Color inside = Color.FromArgb((int)(255f * opacity), 0, 0, 32);
             if (RenderContext11.ExternalProjection)
             {
-                color = Color.FromArgb((int)(255f * opacity), 1, 2, 1);
+                color = Color.FromArgb((int)(255f * opacity), 4, 16, 16);
+                inside = Color.FromArgb((int)(255f * opacity), 0, 0, 1);
             }
 
 
@@ -1268,7 +1269,7 @@ namespace TerraViewer
                                                  (float)(.9 * Math.Sin(((double)i * Math.PI * 2.0) / (double)count))), mat), 1);
 
 
-                points[index++].Color = color;
+                points[index++].Color = inside;
 
                 points[index++] = points[0];
 

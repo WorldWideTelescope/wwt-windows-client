@@ -402,6 +402,7 @@ namespace TerraViewer
             else
             {
                 this.device = deviceIn;
+                externalViewport = new ViewportF(0, 0, width, height);
             }
 
             devContext = this.device.ImmediateContext;
@@ -478,7 +479,7 @@ namespace TerraViewer
             else if (externalTargetView != null)
             {
                 devContext.OutputMerger.ResetTargets();
-                //ViewPort = externalViewport;
+                ViewPort = externalViewport;
                 devContext.OutputMerger.SetTargets(externalDepthView, externalTargetView);
                 currentTargetView = externalTargetView;
                 currentDepthView = externalDepthView;
@@ -493,7 +494,7 @@ namespace TerraViewer
 
         public static RenderTargetView externalTargetView;
         public static DepthStencilView externalDepthView;
-        public static ViewportF externalViewport;
+        static ViewportF externalViewport;
 
         // Return true if this vertex instancing is supported
         public static bool SupportsInstancing
@@ -1327,16 +1328,19 @@ ambientLightColor.B / 255.0f);
             }
         }
 
+        bool lastFrustumExternal = false;
         public void MakeFrustum()
         {
             Matrix3d viewProjection;
             if (ExternalProjection)
             {
                 viewProjection = (World * View * ExternalProjectionLeft);
+                lastFrustumExternal = true;
             }
             else
             {
                 viewProjection = (World * View * Projection);
+                lastFrustumExternal = false;
             }
 
             Matrix3d inverseWorld = World;
@@ -1849,6 +1853,8 @@ ambientLightColor.B / 255.0f);
         //for external projection
         public static SharpDX.Direct3D11.Buffer viewProjectionConstantBuffer;
 
+
+        public static bool ProjectAtInfinity = false;
         public static Matrix3d ExternalProjectionLeft { get; set; }
         public static Matrix3d ExternalProjectionRight { get; set; }
 
@@ -1916,8 +1922,15 @@ ambientLightColor.B / 255.0f);
                 ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
                 ExternalViewScale = Matrix3d.Identity;
 
-                var left = externalViewLeft * ExternalViewScale * externalProjLeft;
-                var right = externalViewRight * ExternalViewScale * externalProjRight;
+                var epl = externalProjLeft;
+                var epr = externalProjRight;
+
+
+                var left = externalViewLeft * ExternalViewScale * epl;
+                var right = externalViewRight * ExternalViewScale * epr;
+
+
+
 
                 //left.M41 = 0;
                 //left.M42 = 0;
@@ -1927,15 +1940,37 @@ ambientLightColor.B / 255.0f);
                 //right.M43 = 0;
 
                 var scale = TerraViewer.Matrix3d.Scaling(1, 1, -1);
+                scale.Matrix = ExternalScalingFactor;
                 TerraViewer.RenderContext11.ExternalProjectionLeft = scale * left;
                 TerraViewer.RenderContext11.ExternalProjectionRight = scale * right;
 
+                if (ProjectAtInfinity)
+                {
+                    left.M41 = 0;
+                    left.M42 = 0;
+                    left.M43 = 0;
+                    left.M44 = 0;
+                    right.M41 = 0;
+                    right.M42 = 0;
+                    right.M43 = 0;
+                    right.M44 = 0;
+                }
                 left.Transpose();
                 right.Transpose();
 
                 viewProjectionConstantBufferData.viewProjectionLeft = left.Matrix;
                 viewProjectionConstantBufferData.viewProjectionRight = right.Matrix;
                 PrepDevice.ImmediateContext.UpdateSubresource(ref viewProjectionConstantBufferData, viewProjectionConstantBuffer);
+            }
+            else
+            {
+                if (viewProjectionConstantBuffer != null)
+                {
+                    ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
+                    viewProjectionConstantBufferData.viewProjectionLeft = Matrix.Identity;
+                    viewProjectionConstantBufferData.viewProjectionRight = Matrix.Identity;
+                    PrepDevice.ImmediateContext.UpdateSubresource(ref viewProjectionConstantBufferData, viewProjectionConstantBuffer);
+                }
             }
         }
     }

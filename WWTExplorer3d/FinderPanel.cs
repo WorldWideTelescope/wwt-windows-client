@@ -25,6 +25,8 @@ namespace TerraViewer
             }
         }
 
+        public Texture11 ZoomTexture { get; internal set; }
+
         public override void Draw(UiGraphics g)
         {
             g.DrawImage(Properties.Resources.PropertiesBackgroundNoFinder, new Rectangle(-10, -10, 400, 535), new Rectangle(0, 0, 292, 315), GraphicsUnit.Pixel, SysColor.FromArgb(128, 255, 255, 255));
@@ -32,6 +34,11 @@ namespace TerraViewer
             if (Target == null)
             {
                 return;
+            }
+
+            if (ZoomTexture != null)
+            {
+                g.DrawImage(ZoomTexture, new Rectangle(0, 210, 380, 300), new Rectangle(0, 0, 506, 450), GraphicsUnit.Pixel);
             }
 
             g.DrawString(Language.GetLocalizedText(277, "Finder Scope"), 8, SysColor.White, new RectangleF(0, 0, 400, 20), UiGraphics.TextAlignment.Left);

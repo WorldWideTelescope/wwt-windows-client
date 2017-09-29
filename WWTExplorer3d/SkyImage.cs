@@ -75,6 +75,7 @@ namespace TerraViewer
 
             if (!ReadyToRender)
             {
+                this.HighPriority = MakeHighPriority;
                 TileCache.AddTileToQueue(this);
                 if (texture == null)
                 {

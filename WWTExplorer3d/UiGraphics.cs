@@ -82,9 +82,9 @@ namespace TerraViewer
             float srcY1 = srcY + ((float)src.Height / (float)height);
 
             points[0] = new PositionColoredTextured(x, y, 0, SysColor.White, 1, srcX, 1-srcY1);
-            points[3] = new PositionColoredTextured(x + width, y + height, 0, SysColor.White, 1, srcX1, 1-srcY);
-            points[2] = new PositionColoredTextured(x, y + height, 0, SysColor.White, 1, srcX, 1-srcY);
-            points[1] = new PositionColoredTextured(x + width, y, 0, SysColor.White, 1, srcX1, 1-srcY1);
+            points[3] = new PositionColoredTextured(x + dst.Width, y + dst.Height, 0, SysColor.White, 1, srcX1, 1-srcY);
+            points[2] = new PositionColoredTextured(x, y + dst.Height, 0, SysColor.White, 1, srcX, 1-srcY);
+            points[1] = new PositionColoredTextured(x + dst.Width, y, 0, SysColor.White, 1, srcX1, 1-srcY1);
             Sprite2d.Draw(renderContext, points, 4, bmpThumb, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
         }
 

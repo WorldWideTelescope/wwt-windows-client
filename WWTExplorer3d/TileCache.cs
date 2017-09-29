@@ -516,6 +516,11 @@ namespace TerraViewer
 
                         double distTemp = Math.Max(0,vectTemp.Length()-t.SphereRadius);
 
+                        if (t.HighPriority)
+                        {
+                            distTemp = 0;
+                        }
+
                         bool thisIsOverlay = (t.Dataset.Projection == ProjectionType.Tangent) || (t.Dataset.Projection == ProjectionType.SkyImage);
                         if (distTemp < minDistance && (!overlayTile || thisIsOverlay))
 						{
@@ -526,8 +531,6 @@ namespace TerraViewer
 
                             if (!test.FileChecked)
                             {
-
-
                                 test.FileExists = FileExists(test.FileName);
                                 test.FileChecked = true;
                                 if (test.Volitile)

@@ -3751,7 +3751,10 @@ namespace TerraViewer
             if (Properties.Settings.Default.SolarSystemLighting)
             {
                 SetupLighting(renderContext);
-                renderContext.AmbientLightColor = Color.FromArgb(11, 11, 11);
+                if (!UseCurrentAmbient)
+                {
+                    renderContext.AmbientLightColor = Color.FromArgb(11, 11, 11);
+                }
             }
             else
             {
@@ -3833,6 +3836,8 @@ namespace TerraViewer
 
 
         }
+
+        public bool UseCurrentAmbient = false;
 
         bool dirty = true;
 

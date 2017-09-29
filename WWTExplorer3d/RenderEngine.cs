@@ -38,7 +38,7 @@ namespace TerraViewer
         DataSetManager dsm;
         public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
-    
+            
             //from constructor
             config = new Config();
 
@@ -135,7 +135,7 @@ namespace TerraViewer
             //set settings to test
 
           //  Properties.Settings.Default.ConstellationArtColor = SysColor.FromArgb(20, 255, 255, 255);
-            Properties.Settings.Default.ShowGrid.TargetState = false;
+            Properties.Settings.Default.ShowGrid.TargetState = true;
             Properties.Settings.Default.ShowEclipticGridText.TargetState = true;
             Properties.Settings.Default.ShowConstellationLabels.TargetState = true;
             Properties.Settings.Default.ShowConstellationFigures.TargetState = false;
@@ -185,6 +185,8 @@ namespace TerraViewer
             int next = (((int)LookAtType) + 1) % 6;
             LookAtType = (ImageSetType)next;
             currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
+            CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
+            GotoTarget(camParams, false, true);
         }
 
         public void PreviousView()
@@ -192,6 +194,8 @@ namespace TerraViewer
             int next = (((int)LookAtType) + 5) % 6;
             LookAtType = (ImageSetType)next;
             currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
+            CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
+            GotoTarget(camParams, false, true);
         }
 
         RingMenu ringMenu = null;
@@ -2067,7 +2071,7 @@ namespace TerraViewer
         bool galMatInit = false;
         Matrix3d galacticMatrix = Matrix3d.Identity;
 
-        private void SetupMatricesSpace11(double localZoomFactor, RenderTypes renderType)
+        private void SetupMatricesSpace11(double localZoomFactor, RenderTypes renderType )
         {
             //todo uwp do we user MultiChannel for MR Headset?
 #if !WINDOWS_UWP
@@ -2212,7 +2216,10 @@ namespace TerraViewer
 #endif
             {
                 ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)RenderContext11.Height, .1, -120.0);
-
+                if (ProjectAtInfinity)
+                {
+                    RenderContext11.ProjectAtInfinity = true;
+                }
             }
             RenderContext11.PerspectiveFov = (localZoomFactor) / FOVMULT;
 
@@ -2239,6 +2246,41 @@ namespace TerraViewer
             MakeFrustum();
 
         }
+
+
+        private void SetupMatricesSpaceForZoomWindow(CameraParameters camera)
+        {
+            double camLocal = camera.Rotation;
+            WorldMatrix = Matrix3d.RotationY(-((camera.Lng + 90.0) / 180.0 * Math.PI));
+            WorldMatrix.Multiply(Matrix3d.RotationX(((-camera.Lat) / 180.0 * Math.PI)));
+
+            RenderContext11.World = WorldMatrix;
+            RenderContext11.WorldBase = WorldMatrix;
+            // altaz
+
+            ViewPoint = Coordinates.RADecTo3d(camera.RA, -camera.Dec, 1.0);
+
+            double distance = (4.0 * (camera.Zoom / 180)) + 0.000001;
+
+            FovAngle = ((camera.Zoom/**16*/) / FOVMULT) / Math.PI * 180;
+            RenderContext11.CameraPosition = new Vector3d(0.0, 0.0, 0.0);
+
+            RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, new Vector3d(0.0, 0.0, -1.0), new Vector3d(Math.Sin(camLocal), Math.Cos(camLocal), 0.0));
+
+            RenderContext11.ViewBase = RenderContext11.View;
+
+            ProjMatrix = Matrix3d.PerspectiveFovLH((camera.Zoom) / FOVMULT, (double)RenderContext11.Width / (double)RenderContext11.Height, .1, -2.0);
+
+            RenderContext11.PerspectiveFov = (camera.Zoom) / FOVMULT;
+
+            RenderContext11.Projection = ProjMatrix;
+
+            ViewMatrix = RenderContext11.View;
+
+            MakeFrustum();
+        }
+
+        bool ProjectAtInfinity = false;
         bool megaFrameDump = false;
         int megaWidth = 4096;
         int megaHeight = 4096;
@@ -4315,6 +4357,20 @@ namespace TerraViewer
             if (!megaFrameDump)
             {
 
+                if (ZoomWindowVisible)
+                {
+                    if (zoomWindowRenderTarget == null)
+                    {
+                        zoomWindowRenderTarget = new RenderTargetTexture(506, 450, RenderContext11.DefaultColorFormat);
+                    }
+
+                    if (ZoomWindowRefresh)
+                    {
+                        RenderZoomWindow(zoomWindowRenderTarget.renderView, ZoomWindowCamera, 506, 450);
+                    }
+                }
+
+
 #if !WINDOWS_UWP
                 if (StereoMode != StereoModes.Off && (!Space || rift))
                 {
@@ -4814,8 +4870,10 @@ namespace TerraViewer
 
         }
 
-
-
+        CameraParameters ZoomWindowCamera = new CameraParameters();
+        bool ZoomWindowVisible = false;
+        bool ZoomWindowRefresh = false;
+        RenderTargetTexture zoomWindowRenderTarget;
         public void CaptureMegaShot(string filename, int width, int height)
         {
 #if !WINDOWS_UWP
@@ -5167,6 +5225,7 @@ namespace TerraViewer
 #if !WINDOWS_UWP
         public SkyLabel label = null;
 #endif
+       
 
         public KmlLabels KmlMarkers = null;
 
@@ -5292,8 +5351,8 @@ namespace TerraViewer
                     if (RenderContext11.ExternalProjection)
                     {
                         RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
-                        double sf = 1/(UiTools.MetersToSolarSystemDistance(1) / SolarSystemCameraDistance);
-                        RenderContext11.ExternalViewScale = Matrix3d.Scaling(sf,sf,sf);
+                        double sf = 1 / (UiTools.MetersToSolarSystemDistance(1) / SolarSystemCameraDistance);
+                        RenderContext11.ExternalViewScale = Matrix3d.Scaling(sf, sf, sf);
                     }
                     {
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0); //black
@@ -5517,6 +5576,7 @@ namespace TerraViewer
                         else
                         {
                             SetupMatricesSpace11(ZoomFactor, renderType);
+                            RenderContext11.ProjectAtInfinity = ProjectAtInfinity;
                         }
                         RenderContext11.DepthStencilMode = DepthStencilMode.Off;
                     }
@@ -5664,6 +5724,8 @@ namespace TerraViewer
                         LayerManager.Draw(RenderContext11, 1.0f, Space, referenceFrame, true, Space);
                     }
 
+                    RenderContext11.ProjectAtInfinity = false;
+
                     if (Space && !hemisphereView && Settings.Active.LocalHorizonMode && !Settings.DomeView && !ProjectorServer)
                     {
                         Grids.DrawHorizon(RenderContext11, 1f);
@@ -5744,24 +5806,30 @@ namespace TerraViewer
                     {
                         Matrix3d worldSaved = RenderContext11.World;
                         Matrix3d viewSaved = RenderContext11.View;
-                        RenderContext11.SunlightColor = SysColor.FromArgb(255,13,13,13);
-                        RenderContext11.SunPosition = new Vector3d(0, 30,0);
-                        RenderContext11.View = Matrix3d.RotationX(-Math.PI/2) * Matrix3d.Scaling(.54,.54,.54);
+                        RenderContext11.SunlightColor = SysColor.FromArgb(255, 13, 5, 5);
+                        RenderContext11.AmbientLightColor = SysColor.FromArgb(255, 1, 1, 13);
+                        RenderContext11.SunPosition = new Vector3d(0, 30, 0);
+                        RenderContext11.View = Matrix3d.RotationX(-Math.PI / 2) * Matrix3d.Scaling(.54, .54, .54);
                         RenderContext11.World = Matrix3d.Identity;
-
+                        settingModel.UseCurrentAmbient = true;
                         settingModel.Render(RenderContext11, 1);
                         RenderContext11.World = worldSaved;
                         RenderContext11.View = viewSaved;
                     }
                 }
 
+                
+
                 if (LeftController.Active || RightController.Active)
                 {
                     RenderContext11.ExternalViewScale = Matrix3d.Identity;
                     if (LeftController.Active)
                     {
+                        if (LeftController.Events.HasFlag(HandControllerStatus.MenuDown))
+                        {
+                            ProjectAtInfinity = !ProjectAtInfinity;
+                        }
 
-                       
                         if (LeftController.Trigger > 0)
                         {
                             TargetZoom *= .95;
@@ -5790,11 +5858,64 @@ namespace TerraViewer
 
                         var mwv = RenderContext11.World * RenderContext11.View;
                         mwv.Invert();
-                        var pos1t =  new Vector3d(pos1.X, pos1.Y, -pos1.Z);
+                        var pos1t = new Vector3d(pos1.X, pos1.Y, -pos1.Z);
                         var endPost = new Vector3d(endPos.X, endPos.Y, -endPos.Z);
+                        var upVector = new Vector3d(up.X, up.Y, -up.Z);
+
 
                         pos1t.TransformCoordinate(mwv);
                         mwv.MultiplyVector(ref endPost);
+                        mwv.MultiplyVector(ref upVector);
+
+                        var upNorth = new Vector3d(0, 1, 0);
+                        var crossNorthEnd = Vector3d.Cross(endPost, upNorth);
+
+                        var v1p = upNorth;
+                        var v2p = endPost;
+
+                        var vzp = Vector3d.Cross(v1p, v2p);
+                        vzp.Normalize();
+                        var v3p = Vector3d.Cross(vzp, v1p);
+
+                        var xpp = Vector3d.Dot(v2p, v1p);
+                        var ypp = Vector3d.Dot(v2p, v3p);
+
+                        var anglep = Math.Atan2(xpp, ypp);
+
+                        anglep += (anglep < 0) ? (Math.PI * 2) : 0;
+
+                        bool flip = (anglep > Math.PI / 2) && (anglep < (3 * Math.PI / 2));
+
+                        crossNorthEnd.Normalize();
+
+                        if (flip)
+                        {
+                            crossNorthEnd.Multiply(-1);
+                        }
+
+                        var trueNorthUp = Vector3d.Cross(endPost, crossNorthEnd);
+                        var crossUpEnd = Vector3d.Cross(endPost, upVector);
+
+                        var v1 = trueNorthUp;
+                        var v2 = crossUpEnd;
+                        var vz = Vector3d.Cross(v1, v2);
+                        vz.Normalize();
+                        var v3 = Vector3d.Cross(vz, v1);
+
+                        var xp = Vector3d.Dot(v2, v1);
+                        var yp = Vector3d.Dot(v2, v3);
+
+
+                        var dot = Vector3d.Dot(upVector, trueNorthUp);
+                       /// var dot = Vector3d.Dot(endPost, upVector);
+                        //var angle =(Math.Acos(dot));
+
+                        var x = Vector3d.Dot(upVector, trueNorthUp);
+
+                        var dx = Vector3d.Scale(upVector, x);
+                        double y = (upVector - dx).Length();
+
+                        var angle = Math.Atan2(xp, yp);
 
                         pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
                         endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
@@ -5811,8 +5932,31 @@ namespace TerraViewer
                         Properties.Settings.Default.ConstellationNamesFilter = filter;
                         // System.Diagnostics.Debug.WriteLine(v);
                         RenderEngine.pointerConstellation = v;
+
+
+                        if (!LeftController.Status.HasFlag(HandControllerStatus.TriggerDown) && LeftController.Trigger > 0)
+                        {
+                            // Start capture of zoom Window
+                            ZoomWindowVisible = true;
+                            ZoomWindowRefresh = true;
+                            
+                            if (LeftController.Trigger < .4)
+                            {
+                                ZoomWindowCamera.RA = result.RA;
+                                ZoomWindowCamera.Dec = result.Dec;
+                                ZoomWindowCamera.Rotation = angle;
+                            }
+                            ZoomWindowCamera.Zoom = Math.Pow(2, (.8-LeftController.Trigger) * 10.614);
+                            showRingMenuLeft = true;
+                        }
+
                         if (LeftController.Status.HasFlag(HandControllerStatus.TriggerDown))
                         {
+
+                            if (zoomWindowRenderTarget != null)
+                            {
+                                finderPanel.ZoomTexture = zoomWindowRenderTarget.RenderTexture;
+                            }
                             IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, .5f);
 
                             if (closetPlace == null)
@@ -5821,9 +5965,21 @@ namespace TerraViewer
                             }
                             else
                             {
-                                int o = 0;
+                                
                             }
                             finderPanel.Target = closetPlace;
+                            if (LeftController.Events.HasFlag(HandControllerStatus.TriggerDown))
+                            {
+                                // Start capture of zoom Window
+                                ZoomWindowVisible = true;
+                                ZoomWindowRefresh = true;
+                                ZoomWindowCamera = new CameraParameters();
+                                ZoomWindowCamera.RA = closetPlace.RA;
+                                ZoomWindowCamera.Dec = closetPlace.Dec;
+                                ZoomWindowCamera.Zoom = 10;
+                                ZoomWindowCamera.Rotation = angle;
+                            }
+
                             showRingMenuLeft = true;
                             ringMenu.SetActivePanel(1);
                         }
@@ -6110,6 +6266,122 @@ namespace TerraViewer
             PresentFrame11(offscreenRender);
 #endif
         }
+
+
+        private void RenderZoomWindow(SharpDX.Direct3D11.RenderTargetView targetTextureView, CameraParameters camera, int width, int height)
+        {
+            Tile.MakeHighPriority = true;
+            Tile.NoBlend = true;
+            var saveEP = RenderContext11.ExternalScalingFactor;
+            bool useEP = RenderContext11.ExternalProjection;
+            RenderContext11.ExternalProjection = false;
+            RenderContext11.ExternalViewScale = Matrix3d.Identity;
+            CurrentRenderType = RenderTypes.Normal;
+
+            bool offscreenRender = targetTextureView != null;
+
+            Tile.deepestLevel = 0;
+
+            try
+            {
+
+                RenderContext11.SetOffscreenRenderTargets(targetTextureView, null, width, height);
+
+                //Clear the backbuffer to a black color 
+
+                RenderContext11.ClearRenderTarget(new SharpDX.Color(255, 0, 0, 255));
+
+                RenderContext11.RenderType = ImageSetType.Sky;
+
+                RenderContext11.BlendMode = BlendMode.Alpha;
+
+                SkyColor = SysColor.FromArgb(255, 0, 0, 0);
+
+                SetupMatricesSpaceForZoomWindow(camera);
+
+                RenderContext11.DepthStencilMode = DepthStencilMode.Off;
+
+                //ComputeViewParameters(currentImageSetfield);
+
+                string referenceFrame = GetCurrentReferenceFrame();
+
+                if (Space)
+                {
+                //    LayerManager.PreDraw(RenderContext11, 1.0f, Space, referenceFrame, true);
+                }
+
+                RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, SysColor.FromArgb(255, 255, 255, 255));
+                {
+                    RenderContext11.setRasterizerState(TriangleCullMode.Off);
+                }
+
+                // Call DrawTiledSphere instead of PaintLayerFull, because PaintLayerFull
+                // will reset ground layer state
+                DrawTiledSphere(currentImageSetfield, 1.0f, SysColor.FromArgb(255, 255, 255, 255));
+
+                if (studyImageset != null)
+                {
+                    if (studyImageset.DataSetType != currentImageSetfield.DataSetType)
+                    {
+                        SetStudy(null);
+                    }
+                    else
+                    {
+                        PaintLayerFull11(studyImageset, StudyOpacity);
+                    }
+                }
+
+                if (Space && (currentImageSetfield.Name == "Plotted Sky"))
+                {
+
+                    Grids.DrawStars(RenderContext11, 1f);
+                }
+
+                if (Space && Properties.Settings.Default.ShowSolarSystem.State)
+                {
+                    Planets.DrawPlanets(RenderContext11, Properties.Settings.Default.ShowSolarSystem.Opacity);
+                }
+
+
+                if (PlanetLike || Space)
+                {
+                    if (!Space)
+                    {
+                        //todo fix this for other planets..
+                        double angle = Coordinates.MstFromUTC2(SpaceTimeController.Now, 0) / 180.0 * Math.PI;
+                        RenderContext11.WorldBaseNonRotating = Matrix3d.RotationY(angle) * RenderContext11.WorldBase;
+                        RenderContext11.NominalRadius = currentImageSetfield.MeanRadius;
+                    }
+                    else
+                    {
+                        RenderContext11.WorldBaseNonRotating = RenderContext11.World;
+                        RenderContext11.NominalRadius = currentImageSetfield.MeanRadius;
+                        RenderContext11.DepthStencilMode = DepthStencilMode.Off;
+                    }
+
+                    //LayerManager.Draw(RenderContext11, 1.0f, Space, referenceFrame, true, Space);
+                }
+            }
+            catch (Exception e)
+            {
+                if (Utils.Logging) { Utils.WriteLogMessage("RenderFrame: Exception"); }
+                if (offscreenRender)
+                {
+                    throw e;
+                }
+            }
+            finally
+            {
+
+                RenderContext11.SetDisplayRenderTargets();
+
+                RenderContext11.ExternalScalingFactor = saveEP;
+                RenderContext11.ExternalProjection = useEP;
+                Tile.MakeHighPriority = false;
+                Tile.NoBlend = false ;
+            }
+        }
+
         bool HandControlModelLoading = false;
 
         private void DrawHandControllerModel(HandController controller)

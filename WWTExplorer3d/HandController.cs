@@ -183,6 +183,30 @@ namespace TerraViewer
                     }
                 }
 
+                if (lastState.Status.HasFlag(HandControllerStatus.MenuDown))
+                {
+                    if (Menu)
+                    {
+                        Status = Status | HandControllerStatus.MenuDown;
+                    }
+                    else
+                    {
+                        Events = Events | HandControllerStatus.MenuUp;
+                        Status = Status | HandControllerStatus.MenuUp;
+                    }
+                }
+                else
+                {
+                    if (Menu)
+                    {
+                        Status = Status | HandControllerStatus.MenuDown;
+                        Events = Events | HandControllerStatus.MenuDown;
+                    }
+                    else
+                    {
+                        Status = Status | HandControllerStatus.MenuUp;
+                    }
+                }
             }
 
             lastState.CopyState(this);
