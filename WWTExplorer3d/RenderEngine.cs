@@ -5869,29 +5869,7 @@ namespace TerraViewer
 
                         var upNorth = new Vector3d(0, 1, 0);
                         var crossNorthEnd = Vector3d.Cross(endPost, upNorth);
-
-                        var v1p = upNorth;
-                        var v2p = endPost;
-
-                        var vzp = Vector3d.Cross(v1p, v2p);
-                        vzp.Normalize();
-                        var v3p = Vector3d.Cross(vzp, v1p);
-
-                        var xpp = Vector3d.Dot(v2p, v1p);
-                        var ypp = Vector3d.Dot(v2p, v3p);
-
-                        var anglep = Math.Atan2(xpp, ypp);
-
-                        anglep += (anglep < 0) ? (Math.PI * 2) : 0;
-
-                        bool flip = (anglep > Math.PI / 2) && (anglep < (3 * Math.PI / 2));
-
                         crossNorthEnd.Normalize();
-
-                        if (flip)
-                        {
-                            crossNorthEnd.Multiply(-1);
-                        }
 
                         var trueNorthUp = Vector3d.Cross(endPost, crossNorthEnd);
                         var crossUpEnd = Vector3d.Cross(endPost, upVector);
@@ -5905,24 +5883,16 @@ namespace TerraViewer
                         var xp = Vector3d.Dot(v2, v1);
                         var yp = Vector3d.Dot(v2, v3);
 
-
-                        var dot = Vector3d.Dot(upVector, trueNorthUp);
-                       /// var dot = Vector3d.Dot(endPost, upVector);
-                        //var angle =(Math.Acos(dot));
-
-                        var x = Vector3d.Dot(upVector, trueNorthUp);
-
-                        var dx = Vector3d.Scale(upVector, x);
-                        double y = (upVector - dx).Length();
-
                         var angle = Math.Atan2(xp, yp);
+                        if (Vector3d.Dot(upVector, trueNorthUp) > 0)
+                        {
+                            angle = Math.PI-angle;
+                        }
 
                         pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
                         endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
 
                         bool inThere = SphereIntersectRay(pos1t, endPost, out result);
-                        //result.RA = 6 - result.RA;
-
 
                         string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                         var v = Constellations.FullName(constellation);
@@ -5930,7 +5900,7 @@ namespace TerraViewer
                         filter.Set(constellation, true);
                         Properties.Settings.Default.ConstellationArtFilter = filter;
                         Properties.Settings.Default.ConstellationNamesFilter = filter;
-                        // System.Diagnostics.Debug.WriteLine(v);
+
                         RenderEngine.pointerConstellation = v;
 
 
