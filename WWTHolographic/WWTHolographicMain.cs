@@ -323,7 +323,7 @@ namespace WWTHolographic
                     if (source.Controller.HasThumbstick)
                     {
                         handController.ThumbX = state.ControllerProperties.ThumbstickX;
-                        handController.ThumbY = state.ControllerProperties.ThumbstickX;
+                        handController.ThumbY = state.ControllerProperties.ThumbstickY;
                         handController.ThumbDown = state.ControllerProperties.IsThumbstickPressed;
                     }
                     if (source.Controller.HasTouchpad)

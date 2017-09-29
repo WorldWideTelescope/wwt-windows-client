@@ -38,7 +38,7 @@ namespace TerraViewer
         DataSetManager dsm;
         public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
-            
+            AppSettings.SettingsBase = Properties.Settings.Default;            
             //from constructor
             config = new Config();
 
@@ -62,7 +62,7 @@ namespace TerraViewer
 
 
 
-            AppSettings.SettingsBase = Properties.Settings.Default;
+
             Text3dBatch hold;
             hold = new Text3dBatch(80);
             hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), " 0hr123456789-+", 80, .0001f));
@@ -135,7 +135,7 @@ namespace TerraViewer
             //set settings to test
 
           //  Properties.Settings.Default.ConstellationArtColor = SysColor.FromArgb(20, 255, 255, 255);
-            Properties.Settings.Default.ShowGrid.TargetState = true;
+            Properties.Settings.Default.ShowGrid.TargetState = false;
             Properties.Settings.Default.ShowEclipticGridText.TargetState = true;
             Properties.Settings.Default.ShowConstellationLabels.TargetState = true;
             Properties.Settings.Default.ShowConstellationFigures.TargetState = false;
@@ -5402,6 +5402,7 @@ namespace TerraViewer
 
                         if (Properties.Settings.Default.SolarSystemMilkyWay.State)
                         {
+#if !WINDOWS_UWP
                             if (milkyWayBlend < 1) // Solar System mode Milky Way background
                             {
                                 if (milkyWayBackground == null)
@@ -5430,6 +5431,7 @@ namespace TerraViewer
                                     RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
                                 }
                             }
+#endif
                         }
 
                         // CMB
@@ -5822,350 +5824,8 @@ namespace TerraViewer
 
                 if (LeftController.Active || RightController.Active)
                 {
-                    RenderContext11.ExternalViewScale = Matrix3d.Identity;
-                    if (LeftController.Active)
-                    {
-                        if (LeftController.Events.HasFlag(HandControllerStatus.MenuDown))
-                        {
-                            ProjectAtInfinity = !ProjectAtInfinity;
-                        }
-
-                        if (LeftController.Trigger > 0)
-                        {
-                            TargetZoom *= .95;
-                        }
-
-                        if (LeftController.Events.HasFlag(HandControllerStatus.StickLeft))
-                        {
-                            PreviousView();
-                        }
-
-                        if (LeftController.Events.HasFlag(HandControllerStatus.StickRight))
-                        {
-                            NextView();
-                        }
-
-
-                        var leftPos = LeftController.Position;
-                        var endPos = LeftController.Forward;
-                        var up = LeftController.Up;
-
-                        Coordinates result = new Coordinates();
-
-                        float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
-                        Vector3d pos1 = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
-                        Vector3d pos = new Vector3d(leftPos.X, leftPos.Y, leftPos.Z);
-
-                        var mwv = RenderContext11.World * RenderContext11.View;
-                        mwv.Invert();
-                        var pos1t = new Vector3d(pos1.X, pos1.Y, -pos1.Z);
-                        var endPost = new Vector3d(endPos.X, endPos.Y, -endPos.Z);
-                        var upVector = new Vector3d(up.X, up.Y, -up.Z);
-
-
-                        pos1t.TransformCoordinate(mwv);
-                        mwv.MultiplyVector(ref endPost);
-                        mwv.MultiplyVector(ref upVector);
-
-                        var upNorth = new Vector3d(0, 1, 0);
-                        var crossNorthEnd = Vector3d.Cross(endPost, upNorth);
-                        crossNorthEnd.Normalize();
-
-                        var trueNorthUp = Vector3d.Cross(endPost, crossNorthEnd);
-                        var crossUpEnd = Vector3d.Cross(endPost, upVector);
-
-                        var v1 = trueNorthUp;
-                        var v2 = crossUpEnd;
-                        var vz = Vector3d.Cross(v1, v2);
-                        vz.Normalize();
-                        var v3 = Vector3d.Cross(vz, v1);
-
-                        var xp = Vector3d.Dot(v2, v1);
-                        var yp = Vector3d.Dot(v2, v3);
-
-                        var angle = Math.Atan2(xp, yp);
-                        if (Vector3d.Dot(upVector, trueNorthUp) > 0)
-                        {
-                            angle = Math.PI-angle;
-                        }
-
-                        pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
-                        endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
-
-                        bool inThere = SphereIntersectRay(pos1t, endPost, out result);
-
-                        string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
-                        var v = Constellations.FullName(constellation);
-                        var filter = new ConstellationFilter();
-                        filter.Set(constellation, true);
-                        Properties.Settings.Default.ConstellationArtFilter = filter;
-                        Properties.Settings.Default.ConstellationNamesFilter = filter;
-
-                        RenderEngine.pointerConstellation = v;
-
-
-                        if (!LeftController.Status.HasFlag(HandControllerStatus.TriggerDown) && LeftController.Trigger > 0)
-                        {
-                            // Start capture of zoom Window
-                            ZoomWindowVisible = true;
-                            ZoomWindowRefresh = true;
-                            
-                            if (LeftController.Trigger < .4)
-                            {
-                                ZoomWindowCamera.RA = result.RA;
-                                ZoomWindowCamera.Dec = result.Dec;
-                                ZoomWindowCamera.Rotation = angle;
-                            }
-                            ZoomWindowCamera.Zoom = Math.Pow(2, (.8-LeftController.Trigger) * 10.614);
-                            showRingMenuLeft = true;
-                        }
-
-                        if (LeftController.Status.HasFlag(HandControllerStatus.TriggerDown))
-                        {
-
-                            if (zoomWindowRenderTarget != null)
-                            {
-                                finderPanel.ZoomTexture = zoomWindowRenderTarget.RenderTexture;
-                            }
-                            IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, .5f);
-
-                            if (closetPlace == null)
-                            {
-                                closetPlace = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
-                            }
-                            else
-                            {
-                                
-                            }
-                            finderPanel.Target = closetPlace;
-                            if (LeftController.Events.HasFlag(HandControllerStatus.TriggerDown))
-                            {
-                                // Start capture of zoom Window
-                                ZoomWindowVisible = true;
-                                ZoomWindowRefresh = true;
-                                ZoomWindowCamera = new CameraParameters();
-                                ZoomWindowCamera.RA = closetPlace.RA;
-                                ZoomWindowCamera.Dec = closetPlace.Dec;
-                                ZoomWindowCamera.Zoom = 10;
-                                ZoomWindowCamera.Rotation = angle;
-                            }
-
-                            showRingMenuLeft = true;
-                            ringMenu.SetActivePanel(1);
-                        }
-
-                        Matrix3d worldSaved = RenderContext11.World;
-                        Matrix3d localWorld = new Matrix3d();
-
-                        Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
-                        m1.Invert();
-                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
-                        if (scale != 1)
-                        {
-                            m1 = m1 * Matrix.Scaling(scale);
-                        }
-
-
-                        localWorld.Matrix = m1;
-                        RenderContext11.World = localWorld;
-                        RenderContext11.View = Matrix3d.Identity;
-
-
-                        leftPointerRay.Draw(RenderContext11, 1, SysColor.Green);
-                        DrawHandControllerModel(LeftController);
-
-                        RenderContext11.DepthStencilMode = DepthStencilMode.ZWriteOnly;
-                        RenderContext11.BlendMode = BlendMode.Alpha;
-
-                        if (LeftController.Events.HasFlag(HandControllerStatus.GripDown))
-                        {
-                            showRingMenuLeft = !showRingMenuLeft;
-                            ringMenu.SetActivePanel(0);
-                        }
-
-                        if (showRingMenuLeft)
-                        {
-                            ringMenu.HandleControlerInput(LeftController);
-
-                            m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
-                            m1.Invert();
-                            m1 = Matrix.RotationX(.5f) * m1;
-                            m1 = Matrix.Scaling(1, -1, 1) * m1;
-                            m1 = Matrix.Translation(-200, -500, -70) * m1;
-
-
-                            m1 = m1 * Matrix.Scaling(.00050f);
-
-                            m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
-                            if (scale != 1)
-                            {
-                                m1 = m1 * Matrix.Scaling(scale);
-                            }
-                            localWorld.Matrix = m1;
-                            RenderContext11.World = localWorld;
-                            ringMenu.Draw(RenderContext11, 1, SysColor.BlueViolet);
-                        }
-
-                        RenderContext11.World = worldSaved;
-
-                    }
-
-                    if (RightController.Active)
-                    {
-
-
-                        if (RightController.Trigger > .5)
-                        {
-                            TargetZoom /= .95;
-                        }
-
-                        if (RightController.Events.HasFlag(HandControllerStatus.StickLeft))
-                        {
-                            PreviousView();
-                        }
-
-                        if (RightController.Events.HasFlag(HandControllerStatus.StickRight))
-                        {
-                            NextView();
-                        }
-
-
-                        var rightPos = RightController.Position;
-                        var endPos = RightController.Forward;
-                        var up = RightController.Up;
-
-
-                        Coordinates result = new Coordinates();
-
-                        float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
-                        Vector3d pos1 = new Vector3d(rightPos.X * scale, rightPos.Y * scale, rightPos.Z * scale);
-                        Vector3d pos = new Vector3d(rightPos.X, rightPos.Y, rightPos.Z);
-
-                        var mwv = RenderContext11.World * RenderContext11.View;
-                        mwv.Invert();
-                        var pos1t = new Vector3d(pos1.X, pos1.Y, -pos1.Z);
-                        var endPost = new Vector3d(endPos.X, endPos.Y, -endPos.Z);
-
-                        pos1t.TransformCoordinate(mwv);
-                        mwv.MultiplyVector(ref endPost);
-
-                        pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
-                        endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
-
-                        bool inThere = SphereIntersectRay(pos1t, endPost, out result);
-                        //result.RA = 6 - result.RA;
-
-                        string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
-                        var v = Constellations.FullName(constellation);
-                        var filter = new ConstellationFilter();
-                        filter.Set(constellation, true);
-                        Properties.Settings.Default.ConstellationArtFilter = filter;
-                        Properties.Settings.Default.ConstellationNamesFilter = filter;
-                        // System.Diagnostics.Debug.WriteLine(v);
-                        RenderEngine.pointerConstellation = v;
-                        if (RightController.Events.HasFlag(HandControllerStatus.TriggerDown))
-                        {
-                            IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, .5f);
-
-                            if (closetPlace == null)
-                            {
-                                closetPlace = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
-                            }
-                            else
-                            {
-                                int o = 0;
-                            }
-                            finderPanel.Target = closetPlace;
-                            showRingMenuRight = true;
-                            ringMenu.SetActivePanel(1);
-                        }
-
-                        Matrix3d worldSaved = RenderContext11.World;
-                        Matrix3d localWorld = new Matrix3d();
-
-                        Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
-                        m1.Invert();
-                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
-                        if (scale != 1)
-                        {
-                            m1 = m1 * Matrix.Scaling(scale);
-                        }
-
-
-                        localWorld.Matrix = m1;
-                        RenderContext11.World = localWorld;
-                        RenderContext11.View = Matrix3d.Identity;
-
-
-                        rightPointerRay.Draw(RenderContext11, 1, SysColor.Green);
-                        DrawHandControllerModel(RightController);
-
-                        RenderContext11.DepthStencilMode = DepthStencilMode.ZWriteOnly;
-                        RenderContext11.BlendMode = BlendMode.Alpha;
-
-                        if (RightController.Events.HasFlag(HandControllerStatus.GripDown))
-                        {
-                            showRingMenuRight = !showRingMenuRight;
-                            ringMenu.SetActivePanel(0);
-                        }
-
-                        if (showRingMenuRight)
-                        {
-                            ringMenu.HandleControlerInput(RightController);
-
-                            m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
-                            m1.Invert();
-                            m1 = Matrix.RotationX(.5f) * m1;
-                            m1 = Matrix.Scaling(1, -1, 1) * m1;
-                            m1 = Matrix.Translation(-200, -500, -70) * m1;
-
-
-                            m1 = m1 * Matrix.Scaling(.00050f);
-
-                            m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
-                            if (scale != 1)
-                            {
-                                m1 = m1 * Matrix.Scaling(scale);
-                            }
-                            localWorld.Matrix = m1;
-                            RenderContext11.World = localWorld;
-                            ringMenu.Draw(RenderContext11, 1, SysColor.BlueViolet);
-                        }
-
-                        RenderContext11.World = worldSaved;
-
-                    }
-
-                    //if (RightController.Active)
-                    //{
-                    //    if (RightController.Trigger > 0)
-                    //    {
-                    //        TargetZoom /= .75;
-                    //    }
-
-                    //    var rightPos = RightController.Position;
-                    //    var endPos = RightController.Forward;
-                    //    var up = RightController.Up;
-
-                    //    float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
-                    //    Vector3d pos = new Vector3d(rightPos.X * scale, rightPos.Y * scale, rightPos.Z * scale);
-
-
-                    //    Matrix3d worldSaved = RenderContext11.World;
-                    //    Matrix3d localWorld = new Matrix3d();
-
-                    //    Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
-                    //    m1.Invert();
-                    //    m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
-
-                    //    localWorld.Matrix = m1;
-                    //    RenderContext11.World = localWorld;
-                    //    RenderContext11.View = Matrix3d.Identity;
-
-                    //    rightPointerRay.Draw(RenderContext11, 1, SysColor.BlueViolet);
-
-                    //    RenderContext11.World = worldSaved;
-                    //}
+                    HandleController(LeftController);
+                    HandleController(RightController);                 
                 }
 
 
@@ -6237,6 +5897,362 @@ namespace TerraViewer
 #endif
         }
 
+        private void HandleController (HandController controller)
+        {
+            RenderContext11.ExternalViewScale = Matrix3d.Identity;
+            if (controller.Active)
+            {
+                //if (controller.Events.HasFlag(HandControllerStatus.MenuDown))
+                //{
+                //    ProjectAtInfinity = !ProjectAtInfinity;
+                //}
+
+                if (controller.Status.HasFlag(HandControllerStatus.StickUp) && controller.Hand == HandType.Left)
+                {
+                    TargetZoom *= .98;
+                }
+
+                if (controller.Status.HasFlag(HandControllerStatus.StickDown) && controller.Hand == HandType.Left)
+                {
+                    TargetZoom /= .98;
+                }
+                if (controller.Events.HasFlag(HandControllerStatus.MenuDown) && controller.Hand == HandType.Left)
+                {
+                    PreviousView();
+                }
+
+                if (controller.Events.HasFlag(HandControllerStatus.MenuDown) && controller.Hand == HandType.Right )
+                {
+                    NextView();
+                }
+
+
+                var leftPos = controller.Position;
+                var endPos = controller.Forward;
+                var up = controller.Up;
+
+                Coordinates result = new Coordinates();
+
+                float scale = 1.0f / RenderContext11.ExternalScalingFactor.M11;
+                Vector3d pos1 = new Vector3d(leftPos.X * scale, leftPos.Y * scale, leftPos.Z * scale);
+                Vector3d pos = new Vector3d(leftPos.X, leftPos.Y, leftPos.Z);
+
+                var mwv = RenderContext11.World * RenderContext11.View;
+                mwv.Invert();
+                var pos1t = new Vector3d(pos1.X, pos1.Y, -pos1.Z);
+                var endPost = new Vector3d(endPos.X, endPos.Y, -endPos.Z);
+                var upVector = new Vector3d(up.X, up.Y, -up.Z);
+
+
+                pos1t.TransformCoordinate(mwv);
+                mwv.MultiplyVector(ref endPost);
+                mwv.MultiplyVector(ref upVector);
+
+                var upNorth = new Vector3d(0, 1, 0);
+                var crossNorthEnd = Vector3d.Cross(endPost, upNorth);
+                crossNorthEnd.Normalize();
+
+                var trueNorthUp = Vector3d.Cross(endPost, crossNorthEnd);
+                var crossUpEnd = Vector3d.Cross(endPost, upVector);
+
+                var v1 = trueNorthUp;
+                var v2 = crossUpEnd;
+                var vz = Vector3d.Cross(v1, v2);
+                vz.Normalize();
+                var v3 = Vector3d.Cross(vz, v1);
+
+                var xp = Vector3d.Dot(v2, v1);
+                var yp = Vector3d.Dot(v2, v3);
+
+                var angle = Math.Atan2(xp, yp);
+                if (Vector3d.Dot(upVector, trueNorthUp) > 0)
+                {
+                    angle = Math.PI - angle;
+                }
+
+                pos1t = new Vector3d(pos1t.X, pos1t.Y, pos1t.Z);
+                endPost = new Vector3d(endPost.X, endPost.Y, endPost.Z);
+
+                bool inThere = SphereIntersectRay(pos1t, endPost, out result);
+
+                string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                var v = Constellations.FullName(constellation);
+                var filter = new ConstellationFilter();
+                filter.Set(constellation, true);
+                Properties.Settings.Default.ConstellationArtFilter = filter;
+                Properties.Settings.Default.ConstellationNamesFilter = filter;
+
+                RenderEngine.pointerConstellation = v;
+
+                if (!(Space && Properties.Settings.Default.LocalHorizonMode))
+                {
+                    if ((Math.Abs(controller.ThumbX) > .2 || Math.Abs(controller.ThumbY) > .2) && controller.Hand == HandType.Right)
+                    {
+                        MoveView(controller.ThumbX * 5, controller.ThumbY * 5, false);
+                    }
+                }
+
+                if (Space)
+                {
+                    if (!controller.Status.HasFlag(HandControllerStatus.TriggerDown) && controller.Trigger > 0)
+                    {
+                        // Start capture of zoom Window
+                        ZoomWindowVisible = true;
+                        ZoomWindowRefresh = true;
+
+                        if (controller.Trigger < .4)
+                        {
+                            ZoomWindowCamera.RA = result.RA;
+                            ZoomWindowCamera.Dec = result.Dec;
+                            ZoomWindowCamera.Rotation = angle;
+                        }
+                        ZoomWindowCamera.Zoom = Math.Pow(2, (.8 - controller.Trigger) * 10.614);
+                        showRingMenuLeft = true;
+                    }
+
+                    if (controller.Status.HasFlag(HandControllerStatus.TriggerDown))
+                    {
+
+                        if (zoomWindowRenderTarget != null)
+                        {
+                            finderPanel.ZoomTexture = zoomWindowRenderTarget.RenderTexture;
+                        }
+                        IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, .5f);
+
+                        if (closetPlace == null)
+                        {
+                            closetPlace = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
+                        }
+
+                        finderPanel.Target = closetPlace;
+                        if (controller.Events.HasFlag(HandControllerStatus.TriggerDown))
+                        {
+                            // Start capture of zoom Window
+                            ZoomWindowVisible = true;
+                            ZoomWindowRefresh = true;
+                            ZoomWindowCamera = new CameraParameters();
+                            ZoomWindowCamera.RA = closetPlace.RA;
+                            ZoomWindowCamera.Dec = closetPlace.Dec;
+                            ZoomWindowCamera.Zoom = 10;
+                            ZoomWindowCamera.Rotation = angle;
+                        }
+
+                        showRingMenuLeft = true;
+                        ringMenu.SetActivePanel(1);
+                    }
+                }
+
+                Matrix3d worldSaved = RenderContext11.World;
+                Matrix3d localWorld = new Matrix3d();
+
+                Matrix m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
+                m1.Invert();
+                m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+                if (scale != 1)
+                {
+                    m1 = m1 * Matrix.Scaling(scale);
+                }
+
+
+                localWorld.Matrix = m1;
+                RenderContext11.World = localWorld;
+                RenderContext11.View = Matrix3d.Identity;
+
+                if (Space)
+                {
+                    leftPointerRay.Draw(RenderContext11, 1, SysColor.Green);
+                }
+                RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
+                RenderContext11.setRasterizerState(TriangleCullMode.CullCounterClockwise);
+                DrawHandControllerModel(controller);
+
+                RenderContext11.DepthStencilMode = DepthStencilMode.ZWriteOnly;
+                RenderContext11.BlendMode = BlendMode.Alpha;
+
+
+                if (controller.Hand == HandType.Left)
+                {
+                    if (controller.Events.HasFlag(HandControllerStatus.TouchDown) && !showRingMenuLeft)
+                    {
+                        showRingMenuLeft = true;
+                        ringMenu.SetActivePanel(0);
+                    }
+                }
+
+                if (controller.Hand == HandType.Right)
+                {
+                    if (controller.Events.HasFlag(HandControllerStatus.TouchDown) && !showRingMenuRight)
+                    {
+                        showRingMenuRight = true;
+                        ringMenu.SetActivePanel(0);
+                    }
+                }
+
+                if (Space)
+                {
+                    if ((showRingMenuLeft && controller.Hand == HandType.Left) || (showRingMenuRight && controller.Hand == HandType.Right))
+                    {
+                        ringMenu.HandleControlerInput(controller);
+
+                        m1 = Matrix.LookAtLH(new Vector3(), new Vector3d(endPos.X, endPos.Y, -endPos.Z).Vector3, new Vector3d(up.X, up.Y, -up.Z).Vector3);
+                        m1.Invert();
+                        m1 = Matrix.RotationX(.5f) * m1;
+                        m1 = Matrix.Scaling(1, -1, 1) * m1;
+                        m1 = Matrix.Translation(-200, -500, -70) * m1;
+
+
+                        m1 = m1 * Matrix.Scaling(.00050f);
+
+                        m1 = Matrix.Multiply(m1, Matrix.Translation(new Vector3d(pos.X, pos.Y, -pos.Z).Vector3));
+                        if (scale != 1)
+                        {
+                            m1 = m1 * Matrix.Scaling(scale);
+                        }
+                        localWorld.Matrix = m1;
+                        RenderContext11.World = localWorld;
+                        ringMenu.Draw(RenderContext11, 1, SysColor.BlueViolet);
+                    }
+                }
+                RenderContext11.World = worldSaved;
+
+            }
+        }
+        
+        public void MoveView(double amountX, double amountY, bool mouseDrag)
+        {
+            if (currentImageSetfield == null)
+            {
+                return;
+            }
+            Tracking = false;
+            double angle = Math.Atan2(amountY, amountX);
+            double distance = Math.Sqrt(amountY * amountY + amountX * amountX);
+            if (SolarSystemMode)
+            {
+                amountX = Math.Cos(angle - CameraRotate) * distance;
+                amountY = Math.Sin(angle - CameraRotate) * distance;
+            }
+            else if (!PlanetLike)
+            {
+                amountX = Math.Cos(angle + CameraRotate) * distance;
+                amountY = Math.Sin(angle + CameraRotate) * distance;
+            }
+            else
+            {
+                amountX = Math.Cos(angle - CameraRotate) * distance;
+                amountY = Math.Sin(angle - CameraRotate) * distance;
+            }
+
+            MoveViewNative(amountX, amountY, mouseDrag);
+        }
+
+        public void MoveViewNative(double amountX, double amountY, bool mouseDrag)
+        {
+            double scaleY = GetPixelScaleY();
+            double scaleX = GetPixelScaleX();
+
+
+            if (currentImageSetfield.DataSetType == ImageSetType.SolarSystem || SandboxMode)
+            {
+                if (scaleY > .05999)
+                {
+                    scaleX = scaleY;
+                }
+            }
+
+            if (Space && Settings.Active.GalacticMode)
+            {
+                amountX = -amountX;
+            }
+
+            if (Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
+            {
+                targetAlt += (amountY) * scaleY;
+                if (targetAlt > Properties.Settings.Default.MaxLatLimit)
+                {
+                    targetAlt = Properties.Settings.Default.MaxLatLimit;
+                }
+                if (targetAlt < -Properties.Settings.Default.MaxLatLimit)
+                {
+                    targetAlt = -Properties.Settings.Default.MaxLatLimit;
+                }
+
+            }
+            else
+            {
+                TargetLat += (amountY) * scaleY;
+
+                if (TargetLat > Properties.Settings.Default.MaxLatLimit)
+                {
+                    TargetLat = Properties.Settings.Default.MaxLatLimit;
+                }
+                if (TargetLat < -Properties.Settings.Default.MaxLatLimit)
+                {
+                    TargetLat = -Properties.Settings.Default.MaxLatLimit;
+                }
+            }
+            if (Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
+            {
+                targetAz = ((targetAz + amountX * scaleX) + 720) % 360;
+            }
+            else
+            {
+                TargetLong += (amountX) * scaleX;
+
+                TargetLong = ((TargetLong + 900.0) % 360.0) - 180.0;
+            }
+        }
+
+        public double GetPixelScaleX()
+        {
+            double lat = ViewLat;
+
+            double cosLat = 1;
+            if (ViewLat > 89.9999)
+            {
+                cosLat = Math.Cos(89.9999 * RC);
+            }
+            else
+            {
+                cosLat = Math.Cos(lat * RC);
+
+            }
+
+            double zz = (90 - ZoomFactor / 6);
+            double zcos = Math.Cos(zz * RC);
+
+            return GetPixelScaleY() / Math.Max(zcos, cosLat);
+        }
+
+        public double GetPixelScaleY()
+        {
+            if (SolarSystemMode)
+            {
+                if ((int)SolarSystemTrack < (int)SolarSystemObjects.Custom)
+                {
+                    return Math.Min(.06, 545000 * Math.Tan(Math.PI / 4) * ZoomFactor / RenderContext11.Height);
+                }
+                else
+                {
+
+                    return .06;
+                }
+            }
+            else if (currentImageSetfield != null && (currentImageSetfield.DataSetType == ImageSetType.Sky || currentImageSetfield.DataSetType == ImageSetType.Panorama))
+            {
+                double val = FovAngle / RenderContext11.Height;
+
+                return val;
+            }
+            else if (SandboxMode)
+            {
+                return .06;
+            }
+            else
+            {
+                return ((baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))) / (double)tileSizeY) / 5;
+            }
+        }
 
         private void RenderZoomWindow(SharpDX.Direct3D11.RenderTargetView targetTextureView, CameraParameters camera, int width, int height)
         {

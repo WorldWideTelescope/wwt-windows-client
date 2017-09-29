@@ -1862,7 +1862,9 @@ namespace TerraViewer
             // Calculate the closest view angle 
             Vector3 viewAngle = (RenderEngine.ViewPoint - renderContext.CameraPosition).Vector3;
 
+
             viewAngle.Normalize();
+
 
             // Draw Milky Way image
             float fadeOut = (float)(Math.Min(.1, Math.Abs(Vector3.Dot(viewAngle, MilkyWayNormal))) * 10);

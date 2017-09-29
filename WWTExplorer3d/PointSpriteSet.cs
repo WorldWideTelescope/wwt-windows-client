@@ -206,11 +206,11 @@ namespace TerraViewer
                     renderContext.SetIndexBuffer(indexBufferIn);
                     if (RenderContext11.ExternalProjection)
                     {
-                        renderContext.devContext.DrawInstanced(count, 2, 0, 0);
+                        renderContext.devContext.DrawIndexedInstanced(count, 2, 0, 0, 0);
                     }
                     else
                     {
-                        renderContext.devContext.Draw(count, 0);
+                        renderContext.devContext.DrawIndexed(count, 0, 0);
                     }
                     renderContext.Device.ImmediateContext.GeometryShader.Set(null);
                     break;

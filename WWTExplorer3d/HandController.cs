@@ -114,19 +114,19 @@ namespace TerraViewer
                     }
                 }
 
-                if (lastState.Status.HasFlag(HandControllerStatus.StickDown))
+                if (lastState.Status.HasFlag(HandControllerStatus.StickUp))
                 {
                     if (ThumbY > low)
                     {
-                        Status = Status | HandControllerStatus.StickDown;
+                        Status = Status | HandControllerStatus.StickUp;
                     }
                 }
                 else
                 {
                     if (ThumbY > high)
                     {
-                        Status = Status | HandControllerStatus.StickDown;
-                        Events = Events | HandControllerStatus.StickDown;
+                        Status = Status | HandControllerStatus.StickUp;
+                        Events = Events | HandControllerStatus.StickUp;
                     }
                 }
 
