@@ -1927,6 +1927,15 @@ namespace TerraViewer
                 double p11 = renderContext.Projection.M11;
                 double p34 = renderContext.Projection.M34;
                 double p44 = renderContext.Projection.M44;
+
+                if (RenderContext11.ExternalProjection)
+                {
+                    p11 = RenderContext11.ExternalProjectionLeft.M11;
+                    p34 = RenderContext11.ExternalProjectionLeft.M34;
+                    p44 = RenderContext11.ExternalProjectionLeft.M44;
+                }
+
+
                 double w = Math.Abs(p34) * dist + p44;
                 float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
                 float planetRadiusInPixels = (float)(radius * pixelsPerUnit);
@@ -2824,7 +2833,7 @@ namespace TerraViewer
                         SharpDX.Vector4 normColor = new SharpDX.Vector4(defaultLayerColor.R, defaultLayerColor.G, defaultLayerColor.B, defaultLayerColor.A) * (1.0f / 255.0f);
                         if (RenderContext11.sRGB)
                         {
-                            normColor.X = (float) Math.Pow(normColor.X, 2.2);
+                            normColor.X = (float)Math.Pow(normColor.X, 2.2);
                             normColor.Y = (float)Math.Pow(normColor.Y, 2.2);
                             normColor.Z = (float)Math.Pow(normColor.Z, 2.2);
                         }
@@ -2881,7 +2890,14 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(sphereVertexBuffers[sphereIndex]);
             renderContext.SetIndexBuffer(sphereIndexBuffers[sphereIndex]);
-            renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawIndexedInstanced(sphereIndexBuffers[sphereIndex].Count, 2, 0, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+            }
         }
 
 
@@ -2895,7 +2911,14 @@ namespace TerraViewer
                 renderContext.PreDraw();
                 renderContext.SetVertexBuffer(sphereVertexBuffers[sphereIndex]);
                 renderContext.SetIndexBuffer(sphereIndexBuffers[sphereIndex]);
-                renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.devContext.DrawIndexedInstanced(sphereIndexBuffers[sphereIndex].Count, 2, 0, 0, 0);
+                }
+                else
+                {
+                    renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+                }
             }
         }
 

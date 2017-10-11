@@ -36,8 +36,12 @@ namespace TerraViewer
 
 #if WINDOWS_UWP
         DataSetManager dsm;
+        bool mixedReality = false;
+
         public void InitializeForUwp(Device device, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
+            mixedReality = device != null;
+
             AppSettings.SettingsBase = Properties.Settings.Default;            
             //from constructor
             config = new Config();
@@ -115,11 +119,14 @@ namespace TerraViewer
                 ContextSearch.Initialized = true;
             });
 
-            var t1 = System.Threading.Tasks.Task.Run(() =>
+            if (mixedReality)
             {
-                settingModel = Object3d.LoadFromModelFileFromUrl("http://www.worldwidetelescope.org/data/sh.mdl.txt");
-                SpaceTimeController.TimeRate = 100;
-            });
+                var t1 = System.Threading.Tasks.Task.Run(() =>
+                {
+                    settingModel = Object3d.LoadFromModelFileFromUrl("http://www.worldwidetelescope.org/data/sh.mdl.txt");
+                    SpaceTimeController.TimeRate = 100;
+                });
+            }
 
 
 
@@ -146,7 +153,7 @@ namespace TerraViewer
             Properties.Settings.Default.ShowISSModel = true;
             Properties.Settings.Default.CloudMap8k = true;
             Properties.Settings.Default.ShowSolarSystem.TargetState = false;
-            Properties.Settings.Default.LocalHorizonMode = true;
+            Properties.Settings.Default.LocalHorizonMode = mixedReality;
             Properties.Settings.Default.ConstellationArtFilter = new ConstellationFilter();
             Properties.Settings.Default.ConstellationBoundariesFilter = new ConstellationFilter();
             Constellations.DrawNamesFiltered = true;
@@ -156,7 +163,7 @@ namespace TerraViewer
             RenderEngine.Initialized = true;
             ReadyToRender = true;
 
-            TargetZoom = .8;
+            
            
         }
         
@@ -243,6 +250,13 @@ namespace TerraViewer
             RenderEngine.Engine.SolarSystemTrack = SolarSystemObjects.Custom;
             RenderEngine.Engine.TrackingFrame = target.Name;
             RenderEngine.Engine.viewCamera.Zoom = RenderEngine.Engine.targetViewCamera.Zoom = .000000001;
+            SpaceTimeController.TimeRate = 1;
+            var scratch = SpaceTimeController.Now;
+            SpaceTimeController.Now = scratch.AddHours(1);
+            Properties.Settings.Default.SolarSystemMinorOrbits.TargetState = true;
+            LayerManager.AllMaps["ISS"].Frame.ShowOrbitPath = true;
+            //SpaceTimeController.SyncToClock = true;
+
         }
 
         const float FOVMULT = 343.774f;
@@ -5351,8 +5365,10 @@ namespace TerraViewer
                     if (RenderContext11.ExternalProjection)
                     {
                         RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
-                        double sf = 1 / (UiTools.MetersToSolarSystemDistance(1) / SolarSystemCameraDistance);
-                        RenderContext11.ExternalViewScale = Matrix3d.Scaling(sf, sf, sf);
+                        //double sf = (SolarSystemCameraDistance / UiTools.MetersToSolarSystemDistance(1)  )*1000;
+                       double sf = 1/(UiTools.SolarSystemToMeters(SolarSystemCameraDistance)*1000);
+                     
+                       RenderContext11.ExternalViewScale = Matrix3d.Scaling(sf, sf, sf);
                     }
                     {
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0); //black
@@ -5820,7 +5836,8 @@ namespace TerraViewer
                     }
                 }
 
-                
+                RenderContext11.ExternalViewScale = Matrix3d.Identity;
+                RenderContext11.UpdateProjectionConstantBuffers();
 
                 if (LeftController.Active || RightController.Active)
                 {
@@ -6040,6 +6057,19 @@ namespace TerraViewer
                         showRingMenuLeft = true;
                         ringMenu.SetActivePanel(1);
                     }
+                }
+                else
+                {
+                    if (controller.Events.HasFlag(HandControllerStatus.TriggerDown))
+                    {
+                        TrackISS();
+                    }
+
+                    if (controller.Events.HasFlag(HandControllerStatus.GripDown))
+                    {
+                        viewCamera.Target = SolarSystemObjects.Earth;
+                    }
+
                 }
 
                 Matrix3d worldSaved = RenderContext11.World;
@@ -7191,8 +7221,15 @@ namespace TerraViewer
             RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
 
             Tile.Viewport = RenderContext11.ViewPort;
-            Tile.wvp = (RenderContext11.WorldBase * RenderContext11.ViewBase * RenderContext11.Projection).Matrix11;
 
+            if (RenderContext11.ExternalProjection)
+            {
+                Tile.wvp = (RenderContext11.WorldBase * RenderContext11.ViewBase * RenderContext11.ExternalProjectionLeft).Matrix11; 
+            }
+            else
+            {
+                Tile.wvp = (RenderContext11.WorldBase * RenderContext11.ViewBase * RenderContext11.Projection).Matrix11;
+            }
             RenderContext11.PreDraw();
 #if !WINDOWS_UWP
             if (layer.DataSetType == ImageSetType.Sky)

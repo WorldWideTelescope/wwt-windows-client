@@ -164,7 +164,7 @@ namespace TerraViewer
 
         public static SharpDX.DXGI.Format DefaultTextureFormat
         {
-            get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.B8G8R8A8_UNorm; }
+            get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
         }
 
 #if !WINDOWS_UWP
@@ -313,13 +313,14 @@ namespace TerraViewer
         
         public RenderContext11(Device deviceIn, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
-            //todo fix these to be real
-            
+            bool forceNoSRGB = false;
+
             WicImagingFactory = wicImagingFactory;
 
 
             if (deviceIn == null)
             {
+                forceNoSRGB = true;
                 bool failed = true;
                 while (failed)
                 {
@@ -423,7 +424,7 @@ namespace TerraViewer
                 Downlevel = true;
             }
 
-            bool forceNoSRGB = false;
+           
 
             if (!Downlevel)
             {
@@ -1920,14 +1921,27 @@ ambientLightColor.B / 255.0f);
             if (ExternalProjection)
             {
                 ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
-                ExternalViewScale = Matrix3d.Identity;
+               // ExternalViewScale = Matrix3d.Identity;
 
                 var epl = externalProjLeft;
                 var epr = externalProjRight;
+                var evl = externalViewLeft;
+                var evr = externalViewRight;
+                double scaleT = ExternalViewScale.M11;
+                //scaleT = 0;
+
+                evl.M41 *= scaleT;
+                evl.M42 *= scaleT;
+                evl.M43 *= scaleT;
+
+                evr.M41 *= scaleT;
+                evr.M42 *= scaleT;
+                evr.M43 *= scaleT;
 
 
-                var left = externalViewLeft * ExternalViewScale * epl;
-                var right = externalViewRight * ExternalViewScale * epr;
+
+                var left = evl  * epl;
+                var right = evr * epr;
 
 
 

@@ -276,7 +276,7 @@ namespace TerraViewer
             context.GeometryShader.SetConstantBuffer(0, constantBuffer);
             context.VertexShader.Set(vertexShader);
             context.PixelShader.Set(pixelShader);
-            context.GeometryShader.SetShader(geometryShader, null, 0);
+            context.GeometryShader.Set(geometryShader);
 
             // Set vertex shader
         }
@@ -1072,10 +1072,10 @@ namespace TerraViewer
                 vertexShaderText +=
                     "    Out.OverlayTexCoord" + overlayIndex + " = mul(float4(In.LongLatCoord.x, In.LongLatCoord.y, 1.0, 0.0), matOverlayTexture" + overlayIndex + ").xy;\n";
             }
-
+           
             vertexShaderText +=
-                    "     return Out;                              \n" + // Transfer color
-                    " }                                            \n";
+                "     return Out;                              \n" + // Transfer color
+                " }                                            \n";
 
             bool viewDependentLighting = false;
             if (style == PlanetSurfaceStyle.Specular ||
@@ -1430,9 +1430,12 @@ namespace TerraViewer
 
             //pixelShaderText +=
             //    "     return Out;\n";
+
+
+
             pixelShaderText +=
                 "     return color;\n";
-
+ 
             pixelShaderText +=
                     " }\n";
 

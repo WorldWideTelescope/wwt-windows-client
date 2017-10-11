@@ -83,6 +83,7 @@ namespace WorldWideTelescope
                 }
                 if (e.Key == Windows.System.VirtualKey.I)
                 {
+                    RenderEngine.currentImageSetfield = RenderEngine.GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible);
                     RenderEngine.TrackISS();
                 }
             }
