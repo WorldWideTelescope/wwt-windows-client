@@ -3733,6 +3733,13 @@ namespace TerraViewer
             double p11 = renderContext.Projection.M11;
             double p34 = renderContext.Projection.M34;
             double p44 = renderContext.Projection.M44;
+            if (RenderContext11.ExternalProjection)
+            {
+                p11 = Math.Abs(RenderContext11.ExternalProjectionLeft.M11);
+                p34 = RenderContext11.ExternalProjectionLeft.M34;
+                p44 = RenderContext11.ExternalProjectionLeft.M44;
+            }
+
             double w = Math.Abs(p34) * dist + p44;
             float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
             float radiusInPixels = (float)(radius * pixelsPerUnit);

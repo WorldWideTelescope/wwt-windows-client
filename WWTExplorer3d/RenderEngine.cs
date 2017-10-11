@@ -5366,7 +5366,7 @@ namespace TerraViewer
                     {
                         RenderContext11.ExternalScalingFactor = Matrix.Scaling(1, 1, -1);
                         //double sf = (SolarSystemCameraDistance / UiTools.MetersToSolarSystemDistance(1)  )*1000;
-                       double sf = 1/(UiTools.SolarSystemToMeters(SolarSystemCameraDistance)*1000);
+                       double sf = 1/(UiTools.SolarSystemToMeters(SolarSystemCameraDistance)*1000000);
                      
                        RenderContext11.ExternalViewScale = Matrix3d.Scaling(sf, sf, sf);
                     }
@@ -5924,15 +5924,8 @@ namespace TerraViewer
                 //    ProjectAtInfinity = !ProjectAtInfinity;
                 //}
 
-                if (controller.Status.HasFlag(HandControllerStatus.StickUp) && controller.Hand == HandType.Left)
-                {
-                    TargetZoom *= .98;
-                }
+                
 
-                if (controller.Status.HasFlag(HandControllerStatus.StickDown) && controller.Hand == HandType.Left)
-                {
-                    TargetZoom /= .98;
-                }
                 if (controller.Events.HasFlag(HandControllerStatus.MenuDown) && controller.Hand == HandType.Left)
                 {
                     PreviousView();
@@ -6060,16 +6053,57 @@ namespace TerraViewer
                 }
                 else
                 {
-                    if (controller.Events.HasFlag(HandControllerStatus.TriggerDown))
-                    {
-                        TrackISS();
-                    }
+                    
 
                     if (controller.Events.HasFlag(HandControllerStatus.GripDown))
                     {
-                        viewCamera.Target = SolarSystemObjects.Earth;
+                        if (viewCamera.Target != SolarSystemObjects.Earth)
+                        {
+                            viewCamera.Target = SolarSystemObjects.Earth;
+                            viewCamera.Zoom = .1;
+                        }
+                        else
+                        {
+                            TrackISS();
+                        }
+                    }
+                    SpaceTimeController.SyncToClock = false;
+
+                    if (controller.Status.HasFlag(HandControllerStatus.TriggerDown) && controller.Hand == HandType.Right)
+                    {
+                        TargetZoom *= .98;
                     }
 
+                    if (controller.Status.HasFlag(HandControllerStatus.TriggerDown) && controller.Hand == HandType.Left)
+                    {
+                        TargetZoom /= .98;
+                    }
+                    double factor = .05;
+
+                    if (Math.Abs(controller.ThumbX) > .2 && controller.Hand == HandType.Left)
+                    {
+                        CameraRotateTarget = CameraRotateTarget + controller.ThumbX * factor;
+                    }
+
+                    if (Math.Abs(controller.ThumbY) > .2 && controller.Hand == HandType.Left)
+                    {
+                        CameraAngleTarget = CameraAngleTarget + controller.ThumbY * factor;
+                    }
+
+                    if (controller.Status.HasFlag(HandControllerStatus.StickDown) && controller.Hand == HandType.Left)
+                    {
+                        TargetZoom /= .98;
+                    }
+
+                    if (CameraAngleTarget < -1.52)
+                    {
+                        CameraAngleTarget = -1.52;
+                    }
+
+                    if (CameraAngleTarget > 0)
+                    {
+                        CameraAngleTarget = 0;
+                    }
                 }
 
                 Matrix3d worldSaved = RenderContext11.World;
