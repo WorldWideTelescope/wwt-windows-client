@@ -91,6 +91,8 @@ namespace WWTHolographic
         }
         bool setupStarted = false;
         bool setupFinished = false;
+        public static int EyeWidth = 1440;
+        public static int EyeHeight = 1440;
         public void SetHolographicSpace(HolographicSpace holographicSpace)
         {
             this.holographicSpace = holographicSpace;
@@ -107,7 +109,7 @@ namespace WWTHolographic
                 var t = Task.Run(() =>
                 {
                     renderEngine = new TerraViewer.RenderEngine();
-                    renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory, 1440, 1440);
+                    renderEngine.InitializeForUwp(deviceResources.D3DDevice, deviceResources.WicImagingFactory, EyeWidth, EyeHeight);
                     setupFinished = true;
                 });
             }

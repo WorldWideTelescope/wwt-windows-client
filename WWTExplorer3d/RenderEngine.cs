@@ -55,7 +55,8 @@ namespace TerraViewer
             bezelSpacing = (float)config.Bezel;
 
             RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
-            RenderContext11.MultiSampleCount = 8;            
+            RenderContext11.MultiSampleCount = 8;     
+            
             if (device !=null)
             {
 
@@ -193,7 +194,12 @@ namespace TerraViewer
             LookAtType = (ImageSetType)next;
             currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
             CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
+            
             GotoTarget(camParams, false, true);
+            Alt = 0;
+            Az = 0;
+            targetAlt = 0;
+            targetAz = 0;
         }
 
         public void PreviousView()
@@ -203,6 +209,10 @@ namespace TerraViewer
             currentImageSetfield = GetDefaultImageset(LookAtType, BandPass.Visible);
             CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
             GotoTarget(camParams, false, true);
+            Alt = 0;
+            Az = 0;
+            targetAlt = 0;
+            targetAz = 0;
         }
 
         RingMenu ringMenu = null;
@@ -5919,12 +5929,6 @@ namespace TerraViewer
             RenderContext11.ExternalViewScale = Matrix3d.Identity;
             if (controller.Active)
             {
-                //if (controller.Events.HasFlag(HandControllerStatus.MenuDown))
-                //{
-                //    ProjectAtInfinity = !ProjectAtInfinity;
-                //}
-
-                
 
                 if (controller.Events.HasFlag(HandControllerStatus.MenuDown) && controller.Hand == HandType.Left)
                 {
@@ -5985,14 +5989,19 @@ namespace TerraViewer
 
                 bool inThere = SphereIntersectRay(pos1t, endPost, out result);
 
-                string constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
-                var v = Constellations.FullName(constellation);
-                var filter = new ConstellationFilter();
-                filter.Set(constellation, true);
-                Properties.Settings.Default.ConstellationArtFilter = filter;
-                Properties.Settings.Default.ConstellationNamesFilter = filter;
+                string constellation = "uma";
+                if (controller.Hand == HandType.Left)
+                {
+                    constellation = constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                    var v = Constellations.FullName(constellation);
+                    var filter = new ConstellationFilter();
+                    filter.Set(constellation, true);
+                    Properties.Settings.Default.ConstellationArtFilter = filter;
+                    Properties.Settings.Default.ConstellationNamesFilter = filter;
 
-                RenderEngine.pointerConstellation = v;
+                    RenderEngine.pointerConstellation = v;
+
+                }
 
                 if (!(Space && Properties.Settings.Default.LocalHorizonMode))
                 {
@@ -6020,7 +6029,7 @@ namespace TerraViewer
                         showRingMenuLeft = true;
                     }
 
-                    if (controller.Status.HasFlag(HandControllerStatus.TriggerDown))
+                    if (controller.Status.HasFlag(HandControllerStatus.TriggerDown) && controller.Hand == HandType.Left)
                     {
 
                         if (zoomWindowRenderTarget != null)
@@ -6122,10 +6131,11 @@ namespace TerraViewer
                 RenderContext11.World = localWorld;
                 RenderContext11.View = Matrix3d.Identity;
 
-                if (Space)
+                if (Space && controller.Hand == HandType.Left)
                 {
                     leftPointerRay.Draw(RenderContext11, 1, SysColor.Green);
                 }
+
                 RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
                 RenderContext11.setRasterizerState(TriangleCullMode.CullCounterClockwise);
                 DrawHandControllerModel(controller);

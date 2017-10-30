@@ -57,6 +57,8 @@ namespace WWTHolographic.Common
             d3dViewport.Y               = 0;
             d3dViewport.MinDepth        = 0;
             d3dViewport.MaxDepth        = 1;
+            WWTHolographicMain.EyeWidth = (int)d3dRenderTargetSize.Width;
+            WWTHolographicMain.EyeHeight = (int)d3dRenderTargetSize.Height;
         }
 
         /// <summary>
