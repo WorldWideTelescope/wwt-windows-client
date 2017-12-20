@@ -207,8 +207,6 @@ namespace TerraViewer
                     keepLooking = false;
                 }
 
-
-
                 TreeNodeCollection nodeCollextion = treeNodeCollection;
                 TreeNode frame = null;
                 if (foundRoot && keepLooking)

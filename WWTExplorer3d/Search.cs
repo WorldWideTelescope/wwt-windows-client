@@ -99,7 +99,8 @@ namespace TerraViewer
                     searchResults.Clear();
                     textChanged = false;
                     return;
-                }               
+                }
+
                 string searchString = Catalogs.CleanSearchString(searchText.Text);
 
                 
