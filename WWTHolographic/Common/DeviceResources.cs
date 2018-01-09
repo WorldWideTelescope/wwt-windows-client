@@ -331,7 +331,17 @@ namespace WWTHolographic.Common
 
         /// <summary>
         /// Present the contents of the swap chain to the screen.
-        ///    );
+        /// Locks the set of holographic camera resources until the function exits.
+        /// </summary>
+        public void Present(ref HolographicFrame frame)
+        {
+            // By default, this API waits for the frame to finish before it returns.
+            // Holographic apps should wait for the previous frame to finish before 
+            // starting work on a new frame. This allows for better results from
+            // holographic frame predictions.
+            var presentResult = frame.PresentUsingCurrentPrediction(
+                HolographicFramePresentWaitBehavior.WaitForFrameToFinish
+                );
 
             HolographicFramePrediction prediction = frame.CurrentPrediction;
             UseHolographicCameraResources((Dictionary<uint, CameraResources> cameraResourcesDictionary) =>
