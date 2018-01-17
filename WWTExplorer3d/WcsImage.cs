@@ -136,6 +136,7 @@ namespace TerraViewer
             get { return sizeY; }
             set { sizeY = value; }
         }
+
         protected double cd1_1;
 
         public double Cd1_1

@@ -7,7 +7,7 @@ using System.Xml;
 #endif
 namespace TerraViewer
 {
-    class ImageSetLayer : Layer
+    public class ImageSetLayer : Layer
     {
         IImageSet imageSet = null;
 

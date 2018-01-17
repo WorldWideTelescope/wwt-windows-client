@@ -2143,14 +2143,27 @@ namespace TerraViewer
 
         private void timeScrubber_Scroll(object sender, EventArgs e)
         {
-            if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
+            if (layerTree.SelectedNode != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
-                TimeSpan ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
+                if (layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
+                {
+                    ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+                    TimeSpan ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
 
-                long ticksPerUnit = ts.Ticks / 1000;
+                    long ticksPerUnit = ts.Ticks / 1000;
 
-                SpaceTimeController.Now = iTimeSeries.SeriesStartTime + new TimeSpan((long)timeScrubber.Value * ticksPerUnit);
+                    SpaceTimeController.Now = iTimeSeries.SeriesStartTime + new TimeSpan((long)timeScrubber.Value * ticksPerUnit);
+                    timeLabel.Text = Language.GetLocalizedText(667, "Time Scrubber");
+                }
+                else
+                {
+                    ImageSetLayer layer = layerTree.SelectedNode.Tag as ImageSetLayer;
+                    if (layer != null && layer.ImageSet.WcsImage is FitsImage)
+                    {
+                        Histogram.UpdateImage(layer, timeScrubber.Value);
+                        timeLabel.Text = layer.FitsImage.GetZDescription();
+                    }
+                }
             }
         }
         bool autoLoop = false;
@@ -2179,44 +2192,61 @@ namespace TerraViewer
 
         private void UpdateLayerTimeLocal()
         {
-            if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
+            if (layerTree.SelectedNode != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
-                if (iTimeSeries.IsTimeSeries)
+                if (layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
                 {
-                    if (SpaceTimeController.Now > iTimeSeries.SeriesEndTime)
+                    ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+                    if (iTimeSeries.IsTimeSeries)
                     {
-                        SpaceTimeController.Now = iTimeSeries.SeriesStartTime;
-                    }
-
-                    TimeSpan ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
-
-                    long ticksPerUnit = ts.Ticks / 1001;
-
-                    if (SpaceTimeController.Now < iTimeSeries.SeriesStartTime)
-                    {
-                        timeScrubber.Value = 0;
-                    }
-                    else if (SpaceTimeController.Now > iTimeSeries.SeriesEndTime)
-                    {
-                        timeScrubber.Value = 1000;
-                    }
-                    else
-                    {
-                        ts = SpaceTimeController.Now - iTimeSeries.SeriesStartTime;
-                        try
+                        if (SpaceTimeController.Now > iTimeSeries.SeriesEndTime)
                         {
-                            if (ticksPerUnit == 0)
-                            {
-                                timeScrubber.Value = 0;
-                            }
-                            else
-                            {
-                                timeScrubber.Value = Math.Min(timeScrubber.Maximum, (int)(ts.Ticks / ticksPerUnit));
-                            }
+                            SpaceTimeController.Now = iTimeSeries.SeriesStartTime;
                         }
-                        catch
-                        { }
+
+                        TimeSpan ts = iTimeSeries.SeriesEndTime - iTimeSeries.SeriesStartTime;
+
+                        long ticksPerUnit = ts.Ticks / 1001;
+
+                        timeScrubber.Maximum = 1000;
+
+                        if (SpaceTimeController.Now < iTimeSeries.SeriesStartTime)
+                        {
+                            timeScrubber.Value = 0;
+                        }
+                        else if (SpaceTimeController.Now > iTimeSeries.SeriesEndTime)
+                        {
+                            timeScrubber.Value = 1000;
+                        }
+                        else
+                        {
+                            ts = SpaceTimeController.Now - iTimeSeries.SeriesStartTime;
+                            try
+                            {
+                                if (ticksPerUnit == 0)
+                                {
+                                    timeScrubber.Value = 0;
+                                }
+                                else
+                                {
+                                    timeScrubber.Value = Math.Min(timeScrubber.Maximum, (int)(ts.Ticks / ticksPerUnit));
+                                }
+                            }
+                            catch
+                            { }
+                        }
+                    }
+                }
+                else 
+                {
+
+                    ImageSetLayer layer = layerTree.SelectedNode.Tag as ImageSetLayer;
+                    if (layer != null && layer.ImageSet.WcsImage is FitsImage)
+                    {
+                        timeScrubber.Maximum = layer.FitsImage.Depth-1;
+                        timeScrubber.Minimum = 0;
+                        timeScrubber.Value = layer.FitsImage.lastBitmapZ;
+
                     }
                 }
             }
@@ -2271,43 +2301,62 @@ namespace TerraViewer
             }
 
 
-            if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
+            if (layerTree.SelectedNode != null)
             {
-                ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
-
-                timeSeries.Checked = iTimeSeries.IsTimeSeries;
-                if (iTimeSeries.SeriesStartTime.ToString("HH:mm:ss") == "00:00:00")
+                if (layerTree.SelectedNode.Tag as ITimeSeriesDescription != null)
                 {
-                    startDate.Text = iTimeSeries.SeriesStartTime.ToString("yyyy/MM/dd");
+                    timeScrubber.Maximum = 1000;
+                    ITimeSeriesDescription iTimeSeries = layerTree.SelectedNode.Tag as ITimeSeriesDescription;
+
+                    timeSeries.Checked = iTimeSeries.IsTimeSeries;
+                    if (iTimeSeries.SeriesStartTime.ToString("HH:mm:ss") == "00:00:00")
+                    {
+                        startDate.Text = iTimeSeries.SeriesStartTime.ToString("yyyy/MM/dd");
+                    }
+                    else
+                    {
+                        startDate.Text = iTimeSeries.SeriesStartTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    }
+
+                    if (iTimeSeries.SeriesEndTime.ToString("HH:mm:ss") == "00:00:00")
+                    {
+                        endDate.Text = iTimeSeries.SeriesEndTime.ToString("yyyy/MM/dd");
+                    }
+                    else
+                    {
+                        endDate.Text = iTimeSeries.SeriesEndTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    }
+                    
+                    return;
+                }
+                else if ( layerTree.SelectedNode.Tag is LayerMap)
+                {
+                    LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
+                    if (map != null)
+                    {
+                        CurrentMap = map.Name;
+                    }
                 }
                 else
                 {
-                    startDate.Text = iTimeSeries.SeriesStartTime.ToString("yyyy/MM/dd HH:mm:ss");
-                }
-
-                if (iTimeSeries.SeriesEndTime.ToString("HH:mm:ss") == "00:00:00")
-                {
-                    endDate.Text = iTimeSeries.SeriesEndTime.ToString("yyyy/MM/dd");
-                }
-                else
-                {
-                    endDate.Text = iTimeSeries.SeriesEndTime.ToString("yyyy/MM/dd HH:mm:ss");
-                }
-                return;
-            }
-            else if (layerTree.SelectedNode != null && layerTree.SelectedNode.Tag is LayerMap)
-            {
-                LayerMap map = layerTree.SelectedNode.Tag as LayerMap;
-                if (map != null)
-                {
-                    CurrentMap = map.Name;
+                    ImageSetLayer layer = layerTree.SelectedNode.Tag as ImageSetLayer;
+                    if (layer != null && layer.ImageSet.WcsImage is FitsImage)
+                    {
+                        Histogram.UpdateImage(layer, timeScrubber.Value);
+                        timeSeries.Checked = false;
+                        startDate.Text = "0";
+                        timeScrubber.Maximum = layer.FitsImage.Depth-1;
+                        timeScrubber.Value = layer.FitsImage.lastBitmapZ;
+                        endDate.Text = timeScrubber.Maximum.ToString();
+                        return;
+                    }                 
                 }
             }
 
             timeSeries.Checked = false;
             startDate.Text = "";
             endDate.Text = "";
-
+            timeLabel.Text = Language.GetLocalizedText(667, "Time Scrubber");
         }
 
         private void layerTree_AfterCollapse(object sender, TreeViewEventArgs e)
@@ -2317,7 +2366,6 @@ namespace TerraViewer
             {
                 if (e.Action != TreeViewAction.Unknown)
                 {
-
                     LayerUITreeNode layerNode = node.Tag as LayerUITreeNode;
                     if (layerNode.Opened != node.IsExpanded)
                     {
