@@ -79,9 +79,10 @@ namespace TerraViewer
 
         }
 
+        public static bool Initializing = false;
         public static void InitSearchTable()
         {
-            if (!searchTableInitialized)
+            if (!searchTableInitialized && !Initializing)
             {
                 LoadSearchTable();
             }
@@ -91,6 +92,7 @@ namespace TerraViewer
         static System.Threading.Mutex LoadSearchMutex = new System.Threading.Mutex();
         static public void LoadSearchTable()
         {
+            Initializing = true;
             try
             {
                 LoadSearchMutex.WaitOne();
@@ -128,7 +130,7 @@ namespace TerraViewer
                 searchTableInitialized = true;
                 LoadSearchMutex.ReleaseMutex();
             }
-
+            Initializing = false;
         }
 
         public static void AddParts(string key, IPlace place)

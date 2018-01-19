@@ -1619,20 +1619,21 @@ namespace TerraViewer
 
             var t = System.Threading.Tasks.Task.Run(() =>
             {
-
+                Catalogs.Initializing = true;
                 LoadExploreRoot();
                 if (explorerRoot != null)
                 {
                     ContextSearch.AddFolderToSearch(explorerRoot, true);
                 }
                 ContextSearch.AddCatalogs(true);
+                Catalogs.LoadSearchTable();
                 ContextSearch.Initialized = true;
             });
 
 
-            BackInitDelegate initBackground = SearchInit;
+            //BackInitDelegate initBackground = SearchInit;
 
-            initBackground.BeginInvoke(null, null);
+            //initBackground.BeginInvoke(null, null);
 
             this.WindowState = FormWindowState.Maximized;
 
@@ -11089,7 +11090,14 @@ namespace TerraViewer
                         Samp.sampKnownTableIds.Add(ID, layer);
 
                     }
-                    Samp.sampKnownTableUrls.Add(url, layer);
+                    try
+                    {
+                        Samp.sampKnownTableUrls.Add(url, layer);
+                    }
+                    catch
+                    {
+
+                    }
                     viewer.Layer = layer;
                     viewer.Show();
                     ShowLayersWindows = true;
