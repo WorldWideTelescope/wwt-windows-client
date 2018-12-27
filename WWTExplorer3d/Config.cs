@@ -77,7 +77,7 @@ namespace TerraViewer
         {
             get
             {
-                return !(String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
+                return (!String.IsNullOrEmpty(BlendFile) && ( !String.IsNullOrEmpty(ConfigFile) || !String.IsNullOrEmpty(DistortionGrid)) );
             }
         }
 

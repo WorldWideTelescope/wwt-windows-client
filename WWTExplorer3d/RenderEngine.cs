@@ -4784,8 +4784,14 @@ namespace TerraViewer
                     // * When multisampling is on, draw into an intermediate buffer, then resolve 
                     //   it into the undistorted texture
                     RenderFrame(undistorted.renderView, domeZbuffer.DepthView, RenderTypes.Normal, config.Width, config.Height);
-
-                    RenderDistort();
+                    if (config.UsingSgcWarpMap)
+                    {
+                        RenderDistortWithBlend();
+                    }
+                    else
+                    {
+                        RenderDistort();
+                    }
                 }
                 else if (Properties.Settings.Default.FlatScreenWarp)
                 {
@@ -5228,7 +5234,7 @@ namespace TerraViewer
 
         // Distortion buffers
         RenderTargetTexture undistorted;
-
+        Texture11 blendTexture;
         // Full-dome buffers
         RenderTargetTexture domeCubeFaceMultisampled = null;
         RenderTargetTexture[] domeCube = new RenderTargetTexture[5];
@@ -7506,6 +7512,44 @@ namespace TerraViewer
             WarpOutputShader.Use(RenderContext11.devContext, true);
 
             RenderContext11.devContext.PixelShader.SetShaderResource(0, undistorted.RenderTexture.ResourceView);
+            RenderContext11.devContext.DrawIndexed(distortIndexBuffer.Count, 0, 0);
+            PresentFrame11(false);
+
+        }
+        private void RenderDistortWithBlend()
+        {
+            SetupMatricesDistort();
+
+            if (blendTexture == null)
+            {
+                blendTexture = Texture11.FromFile(config.BlendFile);
+            }
+
+            if (distortVertexBuffer == null || refreshWarp)
+            {
+                MakeDistortionGrid();
+                refreshWarp = false;
+            }
+
+            RenderContext11.SetDisplayRenderTargets();
+            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
+
+            RenderContext11.SetVertexBuffer(distortVertexBuffer);
+            RenderContext11.SetIndexBuffer(distortIndexBuffer);
+
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.BlendMode = BlendMode.Alpha;
+            RenderContext11.setRasterizerState(TriangleCullMode.Off);
+
+            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
+            mat.Transpose();
+
+            WarpOutputShaderWithBlendTexture.MatWVP = mat;
+
+            WarpOutputShaderWithBlendTexture.Use(RenderContext11.devContext, true);
+
+            RenderContext11.devContext.PixelShader.SetShaderResource(0, undistorted.RenderTexture.ResourceView);
+            RenderContext11.devContext.PixelShader.SetShaderResource(1, blendTexture.ResourceView);
             RenderContext11.devContext.DrawIndexed(distortIndexBuffer.Count, 0, 0);
             PresentFrame11(false);
 
