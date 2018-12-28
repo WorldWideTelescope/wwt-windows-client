@@ -342,6 +342,7 @@ namespace TerraViewer
 
         public Vector6[,] DistortionGridVertices = null;
 
+
         void ReadSGCFile(string filename)
         {
             FileStream s = new FileStream(filename, FileMode.Open);
@@ -379,7 +380,7 @@ namespace TerraViewer
             double pitch=0;
 
             ToEulerianAngle(quaternion, out pitch, out roll, out heading);
-
+           
             float num2 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(up) / 180.0) * Math.PI))) / 2.0);
             float num3 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(down) / 180.0) * Math.PI))) / 2.0);
             float num4 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(right) / 180.0) * Math.PI))) / 2.0);
@@ -395,7 +396,7 @@ namespace TerraViewer
 
             Heading = (float)heading;
             Pitch = (float)pitch;
-            Roll = -(float)roll;
+            Roll = (float)-roll;
 
             DistortionGridWidth = meshWidth;
             DistortionGridHeight = meshHeight;
@@ -416,7 +417,7 @@ namespace TerraViewer
 
             for (int i = 0; i < indexCount; i++)
             {
-                indices[i] = br.ReadInt32();
+                DistortionGridIndicies[i] = br.ReadInt32();
             }
 
             int t = meshHeight * meshWidth;

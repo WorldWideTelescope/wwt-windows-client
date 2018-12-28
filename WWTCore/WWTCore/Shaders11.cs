@@ -4109,9 +4109,6 @@ namespace TerraViewer
     {
         private static WarpOutputShaderWithBlendTexture instance;
 
-        protected static ShaderBytecode pixelShaderByteCodeNoTexture;
-        protected static PixelShader pixelShaderNoTexture;
-
         static SharpDX.Direct3D11.Buffer contantBuffer;
 
         public static VertexShader Shader
@@ -4170,41 +4167,31 @@ namespace TerraViewer
 
             context.PixelShader.Set(instance.CompiledPixelShader);
 
-
-            if (RenderContext11.ExternalProjection)
-            {
-                context.GeometryShader.SetConstantBuffer(0, contantBuffer);
-
-                context.GeometryShader.SetShader(instance.CompiledGeometryShader, null, 0);
-                RenderContext11.UpdateProjectionConstantBuffers();
-            }
         }
 
         protected override string GetPixelShaderSource(string profile)
         {
             return
-                "struct PS_IN                                                              \n" +
-                    "{                                                                     \n" +
-                    "	float4 pos : SV_POSITION;                                          \n" +
-                    "	float2 tex : TEXCOORD;                                             \n" +
-                    "	float4 color : COLOR;                                              \n" +
-                    "};                                                                    \n" +
-                "                                                                          \n" +
-                " Texture2D picture;                                                       \n" +
-                " Texture2D blend;                                                         \n" +
-                " SamplerState pictureSampler;                                             \n" +
-                "                                                                          \n" +
-                "                                                                          \n" +
-                "                                                                          \n" +
-                " float4 PS( PS_IN input ) : SV_Target                                     \n" +
-                " {                                                                        \n" +
-                "      float2 blendTex = float2(input.pos.x+1.0/2.0,input.pos.y+1.0/2.0);  \n" +
-                "      float4 color = blend.Sample( pictureSampler, blendTex);             \n" +
-                "                                                                          \n" +
-                "                                                                          \n" +
-                "                                                                          \n" +
-                "      return picture.Sample(pictureSampler, input.tex) * color;           \n" +
-                " }                                                                        \n" +
+                "struct PS_IN                                                                              \n" +
+                    "{                                                                                     \n" +
+                    "	float4 pos : SV_POSITION;                                                          \n" +
+                    "	float4 color : COLOR;                                                              \n" +
+                    "	float2 tex : TEXCOORD;                                                             \n" +
+                    "	float2 tex1 : TEXCOORD1;                                                           \n" +
+                    "};                                                                                    \n" +
+                "                                                                                          \n" +
+                " Texture2D picture  : register(t0);                                                       \n" +
+                " Texture2D blend  : register(t1);                                                         \n" +
+                " SamplerState pictureSampler;                                                             \n" +
+                "                                                                                          \n" +
+                "                                                                                          \n" +
+                "                                                                                          \n" +
+                " float4 PS( PS_IN input ) : SV_Target                                                     \n" +
+                " {                                                                                        \n" +
+                "      float2 blendTex = input.tex1;        \n" +
+                "      float4 color = blend.Sample( pictureSampler, blendTex);                             \n" +
+                "      return picture.Sample(pictureSampler, input.tex) * color;                           \n" +
+                " }                                                                                        \n" +
                 "                                                                            ";
 
         }
@@ -4214,8 +4201,7 @@ namespace TerraViewer
         {
 
             string source =
-                   "float4x4 matWVP;                              \n" +
-                    "float1 opacity;                              \n" +
+                    "float4x4 matWVP;                              \n" +
                     "struct VS_IN                                 \n" +
                     "{                                            \n" +
                     "	float4 pos : POSITION;                    \n" +
@@ -4226,18 +4212,19 @@ namespace TerraViewer
                     "struct PS_IN                                 \n" +
                     "{                                            \n" +
                     "	float4 pos : SV_POSITION;                 \n" +
-                    "	float2 tex : TEXCOORD;                    \n" +
-                    "	float4 color : COLOR;                     \n"+
+                     "	float4 color : COLOR;                     \n" +
+                     "	float2 tex : TEXCOORD;                    \n" +
+                    "	float2 tex1 : TEXCOORD1;                                                             \n" +
                     "};                                           \n" +
                     "                                             \n" +
                     "PS_IN VS( VS_IN input )                      \n" +
                     "{                                            \n" +
-                    "	PS_IN output = (PS_IN)0;                  \n" +
+                    "	PS_IN output;                         \n" +
                     "	                                          \n "+
                     "   output.pos = mul(input.pos,  matWVP );    \n" +
+                    "   output.tex1 = float2((input.pos.x+.5)/1.0, 1-(input.pos.y+.5)/1.0);" +
                     "	output.tex = input.tex;                   \n" +
                     "	output.color = input.color;               \n" +
-                    "   output.color.a = input.color.a * opacity; \n" +
                     "	return output;                            \n" +
                     "}                                            \n" +
                     "                                             \n" +
