@@ -127,6 +127,8 @@ namespace TerraViewer
             set { nodeDiplayName = value; }
         }
         public Matrix3d ViewMatrix = Matrix3d.Identity;
+
+        public SharpDX.Matrix ProjectorMatrixSGC = SharpDX.Matrix.Identity;
 #if !WINDOWS_UWP
 
         public void ReadFromXML(string path)
@@ -342,7 +344,7 @@ namespace TerraViewer
 
         public Vector6[,] DistortionGridVertices = null;
 
-        public SharpDX.Matrix ProjectorMatrixSGC = SharpDX.Matrix.Identity;
+        
 
         void ReadSGCFile(string filename)
         {

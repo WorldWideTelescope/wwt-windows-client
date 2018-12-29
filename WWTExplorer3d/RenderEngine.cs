@@ -1773,10 +1773,19 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
 
                 view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
             }
@@ -2216,10 +2225,19 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             if (config.MultiChannelGlobe)
             {
-                Matrix3d globeCameraRotation =
+                Matrix3d globeCameraRotation = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    globeCameraRotation.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    globeCameraRotation =
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
                 RenderContext11.View = RenderContext11.View * globeCameraRotation;
             }
 
@@ -2626,15 +2644,22 @@ namespace TerraViewer
             }
             else
             {
-                matHeadingPitchRoll =
-                      Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                      Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                      Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                        Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                        Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                        Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
             }
 
-
             RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
-
 
             m_nearPlane = .000000001;
             back = 12;
@@ -2819,10 +2844,19 @@ namespace TerraViewer
             }
             else if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                        Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                        Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                        Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
                 RenderContext11.View = Matrix3d.LookAtLH(
                             RenderContext11.CameraPosition,
                             cameraTarget,
@@ -3210,14 +3244,19 @@ namespace TerraViewer
 
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationX((config.Pitch / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI));
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
 
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp)
-                    * DomeMatrix
-                    * matHeadingPitchRoll;
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
             }
             else
             {
@@ -3442,10 +3481,19 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
 
                 RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
             }
