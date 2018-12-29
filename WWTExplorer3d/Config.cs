@@ -342,6 +342,7 @@ namespace TerraViewer
 
         public Vector6[,] DistortionGridVertices = null;
 
+        public SharpDX.Matrix ProjectorMatrixSGC = SharpDX.Matrix.Identity;
 
         void ReadSGCFile(string filename)
         {
@@ -373,8 +374,22 @@ namespace TerraViewer
 
             DistortionGridVertices = new Vector6[meshWidth, meshHeight];
 
+            SharpDX.Quaternion quatIn = new SharpDX.Quaternion(quat[0], quat[1], quat[2], quat[3]);
+
+            ProjectorMatrixSGC = SharpDX.Matrix.RotationQuaternion(quatIn);
+
+            SharpDX.Matrix mToggle_YZ = new SharpDX.Matrix(  -1, 0, 0, 0,
+                                                             0, -1, 0, 0,
+                                                             0, 0, 1, 0,
+                                                             0, 0, 0, 1);
+            ProjectorMatrixSGC =   mToggle_YZ * ProjectorMatrixSGC * mToggle_YZ;
+            ProjectorMatrixSGC.Invert();
+            
+           
+
             Vector4d quaternion = new Vector4d(quat[0], quat[1], quat[2], quat[3]);
 
+            
             double roll=0;
             double heading=0;
             double pitch=0;
@@ -396,7 +411,7 @@ namespace TerraViewer
 
             Heading = (float)heading;
             Pitch = (float)pitch;
-            Roll = (float)-roll;
+            Roll = (float)roll;
 
             DistortionGridWidth = meshWidth;
             DistortionGridHeight = meshHeight;
@@ -417,7 +432,7 @@ namespace TerraViewer
 
             for (int i = 0; i < indexCount; i++)
             {
-                DistortionGridIndicies[i] = br.ReadInt32();
+                indices[i] = br.ReadInt32();
             }
 
             int t = meshHeight * meshWidth;

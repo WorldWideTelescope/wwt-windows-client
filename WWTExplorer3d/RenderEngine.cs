@@ -1963,11 +1963,19 @@ namespace TerraViewer
 
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll = 
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-
+                }
                 view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * matHeadingPitchRoll;
             }
             else
@@ -2402,10 +2410,19 @@ namespace TerraViewer
             }
             else
             {
-                matHeadingPitchRoll =
-                      Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                      Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                      Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
             }
             if (rift)
             {
@@ -7997,6 +8014,8 @@ namespace TerraViewer
             fastBlend.Dispose();
             GC.SuppressFinalize(fastBlend);
         }
+
+      
 
         private void MakeDistortionGridSgcWithBlend3()
         {
