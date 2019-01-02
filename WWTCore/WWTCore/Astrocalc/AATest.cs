@@ -603,7 +603,7 @@ public static partial class GlobalMembersStdafx
 	  double Delta2 = CAACoordinateTransformation.DMSToDegrees(18, 26, 27.3);
 	  double Delta3 = CAACoordinateTransformation.DMSToDegrees(18, 49, 38.7);
 
-	  CAARiseTransitSetDetails RiseTransitSetTime = CAARiseTransitSet.Rise(2447240.5, Alpha1, Delta1, Alpha2, Delta2, Alpha3, Delta3, 71.0833, 42.3333, -0.5667);
+	  CAARiseTransitSetDetails RiseTransitSetTime = CAARiseTransitSet.Compute(2447240.5, Alpha1, Delta1, Alpha2, Delta2, Alpha3, Delta3, 71.0833, 42.3333, -0.5667);
 
 	  double Kpp = CAAPlanetaryPhenomena.K(1993.75, CAAPlanetaryPhenomena.PlanetaryObject.MERCURY, CAAPlanetaryPhenomena.EventType.INFERIOR_CONJUNCTION);
       double MercuryInferiorConjunction = CAAPlanetaryPhenomena.Mean(Kpp, CAAPlanetaryPhenomena.PlanetaryObject.MERCURY, CAAPlanetaryPhenomena.EventType.INFERIOR_CONJUNCTION);
