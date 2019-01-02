@@ -52,6 +52,17 @@ namespace TerraViewer
                 singleton.Tile = (SkyImageTile)TileCache.GetTile(0, 0, 0, imageset, null);
             }
         }
+
+        public static void UpdateImage(ImageSetLayer isl, int z)
+        {
+            FitsImage image = isl.ImageSet.WcsImage as FitsImage;
+            SkyImageTile Tile = (SkyImageTile)TileCache.GetTile(0, 0, 0, isl.ImageSet, null);
+            double factor = (image.MaxVal - image.MinVal) / 256.0;
+            double low = image.lastBitmapMin;
+            double hi = image.lastBitmapMax;
+            Tile.SetTexture(image.GetBitmap(low, hi, image.lastScale, z));
+        }
+
         public static void HideHistogram()
         {
 
@@ -281,7 +292,8 @@ namespace TerraViewer
                 double factor = (image.MaxVal - image.MinVal) / 256.0;
                 double low = image.MinVal + (lowPosition * factor);
                 double hi = image.MinVal + (highPosition * factor);
-                Tile.SetTexture(image.GetBitmap(low, hi, (ScaleTypes)scaleType.SelectedIndex));
+                int z = image.lastBitmapZ;
+                Tile.SetTexture(image.GetBitmap(low, hi, (ScaleTypes)scaleType.SelectedIndex, z));
             }
             updateTimer.Enabled = false;
 

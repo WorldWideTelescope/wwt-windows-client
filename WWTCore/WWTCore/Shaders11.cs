@@ -3773,7 +3773,7 @@ namespace TerraViewer
                 "    \n" +
                 " float4 PS( PS_IN input ) : SV_Target   \n" +
                 " {     \n" +
-                 "      if (input.tex.x < .5)                                                                                                                              \n" +
+                "      if (input.tex.x < .5)                                                                                                                              \n" +
                 "      {                                                                                                                                                        \n" +
                 " 	        return rightImg.Sample(rightSamp, float2(input.tex.x*2,input.tex.y));   \n" +
                 "      }                                                                                                                                                        \n" +
@@ -3781,7 +3781,7 @@ namespace TerraViewer
                 "      {                                                                                                                                                        \n" +
                 " 	        return leftImg.Sample(rightSamp, float2((input.tex.x-.5)*2,input.tex.y));   \n" +
                 "      }                                                                                                                                                        \n" +
-                 " }   \n" +
+                " }   \n" +
                 "    ";
         }
 
@@ -4072,7 +4072,8 @@ namespace TerraViewer
             "   }                                                                                                           \n" +
             "                                                                                                               \n ";
         }
-    private static WarpShaderConstants constants;
+
+        private static WarpShaderConstants constants;
 
         static Matrix matWVP;
 
@@ -4101,6 +4102,156 @@ namespace TerraViewer
         [FieldOffset(64)]
         public float Opacity;
        
+    }
+
+
+    public class WarpOutputShaderWithBlendTexture : ShaderBundle
+    {
+        private static WarpOutputShaderWithBlendTexture instance;
+
+        static SharpDX.Direct3D11.Buffer contantBuffer;
+
+        public static VertexShader Shader
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    initialize();
+                }
+                return instance.CompiledVertexShader;
+            }
+        }
+
+        public static PixelShader PixelShader
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    initialize();
+                }
+                return instance.CompiledPixelShader;
+            }
+        }
+
+        private static InputLayout layout;
+
+        public static void Use(DeviceContext context, bool texture, float opacity = 1.0f)
+        {
+            if (instance == null)
+            {
+                initialize();
+            }
+
+            if (layout == null)
+            {
+                // Layout from VertexShader input signature
+                layout = new InputLayout(RenderContext11.PrepDevice, instance.VertexShaderBytecode, new[]
+                    {
+                        new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32A32_Float, 0, 0),
+                        new InputElement("COLOR", 0, SharpDX.DXGI.Format.R8G8B8A8_UNorm, 16, 0),
+                        new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 20, 0),
+                   });
+            }
+
+            constants.Opacity = opacity;
+
+            context.InputAssembler.InputLayout = layout;
+
+            context.VertexShader.Set(instance.CompiledVertexShader);
+
+            context.VertexShader.SetConstantBuffer(0, contantBuffer);
+
+            context.UpdateSubresource(ref constants, contantBuffer);
+
+            context.PixelShader.Set(instance.CompiledPixelShader);
+
+        }
+
+        protected override string GetPixelShaderSource(string profile)
+        {
+            return
+                "struct PS_IN                                                                              \n" +
+                    "{                                                                                     \n" +
+                    "	float4 pos : SV_POSITION;                                                          \n" +
+                    "	float4 color : COLOR;                                                              \n" +
+                    "	float2 tex : TEXCOORD;                                                             \n" +
+                    "	float2 tex1 : TEXCOORD1;                                                           \n" +
+                    "};                                                                                    \n" +
+                "                                                                                          \n" +
+                " Texture2D picture  : register(t0);                                                       \n" +
+                " Texture2D blend  : register(t1);                                                         \n" +
+                " SamplerState pictureSampler;                                                             \n" +
+                "                                                                                          \n" +
+                "                                                                                          \n" +
+                "                                                                                          \n" +
+                " float4 PS( PS_IN input ) : SV_Target                                                     \n" +
+                " {                                                                                        \n" +
+                "      float2 blendTex = input.tex1;        \n" +
+                "      float4 color = blend.Sample( pictureSampler, blendTex);                             \n" +
+                "      return picture.Sample(pictureSampler, input.tex) * color;                           \n" +
+                " }                                                                                        \n" +
+                "                                                                            ";
+
+        }
+
+
+        protected override string GetVertexShaderSource(string profile)
+        {
+
+            string source =
+                    "float4x4 matWVP;                              \n" +
+                    "struct VS_IN                                 \n" +
+                    "{                                            \n" +
+                    "	float4 pos : POSITION;                    \n" +
+                    "	float4 color : COLOR;                     \n" +
+                    "	float2 tex : TEXCOORD;                    \n" +
+                    "};                                           \n" +
+                    "                                             \n" +
+                    "struct PS_IN                                 \n" +
+                    "{                                            \n" +
+                    "	float4 pos : SV_POSITION;                 \n" +
+                     "	float4 color : COLOR;                     \n" +
+                     "	float2 tex : TEXCOORD;                    \n" +
+                    "	float2 tex1 : TEXCOORD1;                                                             \n" +
+                    "};                                           \n" +
+                    "                                             \n" +
+                    "PS_IN VS( VS_IN input )                      \n" +
+                    "{                                            \n" +
+                    "	PS_IN output;                         \n" +
+                    "	                                          \n "+
+                    "   output.pos = mul(input.pos,  matWVP );    \n" +
+                    "   output.tex1 = float2((input.pos.x+.5)/1.0, 1-(input.pos.y+.5)/1.0);" +
+                    "	output.tex = input.tex;                   \n" +
+                    "	output.color = input.color;               \n" +
+                    "	return output;                            \n" +
+                    "}                                            \n" +
+                    "                                             \n" +
+                    "                                             \n";
+            return source;
+        }
+
+
+
+        private static WarpShaderConstants constants;
+
+        static Matrix matWVP;
+
+        public static Matrix MatWVP
+        {
+            set
+            {
+                constants.MatWVP = value;
+            }
+        }
+
+        static void initialize()
+        {
+            instance = new WarpOutputShaderWithBlendTexture();
+            instance.CompileShader(RenderContext11.VertexProfile, RenderContext11.PixelProfile);
+            contantBuffer = new SharpDX.Direct3D11.Buffer(RenderContext11.PrepDevice, Utilities.SizeOf<WarpShaderConstants>(), ResourceUsage.Default, BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+        }
     }
 
 

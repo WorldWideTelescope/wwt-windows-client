@@ -39,7 +39,7 @@ namespace TerraViewer
 
         public void PreRender(RenderEngine renderEngine)
         {
-            if (tour.CurrentTourStop != null)
+            if (tour?.CurrentTourStop != null)
             {
                 if (Scrubbing)
                 {

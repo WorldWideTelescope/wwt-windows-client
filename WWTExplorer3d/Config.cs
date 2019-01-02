@@ -77,7 +77,7 @@ namespace TerraViewer
         {
             get
             {
-                return !(String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
+                return (!String.IsNullOrEmpty(BlendFile) && ( !String.IsNullOrEmpty(ConfigFile) || !String.IsNullOrEmpty(DistortionGrid)) );
             }
         }
 
@@ -127,6 +127,8 @@ namespace TerraViewer
             set { nodeDiplayName = value; }
         }
         public Matrix3d ViewMatrix = Matrix3d.Identity;
+
+        public SharpDX.Matrix ProjectorMatrixSGC = SharpDX.Matrix.Identity;
 #if !WINDOWS_UWP
 
         public void ReadFromXML(string path)
@@ -342,6 +344,8 @@ namespace TerraViewer
 
         public Vector6[,] DistortionGridVertices = null;
 
+        
+
         void ReadSGCFile(string filename)
         {
             FileStream s = new FileStream(filename, FileMode.Open);
@@ -372,14 +376,28 @@ namespace TerraViewer
 
             DistortionGridVertices = new Vector6[meshWidth, meshHeight];
 
+            SharpDX.Quaternion quatIn = new SharpDX.Quaternion(quat[0], quat[1], quat[2], quat[3]);
+
+            ProjectorMatrixSGC = SharpDX.Matrix.RotationQuaternion(quatIn);
+
+            SharpDX.Matrix mToggle_YZ = new SharpDX.Matrix(  -1, 0, 0, 0,
+                                                             0, -1, 0, 0,
+                                                             0, 0, 1, 0,
+                                                             0, 0, 0, 1);
+            ProjectorMatrixSGC =   mToggle_YZ * ProjectorMatrixSGC * mToggle_YZ;
+            ProjectorMatrixSGC.Invert();
+            
+           
+
             Vector4d quaternion = new Vector4d(quat[0], quat[1], quat[2], quat[3]);
 
+            
             double roll=0;
             double heading=0;
             double pitch=0;
 
             ToEulerianAngle(quaternion, out pitch, out roll, out heading);
-
+           
             float num2 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(up) / 180.0) * Math.PI))) / 2.0);
             float num3 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(down) / 180.0) * Math.PI))) / 2.0);
             float num4 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(right) / 180.0) * Math.PI))) / 2.0);
@@ -395,7 +413,7 @@ namespace TerraViewer
 
             Heading = (float)heading;
             Pitch = (float)pitch;
-            Roll = -(float)roll;
+            Roll = (float)roll;
 
             DistortionGridWidth = meshWidth;
             DistortionGridHeight = meshHeight;
