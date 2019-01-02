@@ -9,9 +9,9 @@ using System.Resources;
 [assembly: AssemblyTitle("WorldWide Telescope")]
 [assembly: AssemblyDescription("Interactive 3D viewer for the WorldWide Telescope")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft Research")]
+[assembly: AssemblyCompany("American Astronomical Society")]
 [assembly: AssemblyProduct("WorldWide Telescope")]
-[assembly: AssemblyCopyright("Copyright 2015 Microsoft Corporation")]
+[assembly: AssemblyCopyright("Copyright 2019 .Net Foundation")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -30,8 +30,8 @@ using System.Resources;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("5.5.24.1")]
-[assembly: AssemblyFileVersion("5.5.24.1")]
+[assembly: AssemblyVersion("6.0.02.1")]
+[assembly: AssemblyFileVersion("6.0.02.1")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
 [assembly: System.Windows.Media.DisableDpiAwareness]
 
