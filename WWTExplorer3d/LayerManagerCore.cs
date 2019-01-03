@@ -685,7 +685,8 @@ namespace TerraViewer
         static string GetMpcAsTLE(string id, LayerMap target)
         {
             WebClient client = new WebClient();
-
+            client.Headers.Add("User-Agent", "WWT");
+            client.Headers.Add("Content-Type", "text/xml");
             string data = client.DownloadString("http://www.minorplanetcenter.net/db_search/show_object?object_id=" + id);
 
 

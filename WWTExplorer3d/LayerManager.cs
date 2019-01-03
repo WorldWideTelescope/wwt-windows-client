@@ -635,7 +635,7 @@ namespace TerraViewer
                         defaultImageset.Checked = isl.OverrideDefaultLayer;
                     }
 
-                    if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer || layerTree.SelectedNode.Tag is GroundOverlayLayer || layerTree.SelectedNode.Tag is GreatCirlceRouteLayer || layerTree.SelectedNode.Tag is OrbitLayer)
+                    if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer || layerTree.SelectedNode.Tag is GroundOverlayLayer || layerTree.SelectedNode.Tag is GreatCirlceRouteLayer || layerTree.SelectedNode.Tag is OrbitLayer || layerTree.SelectedNode.Tag is ImageSetLayer)
                     {
                         if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour.EditMode && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
                         {

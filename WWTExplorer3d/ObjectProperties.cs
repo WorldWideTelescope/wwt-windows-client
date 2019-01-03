@@ -362,23 +362,10 @@ namespace TerraViewer
                     }
 
 
-                    if (details.bValid)
-                    {
-                        riseText.Text = UiTools.FormatDecimalHours(details.Rise);
-                        transitText.Text = UiTools.FormatDecimalHours(details.Transit);
-                        setText.Text = UiTools.FormatDecimalHours(details.Set);
-                    }
-                    else
-                    {
-                        if (details.bNeverRises)
-                        {
-                            riseText.Text = transitText.Text = setText.Text = Language.GetLocalizedText(934, "Never Rises");
-                        }
-                        else
-                        {
-                            riseText.Text = transitText.Text = setText.Text = Language.GetLocalizedText(935, "Never Sets");
-                        }
-                    }
+                    riseText.Text = details.bValidRise ? UiTools.FormatDecimalHours(details.Rise) : Language.GetLocalizedText(934, "Never Rises");
+                    transitText.Text = details.bValidTransit ? UiTools.FormatDecimalHours(details.Transit) : Language.GetLocalizedText(934, "Never Rises");
+                    setText.Text = details.bValidSet ? UiTools.FormatDecimalHours(details.Set) : Language.GetLocalizedText(935, "Never Sets");
+                    
                     if (target.Distance != 0)
                     {
                         this.distanceValue.Text = UiTools.FormatDistance(target.Distance);

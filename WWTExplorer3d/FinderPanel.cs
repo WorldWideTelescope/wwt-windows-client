@@ -98,25 +98,9 @@ namespace TerraViewer
                 details = AstroCalc.AstroCalc.GetRiseTrinsitSet(((int)SpaceTimeController.JNow) + .5, SpaceTimeController.Location.Lat, -SpaceTimeController.Location.Lng, target.RA, Target.Dec, target.RA, Target.Dec, target.RA, Target.Dec, 0);
             }
 
-
-            if (details.bValid)
-            {
-                riseText = UiTools.FormatDecimalHours(details.Rise);
-                transitText = UiTools.FormatDecimalHours(details.Transit);
-                setText = UiTools.FormatDecimalHours(details.Set);
-            }
-            else
-            {
-                if (details.bNeverRises)
-                {
-                    riseText = transitText = setText = Language.GetLocalizedText(934, "Never Rises");
-                }
-                else
-                {
-                    riseText = transitText = setText = Language.GetLocalizedText(935, "Never Sets");
-                }
-            }
-
+            riseText = details.bValidRise ? UiTools.FormatDecimalHours(details.Rise) : Language.GetLocalizedText(934, "Never Rises");
+            transitText = details.bValidTransit ? UiTools.FormatDecimalHours(details.Transit) : Language.GetLocalizedText(934, "Never Rises");
+            setText = details.bValidSet ? UiTools.FormatDecimalHours(details.Set) : Language.GetLocalizedText(935, "Never Sets");
 
             g.DrawString(Language.GetLocalizedText(273, "Rise:"), 8, SysColor.White, new RectangleF(125, 152, 31, 15), UiGraphics.TextAlignment.Left);
             g.DrawString(riseText, 8, SysColor.White, new RectangleF(223, 152, 78, 15), UiGraphics.TextAlignment.Left);

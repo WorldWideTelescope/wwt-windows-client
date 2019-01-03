@@ -1773,10 +1773,19 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
 
                 view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
             }
@@ -1963,11 +1972,19 @@ namespace TerraViewer
 
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll = 
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-
+                }
                 view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * matHeadingPitchRoll;
             }
             else
@@ -2208,10 +2225,19 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             if (config.MultiChannelGlobe)
             {
-                Matrix3d globeCameraRotation =
+                Matrix3d globeCameraRotation = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    globeCameraRotation.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    globeCameraRotation =
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
                 RenderContext11.View = RenderContext11.View * globeCameraRotation;
             }
 
@@ -2402,10 +2428,19 @@ namespace TerraViewer
             }
             else
             {
-                matHeadingPitchRoll =
-                      Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                      Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                      Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
             }
             if (rift)
             {
@@ -2609,15 +2644,22 @@ namespace TerraViewer
             }
             else
             {
-                matHeadingPitchRoll =
-                      Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                      Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                      Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                        Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                        Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                        Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
             }
 
-
             RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
-
 
             m_nearPlane = .000000001;
             back = 12;
@@ -2802,10 +2844,19 @@ namespace TerraViewer
             }
             else if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                        Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                        Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                        Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
                 RenderContext11.View = Matrix3d.LookAtLH(
                             RenderContext11.CameraPosition,
                             cameraTarget,
@@ -3193,14 +3244,19 @@ namespace TerraViewer
 
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationX((config.Pitch / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI));
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
 
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp)
-                    * DomeMatrix
-                    * matHeadingPitchRoll;
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
+                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
+                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
+                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
             }
             else
             {
@@ -3425,10 +3481,19 @@ namespace TerraViewer
 #if !WINDOWS_UWP
             if (config.MultiChannelDome1)
             {
-                Matrix3d matHeadingPitchRoll =
+                Matrix3d matHeadingPitchRoll = Matrix3d.Identity;
+
+                if (config.UsingSgcWarpMap)
+                {
+                    matHeadingPitchRoll.Matrix = config.ProjectorMatrixSGC;
+                }
+                else
+                {
+                    matHeadingPitchRoll =
                     Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
                     Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
                     Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
+                }
 
                 RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
             }
@@ -4758,7 +4823,12 @@ namespace TerraViewer
                 {
                     if (undistorted == null)
                     {
-                        undistorted = new RenderTargetTexture(config.Width, config.Height);
+                        undistorted = new RenderTargetTexture(config.Width, config.Height, 1);
+                    }
+
+                    if (undistortedAA == null && RenderContext11.MultiSampleCount > 1)
+                    {
+                        undistortedAA = new RenderTargetTexture(config.Width, config.Height);
                     }
 
 
@@ -4776,16 +4846,36 @@ namespace TerraViewer
                     if (domeZbuffer == null)
                     {
                         domeZbuffer = new DepthBuffer(config.Width, config.Height);
-
                     }
 
 
                     // * If there's no multisampling, draw directly into the undistorted texture
                     // * When multisampling is on, draw into an intermediate buffer, then resolve 
                     //   it into the undistorted texture
-                    RenderFrame(undistorted.renderView, domeZbuffer.DepthView, RenderTypes.Normal, config.Width, config.Height);
+                    if (RenderContext11.MultiSampleCount > 1)
+                    {
+                        RenderFrame(undistortedAA.renderView, domeZbuffer.DepthView, RenderTypes.Normal, config.Width, config.Height);
 
-                    RenderDistort();
+                        RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(undistortedAA.RenderTexture.Texture, 0,
+                                                                                       undistorted.RenderTexture.ResourceView.Resource, 0,
+                                                                                       RenderContext11.DefaultColorFormat);
+                    }
+                    else
+                    {
+                        RenderFrame(undistorted.renderView, domeZbuffer.DepthView, RenderTypes.Normal, config.Width, config.Height);
+                    }
+
+                    RenderContext11.PrepDevice.ImmediateContext.GenerateMips(undistorted.RenderTexture.ResourceView);
+
+
+                    if (config.UsingSgcWarpMap)
+                    {
+                        RenderDistortWithBlend();
+                    }
+                    else
+                    {
+                        RenderDistort();
+                    }
                 }
                 else if (Properties.Settings.Default.FlatScreenWarp)
                 {
@@ -5227,8 +5317,9 @@ namespace TerraViewer
         RenderTargetTexture stereoRenderTextureRight;
 
         // Distortion buffers
+        RenderTargetTexture undistortedAA;
         RenderTargetTexture undistorted;
-
+        Texture11 blendTexture;
         // Full-dome buffers
         RenderTargetTexture domeCubeFaceMultisampled = null;
         RenderTargetTexture[] domeCube = new RenderTargetTexture[5];
@@ -5754,7 +5845,7 @@ namespace TerraViewer
 
                     RenderContext11.ProjectAtInfinity = false;
 
-                    if (Space && !hemisphereView && Settings.Active.LocalHorizonMode && !Settings.DomeView && !ProjectorServer)
+                    if (Space && !hemisphereView && Settings.Active.LocalHorizonMode && !Settings.DomeView && !ProjectorServer && !config.UseDistrotionAndBlend)
                     {
                         Grids.DrawHorizon(RenderContext11, 1f);
                     }
@@ -5890,7 +5981,7 @@ namespace TerraViewer
 #endif
 #if !WINDOWS_UWP
 
-                if (Properties.Settings.Default.ShowTouchControls && (!TourPlayer.Playing || mover == null) && (renderType == RenderTypes.Normal || renderType == RenderTypes.LeftEye || renderType == RenderTypes.RightEye) && !rift && !megaFrameDump)
+                if (Properties.Settings.Default.ShowTouchControls && (!TourPlayer.Playing || mover == null) && (renderType == RenderTypes.Normal || renderType == RenderTypes.LeftEye || renderType == RenderTypes.RightEye) && !rift && !megaFrameDump && !config.UseDistrotionAndBlend)
                 {
                     Earth3d.MainWindow.DrawTouchControls();
                 }
@@ -5915,10 +6006,10 @@ namespace TerraViewer
             {
                 if (offscreenRender)
                 {
-
                     RenderContext11.SetDisplayRenderTargets();
                 }
             }
+
 #if !WINDOWS_UWP
             PresentFrame11(offscreenRender);
 #endif
@@ -7510,18 +7601,48 @@ namespace TerraViewer
             PresentFrame11(false);
 
         }
+        private void RenderDistortWithBlend()
+        {
+            SetupMatricesDistort();
+
+            if (blendTexture == null)
+            {
+                blendTexture = Texture11.FromFile(config.BlendFile);
+            }
+
+            if (distortVertexBuffer == null || refreshWarp)
+            {
+                MakeDistortionGridSgcWithBlend3();
+                refreshWarp = false;
+            }
+
+            RenderContext11.SetDisplayRenderTargets();
+            RenderContext11.ClearRenderTarget(SharpDX.Color.Red);
+
+            RenderContext11.SetVertexBuffer(distortVertexBuffer);
+            RenderContext11.SetIndexBuffer(distortIndexBuffer);
+
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.BlendMode = BlendMode.Alpha;
+            RenderContext11.setRasterizerState(TriangleCullMode.Off);
+
+            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
+            mat.Transpose();
+
+            WarpOutputShaderWithBlendTexture.MatWVP = mat;
+            WarpOutputShaderWithBlendTexture.Use(RenderContext11.devContext, true);
+
+            RenderContext11.devContext.PixelShader.SetShaderResource(0, undistorted.RenderTexture.ResourceView);
+            RenderContext11.devContext.PixelShader.SetShaderResource(1, blendTexture.ResourceView);
+            RenderContext11.devContext.DrawIndexed(distortIndexBuffer.Count, 0, 0);
+            RenderContext11.devContext.PixelShader.SetShaderResource(1, null);
+            PresentFrame11(false);
+        }
 
 
 
         private void MakeDistortionGrid()
-        {
-            if (config.UsingSgcWarpMap)
-            {
-                //MakeDistortionGridSgc();
-                MakeDistortionGridSgcWithBlend();
-                return;
-            }
-
+        { 
             Bitmap bmpBlend = new Bitmap(config.BlendFile);
             FastBitmap fastBlend = new FastBitmap(bmpBlend);
             Bitmap bmpDistort = new Bitmap(config.DistortionGrid);
@@ -7940,6 +8061,72 @@ namespace TerraViewer
             fastBlend.UnlockBitmap();
             fastBlend.Dispose();
             GC.SuppressFinalize(fastBlend);
+        }
+
+      
+
+        private void MakeDistortionGridSgcWithBlend3()
+        {
+            if (distortIndexBuffer != null)
+            {
+                distortIndexBuffer.Dispose();
+                GC.SuppressFinalize(distortIndexBuffer);
+            }
+
+            if (distortVertexBuffer != null)
+            {
+                distortVertexBuffer.Dispose();
+                GC.SuppressFinalize(distortVertexBuffer);
+            }
+
+            int subX = config.DistortionGridWidth - 1;
+            int subY = config.DistortionGridHeight - 1;
+            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
+            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
+
+            distortVertexCount = config.DistortionGridVertices.Length;
+            // Create a vertex buffer 
+            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs
+                                                                                                         // unsafe
+            {
+                int index = 0;
+                for (int y1 = 0; y1 < config.DistortionGridHeight; y1++)
+                {
+                    for (int x1 = 0; x1 < config.DistortionGridWidth; x1++)
+                    {
+                        index = y1 * config.DistortionGridWidth + x1;
+                        verts[index].X = 1.0f * config.DistortionGridVertices[x1, y1].X - .5f;
+                        verts[index].Y = -1.0f * config.DistortionGridVertices[x1, y1].Y + .5f;
+                        verts[index].Z = 1f;
+                        verts[index].W = 1f;
+                        verts[index].Tu = config.DistortionGridVertices[x1, y1].T;
+                        verts[index].Tv = 1f - config.DistortionGridVertices[x1, y1].U;
+                        verts[index].Color = SysColor.White;
+                    }
+                }
+                distortVertexBuffer.Unlock();
+
+                distortTriangleCount = (subX) * (subY) * 2;
+                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
+                index = 0;
+                for (int y1 = 0; y1 < subY; y1++)
+                {
+                    for (int x1 = 0; x1 < subX; x1++)
+                    {
+                        // First triangle in quad
+                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
+                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
+
+                        // Second triangle in quad
+                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
+                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
+                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
+                        index += 6;
+                    }
+                }
+                this.distortIndexBuffer.Unlock();
+            }
         }
 
         PositionColorTexturedVertexBuffer11[] domeVertexBuffer;
