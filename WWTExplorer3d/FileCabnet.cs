@@ -210,9 +210,14 @@ namespace TerraViewer
                         offset += fe.Size;
                         FileList.Add(fe);
                     }
-
+                    bool isMaster = !overwrite;
                     foreach (FileEntry entry in FileList)
                     {
+                        if (isMaster)
+                        {
+                       //     entry.Filename = Guid.NewGuid().ToString() + ".xml";
+                        }
+
                         while (entry.Filename.StartsWith("\\"))
                         {
                             entry.Filename = entry.Filename.Substring(1);
@@ -231,6 +236,16 @@ namespace TerraViewer
                         {
                             Directory.CreateDirectory(dir);
                         }
+                        //// if we are merging alias the old GUID based tour file to a new one.
+                        //if (isMaster && !overwrite && File.Exists(fullPath))
+                        //{
+                        //    Guid newFileGuid = Guid.NewGuid();
+
+                        //    file = newFileGuid.ToString() + ".xml";
+
+                        //    fullPath.
+
+                        //}
 
                         if (overwrite || !File.Exists(fullPath))
                         {
@@ -244,6 +259,8 @@ namespace TerraViewer
                             fileOut.Write(buffer, 0, entry.Size);
                             fileOut.Close();
                         }
+
+                        isMaster = false;
                     }
 
 

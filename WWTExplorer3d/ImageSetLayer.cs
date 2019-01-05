@@ -1,10 +1,21 @@
 ﻿using System;
 using System.IO;
-#if WINDOWS_UWP
 
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+using Point = TerraViewer.Point;
 #else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using Point = System.Drawing.Point;
+using System.Drawing;
 using System.Xml;
+using System.Windows.Forms;
 #endif
+
 namespace TerraViewer
 {
     public class ImageSetLayer : Layer
@@ -92,6 +103,97 @@ namespace TerraViewer
 
         }
 
+        // Set up lighting state to account for:
+        //   - Light reflected from a nearby planet
+        //   - Shadows cast by nearby planets
+        public void SetupLighting(RenderContext11 renderContext)
+        {
+            Vector3d objPosition = new Vector3d(renderContext.World.OffsetX, renderContext.World.OffsetY, renderContext.World.OffsetZ);
+            Vector3d objToLight = objPosition - renderContext.ReflectedLightPosition;
+            Vector3d sunPosition = renderContext.SunPosition - renderContext.ReflectedLightPosition;
+            double cosPhaseAngle = sunPosition.Length() <= 0.0 ? 1.0 : Vector3d.Dot(objToLight, sunPosition) / (objToLight.Length() * sunPosition.Length());
+            float reflectedLightFactor = (float)Math.Max(0.0, cosPhaseAngle);
+            reflectedLightFactor = (float)Math.Sqrt(reflectedLightFactor); // Tweak falloff of reflected light
+            float hemiLightFactor = 0.0f;
+
+            // 1. Reduce the amount of sunlight when the object is in the shadow of a planet
+            // 2. Introduce some lighting due to scattering by the planet's atmosphere if it's
+            //    close to the surface.
+            double sunlightFactor = 1.0;
+            if (renderContext.OccludingPlanetRadius > 0.0)
+            {
+                double objAltitude = (objPosition - renderContext.OccludingPlanetPosition).Length() - renderContext.OccludingPlanetRadius;
+                hemiLightFactor = (float)Math.Max(0.0, Math.Min(1.0, 1.0 - (objAltitude / renderContext.OccludingPlanetRadius) * 300));
+                reflectedLightFactor *= (1.0f - hemiLightFactor);
+
+                // Compute the distance from the center of the object to the line between the sun and occluding planet
+                // We're assuming that the radius of the object is very small relative to Earth;
+                // for large objects the amount of shadow will vary, and we should use circular
+                // eclipse shadows.
+                Vector3d sunToPlanet = renderContext.OccludingPlanetPosition - renderContext.SunPosition;
+                Vector3d objToPlanet = renderContext.OccludingPlanetPosition - objPosition;
+
+                Vector3d hemiLightDirection = -objToPlanet;
+                hemiLightDirection.Normalize();
+                renderContext.HemisphereLightUp = hemiLightDirection;
+
+                Vector3d objToSun = renderContext.SunPosition - objPosition;
+                double sunPlanetDistance = sunToPlanet.Length();
+                double t = -Vector3d.Dot(objToSun, sunToPlanet) / (sunPlanetDistance * sunPlanetDistance);
+                if (t > 1.0)
+                {
+                    // Object is on the side of the planet opposite the sun, so a shadow is possible
+
+                    // Compute the position of the object projected onto the shadow axis
+                    Vector3d shadowAxisPoint = Vector3d.Add(renderContext.SunPosition, Vector3d.Multiply(sunToPlanet, t));
+
+                    // d is the distance to the shadow axis
+                    double d = (shadowAxisPoint - objPosition).Length();
+
+                    // s is the distance from the sun along the shadow axis
+                    double s = (shadowAxisPoint - renderContext.SunPosition).Length();
+
+                    // Use the sun's radius to accurately compute the penumbra and umbra cones
+                    const double solarRadius = 0.004645784; // AU
+                    double penumbraRadius = renderContext.OccludingPlanetRadius + (t - 1.0) * (renderContext.OccludingPlanetRadius + solarRadius);
+                    double umbraRadius = renderContext.OccludingPlanetRadius + (t - 1.0) * (renderContext.OccludingPlanetRadius - solarRadius);
+
+                    if (d < penumbraRadius)
+                    {
+                        // The object is inside the penumbra, so it is at least partly shadowed
+                        double minimumShadow = 0.0;
+                        if (umbraRadius < 0.0)
+                        {
+                            // No umbra at this point; degree of shadowing is limited because the
+                            // planet doesn't completely cover the sun even when the object is positioned
+                            // exactly on the shadow axis.
+                            double occlusion = Math.Pow(1.0 / (1.0 - umbraRadius), 2.0);
+                            umbraRadius = 0.0;
+                            minimumShadow = 1.0 - occlusion;
+                        }
+
+                        // Approximate the amount of shadow with linear interpolation. The accurate
+                        // calculation involves computing the area of the intersection of two circles.
+                        double u = Math.Max(0.0, umbraRadius);
+                        sunlightFactor = Math.Max(minimumShadow, (d - u) / (penumbraRadius - u));
+
+                        int gray = (int)(255.99f * sunlightFactor);
+                        renderContext.SunlightColor = Color.FromArgb(gray, gray, gray);
+
+                        // Reduce sky-scattered light as well
+                        hemiLightFactor *= (float)sunlightFactor;
+                    }
+                }
+            }
+
+            renderContext.ReflectedLightColor = Color.FromArgb((int)(renderContext.ReflectedLightColor.R * reflectedLightFactor),
+                                                                               (int)(renderContext.ReflectedLightColor.G * reflectedLightFactor),
+                                                                               (int)(renderContext.ReflectedLightColor.B * reflectedLightFactor));
+            renderContext.HemisphereLightColor = Color.FromArgb((int)(renderContext.HemisphereLightColor.R * hemiLightFactor),
+                                                                               (int)(renderContext.HemisphereLightColor.G * hemiLightFactor),
+                                                                               (int)(renderContext.HemisphereLightColor.B * hemiLightFactor));
+        }
+
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
             if (!flat)
@@ -102,9 +204,21 @@ namespace TerraViewer
             renderContext.ViewBase = renderContext.View;
             RenderEngine.Engine.MakeFrustum();
             renderContext.MakeFrustum();
-            RenderEngine.Engine.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
 
-     
+            
+            if (renderContext.RenderType != ImageSetType.SolarSystem)
+            {
+                RenderEngine.Engine.PaintLayerFullTint11(imageSet, this.Opacity * opacity * 100, Color);
+            }
+            else
+            {
+               // SetupLighting(renderContext);
+                var key = new PlanetShaderKey(PlanetSurfaceStyle.Diffuse, false, 0);
+                renderContext.SetupPlanetSurfaceEffect(key, 1.0f);
+                renderContext.PreDraw();
+                RenderEngine.Engine.DrawTiledSphere(imageSet, this.Opacity * opacity, Color);
+            }
+
             return true;
 
         }

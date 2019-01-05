@@ -2373,7 +2373,7 @@ namespace TerraViewer
                 tourEdit.TourEditorUI.Close();
                 tourEdit.Close();
                 tourEdit = null;
-                uiController = null;
+                UiController = null;
                 Settings.TourSettings = null;
                 if (toursTab == null)
                 {
@@ -2595,7 +2595,7 @@ namespace TerraViewer
 
                             if (tourEdit.Tour.EditMode && !TourPlayer.Playing)
                             {
-                                uiController = tourEdit.TourEditorUI;
+                                UiController = tourEdit.TourEditorUI;
                             }
                             TimeLine.SetTour(tourEdit.Tour);
                         }
@@ -6986,7 +6986,7 @@ namespace TerraViewer
                         {
                             // We can't really tell where this image came from so dirty everything.
                             FolderBrowser.AllDirty = true;
-                            uiController = new ImageAlignmentUI();
+                            UiController = new ImageAlignmentUI();
                             RenderEngine.StudyOpacity = 50;
 
                         }
@@ -6996,7 +6996,7 @@ namespace TerraViewer
                             {
                                 ((ImageAlignmentUI)uiController).Close();
                             }
-                            uiController = null;
+                            UiController = null;
                         }
                         break;
 

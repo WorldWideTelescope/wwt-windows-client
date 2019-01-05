@@ -12,6 +12,19 @@ namespace TerraViewer
         {
             get
             {
+                if (TourPlayer.Playing)
+                {
+                    switch(key)
+                    {
+                        case "LocationLat":
+                            return Settings.Active.LocationLat;
+                        case "LocationLng":
+                            return Settings.Active.LocationLng;
+                        case "LocationAltitude":
+                            return Settings.Active.LocationAltitude;
+                    }
+                }
+
                 return Properties.Settings.Default[key];
             }
             set

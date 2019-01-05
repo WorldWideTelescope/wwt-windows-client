@@ -68,7 +68,7 @@ namespace TerraViewer
 
             string[] pieces = color.Split(new char[] { ':' });
 
-            if (pieces.Length > 2)
+            if (pieces.Length > 1)
             {
                 ColorFormat colorType = (ColorFormat)
                     Enum.Parse(typeof(ColorFormat), pieces[0], true);

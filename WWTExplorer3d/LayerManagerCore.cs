@@ -1343,7 +1343,7 @@ namespace TerraViewer
                         if (pass == 0)
                         {
                             // Skip default image set layer so that it's not drawn twice
-                            skipLayer = !astronomical && ((ImageSetLayer)layer).OverrideDefaultLayer;
+                            skipLayer = !astronomical && ((ImageSetLayer)layer).OverrideDefaultLayer && AllMaps[referenceFrame].Frame.Reference != ReferenceFrames.Custom;
                         }
 
                         if (layer.Enabled && !skipLayer) // && astronomical == layer.Astronomical)
