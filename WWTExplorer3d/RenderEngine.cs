@@ -5279,7 +5279,9 @@ namespace TerraViewer
             }
             RenderContext11.Device.ImmediateContext.GenerateMips(warpTexture.RenderTexture.ResourceView);
 
-            SetupMatricesWarpFisheye((float)ViewWidth / (float)RenderContext11.Height);
+            RenderContext11.SetDisplayRenderTargets();
+
+            SetupMatricesWarpFisheye((float)RenderContext11.Width / (float)RenderContext11.Height);
 
             if (warpIndexBuffer == null)
             {
@@ -5287,8 +5289,7 @@ namespace TerraViewer
             }
 
 
-            RenderContext11.SetDisplayRenderTargets();
-
+ 
             RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
             RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.None;
