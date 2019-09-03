@@ -9,6 +9,28 @@ using System.Net;
 
 namespace TerraViewer
 {
+
+    public static class FormatOptions
+    {
+      public const int FormatVersionMax = 1;
+    }
+
+
+    class UnsupportedTourFormatVersion : Exception
+    {
+
+      public UnsupportedTourFormatVersion()
+      {
+      }
+
+      public UnsupportedTourFormatVersion(int version)
+          : base(String.Format("Tour file has format version {0} but this version of WWT can only support format versions of {1} or lower", version, FormatOptions.FormatVersionMax))
+      {
+
+      }
+    }
+
+
     public enum UserLevel { Beginner, Intermediate, Advanced, Educator, Professional };
     public class TourDocument : IDisposable
     {
@@ -134,11 +156,25 @@ namespace TerraViewer
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
-
             XmlNode root = doc["Tour"];
 
+            if (root.Attributes["FormatVersion"] != null)
+            {
+                newTour.FormatVersion = int.Parse(root.Attributes["FormatVersion"].Value);
+            } else {
+                newTour.FormatVersion = 0;
+            }
 
-            newTour.id = root.Attributes["ID"].Value.ToString();
+            if (newTour.FormatVersion > FormatOptions.FormatVersionMax) {
+                throw new UnsupportedTourFormatVersion(newTour.FormatVersion);
+            }
+
+            if (newTour.formatVersion == 0) {
+                newTour.id = root.Attributes["ID"].Value.ToString();
+            } else {
+                newTour.id = root.Attributes["Id"].Value.ToString();
+            }
+
             newTour.Title = root.Attributes["Title"].Value.ToString();
             newTour.Author = root.Attributes["Author"].Value.ToString();
 
@@ -757,6 +793,18 @@ namespace TerraViewer
                     lastDirtyCheck = tourDirty;
                 }
                 return runTime;
+            }
+        }
+
+        int formatVersion;
+
+        public int FormatVersion
+        {
+            get { return formatVersion; }
+            set
+            {
+                formatVersion = value;
+                TourDirty = true;
             }
         }
 
