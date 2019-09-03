@@ -12,22 +12,27 @@ namespace TerraViewer
 
     public static class FormatOptions
     {
-      public const int FormatVersionMax = 1;
+        // The following variable indicates the current format version for tour files. This
+        // should be incremented if any backward-incompatible changes are made to tour files.
+        public const int CurrentFormatVersion = 1;
     }
 
 
     class UnsupportedTourFormatVersion : Exception
     {
 
-      public UnsupportedTourFormatVersion()
-      {
-      }
+        // This exception class is used to indicate when a tour file was produced with a
+        // version of WWT that is too recent.
 
-      public UnsupportedTourFormatVersion(int version)
-          : base(String.Format("Tour file has format version {0} but this version of WWT can only support format versions of {1} or lower", version, FormatOptions.FormatVersionMax))
-      {
+        public UnsupportedTourFormatVersion()
+        {
+        }
 
-      }
+        public UnsupportedTourFormatVersion(int version)
+            : base(String.Format("Tour file has format version {0} but this version of WWT can only support format versions of {1} or lower", version, FormatOptions.CurrentFormatVersion))
+        {
+        }
+
     }
 
 
@@ -158,6 +163,8 @@ namespace TerraViewer
 
             XmlNode root = doc["Tour"];
 
+            // The original format for tour files did not include version numbers, so
+            // we need to allow for this attribute to not exist.
             if (root.Attributes["FormatVersion"] != null)
             {
                 newTour.FormatVersion = int.Parse(root.Attributes["FormatVersion"].Value);
@@ -165,10 +172,15 @@ namespace TerraViewer
                 newTour.FormatVersion = 0;
             }
 
-            if (newTour.FormatVersion > FormatOptions.FormatVersionMax) {
+            // The current format used by this application is also assumed to be the
+            // most recent version that it can understand.
+            if (newTour.FormatVersion > FormatOptions.CurrentFormatVersion) {
                 throw new UnsupportedTourFormatVersion(newTour.FormatVersion);
             }
 
+            // When version numbers were added to tour files, the ID attribute was
+            // deliberately changed to Id so that new files would cause an error when
+            // read into old WWT instances (rather than give incorrect output).
             if (newTour.formatVersion == 0) {
                 newTour.id = root.Attributes["ID"].Value.ToString();
             } else {
@@ -452,7 +464,8 @@ namespace TerraViewer
                 xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                 xmlWriter.WriteStartElement("Tour");
 
-                xmlWriter.WriteAttributeString("ID", this.id);
+                xmlWriter.WriteAttributeString("Id", this.id);
+                xmlWriter.WriteAttributeString("FormatVersion", FormatOptions.CurrentFormatVersion.ToString());
                 xmlWriter.WriteAttributeString("Title", this.title);
                 xmlWriter.WriteAttributeString("Descirption", this.Description);
                 xmlWriter.WriteAttributeString("Description", this.Description);

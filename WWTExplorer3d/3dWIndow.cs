@@ -15584,11 +15584,11 @@ namespace TerraViewer
                 {
                     LoadTourFromFile(filename, true, "");
                 }
-                catch (UnsupportedTourFormatVersion exc)
+                catch (UnsupportedTourFormatVersion)
                 {
                     MessageBox.Show(Language.GetLocalizedText(1932, "This file was created by a newer version of WWT and cannot be read"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
                     MessageBox.Show(Language.GetLocalizedText(102, "This file does not seem to be a valid tour"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
                 }
