@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,49 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="TourDescription.Text" xml:space="preserve">
-    <value>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </value>
-  </data>
-  <metadata name="toolTips.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>255, 17</value>
-  </metadata>
-  <metadata name="ttTourPopup.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="fadeInTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>138, 17</value>
-  </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="MyRating.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAIAAAAAYCAIAAAC9aWKyAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAD2ElEQVRoQ+2Z/VNSWRjH+e92G3PKkk0x
-        AVGUC3hFBW4iL1dAEnkVEIG6dF1bbZtmmprsB3sZB0tb2ixjanNqd2rLzNW2mexFI6OnuWdyucIFdGZ/
-        Op85wwzn5cOd+XKecxhEOUE+ftwYDCXhFb3fG9i2E6EAtra+eMMs0W2fu72AuvYAthVEKIC/Xyz3OkLV
-        ddoEew517QFsK4hQAFenbzW3236sJfrcsX/W/kW9uwXbCiIUQGL0XE1j136Jjuzx3Lp9H/XuFmwrSNEA
-        Xrxcsbgi1RJdjYxqVNM/n7mIBnYFthWjaAAzs/Nqg6tGZvxJaa1ro10B5u36OzRWOdhWDNH6+vtXK2s7
-        GzN2XqwwipvNDZr+o9rjlGP4XmaRN4dr2WwWyXI5bKvUJnL5GdvACM1r7liPPQSbqJ5wyHTepi6/yuBz
-        eE/aPQkY4k32hke/Pxm2VWoTDYZZKWH64bBqn1hTVddeVU/ur++obuiETXSk1SYlB1sMIaUxougOQKS1
-        zb0HGvVwvMC0qjqyWkJ2W3yZh4+5ZwKwrVKb6PnSq8mpGaMteFDafVBqONTUA7OhftWr7FLS3awfausZ
-        UZnirceiTZ2+Bo0L6pq4xXxYYZJp7PAtSM3Ocw/EgW2V2tAhPDM37wok5aQT9g5ULlmHp6kroDSGVaaY
-        xnJSY2HU5hNtx6LglXf64AP0dMQfPf3g0Z/cch7YVr5t+xaUefgExvT0sFznbTGEYBnRG9dYGa0t2W47
-        Ba9gBC9hijoD7LVUev3de7SyENhWpi3vGgoXpuuptMOXVBpDsH0gQFCQNAutnWbBpXcw8GG/3cmgBYJg
-        Wzk2/u+A1bU3x4MsHN9Qwr6JwNI3yjUQGZzJC5en0dQywLaSNn4As+mFTnMQyhkUMqhf35LkRDQL24ow
-        xf3RXzY2N9HsUmBbSRs/gLFfJ48SVonaCecG1DKtNanrY0EHDWoZnOm2QebR46dodimwraQtL4DV12/6
-        fQxcqiSEAy6wanOsPzgWiE0YnUlIFbxKKkKaw5emZtACQbCtHFteALPp+1pq4JCcgiS1vRFfdBx6nj1f
-        vjR1w+Y51UoNQ7xynScwMp7NfkZrioNt5djyAjh99vKRFqpWYaLs0aH4xOKTZ2ggl0vN3XWHxtqMQbjM
-        WgYSi2XsTWwDStq2A+D2kVhB2b3M9I07Hz7w/8+8m1kMxic6zCGC8k5euYl6i4Bt3xG2bQewtLxKu+P+
-        kfHf7/2Bunawsvr6aiptdSeGEme2tr6g3kJg238RsOWVIHBtbH5Cb4rz19Ml4WfiwDYeBW15AWD+b3K5
-        r2jIIROtv48iAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="relatedTours.Items" mimetype="application/x-microsoft.net.object.binary.base64">
-    <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAJoBbXNjb3JsaWIsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1u
-        ZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5XV0sIG1zY29ybGliLCBWZXJzaW9u
-        PTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OQUB
-        AAAAMFN5c3RlbS5Db2xsZWN0aW9ucy5HZW5lcmljLkxpc3RgMVtbU3lzdGVtLk9iamVjdAMAAAAGX2l0
-        ZW1zBV9zaXplCF92ZXJzaW9uBQAACAgCAAAACQMAAAAAAAAAAAAAABADAAAAAAAAAAs=
-</value>
-  </data>
 </root>

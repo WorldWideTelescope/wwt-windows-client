@@ -566,7 +566,6 @@ namespace TerraViewer
                     ToolStripMenuItem TimeChart = new ToolStripMenuItem(Language.GetLocalizedText(1296, "Time Chart"));
                     ToolStripMenuItem OpenedCharts = new ToolStripMenuItem(Language.GetLocalizedText(1297, "Current Filters"));
 
-
                     DomainBarchar.DropDownOpening += new EventHandler(showGraphTool_DropDownOpening);
                     TimeChart.DropDownOpening += new EventHandler(TimeChart_DropDownOpening);
                     Histogram.DropDownOpening += new EventHandler(Histogram_DropDownOpened);
@@ -584,14 +583,12 @@ namespace TerraViewer
                     if (!selectedLayer.Opened && selectedLayer.GetPrimaryUI() != null && selectedLayer.GetPrimaryUI().HasTreeViewNodes)
                     {
                         contextMenu.Items.Add(Expand);
-
                     }
 
                     if (selectedLayer.Opened)
                     {
                         contextMenu.Items.Add(Collapse);
                     }
-
 
                     if (selectedLayer.CanCopyToClipboard())
                     {
@@ -635,7 +632,7 @@ namespace TerraViewer
                         defaultImageset.Checked = isl.OverrideDefaultLayer;
                     }
 
-                    if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer || layerTree.SelectedNode.Tag is GroundOverlayLayer || layerTree.SelectedNode.Tag is GreatCirlceRouteLayer || layerTree.SelectedNode.Tag is OrbitLayer || layerTree.SelectedNode.Tag is ImageSetLayer)
+                    if (layerTree.SelectedNode.Tag is Layer )
                     {
                         if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour.EditMode && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
                         {
@@ -673,7 +670,6 @@ namespace TerraViewer
                         contextMenu.Items.Add(down);
                         contextMenu.Items.Add(bottom);
                     }
-
 
                     contextMenu.Show(Cursor.Position);
                 }

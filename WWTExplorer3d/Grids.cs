@@ -222,6 +222,16 @@ namespace TerraViewer
         static Text3dBatch PrecTextBatch;
         public static bool DrawPrecessionChart(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
             MakePrecessionChart();
 
             PrecTextBatch.Draw(renderContext, opacity, drawColor);
@@ -296,7 +306,16 @@ namespace TerraViewer
         static SimpleLineList11 altAzLineList;
         public static bool DrawAltAzGrid(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
 
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return true;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
 
             Coordinates zenithAltAz = new Coordinates(0, 0);
             Coordinates zenith = Coordinates.HorizonToEquitorial(zenithAltAz, SpaceTimeController.Location, SpaceTimeController.Now);
@@ -398,6 +417,17 @@ namespace TerraViewer
         static Text3dBatch AltAzTextBatch;
         public static bool DrawAltAzGridText(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             Coordinates zenithAltAz = new Coordinates(0, 0);
             Coordinates zenith = Coordinates.HorizonToEquitorial(zenithAltAz, SpaceTimeController.Location, SpaceTimeController.Now);
 
@@ -480,6 +510,17 @@ namespace TerraViewer
 
         public static bool DrawEclipticGrid(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (eclipticLineList == null)
             {
                 eclipticLineList = new SimpleLineList11();
@@ -564,6 +605,16 @@ namespace TerraViewer
         static Text3dBatch EclipticTextBatch;
         public static bool DrawEclipticGridText(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
             MakeEclipticGridText();
 
             EclipticTextBatch.Draw(renderContext, opacity, drawColor);
@@ -624,6 +675,17 @@ namespace TerraViewer
 
         public static bool DrawGalacticGrid(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 21.5) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (galLineList == null)
             {
                 galLineList = new SimpleLineList11();
@@ -704,6 +766,17 @@ namespace TerraViewer
         static Text3dBatch GalTextBatch;
         public static bool DrawGalacticGridText(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 21.5) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             MakeGalacticGridText();
 
             GalTextBatch.Draw(renderContext, opacity, drawColor);
@@ -901,6 +974,17 @@ namespace TerraViewer
         static SimpleLineList11 equLineList;
         public static bool DrawEquitorialGrid(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return true;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (equLineList == null)
             {
                 equLineList = new SimpleLineList11();
@@ -989,6 +1073,17 @@ namespace TerraViewer
         static Text3dBatch EquTextBatch;
         public static bool DrawEquitorialGridText(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             MakeEquitorialGridText();
 
             EquTextBatch.Draw(renderContext, opacity, drawColor);
@@ -1053,6 +1148,17 @@ namespace TerraViewer
 
         public static bool DrawEcliptic(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return true;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             Color col = drawColor;
 
             int year = SpaceTimeController.Now.Year;
@@ -1143,6 +1249,17 @@ namespace TerraViewer
         static Text3dBatch EclipOvTextBatch;
         public static bool DrawEclipticText(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return true;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             MakeEclipticText();
 
             EclipOvTextBatch.Draw(renderContext, opacity, drawColor);

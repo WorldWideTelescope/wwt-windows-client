@@ -55,6 +55,9 @@
             this.contextSeperator2 = new System.Windows.Forms.ToolStripSeparator();
             this.blendPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadReferenceImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calculateCorrespondencePointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BlendPanelButtons = new System.Windows.Forms.Panel();
             this.blueAmount = new System.Windows.Forms.Label();
             this.greenAmount = new System.Windows.Forms.Label();
@@ -114,6 +117,8 @@
             this.pattern = new TerraViewer.WwtCombo();
             this.MousePad = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.ScreenPreview = new System.Windows.Forms.PictureBox();
+            this.PreviewPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -125,6 +130,8 @@
             this.AlignButtonPanel.SuspendLayout();
             this.UpdateSoftware.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MousePad)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScreenPreview)).BeginInit();
+            this.PreviewPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -151,7 +158,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.BlendPanelButtons);
             this.splitContainer1.Panel2.Controls.Add(this.AlignButtonPanel);
             this.splitContainer1.Size = new System.Drawing.Size(374, 1240);
-            this.splitContainer1.SplitterDistance = 275;
+            this.splitContainer1.SplitterDistance = 273;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -168,7 +175,7 @@
             this.ProjectorList.Location = new System.Drawing.Point(18, 42);
             this.ProjectorList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ProjectorList.Name = "ProjectorList";
-            this.ProjectorList.Size = new System.Drawing.Size(333, 120);
+            this.ProjectorList.Size = new System.Drawing.Size(333, 80);
             this.ProjectorList.TabIndex = 1;
             this.ProjectorList.SelectedIndexChanged += new System.EventHandler(this.ProjectorList_SelectedIndexChanged);
             this.ProjectorList.DoubleClick += new System.EventHandler(this.ProjectorList_DoubleClick);
@@ -180,7 +187,7 @@
             this.AddProjector.DialogResult = System.Windows.Forms.DialogResult.None;
             this.AddProjector.ImageDisabled = null;
             this.AddProjector.ImageEnabled = null;
-            this.AddProjector.Location = new System.Drawing.Point(40, 211);
+            this.AddProjector.Location = new System.Drawing.Point(40, 208);
             this.AddProjector.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.AddProjector.MaximumSize = new System.Drawing.Size(210, 51);
             this.AddProjector.Name = "AddProjector";
@@ -197,7 +204,7 @@
             this.EditProjector.DialogResult = System.Windows.Forms.DialogResult.None;
             this.EditProjector.ImageDisabled = null;
             this.EditProjector.ImageEnabled = null;
-            this.EditProjector.Location = new System.Drawing.Point(243, 211);
+            this.EditProjector.Location = new System.Drawing.Point(243, 208);
             this.EditProjector.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.EditProjector.MaximumSize = new System.Drawing.Size(210, 51);
             this.EditProjector.Name = "EditProjector";
@@ -214,7 +221,7 @@
             this.DeleteProjector.DialogResult = System.Windows.Forms.DialogResult.None;
             this.DeleteProjector.ImageDisabled = null;
             this.DeleteProjector.ImageEnabled = null;
-            this.DeleteProjector.Location = new System.Drawing.Point(140, 211);
+            this.DeleteProjector.Location = new System.Drawing.Point(140, 208);
             this.DeleteProjector.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.DeleteProjector.MaximumSize = new System.Drawing.Size(210, 51);
             this.DeleteProjector.Name = "DeleteProjector";
@@ -248,7 +255,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(374, 362);
+            this.panel2.Size = new System.Drawing.Size(374, 364);
             this.panel2.TabIndex = 0;
             // 
             // Align
@@ -356,7 +363,7 @@
             this.PointTree.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.PointTree.Name = "PointTree";
             this.PointTree.ShowNodeToolTips = true;
-            this.PointTree.Size = new System.Drawing.Size(335, 220);
+            this.PointTree.Size = new System.Drawing.Size(335, 223);
             this.PointTree.TabIndex = 6;
             this.PointTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PointTree_AfterSelect);
             this.PointTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PointTree_MouseDown);
@@ -373,69 +380,93 @@
             this.moveDownToolStripMenuItem,
             this.contextSeperator2,
             this.blendPointToolStripMenuItem,
-            this.propertiesToolStripMenuItem});
+            this.propertiesToolStripMenuItem,
+            this.loadReferenceImageToolStripMenuItem,
+            this.generateGridToolStripMenuItem,
+            this.calculateCorrespondencePointsToolStripMenuItem});
             this.PointsTreeContextMenu.Name = "PoitsTreeContextMenu";
-            this.PointsTreeContextMenu.Size = new System.Drawing.Size(243, 226);
+            this.PointsTreeContextMenu.Size = new System.Drawing.Size(343, 316);
             this.PointsTreeContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.PointsTreeContextMenu_Opening);
             // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.addToolStripMenuItem.Text = "Add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // transferFromEdgesToolStripMenuItem
             // 
             this.transferFromEdgesToolStripMenuItem.Name = "transferFromEdgesToolStripMenuItem";
-            this.transferFromEdgesToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.transferFromEdgesToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.transferFromEdgesToolStripMenuItem.Text = "Transfer from Edges";
             this.transferFromEdgesToolStripMenuItem.Click += new System.EventHandler(this.transferFromEdgesToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(339, 6);
             // 
             // moveUpToolStripMenuItem
             // 
             this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.moveUpToolStripMenuItem.Text = "Move Up";
             this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
             // 
             // moveDownToolStripMenuItem
             // 
             this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.moveDownToolStripMenuItem.Text = "Move Down";
             this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
             // 
             // contextSeperator2
             // 
             this.contextSeperator2.Name = "contextSeperator2";
-            this.contextSeperator2.Size = new System.Drawing.Size(239, 6);
+            this.contextSeperator2.Size = new System.Drawing.Size(339, 6);
             // 
             // blendPointToolStripMenuItem
             // 
             this.blendPointToolStripMenuItem.Name = "blendPointToolStripMenuItem";
-            this.blendPointToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.blendPointToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.blendPointToolStripMenuItem.Text = "Blend Point";
             this.blendPointToolStripMenuItem.Click += new System.EventHandler(this.blendPointToolStripMenuItem_Click);
             // 
             // propertiesToolStripMenuItem
             // 
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(242, 30);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
             this.propertiesToolStripMenuItem.Text = "Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
+            // 
+            // loadReferenceImageToolStripMenuItem
+            // 
+            this.loadReferenceImageToolStripMenuItem.Name = "loadReferenceImageToolStripMenuItem";
+            this.loadReferenceImageToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
+            this.loadReferenceImageToolStripMenuItem.Text = "Load Reference Image...";
+            this.loadReferenceImageToolStripMenuItem.Click += new System.EventHandler(this.loadReferenceImageToolStripMenuItem_Click);
+            // 
+            // generateGridToolStripMenuItem
+            // 
+            this.generateGridToolStripMenuItem.Name = "generateGridToolStripMenuItem";
+            this.generateGridToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
+            this.generateGridToolStripMenuItem.Text = "Generate Grid...";
+            this.generateGridToolStripMenuItem.Click += new System.EventHandler(this.generateGridToolStripMenuItem_Click);
+            // 
+            // calculateCorrespondencePointsToolStripMenuItem
+            // 
+            this.calculateCorrespondencePointsToolStripMenuItem.Name = "calculateCorrespondencePointsToolStripMenuItem";
+            this.calculateCorrespondencePointsToolStripMenuItem.Size = new System.Drawing.Size(342, 30);
+            this.calculateCorrespondencePointsToolStripMenuItem.Text = "Calculate Correspondence Points";
+            this.calculateCorrespondencePointsToolStripMenuItem.Click += new System.EventHandler(this.calculateCorrespondencePointsToolStripMenuItem_Click);
             // 
             // BlendPanelButtons
             // 
@@ -460,7 +491,7 @@
             this.BlendPanelButtons.Controls.Add(this.BlurSize);
             this.BlendPanelButtons.Controls.Add(this.MakeBlendMap);
             this.BlendPanelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BlendPanelButtons.Location = new System.Drawing.Point(0, 362);
+            this.BlendPanelButtons.Location = new System.Drawing.Point(0, 364);
             this.BlendPanelButtons.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BlendPanelButtons.Name = "BlendPanelButtons";
             this.BlendPanelButtons.Size = new System.Drawing.Size(374, 289);
@@ -712,7 +743,7 @@
             this.AlignButtonPanel.Controls.Add(this.AverageError);
             this.AlignButtonPanel.Controls.Add(this.SolveDistortion);
             this.AlignButtonPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.AlignButtonPanel.Location = new System.Drawing.Point(0, 651);
+            this.AlignButtonPanel.Location = new System.Drawing.Point(0, 653);
             this.AlignButtonPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.AlignButtonPanel.Name = "AlignButtonPanel";
             this.AlignButtonPanel.Size = new System.Drawing.Size(374, 308);
@@ -938,12 +969,12 @@
             this.LoadGrid.DialogResult = System.Windows.Forms.DialogResult.None;
             this.LoadGrid.ImageDisabled = null;
             this.LoadGrid.ImageEnabled = null;
-            this.LoadGrid.Location = new System.Drawing.Point(971, 9);
-            this.LoadGrid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.LoadGrid.Location = new System.Drawing.Point(970, 9);
+            this.LoadGrid.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.LoadGrid.MaximumSize = new System.Drawing.Size(210, 51);
             this.LoadGrid.Name = "LoadGrid";
             this.LoadGrid.Selected = false;
-            this.LoadGrid.Size = new System.Drawing.Size(121, 39);
+            this.LoadGrid.Size = new System.Drawing.Size(122, 38);
             this.LoadGrid.TabIndex = 19;
             this.LoadGrid.Text = "Load Grid";
             this.LoadGrid.Visible = false;
@@ -1250,6 +1281,30 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // ScreenPreview
+            // 
+            this.ScreenPreview.Location = new System.Drawing.Point(0, 0);
+            this.ScreenPreview.Margin = new System.Windows.Forms.Padding(0);
+            this.ScreenPreview.Name = "ScreenPreview";
+            this.ScreenPreview.Size = new System.Drawing.Size(100, 100);
+            this.ScreenPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.ScreenPreview.TabIndex = 4;
+            this.ScreenPreview.TabStop = false;
+            this.ScreenPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.ScreenPreview_Paint);
+            this.ScreenPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ScreenPreview_MouseDown);
+            // 
+            // PreviewPanel
+            // 
+            this.PreviewPanel.AutoScroll = true;
+            this.PreviewPanel.Controls.Add(this.ScreenPreview);
+            this.PreviewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PreviewPanel.Location = new System.Drawing.Point(374, 0);
+            this.PreviewPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.PreviewPanel.Name = "PreviewPanel";
+            this.PreviewPanel.Size = new System.Drawing.Size(1096, 1086);
+            this.PreviewPanel.TabIndex = 5;
+            this.PreviewPanel.Visible = false;
+            // 
             // Calibration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -1257,6 +1312,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(32)))), ((int)(((byte)(42)))));
             this.ClientSize = new System.Drawing.Size(1470, 1240);
             this.Controls.Add(this.MousePad);
+            this.Controls.Add(this.PreviewPanel);
             this.Controls.Add(this.UpdateSoftware);
             this.Controls.Add(this.splitContainer1);
             this.ForeColor = System.Drawing.Color.White;
@@ -1282,6 +1338,9 @@
             this.UpdateSoftware.ResumeLayout(false);
             this.UpdateSoftware.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MousePad)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScreenPreview)).EndInit();
+            this.PreviewPanel.ResumeLayout(false);
+            this.PreviewPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1372,5 +1431,10 @@
         private WwtCombo pattern;
         private WwtButton wwtButton2;
         private WwtButton LoadGrid;
+        private System.Windows.Forms.PictureBox ScreenPreview;
+        private System.Windows.Forms.ToolStripMenuItem loadReferenceImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generateGridToolStripMenuItem;
+        private System.Windows.Forms.Panel PreviewPanel;
+        private System.Windows.Forms.ToolStripMenuItem calculateCorrespondencePointsToolStripMenuItem;
     }
 }

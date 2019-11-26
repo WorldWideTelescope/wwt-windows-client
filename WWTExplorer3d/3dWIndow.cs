@@ -31,8 +31,6 @@ namespace TerraViewer
     public class Earth3d : Form, IScriptable
     {
         const float FOVMULT = 343.774f;
-       
-
         private System.Windows.Forms.Timer timer;
         private ToolStripMenuItem viewOverlayTopo;
         private System.Windows.Forms.ToolStripMenuItem menuItem7;
@@ -51,11 +49,9 @@ namespace TerraViewer
             }
         }
 
-
         public RenderEngine RenderEngine = new RenderEngine();
 
         public static bool NoStealFocus = false;
-
 
         public bool SandboxMode
         {
@@ -88,7 +84,6 @@ namespace TerraViewer
 
         public event EventHandler ImageSetChanged;
 
-        
 
         public IImageSet CurrentImageSet
         {
@@ -123,8 +118,6 @@ namespace TerraViewer
                 }
             }
         }
-
-
 
         private ToolStripMenuItem toggleFullScreenModeF11ToolStripMenuItem;
         private ToolStripMenuItem nEDSearchToolStripMenuItem;
@@ -248,7 +241,6 @@ namespace TerraViewer
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripMenuItem exportCurrentCitiesViewAs3DMeshToolStripMenuItem;
         private ToolStripMenuItem enableExport3dCitiesModeToolStripMenuItem;
- 
 
         public void StartFadeTransition(double milliseconds)
         {
@@ -261,8 +253,6 @@ namespace TerraViewer
             RenderEngine.fadeImageSet.TargetState = false;
         }
 
-       
-
         public static bool IsLoggedIn
         {
             get
@@ -271,7 +261,6 @@ namespace TerraViewer
             }
         }
 
-     
         bool smoothZoom = true;
         private Timer InputTimer;
         private ContextMenuStrip contextMenu;
@@ -384,7 +373,6 @@ namespace TerraViewer
             set { renderWindow = value; }
         }
 
-
         private ToolStripMenuItem setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem;
         private ToolStripMenuItem selectLanguageToolStripMenuItem;
         private ToolStripMenuItem undoToolStripMenuItem;
@@ -393,7 +381,6 @@ namespace TerraViewer
         private ToolStripMenuItem setAsForegroundImageryToolStripMenuItem;
         private ToolStripMenuItem setAsBackgroundImageryToolStripMenuItem;
         private ToolStripSeparator ImagerySeperator;
-
 
         public bool ControllerConnected()
         {
@@ -404,12 +391,9 @@ namespace TerraViewer
             }
 
             return false;
-
         }
 
-
         bool JoyInMotion = false;
-
         bool rSholderDown = false;
         bool lSholderDown = false;
         bool startDown = false;
@@ -425,12 +409,11 @@ namespace TerraViewer
         bool dPadLeftDown = false;
         bool dPadRightDown = false;
         bool slowRates = true;
-
         bool reticleControl = false;
         int retId = 0;
+
         public void UpdateXInputState()
         {
-
             if (Properties.Settings.Default.XboxCustomMapping)
             {
                 ProcessCustomXboxMapping();
@@ -452,6 +435,7 @@ namespace TerraViewer
             {
                 return;
             }
+
             double trigger = 0;
 
             if (state.Gamepad.RightTrigger > 0)
@@ -466,7 +450,6 @@ namespace TerraViewer
             if (Math.Abs(trigger) > 4)
             {
                 RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomFactor * (1 + (trigger / 16000) * factor);
-
                 if (RenderEngine.ZoomFactor > RenderEngine.ZoomMax)
                 {
                     RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomMax;
@@ -529,15 +512,12 @@ namespace TerraViewer
                     leftThumbDown = true;
                     CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
                     RenderEngine.GotoTarget(camParams, false, false);
-
                 }
             }
             else
             {
                 leftThumbDown = false;
             }
-
-
 
             if ((state.Gamepad.Buttons & XInputButtons.RightThumb) == XInputButtons.RightThumb)
             {
@@ -563,15 +543,12 @@ namespace TerraViewer
                 rightThumbDown = false;
             }
 
-
-
             if (state.Gamepad.IsStartButtonDown)
             {
                 if (!startDown)
                 {
                     NextMode();
                     startDown = true;
-
                 }
             }
             else
@@ -585,7 +562,6 @@ namespace TerraViewer
                 {
                     PreviousMode();
                     backDown = true;
-
                 }
             }
             else
@@ -640,8 +616,6 @@ namespace TerraViewer
                     reticle.Alt = (reticle.Alt + ((((double)state.Gamepad.RightThumbY / (zoomRate * 3)) * factor)));
                 }
             }
-
-
 
             if (RenderEngine.CameraAngleTarget < TiltMin)
             {
@@ -723,7 +697,6 @@ namespace TerraViewer
                                     Properties.Settings.Default.SolarSystemOrbits.TargetState = true;
                                     Properties.Settings.Default.SolarSystemMinorOrbits.TargetState = false;
                                 }
-
                             }
                             break;
                         default:
@@ -765,7 +738,6 @@ namespace TerraViewer
             {
                 yDown = false;
             }
-
 
             if (state.Gamepad.IsAButtonDown)
             {
@@ -825,9 +797,7 @@ namespace TerraViewer
             {
                 bDown = false;
             }
-
             return;
-
         }
 
         private void NextMode()
@@ -932,14 +902,12 @@ namespace TerraViewer
                 XBoxConfig.DispatchXboxEvent(XBoxConfig.XboxButtons.LeftTrigger, state.Gamepad.LeftTrigger / 255.0);
             }
 
-
             if (state.Gamepad.IsDPadRightButtonDown)
             {
                 if (!dPadRightDown)
                 {
                     dPadRightDown = XBoxConfig.DispatchXboxEvent(XBoxConfig.XboxButtons.DirectionPadRight, 1);
                 }
-
             }
             else
             {
@@ -952,7 +920,6 @@ namespace TerraViewer
                 {
                     dPadLeftDown = XBoxConfig.DispatchXboxEvent(XBoxConfig.XboxButtons.DirectionPadLeft, 1);
                 }
-
             }
             else
             {
@@ -971,8 +938,6 @@ namespace TerraViewer
                 leftThumbDown = false;
             }
 
-
-
             if (state.Gamepad.IsRightThumbClick)
             {
                 if (!rightThumbDown)
@@ -984,8 +949,6 @@ namespace TerraViewer
             {
                 rightThumbDown = false;
             }
-
-
 
             if (state.Gamepad.IsStartButtonDown)
             {
@@ -1034,8 +997,6 @@ namespace TerraViewer
             {
                 dPadDownDown = false;
             }
-
-
 
             if (Math.Abs((double)state.Gamepad.RightThumbX) > 8000)
             {
@@ -1107,7 +1068,6 @@ namespace TerraViewer
                 yDown = false;
             }
 
-
             if (state.Gamepad.IsAButtonDown)
             {
                 if (!aDown)
@@ -1135,7 +1095,6 @@ namespace TerraViewer
             }
         }
 
-
         Config config = null;
 
         public Config Config
@@ -1143,13 +1102,13 @@ namespace TerraViewer
             get { return config; }
             set { config = value; }
         }
+
         MainMenu holder = null;
         string mainWindowText = Language.GetLocalizedText(3, "Microsoft WorldWide Telescope");
 
         public static bool HideSplash = false;
         public Earth3d()
         {
-
             AudioPlayer.Initialize();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
@@ -1160,12 +1119,8 @@ namespace TerraViewer
 
             // Set the initial size of our form
             this.ClientSize = new System.Drawing.Size(400, 300);
-            // And its caption
-
-
 
             config = new Config();
-
             RenderEngine.MonitorX = config.MonitorX;
             RenderEngine.MonitorY = config.MonitorY;
             RenderEngine.MonitorCountX = config.MonitorCountX;
@@ -1180,6 +1135,7 @@ namespace TerraViewer
             {
                 RenderEngine.ProjectorServer = true;
             }
+
             RenderEngine.multiMonClient = !config.Master && (RenderEngine.MonitorCountX > 1 || RenderEngine.MonitorCountY > 1);
 
             InitializeComponent();
@@ -1193,27 +1149,19 @@ namespace TerraViewer
                 Close();
             }
 
-
             // This code is used for dumping shader code when porting to Windows RT/phone where compiling shaders is not possible at runtime
             if (DumpShaders)
             {
                 //ShaderLibrary.DumpShaderLibrary();
             }
 
-
-
-
             if (!RenderEngine.InitializeImageSets())
             {
                 Close();
             }
 
-
             BackInitDelegate initBackground = BackgroundInit;
-
-
             initBackground.BeginInvoke(null, null);
-
 
             if (TargetScreenId != -1)
             {
@@ -1230,8 +1178,6 @@ namespace TerraViewer
                 {
                 }
             }
-
-
         }
        
         public static void BackgroundInit()
@@ -1240,14 +1186,12 @@ namespace TerraViewer
             Grids.MakeMilkyWay(RenderContext11.PrepDevice);
             Grids.InitCosmosVertexBuffer();
             Planets.InitPlanetResources();
-
         }
 
         public static void SearchInit()
         {
             Catalogs.InitSearchTable();
         }
-
 
         SpaceNavigator._3DxMouse myMouse;
 
@@ -1264,7 +1208,6 @@ namespace TerraViewer
                 myMouse.MotionEvent += new SpaceNavigator._3DxMouse.MotionEventHandler(myMouse_MotionEvent);
                 myMouse.ButtonEvent += new SpaceNavigator._3DxMouse.ButtonEventHandler(myMouse_ButtonEvent);
                 return true;
-
             }
             catch
             {
@@ -1287,7 +1230,6 @@ namespace TerraViewer
             {
                 cameraParams = new CameraParameters(0, 0, 360, 0, 0, 100);
                 RenderEngine.GotoTarget(cameraParams, false, false);
-
             }
         }
 
@@ -1295,7 +1237,6 @@ namespace TerraViewer
         {
             if (e.TranslationVector != null)
             {
-
                 // Swap axes from HID orientation to a right handed coordinate system that matches WPF model space
                 SensorTranslation.X = e.TranslationVector.X;
                 SensorTranslation.Y = -e.TranslationVector.Z;
@@ -1394,7 +1335,6 @@ namespace TerraViewer
                         {
                             RenderEngine.TargetLat = -87;
                         }
-
                     }
                     interupt = true;
                 }
@@ -1407,6 +1347,7 @@ namespace TerraViewer
                 UserInterupt();
             }
         }
+
         // User is taking control...stop automated moves
         void UserInterupt()
         {
@@ -1415,12 +1356,11 @@ namespace TerraViewer
                 SlideAdvanceTimer.Enabled = false;
                 SlideAdvanceTimer.Enabled = true;
             }
+
             if (RenderEngine.Mover != null)
             {
                 CameraParameters newCam = RenderEngine.Mover.CurrentPosition;
-
                 RenderEngine.viewCamera = RenderEngine.targetViewCamera = newCam;
-
                 RenderEngine.Mover = null;
             }
         }
@@ -1501,11 +1441,8 @@ namespace TerraViewer
                 SendMove();
             }
 
-
-
             if (contextPanel != null)
             {
-
                 contextPanel.QueueProgress = TileCache.QueuePercent;
 
                 if (RenderEngine.Space)
@@ -1533,17 +1470,14 @@ namespace TerraViewer
                         contextPanel.Distance = RenderEngine.SolarSystemCameraDistance;
                     }
 
-
                     if (!SandboxMode && (RenderEngine.viewCamera.Target != SolarSystemObjects.Custom && RenderEngine.viewCamera.Target != SolarSystemObjects.Undefined))
                     {
                         Vector3d pnt = Coordinates.GeoTo3dDouble(RenderEngine.ViewLat, RenderEngine.ViewLong + 90);
 
                         Matrix3d EarthMat = Planets.EarthMatrixInv;
 
-
                         pnt = Vector3d.TransformCoordinate(pnt, EarthMat);
                         pnt.Normalize();
-
 
                         Vector2d radec = Coordinates.CartesianToLatLng(pnt);
 
@@ -1630,15 +1564,7 @@ namespace TerraViewer
                 ContextSearch.Initialized = true;
             });
 
-
-            //BackInitDelegate initBackground = SearchInit;
-
-            //initBackground.BeginInvoke(null, null);
-
             this.WindowState = FormWindowState.Maximized;
-
-
-
             this.FormBorderStyle = TouchKiosk ? FormBorderStyle.None : FormBorderStyle.Sizable;
             TileCache.StartQueue();
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
@@ -1653,7 +1579,6 @@ namespace TerraViewer
                 Properties.Settings.Default.ShowCrosshairs = false;
                 Properties.Settings.Default.SolarSystemMultiRes = true;
                 NetControl.Start();
-
             }
             else
             {
@@ -1688,9 +1613,6 @@ namespace TerraViewer
             }
 
             Tile.GrayscaleStyle = Properties.Settings.Default.MonochromeImageStyle;
-
-
-
             // This forces a init at startup does not do anything but force the static contstuctor to fire now
             LayerManager.LoadTree();
 
@@ -1802,7 +1724,6 @@ namespace TerraViewer
 
             if (Properties.Settings.Default.ShowClientNodeList && !RenderEngine.ProjectorServer)
             {
-
                 ClientNodeList.ShowNodeList();
             }
 
@@ -1849,15 +1770,11 @@ namespace TerraViewer
                         doIt();
                     }
                 }
-
-
-
             }
             else if (Samp.sampKnownTableUrls.ContainsKey(url))
             {
 
             }
-
         }
 
         void NetworkChange_NetworkAddressChanged(object sender, EventArgs e)
@@ -1887,7 +1804,6 @@ namespace TerraViewer
             {
                 doIt();
             }
-
         }
 
         public void DownloadFitsImage(string url)
@@ -1931,7 +1847,6 @@ namespace TerraViewer
             {
                 doIt();
             }
-
         }
         void SampGoto(double ra, double dec)
         {
@@ -1962,12 +1877,7 @@ namespace TerraViewer
         public static int TargetScreenId = -1;
         public static int DetachScreenId = -1;
         public void ShowFullScreen(bool showFull)
-        {
-            // This might be useful to look into for full screen mode but can't be used with RIFT
-            //RenderContext11.SetFullScreenState(showFull);
-            //RenderContext11.Resize(renderWindow);
-            //return;
-
+        { 
             this.SuspendLayout();
             menuTabs.IsVisible = !showFull && !TouchKiosk;
             if (showFull)
@@ -2070,14 +1980,11 @@ namespace TerraViewer
             catch
             {
             }
-
         }
 
-       
         public bool KmlAutoRefresh = false;
 
         public ConstellationFigureEditor figureEditor = null;
-
 
         public LayerManager layerManager = null;
         private void ShowLayersWindow()
@@ -2113,11 +2020,7 @@ namespace TerraViewer
             Properties.Settings.Default.ShowConstellationFigures.TargetState = true;
 
             figureEditor.Figures = figures;
-
-
-
             ShowFiguresEditorWindow();
-
         }
 
         private void ShowFiguresEditorWindow()
@@ -2126,7 +2029,6 @@ namespace TerraViewer
             {
                 Rectangle rectContext = contextPanel.Bounds;
                 Rectangle rectCurrentTab = currentTab.Bounds;
-
 
                 Point pnt = PointToScreen(new Point(ClientRectangle.Right, (ClientRectangle.Bottom - contextPanel.Height)));
                 Point pntTab = rectCurrentTab.Location;
@@ -2140,6 +2042,7 @@ namespace TerraViewer
                 figureEditor.Show();
             }
         }
+
         ImageStack stack = null;
 
         public ImageStack Stack
@@ -2159,6 +2062,8 @@ namespace TerraViewer
                 ShowImageStack();
             }
         }
+
+
         public void ShowImageStack()
         {
             if (stack == null)
@@ -2200,7 +2105,9 @@ namespace TerraViewer
             get { return tourEdit; }
             set { tourEdit = value; }
         }
+
         IUiController uiController = null;
+
         public IUiController UiController
         {
             get
@@ -2278,11 +2185,7 @@ namespace TerraViewer
 
         private void menuTabs_TabClicked(object sender, ApplicationMode e)
         {
-            if (currentMode == e)
-            {
-                //Show Menus
-            }
-            else
+            if (currentMode != e)
             {
                 //switch modes
                 SetAppMode(e);
@@ -13822,7 +13725,4 @@ namespace TerraViewer
             data[baseIndex + 5] = 1 - (float)((lat + 90) / 180);
         }
     }
-
-
-
 }

@@ -3521,9 +3521,9 @@ namespace TerraViewer
                         if (rift)
                         {
                             SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
-                            amount *= 10;
+                            amount *= 50;
                             var pose = this.trackingState.HeadPose.ThePose.Position;
-                            stereoTranslate = Matrix3d.Translation((-pos.X + pose.X * 10) * amount, (pos.Y + pose.Y * 10) * amount, (-pos.Z + pose.Z * 10) * amount);
+                            stereoTranslate = Matrix3d.Translation((-pos.X - pose.X * 1) * amount, (pos.Y - pose.Y * 1) * amount, (-pos.Z + pose.Z * 1) * amount);
 
                             var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
                             matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
@@ -3665,7 +3665,6 @@ namespace TerraViewer
             }
             else if (config.MultiProjector)
             {
-
                 RenderContext11.View = RenderContext11.View * config.ViewMatrix;
 
                 ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
@@ -7701,8 +7700,6 @@ namespace TerraViewer
                         tu = (float)(pdata->blue + ((uint)pdata->red % 16) * 256) / 4095f;
                         tv = (float)(pdata->green + ((uint)pdata->red / 16) * 256) / 4095f;
 
-                        //tu = (tu - .5f) * 1.7777778 + .5f;
-
                         if (tu > maxU)
                         {
                             maxU = tu;
@@ -8731,21 +8728,25 @@ namespace TerraViewer
 
 
         OVRTypes.TrackingState trackingState;
+
+        OculusWrap.OVRTypes.InputState inputState;
         void GetRiftSample()
         {
-
-
             OVRTypes.Vector3f[] hmdToEyeViewOffsets = { eyeTextures[0].HmdToEyeViewOffset, eyeTextures[1].HmdToEyeViewOffset };
             double displayMidpoint = hmd.GetPredictedDisplayTime(0);
             trackingState = hmd.GetTrackingState(displayMidpoint, true);
+            inputState = hmd.GetInputState(OVRTypes.ControllerType.Touch);
 
             // Calculate the position and orientation of each eye.
             wrap.CalcEyePoses(trackingState.HeadPose.ThePose, hmdToEyeViewOffsets, ref eyeRenderPose);
 
-            LeftController.Position = new Vector3d(trackingState.HandPoses[0].ThePose.Position.ToVector3());
-            LeftController.Active = true;
+            UpdateOculusTouchStatus(LeftController, trackingState.HandPoses[0], 0);
             LeftController.Forward = new Vector3d(0, 0, 1);
             LeftController.Up = new Vector3d(0, 1, 0);
+
+            UpdateOculusTouchStatus(RightController, trackingState.HandPoses[1], 1);
+            RightController.Forward = new Vector3d(0, 0, 1);
+            RightController.Up = new Vector3d(0, 1, 0);
 
             for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
             {
@@ -8757,6 +8758,37 @@ namespace TerraViewer
                 // Update the render description at each frame, as the HmdToEyeOffset can change at runtime.
                 eyeTexture.RenderDescription = hmd.GetRenderDesc(eye, hmd.DefaultEyeFov[eyeIndex]);
 
+            }
+        }
+
+        void UpdateOculusTouchStatus( HandController handController,  OVRTypes.PoseStatef handPose, int index)
+        {
+            {
+                handController.Active = true;
+                handController.Position = new Vector3d(handPose.ThePose.Position.ToVector3());
+                handController.Up = new Vector3d(); // todo makes these from quat
+                handController.Forward = new Vector3d();// todo make this from quat
+                handController.Grip = inputState.HandTrigger[index];
+                handController.Trigger = inputState.IndexTrigger[index];
+                handController.Menu = (inputState.Buttons & (uint) OVRTypes.Button.Home) == (uint)OVRTypes.Button.Home;
+
+                handController.ThumbX = inputState.Thumbstick[index].X;
+                handController.ThumbY = inputState.Thumbstick[index].Y;
+                if (index == 0)
+                {
+                    handController.ThumbDown = (inputState.Buttons & (uint)OVRTypes.Button.LThumb) == (uint)OVRTypes.Button.LThumb;
+                }
+                else
+                {
+                    handController.ThumbDown = (inputState.Buttons & (uint)OVRTypes.Button.RThumb) == (uint)OVRTypes.Button.RThumb;
+                }
+
+                handController.TouchX = 0;
+                handController.TouchY = 0;
+                handController.TouchDown = false;
+                handController.Touched = false;
+                
+                handController.UpdateEvents();
             }
         }
 

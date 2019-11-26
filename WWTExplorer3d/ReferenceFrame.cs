@@ -1106,7 +1106,6 @@ namespace TerraViewer
             }
             byte[] data = ms.GetBuffer();
             return Encoding.UTF8.GetString(data);
-
         }
 
         public double[] GetParams()
@@ -1125,6 +1124,10 @@ namespace TerraViewer
             paramList[9] = translation.X;
             paramList[10] = translation.Y;
             paramList[11] = translation.Z;
+            paramList[12] = representativeColor.R;
+            paramList[13] = representativeColor.G;
+            paramList[14] = representativeColor.B;
+            paramList[15] = representativeColor.A;
 
             return paramList;
         }
@@ -1144,7 +1147,11 @@ namespace TerraViewer
                 "Altitude",
                 "Translate.X",
                 "Translate.Y",
-                "Translate.Z"
+                "Translate.Z",
+                "Color.Red",
+                "Color.Green",
+                "Color.Blue",
+                "Color.Alpha"
             };
         }
 
@@ -1161,6 +1168,10 @@ namespace TerraViewer
                 BaseTweenType.Linear,
                 BaseTweenType.Linear, 
                 BaseTweenType.Linear, 
+                BaseTweenType.Linear,
+                BaseTweenType.Linear,
+                BaseTweenType.Linear,
+                BaseTweenType.Linear,
                 BaseTweenType.Linear,
                 BaseTweenType.Linear,
                 BaseTweenType.Linear
@@ -1182,11 +1193,16 @@ namespace TerraViewer
                 Altitude = paramList[8];
             }
 
-            if (paramList.Length == 12)
+            if (paramList.Length > 11)
             {
                 translation.X = paramList[9];
                 translation.Y = paramList[10];
                 translation.Z = paramList[11];
+            }
+
+            if (paramList.Length > 11)
+            {
+                representativeColor = Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[13] * 255), (int)(paramList[14] * 255), (int)(paramList[15] * 255));
             }
         }
 
@@ -1264,7 +1280,6 @@ namespace TerraViewer
             {
                 return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
             }
-
         }
     }
 }

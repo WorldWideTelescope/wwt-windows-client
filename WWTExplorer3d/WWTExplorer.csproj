@@ -236,6 +236,12 @@
     <Compile Include="Authentication\OAuthAuthenticator.cs" />
     <Compile Include="Authentication\OAuthTicket.cs" />
     <Compile Include="Authentication\UserObject.cs" />
+    <Compile Include="Callibration\GridCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\GridCreator.Designer.cs">
+      <DependentUpon>GridCreator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Catalogs.cs" />
     <Compile Include="CoverageMap.cs" />
     <Compile Include="ExportSTL.cs">
@@ -1244,6 +1250,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CacheTilePyramid.resx">
       <DependentUpon>CacheTilePyramid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\GridCreator.resx">
+      <DependentUpon>GridCreator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ClientNodeList.resx">
       <DependentUpon>ClientNodeList.cs</DependentUpon>

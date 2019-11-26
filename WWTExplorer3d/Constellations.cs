@@ -316,6 +316,20 @@ namespace TerraViewer
         public Color DrawColor = Color.FromArgb(255, 95, 158, 160);//CadetBlue;
         public virtual bool Draw3D(RenderContext11 renderContext, bool showOnlySelected, float opacity, string focusConsteallation, bool reverse)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double log = Math.Log(zoom);
+
+
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255-Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             constToDraw = focusConsteallation;
 
             Lineset lsSelected = null;
@@ -350,6 +364,17 @@ namespace TerraViewer
 
         public static void DrawConstellationNames(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (NamesBatch == null)
             {
                 InitializeConstellationNames();
@@ -406,6 +431,17 @@ namespace TerraViewer
 
         public static void DrawConstellationArt(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (ConstellationArt == null)
             {
                 InitializeArt();
