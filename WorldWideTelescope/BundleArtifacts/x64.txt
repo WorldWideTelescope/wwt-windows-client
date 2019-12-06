@@ -1,0 +1,2 @@
+MainPackage=C:\Git\wwt-windows-client\WorldWideTelescope\bin\x64\Release\WorldWideTelescope_1.0.0.0_x64.appx
+SymbolPackage=C:\Git\wwt-windows-client\WorldWideTelescope\obj\x64\Release\Symbols\WorldWideTelescope_1.0.0.0_x64.appxsym

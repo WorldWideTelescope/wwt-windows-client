@@ -436,6 +436,7 @@
     <Compile Include="CompatibleTypes\XmlTextWriter.cs" />
     <Compile Include="Layers\GltfModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tiles\ToastPlotTile.cs" />
     <Compile Include="Utilities\DataRow.cs" />
     <Compile Include="Utilities\ThumbMenuNode.cs" />
     <Content Include="..\WWTExplorer3d\Cosmos\Gal_000.jpg">

@@ -261,6 +261,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="LayerMap.cs" />
+    <Compile Include="OffScreenTarget.cs" />
     <Compile Include="Ovr\EyeTexture.cs" />
     <Compile Include="Ovr\SharpDXHelpers.cs" />
     <Compile Include="PointerRay.cs" />
@@ -757,6 +758,7 @@
       <DependentUpon>TimeLine.cs</DependentUpon>
     </Compile>
     <Compile Include="TimeSeriesLayer.cs" />
+    <Compile Include="ToastPlotTile.cs" />
     <Compile Include="ToastTools.cs" />
     <Compile Include="TrackButton.cs">
       <SubType>UserControl</SubType>

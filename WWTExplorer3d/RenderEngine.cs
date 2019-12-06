@@ -271,7 +271,9 @@ namespace TerraViewer
 
         const float FOVMULT = 343.774f;
         internal Config config;
-
+#if !WINDOWS_UWP
+        RenderHead renderHead = null;
+#endif
 
         public void CleanUp()
         {
@@ -295,6 +297,11 @@ namespace TerraViewer
         static public Matrix3d WorldMatrix;
         static public Matrix3d ViewMatrix;
         static public Matrix3d ProjMatrix;
+
+        static public float DomeAzimuth = 0;
+        static public float DomeElevation = 0;
+        static public float DomeFOV = 90;
+        static public float DomeAspect = 1;
 
         public void SetHeadPosition(Vector3d head)
         {
@@ -1745,7 +1752,8 @@ namespace TerraViewer
             bool dome = false;
 
             Matrix3d view;
-
+            float domeFOV = 90;
+            float domeAspect = 1;
             switch (CurrentRenderType)
             {
                 case RenderTypes.DomeUp:
@@ -1766,6 +1774,12 @@ namespace TerraViewer
                 case RenderTypes.DomeBack:
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
                     dome = true;
+                    break;
+                case RenderTypes.DomeCustom:
+                    lookAtAdjust.Multiply(Matrix3d.RotationX(DomeElevation/180.0F * Math.PI) * Matrix3d.RotationY(DomeAzimuth/180.0f * Math.PI));
+                    dome = true;
+                    domeFOV = DomeFOV;
+                    domeAspect = DomeAspect;
                     break;
                 default:
                     break;
@@ -1879,7 +1893,7 @@ namespace TerraViewer
             }
             else if (dome)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((domeFOV/180.0f * Math.PI), domeAspect, m_nearPlane, back);
             }
             else if (rift)
             {
@@ -1945,6 +1959,8 @@ namespace TerraViewer
             Matrix3d view;
             Matrix3d ProjMatrix;
 #if !WINDOWS_UWP
+            float domeFOV = 90;
+            float domeAspect = 1;
             switch (CurrentRenderType)
             {
                 case RenderTypes.DomeUp:
@@ -1965,6 +1981,12 @@ namespace TerraViewer
                 case RenderTypes.DomeBack:
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
                     dome = true;
+                    break;
+                case RenderTypes.DomeCustom:
+                    lookAtAdjust.Multiply(Matrix3d.RotationX(DomeElevation / 180.0F * Math.PI) * Matrix3d.RotationY(DomeAzimuth / 180.0f * Math.PI));
+                    dome = true;
+                    domeFOV = DomeFOV;
+                    domeAspect = DomeAspect;
                     break;
                 default:
                     break;
@@ -2072,7 +2094,7 @@ namespace TerraViewer
             }
             else if (dome)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((domeFOV / 180.0f * Math.PI), domeAspect, m_nearPlane, back);
             }
             else if (rift)
             {
@@ -3201,6 +3223,8 @@ namespace TerraViewer
 
             Matrix3d cubeMat = Matrix3d.Identity;
 
+            float domeFOV = 90;
+            float domeAspect = 1;
             switch (renderType)
             {
                 case RenderTypes.DomeUp:
@@ -3216,6 +3240,12 @@ namespace TerraViewer
                     break;
                 case RenderTypes.DomeBack:
                     cubeMat = Matrix3d.RotationY((Math.PI));
+                    break;
+
+                case RenderTypes.DomeCustom:
+                    lookAtAdjust.Multiply(Matrix3d.RotationX(DomeElevation / 180.0F * Math.PI) * Matrix3d.RotationY(DomeAzimuth / 180.0f * Math.PI));
+                    domeFOV = DomeFOV;
+                    domeAspect = DomeAspect;
                     break;
                 default:
                     break;
@@ -3272,7 +3302,7 @@ namespace TerraViewer
             m_nearPlane = distance * .1f;
 
 
-            ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
+            ProjMatrix = Matrix3d.PerspectiveFovLH((domeFOV / 180.0f * Math.PI), domeAspect, m_nearPlane, back);
             if (config.MultiChannelDome1)
             {
                 ProjMatrix = Matrix3d.PerspectiveFovLH(((config.UpFov + config.DownFov) / 180 * Math.PI), (double)ViewWidth / (double)RenderContext11.Height, m_nearPlane, back);
@@ -3450,7 +3480,9 @@ namespace TerraViewer
 
 
 #if !WINDOWS_UWP
-            switch (renderType)
+            float domeFOV = 90;
+            float domeAspect = 1;
+            switch (CurrentRenderType)
             {
                 case RenderTypes.DomeUp:
                     dome = true;
@@ -3470,6 +3502,15 @@ namespace TerraViewer
                 case RenderTypes.DomeBack:
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
                     dome = true;
+                    break;
+                case RenderTypes.DomeCustom:
+                    //lookAtAdjust.Multiply(Matrix3d.RotationX(DomeElevation / 180.0F * Math.PI) * Matrix3d.RotationY(DomeAzimuth / 180.0f * Math.PI));
+
+                    lookAtAdjust.Multiply(Matrix3d.RotationY(-DomeAzimuth / 180.0f * Math.PI) * Matrix3d.RotationX(-DomeElevation / 180.0F * Math.PI));
+
+                    dome = true;
+                    domeFOV = DomeFOV;
+                    domeAspect = DomeAspect;
                     break;
                 default:
                     break;
@@ -3682,7 +3723,7 @@ namespace TerraViewer
             }
             else if (dome)
             {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
+                ProjMatrix = Matrix3d.PerspectiveFovLH((domeFOV / 180.0f * Math.PI), domeAspect, m_nearPlane, back);
             }
 
             else if (rift)
@@ -3813,22 +3854,35 @@ namespace TerraViewer
             Vector3d lookUp = new Vector3d(Math.Sin(-CameraRotate), Math.Cos(-CameraRotate), 0.0001f);
 
             Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            switch (renderType)
+            bool dome = false;
+            float domeFOV = 90;
+            float domeAspect = 1;
+            switch (CurrentRenderType)
             {
                 case RenderTypes.DomeUp:
+                    dome = true;
                     lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
                     break;
                 case RenderTypes.DomeLeft:
+                    dome = true;
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
                     break;
                 case RenderTypes.DomeRight:
+                    dome = true;
                     lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
                     break;
                 case RenderTypes.DomeFront:
+                    dome = true;
                     break;
                 case RenderTypes.DomeBack:
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
+                    dome = true;
+                    break;
+                case RenderTypes.DomeCustom:
+                    lookAtAdjust.Multiply( Matrix3d.RotationY(-DomeAzimuth / 180.0f * Math.PI)* Matrix3d.RotationX(-DomeElevation / 180.0F * Math.PI));
+                    dome = true;
+                    domeFOV = DomeFOV;
+                    domeAspect = DomeAspect;
                     break;
                 default:
                     break;
@@ -3887,7 +3941,7 @@ namespace TerraViewer
             double cameraZ = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
             m_nearPlane = (float)(1.0 + cameraZ) * 0.5f;
 
-            ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, -1f);
+            ProjMatrix = Matrix3d.PerspectiveFovLH((domeFOV / 180.0f * Math.PI), domeAspect, m_nearPlane, -1f);
             RenderContext11.PerspectiveFov = (Math.PI / 2.0);
             if (multiMonClient)
             {
@@ -3922,21 +3976,32 @@ namespace TerraViewer
 
             Matrix3d lookAtAdjust = Matrix3d.Identity;
 
-            switch (renderType)
+            float domeFOV = 90;
+            float domeAspect = 1;
+            switch (CurrentRenderType)
             {
                 case RenderTypes.DomeUp:
                     lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
                     break;
                 case RenderTypes.DomeLeft:
+
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
                     break;
                 case RenderTypes.DomeRight:
+
                     lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
                     break;
                 case RenderTypes.DomeFront:
+
                     break;
                 case RenderTypes.DomeBack:
                     lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
+
+                    break;
+                case RenderTypes.DomeCustom:
+                    lookAtAdjust.Multiply(Matrix3d.RotationX(DomeElevation / 180.0F * Math.PI) * Matrix3d.RotationY(DomeAzimuth / 180.0f * Math.PI));
+                    domeFOV = DomeFOV;
+                    domeAspect = DomeAspect;
                     break;
                 default:
                     break;
@@ -3958,7 +4023,7 @@ namespace TerraViewer
             m_nearPlane = ((.000000001));
 
 
-            ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, -1f);
+            ProjMatrix = Matrix3d.PerspectiveFovLH((domeFOV / 180.0f * Math.PI), domeAspect, m_nearPlane, -1f);
 
 
             if (multiMonClient)
@@ -4818,6 +4883,105 @@ namespace TerraViewer
                     }
 
                 }
+                else if (config.SkySkanMode)
+                {
+                    if (renderHead == null)
+                    {
+                        LoadRenderHead();
+                    }
+
+                    //todo Get from config
+                    int cubeFaceSize = 2048;
+
+                    if (currentCubeFaceSize != cubeFaceSize)
+                    {
+                        refreshDomeTextures = true;
+                    }
+
+                    if (refreshDomeTextures)
+                    {
+                        for (int face = 0; face < 6; face++)
+                        {
+                            if (domeCube[face] != null)
+                            {
+                                domeCube[face].Dispose();
+                                GC.SuppressFinalize(domeCube[face]);
+                                domeCube[face] = null;
+                            }
+                        }
+                        if (domeZbuffer != null)
+                        {
+                            domeZbuffer.Dispose();
+                            GC.SuppressFinalize(domeZbuffer);
+                            domeZbuffer = null;
+                        }
+                        if (domeCubeFaceMultisampled != null)
+                        {
+                            domeCubeFaceMultisampled.Dispose();
+                            GC.SuppressFinalize(domeCubeFaceMultisampled);
+                            domeCubeFaceMultisampled = null;
+                        }
+                    }
+
+
+                    // Ensure that the dome depth/stencil buffer matches our requirements
+                    if (domeZbuffer != null)
+                    {
+                        if (domeZbuffer.Width != cubeFaceSize || domeZbuffer.Height != cubeFaceSize)
+                        {
+                            domeZbuffer.Dispose();
+                            GC.SuppressFinalize(domeZbuffer);
+                            domeZbuffer = null;
+                        }
+                    }
+
+                    if (domeZbuffer == null)
+                    {
+                        domeZbuffer = new DepthBuffer(cubeFaceSize, cubeFaceSize);
+                    }
+
+                    if (domeCubeFaceMultisampled == null && RenderContext11.MultiSampleCount > 1)
+                    {
+                        domeCubeFaceMultisampled = new RenderTargetTexture(cubeFaceSize, cubeFaceSize);
+                    }
+                    int faceId = 0;
+
+                    foreach(var target in renderHead.Targets)
+                    { 
+                        if (domeCube[faceId] == null)
+                        {
+                            domeCube[faceId] = new RenderTargetTexture(cubeFaceSize, cubeFaceSize, 1);
+                            currentCubeFaceSize = cubeFaceSize;
+                            refreshDomeTextures = false;
+                        }
+
+                        //setup dome parameters before rendering face
+                        DomeAzimuth = target.Azimuth;
+                        DomeAspect = target.AspectRatio;
+                        DomeElevation = target.Elevation;
+
+
+                        if (RenderContext11.MultiSampleCount > 1)
+                        {
+                            // When MSAA is enabled, we render each face to the same multisampled render target,
+                            // then resolve to a different texture for each face. This saves memory and works around
+                            // the fact that multisample textures are not permitted to have mipmaps.
+                            RenderFrame(domeCubeFaceMultisampled.renderView, domeZbuffer.DepthView, RenderTypes.DomeCustom, cubeFaceSize, cubeFaceSize);
+                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(domeCubeFaceMultisampled.RenderTexture.Texture, 0,
+                                                                                           domeCube[faceId].RenderTexture.Texture, 0,
+                                                                                           RenderContext11.DefaultColorFormat);
+                        }
+                        else
+                        {
+                            RenderFrame(domeCube[faceId].renderView, domeZbuffer.DepthView, RenderTypes.DomeCustom, cubeFaceSize, cubeFaceSize);
+                        }
+                        RenderContext11.PrepDevice.ImmediateContext.GenerateMips(domeCube[faceId].RenderTexture.ResourceView);
+                        faceId++;
+                    }
+
+                    RenderSkyScan();
+
+                }
                 else if (config.UseDistrotionAndBlend)
                 {
                     if (undistorted == null)
@@ -4981,6 +5145,13 @@ namespace TerraViewer
                 Tile.fastLoadAutoReset = false;
             }
 
+        }
+
+        private void LoadRenderHead()
+        {
+#if !WINDOWS_UWP
+            renderHead = new RenderHead(config.RenderHeadFile);
+#endif
         }
 
         CameraParameters ZoomWindowCamera = new CameraParameters();
@@ -5147,13 +5318,11 @@ namespace TerraViewer
 
         private void RenderFisheye(bool forTexture)
         {
-
             if (!forTexture)
             {
                 SetupMatricesFisheye();
                 RenderContext11.SetDisplayRenderTargets();
             }
-
 
             RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
 
@@ -5170,7 +5339,6 @@ namespace TerraViewer
                 }
             }
 
-
             RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
             RenderContext11.BlendMode = BlendMode.None;
             RenderContext11.setRasterizerState(TriangleCullMode.Off);
@@ -5180,7 +5348,6 @@ namespace TerraViewer
             WarpOutputShader.MatWVP = mat;
             WarpOutputShader.Use(RenderContext11.devContext, true);
 
-
             for (int face = 0; face < 5; face++)
             {
                 RenderContext11.SetIndexBuffer(domeIndexBuffer[face]);
@@ -5188,9 +5355,37 @@ namespace TerraViewer
                 RenderContext11.devContext.PixelShader.SetShaderResource(0, domeCube[face].RenderTexture.ResourceView);
                 RenderContext11.devContext.DrawIndexed(domeIndexBuffer[face].Count, 0, 0);
             }
-
             PresentFrame11(forTexture);
+        }
 
+        private void RenderSkyScan()
+        {
+            SetupMatricesWarpFisheye(1);
+            //SetupMatricesFisheye();
+            RenderContext11.SetDisplayRenderTargets();
+
+            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
+
+            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
+            RenderContext11.BlendMode = BlendMode.None;
+            RenderContext11.setRasterizerState(TriangleCullMode.Off);
+            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
+            mat.Transpose();
+
+            WarpOutputShader.MatWVP = mat;
+            WarpOutputShader.Use(RenderContext11.devContext, true);
+            int faceId = 0;
+
+            foreach (var target in renderHead.Targets)
+            {
+                RenderContext11.SetIndexBuffer(target.Meshes[0].WarpIndexBuffer);
+                RenderContext11.SetVertexBuffer(target.Meshes[0].WarpVertexBuffer);
+                RenderContext11.devContext.PixelShader.SetShaderResource(0, domeCube[faceId].RenderTexture.ResourceView);
+                RenderContext11.devContext.DrawIndexed(target.Meshes[0].WarpTriangleCount*3, 0, 0);
+                faceId++;
+    
+            }
+            PresentFrame11(false);
         }
 
         RenderTargetTexture domeMasterTexture = null;
@@ -5322,7 +5517,7 @@ namespace TerraViewer
         Texture11 blendTexture;
         // Full-dome buffers
         RenderTargetTexture domeCubeFaceMultisampled = null;
-        RenderTargetTexture[] domeCube = new RenderTargetTexture[5];
+        RenderTargetTexture[] domeCube = new RenderTargetTexture[6];
         DepthBuffer domeZbuffer = null;
         DepthBuffer leftDepthBuffer = null;
         DepthBuffer rightDepthBuffer = null;
@@ -5330,7 +5525,7 @@ namespace TerraViewer
         RenderTargetTexture stereoRenderTextureBoth= null;
         DepthBuffer stereoDepthBufferBoth = null;
         public enum StereoModes { Off, AnaglyphRedCyan, AnaglyphYellowBlue, AnaglyphMagentaGreen, CrossEyed, SideBySide, InterlineEven, InterlineOdd, OculusRift, Right, Left };
-        enum RenderTypes { DomeFront, DomeRight, DomeUp, DomeLeft, DomeBack, Normal, RightEye, LeftEye };
+        enum RenderTypes { DomeFront, DomeRight, DomeUp, DomeLeft, DomeBack, Normal, RightEye, LeftEye, DomeCustom };
 
         public StereoModes StereoMode = StereoModes.Off;
         static RenderTypes CurrentRenderType = RenderTypes.Normal;
@@ -5688,7 +5883,7 @@ namespace TerraViewer
 
                         SkyColor = SysColor.FromArgb(255, 0, 0, 0);
 
-                        if ((int)renderType < 5)
+                        if ((int)renderType < 5 || renderType == RenderTypes.DomeCustom)
                         {
                             SetupMatricesSpaceDome(false, renderType);
                         }

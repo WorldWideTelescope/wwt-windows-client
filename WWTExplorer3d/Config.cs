@@ -43,6 +43,7 @@ namespace TerraViewer
         public string ConfigFile;
         public string BlendFile;
         public string DistortionGrid;
+        public string RenderHeadFile;
         public int DistortionGridWidth = 1;
         public int DistortionGridHeight = 1;
         public bool UsingSgcWarpMap = false;
@@ -254,6 +255,11 @@ namespace TerraViewer
                     DistortionGrid = deviceNode.Attributes["DistortionGrid"].Value.ToString();
                 }
 
+                if (deviceNode.Attributes["RenderHeadFile"] != null)
+                {
+                    RenderHeadFile = deviceNode.Attributes["RenderHeadFile"].Value.ToString();
+                    SkySkanMode = !String.IsNullOrWhiteSpace(RenderHeadFile);
+                }
                 MultiProjector = !(String.IsNullOrEmpty(ConfigFile) || String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
                 // UseDistrotionAndBlend = !( String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
                 // MultiProjector = true;
@@ -517,6 +523,7 @@ namespace TerraViewer
         }
 
         string saveFilename = @"c:\wwtconfig\config.xml";
+        internal bool SkySkanMode;
 #endif
         public bool SaveToXml()
         {
@@ -529,8 +536,8 @@ namespace TerraViewer
                 sb.Append("<DeviceConfig>\r\n");
                 {
                     sb.Append("<Config>\r\n");
-                    sb.Append(String.Format("<Device ClusterID=\"{21}\" NodeID=\"{19}\" NodeDiplayName=\"{20}\" MonitorCountX=\"{0}\" MonitorCountY=\"{1}\" MonitorX=\"{2}\" MonitorY=\"{3}\" Master=\"{4}\" Width=\"{5}\" Height=\"{6}\" Bezel=\"{7}\" ConfigFile=\"{8}\" BlendFile=\"{9}\" DistortionGrid=\"{10}\" Heading=\"{11}\" Pitch=\"{12}\" Roll=\"{13}\" UpFov=\"{14}\" DownFov=\"{15}\" MultiChannelDome=\"{16}\" DomeTilt=\"{17}\" Aspect=\"{18}\" DiffTilt=\"{22}\" MultiChannelGlobe=\"{23}\" DomeAngle=\"{24}\"></Device>\r\n",
-                        MonitorCountX.ToString(), MonitorCountY.ToString(), MonitorX, MonitorY, Master.ToString(), Width.ToString(), Height.ToString(), Bezel.ToString(), ConfigFile, BlendFile, DistortionGrid, Heading, Pitch, Roll, UpFov, DownFov, MultiChannelDome.ToString(), DomeTilt, Aspect, NodeID.ToString(), NodeDiplayName, ClusterID.ToString(), DiffTilt.ToString(), MultiChannelGlobe.ToString(), DomeAngle.ToString()));
+                    sb.Append(String.Format("<Device ClusterID=\"{21}\" NodeID=\"{19}\" NodeDiplayName=\"{20}\" MonitorCountX=\"{0}\" MonitorCountY=\"{1}\" MonitorX=\"{2}\" MonitorY=\"{3}\" Master=\"{4}\" Width=\"{5}\" Height=\"{6}\" Bezel=\"{7}\" RenderHeadFile=\"{25}\" ConfigFile=\"{8}\" BlendFile=\"{9}\" DistortionGrid=\"{10}\" Heading=\"{11}\" Pitch=\"{12}\" Roll=\"{13}\" UpFov=\"{14}\" DownFov=\"{15}\" MultiChannelDome=\"{16}\" DomeTilt=\"{17}\" Aspect=\"{18}\" DiffTilt=\"{22}\" MultiChannelGlobe=\"{23}\" DomeAngle=\"{24}\"></Device>\r\n",
+                        MonitorCountX.ToString(), MonitorCountY.ToString(), MonitorX, MonitorY, Master.ToString(), Width.ToString(), Height.ToString(), Bezel.ToString(), ConfigFile, BlendFile, DistortionGrid, Heading, Pitch, Roll, UpFov, DownFov, MultiChannelDome.ToString(), DomeTilt, Aspect, NodeID.ToString(), NodeDiplayName, ClusterID.ToString(), DiffTilt.ToString(), MultiChannelGlobe.ToString(), DomeAngle.ToString(), RenderHeadFile));
                     sb.Append("</Config>\r\n");
                 }
                 sb.Append("</DeviceConfig>\r\n");
