@@ -254,6 +254,14 @@
     <Compile Include="FolderPanel.cs" />
     <Compile Include="FolderUp.cs" />
     <Compile Include="HandController.cs" />
+    <Compile Include="Healpix\FastMath.cs" />
+    <Compile Include="Healpix\Fxyf.cs" />
+    <Compile Include="Healpix\HealpixTables.cs" />
+    <Compile Include="Healpix\HealpixTile.cs" />
+    <Compile Include="Healpix\HealpixUtils.cs" />
+    <Compile Include="Healpix\Hploc.cs" />
+    <Compile Include="Healpix\Pointing.cs" />
+    <Compile Include="Healpix\Zphi.cs" />
     <Compile Include="IUiController.cs" />
     <Compile Include="KmlLabels.cs" />
     <Compile Include="LayerInfo.cs" />

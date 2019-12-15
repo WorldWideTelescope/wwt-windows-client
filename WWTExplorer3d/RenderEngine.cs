@@ -7696,6 +7696,9 @@ namespace TerraViewer
                 case ProjectionType.Spherical:
                     maxY = 1;
                     break;
+                case ProjectionType.Healpix:// HEALPix Projection Type
+                    maxY = 4 * (int)Math.Pow(2, level);
+                    break;
                 default:
                     maxY = (int)Math.Pow(2, level);
                     break;
@@ -7736,6 +7739,9 @@ namespace TerraViewer
                     break;
                 case ProjectionType.Spherical:
                     maxX = 1;
+                    break;
+                case ProjectionType.Healpix:// HEALPix Projection Type
+                    maxX = 3 * (int)Math.Pow(2, level);
                     break;
                 default:
                     maxX = (int)Math.Pow(2, level) * 2;

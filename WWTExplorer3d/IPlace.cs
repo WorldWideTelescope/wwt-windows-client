@@ -48,7 +48,7 @@ namespace TerraViewer
     };
     [SerializableAttribute()]
     [XmlTypeAttribute(AnonymousType = true)]
-    public enum ProjectionType { Mercator, Equirectangular, Tangent, Tan = Tangent, Toast, Spherical, SkyImage, Plotted };
+    public enum ProjectionType { Mercator, Equirectangular, Tangent, Tan = Tangent, Toast, Spherical, SkyImage, Plotted, Healpix };
 
  
 

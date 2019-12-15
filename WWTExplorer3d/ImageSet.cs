@@ -749,9 +749,46 @@ namespace TerraViewer
             return sb.ToString();
         }
 
-        public static long GetTileKey(IImageSet imageset, int level, int x, int y)
+        public static long GetTileKey(IImageSet imageset, int level, int x, int y, Tile parent)
         {
+            #if !WINDOWS_UWP
+            if (parent != null)
+            {
+                if (imageset.Projection.Equals(ProjectionType.Healpix))
+                {
+                    HealpixTile tile = (HealpixTile)parent;
+                    int tileIndex;
+                    if (tile.tileIndex == -1)
+                    {
+                        tileIndex = y * 2 + x;
+                    }
+                    else
+                    {
+
+                        tileIndex = tile.tileIndex * 4 + y * 2 + x;
+                    }
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42) + ((long)(tileIndex * 4 + y * 2 + x) << 50) + tile.Key;
+                    //return 0L;
+                }
+                else
+                {
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42);
+                }
+            }
+            else
+            {
+                if (imageset.Projection.Equals(ProjectionType.Healpix))
+                {
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42) + ((long)(x * 4 + y) << 50);
+                }
+                else
+                {
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42);
+                }
+            }
+#else
             return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42);
+#endif
         }
 
 
@@ -786,6 +823,10 @@ namespace TerraViewer
                 case ProjectionType.Plotted:
                     {
                         return new PlotTile(level, x, y, imageset, parent);
+                    }
+                case ProjectionType.Healpix:
+                    {
+                        return new HealpixTile(level, x, y, imageset, parent);
                     }
 #endif
                 default:

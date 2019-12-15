@@ -97,7 +97,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -135,7 +135,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -202,7 +202,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
             try
             {
                 if (!tiles.ContainsKey(tileKey))

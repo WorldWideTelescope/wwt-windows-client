@@ -185,11 +185,29 @@ namespace TerraViewer
         //protected Tile[] children = new Tile[4] { null, null, null, null };
         //public Tile Parent = null;
 
+        private Tile parent;
+        /**
+         * the parent tile of different projection type
+         */
         public Tile Parent
         {
             get
             {
-                return TileCache.GetCachedTile(level - 1, x / 2, y / 2, dataset, null);
+#if !WINDOWS_UWP
+                if (this is HealpixTile)
+                {
+                    return this.parent;
+                }
+                else
+#endif
+                {
+                    return TileCache.GetCachedTile(level - 1, x / 2, y / 2, dataset, null);
+                }
+            }
+
+            set
+            {
+                parent = value;
             }
         }
 
@@ -534,6 +552,7 @@ namespace TerraViewer
                 this.indexBuffer = null;
             }
         }
+        public static bool ShowDebugTileEdges = false;
         public virtual void CleanUpGeometryOnly()
         {
 
@@ -634,7 +653,26 @@ namespace TerraViewer
                         if (FileExists)
                         {
                             if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture"); }
-                            texture = BufferPool11.GetTexture(localFilename);
+#if !WINDOWS_UWP
+                            if (ShowDebugTileEdges) //debug with lines around edges
+                            {
+                                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(localFilename);
+                                System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+                                g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle(0, 0, bmp.Width-1, bmp.Height-1));
+                                g.Flush();
+                                g.Dispose();
+                                texture = BufferPool11.GetTexture(bmp);
+                            }
+                            else
+                            {
+                                texture = BufferPool11.GetTexture(localFilename);
+                            }
+
+#else
+                           texture = BufferPool11.GetTexture(localFilename);
+#endif
+
+
                             if (texture == null)
                             {
                                 try
@@ -936,7 +974,7 @@ namespace TerraViewer
             InViewFrustum = false;
             Vector3d center = sphereCenter;
 
-            if (this.Level < 2 && (dataset.Projection == ProjectionType.Mercator || dataset.Projection == ProjectionType.Toast))
+            if (this.Level < 2 && (dataset.Projection == ProjectionType.Mercator || dataset.Projection == ProjectionType.Toast || dataset.Projection == ProjectionType.Healpix))
             {
                 return true;
             }
@@ -1074,7 +1112,7 @@ namespace TerraViewer
             {
                 if (key == 0)
                 {
-                    key = ImageSetHelper.GetTileKey(dataset, level, x, y);
+                    key = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
                 }
 
                 return key;
@@ -1095,6 +1133,13 @@ namespace TerraViewer
                         Volitile = true;
                         directory = Properties.Settings.Default.CahceDirectory + @"Imagery\";
                     }
+#if !WINDOWS_UWP
+                    else if (this.dataset.Projection == ProjectionType.Healpix)
+                    {
+                        //if the tile is healpix, using its own method.
+                        directory = ((HealpixTile)this).GetDirectory(dataset, level, x, y);
+                    }
+#endif
                     else
                     {
                         directory = GetDirectory(dataset, level, x, y);
@@ -1134,6 +1179,13 @@ namespace TerraViewer
                         Volitile = true;
                         filename = Properties.Settings.Default.CahceDirectory + @"Imagery\screenshop.png";
                     }
+#if !WINDOWS_UWP
+                    else if (this.dataset.Projection == ProjectionType.Healpix)
+                    {
+                        HealpixTile tmp = (HealpixTile)this;
+                        filename = tmp.GetFilename();
+                    }
+#endif
                     else
                     {
                         filename = GetFilename(dataset, level, x, y);
@@ -1194,7 +1246,16 @@ namespace TerraViewer
             {
                 if (url == null)
                 {
-                    url = GetUrl(dataset, level, x, y);
+#if !WINDOWS_UWP
+                    if (this.dataset.Projection == ProjectionType.Healpix)
+                    {
+                        url = ((HealpixTile)this).GetUrl(dataset, level, x, y);
+                    }
+                    else
+#endif
+                    {
+                        url = GetUrl(dataset, level, x, y);
+                    }
                     return url;
                 }
                 else
@@ -1391,7 +1452,7 @@ namespace TerraViewer
                 vertexCount = value;
             }
         }
-        BlendState[] renderPart = null;
+        protected BlendState[] renderPart = null;
         bool demEnabled = false;
         bool demInitialized = false;
         public bool DemEnabled

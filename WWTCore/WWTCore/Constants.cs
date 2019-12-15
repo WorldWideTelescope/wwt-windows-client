@@ -11,6 +11,16 @@ namespace TerraViewer
 {
     public class Constants
     {
+        public const double halfpi = Math.PI / 2d;
+
+        public const double inv_halfpi = 2d / Math.PI;
+
+        /** The Constant twopi. */
+        public const double twopi = 2 * Math.PI;
+        public const double inv_twopi = 1d / (2 * Math.PI);
+
+        /** The Constant twothird. */
+        public const double twothird = 2d / 3d;
     }
 
     public class PulseMe
