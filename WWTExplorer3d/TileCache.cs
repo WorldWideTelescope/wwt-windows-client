@@ -729,6 +729,10 @@ namespace TerraViewer
 		{
             WebClient Client = null;
  #if !WINDOWS_UWP
+            if (retTile.Dataset.Projection == ProjectionType.Healpix && retTile.Dataset.Properties.Count == 0)
+            {
+                HealpixTile.LoadProperties(retTile.Dataset);
+            }
             if (retTile.Dataset.Projection == ProjectionType.SkyImage && retTile.Dataset.Url.EndsWith("/screenshot.png"))
             {
                 SkyImageTile tile = retTile as SkyImageTile;

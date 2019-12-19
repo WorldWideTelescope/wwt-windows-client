@@ -5772,8 +5772,10 @@ namespace TerraViewer
 
         private static void SendWMData(IntPtr hwnd, string argData)
         {
-
-            File.WriteAllText(Properties.Settings.Default.CahceDirectory + @"\launchfile.txt", argData);
+            if (!string.IsNullOrWhiteSpace(argData) && !string.IsNullOrWhiteSpace(Properties.Settings.Default.CahceDirectory))
+            {
+                File.WriteAllText(Properties.Settings.Default.CahceDirectory + @"\launchfile.txt", argData);
+            }
             PostMessage(hwnd, AlertMessage, 0, IntPtr.Zero);
 
         }

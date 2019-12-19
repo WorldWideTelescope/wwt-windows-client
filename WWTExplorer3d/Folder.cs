@@ -1116,6 +1116,20 @@ namespace TerraViewer
             }
         }
 
+        private Dictionary<string, string> properties = new Dictionary<string, string>();
+
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public Dictionary<string, string> Properties
+        {
+            get
+            {
+                return properties;
+            }
+            set
+            {
+                properties = value;
+            }
+        }
 
         int hash = 0;
 

@@ -61,6 +61,7 @@ namespace TerraViewer
 
         public HealpixTile(int level, int x, int y, IImageSet dataset, Tile parent)
         {
+            HealpixTile.LoadProperties(dataset);
             //if (x != 0 && y != 0)
             //    return;
             this.level = level;
@@ -309,8 +310,41 @@ namespace TerraViewer
             catch (Exception e)
             {
             }
-        }
 
+            // Convert to galactic points.
+
+
+            if (dataset.Projection == ProjectionType.Healpix && dataset.Properties.ContainsKey("hips_frame") && dataset.Properties["hips_frame"] == "galactic")
+            {
+                if (!galMatInit)
+                {
+                    Matrix3d galMatrix = Matrix3d.Identity;
+                    //galMatrix.Multiply(Matrix3d.RotationY(90 +((17.7603329867975 * 15)) / 180.0 * Math.PI));
+                    //galMatrix.Multiply(Matrix3d.RotationX(((-28.9361739586894)) / 180.0 * Math.PI));
+                    //galMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783)) / 180.0 * Math.PI));
+                    //galMatrix.Invert(); 
+
+                    //Matrix3d galMatrix = new Matrix3d(-.0548755604, -.8734370902, -.4838350155, 0, .4941094279, -.4448296300, .7469822445, 0, -.8676661490, -.1980763734, .4559837762, 0, 0, 0, 0, 1);
+                    //Matrix3d galMatrix = new Matrix3d(-.0548755604, -.8734370902, -.4838350155, 0, .4941094279, -.4448296300, .7469822445, 0, -.8676661490, -.1980763734, .4559837762, 0, 0, 0, 0, 1);
+                    ////galMatrix.Invert();
+                    //galMatrix = Matrix3d.Multiply(galMatrix, Matrix3d.RotationZ( Math.PI));
+                    //galMatrix.Transpose(); 
+                    galacticMatrix = galMatrix;
+                    
+                    galMatInit = true;
+                }
+                for (int i = 0; i < vertexList.Count; i++)
+                {
+                    var vert = vertexList[i];
+                    var pos = vert.Position;
+                    galacticMatrix.MultiplyVector(ref pos);
+                    vert.Position = pos;
+                    vertexList[i] = vert;
+                }
+            }
+        }
+        static bool galMatInit = false;
+        static Matrix3d galacticMatrix = Matrix3d.Identity;
 
         public string GetDirectory(IImageSet dataset, int level, int x, int y)
         {
@@ -697,212 +731,28 @@ namespace TerraViewer
 
             return true;
         }
+        static Mutex propMutex = new Mutex();
 
-        //public override bool IsTileInFrustum(PlaneD[] frustum)
-        //{
+        internal static void LoadProperties(IImageSet dataset)
+        {
+            propMutex.WaitOne();
+            if (dataset.Properties.Count == 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(Properties.Settings.Default.CahceDirectory);
+                sb.Append(@"Imagery\HiPS\");
+                sb.Append(dataset.Name.Replace(" ", "_"));
+                sb.Append("\\");
+                sb.Append(@"properties");
 
+                string propFilename = sb.ToString();
 
-        //    if (level > dataset.Levels)
-        //    {
-        //        return false;
-        //    }
-        //    InViewFrustum = false;
-        //    Vector3d center = sphereCenter;
+                HipsProperties props = HipsProperties.GetProperties(dataset.Url, propFilename);
 
-        //    if (this.Level < 2 )
-        //    {
-        //        return true;
-        //    }
-
-        //    Vector4d centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
-        //    Vector3d length = new Vector3d(sphereRadius, 0, 0);
-
-        //    double rad = length.Length();
-        //    double tmp;
-        //    for (int i = 0; i < 6; i++)
-        //    {
-        //        tmp = frustum[i].Dot(centerV4) + rad;
-        //        if (insideOut)
-        //        {
-        //            //The method used in toast tiles doesn't work here, so several threshold values were tested based on different levels' view.
-        //            if (level <= 4)
-        //            {
-
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -0.19)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.16)
-        //                        return false;
-
-        //                }
-        //            }
-        //            else if (level <= 6)
-        //            {
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -0.19)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.02)
-        //                        return false;
-
-        //                }
-        //            }
-        //            else if (level <= 8)
-        //            {
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -0.19)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.02)
-        //                        return false;
-
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -0.19)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.02)
-        //                        return false;
-
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-
-        //            if (level <= 4)
-        //            {
-
-        //                if (i == 0)
-        //                {
-        //                    if (tmp < -0.8)
-        //                        return false;
-        //                }
-        //                else if (i == 1)
-        //                {
-        //                    if (tmp < -0.8)
-        //                        return false;
-        //                }
-        //                else if (i == 2)
-        //                {
-        //                    if (tmp < -0.8)
-        //                        return false;
-        //                }
-        //                else if (i == 3)
-        //                {
-        //                    if (tmp < -0.8)
-        //                        return false;
-        //                }
-        //                else if (i == 4)
-        //                {
-        //                    if (tmp < -1)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //            }
-        //            else if (level <= 6)
-        //            {
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -1)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.64)
-        //                        return false;
-
-        //                }
-        //            }
-        //            else if (level <= 8)
-        //            {
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -1)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.61)
-        //                        return false;
-
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (i == 4)
-        //                {
-        //                    if (tmp < -1)
-        //                        return false;
-        //                }
-        //                else if (i == 5)
-        //                {
-        //                    if (tmp < 0)
-        //                        return false;
-        //                }
-        //                else
-        //                {
-        //                    if (tmp < -0.6)
-        //                        return false;
-
-        //                }
-        //            }
-        //        }
-        //    }
-        //    InViewFrustum = true;
-
-        //    return true;
-        //}
+                dataset.Properties = props.Properties;
+            }
+            propMutex.ReleaseMutex();
+        }
 
 
         public int GetTileTextureIndex()
@@ -1590,8 +1440,6 @@ namespace TerraViewer
                         }
                         vertexList.Add(new PositionTexture(points[i], u, v));
                     }
-
-
                 }
                 else if (quadIndex == 1)
                 {
@@ -1712,8 +1560,6 @@ namespace TerraViewer
                         }
                         vertexList.Add(new PositionTexture(points[i], u, v));
                     }
-
-
                 }
                 else if (quadIndex == 5)
                 {
@@ -1834,8 +1680,6 @@ namespace TerraViewer
                         }
                         vertexList.Add(new PositionTexture(points[i], u, v));
                     }
-
-
                 }
                 else if (quadIndex == 9)
                 {
@@ -2054,9 +1898,46 @@ namespace TerraViewer
             }
         }
     }
-    /*
-     * 在当前order的第几个face（f）的行列号（x,y）
-     */
+    public class HipsProperties
+    {
+        public Dictionary<string, string> Properties = new Dictionary<string, string>();
+        public static HipsProperties GetProperties(string url, string filename)
+        {
+            HipsProperties props = new HipsProperties();
+            string propsUrl = url.Substring(0, url.IndexOf("/Norder")) + "/properties";
+            try
+            {
+                if (!File.Exists(filename))
+                {
+                    WebClient client = new WebClient();
+                    client.DownloadFile(propsUrl, filename);
+                }
+
+                string[] lines = File.ReadAllLines(filename);
+
+                foreach (string line in lines)
+                {
+                    if (!string.IsNullOrWhiteSpace(line) && !line.StartsWith("#"))
+                    {
+                        string[] parts = line.Split('=');
+                        string key = parts[0].Trim();
+                        string val = parts[1].Trim();
+                        if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(val))
+                        {
+                            props.Properties[key] = val;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                props.Properties["dummy"] = "failed";
+            }
+
+            return props;
+        }
+    }
+
     public class Xyf
     {
         public int ix, iy, face;

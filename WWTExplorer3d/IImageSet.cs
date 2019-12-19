@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace TerraViewer
 {
     public interface IImageSet
@@ -38,5 +40,6 @@ namespace TerraViewer
         double MeanRadius { get; set; }
         string ReferenceFrame { get; set; }
         UInt16 InternalID { get; set; }
+        Dictionary<string, string> Properties { get; set; }
     }
 }
