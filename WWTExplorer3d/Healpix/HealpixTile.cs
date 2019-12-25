@@ -1706,10 +1706,17 @@ namespace TerraViewer
             string propsUrl = url.Substring(0, url.IndexOf("/Norder")) + "/properties";
             string tableUrl = propsUrl.Replace("/properties", "/metadata.xml");
             string tableFilename = filename.Replace("\\properties", "\\metadata.xml");
+            string path = filename.Replace("\\properties", "\\");
             try
             {
                 if (!File.Exists(filename))
                 {
+                    //Create cache directroy if not yet created
+                    if (!System.IO.Directory.Exists(path))
+                    {
+                        System.IO.Directory.CreateDirectory(path);
+                    }
+
                     WebClient client = new WebClient();
                     client.DownloadFile(propsUrl, filename);
                 }
