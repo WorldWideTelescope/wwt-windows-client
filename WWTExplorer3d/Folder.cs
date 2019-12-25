@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml.Serialization;
 
 #if WINDOWS_UWP
+using VoTable= System.Object;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 #else
@@ -1128,6 +1129,21 @@ namespace TerraViewer
             set
             {
                 properties = value;
+            }
+        }
+
+        private VoTable tableMetadata = null;
+
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public VoTable TableMetadata
+        {
+            get
+            {
+                return tableMetadata;
+            }
+            set
+            {
+                tableMetadata = value;
             }
         }
 

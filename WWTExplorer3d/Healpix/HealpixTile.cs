@@ -12,21 +12,14 @@ using TerraViewer.Healpix;
 
 namespace TerraViewer
 {
-
-    /**
-     * Added by Yunfei Xu on 2016/09/10
-     */
     public class HealpixTile : Tile
     {
-        bool topDown = false;
-
         protected PositionTexture[,] bounds;
         protected bool backslash = false;
         List<PositionTexture> vertexList = null;
-        //List<Triangle>[] childTriangleList = new List<Triangle>[4];
 
         int nside = 2;
-        int npface; //nside * nside;
+        int npface; 
         protected double[] demArray;
         public int tileIndex = -1;
         short[] indexArray;
@@ -62,31 +55,25 @@ namespace TerraViewer
         public HealpixTile(int level, int x, int y, IImageSet dataset, Tile parent)
         {
             HealpixTile.LoadProperties(dataset);
-            //if (x != 0 && y != 0)
-            //    return;
             this.level = level;
             this.x = x;
             this.y = y;
             this.dataset = dataset;
-            this.topDown = !dataset.BottomsUp;
-            if(level ==0)
+
+            if (level == 0)
             {
                 this.nside = 4;
             }
-            else { 
-            this.nside = (int)Math.Pow(2, level + 1);
-
-            //if current order is 0, eg. there is no parent for the current tile, the face index is 4x+y
-
+            else
+            {
+                this.nside = (int)Math.Pow(2, level + 1);
             }
-
 
             if (parent == null)
             {
                 this.face = x * 4 + y;
                 quadIndexStart = 0;
                 quadIndexEnd = 15;
-                //this.tileIndex = this.face;
             }
             else
             {
@@ -127,8 +114,6 @@ namespace TerraViewer
 
             ComputeQuadrant();
 
-            // insideOut = this.Dataset.DataSetType == ImageSetType.Sky || this.Dataset.DataSetType == ImageSetType.Panorama;
-            
             // All healpix is inside out
             insideOut = true;
             ComputeBoundingSphere();
@@ -149,31 +134,22 @@ namespace TerraViewer
             }
 
             CalcSphere(pointList);
-            //localCenter = sphereCenter;
             VertexCount = vertexList.Count;
         }
 
         private void createGeometry()
         {
             vertexList = BufferPool11.GetPositionTextureList();
-            //int face = x * 4 + y;
 
             int nQuads = (int)Math.Pow(nside, 2);// quads of one face in a specific order 
-
-
-            //int ppq = 4;// points per quad
-            //int nPoints = nQuads * ppq;
             int faceoff = nQuads * face;
             Vector3d[] points;
 
             try
             {
-                int index = 0;
-                Vector3d tmp;
                 int quadIndex = 0;
 
                 if (level == 0)
-
                 {
                     vertexListOfLevel0(vertexList, quadIndexStart, quadIndexEnd, faceoff);
                 }
@@ -312,8 +288,6 @@ namespace TerraViewer
             }
 
             // Convert to galactic points.
-
-
             if (dataset.Projection == ProjectionType.Healpix && dataset.Properties.ContainsKey("hips_frame") && dataset.Properties["hips_frame"] == "galactic")
             {
                 if (!galMatInit)
@@ -371,7 +345,7 @@ namespace TerraViewer
 
         public string GetFilename()
         {
-            string extention = dataset.Extension.StartsWith(".") ? dataset.Extension : "." + dataset.Extension;
+            string extention = GetHipsFileExtention();
 
             StringBuilder sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
@@ -391,7 +365,6 @@ namespace TerraViewer
                     CreateFakePNG(sb.ToString());
                 }
             }
-
             else
             {
                 sb.Append(@"Norder" + (level));
@@ -428,8 +401,6 @@ namespace TerraViewer
 
         private void CreateFakePNG(string path)
         {
-
-
             Bitmap bmp = new Bitmap(512, 512);
             Graphics g = Graphics.FromImage(bmp);
 
@@ -442,8 +413,6 @@ namespace TerraViewer
 
         public static void GenerateLevel2(string filename)
         {
-            //if(Directory.Exists())
-
             string extention = Path.GetExtension(filename);
             string path = filename.Replace("Allsky" + extention, "Dir0");
             if (!System.IO.Directory.Exists(path))
@@ -464,14 +433,12 @@ namespace TerraViewer
                     imgarray[index].Save(path + "\\Npix" + index + extention);
                 }
             }
-
         }
 
         public string GetUrl(IImageSet dataset, int level, int x, int y)
         {
-
             string returnUrl = "";
-            string extention = dataset.Extension.StartsWith(".") ? dataset.Extension : "." + dataset.Extension;
+            string extention = GetHipsFileExtention();
 
             int tileTextureIndex = -1;
             if (level == 0)
@@ -497,16 +464,49 @@ namespace TerraViewer
             }
 
             returnUrl = string.Format(dataset.Url, level.ToString(), sb.ToString(), tileTextureIndex.ToString() + extention);
-            //}
-
 
             return returnUrl;
+        }
+
+        private string GetHipsFileExtention()
+        {
+            // The extension will contain either a list of type or a single type
+            // The imageset can be set to the perfrered file type if desired IE: FITS will never be chosen if others are avaialbe,
+            // unless the FITS only is selected and saved into the extension field of the imageset.
+            //prioritize transparent Png over other image formats
+            if(dataset.Extension.Contains("png"))
+            {
+                IsCatalogTile = false;
+                return ".png";
+            }
+
+            // Check for either type
+            if (dataset.Extension.Contains("jpeg") || dataset.Extension.Contains("jpg"))
+            {
+                IsCatalogTile = false;
+                return ".jpg";
+            }
+
+            if (dataset.Extension.Contains("tsv"))
+            {
+                IsCatalogTile = true;
+                return ".tsv";
+            }
+
+            if (dataset.Extension.Contains("fits"))
+            {
+                IsCatalogTile = false;
+                return ".fits";
+            }
+                IsCatalogTile = false;
+
+            //default to most common
+            return ".jpg";
         }
 
         private void computeUV(int pi, int count)
         {
             int l = count / 4;//points per edge;
-
         }
 
 
@@ -527,7 +527,6 @@ namespace TerraViewer
                     points[i + 2 * step] = new Fxyf(xc - dc + i * d, yc - dc, xyf.face).toVec3();
                     points[i + 3 * step] = new Fxyf(xc + dc, yc - dc + i * d, xyf.face).toVec3();
                 }
-
                 else
                 {
                     Vector3d tmp = new Fxyf(xc + dc - i * d, yc + dc, xyf.face).toVec3();
@@ -539,6 +538,7 @@ namespace TerraViewer
                     tmp = new Fxyf(xc + dc, yc - dc + i * d, xyf.face).toVec3();
                     points[i + 3 * step] = new Vector3d(-tmp.X, tmp.Y, -tmp.Z);
                 }
+
                 if (i == 0)
                 {
                     TopLeft = points[i];
@@ -548,15 +548,11 @@ namespace TerraViewer
                 }
             }
 
-
             return points;
         }
 
         public override bool Draw3D(RenderContext11 renderContext, float transparancy, Tile parent)
         {
-            //if (this.level > 0)
-            //    return false;
-
             int tileTextureIndex =-1;
             if(level == 0)
             {
@@ -579,13 +575,11 @@ namespace TerraViewer
                 return false;
             }
 
-
-
             TilesInView++;
 
             if (!CreateGeometry(renderContext, true))
             {
-                if (level > 3)
+                if (level > 2)
                 {
                     return false;
                 }
@@ -611,26 +605,26 @@ namespace TerraViewer
                 bool childRendered = false;
                 int childIndex = 0;
 
-
                 for (int y1 = 0; y1 < 2; y1++)
                 {
                     for (int x1 = 0; x1 < 2; x1++)
                     {
-
-
                         if (level < dataset.Levels)
                         {
-
                             HealpixTile child;
                             child = (HealpixTile)TileCache.GetTile(level + 1, x1, y1, dataset, this);
                             childrenId[childIndex] = child.Key;
                             if (child.IsTileInFrustum(renderContext.Frustum))
                             {
-
                                 InViewFrustum = true;
                                 if (child.IsTileBigEnough(renderContext))
                                 {
                                     renderPart[childIndex].TargetState = !child.Draw3D(renderContext, transparancy, this);
+                                    if (level > 4)
+                                    {
+
+                                        int uvx = 0;
+                                    }
 
                                     if (renderPart[childIndex].TargetState)
                                     {
@@ -651,7 +645,6 @@ namespace TerraViewer
                             {
                                 renderPart[childIndex].State = renderPart[childIndex].TargetState;
                             }
-
                         }
                         else
                         {
@@ -674,11 +667,10 @@ namespace TerraViewer
                     }
                 }
 
-                if (!anythingToRender)
+                if (!anythingToRender && !IsCatalogTile)
                 {
                     return true;
                 }
-
 
                 if (!CreateGeometry(renderContext, true))
                 {
@@ -687,30 +679,33 @@ namespace TerraViewer
 
                 TilesInView++;
 
-                if (wireFrame)
+                if (IsCatalogTile)
                 {
-                    renderContext.MainTexture = null;
+                    RenderCatalog(renderContext);
                 }
                 else
                 {
+                    if (wireFrame)
+                    {
+                        renderContext.MainTexture = null;
+                    }
+                    else
+                    {
+                        renderContext.MainTexture = texture;
+                    }
 
-                    renderContext.MainTexture = texture;
+                    if (dataset.DataSetType == ImageSetType.Sky)
+                    {
+                        HDRPixelShader.constants.opacity = transparancy;
+                        HDRPixelShader.Use(renderContext.devContext);
+                    }
 
+                    renderContext.SetVertexBuffer(vertexBuffer);
+
+                    renderContext.SetIndexBuffer(indexBuffer[0]);
+
+                    renderContext.devContext.DrawIndexed(indexBuffer[0].Count, 0, 0);
                 }
-
-                if (dataset.DataSetType == ImageSetType.Sky )
-                {
-                    HDRPixelShader.constants.opacity = transparancy;
-                    HDRPixelShader.Use(renderContext.devContext);
-                }
-
-                renderContext.SetVertexBuffer(vertexBuffer);
-
-                renderContext.SetIndexBuffer(indexBuffer[0]);
-
-                renderContext.devContext.DrawIndexed(indexBuffer[0].Count, 0, 0);
-
-
             }
             catch (Exception e)
             {
@@ -718,17 +713,12 @@ namespace TerraViewer
             }
             finally
             {
-
                 if (usingLocalCenter)
                 {
                     renderContext.World = savedWorld;
                     renderContext.View = savedView;
                 }
             }
-
-
-
-
             return true;
         }
         static Mutex propMutex = new Mutex();
@@ -750,10 +740,10 @@ namespace TerraViewer
                 HipsProperties props = HipsProperties.GetProperties(dataset.Url, propFilename);
 
                 dataset.Properties = props.Properties;
+                dataset.TableMetadata = props.VoTable;
             }
             propMutex.ReleaseMutex();
         }
-
 
         public int GetTileTextureIndex()
         {
@@ -763,10 +753,8 @@ namespace TerraViewer
 
         public override bool IsTileBigEnough(RenderContext11 renderContext)
         {
-
-            if (level > 2)
+            if (level > 1)
             {
-
                 SharpDX.Vector3 topLeftScreen;
                 SharpDX.Vector3 bottomRightScreen;
                 SharpDX.Vector3 topRightScreen;
@@ -779,7 +767,6 @@ namespace TerraViewer
                 // Test for tile scale in view..
                 topLeftScreen = TopLeft.Vector311;
                 topLeftScreen = SharpDX.Vector3.Project(topLeftScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
-
 
                 bottomRightScreen = BottomRight.Vector311;
                 bottomRightScreen = SharpDX.Vector3.Project(bottomRightScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
@@ -806,13 +793,9 @@ namespace TerraViewer
                 right = SharpDX.Vector3.Subtract(right, topRightScreen);
                 float rightLength = right.Length();
 
-
                 float lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
 
-
-
                 float testLength = (400 - ((Earth3d.MainWindow.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality));
-
 
                 if (lengthMax < testLength) // was 220
                 {
@@ -847,7 +830,6 @@ namespace TerraViewer
             //if (nside >= 64)
             //    step = 1;
         }
-
 
         public static int nside2order(long nside)
         {
@@ -935,7 +917,6 @@ namespace TerraViewer
                 }
             }
 
-
             Vector3d testPoint = Coordinates.GeoTo3dDouble(lat, lng);
             bool top = IsLeftOfHalfSpace(TopLeft, TopRight, testPoint);
             bool right = IsLeftOfHalfSpace(TopRight, BottomRight, testPoint);
@@ -947,7 +928,6 @@ namespace TerraViewer
                 return true;
             }
             return false; ;
-
         }
 
         private bool IsLeftOfHalfSpace(Vector3d pntA, Vector3d pntB, Vector3d pntTest)
@@ -1000,8 +980,6 @@ namespace TerraViewer
             double uud = Math.Max(0, Math.Min(16, (uv.X * 16)));
             double vvd = Math.Max(0, Math.Min(16, (uv.Y * 16)));
 
-
-
             int uu = Math.Max(0, Math.Min(15, (int)(uv.X * 16)));
             int vv = Math.Max(0, Math.Min(15, (int)(uv.Y * 16)));
 
@@ -1030,7 +1008,6 @@ namespace TerraViewer
 
         public override double GetSurfacePointAltitudeNow(double lat, double lng, bool meters, int targetLevel)
         {
-
             if (level < targetLevel)
             {
                 int yOffset = 0;
@@ -1102,10 +1079,8 @@ namespace TerraViewer
 
         public override void OnCreateVertexBuffer(VertexBuffer11 vb)
         {
-
             if (!subDivided)
             {
-
                 if (vertexList == null)
                 {
                     createGeometry();
@@ -1113,7 +1088,6 @@ namespace TerraViewer
 
                 try
                 {
-
                     // Create a vertex buffer 
                     PositionNormalTexturedX2[] verts = (PositionNormalTexturedX2[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
                     int index = 0;
@@ -1140,15 +1114,7 @@ namespace TerraViewer
                             indexArray[i * 6 + 3] = (short)(3 * step + offset * i);
                             indexArray[i * 6 + 4] = (short)(0 * step + offset * i);
                             indexArray[i * 6 + 5] = (short)(1 * step + offset * i);
-
-                            //indexArray[i * 6 + 1] = (short)(2 * step + offset * i);
-                            //indexArray[i * 6 + 3] = (short)(3 * step + offset * i);
-                            //indexArray[i * 6 + 2] = (short)(1 * step + offset * i);
-                            //indexArray[i * 6 + 4] = (short)(3 * step + offset * i);
-                            //indexArray[i * 6 + 5] = (short)(0 * step + offset * i);
-                            //indexArray[i * 6 + 0] = (short)(1 * step + offset * i);
                         }
-
                     }
                     else
                     {
@@ -1157,7 +1123,7 @@ namespace TerraViewer
                         indexArray = (short[])this.indexBuffer[0].Lock();
                         int offset = verts.Length / 4;
                         for (int i = 0; i < 4; i++)
-                        {  
+                        {
                             indexArray[i * 6 + 0] = (short)(2 * step + offset * i);
                             indexArray[i * 6 + 1] = (short)(3 * step + offset * i);
                             indexArray[i * 6 + 2] = (short)(1 * step + offset * i);
@@ -1165,18 +1131,8 @@ namespace TerraViewer
                             indexArray[i * 6 + 4] = (short)(0 * step + offset * i);
                             indexArray[i * 6 + 5] = (short)(1 * step + offset * i);
                         }
-                }
-
-
-                    //indexArray[index] = (short)(0);
-                    //indexArray[index + 1] = (short)(1);
-                    //indexArray[index + 2] = (short)(2);
-                    //indexArray[index + 3] = (short)(1);
-                    //indexArray[index + 4] = (short)(3);
-                    //indexArray[index + 5] = (short)(2);
-                this.indexBuffer[0].Unlock();
-
-
+                    }
+                    this.indexBuffer[0].Unlock();
                 }
                 catch (Exception e)
                 {
@@ -1189,7 +1145,6 @@ namespace TerraViewer
 
         private void ProcessIndexBuffer(short[] indexArray, int part)
         {
-
             if (level == 0)
             {
                 rootIndexBuffer[part] = new IndexBuffer11(RenderContext11.PrepDevice, indexArray);
@@ -1210,155 +1165,6 @@ namespace TerraViewer
             }
         }
 
-        private static byte[] slashXIndex;
-        private static byte[] slashYIndex;
-        private static byte[] backslashXIndex;
-        private static byte[] backslashYIndex;
-
-        private byte[] tempSlashXIndex;
-        private byte[] tempSlashYIndex;
-        private byte[] tempBackslashXIndex;
-        private byte[] tempBackslashYIndex;
-
-
-        public override bool CreateDemFromParent()
-        {
-
-
-            HealpixTile parent = Parent as HealpixTile;
-            if (parent == null)
-            {
-                return false;
-            }
-
-            int offsetX = ((X % 2) == 1 ? 8 : 0);
-            int offsetY = ((Y % 2) == 0 ? 8 : 0);
-
-
-            demArray = new double[17 * 17];
-            // Interpolate accross 
-            for (int y = 0; y < 17; y += 2)
-            {
-                bool copy = true;
-                for (int x = 0; x < 17; x++)
-                {
-                    if (copy)
-                    {
-                        demArray[(16 - y) * 17 + x] = parent.GetDemSample((x / 2) + offsetX, (y / 2) + offsetY);
-                    }
-                    else
-                    {
-                        demArray[(16 - y) * 17 + x] =
-                            (
-                            (
-                                parent.GetDemSample((x / 2) + offsetX, (y / 2) + offsetY) +
-                                parent.GetDemSample(((x / 2) + offsetX) + 1, (y / 2) + offsetY)
-                            ) / 2);
-                    }
-                    copy = !copy;
-
-                }
-            }
-            // Interpolate down
-            for (int y = 1; y < 17; y += 2)
-            {
-                for (int x = 0; x < 17; x++)
-                {
-
-                    demArray[(16 - y) * 17 + x] =
-                        (
-                        (
-                            GetDemSample(x, y - 1) +
-                            GetDemSample(x, y + 1)
-                        ) / 2);
-
-                }
-            }
-
-            // Convert the dem array back to the arranged DEM list thu slash/backslash mapping tables
-
-
-            DemData = new double[demSize];
-            for (int i = 0; i < demSize; i++)
-            {
-                if (backslash)
-                {
-                    DemData[i] = demArray[backslashXIndex[i] + backslashYIndex[i] * 17];
-                }
-                else
-                {
-                    DemData[i] = demArray[slashXIndex[i] + slashYIndex[i] * 17];
-                }
-                demAverage += DemData[i];
-
-            }
-
-            // WriteDemIndexArrays();
-
-            // Get Average value for new DemData table
-
-            demAverage /= DemData.Length;
-
-            DemReady = true;
-            return true;
-        }
-
-        private static void WriteDemIndexArrays()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(" byte[] backslashXIndex = new byte[] {");
-            foreach (byte b in backslashXIndex)
-            {
-                sb.Append(b.ToString());
-                sb.Append(", ");
-            }
-
-            sb.Append("};");
-            sb.AppendLine("");
-
-            sb.Append(" byte[] backslashYIndex = new byte[] {");
-            foreach (byte b in backslashYIndex)
-            {
-                sb.Append(b.ToString());
-                sb.Append(", ");
-            }
-
-            sb.Append("};");
-            sb.AppendLine("");
-
-            sb.Append(" byte[] slashXIndex = new byte[] {");
-            foreach (byte b in slashXIndex)
-            {
-                sb.Append(b.ToString());
-                sb.Append(", ");
-            }
-
-            sb.Append("};");
-
-            sb.AppendLine("");
-
-            sb.Append(" byte[] slashYIndex = new byte[] {");
-            foreach (byte b in slashYIndex)
-            {
-                sb.Append(b.ToString());
-                sb.Append(", ");
-            }
-
-            sb.Append("};");
-
-            File.WriteAllText("c:\\tmp\\demIndex.cs", sb.ToString());
-
-        }
-
-        private static void WriteArray(byte[] data)
-        {
-
-        }
-
-        private double GetDemSample(int x, int y)
-        {
-            return demArray[(16 - y) * 17 + x];
-        }
 
         int quadrant = 0;
 
@@ -1380,8 +1186,6 @@ namespace TerraViewer
             quadrant = yQuad * 2 + xQuad;
         }
 
-
-
         public override void CleanUp(bool removeFromParent)
         {
             base.CleanUp(removeFromParent);
@@ -1391,14 +1195,11 @@ namespace TerraViewer
 
         private void ReturnBuffers()
         {
-
-
             if (vertexList != null)
             {
                 BufferPool11.ReturnPositionTextureList(vertexList);
                 vertexList = null;
             }
-
         }
 
         private void vertexListOfLevel0(List<PositionTexture> vertexList, int quadIndexStart, int quadIndexEnd, int faceoff)
@@ -1408,8 +1209,7 @@ namespace TerraViewer
             for (int q = quadIndexStart; q <= quadIndexEnd; q++)
             {
                 points = this.boundaries(faceoff + q);
-                
-                //²âÊÔÐÂËã·¨
+
                 double u = 0, v = 0;
                 if (quadIndex == 0)
                 {
@@ -1890,8 +1690,6 @@ namespace TerraViewer
                         }
                         vertexList.Add(new PositionTexture(points[i], u, v));
                     }
-                   
-                    
                 }
 
                 quadIndex++;
@@ -1901,10 +1699,13 @@ namespace TerraViewer
     public class HipsProperties
     {
         public Dictionary<string, string> Properties = new Dictionary<string, string>();
+        public VoTable VoTable = null;
         public static HipsProperties GetProperties(string url, string filename)
         {
             HipsProperties props = new HipsProperties();
             string propsUrl = url.Substring(0, url.IndexOf("/Norder")) + "/properties";
+            string tableUrl = propsUrl.Replace("/properties", "/metadata.xml");
+            string tableFilename = filename.Replace("\\properties", "\\metadata.xml");
             try
             {
                 if (!File.Exists(filename))
@@ -1914,6 +1715,63 @@ namespace TerraViewer
                 }
 
                 string[] lines = File.ReadAllLines(filename);
+
+                foreach (string line in lines)
+                {
+                    if (!string.IsNullOrWhiteSpace(line) && !line.StartsWith("#"))
+                    {
+                        string[] parts = line.Split('=');
+                        string key = parts[0].Trim();
+                        string val = parts[1].Trim();
+                        if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(val))
+                        {
+                            props.Properties[key] = val;
+                        }
+                    }
+                }
+
+                // now download the catalog
+                if (props.Properties.ContainsKey("dataproduct_type") && props.Properties["dataproduct_type"] == "catalog")
+                {
+                    if (!File.Exists(tableFilename))
+                    {
+                        WebClient client = new WebClient();
+                        client.DownloadFile(tableUrl, tableFilename);
+                    }
+
+                    props.VoTable = new VoTable(tableFilename);
+                }
+            }
+            catch
+            {
+                props.Properties["dummy"] = "failed";
+            }
+
+            return props;
+        }
+
+        public static HipsProperties GetProperties(string url)
+        {
+            HipsProperties props = new HipsProperties();
+            string propsUrl = "";
+
+            if (url.Contains("/Norder"))
+            {
+                url = url.Substring(0, url.IndexOf("/Norder"));
+            }
+            if (!url.EndsWith("/"))
+            {
+                url += "/";
+            }
+
+            propsUrl = url + "properties";
+
+            try
+            {
+                WebClient client = new WebClient();
+                string data = client.DownloadString(propsUrl);
+
+                string[] lines = data.Split('\n');
 
                 foreach (string line in lines)
                 {
@@ -1945,5 +1803,4 @@ namespace TerraViewer
         public Xyf(int x, int y, int f)
         { ix = x; iy = y; face = f; }
     }
-
 }

@@ -1,19 +1,22 @@
 ﻿using Microsoft.Maps.ElevationAdjustmentService.HDPhoto;
 using System;
 #if WINDOWS_UWP
+using VoRow = System.Object;
 using SysColor = TerraViewer.Color;
 #else
 using SysColor = System.Drawing.Color;
 #endif
+using Vector3 = SharpDX.Vector3;
+using Matrix = SharpDX.Matrix;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 #if !WINDOWS_UWP
 using WwtDataUtils;
 #endif
 
 namespace TerraViewer
 {
-
     public abstract class Tile
     {
         public const bool UseDefault = false;
@@ -69,7 +72,9 @@ namespace TerraViewer
         protected VertexBuffer11 vertexBuffer = null;
         protected IndexBuffer11[] indexBuffer = null;
         public Texture11 texture = null;
-
+        public bool IsCatalogTile = false;
+        public bool CatalogLoaded = false;
+        public List<VoRow> Rows = new List<VoRow>();
         public static int iTileBuildCount = 0;
         public bool ReadyToRender = false;
         public bool InViewFrustum = true;
@@ -131,7 +136,6 @@ namespace TerraViewer
                 {
                     for (int x1 = 0; x1 < xMax; x1++)
                     {
-
                         if (level < dataset.Levels && level < (targetLevel+1))
                         {
                             Tile child = TileCache.GetTileNow(level + 1, x * 2 + ((x1 + xOffset) % 2), y * 2 + ((y1 + yOffset) % 2), dataset, this);
@@ -234,7 +238,6 @@ namespace TerraViewer
  
             InViewFrustum = true;
 
-
             if (!ReadyToRender)
             {
                 if (fastLoad)
@@ -257,8 +260,6 @@ namespace TerraViewer
                     return false;
                 }
             }
-            
-          
 
             int childIndex = 0;
 
@@ -273,6 +274,7 @@ namespace TerraViewer
             {
                 PurgeTextureAndDemFiles();
             }
+
             Matrix3d savedWorld = renderContext.World;
             Matrix3d savedView = renderContext.View;
             bool usingLocalCenter = false;
@@ -457,9 +459,6 @@ namespace TerraViewer
                 return 0;
             }
 
-            
-
-
             //Bottom
             Tile top = TileCache.GetCachedTile(level, x, y + 1, dataset, this);
             if (top == null || top.RenderedAtOrBelowGeneration < CurrentRenderGeneration - 2)
@@ -551,11 +550,23 @@ namespace TerraViewer
                 }
                 this.indexBuffer = null;
             }
+
+            Rows.Clear();
+#if !WINDOWS_UWP
+            if (shapeFileVertex != null)
+            {
+                shapeFileVertex.Dispose();
+                GC.SuppressFinalize(shapeFileVertex);
+            }
+            shapeFileVertex = null;
+            shapeVertexCount = 0;
+#endif    
+            CatalogLoaded = false;
         }
+
         public static bool ShowDebugTileEdges = false;
         public virtual void CleanUpGeometryOnly()
         {
-
             if (this.vertexBuffer != null)
             {
                 //vertexBuffer.Created -= OnCreateVertexBuffer();
@@ -608,15 +619,12 @@ namespace TerraViewer
 
         public virtual bool CreateGeometry(RenderContext11 renderContext, bool uiThread)
         {
-
             if (uiThread && !ReadyToRender)
             {
                 return false;
             }
 
-            
-
-            if (texture == null)
+            if (texture == null && !CatalogLoaded)
             {
                 if (PreCreateGeometry(renderContext))
                 {
@@ -635,7 +643,7 @@ namespace TerraViewer
                 }
 
                 blendMode = (dataset.DataSetType == ImageSetType.Sky || dataset.DataSetType == ImageSetType.Panorama) && !Settings.DomeView;
-                //blendMode = false;
+
                 if (this.texture == null)
                 {
                     if (TextureReady)
@@ -643,59 +651,71 @@ namespace TerraViewer
                         iTileBuildCount++;
 
                         string localFilename = FileName;
-#if !WINDOWS_UWP
-                        if (GrayscaleStyle)
+                        if (IsCatalogTile)
                         {
-                            localFilename = UiTools.MakeGrayScaleImage(localFilename);
-                        }
-#endif
-
-                        if (FileExists)
-                        {
-                            if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture"); }
 #if !WINDOWS_UWP
-                            if (ShowDebugTileEdges) //debug with lines around edges
+                            if (dataset.Properties.ContainsKey("hips_order_min") && level >= int.Parse(dataset.Properties["hips_order_min"]))
                             {
-                                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(localFilename);
-                                System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
-                                g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle(0, 0, bmp.Width-1, bmp.Height-1));
-                                g.Flush();
-                                g.Dispose();
-                                texture = BufferPool11.GetTexture(bmp);
+                                if (File.Exists(localFilename))
+                                {
+                                    LoadDataTable();
+                                }
                             }
-                            else
-                            {
-                                texture = BufferPool11.GetTexture(localFilename);
-                            }
-
-#else
-                           texture = BufferPool11.GetTexture(localFilename);
 #endif
-
-
-                            if (texture == null)
-                            {
-                                try
-                                {
-                                    // bad texture
-                                    TextureReady = false;
-                                    File.Delete(localFilename);
-                                }
-                                catch
-                                {
-                                    if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture: Exception"); }
-                                    errored = true;
-                                }
-                                return false;
-                            }
                         }
                         else
                         {
-                            return false;
+#if !WINDOWS_UWP
+                             if (GrayscaleStyle)
+                             {
+                                 localFilename = UiTools.MakeGrayScaleImage(localFilename);
+                             }
+#endif
+
+                            if (FileExists)
+                            {
+                                if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture"); }
+#if !WINDOWS_UWP
+                                if (ShowDebugTileEdges) //debug with lines around edges
+                                {
+                                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(localFilename);
+                                    System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+                                    g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle(0, 0, bmp.Width-1, bmp.Height-1));
+                                    g.Flush();
+                                    g.Dispose();
+                                    texture = BufferPool11.GetTexture(bmp);
+                                }
+                                else
+                                {
+                                    texture = BufferPool11.GetTexture(localFilename);
+                                }
+#else
+                                texture = BufferPool11.GetTexture(localFilename);
+#endif
+                                if (texture == null)
+                                {
+                                    try
+                                    {
+                                        // bad texture
+                                        TextureReady = false;
+                                        File.Delete(localFilename);
+                                    }
+                                    catch
+                                    {
+                                        if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture: Exception"); }
+                                        errored = true;
+                                    }
+                                    return false;
+                                }
+                            }
+
+                            else
+                            {
+                                return false;
+                            }
+
+                            TexturesLoaded++;
                         }
-
-                        TexturesLoaded++;
-
                     }
                     else
                     {
@@ -726,7 +746,6 @@ namespace TerraViewer
                 vertexBuffer.ComputeSphereOnUnlock = true;
                 indexBuffer = new IndexBuffer11[4];
 
-
                 if (vertexBuffer != null)
                 {
                     this.OnCreateVertexBuffer(vertexBuffer);
@@ -735,14 +754,168 @@ namespace TerraViewer
                     sphereCenter = vertexBuffer.SphereCenter;
                     sphereCenter.Add(localCenter);
                 }
-
             }
-
-
 
             ReadyToRender = true;
             return true;
         }
+#if !WINDOWS_UWP
+
+        TimeSeriesPointSpriteSet shapeFileVertex = null;
+        protected List<Vector3> positions = new List<Vector3>();
+        protected int shapeVertexCount = 0;
+        protected  bool PrepPlotVertexBuffer()
+        {
+            VoTable table = dataset.TableMetadata;
+
+            VoColumn col = table.GetColumnByUcd("meta.id");
+            VoColumn raCol = table.GetColumnByUcd("pos.eq.ra;meta.main");
+            VoColumn decCol = table.GetColumnByUcd("pos.eq.dec;meta.main");
+            int lngColumn = raCol.Index;
+            int latColumn = decCol.Index;
+
+            if (col == null)
+            {
+                col = table.Column[0];
+            }
+
+            if (shapeFileVertex == null)
+            {
+                List<TimeSeriesPointVertex> vertList = new List<TimeSeriesPointVertex>();
+                List<UInt32> indexList = new List<UInt32>();
+                TimeSeriesPointVertex lastItem = new TimeSeriesPointVertex();
+                positions.Clear();
+                UInt32 currentIndex = 0;
+                SysColor color = SysColor.Blue;
+
+                foreach (VoRow row in Rows)
+                {
+                    try
+                    {
+                        if (lngColumn > -1 && latColumn > -1)
+                        {
+                            double Xcoord = Coordinates.ParseRA(row[lngColumn].ToString(), true) * 15 + 180;
+                            double Ycoord = Coordinates.ParseDec(row[latColumn].ToString());
+                            lastItem.Position = Coordinates.GeoTo3dDouble(Ycoord, Xcoord).Vector311;
+                            positions.Add(lastItem.Position);
+                            lastItem.Color = color;
+                            lastItem.PointSize = 10;
+                            vertList.Add(lastItem);
+                            currentIndex++;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+
+                shapeVertexCount = vertList.Count;
+                if (shapeVertexCount == 0)
+                {
+                    shapeVertexCount = 1;
+                }
+                shapeFileVertex = new TimeSeriesPointSpriteSet(RenderContext11.PrepDevice, vertList.ToArray());
+            }
+            CleanAndReady = true;
+            return true;
+        }
+        bool bufferIsFlat = false;
+        bool CleanAndReady = false;
+        float scaleFactor = 1.0f;
+        public bool RenderCatalog(RenderContext11 renderContext)
+        {
+            if (!CleanAndReady)
+            {
+                PrepPlotVertexBuffer();
+            }
+
+            Matrix3d oldWorld = renderContext.World;
+
+            renderContext.DepthStencilMode = DepthStencilMode.Off;
+
+            DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
+            renderContext.setRasterizerState(TriangleCullMode.Off);
+
+            Vector3 cam = Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311;
+            float adjustedScale = scaleFactor;
+
+            Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            matrixWVP.Transpose();
+          
+            // switch (plotType)
+            renderContext.BlendMode = BlendMode.Alpha;
+            renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, TimeSeriesLayer.CircleTexture.ResourceView);
+
+            if (shapeFileVertex != null)
+            {
+                TimeSeriesPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                double jBase = SpaceTimeController.UtcToJulian(baseDate);
+                TimeSeriesPointSpriteShader11.Constants.JNow = (float)(SpaceTimeController.JNow - jBase);
+                TimeSeriesPointSpriteShader11.Constants.Decay = 0f;
+                TimeSeriesPointSpriteShader11.Constants.Scale =  (-(float)adjustedScale);
+                TimeSeriesPointSpriteShader11.Constants.Sky =  -1;
+                TimeSeriesPointSpriteShader11.Constants.Opacity = 1;
+                TimeSeriesPointSpriteShader11.Constants.ShowFarSide = 1f;
+               // TimeSeriesPointSpriteShader11.Color = new SharpDX.Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
+                TimeSeriesPointSpriteShader11.Color = new SharpDX.Color4(0, 0,  1f, 1f);
+                TimeSeriesPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
+                TimeSeriesPointSpriteShader11.ViewportScale = new SharpDX.Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
+                TimeSeriesPointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10.0f);
+                if (shapeFileVertex.Downlevel)
+                {
+                    DownlevelTimeSeriesPointSpriteShader.Use(renderContext.devContext, shapeFileVertex.Instanced);
+                }
+                else
+                {
+                    TimeSeriesPointSpriteShader11.Use(renderContext.devContext);
+                }
+                shapeFileVertex.Draw(renderContext, shapeFileVertex.Count, null, 1.0f);
+            }
+            renderContext.Device.ImmediateContext.GeometryShader.Set(null);
+            renderContext.BlendMode = BlendMode.Alpha;
+
+            renderContext.World = oldWorld;
+
+            return true;
+        }
+
+        private void CleanUpCatalog()
+        {
+            if (shapeFileVertex != null)
+            {
+                shapeFileVertex.Dispose();
+                GC.SuppressFinalize(shapeFileVertex);
+            }
+            shapeFileVertex = null;
+            shapeVertexCount = 0;
+        }
+        static int loadCount = 0;
+        private void LoadDataTable()
+        {
+            loadCount++;
+
+            if (loadCount > 500)
+            {
+                int ykl = 0;
+            }
+            string filename = this.FileName;
+
+            Table table = Table.Load(filename, '\t');
+            foreach (var row in table.Rows)
+            {
+                VoRow voRow = new VoRow(dataset.TableMetadata);
+                voRow.ColumnData = new object[dataset.TableMetadata.Columns.Count];
+
+                for (int i = 0; i < row.Length; i++)
+                {
+                    voRow.ColumnData[i] = row[i];
+                }
+                Rows.Add(voRow);
+            }
+            CatalogLoaded = true;
+        }
+#endif
         protected void CalcSphere()
         {
             Vector3d[] corners = new Vector3d[4];
@@ -762,7 +935,6 @@ namespace TerraViewer
         {
             if (!demFileExists)
             {
-
                 return CreateDemFromParent();                
             }
             bool useFloat = false;
@@ -776,9 +948,7 @@ namespace TerraViewer
                     demStream.Close();
                     demStream.Dispose();
                 }
-                   
             }
-
 
             if (hdTile != null)
             {
@@ -793,8 +963,6 @@ namespace TerraViewer
                         int indexI = xl + (32-yl) * 33;
                         DemData[indexI] = hdTile.AltitudeInMeters(yh, xh);
                         demAverage += DemData[indexI];
-                       
-                        
                         xh += 8;
                     }
                     yh += 8;
@@ -816,7 +984,7 @@ namespace TerraViewer
             }
 
             FileStream fs = null;
-             BinaryReader br = null;
+            BinaryReader br = null;
             try
             {
                 fs = new FileStream(DemFilename, FileMode.Open);
@@ -870,7 +1038,6 @@ namespace TerraViewer
                     fs.Close();
                 }
             }
-
         }
 
         public virtual bool CreateDemFromParent()
@@ -882,9 +1049,6 @@ namespace TerraViewer
         public static SharpDX.ViewportF Viewport;
         public static SharpDX.Matrix wvp;
         public static int maxLevel = 20;
-     
-        
-        
 
         virtual public bool IsTileBigEnough(RenderContext11 renderContext)
         {
@@ -897,7 +1061,6 @@ namespace TerraViewer
 
             if (level > min)
             {
-
                 SharpDX.Vector3 topLeftScreen;
                 SharpDX.Vector3 bottomRightScreen;
                 SharpDX.Vector3 topRightScreen;
@@ -910,7 +1073,6 @@ namespace TerraViewer
                 // Test for tile scale in view..
                 topLeftScreen = TopLeft.Vector311;
                 topLeftScreen = SharpDX.Vector3.Project(topLeftScreen,Viewport.X,Viewport.Y,Viewport.Width,Viewport.Height,Viewport.MinDepth,Viewport.MaxDepth, wvp);
-
 
                 bottomRightScreen = BottomRight.Vector311;
                 bottomRightScreen = SharpDX.Vector3.Project(bottomRightScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
@@ -936,7 +1098,6 @@ namespace TerraViewer
                 SharpDX.Vector3 right = bottomRightScreen;
                 right = SharpDX.Vector3.Subtract(right, topRightScreen);
                 float rightLength = right.Length();
-                
 
                 float lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
 
@@ -950,7 +1111,6 @@ namespace TerraViewer
                 if (lengthMax < testLength) // was 220
                 {
                     return false;
-
                 }
                 else
                 {
@@ -966,11 +1126,6 @@ namespace TerraViewer
         public static int deepestLevel = 0;
         virtual public bool IsTileInFrustum(PlaneD[] frustum)
         {
-            //if (RenderContext11.ExternalProjection)
-            //{
-              //  return true;
-            //}
-
             InViewFrustum = false;
             Vector3d center = sphereCenter;
 
@@ -1028,7 +1183,6 @@ namespace TerraViewer
         protected float radius = 1;
         protected Vector3d GeoTo3d(double lat, double lng, bool useLocalCenter)
         {
-
             if (dataset.DataSetType == ImageSetType.Panorama)
             {
                 Vector3d retVal = new Vector3d(-(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
@@ -1037,7 +1191,6 @@ namespace TerraViewer
                     retVal.Subtract(localCenter);
                 }
                 return retVal;
-
             }
             else
             {
@@ -1048,7 +1201,6 @@ namespace TerraViewer
                 }
                 return retVal;
             }
-
         }
         protected Vector3d GeoTo3dWithAltitude(double lat, double lng, bool useLocalCenter)
         {
@@ -1066,7 +1218,6 @@ namespace TerraViewer
 
         public Vector3d GeoTo3dWithAltitude(double lat, double lng, double altitude, bool useLocalCenter)
         {
-
             double radius = 1 + (altitude / DemScaleFactor);
             Vector3d retVal = (new Vector3d((Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius)));
             if (useLocalCenter)
@@ -1114,10 +1265,8 @@ namespace TerraViewer
                 {
                     key = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
                 }
-
                 return key;
             }
-
         }
         
         string directory;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 #if WINDOWS_UWP
+using VoTable= System.Object;
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
 #else
 using Color = System.Drawing.Color;
@@ -881,5 +882,18 @@ namespace TerraViewer
             }
         }
 
+        private VoTable tableMetadata = null;
+
+        public VoTable TableMetadata
+        { 
+            get
+            {
+                return tableMetadata;
+            }
+            set
+            {
+                tableMetadata = value;
+            }
+        }
     }
 }

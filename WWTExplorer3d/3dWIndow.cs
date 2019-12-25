@@ -25,6 +25,7 @@ using System.Security.Permissions;
 using MSAuth;
 using System.Threading.Tasks;
 using OculusWrap;
+using SharpDX.DirectWrite;
 
 namespace TerraViewer
 {
@@ -241,6 +242,7 @@ namespace TerraViewer
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripMenuItem exportCurrentCitiesViewAs3DMeshToolStripMenuItem;
         private ToolStripMenuItem showTileEdgesToolStripMenuItem;
+        private ToolStripMenuItem hIPSProgresiveSurveyToolStripMenuItem;
         private ToolStripMenuItem enableExport3dCitiesModeToolStripMenuItem;
 
         public void StartFadeTransition(double milliseconds)
@@ -1180,7 +1182,7 @@ namespace TerraViewer
                 }
             }
         }
-       
+
         public static void BackgroundInit()
         {
             Grids.InitStarVertexBuffer(RenderContext11.PrepDevice);
@@ -1380,7 +1382,7 @@ namespace TerraViewer
                     break;
             }
         }
-        
+
 
         public static Earth3d MainWindow = null;
 
@@ -1535,7 +1537,7 @@ namespace TerraViewer
             RenderEngine.PreRenderStage = new RenderEngine.RenderNotify(PreRenderStage);
             RenderEngine.PostRenderStage = new RenderEngine.RenderNotify(PostRenderStage);
             RenderEngine.OpacityChanged = new RenderEngine.NotifyOpacityUpdate(OpacityChanged);
-            RenderEngine.EndRenderStage= new RenderEngine.RenderNotify(UpdateStats);
+            RenderEngine.EndRenderStage = new RenderEngine.RenderNotify(UpdateStats);
 
             RenderEngine.zoomMaxSolarSystem = Properties.Settings.Default.MaxZoomLimitSolar;
             RenderEngine.zoomMinSolarSystem = Properties.Settings.Default.MinZoonLimitSolar;
@@ -1878,7 +1880,7 @@ namespace TerraViewer
         public static int TargetScreenId = -1;
         public static int DetachScreenId = -1;
         public void ShowFullScreen(bool showFull)
-        { 
+        {
             this.SuspendLayout();
             menuTabs.IsVisible = !showFull && !TouchKiosk;
             if (showFull)
@@ -2120,7 +2122,7 @@ namespace TerraViewer
             {
                 uiController = value;
                 RenderEngine.uiController = uiController;
-           }
+            }
         }
 
         void menuTabs_MenuClicked(object sender, ApplicationMode e)
@@ -2642,7 +2644,7 @@ namespace TerraViewer
             }
         }
         int changeCount = 0;
-       
+
 
         void Default_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -2769,7 +2771,7 @@ namespace TerraViewer
         }
 
 
-        
+
 
         public static int bgImagesetGets = 0;
         public static int bgImagesetFails = 0;
@@ -3174,6 +3176,7 @@ namespace TerraViewer
             this.downloadQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showTileEdgesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileLoadingThrottlingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tpsToolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.tpsToolStripMenuItem30 = new System.Windows.Forms.ToolStripMenuItem();
@@ -3279,7 +3282,7 @@ namespace TerraViewer
             this.kioskTitleBar = new TerraViewer.KioskTitleBar();
             this.renderWindow = new TerraViewer.RenderTarget();
             this.menuTabs = new TerraViewer.MenuTabs();
-            this.showTileEdgesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hIPSProgresiveSurveyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu.SuspendLayout();
             this.communitiesMenu.SuspendLayout();
             this.searchMenu.SuspendLayout();
@@ -4059,7 +4062,7 @@ namespace TerraViewer
             this.toolStripSeparator4,
             this.exitMenuItem});
             this.exploreMenu.Name = "contextMenuStrip1";
-            this.exploreMenu.Size = new System.Drawing.Size(352, 342);
+            this.exploreMenu.Size = new System.Drawing.Size(352, 375);
             this.exploreMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.exploreMenu.Opening += new System.ComponentModel.CancelEventHandler(this.exploreMenu_Opening);
             this.exploreMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4102,6 +4105,7 @@ namespace TerraViewer
             this.openImageMenuItem,
             this.openKMLMenuItem,
             this.vOTableToolStripMenuItem,
+            this.hIPSProgresiveSurveyToolStripMenuItem,
             this.shapeFileToolStripMenuItem,
             this.layerManagerToolStripMenuItem,
             this.customGalaxyFileToolStripMenuItem});
@@ -4112,35 +4116,35 @@ namespace TerraViewer
             // openTourMenuItem
             // 
             this.openTourMenuItem.Name = "openTourMenuItem";
-            this.openTourMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.openTourMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openTourMenuItem.Text = "Tour...";
             this.openTourMenuItem.Click += new System.EventHandler(this.openTourMenuItem_Click);
             // 
             // openObservingListMenuItem
             // 
             this.openObservingListMenuItem.Name = "openObservingListMenuItem";
-            this.openObservingListMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.openObservingListMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openObservingListMenuItem.Text = "Collection...";
             this.openObservingListMenuItem.Click += new System.EventHandler(this.openObservingListMenuItem_Click);
             // 
             // layersToolStripMenuItem
             // 
             this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
-            this.layersToolStripMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.layersToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.layersToolStripMenuItem.Text = "Layers...";
             this.layersToolStripMenuItem.Click += new System.EventHandler(this.layersToolStripMenuItem_Click);
             // 
             // openImageMenuItem
             // 
             this.openImageMenuItem.Name = "openImageMenuItem";
-            this.openImageMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.openImageMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openImageMenuItem.Text = "Astronomical Image...";
             this.openImageMenuItem.Click += new System.EventHandler(this.openImageMenuItem_Click);
             // 
             // openKMLMenuItem
             // 
             this.openKMLMenuItem.Name = "openKMLMenuItem";
-            this.openKMLMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.openKMLMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openKMLMenuItem.Text = "KML...";
             this.openKMLMenuItem.Visible = false;
             this.openKMLMenuItem.Click += new System.EventHandler(this.openKMLMenuItem_Click);
@@ -4148,14 +4152,14 @@ namespace TerraViewer
             // vOTableToolStripMenuItem
             // 
             this.vOTableToolStripMenuItem.Name = "vOTableToolStripMenuItem";
-            this.vOTableToolStripMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.vOTableToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.vOTableToolStripMenuItem.Text = "VO Table...";
             this.vOTableToolStripMenuItem.Click += new System.EventHandler(this.vOTableToolStripMenuItem_Click);
             // 
             // shapeFileToolStripMenuItem
             // 
             this.shapeFileToolStripMenuItem.Name = "shapeFileToolStripMenuItem";
-            this.shapeFileToolStripMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.shapeFileToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.shapeFileToolStripMenuItem.Text = "Shape File...";
             this.shapeFileToolStripMenuItem.Visible = false;
             this.shapeFileToolStripMenuItem.Click += new System.EventHandler(this.shapeFileToolStripMenuItem_Click);
@@ -4163,14 +4167,14 @@ namespace TerraViewer
             // layerManagerToolStripMenuItem
             // 
             this.layerManagerToolStripMenuItem.Name = "layerManagerToolStripMenuItem";
-            this.layerManagerToolStripMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.layerManagerToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.layerManagerToolStripMenuItem.Text = "Layer Manager";
             this.layerManagerToolStripMenuItem.Click += new System.EventHandler(this.layerManagerToolStripMenuItem_Click);
             // 
             // customGalaxyFileToolStripMenuItem
             // 
             this.customGalaxyFileToolStripMenuItem.Name = "customGalaxyFileToolStripMenuItem";
-            this.customGalaxyFileToolStripMenuItem.Size = new System.Drawing.Size(286, 34);
+            this.customGalaxyFileToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.customGalaxyFileToolStripMenuItem.Text = "Custom Galaxy File...";
             this.customGalaxyFileToolStripMenuItem.Click += new System.EventHandler(this.customGalaxyFileToolStripMenuItem_Click);
             // 
@@ -4263,7 +4267,7 @@ namespace TerraViewer
             this.selectLanguageToolStripMenuItem,
             this.regionalDataCacheToolStripMenuItem});
             this.settingsMenu.Name = "contextMenuStrip1";
-            this.settingsMenu.Size = new System.Drawing.Size(280, 349);
+            this.settingsMenu.Size = new System.Drawing.Size(280, 316);
             this.settingsMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.settingsMenu.Opening += new System.ComponentModel.CancelEventHandler(this.settingsMenu_Opening);
             this.settingsMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4352,6 +4356,13 @@ namespace TerraViewer
             this.stopQueueToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.stopQueueToolStripMenuItem.Text = "Stop Queue";
             this.stopQueueToolStripMenuItem.Click += new System.EventHandler(this.stopQueue_Click);
+            // 
+            // showTileEdgesToolStripMenuItem
+            // 
+            this.showTileEdgesToolStripMenuItem.Name = "showTileEdgesToolStripMenuItem";
+            this.showTileEdgesToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
+            this.showTileEdgesToolStripMenuItem.Text = "Show Tile Edges";
+            this.showTileEdgesToolStripMenuItem.Click += new System.EventHandler(this.showTileEdgesToolStripMenuItem_Click);
             // 
             // tileLoadingThrottlingToolStripMenuItem
             // 
@@ -5179,12 +5190,12 @@ namespace TerraViewer
             this.menuTabs.ControlEvent += new TerraViewer.ControlEventHandler(this.menuTabs_ControlEvent);
             this.menuTabs.Load += new System.EventHandler(this.menuTabs_Load);
             // 
-            // showTileEdgesToolStripMenuItem
+            // hIPSProgresiveSurveyToolStripMenuItem
             // 
-            this.showTileEdgesToolStripMenuItem.Name = "showTileEdgesToolStripMenuItem";
-            this.showTileEdgesToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
-            this.showTileEdgesToolStripMenuItem.Text = "Show Tile Edges";
-            this.showTileEdgesToolStripMenuItem.Click += new System.EventHandler(this.showTileEdgesToolStripMenuItem_Click);
+            this.hIPSProgresiveSurveyToolStripMenuItem.Name = "hIPSProgresiveSurveyToolStripMenuItem";
+            this.hIPSProgresiveSurveyToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
+            this.hIPSProgresiveSurveyToolStripMenuItem.Text = "HIPS Progresive Survey...";
+            this.hIPSProgresiveSurveyToolStripMenuItem.Click += new System.EventHandler(this.hIPSProgresiveSurveyToolStripMenuItem_Click);
             // 
             // Earth3d
             // 
@@ -5333,7 +5344,7 @@ namespace TerraViewer
             }
         }
 
-       
+
         public bool InitializeGraphics()
         {
             if (RenderEngine.ReadyToRender)
@@ -5362,7 +5373,7 @@ namespace TerraViewer
         }
 
 
-        
+
 
         void device_DeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -5378,9 +5389,9 @@ namespace TerraViewer
         }
 
 
-    
 
-      
+
+
 
 
         public void SetLabelText(IPlace place, bool showText)
@@ -5428,15 +5439,15 @@ namespace TerraViewer
             get { return RenderEngine.Constellation; }
         }
 
-     
+
 
         int frameCount = 0;
 
         long lastSampleTime;
 
-        
-     
-       
+
+
+
         static int lastGcCount = 0;
         public static float LastFPS = 0;
         static DateTime lastPing = DateTime.Now;
@@ -5513,9 +5524,9 @@ namespace TerraViewer
         long lastMem = 0;
         Random pingRandom = new Random();
         BlendState panoramaBlend = new BlendState();
-       
-        
-       
+
+
+
         delegate void RenderDelegate();
         delegate void BackInitDelegate();
         public void RenderCrossThread()
@@ -5526,7 +5537,7 @@ namespace TerraViewer
         bool blink = false;
         DateTime lastBlink = DateTime.Now;
 
-  
+
 
 
 
@@ -5558,7 +5569,7 @@ namespace TerraViewer
 
         }
 
-      
+
 
         int lastTimeSyncFrame = 0;
 
@@ -5613,7 +5624,7 @@ namespace TerraViewer
             Settings.ignoreChanges = false;
         }
 
-        
+
 
         private void NotifyMoveComplete()
         {
@@ -5641,7 +5652,7 @@ namespace TerraViewer
 
 
         private SharpDX.Direct3D11.InputLayout layout = null;
-     
+
 
         protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
         {
@@ -5681,7 +5692,7 @@ namespace TerraViewer
             return ((this.WindowState == FormWindowState.Minimized) || !this.Visible || pause);
         }
 
-       
+
 
 
         static private void RegisterKnownFileTypes()
@@ -6328,13 +6339,13 @@ namespace TerraViewer
         int mouseDownY;
 
 
-      
 
-        
+
+
         Coordinates measureStart;
         Coordinates measureEnd;
 
-       
+
         public bool Measuring
         {
             get { return RenderEngine.measuring; }
@@ -6344,7 +6355,7 @@ namespace TerraViewer
                 {
                     RenderEngine.measureLines.Clear();
                 }
-                 RenderEngine.measuring = value;
+                RenderEngine.measuring = value;
             }
         }
 
@@ -6640,9 +6651,9 @@ namespace TerraViewer
             }
         }
 
-      
 
-        
+
+
         private void MainWndow_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta != 0)
@@ -6957,7 +6968,7 @@ namespace TerraViewer
                         //RenderContext11.SetLatency(3);
                         break;
                     case Keys.K:
-                       // RenderContext11.SetLatency(1);
+                        // RenderContext11.SetLatency(1);
                         break;
                     case Keys.F5:
                         TileCache.ClearCache();
@@ -7598,14 +7609,14 @@ namespace TerraViewer
                 RenderEngine.TargetZoom = RenderEngine.ZoomMax;
             }
         }
-       
+
 
 
         private void zoomTimer_Tick(object sender, EventArgs e)
         {
 
         }
-        
+
         double lastMoveCompleteLat = 0;
         double lastMoveCompleteLng = 0;
         private void SendMoveComplete()
@@ -7672,7 +7683,7 @@ namespace TerraViewer
         {
             TileCache.ShutdownQueue();
         }
-        
+
 
         private void timer2_Tick(object sender, EventArgs e)
         {
@@ -7701,7 +7712,7 @@ namespace TerraViewer
         }
 
 
-  
+
         public Constellations ConstellationCheck
         {
             get { return RenderEngine.constellationCheck; }
@@ -7964,7 +7975,7 @@ namespace TerraViewer
 
 
 
-       //TOdo use Coordinate versions of these instead?
+        //TOdo use Coordinate versions of these instead?
         public static double[] GalactictoJ2000(double GalacticL2, double GalacticB2)
         {
             double[] Galacticpos = new double[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
@@ -8117,14 +8128,14 @@ namespace TerraViewer
         }
 
 
- 
+
 
         public IImageSet StudyImageset
         {
             get { return RenderEngine.studyImageset; }
             set
             {
-                RenderEngine.studyImageset = value;           
+                RenderEngine.studyImageset = value;
             }
         }
 
@@ -8390,7 +8401,7 @@ namespace TerraViewer
             }
         }
 
-       
+
 
 
         private void newSlideBasedTour(object sender, EventArgs e)
@@ -10240,7 +10251,7 @@ namespace TerraViewer
                         {
                             if (RenderEngine.constellationCheck != null)
                             {
-                                if ( RenderEngine.ShowKmlMarkers && RenderEngine.KmlMarkers != null)
+                                if (RenderEngine.ShowKmlMarkers && RenderEngine.KmlMarkers != null)
                                 {
                                     RenderEngine.KmlMarkers.ItemClick(Coordinates.RADecTo3dDouble(result, 1.0).Vector311, (float)(RenderEngine.ZoomFactor / 900.0));
                                 }
@@ -10891,7 +10902,7 @@ namespace TerraViewer
 
             }
         }
-        
+
         private void addToImageStackToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -11135,7 +11146,7 @@ namespace TerraViewer
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
-       
+
 
         private void sideBySideCrossEyedToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -11475,7 +11486,7 @@ namespace TerraViewer
 
         public async Task WindowsLiveSignIn()
         {
- 
+
             await SignIn();
 
 
@@ -11510,9 +11521,9 @@ namespace TerraViewer
 
                 profile = wc.DownloadString("https://apis.live.net/v5.0//me?access_token=" + Connection.AccessToken);
                 var user = Newtonsoft.Json.JsonConvert.DeserializeObject<UserObject>(profile);
-  
+
                 //ready
-             
+
                 Properties.Settings.Default.LiveIdWWTId = user.Id;
                 Properties.Settings.Default.LiveIdUser = user.Name;
                 Properties.Settings.Default.LiveIdToken = Connection.AccessToken;
@@ -11680,7 +11691,7 @@ namespace TerraViewer
 
         private void multiChanelCalibrationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
             TerraViewer.Callibration.Calibration calibrate = new TerraViewer.Callibration.Calibration();
 
             calibrate.Show();
@@ -11808,7 +11819,7 @@ namespace TerraViewer
                     if (File.Exists(customImageFile))
                     {
                         Bitmap bmp = new Bitmap(customImageFile);
-                        touchControl = Planets.LoadPlanetTexture(bmp); 
+                        touchControl = Planets.LoadPlanetTexture(bmp);
                         bmp.Dispose();
                     }
                     else
@@ -11819,7 +11830,7 @@ namespace TerraViewer
                     if (File.Exists(customImageFileNoHold))
                     {
                         Bitmap bmp = new Bitmap(customImageFileNoHold);
-                        touchControlNoHold = Planets.LoadPlanetTexture(bmp); 
+                        touchControlNoHold = Planets.LoadPlanetTexture(bmp);
                         bmp.Dispose();
                     }
                     else
@@ -11924,7 +11935,7 @@ namespace TerraViewer
 
                 try
                 {
-                   kinectUi = Folder.LoadFromUrl("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?w=kinect", false);
+                    kinectUi = Folder.LoadFromUrl("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?w=kinect", false);
                 }
                 catch
                 {
@@ -11986,7 +11997,7 @@ namespace TerraViewer
                                           ),
                                       Color.White
                                       );
-                                 }
+                                }
                                 else if (id > 0)// && id != 18)
                                 {
                                     Sprite2d.Draw2D(
@@ -12323,7 +12334,7 @@ namespace TerraViewer
                         case NavigationActions.ResetRiftView:
                             if (RenderEngine.rift)
                             {
-                              //  ResetRift();
+                                //  ResetRift();
                             }
                             break;
                         case NavigationActions.AllStop:
@@ -12384,7 +12395,7 @@ namespace TerraViewer
                             if (!string.IsNullOrEmpty(value))
                             {
                                 ZoomOut(double.Parse(value));
-                             }
+                            }
                             else
                             {
                                 ZoomOut();
@@ -13074,7 +13085,7 @@ namespace TerraViewer
 
         private void settingsMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
- 
+
         }
 
         private void clientNodeListToolStripMenuItem_Click(object sender, EventArgs e)
@@ -13415,17 +13426,17 @@ namespace TerraViewer
 
 
 
-       
+
         private void exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             GeoRect rect = new GeoRect();
 
-            double amount = RenderEngine.ZoomFactor /10;
+            double amount = RenderEngine.ZoomFactor / 10;
 
             rect.North = RenderEngine.viewCamera.Lat + amount;
             rect.South = RenderEngine.viewCamera.Lat - amount;
-            rect.West =  RenderEngine.viewCamera.Lng - amount;
+            rect.West = RenderEngine.viewCamera.Lng - amount;
             rect.East = RenderEngine.viewCamera.Lng + amount;
 
             ExportSTL props = new ExportSTL();
@@ -13479,7 +13490,7 @@ namespace TerraViewer
 
                 StringBuilder sb = new StringBuilder();
 
-                foreach(string item in MercatorTile.SaveDsmTileList)
+                foreach (string item in MercatorTile.SaveDsmTileList)
                 {
                     sb.AppendLine(item);
                 }
@@ -13508,6 +13519,92 @@ namespace TerraViewer
             showTileEdgesToolStripMenuItem.Checked = Tile.ShowDebugTileEdges;
             TileCache.PurgeQueue();
             TileCache.ClearCache();
+        }
+
+        private void hIPSProgresiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SimpleInput input = new SimpleInput("Create HIPS Layer", Language.GetLocalizedText(542, "Url"), "http://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2", 2048);
+            if (input.ShowDialog() == DialogResult.OK)
+            {
+                string url = input.ResultText;
+                string baseUrl = "";
+
+                if (url.Contains("/Norder"))
+                {
+                    baseUrl = url.Substring(0, url.IndexOf("/Norder"));
+                }
+                else
+                {
+                    baseUrl = url;
+                }
+                if (!baseUrl.EndsWith("/"))
+                {
+                    baseUrl = baseUrl + "/";
+                }
+
+                url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
+
+                HipsProperties hipsProperties = HipsProperties.GetProperties(url);
+
+                if (!hipsProperties.Properties.ContainsKey("dummy"))
+                {
+                    var props = hipsProperties.Properties;
+
+                    ImageSetHelper ish = new ImageSetHelper(
+                        props["obs_title"],
+                        url,
+                        ImageSetType.Sky,
+                        GetBandPassFromString(props.ContainsKey("obs_regime") ? props["obs_regime"] : ""),
+                        ProjectionType.Healpix,
+                        Math.Abs(url.GetHashCode32()),
+                        0,
+                        int.Parse(props["hips_order"]),
+                        props.ContainsKey("hips_tile_width") ? int.Parse(props["hips_tile_width"]) : 512,
+                        180,
+                        props["hips_tile_format"],
+                        false,
+                        "0123",
+                        0, 0, 0, false,
+                        baseUrl + "preview.jpg",
+                        false,
+                        false,
+                        1,
+                        0,
+                        0,
+                        props.ContainsKey("obs_copyright") ? props["obs_copyright"] : "",
+                        props.ContainsKey("obs_copyright_url") ? props["obs_copyright_url"] : "",
+                        "",
+                        "",
+                        1,
+                        "Sky");
+
+                    LayerManager.AddImagesetLayer(ish);
+                }
+            }
+        }
+
+        private static BandPass GetBandPassFromString(string bandPass)
+        {
+            switch (bandPass)
+            {
+                case "EUV":
+                    return BandPass.Ultraviolet;
+                case "GAMMA_RAY":
+                    return BandPass.Gamma;
+                case "INFRARED":
+                    return BandPass.IR;
+                case "MILLIMETER":
+                case "RADIO":
+                    return BandPass.Radio;
+                case "UV":
+                    return BandPass.Ultraviolet;
+                case "X_RAY":
+                    return BandPass.XRay;
+                case "OPTICAL":
+                    return BandPass.Visible;
+                default:
+                    return BandPass.Visible;
+            }          
         }
     }
 

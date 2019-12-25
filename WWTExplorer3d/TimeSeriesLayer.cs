@@ -797,7 +797,7 @@ namespace TerraViewer
         static Texture11 target1Texture = null;
         static Texture11 target2Texture = null;
 
-        static Texture11 CircleTexture
+        public static Texture11 CircleTexture
         {
             get
             {

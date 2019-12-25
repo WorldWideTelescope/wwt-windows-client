@@ -239,9 +239,9 @@ namespace TerraViewer
                 ImageSetLayer layer = new ImageSetLayer(imageSet);
                 layer.Name = imageSet.Name;
                 LayerList.Add(layer.ID, layer);
-                layer.ReferenceFrame = CurrentMap;
-                AllMaps[CurrentMap].Layers.Add(layer);
-                AllMaps[CurrentMap].Open = true;
+                layer.ReferenceFrame = "Sky";
+                AllMaps["Sky"].Layers.Add(layer);
+                AllMaps["Sky"].Open = true;
                 LoadTree();
                 version++;
                 return layer;
@@ -249,6 +249,18 @@ namespace TerraViewer
             return null;
         }
 
+        internal static Layer AddImagesetLayer(IImageSet imageSet, string reference)
+        {
+            ImageSetLayer layer = new ImageSetLayer(imageSet);
+            layer.Name = imageSet.Name;
+            LayerList.Add(layer.ID, layer);
+            layer.ReferenceFrame = reference;
+            AllMaps[reference].Layers.Add(layer);
+            AllMaps[reference].Open = true;
+            LoadTree();
+            version++;
+            return layer;
+        }
 
         public static void Add(Layer layer, bool updateTree)
         {

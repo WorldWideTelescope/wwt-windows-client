@@ -49,8 +49,6 @@ namespace TerraViewer
                 {
                     File.Copy(fName, fileName);
                 }
-
-
             }
 
             if (File.Exists(fileName))
@@ -81,7 +79,6 @@ namespace TerraViewer
         {
             Vector3d searchPoint = Coordinates.GeoTo3dDouble(target.Lat, target.Lng);
 
-            //searchPoint = -searchPoint;
             Vector3d dist;
             if (defaultPlace != null)
             {
@@ -102,7 +99,6 @@ namespace TerraViewer
                 }
                 index++;
             }
-
 
             if (closestItem == -1)
             {
