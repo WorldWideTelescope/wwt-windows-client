@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace TerraViewer
 {
-    public class ImageSetLayer : Layer
+    public class ImageSetLayer : Layer, IVoLayer
     {
         IImageSet imageSet = null;
 
@@ -40,9 +40,167 @@ namespace TerraViewer
         public ImageSetLayer(IImageSet set)
         {
             imageSet = set;
+            GetDefaultColumns();
         }
 
         bool overrideDefaultLayer = false;
+        #if !WINDOWS_UWP
+         public VoTable Table
+        {
+            get
+            {
+                return imageSet.TableMetadata;
+            }
+        }
+
+        private VOTableViewer viewer = null;
+        public VOTableViewer Viewer { get => viewer; set => viewer = value; }
+
+        private TimeSeriesLayer.PlotTypes plotType = TimeSeriesLayer.PlotTypes.Gaussian;
+
+        [LayerProperty]
+        public TimeSeriesLayer.PlotTypes PlotType
+        {
+            get { return plotType; }
+            set
+            {
+                if (plotType != value)
+                {
+                    version++;
+                    plotType = value;
+                }
+
+            }
+        }
+
+        protected int latColumn = -1;
+
+        [LayerProperty]
+        public int LatColumn
+        {
+            get { return latColumn; }
+            set
+            {
+                if (latColumn != value)
+                {
+                    version++;
+                    latColumn = value;
+                }
+            }
+        }
+        protected int lngColumn = -1;
+
+        [LayerProperty]
+        public int LngColumn
+        {
+            get { return lngColumn; }
+            set
+            {
+                if (lngColumn != value)
+                {
+                    version++;
+                    lngColumn = value;
+                }
+            }
+        }
+
+        protected int altColumn = -1;
+        [LayerProperty]
+        public int AltColumn
+        {
+            get { return altColumn; }
+            set
+            {
+                if (altColumn != value)
+                {
+                    version++;
+                    altColumn = value;
+                }
+            }
+        }
+
+        private int markerColumn = -1;
+
+        [LayerProperty]
+        public int MarkerColumn
+        {
+            get { return markerColumn; }
+            set
+            {
+                if (markerColumn != value)
+                {
+                    version++;
+                    markerColumn = value;
+                }
+            }
+        }
+
+        protected int sizeColumn = -1;
+
+        [LayerProperty]
+        public int SizeColumn
+        {
+            get { return sizeColumn; }
+            set
+            {
+                if (sizeColumn != value)
+                {
+                    version++;
+                    sizeColumn = value;
+                }
+            }
+        }
+
+        private TimeSeriesLayer.AltTypes altType = TimeSeriesLayer.AltTypes.SeaLevel;
+
+        [LayerProperty]
+        public TimeSeriesLayer.AltTypes AltType
+        {
+            get { return altType; }
+            set
+            {
+                if (altType != value)
+                {
+                    version++;
+                    altType = value;
+                }
+            }
+        }
+
+        private AltUnits altUnit = AltUnits.Meters;
+
+        [LayerProperty]
+        public AltUnits AltUnit
+        {
+            get { return altUnit; }
+            set
+            {
+                if (altUnit != value)
+                {
+                    version++;
+                    altUnit = value;
+                }
+            }
+        }
+
+        public bool IsSiapResultSet()
+        {
+            return false;
+        }
+
+
+        public void GetDefaultColumns()
+        {
+            if (Table != null)
+            {
+                LngColumn = Table.GetRAColumn().Index;
+                LatColumn = Table.GetDecColumn().Index;
+            }
+        }
+#endif
+
+
+
         public bool OverrideDefaultLayer
         {
             get { return overrideDefaultLayer; }
@@ -60,6 +218,7 @@ namespace TerraViewer
                 return imageSet.WcsImage as FitsImage;
             }
         }
+
 
         public override void InitializeFromXml(XmlNode node)
         {
@@ -309,5 +468,24 @@ namespace TerraViewer
                  }
              }
         }
+    }
+
+    public interface IVoLayer
+    {
+#if !WINDOWS_UWP
+        VoTable Table { get;  }
+        VOTableViewer Viewer { get; set; }
+        TimeSeriesLayer.PlotTypes PlotType { get; set; }
+        int LngColumn { get; set; }
+        int LatColumn { get; set; }
+        int AltColumn { get; set; }
+        int MarkerColumn { get; set; }
+        int SizeColumn { get; set; }
+        AltUnits AltUnit { get; set; }
+        TimeSeriesLayer.AltTypes AltType { get; set; }
+
+        void CleanUp();
+        bool IsSiapResultSet();
+#endif
     }
 }

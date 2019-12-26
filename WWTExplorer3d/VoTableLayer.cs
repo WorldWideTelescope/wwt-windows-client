@@ -11,9 +11,10 @@ using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
 {
-    public class VoTableLayer : TimeSeriesLayer
+    public class VoTableLayer : TimeSeriesLayer , IVoLayer
     {
-        public VOTableViewer Viewer = null;
+        private VOTableViewer viewer = null;
+        public VOTableViewer Viewer { get => viewer; set => viewer = value; }
         public VoTableLayer()
         {
             this.table = null;

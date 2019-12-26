@@ -3052,8 +3052,33 @@ namespace TerraViewer
 
             MakeFrustum();
         }
+#if !WINDOWS_UWP
+        public bool GetVisibleDataRows(IImageSet layer, VoTable table)
+        {
+            if (layer == null)
+            {
+                return false;
+            }
+            table.Rows.Clear();
+            int maxX = GetTilesXForLevel(layer, layer.BaseLevel);
+            int maxY = GetTilesYForLevel(layer, layer.BaseLevel);
+            int tileCount = 0;
 
+            for (int x = 0; x < maxX; x++)
+            {
+                for (int y = 0; y < maxY; y++)
+                {
+                    Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
+                    if (tile != null)
+                    {
+                        tile.GetVisitbleDataRows(table.Rows, ref tileCount);
+                    }
+                }
+            }
 
+            return true;
+        }
+#endif
         public double GetScaledAltitudeForLatLong(double viewLat, double viewLong)
         {
             IImageSet layer = currentImageSetfield;

@@ -35,9 +35,9 @@ namespace TerraViewer
             label1.Text = Language.GetLocalizedText(641, "Marker Type");
             Text = Language.GetLocalizedText(642, "Microsoft WorldWide Telescope - VO Table Viewer");
         }
-        public VoTableLayer layer = null;
+        public IVoLayer layer = null;
 
-        public VoTableLayer Layer
+        public IVoLayer Layer
         {
             get { return layer; }
             set
@@ -407,8 +407,29 @@ namespace TerraViewer
             row.Selected = e.Item.Checked;
         }
 
+        int lastSearchGeneration = -1;
 
+        private void refreshTimer_Tick(object sender, EventArgs e)
+        {
+            if (layer is ImageSetLayer)
+            {
+                ImageSetLayer isl = layer as ImageSetLayer;
+
+                if (Earth3d.MainWindow.IsMoving || TileCache.QueuePercent != 100)
+                {
+                    return;
+                }
+
+                if (ContextPanel.SearchGeneration > lastSearchGeneration)
+                {
+                    RenderEngine.Engine.GetVisibleDataRows(isl.ImageSet, isl.ImageSet.TableMetadata);
+                    UpdateTable();
+                    lastSearchGeneration = ContextPanel.SearchGeneration;
+                }
+            }
+        }
     }
     //enum PlotTypes { None, Sky, Stars3D, Galaxies3D};
     //enum MarkerTypes { Circle, Cross, Asterisk, Point, Square, Triangle };
+
 }

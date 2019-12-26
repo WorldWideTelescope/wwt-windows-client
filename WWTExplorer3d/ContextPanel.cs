@@ -49,21 +49,7 @@ namespace TerraViewer
             this.bigSizeLabel.Text = Language.GetLocalizedText(579, "Large");
             this.actualSizeLabel.Text = Language.GetLocalizedText(580, "Actual");
         }
-        //protected override void OnPaintBackground(PaintEventArgs e)
-        //{
-        //    base.OnPaintBackground(e);
-        //    Graphics g = e.Graphics;
-        //    g.Clear(Color.Red);
 
-        //}
-
-        int level;
-
-        public int Level
-        {
-            get { return level; }
-            set { level = value; }
-        }
         double ra;
 
         public double RA
@@ -96,7 +82,9 @@ namespace TerraViewer
         }
         string constellation= " ";
 
-        bool contextAreaChanged = false;
+        static bool contextAreaChanged = false;
+
+        static public bool ContextAreaChanged { get => contextAreaChanged; set => contextAreaChanged = value; }
 
         public string Constellation
         {
@@ -229,6 +217,9 @@ namespace TerraViewer
 
             }
         }
+
+        static public int SearchGeneration = 0;
+
         static string lastTracking = "";
         bool autoRestore = false;
         private void searchTimer_Tick(object sender, EventArgs e)
@@ -462,13 +453,6 @@ namespace TerraViewer
                     trackingText.Text = "";
                 }
 
-                // COmmented to add context search to planetary mode
-                //if (!(space || solarSystem) && state != WindowsStates.StatusOnly)
-                //{
-                //    autoRestore = true;
-                //    SetWindowState(WindowsStates.StatusOnly);
-                //}
-
                 if ((space || solarSystem) && state == WindowsStates.StatusOnly && autoRestore)
                 {
                     SetWindowState(WindowsStates.OneLine);
@@ -500,8 +484,6 @@ namespace TerraViewer
                 paginator1.CurrentPage = 1;
                 paginator1.TotalPages = 1;
 
-                //Place[] results = ContextSearch.FindConteallationObjects(Constellations.Abbreviation(constellation), cornersLast, (Classification)FilterCombo.Tag);
-
                 Vector3d cornerUl = Coordinates.RADecTo3d(cornersLast[0].RA, cornersLast[0].Dec,1);
                 Vector3d cornerLR = Coordinates.RADecTo3d(cornersLast[2].RA, cornersLast[2].Dec,1);
                 Vector3d dist = Vector3d.Subtract(cornerLR, cornerUl);
@@ -521,9 +503,8 @@ namespace TerraViewer
                 {
                     contextResults.AddRange(results);
                 }
+                SearchGeneration++;
                 contextResults.Invalidate();
-                //paginator1.CurrentPage = 0;
-                //paginator1.TotalPages = contextResults.PageCount;
             }
         }
 

@@ -780,8 +780,6 @@ namespace TerraViewer
             }
         }
 
-
-
         protected List<Vector3> positions = new List<Vector3>();
 
         protected LineList lineList;
@@ -863,8 +861,6 @@ namespace TerraViewer
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
-    
-
             if (bufferIsFlat != flat)
             {
                 CleanUp();
@@ -882,7 +878,6 @@ namespace TerraViewer
                 double ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
                 renderContext.World = Matrix3d.RotationX(ecliptic) * renderContext.World;
             }
-
 
             if (triangleList2d != null)
             {

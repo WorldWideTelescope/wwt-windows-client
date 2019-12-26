@@ -13577,8 +13577,9 @@ namespace TerraViewer
                         "",
                         1,
                         "Sky");
-
-                    LayerManager.AddImagesetLayer(ish);
+                    ish.Properties = props;
+                    ish.TableMetadata = hipsProperties.VoTable;
+                    LayerManager.AddImagesetLayer(ish, "Sky");
                 }
             }
         }

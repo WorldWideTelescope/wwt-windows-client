@@ -626,7 +626,7 @@ namespace TerraViewer
                                         int uvx = 0;
                                     }
 
-                                    if (renderPart[childIndex].TargetState)
+                                    if (!renderPart[childIndex].TargetState)
                                     {
                                         childRendered = true;
                                     }
@@ -667,7 +667,7 @@ namespace TerraViewer
                     }
                 }
 
-                if (!anythingToRender && !IsCatalogTile)
+                if (!anythingToRender && !(IsCatalogTile && childRendered))
                 {
                     return true;
                 }
@@ -1792,6 +1792,20 @@ namespace TerraViewer
                             props.Properties[key] = val;
                         }
                     }
+                }
+
+
+                // now download the catalog
+                if (props.Properties.ContainsKey("dataproduct_type") && props.Properties["dataproduct_type"] == "catalog")
+                {
+                    string tableUrl = propsUrl.Replace("/properties", "/metadata.xml");
+
+                    client = new WebClient();
+                    string voTable = client.DownloadString(tableUrl);
+
+                    System.Xml.XmlDocument xmlDocument = new System.Xml.XmlDocument();
+                    xmlDocument.LoadXml(voTable);
+                    props.VoTable = new VoTable(xmlDocument);
                 }
             }
             catch

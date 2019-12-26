@@ -28,6 +28,7 @@ namespace TerraViewer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.listView1 = new System.Windows.Forms.ListView();
             this.raSourceLabel = new System.Windows.Forms.Label();
             this.decSourceLabel = new System.Windows.Forms.Label();
@@ -44,6 +45,7 @@ namespace TerraViewer
             this.raSource = new TerraViewer.WwtCombo();
             this.sync = new TerraViewer.WwtButton();
             this.save = new TerraViewer.WwtButton();
+            this.refreshTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // listView1
@@ -57,10 +59,11 @@ namespace TerraViewer
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(0, 66);
+            this.listView1.Location = new System.Drawing.Point(0, 102);
+            this.listView1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(912, 393);
+            this.listView1.Size = new System.Drawing.Size(1366, 602);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -76,54 +79,60 @@ namespace TerraViewer
             // raSourceLabel
             // 
             this.raSourceLabel.AutoSize = true;
-            this.raSourceLabel.Location = new System.Drawing.Point(123, 10);
+            this.raSourceLabel.Location = new System.Drawing.Point(184, 15);
+            this.raSourceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.raSourceLabel.Name = "raSourceLabel";
-            this.raSourceLabel.Size = new System.Drawing.Size(59, 13);
+            this.raSourceLabel.Size = new System.Drawing.Size(87, 20);
             this.raSourceLabel.TabIndex = 3;
             this.raSourceLabel.Text = "RA Source";
             // 
             // decSourceLabel
             // 
             this.decSourceLabel.AutoSize = true;
-            this.decSourceLabel.Location = new System.Drawing.Point(238, 10);
+            this.decSourceLabel.Location = new System.Drawing.Point(357, 15);
+            this.decSourceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.decSourceLabel.Name = "decSourceLabel";
-            this.decSourceLabel.Size = new System.Drawing.Size(64, 13);
+            this.decSourceLabel.Size = new System.Drawing.Size(93, 20);
             this.decSourceLabel.TabIndex = 3;
             this.decSourceLabel.Text = "Dec Source";
             // 
             // distanceSouceLabel
             // 
             this.distanceSouceLabel.AutoSize = true;
-            this.distanceSouceLabel.Location = new System.Drawing.Point(353, 10);
+            this.distanceSouceLabel.Location = new System.Drawing.Point(530, 15);
+            this.distanceSouceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.distanceSouceLabel.Name = "distanceSouceLabel";
-            this.distanceSouceLabel.Size = new System.Drawing.Size(86, 13);
+            this.distanceSouceLabel.Size = new System.Drawing.Size(127, 20);
             this.distanceSouceLabel.TabIndex = 3;
             this.distanceSouceLabel.Text = "Distance Source";
             // 
             // typeSourceLabel
             // 
             this.typeSourceLabel.AutoSize = true;
-            this.typeSourceLabel.Location = new System.Drawing.Point(466, 9);
+            this.typeSourceLabel.Location = new System.Drawing.Point(699, 14);
+            this.typeSourceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.typeSourceLabel.Name = "typeSourceLabel";
-            this.typeSourceLabel.Size = new System.Drawing.Size(68, 13);
+            this.typeSourceLabel.Size = new System.Drawing.Size(98, 20);
             this.typeSourceLabel.TabIndex = 3;
             this.typeSourceLabel.Text = "Type Source";
             // 
             // sizeSourceLabel
             // 
             this.sizeSourceLabel.AutoSize = true;
-            this.sizeSourceLabel.Location = new System.Drawing.Point(578, 9);
+            this.sizeSourceLabel.Location = new System.Drawing.Point(867, 14);
+            this.sizeSourceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.sizeSourceLabel.Name = "sizeSourceLabel";
-            this.sizeSourceLabel.Size = new System.Drawing.Size(90, 13);
+            this.sizeSourceLabel.Size = new System.Drawing.Size(130, 20);
             this.sizeSourceLabel.TabIndex = 3;
             this.sizeSourceLabel.Text = "Size/Mag Source";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 9);
+            this.label1.Location = new System.Drawing.Point(9, 14);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.Size = new System.Drawing.Size(96, 20);
             this.label1.TabIndex = 3;
             this.label1.Text = "Marker Type";
             // 
@@ -133,11 +142,12 @@ namespace TerraViewer
             this.loadImage.DialogResult = System.Windows.Forms.DialogResult.None;
             this.loadImage.ImageDisabled = null;
             this.loadImage.ImageEnabled = null;
-            this.loadImage.Location = new System.Drawing.Point(706, 32);
-            this.loadImage.MaximumSize = new System.Drawing.Size(140, 33);
+            this.loadImage.Location = new System.Drawing.Point(1059, 49);
+            this.loadImage.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.loadImage.MaximumSize = new System.Drawing.Size(210, 51);
             this.loadImage.Name = "loadImage";
             this.loadImage.Selected = false;
-            this.loadImage.Size = new System.Drawing.Size(113, 33);
+            this.loadImage.Size = new System.Drawing.Size(170, 51);
             this.loadImage.TabIndex = 5;
             this.loadImage.Text = "Load Image";
             this.loadImage.Visible = false;
@@ -149,15 +159,15 @@ namespace TerraViewer
             this.markerTypeCombo.DateTimeValue = new System.DateTime(2008, 11, 1, 21, 10, 58, 878);
             this.markerTypeCombo.Filter = TerraViewer.Classification.Unfiltered;
             this.markerTypeCombo.FilterStyle = false;
-            this.markerTypeCombo.Location = new System.Drawing.Point(9, 26);
+            this.markerTypeCombo.Location = new System.Drawing.Point(14, 40);
             this.markerTypeCombo.Margin = new System.Windows.Forms.Padding(0);
             this.markerTypeCombo.MasterTime = true;
-            this.markerTypeCombo.MaximumSize = new System.Drawing.Size(248, 33);
-            this.markerTypeCombo.MinimumSize = new System.Drawing.Size(35, 33);
+            this.markerTypeCombo.MaximumSize = new System.Drawing.Size(372, 51);
+            this.markerTypeCombo.MinimumSize = new System.Drawing.Size(52, 51);
             this.markerTypeCombo.Name = "markerTypeCombo";
             this.markerTypeCombo.SelectedIndex = -1;
             this.markerTypeCombo.SelectedItem = null;
-            this.markerTypeCombo.Size = new System.Drawing.Size(106, 33);
+            this.markerTypeCombo.Size = new System.Drawing.Size(159, 51);
             this.markerTypeCombo.State = TerraViewer.State.Rest;
             this.markerTypeCombo.TabIndex = 4;
             this.markerTypeCombo.Type = TerraViewer.WwtCombo.ComboType.List;
@@ -169,15 +179,15 @@ namespace TerraViewer
             this.sizeSource.DateTimeValue = new System.DateTime(2008, 11, 1, 21, 10, 58, 878);
             this.sizeSource.Filter = TerraViewer.Classification.Unfiltered;
             this.sizeSource.FilterStyle = false;
-            this.sizeSource.Location = new System.Drawing.Point(581, 26);
+            this.sizeSource.Location = new System.Drawing.Point(872, 40);
             this.sizeSource.Margin = new System.Windows.Forms.Padding(0);
             this.sizeSource.MasterTime = true;
-            this.sizeSource.MaximumSize = new System.Drawing.Size(248, 33);
-            this.sizeSource.MinimumSize = new System.Drawing.Size(35, 33);
+            this.sizeSource.MaximumSize = new System.Drawing.Size(372, 51);
+            this.sizeSource.MinimumSize = new System.Drawing.Size(52, 51);
             this.sizeSource.Name = "sizeSource";
             this.sizeSource.SelectedIndex = -1;
             this.sizeSource.SelectedItem = null;
-            this.sizeSource.Size = new System.Drawing.Size(106, 33);
+            this.sizeSource.Size = new System.Drawing.Size(159, 51);
             this.sizeSource.State = TerraViewer.State.Rest;
             this.sizeSource.TabIndex = 4;
             this.sizeSource.Type = TerraViewer.WwtCombo.ComboType.List;
@@ -189,15 +199,15 @@ namespace TerraViewer
             this.typeSource.DateTimeValue = new System.DateTime(2008, 11, 1, 21, 10, 58, 878);
             this.typeSource.Filter = TerraViewer.Classification.Unfiltered;
             this.typeSource.FilterStyle = false;
-            this.typeSource.Location = new System.Drawing.Point(469, 26);
+            this.typeSource.Location = new System.Drawing.Point(704, 40);
             this.typeSource.Margin = new System.Windows.Forms.Padding(0);
             this.typeSource.MasterTime = true;
-            this.typeSource.MaximumSize = new System.Drawing.Size(248, 33);
-            this.typeSource.MinimumSize = new System.Drawing.Size(35, 33);
+            this.typeSource.MaximumSize = new System.Drawing.Size(372, 51);
+            this.typeSource.MinimumSize = new System.Drawing.Size(52, 51);
             this.typeSource.Name = "typeSource";
             this.typeSource.SelectedIndex = -1;
             this.typeSource.SelectedItem = null;
-            this.typeSource.Size = new System.Drawing.Size(106, 33);
+            this.typeSource.Size = new System.Drawing.Size(159, 51);
             this.typeSource.State = TerraViewer.State.Rest;
             this.typeSource.TabIndex = 4;
             this.typeSource.Type = TerraViewer.WwtCombo.ComboType.List;
@@ -209,15 +219,15 @@ namespace TerraViewer
             this.distanceSource.DateTimeValue = new System.DateTime(2008, 11, 1, 21, 10, 58, 878);
             this.distanceSource.Filter = TerraViewer.Classification.Unfiltered;
             this.distanceSource.FilterStyle = false;
-            this.distanceSource.Location = new System.Drawing.Point(356, 27);
+            this.distanceSource.Location = new System.Drawing.Point(534, 42);
             this.distanceSource.Margin = new System.Windows.Forms.Padding(0);
             this.distanceSource.MasterTime = true;
-            this.distanceSource.MaximumSize = new System.Drawing.Size(248, 33);
-            this.distanceSource.MinimumSize = new System.Drawing.Size(35, 33);
+            this.distanceSource.MaximumSize = new System.Drawing.Size(372, 51);
+            this.distanceSource.MinimumSize = new System.Drawing.Size(52, 51);
             this.distanceSource.Name = "distanceSource";
             this.distanceSource.SelectedIndex = -1;
             this.distanceSource.SelectedItem = null;
-            this.distanceSource.Size = new System.Drawing.Size(106, 33);
+            this.distanceSource.Size = new System.Drawing.Size(159, 51);
             this.distanceSource.State = TerraViewer.State.Rest;
             this.distanceSource.TabIndex = 4;
             this.distanceSource.Type = TerraViewer.WwtCombo.ComboType.List;
@@ -229,15 +239,15 @@ namespace TerraViewer
             this.decSource.DateTimeValue = new System.DateTime(2008, 11, 1, 21, 10, 58, 878);
             this.decSource.Filter = TerraViewer.Classification.Unfiltered;
             this.decSource.FilterStyle = false;
-            this.decSource.Location = new System.Drawing.Point(241, 27);
+            this.decSource.Location = new System.Drawing.Point(362, 42);
             this.decSource.Margin = new System.Windows.Forms.Padding(0);
             this.decSource.MasterTime = true;
-            this.decSource.MaximumSize = new System.Drawing.Size(248, 33);
-            this.decSource.MinimumSize = new System.Drawing.Size(35, 33);
+            this.decSource.MaximumSize = new System.Drawing.Size(372, 51);
+            this.decSource.MinimumSize = new System.Drawing.Size(52, 51);
             this.decSource.Name = "decSource";
             this.decSource.SelectedIndex = -1;
             this.decSource.SelectedItem = null;
-            this.decSource.Size = new System.Drawing.Size(106, 33);
+            this.decSource.Size = new System.Drawing.Size(159, 51);
             this.decSource.State = TerraViewer.State.Rest;
             this.decSource.TabIndex = 4;
             this.decSource.Type = TerraViewer.WwtCombo.ComboType.List;
@@ -249,15 +259,15 @@ namespace TerraViewer
             this.raSource.DateTimeValue = new System.DateTime(2008, 11, 1, 21, 10, 58, 878);
             this.raSource.Filter = TerraViewer.Classification.Unfiltered;
             this.raSource.FilterStyle = false;
-            this.raSource.Location = new System.Drawing.Point(126, 27);
+            this.raSource.Location = new System.Drawing.Point(189, 42);
             this.raSource.Margin = new System.Windows.Forms.Padding(0);
             this.raSource.MasterTime = true;
-            this.raSource.MaximumSize = new System.Drawing.Size(248, 33);
-            this.raSource.MinimumSize = new System.Drawing.Size(35, 33);
+            this.raSource.MaximumSize = new System.Drawing.Size(372, 51);
+            this.raSource.MinimumSize = new System.Drawing.Size(52, 51);
             this.raSource.Name = "raSource";
             this.raSource.SelectedIndex = -1;
             this.raSource.SelectedItem = null;
-            this.raSource.Size = new System.Drawing.Size(106, 33);
+            this.raSource.Size = new System.Drawing.Size(159, 51);
             this.raSource.State = TerraViewer.State.Rest;
             this.raSource.TabIndex = 4;
             this.raSource.Type = TerraViewer.WwtCombo.ComboType.List;
@@ -270,11 +280,12 @@ namespace TerraViewer
             this.sync.DialogResult = System.Windows.Forms.DialogResult.None;
             this.sync.ImageDisabled = null;
             this.sync.ImageEnabled = null;
-            this.sync.Location = new System.Drawing.Point(816, 32);
-            this.sync.MaximumSize = new System.Drawing.Size(140, 33);
+            this.sync.Location = new System.Drawing.Point(1224, 49);
+            this.sync.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.sync.MaximumSize = new System.Drawing.Size(210, 51);
             this.sync.Name = "sync";
             this.sync.Selected = false;
-            this.sync.Size = new System.Drawing.Size(96, 33);
+            this.sync.Size = new System.Drawing.Size(144, 51);
             this.sync.TabIndex = 1;
             this.sync.Text = "Broadcast";
             this.sync.Click += new System.EventHandler(this.sync_Click);
@@ -286,21 +297,28 @@ namespace TerraViewer
             this.save.DialogResult = System.Windows.Forms.DialogResult.None;
             this.save.ImageDisabled = null;
             this.save.ImageEnabled = null;
-            this.save.Location = new System.Drawing.Point(816, 0);
-            this.save.MaximumSize = new System.Drawing.Size(140, 33);
+            this.save.Location = new System.Drawing.Point(1224, 0);
+            this.save.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.save.MaximumSize = new System.Drawing.Size(210, 51);
             this.save.Name = "save";
             this.save.Selected = false;
-            this.save.Size = new System.Drawing.Size(96, 33);
+            this.save.Size = new System.Drawing.Size(144, 51);
             this.save.TabIndex = 1;
             this.save.Text = "Save As...";
             this.save.Click += new System.EventHandler(this.save_Click);
             // 
+            // refreshTimer
+            // 
+            this.refreshTimer.Enabled = true;
+            this.refreshTimer.Interval = 500;
+            this.refreshTimer.Tick += new System.EventHandler(this.refreshTimer_Tick);
+            // 
             // VOTableViewer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(22)))), ((int)(((byte)(31)))));
-            this.ClientSize = new System.Drawing.Size(912, 459);
+            this.ClientSize = new System.Drawing.Size(1368, 706);
             this.Controls.Add(this.loadImage);
             this.Controls.Add(this.markerTypeCombo);
             this.Controls.Add(this.sizeSource);
@@ -319,6 +337,7 @@ namespace TerraViewer
             this.Controls.Add(this.listView1);
             this.DoubleBuffered = true;
             this.ForeColor = System.Drawing.Color.White;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "VOTableViewer";
             this.ShowIcon = false;
             this.Text = "Microsoft WorldWide Telescope - VO Table Viewer";
@@ -347,5 +366,6 @@ namespace TerraViewer
         private System.Windows.Forms.Label label1;
         private WwtCombo markerTypeCombo;
         private WwtButton loadImage;
+        private System.Windows.Forms.Timer refreshTimer;
     }
 }

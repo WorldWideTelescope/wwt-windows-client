@@ -45,7 +45,6 @@ namespace TerraViewer
 
         public static VoTableLayer AddVoTableLayer(VoTable table, string title)
         {
-
             VoTableLayer layer = new VoTableLayer(table);
             layer.Name = title;
             layer.Astronomical = true;
@@ -612,7 +611,6 @@ namespace TerraViewer
 
                     if (selectedLayer is SpreadSheetLayer)
                     {
-
                         SpreadSheetLayer sslayer = selectedLayer as SpreadSheetLayer;
                         if (sslayer.DynamicData)
                         {
@@ -622,7 +620,6 @@ namespace TerraViewer
                             contextMenu.Items.Add(dynamicData);
                         }
                     }
-
 
                     if (layerTree.SelectedNode.Tag is ImageSetLayer)
                     {
@@ -648,7 +645,7 @@ namespace TerraViewer
                         contextMenu.Items.Add(popertiesMenu);
                     }
 
-                    if (layerTree.SelectedNode.Tag is VoTableLayer)
+                    if (layerTree.SelectedNode.Tag is IVoLayer)
                     {
                         contextMenu.Items.Add(showViewer);
                     }
@@ -1622,9 +1619,9 @@ namespace TerraViewer
 
         void showViewer_Click(object sender, EventArgs e)
         {
-            if (layerTree.SelectedNode.Tag is VoTableLayer)
+            if (layerTree.SelectedNode.Tag is IVoLayer)
             {
-                VoTableLayer layer = layerTree.SelectedNode.Tag as VoTableLayer;
+                IVoLayer layer = layerTree.SelectedNode.Tag as IVoLayer;
 
                 if (layer.Viewer != null)
                 {

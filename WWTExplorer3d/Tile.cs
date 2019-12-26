@@ -117,6 +117,25 @@ namespace TerraViewer
             return demAverage / DemScaleFactor;
         }
 
+        public void GetVisitbleDataRows(List<VoRow> rows, ref int tileCount)
+        {
+            if ((level <= lastDeepestLevel && RenderedAtOrBelowGeneration == CurrentRenderGeneration) || level == 0)
+            {
+                rows.AddRange(Rows);
+                tileCount++;
+                //interate children
+
+                foreach (long childKey in childrenId)
+                {
+                    Tile child = TileCache.GetCachedTile(childKey);
+                    if (child != null)
+                    {
+                        child.GetVisitbleDataRows(rows, ref tileCount);
+                    }
+                }
+            }
+        }
+
 
         public virtual double GetSurfacePointAltitudeNow(double lat, double lng, bool meters, int targetLevel)
         {
@@ -307,7 +326,7 @@ namespace TerraViewer
                                 if (child.IsTileBigEnough(renderContext))
                                 {
                                     renderPart[childIndex].TargetState = !child.Draw3D(renderContext, opacity, this);
-                                    if (renderPart[childIndex].TargetState)
+                                    if (!renderPart[childIndex].TargetState)
                                     {
                                         childRendered = true;
                                     }
