@@ -40,7 +40,9 @@ namespace TerraViewer
         public ImageSetLayer(IImageSet set)
         {
             imageSet = set;
+#if !WINDOWS_UWP
             GetDefaultColumns();
+#endif
         }
 
         bool overrideDefaultLayer = false;

@@ -242,7 +242,7 @@ namespace TerraViewer
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripMenuItem exportCurrentCitiesViewAs3DMeshToolStripMenuItem;
         private ToolStripMenuItem showTileEdgesToolStripMenuItem;
-        private ToolStripMenuItem hIPSProgresiveSurveyToolStripMenuItem;
+        private ToolStripMenuItem hIPSProgressiveSurveyToolStripMenuItem;
         private ToolStripMenuItem enableExport3dCitiesModeToolStripMenuItem;
 
         public void StartFadeTransition(double milliseconds)
@@ -3282,7 +3282,7 @@ namespace TerraViewer
             this.kioskTitleBar = new TerraViewer.KioskTitleBar();
             this.renderWindow = new TerraViewer.RenderTarget();
             this.menuTabs = new TerraViewer.MenuTabs();
-            this.hIPSProgresiveSurveyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hIPSProgressiveSurveyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu.SuspendLayout();
             this.communitiesMenu.SuspendLayout();
             this.searchMenu.SuspendLayout();
@@ -4105,7 +4105,7 @@ namespace TerraViewer
             this.openImageMenuItem,
             this.openKMLMenuItem,
             this.vOTableToolStripMenuItem,
-            this.hIPSProgresiveSurveyToolStripMenuItem,
+            this.hIPSProgressiveSurveyToolStripMenuItem,
             this.shapeFileToolStripMenuItem,
             this.layerManagerToolStripMenuItem,
             this.customGalaxyFileToolStripMenuItem});
@@ -5190,12 +5190,12 @@ namespace TerraViewer
             this.menuTabs.ControlEvent += new TerraViewer.ControlEventHandler(this.menuTabs_ControlEvent);
             this.menuTabs.Load += new System.EventHandler(this.menuTabs_Load);
             // 
-            // hIPSProgresiveSurveyToolStripMenuItem
+            // hIPSProgressiveSurveyToolStripMenuItem
             // 
-            this.hIPSProgresiveSurveyToolStripMenuItem.Name = "hIPSProgresiveSurveyToolStripMenuItem";
-            this.hIPSProgresiveSurveyToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
-            this.hIPSProgresiveSurveyToolStripMenuItem.Text = "HIPS Progresive Survey...";
-            this.hIPSProgresiveSurveyToolStripMenuItem.Click += new System.EventHandler(this.hIPSProgresiveSurveyToolStripMenuItem_Click);
+            this.hIPSProgressiveSurveyToolStripMenuItem.Name = "hIPSProgressiveSurveyToolStripMenuItem";
+            this.hIPSProgressiveSurveyToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
+            this.hIPSProgressiveSurveyToolStripMenuItem.Text = "HIPS Progrsesive Survey...";
+            this.hIPSProgressiveSurveyToolStripMenuItem.Click += new System.EventHandler(this.hIPSProgressiveSurveyToolStripMenuItem_Click);
             // 
             // Earth3d
             // 
@@ -13521,7 +13521,7 @@ namespace TerraViewer
             TileCache.ClearCache();
         }
 
-        private void hIPSProgresiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
+        private void hIPSProgressiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SimpleInput input = new SimpleInput("Create HIPS Layer", Language.GetLocalizedText(542, "Url"), "http://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2", 2048);
             if (input.ShowDialog() == DialogResult.OK)

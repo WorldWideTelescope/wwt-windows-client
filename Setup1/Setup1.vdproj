@@ -22,7 +22,7 @@
         "Entry"
         {
         "MsmKey" = "8:_03EF984C5B6944AE9511AA0C8545697F"
-        "OwnerKey" = "8:_11F2E2A1693262AA2572C1B7D7577DD1"
+        "OwnerKey" = "8:_A69AB081DE4CB510031ED9B9336C78F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -106,7 +106,7 @@
         "Entry"
         {
         "MsmKey" = "8:_0FDD462ADF611056A647ACDB80BF146C"
-        "OwnerKey" = "8:_11F2E2A1693262AA2572C1B7D7577DD1"
+        "OwnerKey" = "8:_A69AB081DE4CB510031ED9B9336C78F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -153,12 +153,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_11F2E2A1693262AA2572C1B7D7577DD1"
-        "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_130FB70F0CAB4A4DB846B7DFC33D4C1F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -191,6 +185,12 @@
         {
         "MsmKey" = "8:_2650F236B8C7408D87352D21C994CD3D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_272AB542FC18BDB01CD0BCE344DB1F9D"
+        "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -238,7 +238,7 @@
         "Entry"
         {
         "MsmKey" = "8:_4D3758ACF36D1896D762E9FB61AB613B"
-        "OwnerKey" = "8:_7EB701796A7F1174BDDC111B235D04CC"
+        "OwnerKey" = "8:_63AC6B5D13FACA83678F48C84827194C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -267,6 +267,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_63AC6B5D13FACA83678F48C84827194C"
+        "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_65146AB932E9B929DD9111093DB82452"
         "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
         "MsmSig" = "8:_UNDEFINED"
@@ -279,12 +285,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6C498A9A318B90CFF93ED378F36CD6C8"
-        "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_7688676E98014BA1B995CD50E9FB32A4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -293,12 +293,6 @@
         {
         "MsmKey" = "8:_77A49FF2147A4061AE55DB3C7D47FD9C"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7EB701796A7F1174BDDC111B235D04CC"
-        "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -316,7 +310,7 @@
         "Entry"
         {
         "MsmKey" = "8:_8463E710DEEEBED8D1F49BAB36D17C1B"
-        "OwnerKey" = "8:_11F2E2A1693262AA2572C1B7D7577DD1"
+        "OwnerKey" = "8:_A69AB081DE4CB510031ED9B9336C78F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -365,6 +359,12 @@
         {
         "MsmKey" = "8:_9C1B4905D7ED42CAA80253765C8F1A9B"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A69AB081DE4CB510031ED9B9336C78F3"
+        "OwnerKey" = "8:_8C920A1E441C49CCA1D5048846532EFC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -436,7 +436,7 @@
         "Entry"
         {
         "MsmKey" = "8:_D581577785EBA1A371705CA257302301"
-        "OwnerKey" = "8:_11F2E2A1693262AA2572C1B7D7577DD1"
+        "OwnerKey" = "8:_A69AB081DE4CB510031ED9B9336C78F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -466,7 +466,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7EB701796A7F1174BDDC111B235D04CC"
+        "OwnerKey" = "8:_63AC6B5D13FACA83678F48C84827194C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -478,7 +478,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_11F2E2A1693262AA2572C1B7D7577DD1"
+        "OwnerKey" = "8:_A69AB081DE4CB510031ED9B9336C78F3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -556,7 +556,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6C498A9A318B90CFF93ED378F36CD6C8"
+        "OwnerKey" = "8:_272AB542FC18BDB01CD0BCE344DB1F9D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -837,37 +837,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_11F2E2A1693262AA2572C1B7D7577DD1"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WWTCore, Version=6.0.6.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_11F2E2A1693262AA2572C1B7D7577DD1"
-                    {
-                    "Name" = "8:WWTCore.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:WWTCore.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_8994134A3002496B9ACD2171AA6B2439"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_130FB70F0CAB4A4DB846B7DFC33D4C1F"
             {
             "SourcePath" = "8:..\\WWTExplorer3d\\wwt.ico"
@@ -986,6 +955,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_272AB542FC18BDB01CD0BCE344DB1F9D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:OculusWrap, Version=2.3.3.1, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_272AB542FC18BDB01CD0BCE344DB1F9D"
+                    {
+                    "Name" = "8:OculusWrap.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:OculusWrap.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_8994134A3002496B9ACD2171AA6B2439"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B954D127A934C55AC2370E46CFC47EA"
@@ -1221,6 +1221,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_63AC6B5D13FACA83678F48C84827194C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Interop.Shell32, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_63AC6B5D13FACA83678F48C84827194C"
+                    {
+                    "Name" = "8:Interop.Shell32.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Interop.Shell32.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_8994134A3002496B9ACD2171AA6B2439"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_65146AB932E9B929DD9111093DB82452"
             {
             "AssemblyRegister" = "3:1"
@@ -1272,37 +1303,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6C498A9A318B90CFF93ED378F36CD6C8"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:OculusWrap, Version=2.3.3.1, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_6C498A9A318B90CFF93ED378F36CD6C8"
-                    {
-                    "Name" = "8:OculusWrap.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:OculusWrap.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_8994134A3002496B9ACD2171AA6B2439"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7688676E98014BA1B995CD50E9FB32A4"
             {
             "SourcePath" = "8:..\\Redist\\Aug2009_d3dx11_42_x64.cab"
@@ -1341,37 +1341,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7EB701796A7F1174BDDC111B235D04CC"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Interop.Shell32, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_7EB701796A7F1174BDDC111B235D04CC"
-                    {
-                    "Name" = "8:Interop.Shell32.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Interop.Shell32.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_8994134A3002496B9ACD2171AA6B2439"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8463E710DEEEBED8D1F49BAB36D17C1B"
@@ -1474,6 +1443,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A69AB081DE4CB510031ED9B9336C78F3"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:WWTCore, Version=6.0.8.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A69AB081DE4CB510031ED9B9336C78F3"
+                    {
+                    "Name" = "8:WWTCore.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:WWTCore.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_8994134A3002496B9ACD2171AA6B2439"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A939711E08494FFB98A4E1CE59FC7404"
@@ -1976,15 +1976,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:WorldWide Telescope"
-        "ProductCode" = "8:{FF469D52-51E1-4857-B414-907BDE2A8304}"
-        "PackageCode" = "8:{73AF92E3-89C3-42B6-94E3-AB7882A99380}"
+        "ProductCode" = "8:{B7BAEBCB-DEAB-4BBF-8B17-75156DEF52FF}"
+        "PackageCode" = "8:{D4A59390-9AD7-49AF-9930-E5B9C0203F94}"
         "UpgradeCode" = "8:{543D9051-C7F5-4C6B-BEA5-6CA148C8487F}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:6.0.08"
+        "ProductVersion" = "8:6.0.09"
         "Manufacturer" = "8:WorldWide Telescope"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
