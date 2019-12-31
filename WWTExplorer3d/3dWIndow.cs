@@ -13584,6 +13584,11 @@ namespace TerraViewer
             }
         }
 
+        private void GetMasterHipsListAsWtml()
+        {
+
+        }
+
         private static BandPass GetBandPassFromString(string bandPass)
         {
             switch (bandPass)

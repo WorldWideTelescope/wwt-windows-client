@@ -118,24 +118,23 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="aboutText.Text" xml:space="preserve">
-    <value>Copyright © 2015 Microsoft Corporation
-
-Dedicated to Jim Gray
+    <value>Dedicated to Jim Gray
 
 Imagery is Courtesy of SDSS, DSS, STScI, IPAC, CfA, NASA, USNO, WMAP, USGS and Bing Maps.
 Additional Imagery credits is contained in Imageset Information properties dialog.
 
-Microsoft Research
-Jonathan Fay, Curtis Wong,
-Eric Carter, Ed Cook, Rob Fatland, Jessika Gebauer, Darren Gehring, Ron Gilchrist,
+Originally Created by Jonathan Fay and Curtis Wong at Microsoft Research
+with help from
+Eric Carter, Ed Cook, Rob Fatland, Dan Fay, Jessika Gebauer, Darren Gehring, Ron Gilchrist,
 Rick Gutierrez, Nils Kock, Ben Kunz, Gavin Jancke, Paul Johns, Chris Laurel, Chuck Needham,
-ThuVan Pham, Doug Roberts, Phil Rosenfield, Kim Rush, Jina Suh, Dinoj Surendran, Peter Turcan
-Special Thanks to Peter Lee, Rick Rashid, Tony Hey, Jim Pinkelman, Michael Zyskowski
-Dan Fay, Tom Barclay, Wyman Chong
+ThuVan Pham, Doug Roberts, Kim Rush, Jina Suh, Dinoj Surendran, Peter Turcan
 
-In collaboration with:
-Alex Szalay, Miguel Aragon  - Johns Hopkins Univ, Mark Subbarao, Randy Lansberg - Adler SVL
-Alyssa Goodman, Gus Muench, Doug Finkbeiner, Roy Gould  - CfA 
+AAS WWT Staff
+Gus Muench, O. Justin Otor, Thomas Robitaille, Phil Rosenfield, Julie Steffen, Jeffrey Subbarao, Peter Williams
+
+Long time Collaborators
+Alex Szalay, Miguel Aragon  - JHU, Mark Subbarao, Randy Lansberg - Adler SVL, Chenzhou Cui - ChinaVO
+Alyssa Goodman, Doug Finkbeiner, Roy Gould  - CfA, A. David Weigel - U.S. Space &amp; Rocket Center
 Frank Summers, Brian McLean, Alberto Conti, Carol Christian - STScI, Robert Hurt, John Good - IPAC
 Megan Watzke, Kimberly Kowal Arcand - Chandra, George Djorgovski, Ashish Mahabal, Roy Williams - Cal Tech</value>
   </data>
