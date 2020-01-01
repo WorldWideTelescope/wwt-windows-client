@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using SharpDX.Toolkit.Graphics;
+using System.Windows.Input;
 
 #if WINDOWS_UWP
 using XmlElement = Windows.Data.Xml.Dom.XmlElement;
@@ -14,6 +16,10 @@ using Point = System.Drawing.Point;
 using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
+using System.Collections.Generic;
+
+using Vector3 = SharpDX.Vector3;
+
 #endif
 
 namespace TerraViewer
@@ -383,6 +389,85 @@ namespace TerraViewer
             return true;
 
         }
+
+        protected List<Vector3> positions = new List<Vector3>();
+
+        public override IPlace FindClosest(Coordinates target, float distance, IPlace defaultPlace, bool astronomical)
+        {
+            Vector3d searchPoint = Coordinates.GeoTo3dDouble(target.Lat, target.Lng);
+
+            Vector3d dist;
+            if (defaultPlace != null)
+            {
+                Vector3d testPoint = Coordinates.RADecTo3d(defaultPlace.RA, -defaultPlace.Dec, -1.0);
+                dist = searchPoint - testPoint;
+                distance = (float)dist.Length();
+            }
+
+            int closestItem = -1;
+            int index = 0;
+            int raCol = imageSet.TableMetadata.GetRAColumn().Index;
+            int decCol = imageSet.TableMetadata.GetDecColumn().Index;
+            foreach(VoRow row in imageSet.TableMetadata.Rows)
+            {
+                double Xcoord = Coordinates.ParseRA(row[raCol].ToString(), true) * 15 + 180;
+                double Ycoord = Coordinates.ParseDec(row[decCol].ToString());
+
+                Vector3d p = Coordinates.GeoTo3dDouble(Ycoord, Xcoord);
+
+                dist = searchPoint - p;
+                positions.Add(p.Vector3);
+
+                if (dist.Length() < distance)
+                {
+                    distance = (float)dist.Length();
+                    closestItem = index;
+                }
+                index++;
+            }
+
+            if (closestItem == -1)
+            {
+                return defaultPlace;
+            }
+
+            Coordinates pnt = Coordinates.CartesianToSpherical2(positions[closestItem]);
+            int nameCol = 1; // imageSet.TableMetadata.GetColumnByUcd()
+            //string name = imageSet.TableMetadata.Rows[closestItem].ColumnData[nameCol].ToString();
+            string name = "";
+
+            if (String.IsNullOrEmpty(name))
+            {
+                name = string.Format("RA={0}, Dec={1}", Coordinates.FormatHMS(pnt.RA), Coordinates.FormatDMS(pnt.Dec));
+            }
+            TourPlace place = new TourPlace(name, pnt.Lat, pnt.RA, Classification.Unidentified, "", ImageSetType.Sky, -1);
+
+            Dictionary<String, String> rowData = new Dictionary<string, string>();
+            for (int i = 0; i < imageSet.TableMetadata.Columns.Count; i++)
+            {
+                string colValue = imageSet.TableMetadata.Rows[closestItem][i].ToString();
+                //if (i == startDateColumn || i == endDateColumn)
+                //{
+                //    colValue = SpreadSheetLayer.ParseDate(colValue).ToString("u");
+                //}
+
+                //if (!rowData.ContainsKey(table.Column[i].Name) && !string.IsNullOrEmpty(table.Column[i].Name))
+                //{
+                //    rowData.Add(table.Column[i].Name, colValue);
+                //}
+                //else
+                {
+                    rowData.Add("Column" + i.ToString(), colValue);
+                }
+            }
+            place.Tag = rowData;
+            if (Viewer != null)
+            {
+                Viewer.LabelClicked(closestItem);
+            }
+            return place;
+        }
+
 
         public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {

@@ -378,7 +378,6 @@ namespace TerraViewer
 
                 return header;
             }
-
         }
 
 
@@ -389,7 +388,6 @@ namespace TerraViewer
             get { return table; }
             set { table = value; }
         }
-
     }
  
 }
