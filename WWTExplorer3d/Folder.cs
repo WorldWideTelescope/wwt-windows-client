@@ -1459,6 +1459,12 @@ namespace TerraViewer
                 if (thumbnail == null)
                 {
                     thumbnail = UiTools.LoadThumbnailFromWeb(thumbnailUrlField);
+                    if (thumbnail.Height != 45)
+                    {
+                        var temp = UiTools.MakeThumbnail(thumbnail);
+                        thumbnail.Dispose();
+                        thumbnail = temp;
+                    }
                 }
                 return thumbnail;
             }

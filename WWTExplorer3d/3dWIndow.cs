@@ -13523,8 +13523,8 @@ namespace TerraViewer
 
         private void hIPSProgressiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //GetMasterHipsListAsWtml();
-            //return;
+            GetMasterHipsListAsWtml();
+            return;
 
             SimpleInput input = new SimpleInput("Create HIPS Layer", Language.GetLocalizedText(542, "Url"), "http://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2", 2048);
             if (input.ShowDialog() == DialogResult.OK)
