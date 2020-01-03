@@ -1754,6 +1754,8 @@ namespace TerraViewer
                 props.Properties["dummy"] = "failed";
             }
 
+            ValidateProperties(props);
+
             return props;
         }
 
@@ -1812,7 +1814,77 @@ namespace TerraViewer
             {
                 props.Properties["dummy"] = "failed";
             }
+            ValidateProperties(props);
+            return props;
+        }
 
+        public static void ValidateProperties(HipsProperties props)
+        {
+            if (props.Properties.Count == 1)
+            {
+                return;
+            }
+            if (!props.Properties.ContainsKey("obs_title"))
+            {
+                if (props.Properties.ContainsKey("creator_did"))
+                {
+                    props.Properties["obs_title"] = props.Properties["creator_did"];
+                }
+                else
+                {
+                    props.Properties["obs_title"] = "No Title";
+                }
+            }
+        }
+
+        public static bool IsValid(HipsProperties props)
+        {
+            if (props.Properties.Count == 1)
+            {
+                return false;
+            }
+            if (!props.Properties.ContainsKey("obs_title"))
+            {
+                return false;
+            }
+            if (!props.Properties.ContainsKey("hips_tile_format"))
+            {
+                return false;
+            }  
+            if (!props.Properties.ContainsKey("hips_service_url"))
+            {
+                return false;
+            }
+            if (!props.Properties.ContainsKey("hips_order"))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static HipsProperties ParseProperties(string data)
+        {
+            HipsProperties props = new HipsProperties();
+            string[] lines = data.Split('\n');
+
+            foreach (string line in lines)
+            {
+                if (!string.IsNullOrWhiteSpace(line) && !line.StartsWith("#"))
+                {
+                    string[] parts = line.Split('=');
+                    if (parts.Length == 2)
+                    {
+                        string key = parts[0].Trim();
+                        string val = parts[1].Trim();
+                        if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(val))
+                        {
+                            props.Properties[key] = val;
+                        }
+                    }
+                }
+            }
+
+            ValidateProperties(props);
             return props;
         }
     }

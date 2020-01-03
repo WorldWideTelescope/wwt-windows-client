@@ -13523,6 +13523,9 @@ namespace TerraViewer
 
         private void hIPSProgressiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //GetMasterHipsListAsWtml();
+            //return;
+
             SimpleInput input = new SimpleInput("Create HIPS Layer", Language.GetLocalizedText(542, "Url"), "http://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2", 2048);
             if (input.ShowDialog() == DialogResult.OK)
             {
@@ -13550,42 +13553,124 @@ namespace TerraViewer
                 {
                     var props = hipsProperties.Properties;
 
-                    ImageSetHelper ish = new ImageSetHelper(
-                        props["obs_title"],
-                        url,
-                        ImageSetType.Sky,
-                        GetBandPassFromString(props.ContainsKey("obs_regime") ? props["obs_regime"] : ""),
-                        ProjectionType.Healpix,
-                        Math.Abs(url.GetHashCode32()),
-                        0,
-                        int.Parse(props["hips_order"]),
-                        props.ContainsKey("hips_tile_width") ? int.Parse(props["hips_tile_width"]) : 512,
-                        180,
-                        props["hips_tile_format"],
-                        false,
-                        "0123",
-                        0, 0, 0, false,
-                        baseUrl + "preview.jpg",
-                        false,
-                        false,
-                        1,
-                        0,
-                        0,
-                        props.ContainsKey("obs_copyright") ? props["obs_copyright"] : "",
-                        props.ContainsKey("obs_copyright_url") ? props["obs_copyright_url"] : "",
-                        "",
-                        "",
-                        1,
-                        "Sky");
-                    ish.Properties = props;
+                    ImageSetHelper ish = ImageSetHelperFromHipsProperties(url, baseUrl, props);
                     ish.TableMetadata = hipsProperties.VoTable;
                     LayerManager.AddImagesetLayer(ish, "Sky");
                 }
             }
         }
 
+        private static ImageSetHelper ImageSetHelperFromHipsProperties(string url, string baseUrl, Dictionary<string, string> props)
+        {
+            ImageSetHelper ish = new ImageSetHelper(
+                props["obs_title"],
+                url,
+                ImageSetType.Sky,
+                GetBandPassFromString(props.ContainsKey("obs_regime") ? props["obs_regime"] : ""),
+                ProjectionType.Healpix,
+                Math.Abs(url.GetHashCode32()),
+                0,
+                int.Parse(props["hips_order"]),
+                props.ContainsKey("hips_tile_width") ? int.Parse(props["hips_tile_width"]) : 512,
+                180,
+                props["hips_tile_format"],
+                false,
+                "0123",
+                0, 0, 0, false,
+                baseUrl + "preview.jpg",
+                false,
+                false,
+                1,
+                0,
+                0,
+                props.ContainsKey("obs_copyright") ? props["obs_copyright"] : "",
+                props.ContainsKey("obs_copyright_url") ? props["obs_copyright_url"] : "",
+                "",
+                "",
+                1,
+                "Sky");
+            ish.Properties = props;
+            return ish;
+        }
+
         private void GetMasterHipsListAsWtml()
         {
+            Folder folder = new Folder();
+
+            folder.Name = "HIPS Surveys";
+
+            Folder catalog = new Folder();
+            catalog.Name = "Catalogs";
+
+            Folder images = new Folder();
+            images.Name = "Images";
+
+            folder.AddChildFolder(images);
+            folder.AddChildFolder(catalog);
+
+            WebClient client = new WebClient();
+            string data = client.DownloadString("http://aladin.u-strasbg.fr/hips/globalhipslist");
+
+            StringReader sr = new StringReader(data);
+            StringBuilder sb = new StringBuilder();
+
+            List<HipsProperties> propsList = new List<HipsProperties>();
+
+            while(sr.Peek() > -1)
+            {
+
+                string line = sr.ReadLine();
+
+                if (line.StartsWith("ID "))
+                {
+                    // if we have a data item already add it.
+                    if (sb.Length > 0)
+                    {
+                        var props = HipsProperties.ParseProperties(sb.ToString());
+                        propsList.Add(props);
+                        sb = new StringBuilder();
+                    }
+                }
+                sb.AppendLine(line);
+            }
+            foreach (var prop in propsList)
+            {
+                if (!HipsProperties.IsValid(prop))
+                {
+                    continue;
+                }
+
+                string url = prop.Properties["hips_service_url"];
+                string baseUrl = "";
+
+                if (url.Contains("/Norder"))
+                {
+                    baseUrl = url.Substring(0, url.IndexOf("/Norder"));
+                }
+                else
+                {
+                    baseUrl = url;
+                }
+                if (!baseUrl.EndsWith("/"))
+                {
+                    baseUrl = baseUrl + "/";
+                }
+
+                url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
+
+                ImageSetHelper ish = ImageSetHelperFromHipsProperties(url, baseUrl, prop.Properties);
+
+                if (ish.Extension == "tsv")
+                {
+                    catalog.AddChildImageSet(ImageSet.FromIImage(ish));
+                }
+                else
+                {
+                    images.AddChildImageSet(ImageSet.FromIImage(ish));
+                }
+            }
+
+            folder.SaveToFile(@"c:\temp\allhips.wtml");
 
         }
 

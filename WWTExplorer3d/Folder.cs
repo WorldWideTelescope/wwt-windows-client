@@ -198,6 +198,11 @@ namespace TerraViewer
             dirty = true;
         }
 
+        public void AddChildImageSet(ImageSet child)
+        {
+            imagesets.Add(child);
+        }
+
         Bitmap thumbnail = null;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public Bitmap ThumbNail
