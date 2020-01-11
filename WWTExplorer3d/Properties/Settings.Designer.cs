@@ -787,7 +787,7 @@ namespace TerraViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot6")]
         public string ExploreRootUrl {
             get {
                 return ((string)(this["ExploreRootUrl"]));
@@ -799,7 +799,7 @@ namespace TerraViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets6")]
         public string ImageSetUrl {
             get {
                 return ((string)(this["ImageSetUrl"]));

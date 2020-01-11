@@ -61,6 +61,12 @@ namespace TerraViewer
 
         public static void AddFolderToSearch(Folder parent, bool sky)
         {
+            var children = parent.Children;
+           
+            if (children == null)
+            {
+                return;
+            }
 
             foreach (Object child in parent.Children)
             {

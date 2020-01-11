@@ -135,7 +135,7 @@ namespace TerraViewer
             try
             {
                 request = System.Net.WebRequest.Create(url);
-                request.Timeout = 30000;
+                request.Timeout = 300000;
                 request.Headers.Add("LiveUserToken", Properties.Settings.Default.LiveIdToken);
                 string etag;
 

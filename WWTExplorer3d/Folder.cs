@@ -1458,13 +1458,30 @@ namespace TerraViewer
             {
                 if (thumbnail == null)
                 {
-                    thumbnail = UiTools.LoadThumbnailFromWeb(thumbnailUrlField);
-                    if (thumbnail.Height != 45)
+ 
+#if !WINDOWS_UWP
+                    thumbnail = UiTools.GetLoadingBitmap();
+                    var t = System.Threading.Tasks.Task.Run(() =>
                     {
-                        var temp = UiTools.MakeThumbnail(thumbnail);
-                        thumbnail.Dispose();
-                        thumbnail = temp;
-                    }
+                        thumbnail = UiTools.LoadThumbnailFromWeb(thumbnailUrlField);
+                        if (thumbnail != null)
+                        {
+                            if (thumbnail.Height > 46)
+                            {
+                                var temp = UiTools.MakeThumbnail(thumbnail);
+                                thumbnail.Dispose();
+                                thumbnail = temp;
+                            }
+                        }
+                        else
+                        {
+                            thumbnail = TerraViewer.Properties.Resources.Unidentified;
+                        }
+                    });
+
+#else
+                    thumbnail = UiTools.LoadThumbnailFromWeb(thumbnailUrlField);
+#endif
                 }
                 return thumbnail;
             }
@@ -1532,7 +1549,7 @@ namespace TerraViewer
 
 #endregion
 
-#region IImageSet Members
+                    #region IImageSet Members
         private string demUrl;
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "anyURI")]
 
@@ -1552,6 +1569,6 @@ namespace TerraViewer
             }
         }
 
-#endregion
+                    #endregion
     }
 }
