@@ -404,7 +404,6 @@ namespace TerraViewer
 #else
             return Texture11.FromBitmap(bmp);
 #endif
-
         }
 
         static public Bitmap LoadThumbnailFromWeb(string url, string filename)
@@ -424,8 +423,21 @@ namespace TerraViewer
             {
                 return null;
             }
-
         }
+
+#if !WINDOWS_UWP
+        static Bitmap loading = null;
+        static public Bitmap GetLoadingBitmap()
+        {
+            if (loading == null)
+            {
+                loading = Properties.Resources.IrregularGalaxy;
+            }
+
+            return loading;
+        }
+#endif
+
 
         static public string GetNamesStringFromArray(string[] array)
         {

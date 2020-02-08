@@ -389,11 +389,16 @@ namespace TerraViewer
             return true;
 
         }
-
+#if !WINDOWS_UWP
         protected List<Vector3> positions = new List<Vector3>();
 
         public override IPlace FindClosest(Coordinates target, float distance, IPlace defaultPlace, bool astronomical)
         {
+            if (imageSet.TableMetadata == null)
+            {
+                return defaultPlace;
+            }
+
             Vector3d searchPoint = Coordinates.GeoTo3dDouble(target.Lat, target.Lng);
 
             Vector3d dist;
@@ -457,7 +462,7 @@ namespace TerraViewer
                 //}
                 //else
                 {
-                    rowData.Add("Column" + i.ToString(), colValue);
+                    rowData.Add(imageSet.TableMetadata.Column[i].Name, colValue);
                 }
             }
             place.Tag = rowData;
@@ -467,7 +472,7 @@ namespace TerraViewer
             }
             return place;
         }
-
+#endif
 
         public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {

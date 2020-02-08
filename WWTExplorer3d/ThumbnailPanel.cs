@@ -236,8 +236,20 @@ namespace TerraViewer
         int ThumbWidth = 110;
         float horzMultiple = 110;
 
+        Bitmap loading = null;
+
+        bool stillLoading = false;
+
         public void Draw(UiGraphics g)
         {
+            stillLoading = false;
+
+#if !WINDOWS_UWP
+            if (loading == null)
+            {
+                loading = UiTools.GetLoadingBitmap();
+            }
+#endif
             RowCount = Math.Max(Height / ThumbHeight, 1);
             ColCount = Math.Max(Width / HorzSpacing, 1);
 
@@ -281,6 +293,12 @@ namespace TerraViewer
                     //((IThumbnail)items[index]).Bounds = RectangleToScreen(new Rectangle((int)(x * horzMultiple), (int)(y * VertSpacing), (int)horzMultiple, (int)VertSpacing));
 
                     Bitmap bmpThumb = ((IThumbnail)items[index]).ThumbNail;
+
+                    if (bmpThumb == loading)
+                    {
+                        StillLoading = true;
+                    }
+
                     if (bmpThumb != null)
                     {
                         g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3, bmpThumb.Width, bmpThumb.Height), new Rectangle(0, 0, bmpThumb.Width, bmpThumb.Height), GraphicsUnit.Pixel, SysColor.White);
@@ -840,6 +858,7 @@ namespace TerraViewer
         }
 
         public bool Focused { get; private set; }
+        public bool StillLoading { get => stillLoading; set => stillLoading = value; }
 
         private void ThumbnailList_MouseDown(object sender, MouseEventArgs e)
         {

@@ -1130,8 +1130,6 @@ namespace TerraViewer
                 BrowseList.Add(new FolderUp());
             }
 
-            //Folder temp = new Folder();
-            //temp.Name = "Constellations";
             object[] children = parent.Children;
 
             if (children != null)
@@ -1158,26 +1156,13 @@ namespace TerraViewer
                     else
                     {
                         BrowseList.Add(child);
-                        //IThumbnail c = (IThumbnail)child;
-
-                        //if (!c.IsFolder)
-                        //{
-                        //    temp.AddChildPlace(Place.FromIPlace((IPlace)child));
-                        //}
                     }
                 }
-
             }
-
-            //temp.SaveToFile("C:\\namedStars.wtml");
-
 
             StringBuilder sb = new StringBuilder();
 
             string text = "";
-
-
-
 
             foreach (IThumbnail item in breadcrumbs)
             {

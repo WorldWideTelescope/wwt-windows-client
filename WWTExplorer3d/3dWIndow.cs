@@ -1545,7 +1545,7 @@ namespace TerraViewer
 
             if (Properties.Settings.Default.ImageSetUrl.ToLower().Contains("imagesetsnew"))
             {
-                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5";
+                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets6";
             }
 
             Earth3d.MainWindow = this;
@@ -6256,7 +6256,8 @@ namespace TerraViewer
                 Properties.Settings.Default.SolarSystemCosmos.TargetState = true;
                 Properties.Settings.Default.SolarSystemOverlays.TargetState = false;
                 Properties.Settings.Default.ImageQuality = 100;
-                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5";
+                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets6";
+                Properties.Settings.Default.ExploreRootUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot6";
                 Properties.Settings.Default.UpgradeNeeded = false;
             }
 
@@ -13523,8 +13524,11 @@ namespace TerraViewer
 
         private void hIPSProgressiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GetMasterHipsListAsWtml();
-            return;
+            if (Control.ModifierKeys == Keys.Control)
+            {
+                GetMasterHipsListAsWtml();
+                return;
+            }
 
             SimpleInput input = new SimpleInput("Create HIPS Layer", Language.GetLocalizedText(542, "Url"), "http://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2", 2048);
             if (input.ShowDialog() == DialogResult.OK)
@@ -13605,8 +13609,32 @@ namespace TerraViewer
             Folder images = new Folder();
             images.Name = "Images";
 
+            Folder heatmaps = new Folder();
+            heatmaps.Name = "Heatmaps";
+            Folder heatmapsByObject = new Folder();
+            heatmapsByObject.Name = "By Object Type";
+            Folder heatmapsByDate = new Folder();
+            heatmapsByDate.Name = "By Date";
+
             folder.AddChildFolder(images);
             folder.AddChildFolder(catalog);
+            folder.AddChildFolder(heatmaps);
+            heatmaps.AddChildFolder(heatmapsByObject);
+            heatmaps.AddChildFolder(heatmapsByDate);
+
+            int uncategorized = (int)BandPass.Radio+1;
+
+            Folder[] imageBands = new Folder[((int)BandPass.Radio)+2];
+            for (int i = 0; i < (int)BandPass.VisibleNight; i++)
+            {
+                imageBands[i] = new Folder();
+                imageBands[i].Name = ((BandPass)i).ToString();
+                images.AddChildFolder(imageBands[i]);
+            }
+
+            imageBands[uncategorized] = new Folder();
+            imageBands[uncategorized].Name = "Uncategorized";
+            images.AddChildFolder(imageBands[uncategorized]);
 
             WebClient client = new WebClient();
             string data = client.DownloadString("http://aladin.u-strasbg.fr/hips/globalhipslist");
@@ -13618,7 +13646,6 @@ namespace TerraViewer
 
             while(sr.Peek() > -1)
             {
-
                 string line = sr.ReadLine();
 
                 if (line.StartsWith("ID "))
@@ -13635,9 +13662,16 @@ namespace TerraViewer
             }
             foreach (var prop in propsList)
             {
+                bool isHeatmap = false;
+
                 if (!HipsProperties.IsValid(prop))
                 {
                     continue;
+                }
+
+                if(prop.Properties.ContainsKey("client_category") && prop.Properties["client_category"].ToLower().StartsWith("data"))
+                {
+                    isHeatmap = true;
                 }
 
                 string url = prop.Properties["hips_service_url"];
@@ -13664,9 +13698,24 @@ namespace TerraViewer
                 {
                     catalog.AddChildImageSet(ImageSet.FromIImage(ish));
                 }
+                else if (isHeatmap)
+                {
+                    switch (prop.Properties["client_category"])
+                    {
+                        case "Data base/Simbad ancillary/Biblio heatmaps by dates":
+                            heatmapsByDate.AddChildImageSet(ImageSet.FromIImage(ish));
+                            break;
+                        case "Data base/Simbad ancillary/Biblio heatmaps by object types":
+                            heatmapsByObject.AddChildImageSet(ImageSet.FromIImage(ish));
+                            break;
+                        default:
+                            heatmaps.AddChildImageSet(ImageSet.FromIImage(ish));
+                            break;
+                    }
+                }
                 else
                 {
-                    images.AddChildImageSet(ImageSet.FromIImage(ish));
+                    imageBands[(int)ish.BandPass].AddChildImageSet(ImageSet.FromIImage(ish));
                 }
             }
 
@@ -13678,20 +13727,22 @@ namespace TerraViewer
         {
             switch (bandPass)
             {
-                case "EUV":
-                    return BandPass.Ultraviolet;
-                case "GAMMA_RAY":
+                case "Gamma-ray":
                     return BandPass.Gamma;
-                case "INFRARED":
+                case "IR":
+                case "Infrared,Infrared":
+                case "Infrared":
+                case "Infrared/AKARI-FIS": 
                     return BandPass.IR;
-                case "MILLIMETER":
-                case "RADIO":
+                case "Mlillimeter":
+                case "Radio":
                     return BandPass.Radio;
                 case "UV":
                     return BandPass.Ultraviolet;
-                case "X_RAY":
+                case "X-ray":
                     return BandPass.XRay;
-                case "OPTICAL":
+                case "Optical":
+                case "Optical,Infrared":
                     return BandPass.Visible;
                 default:
                     return BandPass.Visible;

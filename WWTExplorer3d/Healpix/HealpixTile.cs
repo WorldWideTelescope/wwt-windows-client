@@ -326,7 +326,7 @@ namespace TerraViewer
 
             sb.Append(Properties.Settings.Default.CahceDirectory);
             sb.Append(@"Imagery\HiPS\");
-            sb.Append(dataset.Name.Replace(" ", "_"));
+            sb.Append(ReplaceInvalidChars(dataset.Name));
             sb.Append(@"\Norder" + (level));
             sb.Append(@"\Dir");
             int tileTextureIndex = this.face * nside * nside / 4 + this.tileIndex;
@@ -350,7 +350,7 @@ namespace TerraViewer
             StringBuilder sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
             sb.Append(@"Imagery\HiPS\");
-            sb.Append(dataset.Name.Replace(" ", "_"));
+            sb.Append(ReplaceInvalidChars(dataset.Name));
             sb.Append("\\");
             if (level < 0)
             {
@@ -399,6 +399,10 @@ namespace TerraViewer
             return sb.ToString();
         }
 
+        private static string ReplaceInvalidChars(string filename)
+        {
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+        }
         private void CreateFakePNG(string path)
         {
             Bitmap bmp = new Bitmap(512, 512);
@@ -731,7 +735,7 @@ namespace TerraViewer
                 StringBuilder sb = new StringBuilder();
                 sb.Append(Properties.Settings.Default.CahceDirectory);
                 sb.Append(@"Imagery\HiPS\");
-                sb.Append(dataset.Name.Replace(" ", "_"));
+                sb.Append(ReplaceInvalidChars(dataset.Name));
                 sb.Append("\\");
                 sb.Append(@"properties");
 
@@ -1856,6 +1860,18 @@ namespace TerraViewer
                 return false;
             }
             if (!props.Properties.ContainsKey("hips_order"))
+            {
+                return false;
+            }
+            if (!props.Properties.ContainsKey("dataproduct_type"))
+            {
+                return false;
+            }
+            if (props.Properties["dataproduct_type"] == "cube")
+            {
+                return false;
+            }
+            if (props.Properties.ContainsKey("client_category") && props.Properties["client_category"].ToLower().Contains("solar"))
             {
                 return false;
             }

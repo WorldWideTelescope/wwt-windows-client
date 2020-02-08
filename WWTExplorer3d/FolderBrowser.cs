@@ -1048,6 +1048,12 @@ namespace TerraViewer
                 else if (e is IImageSet)
                 {
                     IImageSet imageSet = (IImageSet)e;
+                    if(imageSet.Projection == ProjectionType.Healpix && imageSet.Extension == "tsv")
+                    {
+                        LayerManager.AddImagesetLayer(imageSet, "Sky");
+                        return;
+                    }
+
                     if (imageSet.Projection == ProjectionType.SkyImage || imageSet.Projection == ProjectionType.Tangent)
                     {
                         RenderEngine.Engine.GotoTarget(new TourPlace("", imageSet.CenterY, imageSet.CenterX / 15, Classification.Unidentified, "UMA", ImageSetType.Sky, imageSet.BaseTileDegrees * 10), false, doubleClick, true);
