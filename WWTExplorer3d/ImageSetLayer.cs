@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using SharpDX.Toolkit.Graphics;
+//using SharpDX.Toolkit.Graphics;
 using System.Windows.Input;
 
 #if WINDOWS_UWP
@@ -16,11 +16,11 @@ using Point = System.Drawing.Point;
 using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
+#endif
 using System.Collections.Generic;
 
 using Vector3 = SharpDX.Vector3;
 
-#endif
 
 namespace TerraViewer
 {
@@ -514,7 +514,6 @@ namespace TerraViewer
                     {
                         File.Copy(fName, fileName);
                     }
-
                 }
 
                 if (File.Exists(fileName))

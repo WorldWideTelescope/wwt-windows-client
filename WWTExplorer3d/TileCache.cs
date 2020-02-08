@@ -962,7 +962,7 @@ namespace TerraViewer
           //  string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
           //  filename = dir + filename;
 #endif
-            FileDelete(filename);
+            File.Delete(filename);
         }
 
         public static void FileMove(string source, string destination)
@@ -1024,9 +1024,7 @@ namespace TerraViewer
                     }
                     exists = false;
                 }
-
             }
-
 
             if (!exists)
             {
@@ -1071,8 +1069,6 @@ namespace TerraViewer
 
             return;
         }
-
-        
     }
     public class FakeMutex
     {
