@@ -7576,7 +7576,8 @@ namespace TerraViewer
             RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
 
             Tile.Viewport = RenderContext11.ViewPort;
-            var saveWorld = RenderContext11.WorldBase;
+            var saveWorldBase = RenderContext11.WorldBase;
+            var saveWorld = RenderContext11.World;
 
             if (RenderContext11.ExternalProjection)
             {
@@ -7695,7 +7696,7 @@ namespace TerraViewer
                     }
                 }
             }
-            RenderContext11.WorldBase = saveWorld;
+            RenderContext11.WorldBase = saveWorldBase;
             RenderContext11.World = saveWorld;
 
             RenderContext11.DisableEffect();
