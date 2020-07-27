@@ -4,50 +4,103 @@
 trigger:
 - pipelines-codesign  # TEMPORARY
 
-pool:
-  vmImage: 'windows-latest'
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'windows-latest'
 
-variables:
-  buildPlatform: 'AnyCPU'
-  buildConfiguration: 'Release'
+    variables:
+      buildPlatform: 'AnyCPU'
+      buildConfiguration: 'Release'
 
-steps:
-- task: NuGetToolInstaller@1
+    steps:
+    - task: NuGetToolInstaller@1
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: 'WWTExplorer.sln'
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: 'WWTExplorer.sln'
 
-- task: VSBuild@1
-  displayName: Build Explorer app
-  inputs:
-    solution: 'WWTExplorer3d/WWTExplorer.csproj'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: VSBuild@1
+      displayName: Build Explorer app
+      inputs:
+        solution: 'WWTExplorer3d/WWTExplorer.csproj'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-# TODO: installer -- seems that default hosted agents can't do this??
-# https://stackoverflow.com/questions/46570869/vsts-online-building-setup-projects
-# - task: VSBuild@1
-#   displayName: Build installer
-#   inputs:
-#     solution: 'Setup1/Setup1.vdproj'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
+    # TODO: installer -- seems that default hosted agents can't do this??
+    # https://stackoverflow.com/questions/46570869/vsts-online-building-setup-projects
+    # - task: VSBuild@1
+    #   displayName: Build installer
+    #   inputs:
+    #     solution: 'Setup1/Setup1.vdproj'
+    #     platform: '$(buildPlatform)'
+    #     configuration: '$(buildConfiguration)'
 
-- task: CopyFiles@2
-  displayName: Copy build artifacts for staging
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: CopyFiles@2
+      displayName: Copy build artifacts for staging
+      inputs:
+        sourceFolder: '$(Build.SourcesDirectory)'
+        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- task: PublishBuildArtifacts@1
-  displayName: Publish staged build artifacts
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: drop
+    - task: PublishBuildArtifacts@1
+      displayName: Publish staged build artifacts
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: drop-unsigned
+
+- stage: CodeSign
+  condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
+  jobs:
+  - deployment: CodeSign
+    displayName: Code Signing
+    pool:
+      vmImage: windows-latest
+
+    environment: Code Sign - Approvals
+
+    variables:
+    - group: Sign Client Credentials
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # TODO: enable if possible
+          # - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
+          #   displayName: AntiMalware Scan
+          #   inputs:
+          #     EnableServices: true
+          #     FileDirPath: $(Pipeline.Workspace)\BuildPackages
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . SignClient
+            displayName: Install SignTool tool
+
+          # XXX known incomplete configuration, working towards getting the basics going
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
+              --input "**/*.nupkg" `
+              --config "$(Pipeline.Workspace)\config\SignClient.json" `
+              --filelist "$(Pipeline.Workspace)\config\filelist.txt" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "AASWorldWideTelescope" `
+              --description "AAS WorldWide Telescope" `
+              --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
+            displayName: Sign executables
+
+          - publish: $(Pipeline.Workspace)/drop-unsigned
+            displayName: Publish Signed Packages
+            artifact: drop-signed
