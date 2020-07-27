@@ -93,17 +93,18 @@ stages:
               arguments: install --tool-path . SignClient
             displayName: Install SignTool tool
 
-          # XXX known incomplete configuration, working towards getting the basics going
+          # See: https://github.com/dotnet/SignService#client-configuration
+          # and https://github.com/novotnyllc/CodeSigningDemo
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
-              --input "**/*.nupkg" `
+              --input "WWTExplorer3d\bin\Release\WWTExplorer.exe" `
               --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
-              --filelist "$(Pipeline.Workspace)\ci-support\filelist.txt" `
+              --filelist "$(Pipeline.Workspace)\ci-support\codesign-filelist.txt" `
               --user "$(SignClientUser)" `
               --secret "$(SignClientSecret)" `
-              --name "AASWorldWideTelescope" `
-              --description "AAS WorldWide Telescope" `
+              --name "AASWorldWideTelescopeWindowsClient" `
+              --description "AAS WorldWide Telescope Windows client" `
               --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
             displayName: Sign executables
 
