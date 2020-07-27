@@ -50,16 +50,16 @@ stages:
         contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
         targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
       displayName: Publish staged build artifacts
       inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
         artifactName: drop-unsigned
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
       displayName: Publish CI support files
       inputs:
-        pathToPublish: '$(Build.SourcesDirectory)/ci'
+        targetPath: '$(Build.SourcesDirectory)/ci'
         artifactName: ci-support
 
 - stage: CodeSign
