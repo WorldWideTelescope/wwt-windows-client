@@ -64,7 +64,7 @@ stages:
     pool:
       vmImage: windows-latest
 
-    environment: Code Sign - Approvals
+    environment: App Code Signing
 
     # XXX to be set
     # variables:
