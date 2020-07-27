@@ -20,7 +20,7 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    solution: 'WWTExplorer3d\WWTExplorer.csproj'
+    solution: 'WWTExplorer3d/WWTExplorer.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
   displayName: Build Explorer app
@@ -29,3 +29,10 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: VSBuild@1
+  inputs:
+    solution: 'Setup1/Setup1.vdproj'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+  displayName: Build installer
