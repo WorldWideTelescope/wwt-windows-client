@@ -72,9 +72,8 @@ stages:
 
     environment: App Code Signing
 
-    # XXX to be set
-    # variables:
-    # - group: Sign Client Credentials
+    variables:
+    - group: Sign Client Credentials
 
     strategy:
       runOnce:
