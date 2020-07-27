@@ -66,8 +66,9 @@ stages:
 
     environment: Code Sign - Approvals
 
-    variables:
-    - group: Sign Client Credentials
+    # XXX to be set
+    # variables:
+    # - group: Sign Client Credentials
 
     strategy:
       runOnce:
