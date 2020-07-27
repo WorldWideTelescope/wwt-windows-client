@@ -16,7 +16,7 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    restoreSolution: 'WWTExplorer3d\WWTExplorer.csproj'
+    restoreSolution: 'WWTExplorer.sln'
 
 - task: VSBuild@1
   inputs:
