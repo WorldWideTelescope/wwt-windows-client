@@ -56,6 +56,12 @@ stages:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: drop-unsigned
 
+    - task: PublishBuildArtifacts@1
+      displayName: Publish CI support files
+      inputs:
+        pathToPublish: '$(Build.SourcesDirectory)/ci'
+        artifactName: ci-support
+
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
   jobs:
@@ -93,7 +99,7 @@ stages:
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
               --input "**/*.nupkg" `
-              --config "$(Pipeline.Workspace)\config\SignClient.json" `
+              --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
               --filelist "$(Pipeline.Workspace)\config\filelist.txt" `
               --user "$(SignClientUser)" `
               --secret "$(SignClientSecret)" `
