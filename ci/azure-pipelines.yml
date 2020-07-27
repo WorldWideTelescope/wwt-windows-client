@@ -84,7 +84,7 @@ stages:
           #   displayName: AntiMalware Scan
           #   inputs:
           #     EnableServices: true
-          #     FileDirPath: $(Pipeline.Workspace)\BuildPackages
+          #     FileDirPath: $(Pipeline.Workspace)\drop-unsigned
 
           - task: DotNetCoreCLI@2
             inputs:
@@ -99,7 +99,7 @@ stages:
               --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
               --input "**/*.nupkg" `
               --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
-              --filelist "$(Pipeline.Workspace)\config\filelist.txt" `
+              --filelist "$(Pipeline.Workspace)\ci-support\filelist.txt" `
               --user "$(SignClientUser)" `
               --secret "$(SignClientSecret)" `
               --name "AASWorldWideTelescope" `
