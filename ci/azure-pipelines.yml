@@ -79,12 +79,11 @@ stages:
       runOnce:
         deploy:
           steps:
-          # TODO: enable if possible
-          # - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
-          #   displayName: AntiMalware Scan
-          #   inputs:
-          #     EnableServices: true
-          #     FileDirPath: $(Pipeline.Workspace)\drop-unsigned
+          - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
+            displayName: AntiMalware Scan
+            inputs:
+              EnableServices: true
+              FileDirPath: $(Pipeline.Workspace)\drop-unsigned
 
           - task: DotNetCoreCLI@2
             inputs:
