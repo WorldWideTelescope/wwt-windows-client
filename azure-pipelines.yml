@@ -8,7 +8,6 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -17,13 +16,14 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    restoreSolution: '$(solution)'
+    restoreSolution: 'WWTExplorer3d\WWTExplorer.csproj'
 
 - task: VSBuild@1
   inputs:
-    solution: '$(solution)'
+    solution: 'WWTExplorer3d\WWTExplorer.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+  displayName: Build Explorer app
 
 - task: VSTest@2
   inputs:
