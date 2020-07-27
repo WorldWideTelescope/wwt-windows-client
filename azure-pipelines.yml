@@ -19,20 +19,35 @@ steps:
     restoreSolution: 'WWTExplorer.sln'
 
 - task: VSBuild@1
+  displayName: Build Explorer app
   inputs:
     solution: 'WWTExplorer3d/WWTExplorer.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-  displayName: Build Explorer app
 
 - task: VSTest@2
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSBuild@1
+# TODO: installer -- seems that default hosted agents can't do this??
+# https://stackoverflow.com/questions/46570869/vsts-online-building-setup-projects
+# - task: VSBuild@1
+#   displayName: Build installer
+#   inputs:
+#     solution: 'Setup1/Setup1.vdproj'
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
+
+- task: CopyFiles@2
+  displayName: Copy build artifacts for staging
   inputs:
-    solution: 'Setup1/Setup1.vdproj'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-  displayName: Build installer
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish staged build artifacts
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop
