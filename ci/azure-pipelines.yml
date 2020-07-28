@@ -65,7 +65,7 @@ stages:
       displayName: Copy build artifacts for staging
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
-        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
+        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb|*.msi)'
         targetFolder: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishPipelineArtifact@1
@@ -124,7 +124,20 @@ stages:
               --name "AASWorldWideTelescopeWindowsClient" `
               --description "AAS WorldWide Telescope Windows client" `
               --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
-            displayName: Sign executables
+            displayName: Sign main executable
+
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
+              --input "Setup1\Release\WWTSetup.msi" `
+              --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
+              --filelist "$(Pipeline.Workspace)\ci-support\codesign-filelist.txt" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "AASWorldWideTelescopeWindowsClient" `
+              --description "AAS WorldWide Telescope Windows client" `
+              --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
+            displayName: Sign installer
 
           - publish: $(Pipeline.Workspace)/drop-unsigned
             displayName: Publish Signed Packages
