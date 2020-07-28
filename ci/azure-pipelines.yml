@@ -34,12 +34,13 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    - task: VSBuild@1
+    - task: BuildInstaller@1
       displayName: Build installer
       inputs:
-        solution: 'Setup1/Setup1.vdproj'
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+        installTaskMode: 'vdproj'
+        SlnPath: 'WWTExplorer.sln'
+        VdprojPath: 'Setup1\Setup1.vdproj'
+        VsVersion: 'VS2017'
 
     - task: CopyFiles@2
       displayName: Copy build artifacts for staging
