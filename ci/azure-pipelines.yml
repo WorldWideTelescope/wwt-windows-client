@@ -34,13 +34,15 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    - task: BuildInstaller@1
+    - task: PowerShell@2
       displayName: Build installer
       inputs:
-        installTaskMode: 'vdproj'
-        SlnPath: 'WWTExplorer.sln'
-        VdprojPath: 'Setup1\Setup1.vdproj'
-        VsVersion: 'VS2017'
+        targetType: inline
+        script: |
+          &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
+            .\WWTExplorer.sln `
+            /Build "$(buildConfiguration)|$(buildPlatform)" `
+            /Project .\Setup1\Setup1.vdproj
 
     - task: CopyFiles@2
       displayName: Copy build artifacts for staging
