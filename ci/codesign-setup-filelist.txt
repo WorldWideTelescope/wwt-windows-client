@@ -1,0 +1,3 @@
+WWTCore.dll
+WWTExplorer.exe
+WWTThumbnails.dll

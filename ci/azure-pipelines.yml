@@ -118,7 +118,6 @@ stages:
               --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
               --input "WWTExplorer3d\bin\Release\WWTExplorer.exe" `
               --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
-              --filelist "$(Pipeline.Workspace)\ci-support\codesign-filelist.txt" `
               --user "$(SignClientUser)" `
               --secret "$(SignClientSecret)" `
               --name "AASWorldWideTelescopeWindowsClient" `
@@ -131,7 +130,7 @@ stages:
               --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
               --input "Setup1\Release\WWTSetup.msi" `
               --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
-              --filelist "$(Pipeline.Workspace)\ci-support\codesign-filelist.txt" `
+              --filelist "$(Pipeline.Workspace)\ci-support\codesign-setup-filelist.txt" `
               --user "$(SignClientUser)" `
               --secret "$(SignClientSecret)" `
               --name "AASWorldWideTelescopeWindowsClient" `
