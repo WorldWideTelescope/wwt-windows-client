@@ -34,14 +34,12 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    # TODO: installer -- seems that default hosted agents can't do this??
-    # https://stackoverflow.com/questions/46570869/vsts-online-building-setup-projects
-    # - task: VSBuild@1
-    #   displayName: Build installer
-    #   inputs:
-    #     solution: 'Setup1/Setup1.vdproj'
-    #     platform: '$(buildPlatform)'
-    #     configuration: '$(buildConfiguration)'
+    - task: VSBuild@1
+      displayName: Build installer
+      inputs:
+        solution: 'Setup1/Setup1.vdproj'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
     - task: CopyFiles@2
       displayName: Copy build artifacts for staging
