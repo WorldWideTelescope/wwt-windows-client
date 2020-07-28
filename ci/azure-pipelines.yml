@@ -41,16 +41,25 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    # Skip installer build while I work out how to provision the cabinet
-    # - task: PowerShell@2
-    #   displayName: Build installer
-    #   inputs:
-    #     targetType: inline
-    #     script: |
-    #       &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
-    #         .\WWTExplorer.sln `
-    #         /Build "$(buildConfiguration)|$(buildPlatform)" `
-    #         /Project .\Setup1\Setup1.vdproj
+    # TODO: for tagged release, download a fullsize / up-to-date package
+    - task: PowerShell@2
+      displayName: Download installer data files bundle
+      inputs:
+        targetType: inline
+        script: |
+          Invoke-WebRequest `
+            "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
+            -OutFile ".\Setup1\datafiles.cabinet"
+
+    - task: PowerShell@2
+      displayName: Build installer
+      inputs:
+        targetType: inline
+        script: |
+          &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
+            .\WWTExplorer.sln `
+            /Build "$(buildConfiguration)|$(buildPlatform)" `
+            /Project .\Setup1\Setup1.vdproj
 
     - task: CopyFiles@2
       displayName: Copy build artifacts for staging
