@@ -34,6 +34,13 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
+    - task: VSBuild@1
+      displayName: Build MakeDataCabinetFile app
+      inputs:
+        solution: 'MakeDataCabinetFile/MakeDataCabinetFile.csproj'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
     - task: PowerShell@2
       displayName: Build installer
       inputs:
