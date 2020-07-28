@@ -9,7 +9,7 @@ stages:
   jobs:
   - job: Build
     pool:
-      name: 'default'
+      name: 'Custom Windows'
 
     variables:
       buildPlatform: 'AnyCPU'
@@ -41,7 +41,7 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-    # TODO: for tagged release, download a fullsize / up-to-date package
+    # TODO: for tagged releases, download a fullsize / up-to-date package
     - task: PowerShell@2
       displayName: Download installer data files bundle
       inputs:
@@ -125,6 +125,10 @@ stages:
               --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
             displayName: Sign main executable
 
+          # Note: this command doesn't seem to sign the contents of the
+          # installer package as might be hoped, but that seems to be OK -- if
+          # you download and run the installer there aren't any complaints
+          # when launching the software.
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
