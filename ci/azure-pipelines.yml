@@ -26,10 +26,10 @@ stages:
     # dynamically provisions the VMs with the Pipelines agent, we don't know
     # which user account will be used for the build. So we have to apply this
     # hack at runtime, rather than while constructing the VM image:
-    - pwsh: |
+    - powershell: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild"
         .\DisableOutOfProcBuild.exe
-      displayName: Work around HRESUlT=8000000A vdproj error
+      displayName: Work around HRESULT=8000000A vdproj error
 
     - task: NuGetCommand@2
       inputs:
@@ -55,13 +55,13 @@ stages:
         configuration: '$(buildConfiguration)'
 
     # TODO: for tagged releases, download a fullsize / up-to-date package
-    - pwsh: |
+    - powershell: |
         Invoke-WebRequest `
           "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
           -OutFile ".\Setup1\datafiles.cabinet"
       displayName: Download installer data files bundle
 
-    - pwsh: |
+    - powershell: |
         &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
           .\WWTExplorer.sln `
           /Build "$(buildConfiguration)|$(buildPlatform)" `
