@@ -2,6 +2,7 @@
 # Licensed under the MIT License
 
 trigger:
+- master
 - pipelines-codesign  # TEMPORARY
 
 stages:
