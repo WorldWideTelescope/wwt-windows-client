@@ -8,6 +8,9 @@ stages:
 - stage: Build
   jobs:
   - job: Build
+
+    # Custom agents are needed to build the installer MSI.
+    # (E.g.: https://developercommunity.visualstudio.com/idea/628434/azure-devops-cannot-build-msi-via-vdproj-project.html)
     pool:
       name: 'Custom Windows'
 
@@ -16,7 +19,17 @@ stages:
       buildConfiguration: 'Release'
 
     steps:
-    - task: NuGetToolInstaller@1
+
+    # There is a known issue with building MSI installer projects that demands a
+    # registry hack: https://stackoverflow.com/a/41788791/3760486 . The hack is
+    # user-specific, and because we're using a VM Scale Set agent pool, which
+    # dynamically provisions the VMs with the Pipelines agent, we don't know
+    # which user account will be used for the build. So we have to apply this
+    # hack at runtime, rather than while constructing the VM image:
+    - pwsh: |
+        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild"
+        .\DisableOutOfProcBuild.exe
+      displayName: Work around HRESUlT=8000000A vdproj error
 
     - task: NuGetCommand@2
       inputs:
@@ -42,24 +55,18 @@ stages:
         configuration: '$(buildConfiguration)'
 
     # TODO: for tagged releases, download a fullsize / up-to-date package
-    - task: PowerShell@2
+    - pwsh: |
+        Invoke-WebRequest `
+          "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
+          -OutFile ".\Setup1\datafiles.cabinet"
       displayName: Download installer data files bundle
-      inputs:
-        targetType: inline
-        script: |
-          Invoke-WebRequest `
-            "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
-            -OutFile ".\Setup1\datafiles.cabinet"
 
-    - task: PowerShell@2
+    - pwsh: |
+        &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
+          .\WWTExplorer.sln `
+          /Build "$(buildConfiguration)|$(buildPlatform)" `
+          /Project .\Setup1\Setup1.vdproj
       displayName: Build installer
-      inputs:
-        targetType: inline
-        script: |
-          &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
-            .\WWTExplorer.sln `
-            /Build "$(buildConfiguration)|$(buildPlatform)" `
-            /Project .\Setup1\Setup1.vdproj
 
     - task: CopyFiles@2
       displayName: Copy build artifacts for staging
