@@ -1099,7 +1099,7 @@ namespace TerraViewer
         {
             get
             {
-                if (hasTime)
+                if (hasLocation)
                 {
                     return locationAltitude;
                 }
@@ -1114,7 +1114,7 @@ namespace TerraViewer
         {
             get
             {
-                if (hasTime)
+                if (hasLocation)
                 {
                     return locationLat;
                 }
@@ -1129,7 +1129,7 @@ namespace TerraViewer
         {
             get
             {
-                if (hasTime)
+                if (hasLocation)
                 {
                     return locationLng;
                 }

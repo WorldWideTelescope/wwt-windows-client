@@ -99,9 +99,7 @@ namespace TerraViewer
 
                     }
 
-                    Settings.TourSettings = tour.CurrentTourStop;
-                    SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
-                    SpaceTimeController.SyncToClock = false;
+                    UpdateSettingsForTourstop();
                 }
             }
 
@@ -128,6 +126,20 @@ namespace TerraViewer
                     overlay.Draw3D(renderEngine.RenderContext11, overlayBlend.Opacity, false);
                 }
             }     
+        }
+
+        private void UpdateSettingsForTourstop()
+        {
+            Settings.TourSettings = tour.CurrentTourStop;
+            SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
+            SpaceTimeController.SyncToClock = false;
+            Settings ambient = Settings.Ambient as Settings;
+            if (ambient != null)
+            {
+                ambient.LocationAltitude = tour.CurrentTourStop.LocationAltitude;
+                ambient.LocationLat = tour.CurrentTourStop.LocationLat;
+                ambient.LocationLng = tour.CurrentTourStop.LocationLng;
+            }        
         }
 
         TourDocument tour = null;
@@ -274,9 +286,7 @@ namespace TerraViewer
 
                 slideStartTime = SpaceTimeController.MetaNow;
                 // Move to new settings
-                Settings.TourSettings = tour.CurrentTourStop;
-                SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
-                SpaceTimeController.SyncToClock = false;
+                UpdateSettingsForTourstop();
 
 
             }
