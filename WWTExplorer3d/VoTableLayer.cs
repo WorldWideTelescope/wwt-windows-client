@@ -11,9 +11,10 @@ using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
 {
-    public class VoTableLayer : TimeSeriesLayer
+    public class VoTableLayer : TimeSeriesLayer , IVoLayer
     {
-        public VOTableViewer Viewer = null;
+        private VOTableViewer viewer = null;
+        public VOTableViewer Viewer { get => viewer; set => viewer = value; }
         public VoTableLayer()
         {
             this.table = null;
@@ -49,8 +50,6 @@ namespace TerraViewer
                 {
                     File.Copy(fName, fileName);
                 }
-
-
             }
 
             if (File.Exists(fileName))
@@ -81,7 +80,6 @@ namespace TerraViewer
         {
             Vector3d searchPoint = Coordinates.GeoTo3dDouble(target.Lat, target.Lng);
 
-            //searchPoint = -searchPoint;
             Vector3d dist;
             if (defaultPlace != null)
             {
@@ -102,7 +100,6 @@ namespace TerraViewer
                 }
                 index++;
             }
-
 
             if (closestItem == -1)
             {
@@ -282,7 +279,7 @@ namespace TerraViewer
                     lines = false;
                 }
 
-                if (siapSet && stcsCol != null)
+                if (siapSet && stcsCol != null && table.SelectedRow != null)
                 {
                     AddSiapStcRow(stcsCol.Name, table.SelectedRow, true);
                 }
@@ -300,7 +297,7 @@ namespace TerraViewer
 
         private void AddSiapStcRow(string stcsColName, VoRow row, bool selected)
         {
-            string stcs = row[stcsColName].ToString().Replace("  ", " ");
+            string stcs = row[stcsColName].ToString().Replace("  ", " ").Replace("  ", " ");
             Color col = Color.FromArgb(120, 255, 255, 255);
 
             if (selected)
@@ -333,7 +330,6 @@ namespace TerraViewer
                             {
                                 double Xcoord = Coordinates.ParseRA(parts[i], true) * 15 + 180;
                                 double Ycoord = Coordinates.ParseDec(parts[i + 1]);
-         
 
                                 Vector3d pnt = Coordinates.GeoTo3dDouble(Ycoord, Xcoord);
 
@@ -354,9 +350,6 @@ namespace TerraViewer
                         {
                             lineList2d.AddLine(firstPoint, lastPoint, col, new Dates());
                         }
-
-                        
-
                     }
                 }
             }
@@ -381,7 +374,6 @@ namespace TerraViewer
 
                 return header;
             }
-
         }
 
 
@@ -392,7 +384,6 @@ namespace TerraViewer
             get { return table; }
             set { table = value; }
         }
-
     }
  
 }

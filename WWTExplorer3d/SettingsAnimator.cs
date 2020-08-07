@@ -130,7 +130,7 @@ namespace TerraViewer
             return settingsType.ToString();
         }
 
-        public IUiController GetEditUI()
+        public object GetEditUI()
         {
             return null;
         }

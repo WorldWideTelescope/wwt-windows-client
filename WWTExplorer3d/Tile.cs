@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
+﻿using Microsoft.Maps.ElevationAdjustmentService.HDPhoto;
+using System;
+#if WINDOWS_UWP
+using VoRow = System.Object;
+using SysColor = TerraViewer.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
+using Vector3 = SharpDX.Vector3;
+using Matrix = SharpDX.Matrix;
 using System.IO;
-using System.IO.Compression;
-
 using System.Text;
-using Microsoft.Maps.ElevationAdjustmentService.HDPhoto;
-using SharpDX;
+using System.Collections.Generic;
+#if !WINDOWS_UWP
 using WwtDataUtils;
+#endif
 
 namespace TerraViewer
 {
-
     public abstract class Tile
     {
         public const bool UseDefault = false;
@@ -64,13 +64,17 @@ namespace TerraViewer
                 y = value;
             }
         }
+        public static bool MakeHighPriority = false;
+        public bool HighPriority = false;
         public bool FileChecked = false;
         public bool FileExists = false;
 
         protected VertexBuffer11 vertexBuffer = null;
         protected IndexBuffer11[] indexBuffer = null;
         public Texture11 texture = null;
-
+        public bool IsCatalogTile = false;
+        public bool CatalogLoaded = false;
+        public List<VoRow> Rows = new List<VoRow>();
         public static int iTileBuildCount = 0;
         public bool ReadyToRender = false;
         public bool InViewFrustum = true;
@@ -113,6 +117,25 @@ namespace TerraViewer
             return demAverage / DemScaleFactor;
         }
 
+        public void GetVisitbleDataRows(List<VoRow> rows, ref int tileCount)
+        {
+            if ((level <= lastDeepestLevel && RenderedAtOrBelowGeneration == CurrentRenderGeneration) || level == 0)
+            {
+                rows.AddRange(Rows);
+                tileCount++;
+                //interate children
+
+                foreach (long childKey in childrenId)
+                {
+                    Tile child = TileCache.GetCachedTile(childKey);
+                    if (child != null)
+                    {
+                        child.GetVisitbleDataRows(rows, ref tileCount);
+                    }
+                }
+            }
+        }
+
 
         public virtual double GetSurfacePointAltitudeNow(double lat, double lng, bool meters, int targetLevel)
         {
@@ -132,7 +155,6 @@ namespace TerraViewer
                 {
                     for (int x1 = 0; x1 < xMax; x1++)
                     {
-
                         if (level < dataset.Levels && level < (targetLevel+1))
                         {
                             Tile child = TileCache.GetTileNow(level + 1, x * 2 + ((x1 + xOffset) % 2), y * 2 + ((y1 + yOffset) % 2), dataset, this);
@@ -186,11 +208,29 @@ namespace TerraViewer
         //protected Tile[] children = new Tile[4] { null, null, null, null };
         //public Tile Parent = null;
 
+        private Tile parent;
+        /**
+         * the parent tile of different projection type
+         */
         public Tile Parent
         {
             get
             {
-                return TileCache.GetCachedTile(level - 1, x / 2, y / 2, dataset, null);
+#if !WINDOWS_UWP
+                if (this is HealpixTile)
+                {
+                    return this.parent;
+                }
+                else
+#endif
+                {
+                    return TileCache.GetCachedTile(level - 1, x / 2, y / 2, dataset, null);
+                }
+            }
+
+            set
+            {
+                parent = value;
             }
         }
 
@@ -217,7 +257,6 @@ namespace TerraViewer
  
             InViewFrustum = true;
 
-
             if (!ReadyToRender)
             {
                 if (fastLoad)
@@ -228,18 +267,18 @@ namespace TerraViewer
                     {
                         TextureReady = false;
                         DemReady = false;
+                        this.HighPriority = MakeHighPriority;
                         TileCache.AddTileToQueue(this);
                         return false;
                     }
                 }
                 else
                 {
+                    this.HighPriority = MakeHighPriority;
                     TileCache.AddTileToQueue(this);
                     return false;
                 }
             }
-            
-          
 
             int childIndex = 0;
 
@@ -254,6 +293,7 @@ namespace TerraViewer
             {
                 PurgeTextureAndDemFiles();
             }
+
             Matrix3d savedWorld = renderContext.World;
             Matrix3d savedView = renderContext.View;
             bool usingLocalCenter = false;
@@ -286,7 +326,7 @@ namespace TerraViewer
                                 if (child.IsTileBigEnough(renderContext))
                                 {
                                     renderPart[childIndex].TargetState = !child.Draw3D(renderContext, opacity, this);
-                                    if (renderPart[childIndex].TargetState)
+                                    if (!renderPart[childIndex].TargetState)
                                     {
                                         childRendered = true;
                                     }
@@ -355,18 +395,19 @@ namespace TerraViewer
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (blendMode) //|| ShowElevation == false)
+                    if (blendMode && !NoBlend) //|| ShowElevation == false)
                     {
                         if ((renderPart[i].State && opacity == 1.0) || renderPart[i].TargetState)
                         {
                             renderContext.LocalCenter = localCenter;
-                            renderContext.PreDraw();      
+                            renderContext.PreDraw();
+#if !WINDOWS_UWP
                             if (dataset.DataSetType == ImageSetType.Sky)
                             {
                                 HDRPixelShader.constants.opacity = renderPart[i].Opacity * opacity;
                                 HDRPixelShader.Use(renderContext.devContext);
                             }
-                            
+#endif    
                             RenderPart(renderContext, i, renderPart[i].Opacity * opacity, false);
                         }
 
@@ -377,11 +418,13 @@ namespace TerraViewer
                         {
                             renderContext.LocalCenter = localCenter;
                             renderContext.PreDraw();
+#if !WINDOWS_UWP
                             if (dataset.DataSetType == ImageSetType.Sky)
                             {
                                 HDRPixelShader.constants.opacity = opacity;
                                 HDRPixelShader.Use(renderContext.devContext);
                             }
+#endif
                             RenderPart(renderContext, i, opacity, false);
                         }
                     }
@@ -398,6 +441,7 @@ namespace TerraViewer
             }
             return true;
         }
+        public static bool NoBlend = false;
         public int RenderedGeneration = 0;
         private void PurgeTextureAndDemFiles()
         {
@@ -433,9 +477,6 @@ namespace TerraViewer
             {
                 return 0;
             }
-
-            
-
 
             //Bottom
             Tile top = TileCache.GetCachedTile(level, x, y + 1, dataset, this);
@@ -473,13 +514,25 @@ namespace TerraViewer
             TrianglesRendered += partCount;
 
             renderContext.SetIndexBuffer(GetIndexBuffer(part, accomidation));
-            renderContext.devContext.DrawIndexed(partCount*3, 0, 0);
+
+            if (RenderContext11.ExternalProjection)
+            {
+                //draw instaced for stereo
+                renderContext.devContext.DrawIndexedInstanced(partCount * 3, 2, 0, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.DrawIndexed(partCount * 3, 0, 0);
+            }
         }
  
         public int DemGeneration = 0;
         public virtual void CleanUp(bool removeFromParent)
         {
-
+            if (HighPriority)
+            {
+                int x = 0;
+            }
             ReadyToRender = false;
             TextureReady = false;
 
@@ -489,13 +542,13 @@ namespace TerraViewer
 
             if (this.texture != null)
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile:Texture Cleanup"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("Tile:Texture Cleanup"); }
                 BufferPool11.ReturnTexture(texture);
                 this.texture = null;
             }
             else
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile:Cleanup - no Texture"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("Tile:Cleanup - no Texture"); }
             }
 
             if (this.vertexBuffer != null)
@@ -516,10 +569,23 @@ namespace TerraViewer
                 }
                 this.indexBuffer = null;
             }
+
+            Rows.Clear();
+#if !WINDOWS_UWP
+            if (shapeFileVertex != null)
+            {
+                shapeFileVertex.Dispose();
+                GC.SuppressFinalize(shapeFileVertex);
+            }
+            shapeFileVertex = null;
+            shapeVertexCount = 0;
+#endif    
+            CatalogLoaded = false;
         }
+
+        public static bool ShowDebugTileEdges = false;
         public virtual void CleanUpGeometryOnly()
         {
-
             if (this.vertexBuffer != null)
             {
                 //vertexBuffer.Created -= OnCreateVertexBuffer();
@@ -572,15 +638,12 @@ namespace TerraViewer
 
         public virtual bool CreateGeometry(RenderContext11 renderContext, bool uiThread)
         {
-
             if (uiThread && !ReadyToRender)
             {
                 return false;
             }
 
-            
-
-            if (texture == null)
+            if (texture == null && !CatalogLoaded)
             {
                 if (PreCreateGeometry(renderContext))
                 {
@@ -591,7 +654,7 @@ namespace TerraViewer
                     {
                         if (!LoadDemData())
                         {
-                            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile:CreateGeometry:Loading Dem Failed"); }
+                            if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Dem Failed"); }
                             return false;
                         }
                     }
@@ -599,7 +662,7 @@ namespace TerraViewer
                 }
 
                 blendMode = (dataset.DataSetType == ImageSetType.Sky || dataset.DataSetType == ImageSetType.Panorama) && !Settings.DomeView;
-                //blendMode = false;
+
                 if (this.texture == null)
                 {
                     if (TextureReady)
@@ -607,38 +670,71 @@ namespace TerraViewer
                         iTileBuildCount++;
 
                         string localFilename = FileName;
-                        if (GrayscaleStyle)
+                        if (IsCatalogTile)
                         {
-                            localFilename = UiTools.MakeGrayScaleImage(localFilename);
-                        }
-
-                        if (FileExists)
-                        {
-                            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile:CreateGeometry:Loading Texture"); }
-                            texture = BufferPool11.GetTexture(localFilename);
-                            if (texture == null)
+#if !WINDOWS_UWP
+                            if (dataset.Properties.ContainsKey("hips_order_min") && level >= int.Parse(dataset.Properties["hips_order_min"]))
                             {
-                                try
+                                if (File.Exists(localFilename))
                                 {
-                                    // bad texture
-                                    TextureReady = false;
-                                    File.Delete(localFilename);
+                                    LoadDataTable();
                                 }
-                                catch
-                                {
-                                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile:CreateGeometry:Loading Texture: Exception"); }
-                                    errored = true;
-                                }
-                                return false;
                             }
+#endif
                         }
                         else
                         {
-                            return false;
+#if !WINDOWS_UWP
+                             if (GrayscaleStyle)
+                             {
+                                 localFilename = UiTools.MakeGrayScaleImage(localFilename);
+                             }
+#endif
+
+                            if (FileExists)
+                            {
+                                if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture"); }
+#if !WINDOWS_UWP
+                                if (ShowDebugTileEdges) //debug with lines around edges
+                                {
+                                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(localFilename);
+                                    System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+                                    g.DrawRectangle(System.Drawing.Pens.Red, new System.Drawing.Rectangle(0, 0, bmp.Width-1, bmp.Height-1));
+                                    g.Flush();
+                                    g.Dispose();
+                                    texture = BufferPool11.GetTexture(bmp);
+                                }
+                                else
+                                {
+                                    texture = BufferPool11.GetTexture(localFilename);
+                                }
+#else
+                                texture = BufferPool11.GetTexture(localFilename);
+#endif
+                                if (texture == null)
+                                {
+                                    try
+                                    {
+                                        // bad texture
+                                        TextureReady = false;
+                                        File.Delete(localFilename);
+                                    }
+                                    catch
+                                    {
+                                        if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Texture: Exception"); }
+                                        errored = true;
+                                    }
+                                    return false;
+                                }
+                            }
+
+                            else
+                            {
+                                return false;
+                            }
+
+                            TexturesLoaded++;
                         }
-
-                        TexturesLoaded++;
-
                     }
                     else
                     {
@@ -651,7 +747,7 @@ namespace TerraViewer
                 {
                     if (!LoadDemData())
                     {
-                        if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile:CreateGeometry:Loading Dem Failed"); }
+                        if (Utils.Logging) { Utils.WriteLogMessage("Tile:CreateGeometry:Loading Dem Failed"); }
                         return false;
                     }
                 }
@@ -669,7 +765,6 @@ namespace TerraViewer
                 vertexBuffer.ComputeSphereOnUnlock = true;
                 indexBuffer = new IndexBuffer11[4];
 
-
                 if (vertexBuffer != null)
                 {
                     this.OnCreateVertexBuffer(vertexBuffer);
@@ -678,14 +773,168 @@ namespace TerraViewer
                     sphereCenter = vertexBuffer.SphereCenter;
                     sphereCenter.Add(localCenter);
                 }
-
             }
-
-
 
             ReadyToRender = true;
             return true;
         }
+#if !WINDOWS_UWP
+
+        TimeSeriesPointSpriteSet shapeFileVertex = null;
+        protected List<Vector3> positions = new List<Vector3>();
+        protected int shapeVertexCount = 0;
+        protected  bool PrepPlotVertexBuffer()
+        {
+            VoTable table = dataset.TableMetadata;
+
+            VoColumn col = table.GetColumnByUcd("meta.id");
+            VoColumn raCol = table.GetColumnByUcd("pos.eq.ra;meta.main");
+            VoColumn decCol = table.GetColumnByUcd("pos.eq.dec;meta.main");
+            int lngColumn = raCol.Index;
+            int latColumn = decCol.Index;
+
+            if (col == null)
+            {
+                col = table.Column[0];
+            }
+
+            if (shapeFileVertex == null)
+            {
+                List<TimeSeriesPointVertex> vertList = new List<TimeSeriesPointVertex>();
+                List<UInt32> indexList = new List<UInt32>();
+                TimeSeriesPointVertex lastItem = new TimeSeriesPointVertex();
+                positions.Clear();
+                UInt32 currentIndex = 0;
+                SysColor color = SysColor.Blue;
+
+                foreach (VoRow row in Rows)
+                {
+                    try
+                    {
+                        if (lngColumn > -1 && latColumn > -1)
+                        {
+                            double Xcoord = Coordinates.ParseRA(row[lngColumn].ToString(), true) * 15 + 180;
+                            double Ycoord = Coordinates.ParseDec(row[latColumn].ToString());
+                            lastItem.Position = Coordinates.GeoTo3dDouble(Ycoord, Xcoord).Vector311;
+                            positions.Add(lastItem.Position);
+                            lastItem.Color = color;
+                            lastItem.PointSize = 10;
+                            vertList.Add(lastItem);
+                            currentIndex++;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+
+                shapeVertexCount = vertList.Count;
+                if (shapeVertexCount == 0)
+                {
+                    shapeVertexCount = 1;
+                }
+                shapeFileVertex = new TimeSeriesPointSpriteSet(RenderContext11.PrepDevice, vertList.ToArray());
+            }
+            CleanAndReady = true;
+            return true;
+        }
+        bool bufferIsFlat = false;
+        bool CleanAndReady = false;
+        float scaleFactor = 1.0f;
+        public bool RenderCatalog(RenderContext11 renderContext)
+        {
+            if (!CleanAndReady)
+            {
+                PrepPlotVertexBuffer();
+            }
+
+            Matrix3d oldWorld = renderContext.World;
+
+            renderContext.DepthStencilMode = DepthStencilMode.Off;
+
+            DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
+            renderContext.setRasterizerState(TriangleCullMode.Off);
+
+            Vector3 cam = Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311;
+            float adjustedScale = scaleFactor;
+
+            Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            matrixWVP.Transpose();
+          
+            // switch (plotType)
+            renderContext.BlendMode = BlendMode.Alpha;
+            renderContext.Device.ImmediateContext.PixelShader.SetShaderResource(0, TimeSeriesLayer.CircleTexture.ResourceView);
+
+            if (shapeFileVertex != null)
+            {
+                TimeSeriesPointSpriteShader11.Constants.CameraPosition = new SharpDX.Vector4(cam, 1);
+                double jBase = SpaceTimeController.UtcToJulian(baseDate);
+                TimeSeriesPointSpriteShader11.Constants.JNow = (float)(SpaceTimeController.JNow - jBase);
+                TimeSeriesPointSpriteShader11.Constants.Decay = 0f;
+                TimeSeriesPointSpriteShader11.Constants.Scale =  (-(float)adjustedScale);
+                TimeSeriesPointSpriteShader11.Constants.Sky =  -1;
+                TimeSeriesPointSpriteShader11.Constants.Opacity = 1;
+                TimeSeriesPointSpriteShader11.Constants.ShowFarSide = 1f;
+               // TimeSeriesPointSpriteShader11.Color = new SharpDX.Color4(Color.R / 255f, Color.G / 255f, Color.B / 255f, Color.A / 255f);
+                TimeSeriesPointSpriteShader11.Color = new SharpDX.Color4(0, 0,  1f, 1f);
+                TimeSeriesPointSpriteShader11.Constants.WorldViewProjection = matrixWVP;
+                TimeSeriesPointSpriteShader11.ViewportScale = new SharpDX.Vector2(2.0f / renderContext.ViewPort.Width, 2.0f / renderContext.ViewPort.Height);
+                TimeSeriesPointSpriteShader11.PointScaleFactors = new SharpDX.Vector3(0.0f, 0.0f, 10.0f);
+                if (shapeFileVertex.Downlevel)
+                {
+                    DownlevelTimeSeriesPointSpriteShader.Use(renderContext.devContext, shapeFileVertex.Instanced);
+                }
+                else
+                {
+                    TimeSeriesPointSpriteShader11.Use(renderContext.devContext);
+                }
+                shapeFileVertex.Draw(renderContext, shapeFileVertex.Count, null, 1.0f);
+            }
+            renderContext.Device.ImmediateContext.GeometryShader.Set(null);
+            renderContext.BlendMode = BlendMode.Alpha;
+
+            renderContext.World = oldWorld;
+
+            return true;
+        }
+
+        private void CleanUpCatalog()
+        {
+            if (shapeFileVertex != null)
+            {
+                shapeFileVertex.Dispose();
+                GC.SuppressFinalize(shapeFileVertex);
+            }
+            shapeFileVertex = null;
+            shapeVertexCount = 0;
+        }
+        static int loadCount = 0;
+        private void LoadDataTable()
+        {
+            loadCount++;
+
+            if (loadCount > 500)
+            {
+                int ykl = 0;
+            }
+            string filename = this.FileName;
+
+            Table table = Table.Load(filename, '\t');
+            foreach (var row in table.Rows)
+            {
+                VoRow voRow = new VoRow(dataset.TableMetadata);
+                voRow.ColumnData = new object[dataset.TableMetadata.Columns.Count];
+
+                for (int i = 0; i < row.Length; i++)
+                {
+                    voRow.ColumnData[i] = row[i];
+                }
+                Rows.Add(voRow);
+            }
+            CatalogLoaded = true;
+        }
+#endif
         protected void CalcSphere()
         {
             Vector3d[] corners = new Vector3d[4];
@@ -705,7 +954,6 @@ namespace TerraViewer
         {
             if (!demFileExists)
             {
-
                 return CreateDemFromParent();                
             }
             bool useFloat = false;
@@ -717,10 +965,9 @@ namespace TerraViewer
                 {
                     hdTile = DemCodec.Decompress(demStream);
                     demStream.Close();
+                    demStream.Dispose();
                 }
-                   
             }
-
 
             if (hdTile != null)
             {
@@ -735,8 +982,6 @@ namespace TerraViewer
                         int indexI = xl + (32-yl) * 33;
                         DemData[indexI] = hdTile.AltitudeInMeters(yh, xh);
                         demAverage += DemData[indexI];
-                       
-                        
                         xh += 8;
                     }
                     yh += 8;
@@ -758,7 +1003,7 @@ namespace TerraViewer
             }
 
             FileStream fs = null;
-             BinaryReader br = null;
+            BinaryReader br = null;
             try
             {
                 fs = new FileStream(DemFilename, FileMode.Open);
@@ -812,7 +1057,6 @@ namespace TerraViewer
                     fs.Close();
                 }
             }
-
         }
 
         public virtual bool CreateDemFromParent()
@@ -824,15 +1068,18 @@ namespace TerraViewer
         public static SharpDX.ViewportF Viewport;
         public static SharpDX.Matrix wvp;
         public static int maxLevel = 20;
-     
-        
-        
 
         virtual public bool IsTileBigEnough(RenderContext11 renderContext)
         {
-            if (level > 1)
+            int min = 1;
+            //todo UWP fix this to use HMD view frustrum
+            if (RenderContext11.ExternalProjection)
             {
+                min = 2;
+            }
 
+            if (level > min)
+            {
                 SharpDX.Vector3 topLeftScreen;
                 SharpDX.Vector3 bottomRightScreen;
                 SharpDX.Vector3 topRightScreen;
@@ -845,7 +1092,6 @@ namespace TerraViewer
                 // Test for tile scale in view..
                 topLeftScreen = TopLeft.Vector311;
                 topLeftScreen = SharpDX.Vector3.Project(topLeftScreen,Viewport.X,Viewport.Y,Viewport.Width,Viewport.Height,Viewport.MinDepth,Viewport.MaxDepth, wvp);
-
 
                 bottomRightScreen = BottomRight.Vector311;
                 bottomRightScreen = SharpDX.Vector3.Project(bottomRightScreen, Viewport.X, Viewport.Y, Viewport.Width, Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth, wvp);
@@ -871,11 +1117,10 @@ namespace TerraViewer
                 SharpDX.Vector3 right = bottomRightScreen;
                 right = SharpDX.Vector3.Subtract(right, topRightScreen);
                 float rightLength = right.Length();
-                
 
                 float lengthMax = Math.Max(Math.Max(rightLength, leftLength), Math.Max(bottomLength, topLength));
 
-                float testLength = (400 - ((Earth3d.MainWindow.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality));
+                float testLength = (400 - ((RenderEngine.Engine.dumpFrameParams.Dome && SpaceTimeController.FrameDumping) ? -200 : Tile.imageQuality));
 
                 if (Properties.Settings.Default.OverSampleTerrain)
                 {
@@ -885,7 +1130,6 @@ namespace TerraViewer
                 if (lengthMax < testLength) // was 220
                 {
                     return false;
-
                 }
                 else
                 {
@@ -899,12 +1143,12 @@ namespace TerraViewer
         public static int imageQuality = 50;
         public static int lastDeepestLevel = 0;
         public static int deepestLevel = 0;
-        virtual public bool IsTileInFrustum(PlaneD[]frustum)
+        virtual public bool IsTileInFrustum(PlaneD[] frustum)
         {
             InViewFrustum = false;
             Vector3d center = sphereCenter;
 
-            if (this.Level < 2 && (dataset.Projection == ProjectionType.Mercator || dataset.Projection == ProjectionType.Toast))
+            if (this.Level < 2 && (dataset.Projection == ProjectionType.Mercator || dataset.Projection == ProjectionType.Toast || dataset.Projection == ProjectionType.Healpix))
             {
                 return true;
             }
@@ -958,7 +1202,6 @@ namespace TerraViewer
         protected float radius = 1;
         protected Vector3d GeoTo3d(double lat, double lng, bool useLocalCenter)
         {
-
             if (dataset.DataSetType == ImageSetType.Panorama)
             {
                 Vector3d retVal = new Vector3d(-(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
@@ -967,7 +1210,6 @@ namespace TerraViewer
                     retVal.Subtract(localCenter);
                 }
                 return retVal;
-
             }
             else
             {
@@ -978,7 +1220,6 @@ namespace TerraViewer
                 }
                 return retVal;
             }
-
         }
         protected Vector3d GeoTo3dWithAltitude(double lat, double lng, bool useLocalCenter)
         {
@@ -996,7 +1237,6 @@ namespace TerraViewer
 
         public Vector3d GeoTo3dWithAltitude(double lat, double lng, double altitude, bool useLocalCenter)
         {
-
             double radius = 1 + (altitude / DemScaleFactor);
             Vector3d retVal = (new Vector3d((Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (Math.Sin(lat * RC) * radius), (Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius)));
             if (useLocalCenter)
@@ -1042,12 +1282,10 @@ namespace TerraViewer
             {
                 if (key == 0)
                 {
-                    key = ImageSetHelper.GetTileKey(dataset, level, x, y);
+                    key = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
                 }
-
                 return key;
             }
-
         }
         
         string directory;
@@ -1063,6 +1301,13 @@ namespace TerraViewer
                         Volitile = true;
                         directory = Properties.Settings.Default.CahceDirectory + @"Imagery\";
                     }
+#if !WINDOWS_UWP
+                    else if (this.dataset.Projection == ProjectionType.Healpix)
+                    {
+                        //if the tile is healpix, using its own method.
+                        directory = ((HealpixTile)this).GetDirectory(dataset, level, x, y);
+                    }
+#endif
                     else
                     {
                         directory = GetDirectory(dataset, level, x, y);
@@ -1102,6 +1347,13 @@ namespace TerraViewer
                         Volitile = true;
                         filename = Properties.Settings.Default.CahceDirectory + @"Imagery\screenshop.png";
                     }
+#if !WINDOWS_UWP
+                    else if (this.dataset.Projection == ProjectionType.Healpix)
+                    {
+                        HealpixTile tmp = (HealpixTile)this;
+                        filename = tmp.GetFilename();
+                    }
+#endif
                     else
                     {
                         filename = GetFilename(dataset, level, x, y);
@@ -1162,7 +1414,16 @@ namespace TerraViewer
             {
                 if (url == null)
                 {
-                    url = GetUrl(dataset, level, x, y);
+#if !WINDOWS_UWP
+                    if (this.dataset.Projection == ProjectionType.Healpix)
+                    {
+                        url = ((HealpixTile)this).GetUrl(dataset, level, x, y);
+                    }
+                    else
+#endif
+                    {
+                        url = GetUrl(dataset, level, x, y);
+                    }
                     return url;
                 }
                 else
@@ -1359,7 +1620,7 @@ namespace TerraViewer
                 vertexCount = value;
             }
         }
-        BlendState[] renderPart = null;
+        protected BlendState[] renderPart = null;
         bool demEnabled = false;
         bool demInitialized = false;
         public bool DemEnabled
@@ -1535,13 +1796,15 @@ namespace TerraViewer
         }
 
         const int mandelWidth = 256;
+
         public void ComputeMandel()
         {
+#if !WINDOWS_UWP
             unsafe
             {
                 string filename = this.FileName;
                 string path = this.Directory;
-                Bitmap b = null;
+                System.Drawing.Bitmap b = null;
                 PixelData pixel;
                 pixel.alpha = 255;
                 MAXITER = 100 + level * 38;
@@ -1553,7 +1816,7 @@ namespace TerraViewer
                 double Sx = ((double)this.x * tileWidth) - 4;
                 double Fx = Sx + tileWidth;
 
-                b = new Bitmap(mandelWidth, mandelWidth);
+                b = new System.Drawing.Bitmap(mandelWidth, mandelWidth);
                 FastBitmap fb = new FastBitmap(b);
                 fb.LockBitmap();
                 double x, y, xmin, xmax, ymin, ymax = 0.0;
@@ -1578,7 +1841,7 @@ namespace TerraViewer
                         {
 
                             looper = MandPoint(x, y);
-                            System.Drawing.Color col = (looper == MAXITER) ? System.Drawing.Color.Black : Tile.ColorTable[looper % 1011];
+                            SysColor col = (looper == MAXITER) ? SysColor.Black : Tile.ColorTable[looper % 1011];
                             pixel.red = col.R;
                             pixel.green = col.G;
                             pixel.blue = col.B;
@@ -1599,1028 +1862,1029 @@ namespace TerraViewer
                 b.Dispose();
                 GC.SuppressFinalize(b);
             }
+#endif
         }
 
 
 
-        #region
-        static System.Drawing.Color[] ColorTable = {
-										System.Drawing.Color.FromArgb(255,0,0),
-										System.Drawing.Color.FromArgb(255,4,0),
-										System.Drawing.Color.FromArgb(255,8,0),
-										System.Drawing.Color.FromArgb(255,12,0),
-										System.Drawing.Color.FromArgb(255,16,0),
-										System.Drawing.Color.FromArgb(255,20,0),
-										System.Drawing.Color.FromArgb(255,24,0),
-										System.Drawing.Color.FromArgb(255,28,0),
-										System.Drawing.Color.FromArgb(255,31,0),
-										System.Drawing.Color.FromArgb(255,35,0),
-										System.Drawing.Color.FromArgb(255,39,0),
-										System.Drawing.Color.FromArgb(255,43,0),
-										System.Drawing.Color.FromArgb(255,47,0),
-										System.Drawing.Color.FromArgb(255,51,0),
-										System.Drawing.Color.FromArgb(255,55,0),
-										System.Drawing.Color.FromArgb(255,59,0),
-										System.Drawing.Color.FromArgb(255,63,0),
-										System.Drawing.Color.FromArgb(255,67,0),
-										System.Drawing.Color.FromArgb(255,71,0),
-										System.Drawing.Color.FromArgb(255,75,0),
-										System.Drawing.Color.FromArgb(255,79,0),
-										System.Drawing.Color.FromArgb(255,83,0),
-										System.Drawing.Color.FromArgb(255,87,0),
-										System.Drawing.Color.FromArgb(255,91,0),
-										System.Drawing.Color.FromArgb(255,94,0),
-										System.Drawing.Color.FromArgb(255,98,0),
-										System.Drawing.Color.FromArgb(255,102,0),
-										System.Drawing.Color.FromArgb(255,106,0),
-										System.Drawing.Color.FromArgb(255,110,0),
-										System.Drawing.Color.FromArgb(255,114,0),
-										System.Drawing.Color.FromArgb(255,118,0),
-										System.Drawing.Color.FromArgb(255,122,0),
-										System.Drawing.Color.FromArgb(255,126,0),
-										System.Drawing.Color.FromArgb(255,130,0),
-										System.Drawing.Color.FromArgb(255,133,0),
-										System.Drawing.Color.FromArgb(255,137,0),
-										System.Drawing.Color.FromArgb(255,141,0),
-										System.Drawing.Color.FromArgb(255,145,0),
-										System.Drawing.Color.FromArgb(255,149,0),
-										System.Drawing.Color.FromArgb(255,153,0),
-										System.Drawing.Color.FromArgb(255,157,0),
-										System.Drawing.Color.FromArgb(255,161,0),
-										System.Drawing.Color.FromArgb(255,255,0),
-										System.Drawing.Color.FromArgb(255,167,0),
-										System.Drawing.Color.FromArgb(255,170,0),
-										System.Drawing.Color.FromArgb(255,172,0),
-										System.Drawing.Color.FromArgb(255,174,0),
-										System.Drawing.Color.FromArgb(255,176,0),
-										System.Drawing.Color.FromArgb(255,178,0),
-										System.Drawing.Color.FromArgb(255,180,0),
-										System.Drawing.Color.FromArgb(255,182,0),
-										System.Drawing.Color.FromArgb(255,185,0),
-										System.Drawing.Color.FromArgb(255,187,0),
-										System.Drawing.Color.FromArgb(255,189,0),
-										System.Drawing.Color.FromArgb(255,191,0),
-										System.Drawing.Color.FromArgb(255,193,0),
-										System.Drawing.Color.FromArgb(255,195,0),
-										System.Drawing.Color.FromArgb(255,197,0),
-										System.Drawing.Color.FromArgb(255,199,0),
-										System.Drawing.Color.FromArgb(255,201,0),
-										System.Drawing.Color.FromArgb(255,203,0),
-										System.Drawing.Color.FromArgb(255,205,0),
-										System.Drawing.Color.FromArgb(255,208,0),
-										System.Drawing.Color.FromArgb(255,210,0),
-										System.Drawing.Color.FromArgb(255,212,0),
-										System.Drawing.Color.FromArgb(255,215,0),
-										System.Drawing.Color.FromArgb(255,217,0),
-										System.Drawing.Color.FromArgb(255,219,0),
-										System.Drawing.Color.FromArgb(255,221,0),
-										System.Drawing.Color.FromArgb(255,223,0),
-										System.Drawing.Color.FromArgb(255,225,0),
-										System.Drawing.Color.FromArgb(255,227,0),
-										System.Drawing.Color.FromArgb(255,230,0),
-										System.Drawing.Color.FromArgb(255,232,0),
-										System.Drawing.Color.FromArgb(255,234,0),
-										System.Drawing.Color.FromArgb(255,236,0),
-										System.Drawing.Color.FromArgb(255,238,0),
-										System.Drawing.Color.FromArgb(255,240,0),
-										System.Drawing.Color.FromArgb(255,242,0),
-										System.Drawing.Color.FromArgb(255,244,0),
-										System.Drawing.Color.FromArgb(255,246,0),
-										System.Drawing.Color.FromArgb(255,248,0),
-										System.Drawing.Color.FromArgb(255,250,0),
-										System.Drawing.Color.FromArgb(255,253,0),
-										System.Drawing.Color.FromArgb(0,128,0),
-										System.Drawing.Color.FromArgb(249,252,0),
-										System.Drawing.Color.FromArgb(243,249,0),
-										System.Drawing.Color.FromArgb(237,246,0),
-										System.Drawing.Color.FromArgb(231,243,0),
-										System.Drawing.Color.FromArgb(225,240,0),
-										System.Drawing.Color.FromArgb(218,237,0),
-										System.Drawing.Color.FromArgb(212,234,0),
-										System.Drawing.Color.FromArgb(206,231,0),
-										System.Drawing.Color.FromArgb(200,228,0),
-										System.Drawing.Color.FromArgb(194,225,0),
-										System.Drawing.Color.FromArgb(188,222,0),
-										System.Drawing.Color.FromArgb(182,218,0),
-										System.Drawing.Color.FromArgb(176,215,0),
-										System.Drawing.Color.FromArgb(170,212,0),
-										System.Drawing.Color.FromArgb(164,209,0),
-										System.Drawing.Color.FromArgb(158,206,0),
-										System.Drawing.Color.FromArgb(151,203,0),
-										System.Drawing.Color.FromArgb(145,200,0),
-										System.Drawing.Color.FromArgb(139,197,0),
-										System.Drawing.Color.FromArgb(134,195,0),
-										System.Drawing.Color.FromArgb(128,192,0),
-										System.Drawing.Color.FromArgb(122,189,0),
-										System.Drawing.Color.FromArgb(116,186,0),
-										System.Drawing.Color.FromArgb(110,183,0),
-										System.Drawing.Color.FromArgb(104,180,0),
-										System.Drawing.Color.FromArgb(98,177,0),
-										System.Drawing.Color.FromArgb(91,174,0),
-										System.Drawing.Color.FromArgb(85,171,0),
-										System.Drawing.Color.FromArgb(79,168,0),
-										System.Drawing.Color.FromArgb(73,165,0),
-										System.Drawing.Color.FromArgb(67,162,0),
-										System.Drawing.Color.FromArgb(61,159,0),
-										System.Drawing.Color.FromArgb(55,155,0),
-										System.Drawing.Color.FromArgb(49,152,0),
-										System.Drawing.Color.FromArgb(43,149,0),
-										System.Drawing.Color.FromArgb(37,146,0),
-										System.Drawing.Color.FromArgb(31,143,0),
-										System.Drawing.Color.FromArgb(24,140,0),
-										System.Drawing.Color.FromArgb(18,137,0),
-										System.Drawing.Color.FromArgb(12,134,0),
-										System.Drawing.Color.FromArgb(6,131,0),
-										System.Drawing.Color.FromArgb(0,0,255),
-										System.Drawing.Color.FromArgb(0,125,6),
-										System.Drawing.Color.FromArgb(0,122,12),
-										System.Drawing.Color.FromArgb(0,119,18),
-										System.Drawing.Color.FromArgb(0,116,24),
-										System.Drawing.Color.FromArgb(0,113,30),
-										System.Drawing.Color.FromArgb(0,110,37),
-										System.Drawing.Color.FromArgb(0,107,43),
-										System.Drawing.Color.FromArgb(0,104,49),
-										System.Drawing.Color.FromArgb(0,101,55),
-										System.Drawing.Color.FromArgb(0,98,61),
-										System.Drawing.Color.FromArgb(0,95,67),
-										System.Drawing.Color.FromArgb(0,91,73),
-										System.Drawing.Color.FromArgb(0,88,79),
-										System.Drawing.Color.FromArgb(0,85,85),
-										System.Drawing.Color.FromArgb(0,82,91),
-										System.Drawing.Color.FromArgb(0,79,98),
-										System.Drawing.Color.FromArgb(0,76,104),
-										System.Drawing.Color.FromArgb(0,73,110),
-										System.Drawing.Color.FromArgb(0,70,116),
-										System.Drawing.Color.FromArgb(0,67,122),
-										System.Drawing.Color.FromArgb(0,64,128),
-										System.Drawing.Color.FromArgb(0,61,134),
-										System.Drawing.Color.FromArgb(0,58,139),
-										System.Drawing.Color.FromArgb(0,55,145),
-										System.Drawing.Color.FromArgb(0,52,151),
-										System.Drawing.Color.FromArgb(0,49,157),
-										System.Drawing.Color.FromArgb(0,46,164),
-										System.Drawing.Color.FromArgb(0,43,170),
-										System.Drawing.Color.FromArgb(0,40,176),
-										System.Drawing.Color.FromArgb(0,37,182),
-										System.Drawing.Color.FromArgb(0,34,188),
-										System.Drawing.Color.FromArgb(0,31,194),
-										System.Drawing.Color.FromArgb(0,27,200),
-										System.Drawing.Color.FromArgb(0,24,206),
-										System.Drawing.Color.FromArgb(0,21,212),
-										System.Drawing.Color.FromArgb(0,18,218),
-										System.Drawing.Color.FromArgb(0,15,225),
-										System.Drawing.Color.FromArgb(0,12,231),
-										System.Drawing.Color.FromArgb(0,9,237),
-										System.Drawing.Color.FromArgb(0,6,243),
-										System.Drawing.Color.FromArgb(0,3,249),
-										System.Drawing.Color.FromArgb(75,0,130),
-										System.Drawing.Color.FromArgb(2,0,252),
-										System.Drawing.Color.FromArgb(4,0,249),
-										System.Drawing.Color.FromArgb(6,0,246),
-										System.Drawing.Color.FromArgb(7,0,243),
-										System.Drawing.Color.FromArgb(9,0,240),
-										System.Drawing.Color.FromArgb(10,0,237),
-										System.Drawing.Color.FromArgb(12,0,234),
-										System.Drawing.Color.FromArgb(14,0,232),
-										System.Drawing.Color.FromArgb(16,0,229),
-										System.Drawing.Color.FromArgb(18,0,226),
-										System.Drawing.Color.FromArgb(20,0,223),
-										System.Drawing.Color.FromArgb(21,0,219),
-										System.Drawing.Color.FromArgb(23,0,216),
-										System.Drawing.Color.FromArgb(25,0,213),
-										System.Drawing.Color.FromArgb(27,0,210),
-										System.Drawing.Color.FromArgb(28,0,207),
-										System.Drawing.Color.FromArgb(30,0,204),
-										System.Drawing.Color.FromArgb(32,0,201),
-										System.Drawing.Color.FromArgb(34,0,198),
-										System.Drawing.Color.FromArgb(36,0,196),
-										System.Drawing.Color.FromArgb(38,0,193),
-										System.Drawing.Color.FromArgb(40,0,190),
-										System.Drawing.Color.FromArgb(41,0,187),
-										System.Drawing.Color.FromArgb(43,0,184),
-										System.Drawing.Color.FromArgb(45,0,181),
-										System.Drawing.Color.FromArgb(47,0,178),
-										System.Drawing.Color.FromArgb(48,0,175),
-										System.Drawing.Color.FromArgb(50,0,172),
-										System.Drawing.Color.FromArgb(52,0,169),
-										System.Drawing.Color.FromArgb(54,0,166),
-										System.Drawing.Color.FromArgb(55,0,163),
-										System.Drawing.Color.FromArgb(57,0,160),
-										System.Drawing.Color.FromArgb(59,0,156),
-										System.Drawing.Color.FromArgb(61,0,153),
-										System.Drawing.Color.FromArgb(63,0,151),
-										System.Drawing.Color.FromArgb(65,0,148),
-										System.Drawing.Color.FromArgb(66,0,145),
-										System.Drawing.Color.FromArgb(68,0,142),
-										System.Drawing.Color.FromArgb(69,0,139),
-										System.Drawing.Color.FromArgb(71,0,136),
-										System.Drawing.Color.FromArgb(73,0,133),
-										System.Drawing.Color.FromArgb(238,130,238),
-										System.Drawing.Color.FromArgb(79,3,133),
-										System.Drawing.Color.FromArgb(83,6,135),
-										System.Drawing.Color.FromArgb(86,9,138),
-										System.Drawing.Color.FromArgb(90,12,141),
-										System.Drawing.Color.FromArgb(94,15,143),
-										System.Drawing.Color.FromArgb(98,18,146),
-										System.Drawing.Color.FromArgb(102,21,148),
-										System.Drawing.Color.FromArgb(106,24,150),
-										System.Drawing.Color.FromArgb(110,28,153),
-										System.Drawing.Color.FromArgb(114,31,156),
-										System.Drawing.Color.FromArgb(118,35,158),
-										System.Drawing.Color.FromArgb(122,38,161),
-										System.Drawing.Color.FromArgb(125,41,164),
-										System.Drawing.Color.FromArgb(129,44,166),
-										System.Drawing.Color.FromArgb(133,47,169),
-										System.Drawing.Color.FromArgb(137,50,172),
-										System.Drawing.Color.FromArgb(141,53,174),
-										System.Drawing.Color.FromArgb(145,56,176),
-										System.Drawing.Color.FromArgb(149,59,179),
-										System.Drawing.Color.FromArgb(153,62,181),
-										System.Drawing.Color.FromArgb(157,65,184),
-										System.Drawing.Color.FromArgb(161,68,187),
-										System.Drawing.Color.FromArgb(165,71,189),
-										System.Drawing.Color.FromArgb(168,74,192),
-										System.Drawing.Color.FromArgb(172,77,195),
-										System.Drawing.Color.FromArgb(176,80,197),
-										System.Drawing.Color.FromArgb(180,83,200),
-										System.Drawing.Color.FromArgb(184,86,202),
-										System.Drawing.Color.FromArgb(187,89,204),
-										System.Drawing.Color.FromArgb(191,93,207),
-										System.Drawing.Color.FromArgb(195,96,210),
-										System.Drawing.Color.FromArgb(199,100,212),
-										System.Drawing.Color.FromArgb(203,103,215),
-										System.Drawing.Color.FromArgb(206,106,218),
-										System.Drawing.Color.FromArgb(211,109,220),
-										System.Drawing.Color.FromArgb(215,112,223),
-										System.Drawing.Color.FromArgb(219,115,226),
-										System.Drawing.Color.FromArgb(223,118,228),
-										System.Drawing.Color.FromArgb(227,121,230),
-										System.Drawing.Color.FromArgb(230,124,233),
-										System.Drawing.Color.FromArgb(234,127,235),
-										System.Drawing.Color.FromArgb(238,130,238),
-										System.Drawing.Color.FromArgb(234,127,235),
-										System.Drawing.Color.FromArgb(230,124,233),
-										System.Drawing.Color.FromArgb(227,121,230),
-										System.Drawing.Color.FromArgb(223,118,228),
-										System.Drawing.Color.FromArgb(219,115,226),
-										System.Drawing.Color.FromArgb(215,112,223),
-										System.Drawing.Color.FromArgb(211,109,220),
-										System.Drawing.Color.FromArgb(206,106,218),
-										System.Drawing.Color.FromArgb(203,103,215),
-										System.Drawing.Color.FromArgb(199,100,212),
-										System.Drawing.Color.FromArgb(195,96,210),
-										System.Drawing.Color.FromArgb(191,93,207),
-										System.Drawing.Color.FromArgb(187,89,204),
-										System.Drawing.Color.FromArgb(184,86,202),
-										System.Drawing.Color.FromArgb(180,83,200),
-										System.Drawing.Color.FromArgb(176,80,197),
-										System.Drawing.Color.FromArgb(172,77,195),
-										System.Drawing.Color.FromArgb(168,74,192),
-										System.Drawing.Color.FromArgb(165,71,189),
-										System.Drawing.Color.FromArgb(161,68,187),
-										System.Drawing.Color.FromArgb(157,65,184),
-										System.Drawing.Color.FromArgb(153,62,181),
-										System.Drawing.Color.FromArgb(149,59,179),
-										System.Drawing.Color.FromArgb(145,56,176),
-										System.Drawing.Color.FromArgb(141,53,174),
-										System.Drawing.Color.FromArgb(137,50,172),
-										System.Drawing.Color.FromArgb(133,47,169),
-										System.Drawing.Color.FromArgb(129,44,166),
-										System.Drawing.Color.FromArgb(125,41,164),
-										System.Drawing.Color.FromArgb(122,38,161),
-										System.Drawing.Color.FromArgb(118,35,158),
-										System.Drawing.Color.FromArgb(114,31,156),
-										System.Drawing.Color.FromArgb(110,28,153),
-										System.Drawing.Color.FromArgb(106,24,150),
-										System.Drawing.Color.FromArgb(102,21,148),
-										System.Drawing.Color.FromArgb(98,18,146),
-										System.Drawing.Color.FromArgb(94,15,143),
-										System.Drawing.Color.FromArgb(90,12,141),
-										System.Drawing.Color.FromArgb(86,9,138),
-										System.Drawing.Color.FromArgb(83,6,135),
-										System.Drawing.Color.FromArgb(79,3,133),
-										System.Drawing.Color.FromArgb(238,130,238),
-										System.Drawing.Color.FromArgb(73,0,133),
-										System.Drawing.Color.FromArgb(71,0,136),
-										System.Drawing.Color.FromArgb(69,0,139),
-										System.Drawing.Color.FromArgb(68,0,142),
-										System.Drawing.Color.FromArgb(66,0,145),
-										System.Drawing.Color.FromArgb(65,0,148),
-										System.Drawing.Color.FromArgb(63,0,151),
-										System.Drawing.Color.FromArgb(61,0,153),
-										System.Drawing.Color.FromArgb(59,0,156),
-										System.Drawing.Color.FromArgb(57,0,160),
-										System.Drawing.Color.FromArgb(55,0,163),
-										System.Drawing.Color.FromArgb(54,0,166),
-										System.Drawing.Color.FromArgb(52,0,169),
-										System.Drawing.Color.FromArgb(50,0,172),
-										System.Drawing.Color.FromArgb(48,0,175),
-										System.Drawing.Color.FromArgb(47,0,178),
-										System.Drawing.Color.FromArgb(45,0,181),
-										System.Drawing.Color.FromArgb(43,0,184),
-										System.Drawing.Color.FromArgb(41,0,187),
-										System.Drawing.Color.FromArgb(40,0,190),
-										System.Drawing.Color.FromArgb(38,0,193),
-										System.Drawing.Color.FromArgb(36,0,196),
-										System.Drawing.Color.FromArgb(34,0,198),
-										System.Drawing.Color.FromArgb(32,0,201),
-										System.Drawing.Color.FromArgb(30,0,204),
-										System.Drawing.Color.FromArgb(28,0,207),
-										System.Drawing.Color.FromArgb(27,0,210),
-										System.Drawing.Color.FromArgb(25,0,213),
-										System.Drawing.Color.FromArgb(23,0,216),
-										System.Drawing.Color.FromArgb(21,0,219),
-										System.Drawing.Color.FromArgb(20,0,223),
-										System.Drawing.Color.FromArgb(18,0,226),
-										System.Drawing.Color.FromArgb(16,0,229),
-										System.Drawing.Color.FromArgb(14,0,232),
-										System.Drawing.Color.FromArgb(12,0,234),
-										System.Drawing.Color.FromArgb(10,0,237),
-										System.Drawing.Color.FromArgb(9,0,240),
-										System.Drawing.Color.FromArgb(7,0,243),
-										System.Drawing.Color.FromArgb(6,0,246),
-										System.Drawing.Color.FromArgb(4,0,249),
-										System.Drawing.Color.FromArgb(2,0,252),
-										System.Drawing.Color.FromArgb(75,0,130),
-										System.Drawing.Color.FromArgb(0,3,249),
-										System.Drawing.Color.FromArgb(0,6,243),
-										System.Drawing.Color.FromArgb(0,9,237),
-										System.Drawing.Color.FromArgb(0,12,231),
-										System.Drawing.Color.FromArgb(0,15,225),
-										System.Drawing.Color.FromArgb(0,18,218),
-										System.Drawing.Color.FromArgb(0,21,212),
-										System.Drawing.Color.FromArgb(0,24,206),
-										System.Drawing.Color.FromArgb(0,27,200),
-										System.Drawing.Color.FromArgb(0,31,194),
-										System.Drawing.Color.FromArgb(0,34,188),
-										System.Drawing.Color.FromArgb(0,37,182),
-										System.Drawing.Color.FromArgb(0,40,176),
-										System.Drawing.Color.FromArgb(0,43,170),
-										System.Drawing.Color.FromArgb(0,46,164),
-										System.Drawing.Color.FromArgb(0,49,157),
-										System.Drawing.Color.FromArgb(0,52,151),
-										System.Drawing.Color.FromArgb(0,55,145),
-										System.Drawing.Color.FromArgb(0,58,139),
-										System.Drawing.Color.FromArgb(0,61,134),
-										System.Drawing.Color.FromArgb(0,64,128),
-										System.Drawing.Color.FromArgb(0,67,122),
-										System.Drawing.Color.FromArgb(0,70,116),
-										System.Drawing.Color.FromArgb(0,73,110),
-										System.Drawing.Color.FromArgb(0,76,104),
-										System.Drawing.Color.FromArgb(0,79,98),
-										System.Drawing.Color.FromArgb(0,82,91),
-										System.Drawing.Color.FromArgb(0,85,85),
-										System.Drawing.Color.FromArgb(0,88,79),
-										System.Drawing.Color.FromArgb(0,91,73),
-										System.Drawing.Color.FromArgb(0,95,67),
-										System.Drawing.Color.FromArgb(0,98,61),
-										System.Drawing.Color.FromArgb(0,101,55),
-										System.Drawing.Color.FromArgb(0,104,49),
-										System.Drawing.Color.FromArgb(0,107,43),
-										System.Drawing.Color.FromArgb(0,110,37),
-										System.Drawing.Color.FromArgb(0,113,30),
-										System.Drawing.Color.FromArgb(0,116,24),
-										System.Drawing.Color.FromArgb(0,119,18),
-										System.Drawing.Color.FromArgb(0,122,12),
-										System.Drawing.Color.FromArgb(0,125,6),
-										System.Drawing.Color.FromArgb(0,0,255),
-										System.Drawing.Color.FromArgb(6,131,0),
-										System.Drawing.Color.FromArgb(12,134,0),
-										System.Drawing.Color.FromArgb(18,137,0),
-										System.Drawing.Color.FromArgb(24,140,0),
-										System.Drawing.Color.FromArgb(31,143,0),
-										System.Drawing.Color.FromArgb(37,146,0),
-										System.Drawing.Color.FromArgb(43,149,0),
-										System.Drawing.Color.FromArgb(49,152,0),
-										System.Drawing.Color.FromArgb(55,155,0),
-										System.Drawing.Color.FromArgb(61,159,0),
-										System.Drawing.Color.FromArgb(67,162,0),
-										System.Drawing.Color.FromArgb(73,165,0),
-										System.Drawing.Color.FromArgb(79,168,0),
-										System.Drawing.Color.FromArgb(85,171,0),
-										System.Drawing.Color.FromArgb(91,174,0),
-										System.Drawing.Color.FromArgb(98,177,0),
-										System.Drawing.Color.FromArgb(104,180,0),
-										System.Drawing.Color.FromArgb(110,183,0),
-										System.Drawing.Color.FromArgb(116,186,0),
-										System.Drawing.Color.FromArgb(122,189,0),
-										System.Drawing.Color.FromArgb(128,192,0),
-										System.Drawing.Color.FromArgb(134,195,0),
-										System.Drawing.Color.FromArgb(139,197,0),
-										System.Drawing.Color.FromArgb(145,200,0),
-										System.Drawing.Color.FromArgb(151,203,0),
-										System.Drawing.Color.FromArgb(158,206,0),
-										System.Drawing.Color.FromArgb(164,209,0),
-										System.Drawing.Color.FromArgb(170,212,0),
-										System.Drawing.Color.FromArgb(176,215,0),
-										System.Drawing.Color.FromArgb(182,218,0),
-										System.Drawing.Color.FromArgb(188,222,0),
-										System.Drawing.Color.FromArgb(194,225,0),
-										System.Drawing.Color.FromArgb(200,228,0),
-										System.Drawing.Color.FromArgb(206,231,0),
-										System.Drawing.Color.FromArgb(212,234,0),
-										System.Drawing.Color.FromArgb(218,237,0),
-										System.Drawing.Color.FromArgb(225,240,0),
-										System.Drawing.Color.FromArgb(231,243,0),
-										System.Drawing.Color.FromArgb(237,246,0),
-										System.Drawing.Color.FromArgb(243,249,0),
-										System.Drawing.Color.FromArgb(249,252,0),
-										System.Drawing.Color.FromArgb(0,128,0),
-										System.Drawing.Color.FromArgb(255,253,0),
-										System.Drawing.Color.FromArgb(255,250,0),
-										System.Drawing.Color.FromArgb(255,248,0),
-										System.Drawing.Color.FromArgb(255,246,0),
-										System.Drawing.Color.FromArgb(255,244,0),
-										System.Drawing.Color.FromArgb(255,242,0),
-										System.Drawing.Color.FromArgb(255,240,0),
-										System.Drawing.Color.FromArgb(255,238,0),
-										System.Drawing.Color.FromArgb(255,236,0),
-										System.Drawing.Color.FromArgb(255,234,0),
-										System.Drawing.Color.FromArgb(255,232,0),
-										System.Drawing.Color.FromArgb(255,230,0),
-										System.Drawing.Color.FromArgb(255,227,0),
-										System.Drawing.Color.FromArgb(255,225,0),
-										System.Drawing.Color.FromArgb(255,223,0),
-										System.Drawing.Color.FromArgb(255,221,0),
-										System.Drawing.Color.FromArgb(255,219,0),
-										System.Drawing.Color.FromArgb(255,217,0),
-										System.Drawing.Color.FromArgb(255,215,0),
-										System.Drawing.Color.FromArgb(255,212,0),
-										System.Drawing.Color.FromArgb(255,210,0),
-										System.Drawing.Color.FromArgb(255,208,0),
-										System.Drawing.Color.FromArgb(255,205,0),
-										System.Drawing.Color.FromArgb(255,203,0),
-										System.Drawing.Color.FromArgb(255,201,0),
-										System.Drawing.Color.FromArgb(255,199,0),
-										System.Drawing.Color.FromArgb(255,197,0),
-										System.Drawing.Color.FromArgb(255,195,0),
-										System.Drawing.Color.FromArgb(255,193,0),
-										System.Drawing.Color.FromArgb(255,191,0),
-										System.Drawing.Color.FromArgb(255,189,0),
-										System.Drawing.Color.FromArgb(255,187,0),
-										System.Drawing.Color.FromArgb(255,185,0),
-										System.Drawing.Color.FromArgb(255,182,0),
-										System.Drawing.Color.FromArgb(255,180,0),
-										System.Drawing.Color.FromArgb(255,178,0),
-										System.Drawing.Color.FromArgb(255,176,0),
-										System.Drawing.Color.FromArgb(255,174,0),
-										System.Drawing.Color.FromArgb(255,172,0),
-										System.Drawing.Color.FromArgb(255,170,0),
-										System.Drawing.Color.FromArgb(255,167,0),
-										System.Drawing.Color.FromArgb(255,255,0),
-										System.Drawing.Color.FromArgb(255,161,0),
-										System.Drawing.Color.FromArgb(255,157,0),
-										System.Drawing.Color.FromArgb(255,153,0),
-										System.Drawing.Color.FromArgb(255,149,0),
-										System.Drawing.Color.FromArgb(255,145,0),
-										System.Drawing.Color.FromArgb(255,141,0),
-										System.Drawing.Color.FromArgb(255,137,0),
-										System.Drawing.Color.FromArgb(255,133,0),
-										System.Drawing.Color.FromArgb(255,130,0),
-										System.Drawing.Color.FromArgb(255,126,0),
-										System.Drawing.Color.FromArgb(255,122,0),
-										System.Drawing.Color.FromArgb(255,118,0),
-										System.Drawing.Color.FromArgb(255,114,0),
-										System.Drawing.Color.FromArgb(255,110,0),
-										System.Drawing.Color.FromArgb(255,106,0),
-										System.Drawing.Color.FromArgb(255,102,0),
-										System.Drawing.Color.FromArgb(255,98,0),
-										System.Drawing.Color.FromArgb(255,94,0),
-										System.Drawing.Color.FromArgb(255,91,0),
-										System.Drawing.Color.FromArgb(255,87,0),
-										System.Drawing.Color.FromArgb(255,83,0),
-										System.Drawing.Color.FromArgb(255,79,0),
-										System.Drawing.Color.FromArgb(255,75,0),
-										System.Drawing.Color.FromArgb(255,71,0),
-										System.Drawing.Color.FromArgb(255,67,0),
-										System.Drawing.Color.FromArgb(255,63,0),
-										System.Drawing.Color.FromArgb(255,59,0),
-										System.Drawing.Color.FromArgb(255,55,0),
-										System.Drawing.Color.FromArgb(255,51,0),
-										System.Drawing.Color.FromArgb(255,47,0),
-										System.Drawing.Color.FromArgb(255,43,0),
-										System.Drawing.Color.FromArgb(255,39,0),
-										System.Drawing.Color.FromArgb(255,35,0),
-										System.Drawing.Color.FromArgb(255,31,0),
-										System.Drawing.Color.FromArgb(255,28,0),
-										System.Drawing.Color.FromArgb(255,24,0),
-										System.Drawing.Color.FromArgb(255,20,0),
-										System.Drawing.Color.FromArgb(255,16,0),
-										System.Drawing.Color.FromArgb(255,12,0),
-										System.Drawing.Color.FromArgb(255,8,0),
-										System.Drawing.Color.FromArgb(255,4,0),
-										System.Drawing.Color.FromArgb(255,0,0),
-										System.Drawing.Color.FromArgb(255,4,0),
-										System.Drawing.Color.FromArgb(255,8,0),
-										System.Drawing.Color.FromArgb(255,12,0),
-										System.Drawing.Color.FromArgb(255,16,0),
-										System.Drawing.Color.FromArgb(255,20,0),
-										System.Drawing.Color.FromArgb(255,24,0),
-										System.Drawing.Color.FromArgb(255,28,0),
-										System.Drawing.Color.FromArgb(255,31,0),
-										System.Drawing.Color.FromArgb(255,35,0),
-										System.Drawing.Color.FromArgb(255,39,0),
-										System.Drawing.Color.FromArgb(255,43,0),
-										System.Drawing.Color.FromArgb(255,47,0),
-										System.Drawing.Color.FromArgb(255,51,0),
-										System.Drawing.Color.FromArgb(255,55,0),
-										System.Drawing.Color.FromArgb(255,59,0),
-										System.Drawing.Color.FromArgb(255,63,0),
-										System.Drawing.Color.FromArgb(255,67,0),
-										System.Drawing.Color.FromArgb(255,71,0),
-										System.Drawing.Color.FromArgb(255,75,0),
-										System.Drawing.Color.FromArgb(255,79,0),
-										System.Drawing.Color.FromArgb(255,83,0),
-										System.Drawing.Color.FromArgb(255,87,0),
-										System.Drawing.Color.FromArgb(255,91,0),
-										System.Drawing.Color.FromArgb(255,94,0),
-										System.Drawing.Color.FromArgb(255,98,0),
-										System.Drawing.Color.FromArgb(255,102,0),
-										System.Drawing.Color.FromArgb(255,106,0),
-										System.Drawing.Color.FromArgb(255,110,0),
-										System.Drawing.Color.FromArgb(255,114,0),
-										System.Drawing.Color.FromArgb(255,118,0),
-										System.Drawing.Color.FromArgb(255,122,0),
-										System.Drawing.Color.FromArgb(255,126,0),
-										System.Drawing.Color.FromArgb(255,130,0),
-										System.Drawing.Color.FromArgb(255,133,0),
-										System.Drawing.Color.FromArgb(255,137,0),
-										System.Drawing.Color.FromArgb(255,141,0),
-										System.Drawing.Color.FromArgb(255,145,0),
-										System.Drawing.Color.FromArgb(255,149,0),
-										System.Drawing.Color.FromArgb(255,153,0),
-										System.Drawing.Color.FromArgb(255,157,0),
-										System.Drawing.Color.FromArgb(255,161,0),
-										System.Drawing.Color.FromArgb(255,255,0),
-										System.Drawing.Color.FromArgb(255,167,0),
-										System.Drawing.Color.FromArgb(255,170,0),
-										System.Drawing.Color.FromArgb(255,172,0),
-										System.Drawing.Color.FromArgb(255,174,0),
-										System.Drawing.Color.FromArgb(255,176,0),
-										System.Drawing.Color.FromArgb(255,178,0),
-										System.Drawing.Color.FromArgb(255,180,0),
-										System.Drawing.Color.FromArgb(255,182,0),
-										System.Drawing.Color.FromArgb(255,185,0),
-										System.Drawing.Color.FromArgb(255,187,0),
-										System.Drawing.Color.FromArgb(255,189,0),
-										System.Drawing.Color.FromArgb(255,191,0),
-										System.Drawing.Color.FromArgb(255,193,0),
-										System.Drawing.Color.FromArgb(255,195,0),
-										System.Drawing.Color.FromArgb(255,197,0),
-										System.Drawing.Color.FromArgb(255,199,0),
-										System.Drawing.Color.FromArgb(255,201,0),
-										System.Drawing.Color.FromArgb(255,203,0),
-										System.Drawing.Color.FromArgb(255,205,0),
-										System.Drawing.Color.FromArgb(255,208,0),
-										System.Drawing.Color.FromArgb(255,210,0),
-										System.Drawing.Color.FromArgb(255,212,0),
-										System.Drawing.Color.FromArgb(255,215,0),
-										System.Drawing.Color.FromArgb(255,217,0),
-										System.Drawing.Color.FromArgb(255,219,0),
-										System.Drawing.Color.FromArgb(255,221,0),
-										System.Drawing.Color.FromArgb(255,223,0),
-										System.Drawing.Color.FromArgb(255,225,0),
-										System.Drawing.Color.FromArgb(255,227,0),
-										System.Drawing.Color.FromArgb(255,230,0),
-										System.Drawing.Color.FromArgb(255,232,0),
-										System.Drawing.Color.FromArgb(255,234,0),
-										System.Drawing.Color.FromArgb(255,236,0),
-										System.Drawing.Color.FromArgb(255,238,0),
-										System.Drawing.Color.FromArgb(255,240,0),
-										System.Drawing.Color.FromArgb(255,242,0),
-										System.Drawing.Color.FromArgb(255,244,0),
-										System.Drawing.Color.FromArgb(255,246,0),
-										System.Drawing.Color.FromArgb(255,248,0),
-										System.Drawing.Color.FromArgb(255,250,0),
-										System.Drawing.Color.FromArgb(255,253,0),
-										System.Drawing.Color.FromArgb(0,128,0),
-										System.Drawing.Color.FromArgb(249,252,0),
-										System.Drawing.Color.FromArgb(243,249,0),
-										System.Drawing.Color.FromArgb(237,246,0),
-										System.Drawing.Color.FromArgb(231,243,0),
-										System.Drawing.Color.FromArgb(225,240,0),
-										System.Drawing.Color.FromArgb(218,237,0),
-										System.Drawing.Color.FromArgb(212,234,0),
-										System.Drawing.Color.FromArgb(206,231,0),
-										System.Drawing.Color.FromArgb(200,228,0),
-										System.Drawing.Color.FromArgb(194,225,0),
-										System.Drawing.Color.FromArgb(188,222,0),
-										System.Drawing.Color.FromArgb(182,218,0),
-										System.Drawing.Color.FromArgb(176,215,0),
-										System.Drawing.Color.FromArgb(170,212,0),
-										System.Drawing.Color.FromArgb(164,209,0),
-										System.Drawing.Color.FromArgb(158,206,0),
-										System.Drawing.Color.FromArgb(151,203,0),
-										System.Drawing.Color.FromArgb(145,200,0),
-										System.Drawing.Color.FromArgb(139,197,0),
-										System.Drawing.Color.FromArgb(134,195,0),
-										System.Drawing.Color.FromArgb(128,192,0),
-										System.Drawing.Color.FromArgb(122,189,0),
-										System.Drawing.Color.FromArgb(116,186,0),
-										System.Drawing.Color.FromArgb(110,183,0),
-										System.Drawing.Color.FromArgb(104,180,0),
-										System.Drawing.Color.FromArgb(98,177,0),
-										System.Drawing.Color.FromArgb(91,174,0),
-										System.Drawing.Color.FromArgb(85,171,0),
-										System.Drawing.Color.FromArgb(79,168,0),
-										System.Drawing.Color.FromArgb(73,165,0),
-										System.Drawing.Color.FromArgb(67,162,0),
-										System.Drawing.Color.FromArgb(61,159,0),
-										System.Drawing.Color.FromArgb(55,155,0),
-										System.Drawing.Color.FromArgb(49,152,0),
-										System.Drawing.Color.FromArgb(43,149,0),
-										System.Drawing.Color.FromArgb(37,146,0),
-										System.Drawing.Color.FromArgb(31,143,0),
-										System.Drawing.Color.FromArgb(24,140,0),
-										System.Drawing.Color.FromArgb(18,137,0),
-										System.Drawing.Color.FromArgb(12,134,0),
-										System.Drawing.Color.FromArgb(6,131,0),
-										System.Drawing.Color.FromArgb(0,0,255),
-										System.Drawing.Color.FromArgb(0,125,6),
-										System.Drawing.Color.FromArgb(0,122,12),
-										System.Drawing.Color.FromArgb(0,119,18),
-										System.Drawing.Color.FromArgb(0,116,24),
-										System.Drawing.Color.FromArgb(0,113,30),
-										System.Drawing.Color.FromArgb(0,110,37),
-										System.Drawing.Color.FromArgb(0,107,43),
-										System.Drawing.Color.FromArgb(0,104,49),
-										System.Drawing.Color.FromArgb(0,101,55),
-										System.Drawing.Color.FromArgb(0,98,61),
-										System.Drawing.Color.FromArgb(0,95,67),
-										System.Drawing.Color.FromArgb(0,91,73),
-										System.Drawing.Color.FromArgb(0,88,79),
-										System.Drawing.Color.FromArgb(0,85,85),
-										System.Drawing.Color.FromArgb(0,82,91),
-										System.Drawing.Color.FromArgb(0,79,98),
-										System.Drawing.Color.FromArgb(0,76,104),
-										System.Drawing.Color.FromArgb(0,73,110),
-										System.Drawing.Color.FromArgb(0,70,116),
-										System.Drawing.Color.FromArgb(0,67,122),
-										System.Drawing.Color.FromArgb(0,64,128),
-										System.Drawing.Color.FromArgb(0,61,134),
-										System.Drawing.Color.FromArgb(0,58,139),
-										System.Drawing.Color.FromArgb(0,55,145),
-										System.Drawing.Color.FromArgb(0,52,151),
-										System.Drawing.Color.FromArgb(0,49,157),
-										System.Drawing.Color.FromArgb(0,46,164),
-										System.Drawing.Color.FromArgb(0,43,170),
-										System.Drawing.Color.FromArgb(0,40,176),
-										System.Drawing.Color.FromArgb(0,37,182),
-										System.Drawing.Color.FromArgb(0,34,188),
-										System.Drawing.Color.FromArgb(0,31,194),
-										System.Drawing.Color.FromArgb(0,27,200),
-										System.Drawing.Color.FromArgb(0,24,206),
-										System.Drawing.Color.FromArgb(0,21,212),
-										System.Drawing.Color.FromArgb(0,18,218),
-										System.Drawing.Color.FromArgb(0,15,225),
-										System.Drawing.Color.FromArgb(0,12,231),
-										System.Drawing.Color.FromArgb(0,9,237),
-										System.Drawing.Color.FromArgb(0,6,243),
-										System.Drawing.Color.FromArgb(0,3,249),
-										System.Drawing.Color.FromArgb(75,0,130),
-										System.Drawing.Color.FromArgb(2,0,252),
-										System.Drawing.Color.FromArgb(4,0,249),
-										System.Drawing.Color.FromArgb(6,0,246),
-										System.Drawing.Color.FromArgb(7,0,243),
-										System.Drawing.Color.FromArgb(9,0,240),
-										System.Drawing.Color.FromArgb(10,0,237),
-										System.Drawing.Color.FromArgb(12,0,234),
-										System.Drawing.Color.FromArgb(14,0,232),
-										System.Drawing.Color.FromArgb(16,0,229),
-										System.Drawing.Color.FromArgb(18,0,226),
-										System.Drawing.Color.FromArgb(20,0,223),
-										System.Drawing.Color.FromArgb(21,0,219),
-										System.Drawing.Color.FromArgb(23,0,216),
-										System.Drawing.Color.FromArgb(25,0,213),
-										System.Drawing.Color.FromArgb(27,0,210),
-										System.Drawing.Color.FromArgb(28,0,207),
-										System.Drawing.Color.FromArgb(30,0,204),
-										System.Drawing.Color.FromArgb(32,0,201),
-										System.Drawing.Color.FromArgb(34,0,198),
-										System.Drawing.Color.FromArgb(36,0,196),
-										System.Drawing.Color.FromArgb(38,0,193),
-										System.Drawing.Color.FromArgb(40,0,190),
-										System.Drawing.Color.FromArgb(41,0,187),
-										System.Drawing.Color.FromArgb(43,0,184),
-										System.Drawing.Color.FromArgb(45,0,181),
-										System.Drawing.Color.FromArgb(47,0,178),
-										System.Drawing.Color.FromArgb(48,0,175),
-										System.Drawing.Color.FromArgb(50,0,172),
-										System.Drawing.Color.FromArgb(52,0,169),
-										System.Drawing.Color.FromArgb(54,0,166),
-										System.Drawing.Color.FromArgb(55,0,163),
-										System.Drawing.Color.FromArgb(57,0,160),
-										System.Drawing.Color.FromArgb(59,0,156),
-										System.Drawing.Color.FromArgb(61,0,153),
-										System.Drawing.Color.FromArgb(63,0,151),
-										System.Drawing.Color.FromArgb(65,0,148),
-										System.Drawing.Color.FromArgb(66,0,145),
-										System.Drawing.Color.FromArgb(68,0,142),
-										System.Drawing.Color.FromArgb(69,0,139),
-										System.Drawing.Color.FromArgb(71,0,136),
-										System.Drawing.Color.FromArgb(73,0,133),
-										System.Drawing.Color.FromArgb(238,130,238),
-										System.Drawing.Color.FromArgb(79,3,133),
-										System.Drawing.Color.FromArgb(83,6,135),
-										System.Drawing.Color.FromArgb(86,9,138),
-										System.Drawing.Color.FromArgb(90,12,141),
-										System.Drawing.Color.FromArgb(94,15,143),
-										System.Drawing.Color.FromArgb(98,18,146),
-										System.Drawing.Color.FromArgb(102,21,148),
-										System.Drawing.Color.FromArgb(106,24,150),
-										System.Drawing.Color.FromArgb(110,28,153),
-										System.Drawing.Color.FromArgb(114,31,156),
-										System.Drawing.Color.FromArgb(118,35,158),
-										System.Drawing.Color.FromArgb(122,38,161),
-										System.Drawing.Color.FromArgb(125,41,164),
-										System.Drawing.Color.FromArgb(129,44,166),
-										System.Drawing.Color.FromArgb(133,47,169),
-										System.Drawing.Color.FromArgb(137,50,172),
-										System.Drawing.Color.FromArgb(141,53,174),
-										System.Drawing.Color.FromArgb(145,56,176),
-										System.Drawing.Color.FromArgb(149,59,179),
-										System.Drawing.Color.FromArgb(153,62,181),
-										System.Drawing.Color.FromArgb(157,65,184),
-										System.Drawing.Color.FromArgb(161,68,187),
-										System.Drawing.Color.FromArgb(165,71,189),
-										System.Drawing.Color.FromArgb(168,74,192),
-										System.Drawing.Color.FromArgb(172,77,195),
-										System.Drawing.Color.FromArgb(176,80,197),
-										System.Drawing.Color.FromArgb(180,83,200),
-										System.Drawing.Color.FromArgb(184,86,202),
-										System.Drawing.Color.FromArgb(187,89,204),
-										System.Drawing.Color.FromArgb(191,93,207),
-										System.Drawing.Color.FromArgb(195,96,210),
-										System.Drawing.Color.FromArgb(199,100,212),
-										System.Drawing.Color.FromArgb(203,103,215),
-										System.Drawing.Color.FromArgb(206,106,218),
-										System.Drawing.Color.FromArgb(211,109,220),
-										System.Drawing.Color.FromArgb(215,112,223),
-										System.Drawing.Color.FromArgb(219,115,226),
-										System.Drawing.Color.FromArgb(223,118,228),
-										System.Drawing.Color.FromArgb(227,121,230),
-										System.Drawing.Color.FromArgb(230,124,233),
-										System.Drawing.Color.FromArgb(234,127,235),
-										System.Drawing.Color.FromArgb(238,130,238),
-										System.Drawing.Color.FromArgb(234,127,235),
-										System.Drawing.Color.FromArgb(230,124,233),
-										System.Drawing.Color.FromArgb(227,121,230),
-										System.Drawing.Color.FromArgb(223,118,228),
-										System.Drawing.Color.FromArgb(219,115,226),
-										System.Drawing.Color.FromArgb(215,112,223),
-										System.Drawing.Color.FromArgb(211,109,220),
-										System.Drawing.Color.FromArgb(206,106,218),
-										System.Drawing.Color.FromArgb(203,103,215),
-										System.Drawing.Color.FromArgb(199,100,212),
-										System.Drawing.Color.FromArgb(195,96,210),
-										System.Drawing.Color.FromArgb(191,93,207),
-										System.Drawing.Color.FromArgb(187,89,204),
-										System.Drawing.Color.FromArgb(184,86,202),
-										System.Drawing.Color.FromArgb(180,83,200),
-										System.Drawing.Color.FromArgb(176,80,197),
-										System.Drawing.Color.FromArgb(172,77,195),
-										System.Drawing.Color.FromArgb(168,74,192),
-										System.Drawing.Color.FromArgb(165,71,189),
-										System.Drawing.Color.FromArgb(161,68,187),
-										System.Drawing.Color.FromArgb(157,65,184),
-										System.Drawing.Color.FromArgb(153,62,181),
-										System.Drawing.Color.FromArgb(149,59,179),
-										System.Drawing.Color.FromArgb(145,56,176),
-										System.Drawing.Color.FromArgb(141,53,174),
-										System.Drawing.Color.FromArgb(137,50,172),
-										System.Drawing.Color.FromArgb(133,47,169),
-										System.Drawing.Color.FromArgb(129,44,166),
-										System.Drawing.Color.FromArgb(125,41,164),
-										System.Drawing.Color.FromArgb(122,38,161),
-										System.Drawing.Color.FromArgb(118,35,158),
-										System.Drawing.Color.FromArgb(114,31,156),
-										System.Drawing.Color.FromArgb(110,28,153),
-										System.Drawing.Color.FromArgb(106,24,150),
-										System.Drawing.Color.FromArgb(102,21,148),
-										System.Drawing.Color.FromArgb(98,18,146),
-										System.Drawing.Color.FromArgb(94,15,143),
-										System.Drawing.Color.FromArgb(90,12,141),
-										System.Drawing.Color.FromArgb(86,9,138),
-										System.Drawing.Color.FromArgb(83,6,135),
-										System.Drawing.Color.FromArgb(79,3,133),
-										System.Drawing.Color.FromArgb(238,130,238),
-										System.Drawing.Color.FromArgb(73,0,133),
-										System.Drawing.Color.FromArgb(71,0,136),
-										System.Drawing.Color.FromArgb(69,0,139),
-										System.Drawing.Color.FromArgb(68,0,142),
-										System.Drawing.Color.FromArgb(66,0,145),
-										System.Drawing.Color.FromArgb(65,0,148),
-										System.Drawing.Color.FromArgb(63,0,151),
-										System.Drawing.Color.FromArgb(61,0,153),
-										System.Drawing.Color.FromArgb(59,0,156),
-										System.Drawing.Color.FromArgb(57,0,160),
-										System.Drawing.Color.FromArgb(55,0,163),
-										System.Drawing.Color.FromArgb(54,0,166),
-										System.Drawing.Color.FromArgb(52,0,169),
-										System.Drawing.Color.FromArgb(50,0,172),
-										System.Drawing.Color.FromArgb(48,0,175),
-										System.Drawing.Color.FromArgb(47,0,178),
-										System.Drawing.Color.FromArgb(45,0,181),
-										System.Drawing.Color.FromArgb(43,0,184),
-										System.Drawing.Color.FromArgb(41,0,187),
-										System.Drawing.Color.FromArgb(40,0,190),
-										System.Drawing.Color.FromArgb(38,0,193),
-										System.Drawing.Color.FromArgb(36,0,196),
-										System.Drawing.Color.FromArgb(34,0,198),
-										System.Drawing.Color.FromArgb(32,0,201),
-										System.Drawing.Color.FromArgb(30,0,204),
-										System.Drawing.Color.FromArgb(28,0,207),
-										System.Drawing.Color.FromArgb(27,0,210),
-										System.Drawing.Color.FromArgb(25,0,213),
-										System.Drawing.Color.FromArgb(23,0,216),
-										System.Drawing.Color.FromArgb(21,0,219),
-										System.Drawing.Color.FromArgb(20,0,223),
-										System.Drawing.Color.FromArgb(18,0,226),
-										System.Drawing.Color.FromArgb(16,0,229),
-										System.Drawing.Color.FromArgb(14,0,232),
-										System.Drawing.Color.FromArgb(12,0,234),
-										System.Drawing.Color.FromArgb(10,0,237),
-										System.Drawing.Color.FromArgb(9,0,240),
-										System.Drawing.Color.FromArgb(7,0,243),
-										System.Drawing.Color.FromArgb(6,0,246),
-										System.Drawing.Color.FromArgb(4,0,249),
-										System.Drawing.Color.FromArgb(2,0,252),
-										System.Drawing.Color.FromArgb(75,0,130),
-										System.Drawing.Color.FromArgb(0,3,249),
-										System.Drawing.Color.FromArgb(0,6,243),
-										System.Drawing.Color.FromArgb(0,9,237),
-										System.Drawing.Color.FromArgb(0,12,231),
-										System.Drawing.Color.FromArgb(0,15,225),
-										System.Drawing.Color.FromArgb(0,18,218),
-										System.Drawing.Color.FromArgb(0,21,212),
-										System.Drawing.Color.FromArgb(0,24,206),
-										System.Drawing.Color.FromArgb(0,27,200),
-										System.Drawing.Color.FromArgb(0,31,194),
-										System.Drawing.Color.FromArgb(0,34,188),
-										System.Drawing.Color.FromArgb(0,37,182),
-										System.Drawing.Color.FromArgb(0,40,176),
-										System.Drawing.Color.FromArgb(0,43,170),
-										System.Drawing.Color.FromArgb(0,46,164),
-										System.Drawing.Color.FromArgb(0,49,157),
-										System.Drawing.Color.FromArgb(0,52,151),
-										System.Drawing.Color.FromArgb(0,55,145),
-										System.Drawing.Color.FromArgb(0,58,139),
-										System.Drawing.Color.FromArgb(0,61,134),
-										System.Drawing.Color.FromArgb(0,64,128),
-										System.Drawing.Color.FromArgb(0,67,122),
-										System.Drawing.Color.FromArgb(0,70,116),
-										System.Drawing.Color.FromArgb(0,73,110),
-										System.Drawing.Color.FromArgb(0,76,104),
-										System.Drawing.Color.FromArgb(0,79,98),
-										System.Drawing.Color.FromArgb(0,82,91),
-										System.Drawing.Color.FromArgb(0,85,85),
-										System.Drawing.Color.FromArgb(0,88,79),
-										System.Drawing.Color.FromArgb(0,91,73),
-										System.Drawing.Color.FromArgb(0,95,67),
-										System.Drawing.Color.FromArgb(0,98,61),
-										System.Drawing.Color.FromArgb(0,101,55),
-										System.Drawing.Color.FromArgb(0,104,49),
-										System.Drawing.Color.FromArgb(0,107,43),
-										System.Drawing.Color.FromArgb(0,110,37),
-										System.Drawing.Color.FromArgb(0,113,30),
-										System.Drawing.Color.FromArgb(0,116,24),
-										System.Drawing.Color.FromArgb(0,119,18),
-										System.Drawing.Color.FromArgb(0,122,12),
-										System.Drawing.Color.FromArgb(0,125,6),
-										System.Drawing.Color.FromArgb(0,0,255),
-										System.Drawing.Color.FromArgb(6,131,0),
-										System.Drawing.Color.FromArgb(12,134,0),
-										System.Drawing.Color.FromArgb(18,137,0),
-										System.Drawing.Color.FromArgb(24,140,0),
-										System.Drawing.Color.FromArgb(31,143,0),
-										System.Drawing.Color.FromArgb(37,146,0),
-										System.Drawing.Color.FromArgb(43,149,0),
-										System.Drawing.Color.FromArgb(49,152,0),
-										System.Drawing.Color.FromArgb(55,155,0),
-										System.Drawing.Color.FromArgb(61,159,0),
-										System.Drawing.Color.FromArgb(67,162,0),
-										System.Drawing.Color.FromArgb(73,165,0),
-										System.Drawing.Color.FromArgb(79,168,0),
-										System.Drawing.Color.FromArgb(85,171,0),
-										System.Drawing.Color.FromArgb(91,174,0),
-										System.Drawing.Color.FromArgb(98,177,0),
-										System.Drawing.Color.FromArgb(104,180,0),
-										System.Drawing.Color.FromArgb(110,183,0),
-										System.Drawing.Color.FromArgb(116,186,0),
-										System.Drawing.Color.FromArgb(122,189,0),
-										System.Drawing.Color.FromArgb(128,192,0),
-										System.Drawing.Color.FromArgb(134,195,0),
-										System.Drawing.Color.FromArgb(139,197,0),
-										System.Drawing.Color.FromArgb(145,200,0),
-										System.Drawing.Color.FromArgb(151,203,0),
-										System.Drawing.Color.FromArgb(158,206,0),
-										System.Drawing.Color.FromArgb(164,209,0),
-										System.Drawing.Color.FromArgb(170,212,0),
-										System.Drawing.Color.FromArgb(176,215,0),
-										System.Drawing.Color.FromArgb(182,218,0),
-										System.Drawing.Color.FromArgb(188,222,0),
-										System.Drawing.Color.FromArgb(194,225,0),
-										System.Drawing.Color.FromArgb(200,228,0),
-										System.Drawing.Color.FromArgb(206,231,0),
-										System.Drawing.Color.FromArgb(212,234,0),
-										System.Drawing.Color.FromArgb(218,237,0),
-										System.Drawing.Color.FromArgb(225,240,0),
-										System.Drawing.Color.FromArgb(231,243,0),
-										System.Drawing.Color.FromArgb(237,246,0),
-										System.Drawing.Color.FromArgb(243,249,0),
-										System.Drawing.Color.FromArgb(249,252,0),
-										System.Drawing.Color.FromArgb(0,128,0),
-										System.Drawing.Color.FromArgb(255,253,0),
-										System.Drawing.Color.FromArgb(255,250,0),
-										System.Drawing.Color.FromArgb(255,248,0),
-										System.Drawing.Color.FromArgb(255,246,0),
-										System.Drawing.Color.FromArgb(255,244,0),
-										System.Drawing.Color.FromArgb(255,242,0),
-										System.Drawing.Color.FromArgb(255,240,0),
-										System.Drawing.Color.FromArgb(255,238,0),
-										System.Drawing.Color.FromArgb(255,236,0),
-										System.Drawing.Color.FromArgb(255,234,0),
-										System.Drawing.Color.FromArgb(255,232,0),
-										System.Drawing.Color.FromArgb(255,230,0),
-										System.Drawing.Color.FromArgb(255,227,0),
-										System.Drawing.Color.FromArgb(255,225,0),
-										System.Drawing.Color.FromArgb(255,223,0),
-										System.Drawing.Color.FromArgb(255,221,0),
-										System.Drawing.Color.FromArgb(255,219,0),
-										System.Drawing.Color.FromArgb(255,217,0),
-										System.Drawing.Color.FromArgb(255,215,0),
-										System.Drawing.Color.FromArgb(255,212,0),
-										System.Drawing.Color.FromArgb(255,210,0),
-										System.Drawing.Color.FromArgb(255,208,0),
-										System.Drawing.Color.FromArgb(255,205,0),
-										System.Drawing.Color.FromArgb(255,203,0),
-										System.Drawing.Color.FromArgb(255,201,0),
-										System.Drawing.Color.FromArgb(255,199,0),
-										System.Drawing.Color.FromArgb(255,197,0),
-										System.Drawing.Color.FromArgb(255,195,0),
-										System.Drawing.Color.FromArgb(255,193,0),
-										System.Drawing.Color.FromArgb(255,191,0),
-										System.Drawing.Color.FromArgb(255,189,0),
-										System.Drawing.Color.FromArgb(255,187,0),
-										System.Drawing.Color.FromArgb(255,185,0),
-										System.Drawing.Color.FromArgb(255,182,0),
-										System.Drawing.Color.FromArgb(255,180,0),
-										System.Drawing.Color.FromArgb(255,178,0),
-										System.Drawing.Color.FromArgb(255,176,0),
-										System.Drawing.Color.FromArgb(255,174,0),
-										System.Drawing.Color.FromArgb(255,172,0),
-										System.Drawing.Color.FromArgb(255,170,0),
-										System.Drawing.Color.FromArgb(255,167,0),
-										System.Drawing.Color.FromArgb(255,255,0),
-										System.Drawing.Color.FromArgb(255,161,0),
-										System.Drawing.Color.FromArgb(255,157,0),
-										System.Drawing.Color.FromArgb(255,153,0),
-										System.Drawing.Color.FromArgb(255,149,0),
-										System.Drawing.Color.FromArgb(255,145,0),
-										System.Drawing.Color.FromArgb(255,141,0),
-										System.Drawing.Color.FromArgb(255,137,0),
-										System.Drawing.Color.FromArgb(255,133,0),
-										System.Drawing.Color.FromArgb(255,130,0),
-										System.Drawing.Color.FromArgb(255,126,0),
-										System.Drawing.Color.FromArgb(255,122,0),
-										System.Drawing.Color.FromArgb(255,118,0),
-										System.Drawing.Color.FromArgb(255,114,0),
-										System.Drawing.Color.FromArgb(255,110,0),
-										System.Drawing.Color.FromArgb(255,106,0),
-										System.Drawing.Color.FromArgb(255,102,0),
-										System.Drawing.Color.FromArgb(255,98,0),
-										System.Drawing.Color.FromArgb(255,94,0),
-										System.Drawing.Color.FromArgb(255,91,0),
-										System.Drawing.Color.FromArgb(255,87,0),
-										System.Drawing.Color.FromArgb(255,83,0),
-										System.Drawing.Color.FromArgb(255,79,0),
-										System.Drawing.Color.FromArgb(255,75,0),
-										System.Drawing.Color.FromArgb(255,71,0),
-										System.Drawing.Color.FromArgb(255,67,0),
-										System.Drawing.Color.FromArgb(255,63,0),
-										System.Drawing.Color.FromArgb(255,59,0),
-										System.Drawing.Color.FromArgb(255,55,0),
-										System.Drawing.Color.FromArgb(255,51,0),
-										System.Drawing.Color.FromArgb(255,47,0),
-										System.Drawing.Color.FromArgb(255,43,0),
-										System.Drawing.Color.FromArgb(255,39,0),
-										System.Drawing.Color.FromArgb(255,35,0),
-										System.Drawing.Color.FromArgb(255,31,0),
-										System.Drawing.Color.FromArgb(255,28,0),
-										System.Drawing.Color.FromArgb(255,24,0),
-										System.Drawing.Color.FromArgb(255,20,0),
-										System.Drawing.Color.FromArgb(255,16,0),
-										System.Drawing.Color.FromArgb(255,12,0),
-										System.Drawing.Color.FromArgb(255,8,0),
-										System.Drawing.Color.FromArgb(255,4,0),
-										System.Drawing.Color.FromArgb(255,0,0),
-										System.Drawing.Color.FromArgb(0,0,0),
-										System.Drawing.Color.FromArgb(0,0,0),
-										System.Drawing.Color.FromArgb(0,0,0)
+#region
+        static SysColor[] ColorTable = {
+										SysColor.FromArgb(255,255,0,0),
+										SysColor.FromArgb(255,255,4,0),
+										SysColor.FromArgb(255,255,8,0),
+										SysColor.FromArgb(255,255,12,0),
+										SysColor.FromArgb(255,255,16,0),
+										SysColor.FromArgb(255,255,20,0),
+										SysColor.FromArgb(255,255,24,0),
+										SysColor.FromArgb(255,255,28,0),
+										SysColor.FromArgb(255,255,31,0),
+										SysColor.FromArgb(255,255,35,0),
+										SysColor.FromArgb(255,255,39,0),
+										SysColor.FromArgb(255,255,43,0),
+										SysColor.FromArgb(255,255,47,0),
+										SysColor.FromArgb(255,255,51,0),
+										SysColor.FromArgb(255,255,55,0),
+										SysColor.FromArgb(255,255,59,0),
+										SysColor.FromArgb(255,255,63,0),
+										SysColor.FromArgb(255,255,67,0),
+										SysColor.FromArgb(255,255,71,0),
+										SysColor.FromArgb(255,255,75,0),
+										SysColor.FromArgb(255,255,79,0),
+										SysColor.FromArgb(255,255,83,0),
+										SysColor.FromArgb(255,255,87,0),
+										SysColor.FromArgb(255,255,91,0),
+										SysColor.FromArgb(255,255,94,0),
+										SysColor.FromArgb(255,255,98,0),
+										SysColor.FromArgb(255,255,102,0),
+										SysColor.FromArgb(255,255,106,0),
+										SysColor.FromArgb(255,255,110,0),
+										SysColor.FromArgb(255,255,114,0),
+										SysColor.FromArgb(255,255,118,0),
+										SysColor.FromArgb(255,255,122,0),
+										SysColor.FromArgb(255,255,126,0),
+										SysColor.FromArgb(255,255,130,0),
+										SysColor.FromArgb(255,255,133,0),
+										SysColor.FromArgb(255,255,137,0),
+										SysColor.FromArgb(255,255,141,0),
+										SysColor.FromArgb(255,255,145,0),
+										SysColor.FromArgb(255,255,149,0),
+										SysColor.FromArgb(255,255,153,0),
+										SysColor.FromArgb(255,255,157,0),
+										SysColor.FromArgb(255,255,161,0),
+										SysColor.FromArgb(255,255,255,0),
+										SysColor.FromArgb(255,255,167,0),
+										SysColor.FromArgb(255,255,170,0),
+										SysColor.FromArgb(255,255,172,0),
+										SysColor.FromArgb(255,255,174,0),
+										SysColor.FromArgb(255,255,176,0),
+										SysColor.FromArgb(255,255,178,0),
+										SysColor.FromArgb(255,255,180,0),
+										SysColor.FromArgb(255,255,182,0),
+										SysColor.FromArgb(255,255,185,0),
+										SysColor.FromArgb(255,255,187,0),
+										SysColor.FromArgb(255,255,189,0),
+										SysColor.FromArgb(255,255,191,0),
+										SysColor.FromArgb(255,255,193,0),
+										SysColor.FromArgb(255,255,195,0),
+										SysColor.FromArgb(255,255,197,0),
+										SysColor.FromArgb(255,255,199,0),
+										SysColor.FromArgb(255,255,201,0),
+										SysColor.FromArgb(255,255,203,0),
+										SysColor.FromArgb(255,255,205,0),
+										SysColor.FromArgb(255,255,208,0),
+										SysColor.FromArgb(255,255,210,0),
+										SysColor.FromArgb(255,255,212,0),
+										SysColor.FromArgb(255,255,215,0),
+										SysColor.FromArgb(255,255,217,0),
+										SysColor.FromArgb(255,255,219,0),
+										SysColor.FromArgb(255,255,221,0),
+										SysColor.FromArgb(255,255,223,0),
+										SysColor.FromArgb(255,255,225,0),
+										SysColor.FromArgb(255,255,227,0),
+										SysColor.FromArgb(255,255,230,0),
+										SysColor.FromArgb(255,255,232,0),
+										SysColor.FromArgb(255,255,234,0),
+										SysColor.FromArgb(255,255,236,0),
+										SysColor.FromArgb(255,255,238,0),
+										SysColor.FromArgb(255,255,240,0),
+										SysColor.FromArgb(255,255,242,0),
+										SysColor.FromArgb(255,255,244,0),
+										SysColor.FromArgb(255,255,246,0),
+										SysColor.FromArgb(255,255,248,0),
+										SysColor.FromArgb(255,255,250,0),
+										SysColor.FromArgb(255,255,253,0),
+										SysColor.FromArgb(255,0,128,0),
+										SysColor.FromArgb(255,249,252,0),
+										SysColor.FromArgb(255,243,249,0),
+										SysColor.FromArgb(255,237,246,0),
+										SysColor.FromArgb(255,231,243,0),
+										SysColor.FromArgb(255,225,240,0),
+										SysColor.FromArgb(255,218,237,0),
+										SysColor.FromArgb(255,212,234,0),
+										SysColor.FromArgb(255,206,231,0),
+										SysColor.FromArgb(255,200,228,0),
+										SysColor.FromArgb(255,194,225,0),
+										SysColor.FromArgb(255,188,222,0),
+										SysColor.FromArgb(255,182,218,0),
+										SysColor.FromArgb(255,176,215,0),
+										SysColor.FromArgb(255,170,212,0),
+										SysColor.FromArgb(255,164,209,0),
+										SysColor.FromArgb(255,158,206,0),
+										SysColor.FromArgb(255,151,203,0),
+										SysColor.FromArgb(255,145,200,0),
+										SysColor.FromArgb(255,139,197,0),
+										SysColor.FromArgb(255,134,195,0),
+										SysColor.FromArgb(255,128,192,0),
+										SysColor.FromArgb(255,122,189,0),
+										SysColor.FromArgb(255,116,186,0),
+										SysColor.FromArgb(255,110,183,0),
+										SysColor.FromArgb(255,104,180,0),
+										SysColor.FromArgb(255,98,177,0),
+										SysColor.FromArgb(255,91,174,0),
+										SysColor.FromArgb(255,85,171,0),
+										SysColor.FromArgb(255,79,168,0),
+										SysColor.FromArgb(255,73,165,0),
+										SysColor.FromArgb(255,67,162,0),
+										SysColor.FromArgb(255,61,159,0),
+										SysColor.FromArgb(255,55,155,0),
+										SysColor.FromArgb(255,49,152,0),
+										SysColor.FromArgb(255,43,149,0),
+										SysColor.FromArgb(255,37,146,0),
+										SysColor.FromArgb(255,31,143,0),
+										SysColor.FromArgb(255,24,140,0),
+										SysColor.FromArgb(255,18,137,0),
+										SysColor.FromArgb(255,12,134,0),
+										SysColor.FromArgb(255,6,131,0),
+										SysColor.FromArgb(255,0,0,255),
+										SysColor.FromArgb(255,0,125,6),
+										SysColor.FromArgb(255,0,122,12),
+										SysColor.FromArgb(255,0,119,18),
+										SysColor.FromArgb(255,0,116,24),
+										SysColor.FromArgb(255,0,113,30),
+										SysColor.FromArgb(255,0,110,37),
+										SysColor.FromArgb(255,0,107,43),
+										SysColor.FromArgb(255,0,104,49),
+										SysColor.FromArgb(255,0,101,55),
+										SysColor.FromArgb(255,0,98,61),
+										SysColor.FromArgb(255,0,95,67),
+										SysColor.FromArgb(255,0,91,73),
+										SysColor.FromArgb(255,0,88,79),
+										SysColor.FromArgb(255,0,85,85),
+										SysColor.FromArgb(255,0,82,91),
+										SysColor.FromArgb(255,0,79,98),
+										SysColor.FromArgb(255,0,76,104),
+										SysColor.FromArgb(255,0,73,110),
+										SysColor.FromArgb(255,0,70,116),
+										SysColor.FromArgb(255,0,67,122),
+										SysColor.FromArgb(255,0,64,128),
+										SysColor.FromArgb(255,0,61,134),
+										SysColor.FromArgb(255,0,58,139),
+										SysColor.FromArgb(255,0,55,145),
+										SysColor.FromArgb(255,0,52,151),
+										SysColor.FromArgb(255,0,49,157),
+										SysColor.FromArgb(255,0,46,164),
+										SysColor.FromArgb(255,0,43,170),
+										SysColor.FromArgb(255,0,40,176),
+										SysColor.FromArgb(255,0,37,182),
+										SysColor.FromArgb(255,0,34,188),
+										SysColor.FromArgb(255,0,31,194),
+										SysColor.FromArgb(255,0,27,200),
+										SysColor.FromArgb(255,0,24,206),
+										SysColor.FromArgb(255,0,21,212),
+										SysColor.FromArgb(255,0,18,218),
+										SysColor.FromArgb(255,0,15,225),
+										SysColor.FromArgb(255,0,12,231),
+										SysColor.FromArgb(255,0,9,237),
+										SysColor.FromArgb(255,0,6,243),
+										SysColor.FromArgb(255,0,3,249),
+										SysColor.FromArgb(255,75,0,130),
+										SysColor.FromArgb(255,2,0,252),
+										SysColor.FromArgb(255,4,0,249),
+										SysColor.FromArgb(255,6,0,246),
+										SysColor.FromArgb(255,7,0,243),
+										SysColor.FromArgb(255,9,0,240),
+										SysColor.FromArgb(255,10,0,237),
+										SysColor.FromArgb(255,12,0,234),
+										SysColor.FromArgb(255,14,0,232),
+										SysColor.FromArgb(255,16,0,229),
+										SysColor.FromArgb(255,18,0,226),
+										SysColor.FromArgb(255,20,0,223),
+										SysColor.FromArgb(255,21,0,219),
+										SysColor.FromArgb(255,23,0,216),
+										SysColor.FromArgb(255,25,0,213),
+										SysColor.FromArgb(255,27,0,210),
+										SysColor.FromArgb(255,28,0,207),
+										SysColor.FromArgb(255,30,0,204),
+										SysColor.FromArgb(255,32,0,201),
+										SysColor.FromArgb(255,34,0,198),
+										SysColor.FromArgb(255,36,0,196),
+										SysColor.FromArgb(255,38,0,193),
+										SysColor.FromArgb(255,40,0,190),
+										SysColor.FromArgb(255,41,0,187),
+										SysColor.FromArgb(255,43,0,184),
+										SysColor.FromArgb(255,45,0,181),
+										SysColor.FromArgb(255,47,0,178),
+										SysColor.FromArgb(255,48,0,175),
+										SysColor.FromArgb(255,50,0,172),
+										SysColor.FromArgb(255,52,0,169),
+										SysColor.FromArgb(255,54,0,166),
+										SysColor.FromArgb(255,55,0,163),
+										SysColor.FromArgb(255,57,0,160),
+										SysColor.FromArgb(255,59,0,156),
+										SysColor.FromArgb(255,61,0,153),
+										SysColor.FromArgb(255,63,0,151),
+										SysColor.FromArgb(255,65,0,148),
+										SysColor.FromArgb(255,66,0,145),
+										SysColor.FromArgb(255,68,0,142),
+										SysColor.FromArgb(255,69,0,139),
+										SysColor.FromArgb(255,71,0,136),
+										SysColor.FromArgb(255,73,0,133),
+										SysColor.FromArgb(255,238,130,238),
+										SysColor.FromArgb(255,79,3,133),
+										SysColor.FromArgb(255,83,6,135),
+										SysColor.FromArgb(255,86,9,138),
+										SysColor.FromArgb(255,90,12,141),
+										SysColor.FromArgb(255,94,15,143),
+										SysColor.FromArgb(255,98,18,146),
+										SysColor.FromArgb(255,102,21,148),
+										SysColor.FromArgb(255,106,24,150),
+										SysColor.FromArgb(255,110,28,153),
+										SysColor.FromArgb(255,114,31,156),
+										SysColor.FromArgb(255,118,35,158),
+										SysColor.FromArgb(255,122,38,161),
+										SysColor.FromArgb(255,125,41,164),
+										SysColor.FromArgb(255,129,44,166),
+										SysColor.FromArgb(255,133,47,169),
+										SysColor.FromArgb(255,137,50,172),
+										SysColor.FromArgb(255,141,53,174),
+										SysColor.FromArgb(255,145,56,176),
+										SysColor.FromArgb(255,149,59,179),
+										SysColor.FromArgb(255,153,62,181),
+										SysColor.FromArgb(255,157,65,184),
+										SysColor.FromArgb(255,161,68,187),
+										SysColor.FromArgb(255,165,71,189),
+										SysColor.FromArgb(255,168,74,192),
+										SysColor.FromArgb(255,172,77,195),
+										SysColor.FromArgb(255,176,80,197),
+										SysColor.FromArgb(255,180,83,200),
+										SysColor.FromArgb(255,184,86,202),
+										SysColor.FromArgb(255,187,89,204),
+										SysColor.FromArgb(255,191,93,207),
+										SysColor.FromArgb(255,195,96,210),
+										SysColor.FromArgb(255,199,100,212),
+										SysColor.FromArgb(255,203,103,215),
+										SysColor.FromArgb(255,206,106,218),
+										SysColor.FromArgb(255,211,109,220),
+										SysColor.FromArgb(255,215,112,223),
+										SysColor.FromArgb(255,219,115,226),
+										SysColor.FromArgb(255,223,118,228),
+										SysColor.FromArgb(255,227,121,230),
+										SysColor.FromArgb(255,230,124,233),
+										SysColor.FromArgb(255,234,127,235),
+										SysColor.FromArgb(255,238,130,238),
+										SysColor.FromArgb(255,234,127,235),
+										SysColor.FromArgb(255,230,124,233),
+										SysColor.FromArgb(255,227,121,230),
+										SysColor.FromArgb(255,223,118,228),
+										SysColor.FromArgb(255,219,115,226),
+										SysColor.FromArgb(255,215,112,223),
+										SysColor.FromArgb(255,211,109,220),
+										SysColor.FromArgb(255,206,106,218),
+										SysColor.FromArgb(255,203,103,215),
+										SysColor.FromArgb(255,199,100,212),
+										SysColor.FromArgb(255,195,96,210),
+										SysColor.FromArgb(255,191,93,207),
+										SysColor.FromArgb(255,187,89,204),
+										SysColor.FromArgb(255,184,86,202),
+										SysColor.FromArgb(255,180,83,200),
+										SysColor.FromArgb(255,176,80,197),
+										SysColor.FromArgb(255,172,77,195),
+										SysColor.FromArgb(255,168,74,192),
+										SysColor.FromArgb(255,165,71,189),
+										SysColor.FromArgb(255,161,68,187),
+										SysColor.FromArgb(255,157,65,184),
+										SysColor.FromArgb(255,153,62,181),
+										SysColor.FromArgb(255,149,59,179),
+										SysColor.FromArgb(255,145,56,176),
+										SysColor.FromArgb(255,141,53,174),
+										SysColor.FromArgb(255,137,50,172),
+										SysColor.FromArgb(255,133,47,169),
+										SysColor.FromArgb(255,129,44,166),
+										SysColor.FromArgb(255,125,41,164),
+										SysColor.FromArgb(255,122,38,161),
+										SysColor.FromArgb(255,118,35,158),
+										SysColor.FromArgb(255,114,31,156),
+										SysColor.FromArgb(255,110,28,153),
+										SysColor.FromArgb(255,106,24,150),
+										SysColor.FromArgb(255,102,21,148),
+										SysColor.FromArgb(255,98,18,146),
+										SysColor.FromArgb(255,94,15,143),
+										SysColor.FromArgb(255,90,12,141),
+										SysColor.FromArgb(255,86,9,138),
+										SysColor.FromArgb(255,83,6,135),
+										SysColor.FromArgb(255,79,3,133),
+										SysColor.FromArgb(255,238,130,238),
+										SysColor.FromArgb(255,73,0,133),
+										SysColor.FromArgb(255,71,0,136),
+										SysColor.FromArgb(255,69,0,139),
+										SysColor.FromArgb(255,68,0,142),
+										SysColor.FromArgb(255,66,0,145),
+										SysColor.FromArgb(255,65,0,148),
+										SysColor.FromArgb(255,63,0,151),
+										SysColor.FromArgb(255,61,0,153),
+										SysColor.FromArgb(255,59,0,156),
+										SysColor.FromArgb(255,57,0,160),
+										SysColor.FromArgb(255,55,0,163),
+										SysColor.FromArgb(255,54,0,166),
+										SysColor.FromArgb(255,52,0,169),
+										SysColor.FromArgb(255,50,0,172),
+										SysColor.FromArgb(255,48,0,175),
+										SysColor.FromArgb(255,47,0,178),
+										SysColor.FromArgb(255,45,0,181),
+										SysColor.FromArgb(255,43,0,184),
+										SysColor.FromArgb(255,41,0,187),
+										SysColor.FromArgb(255,40,0,190),
+										SysColor.FromArgb(255,38,0,193),
+										SysColor.FromArgb(255,36,0,196),
+										SysColor.FromArgb(255,34,0,198),
+										SysColor.FromArgb(255,32,0,201),
+										SysColor.FromArgb(255,30,0,204),
+										SysColor.FromArgb(255,28,0,207),
+										SysColor.FromArgb(255,27,0,210),
+										SysColor.FromArgb(255,25,0,213),
+										SysColor.FromArgb(255,23,0,216),
+										SysColor.FromArgb(255,21,0,219),
+										SysColor.FromArgb(255,20,0,223),
+										SysColor.FromArgb(255,18,0,226),
+										SysColor.FromArgb(255,16,0,229),
+										SysColor.FromArgb(255,14,0,232),
+										SysColor.FromArgb(255,12,0,234),
+										SysColor.FromArgb(255,10,0,237),
+										SysColor.FromArgb(255,9,0,240),
+										SysColor.FromArgb(255,7,0,243),
+										SysColor.FromArgb(255,6,0,246),
+										SysColor.FromArgb(255,4,0,249),
+										SysColor.FromArgb(255,2,0,252),
+										SysColor.FromArgb(255,75,0,130),
+										SysColor.FromArgb(255,0,3,249),
+										SysColor.FromArgb(255,0,6,243),
+										SysColor.FromArgb(255,0,9,237),
+										SysColor.FromArgb(255,0,12,231),
+										SysColor.FromArgb(255,0,15,225),
+										SysColor.FromArgb(255,0,18,218),
+										SysColor.FromArgb(255,0,21,212),
+										SysColor.FromArgb(255,0,24,206),
+										SysColor.FromArgb(255,0,27,200),
+										SysColor.FromArgb(255,0,31,194),
+										SysColor.FromArgb(255,0,34,188),
+										SysColor.FromArgb(255,0,37,182),
+										SysColor.FromArgb(255,0,40,176),
+										SysColor.FromArgb(255,0,43,170),
+										SysColor.FromArgb(255,0,46,164),
+										SysColor.FromArgb(255,0,49,157),
+										SysColor.FromArgb(255,0,52,151),
+										SysColor.FromArgb(255,0,55,145),
+										SysColor.FromArgb(255,0,58,139),
+										SysColor.FromArgb(255,0,61,134),
+										SysColor.FromArgb(255,0,64,128),
+										SysColor.FromArgb(255,0,67,122),
+										SysColor.FromArgb(255,0,70,116),
+										SysColor.FromArgb(255,0,73,110),
+										SysColor.FromArgb(255,0,76,104),
+										SysColor.FromArgb(255,0,79,98),
+										SysColor.FromArgb(255,0,82,91),
+										SysColor.FromArgb(255,0,85,85),
+										SysColor.FromArgb(255,0,88,79),
+										SysColor.FromArgb(255,0,91,73),
+										SysColor.FromArgb(255,0,95,67),
+										SysColor.FromArgb(255,0,98,61),
+										SysColor.FromArgb(255,0,101,55),
+										SysColor.FromArgb(255,0,104,49),
+										SysColor.FromArgb(255,0,107,43),
+										SysColor.FromArgb(255,0,110,37),
+										SysColor.FromArgb(255,0,113,30),
+										SysColor.FromArgb(255,0,116,24),
+										SysColor.FromArgb(255,0,119,18),
+										SysColor.FromArgb(255,0,122,12),
+										SysColor.FromArgb(255,0,125,6),
+										SysColor.FromArgb(255,0,0,255),
+										SysColor.FromArgb(255,6,131,0),
+										SysColor.FromArgb(255,12,134,0),
+										SysColor.FromArgb(255,18,137,0),
+										SysColor.FromArgb(255,24,140,0),
+										SysColor.FromArgb(255,31,143,0),
+										SysColor.FromArgb(255,37,146,0),
+										SysColor.FromArgb(255,43,149,0),
+										SysColor.FromArgb(255,49,152,0),
+										SysColor.FromArgb(255,55,155,0),
+										SysColor.FromArgb(255,61,159,0),
+										SysColor.FromArgb(255,67,162,0),
+										SysColor.FromArgb(255,73,165,0),
+										SysColor.FromArgb(255,79,168,0),
+										SysColor.FromArgb(255,85,171,0),
+										SysColor.FromArgb(255,91,174,0),
+										SysColor.FromArgb(255,98,177,0),
+										SysColor.FromArgb(255,104,180,0),
+										SysColor.FromArgb(255,110,183,0),
+										SysColor.FromArgb(255,116,186,0),
+										SysColor.FromArgb(255,122,189,0),
+										SysColor.FromArgb(255,128,192,0),
+										SysColor.FromArgb(255,134,195,0),
+										SysColor.FromArgb(255,139,197,0),
+										SysColor.FromArgb(255,145,200,0),
+										SysColor.FromArgb(255,151,203,0),
+										SysColor.FromArgb(255,158,206,0),
+										SysColor.FromArgb(255,164,209,0),
+										SysColor.FromArgb(255,170,212,0),
+										SysColor.FromArgb(255,176,215,0),
+										SysColor.FromArgb(255,182,218,0),
+										SysColor.FromArgb(255,188,222,0),
+										SysColor.FromArgb(255,194,225,0),
+										SysColor.FromArgb(255,200,228,0),
+										SysColor.FromArgb(255,206,231,0),
+										SysColor.FromArgb(255,212,234,0),
+										SysColor.FromArgb(255,218,237,0),
+										SysColor.FromArgb(255,225,240,0),
+										SysColor.FromArgb(255,231,243,0),
+										SysColor.FromArgb(255,237,246,0),
+										SysColor.FromArgb(255,243,249,0),
+										SysColor.FromArgb(255,249,252,0),
+										SysColor.FromArgb(255,0,128,0),
+										SysColor.FromArgb(255,255,253,0),
+										SysColor.FromArgb(255,255,250,0),
+										SysColor.FromArgb(255,255,248,0),
+										SysColor.FromArgb(255,255,246,0),
+										SysColor.FromArgb(255,255,244,0),
+										SysColor.FromArgb(255,255,242,0),
+										SysColor.FromArgb(255,255,240,0),
+										SysColor.FromArgb(255,255,238,0),
+										SysColor.FromArgb(255,255,236,0),
+										SysColor.FromArgb(255,255,234,0),
+										SysColor.FromArgb(255,255,232,0),
+										SysColor.FromArgb(255,255,230,0),
+										SysColor.FromArgb(255,255,227,0),
+										SysColor.FromArgb(255,255,225,0),
+										SysColor.FromArgb(255,255,223,0),
+										SysColor.FromArgb(255,255,221,0),
+										SysColor.FromArgb(255,255,219,0),
+										SysColor.FromArgb(255,255,217,0),
+										SysColor.FromArgb(255,255,215,0),
+										SysColor.FromArgb(255,255,212,0),
+										SysColor.FromArgb(255,255,210,0),
+										SysColor.FromArgb(255,255,208,0),
+										SysColor.FromArgb(255,255,205,0),
+										SysColor.FromArgb(255,255,203,0),
+										SysColor.FromArgb(255,255,201,0),
+										SysColor.FromArgb(255,255,199,0),
+										SysColor.FromArgb(255,255,197,0),
+										SysColor.FromArgb(255,255,195,0),
+										SysColor.FromArgb(255,255,193,0),
+										SysColor.FromArgb(255,255,191,0),
+										SysColor.FromArgb(255,255,189,0),
+										SysColor.FromArgb(255,255,187,0),
+										SysColor.FromArgb(255,255,185,0),
+										SysColor.FromArgb(255,255,182,0),
+										SysColor.FromArgb(255,255,180,0),
+										SysColor.FromArgb(255,255,178,0),
+										SysColor.FromArgb(255,255,176,0),
+										SysColor.FromArgb(255,255,174,0),
+										SysColor.FromArgb(255,255,172,0),
+										SysColor.FromArgb(255,255,170,0),
+										SysColor.FromArgb(255,255,167,0),
+										SysColor.FromArgb(255,255,255,0),
+										SysColor.FromArgb(255,255,161,0),
+										SysColor.FromArgb(255,255,157,0),
+										SysColor.FromArgb(255,255,153,0),
+										SysColor.FromArgb(255,255,149,0),
+										SysColor.FromArgb(255,255,145,0),
+										SysColor.FromArgb(255,255,141,0),
+										SysColor.FromArgb(255,255,137,0),
+										SysColor.FromArgb(255,255,133,0),
+										SysColor.FromArgb(255,255,130,0),
+										SysColor.FromArgb(255,255,126,0),
+										SysColor.FromArgb(255,255,122,0),
+										SysColor.FromArgb(255,255,118,0),
+										SysColor.FromArgb(255,255,114,0),
+										SysColor.FromArgb(255,255,110,0),
+										SysColor.FromArgb(255,255,106,0),
+										SysColor.FromArgb(255,255,102,0),
+										SysColor.FromArgb(255,255,98,0),
+										SysColor.FromArgb(255,255,94,0),
+										SysColor.FromArgb(255,255,91,0),
+										SysColor.FromArgb(255,255,87,0),
+										SysColor.FromArgb(255,255,83,0),
+										SysColor.FromArgb(255,255,79,0),
+										SysColor.FromArgb(255,255,75,0),
+										SysColor.FromArgb(255,255,71,0),
+										SysColor.FromArgb(255,255,67,0),
+										SysColor.FromArgb(255,255,63,0),
+										SysColor.FromArgb(255,255,59,0),
+										SysColor.FromArgb(255,255,55,0),
+										SysColor.FromArgb(255,255,51,0),
+										SysColor.FromArgb(255,255,47,0),
+										SysColor.FromArgb(255,255,43,0),
+										SysColor.FromArgb(255,255,39,0),
+										SysColor.FromArgb(255,255,35,0),
+										SysColor.FromArgb(255,255,31,0),
+										SysColor.FromArgb(255,255,28,0),
+										SysColor.FromArgb(255,255,24,0),
+										SysColor.FromArgb(255,255,20,0),
+										SysColor.FromArgb(255,255,16,0),
+										SysColor.FromArgb(255,255,12,0),
+										SysColor.FromArgb(255,255,8,0),
+										SysColor.FromArgb(255,255,4,0),
+										SysColor.FromArgb(255,255,0,0),
+										SysColor.FromArgb(255,255,4,0),
+										SysColor.FromArgb(255,255,8,0),
+										SysColor.FromArgb(255,255,12,0),
+										SysColor.FromArgb(255,255,16,0),
+										SysColor.FromArgb(255,255,20,0),
+										SysColor.FromArgb(255,255,24,0),
+										SysColor.FromArgb(255,255,28,0),
+										SysColor.FromArgb(255,255,31,0),
+										SysColor.FromArgb(255,255,35,0),
+										SysColor.FromArgb(255,255,39,0),
+										SysColor.FromArgb(255,255,43,0),
+										SysColor.FromArgb(255,255,47,0),
+										SysColor.FromArgb(255,255,51,0),
+										SysColor.FromArgb(255,255,55,0),
+										SysColor.FromArgb(255,255,59,0),
+										SysColor.FromArgb(255,255,63,0),
+										SysColor.FromArgb(255,255,67,0),
+										SysColor.FromArgb(255,255,71,0),
+										SysColor.FromArgb(255,255,75,0),
+										SysColor.FromArgb(255,255,79,0),
+										SysColor.FromArgb(255,255,83,0),
+										SysColor.FromArgb(255,255,87,0),
+										SysColor.FromArgb(255,255,91,0),
+										SysColor.FromArgb(255,255,94,0),
+										SysColor.FromArgb(255,255,98,0),
+										SysColor.FromArgb(255,255,102,0),
+										SysColor.FromArgb(255,255,106,0),
+										SysColor.FromArgb(255,255,110,0),
+										SysColor.FromArgb(255,255,114,0),
+										SysColor.FromArgb(255,255,118,0),
+										SysColor.FromArgb(255,255,122,0),
+										SysColor.FromArgb(255,255,126,0),
+										SysColor.FromArgb(255,255,130,0),
+										SysColor.FromArgb(255,255,133,0),
+										SysColor.FromArgb(255,255,137,0),
+										SysColor.FromArgb(255,255,141,0),
+										SysColor.FromArgb(255,255,145,0),
+										SysColor.FromArgb(255,255,149,0),
+										SysColor.FromArgb(255,255,153,0),
+										SysColor.FromArgb(255,255,157,0),
+										SysColor.FromArgb(255,255,161,0),
+										SysColor.FromArgb(255,255,255,0),
+										SysColor.FromArgb(255,255,167,0),
+										SysColor.FromArgb(255,255,170,0),
+										SysColor.FromArgb(255,255,172,0),
+										SysColor.FromArgb(255,255,174,0),
+										SysColor.FromArgb(255,255,176,0),
+										SysColor.FromArgb(255,255,178,0),
+										SysColor.FromArgb(255,255,180,0),
+										SysColor.FromArgb(255,255,182,0),
+										SysColor.FromArgb(255,255,185,0),
+										SysColor.FromArgb(255,255,187,0),
+										SysColor.FromArgb(255,255,189,0),
+										SysColor.FromArgb(255,255,191,0),
+										SysColor.FromArgb(255,255,193,0),
+										SysColor.FromArgb(255,255,195,0),
+										SysColor.FromArgb(255,255,197,0),
+										SysColor.FromArgb(255,255,199,0),
+										SysColor.FromArgb(255,255,201,0),
+										SysColor.FromArgb(255,255,203,0),
+										SysColor.FromArgb(255,255,205,0),
+										SysColor.FromArgb(255,255,208,0),
+										SysColor.FromArgb(255,255,210,0),
+										SysColor.FromArgb(255,255,212,0),
+										SysColor.FromArgb(255,255,215,0),
+										SysColor.FromArgb(255,255,217,0),
+										SysColor.FromArgb(255,255,219,0),
+										SysColor.FromArgb(255,255,221,0),
+										SysColor.FromArgb(255,255,223,0),
+										SysColor.FromArgb(255,255,225,0),
+										SysColor.FromArgb(255,255,227,0),
+										SysColor.FromArgb(255,255,230,0),
+										SysColor.FromArgb(255,255,232,0),
+										SysColor.FromArgb(255,255,234,0),
+										SysColor.FromArgb(255,255,236,0),
+										SysColor.FromArgb(255,255,238,0),
+										SysColor.FromArgb(255,255,240,0),
+										SysColor.FromArgb(255,255,242,0),
+										SysColor.FromArgb(255,255,244,0),
+										SysColor.FromArgb(255,255,246,0),
+										SysColor.FromArgb(255,255,248,0),
+										SysColor.FromArgb(255,255,250,0),
+										SysColor.FromArgb(255,255,253,0),
+										SysColor.FromArgb(255,0,128,0),
+										SysColor.FromArgb(255,249,252,0),
+										SysColor.FromArgb(255,243,249,0),
+										SysColor.FromArgb(255,237,246,0),
+										SysColor.FromArgb(255,231,243,0),
+										SysColor.FromArgb(255,225,240,0),
+										SysColor.FromArgb(255,218,237,0),
+										SysColor.FromArgb(255,212,234,0),
+										SysColor.FromArgb(255,206,231,0),
+										SysColor.FromArgb(255,200,228,0),
+										SysColor.FromArgb(255,194,225,0),
+										SysColor.FromArgb(255,188,222,0),
+										SysColor.FromArgb(255,182,218,0),
+										SysColor.FromArgb(255,176,215,0),
+										SysColor.FromArgb(255,170,212,0),
+										SysColor.FromArgb(255,164,209,0),
+										SysColor.FromArgb(255,158,206,0),
+										SysColor.FromArgb(255,151,203,0),
+										SysColor.FromArgb(255,145,200,0),
+										SysColor.FromArgb(255,139,197,0),
+										SysColor.FromArgb(255,134,195,0),
+										SysColor.FromArgb(255,128,192,0),
+										SysColor.FromArgb(255,122,189,0),
+										SysColor.FromArgb(255,116,186,0),
+										SysColor.FromArgb(255,110,183,0),
+										SysColor.FromArgb(255,104,180,0),
+										SysColor.FromArgb(255,98,177,0),
+										SysColor.FromArgb(255,91,174,0),
+										SysColor.FromArgb(255,85,171,0),
+										SysColor.FromArgb(255,79,168,0),
+										SysColor.FromArgb(255,73,165,0),
+										SysColor.FromArgb(255,67,162,0),
+										SysColor.FromArgb(255,61,159,0),
+										SysColor.FromArgb(255,55,155,0),
+										SysColor.FromArgb(255,49,152,0),
+										SysColor.FromArgb(255,43,149,0),
+										SysColor.FromArgb(255,37,146,0),
+										SysColor.FromArgb(255,31,143,0),
+										SysColor.FromArgb(255,24,140,0),
+										SysColor.FromArgb(255,18,137,0),
+										SysColor.FromArgb(255,12,134,0),
+										SysColor.FromArgb(255,6,131,0),
+										SysColor.FromArgb(255,0,0,255),
+										SysColor.FromArgb(255,0,125,6),
+										SysColor.FromArgb(255,0,122,12),
+										SysColor.FromArgb(255,0,119,18),
+										SysColor.FromArgb(255,0,116,24),
+										SysColor.FromArgb(255,0,113,30),
+										SysColor.FromArgb(255,0,110,37),
+										SysColor.FromArgb(255,0,107,43),
+										SysColor.FromArgb(255,0,104,49),
+										SysColor.FromArgb(255,0,101,55),
+										SysColor.FromArgb(255,0,98,61),
+										SysColor.FromArgb(255,0,95,67),
+										SysColor.FromArgb(255,0,91,73),
+										SysColor.FromArgb(255,0,88,79),
+										SysColor.FromArgb(255,0,85,85),
+										SysColor.FromArgb(255,0,82,91),
+										SysColor.FromArgb(255,0,79,98),
+										SysColor.FromArgb(255,0,76,104),
+										SysColor.FromArgb(255,0,73,110),
+										SysColor.FromArgb(255,0,70,116),
+										SysColor.FromArgb(255,0,67,122),
+										SysColor.FromArgb(255,0,64,128),
+										SysColor.FromArgb(255,0,61,134),
+										SysColor.FromArgb(255,0,58,139),
+										SysColor.FromArgb(255,0,55,145),
+										SysColor.FromArgb(255,0,52,151),
+										SysColor.FromArgb(255,0,49,157),
+										SysColor.FromArgb(255,0,46,164),
+										SysColor.FromArgb(255,0,43,170),
+										SysColor.FromArgb(255,0,40,176),
+										SysColor.FromArgb(255,0,37,182),
+										SysColor.FromArgb(255,0,34,188),
+										SysColor.FromArgb(255,0,31,194),
+										SysColor.FromArgb(255,0,27,200),
+										SysColor.FromArgb(255,0,24,206),
+										SysColor.FromArgb(255,0,21,212),
+										SysColor.FromArgb(255,0,18,218),
+										SysColor.FromArgb(255,0,15,225),
+										SysColor.FromArgb(255,0,12,231),
+										SysColor.FromArgb(255,0,9,237),
+										SysColor.FromArgb(255,0,6,243),
+										SysColor.FromArgb(255,0,3,249),
+										SysColor.FromArgb(255,75,0,130),
+										SysColor.FromArgb(255,2,0,252),
+										SysColor.FromArgb(255,4,0,249),
+										SysColor.FromArgb(255,6,0,246),
+										SysColor.FromArgb(255,7,0,243),
+										SysColor.FromArgb(255,9,0,240),
+										SysColor.FromArgb(255,10,0,237),
+										SysColor.FromArgb(255,12,0,234),
+										SysColor.FromArgb(255,14,0,232),
+										SysColor.FromArgb(255,16,0,229),
+										SysColor.FromArgb(255,18,0,226),
+										SysColor.FromArgb(255,20,0,223),
+										SysColor.FromArgb(255,21,0,219),
+										SysColor.FromArgb(255,23,0,216),
+										SysColor.FromArgb(255,25,0,213),
+										SysColor.FromArgb(255,27,0,210),
+										SysColor.FromArgb(255,28,0,207),
+										SysColor.FromArgb(255,30,0,204),
+										SysColor.FromArgb(255,32,0,201),
+										SysColor.FromArgb(255,34,0,198),
+										SysColor.FromArgb(255,36,0,196),
+										SysColor.FromArgb(255,38,0,193),
+										SysColor.FromArgb(255,40,0,190),
+										SysColor.FromArgb(255,41,0,187),
+										SysColor.FromArgb(255,43,0,184),
+										SysColor.FromArgb(255,45,0,181),
+										SysColor.FromArgb(255,47,0,178),
+										SysColor.FromArgb(255,48,0,175),
+										SysColor.FromArgb(255,50,0,172),
+										SysColor.FromArgb(255,52,0,169),
+										SysColor.FromArgb(255,54,0,166),
+										SysColor.FromArgb(255,55,0,163),
+										SysColor.FromArgb(255,57,0,160),
+										SysColor.FromArgb(255,59,0,156),
+										SysColor.FromArgb(255,61,0,153),
+										SysColor.FromArgb(255,63,0,151),
+										SysColor.FromArgb(255,65,0,148),
+										SysColor.FromArgb(255,66,0,145),
+										SysColor.FromArgb(255,68,0,142),
+										SysColor.FromArgb(255,69,0,139),
+										SysColor.FromArgb(255,71,0,136),
+										SysColor.FromArgb(255,73,0,133),
+										SysColor.FromArgb(255,238,130,238),
+										SysColor.FromArgb(255,79,3,133),
+										SysColor.FromArgb(255,83,6,135),
+										SysColor.FromArgb(255,86,9,138),
+										SysColor.FromArgb(255,90,12,141),
+										SysColor.FromArgb(255,94,15,143),
+										SysColor.FromArgb(255,98,18,146),
+										SysColor.FromArgb(255,102,21,148),
+										SysColor.FromArgb(255,106,24,150),
+										SysColor.FromArgb(255,110,28,153),
+										SysColor.FromArgb(255,114,31,156),
+										SysColor.FromArgb(255,118,35,158),
+										SysColor.FromArgb(255,122,38,161),
+										SysColor.FromArgb(255,125,41,164),
+										SysColor.FromArgb(255,129,44,166),
+										SysColor.FromArgb(255,133,47,169),
+										SysColor.FromArgb(255,137,50,172),
+										SysColor.FromArgb(255,141,53,174),
+										SysColor.FromArgb(255,145,56,176),
+										SysColor.FromArgb(255,149,59,179),
+										SysColor.FromArgb(255,153,62,181),
+										SysColor.FromArgb(255,157,65,184),
+										SysColor.FromArgb(255,161,68,187),
+										SysColor.FromArgb(255,165,71,189),
+										SysColor.FromArgb(255,168,74,192),
+										SysColor.FromArgb(255,172,77,195),
+										SysColor.FromArgb(255,176,80,197),
+										SysColor.FromArgb(255,180,83,200),
+										SysColor.FromArgb(255,184,86,202),
+										SysColor.FromArgb(255,187,89,204),
+										SysColor.FromArgb(255,191,93,207),
+										SysColor.FromArgb(255,195,96,210),
+										SysColor.FromArgb(255,199,100,212),
+										SysColor.FromArgb(255,203,103,215),
+										SysColor.FromArgb(255,206,106,218),
+										SysColor.FromArgb(255,211,109,220),
+										SysColor.FromArgb(255,215,112,223),
+										SysColor.FromArgb(255,219,115,226),
+										SysColor.FromArgb(255,223,118,228),
+										SysColor.FromArgb(255,227,121,230),
+										SysColor.FromArgb(255,230,124,233),
+										SysColor.FromArgb(255,234,127,235),
+										SysColor.FromArgb(255,238,130,238),
+										SysColor.FromArgb(255,234,127,235),
+										SysColor.FromArgb(255,230,124,233),
+										SysColor.FromArgb(255,227,121,230),
+										SysColor.FromArgb(255,223,118,228),
+										SysColor.FromArgb(255,219,115,226),
+										SysColor.FromArgb(255,215,112,223),
+										SysColor.FromArgb(255,211,109,220),
+										SysColor.FromArgb(255,206,106,218),
+										SysColor.FromArgb(255,203,103,215),
+										SysColor.FromArgb(255,199,100,212),
+										SysColor.FromArgb(255,195,96,210),
+										SysColor.FromArgb(255,191,93,207),
+										SysColor.FromArgb(255,187,89,204),
+										SysColor.FromArgb(255,184,86,202),
+										SysColor.FromArgb(255,180,83,200),
+										SysColor.FromArgb(255,176,80,197),
+										SysColor.FromArgb(255,172,77,195),
+										SysColor.FromArgb(255,168,74,192),
+										SysColor.FromArgb(255,165,71,189),
+										SysColor.FromArgb(255,161,68,187),
+										SysColor.FromArgb(255,157,65,184),
+										SysColor.FromArgb(255,153,62,181),
+										SysColor.FromArgb(255,149,59,179),
+										SysColor.FromArgb(255,145,56,176),
+										SysColor.FromArgb(255,141,53,174),
+										SysColor.FromArgb(255,137,50,172),
+										SysColor.FromArgb(255,133,47,169),
+										SysColor.FromArgb(255,129,44,166),
+										SysColor.FromArgb(255,125,41,164),
+										SysColor.FromArgb(255,122,38,161),
+										SysColor.FromArgb(255,118,35,158),
+										SysColor.FromArgb(255,114,31,156),
+										SysColor.FromArgb(255,110,28,153),
+										SysColor.FromArgb(255,106,24,150),
+										SysColor.FromArgb(255,102,21,148),
+										SysColor.FromArgb(255,98,18,146),
+										SysColor.FromArgb(255,94,15,143),
+										SysColor.FromArgb(255,90,12,141),
+										SysColor.FromArgb(255,86,9,138),
+										SysColor.FromArgb(255,83,6,135),
+										SysColor.FromArgb(255,79,3,133),
+										SysColor.FromArgb(255,238,130,238),
+										SysColor.FromArgb(255,73,0,133),
+										SysColor.FromArgb(255,71,0,136),
+										SysColor.FromArgb(255,69,0,139),
+										SysColor.FromArgb(255,68,0,142),
+										SysColor.FromArgb(255,66,0,145),
+										SysColor.FromArgb(255,65,0,148),
+										SysColor.FromArgb(255,63,0,151),
+										SysColor.FromArgb(255,61,0,153),
+										SysColor.FromArgb(255,59,0,156),
+										SysColor.FromArgb(255,57,0,160),
+										SysColor.FromArgb(255,55,0,163),
+										SysColor.FromArgb(255,54,0,166),
+										SysColor.FromArgb(255,52,0,169),
+										SysColor.FromArgb(255,50,0,172),
+										SysColor.FromArgb(255,48,0,175),
+										SysColor.FromArgb(255,47,0,178),
+										SysColor.FromArgb(255,45,0,181),
+										SysColor.FromArgb(255,43,0,184),
+										SysColor.FromArgb(255,41,0,187),
+										SysColor.FromArgb(255,40,0,190),
+										SysColor.FromArgb(255,38,0,193),
+										SysColor.FromArgb(255,36,0,196),
+										SysColor.FromArgb(255,34,0,198),
+										SysColor.FromArgb(255,32,0,201),
+										SysColor.FromArgb(255,30,0,204),
+										SysColor.FromArgb(255,28,0,207),
+										SysColor.FromArgb(255,27,0,210),
+										SysColor.FromArgb(255,25,0,213),
+										SysColor.FromArgb(255,23,0,216),
+										SysColor.FromArgb(255,21,0,219),
+										SysColor.FromArgb(255,20,0,223),
+										SysColor.FromArgb(255,18,0,226),
+										SysColor.FromArgb(255,16,0,229),
+										SysColor.FromArgb(255,14,0,232),
+										SysColor.FromArgb(255,12,0,234),
+										SysColor.FromArgb(255,10,0,237),
+										SysColor.FromArgb(255,9,0,240),
+										SysColor.FromArgb(255,7,0,243),
+										SysColor.FromArgb(255,6,0,246),
+										SysColor.FromArgb(255,4,0,249),
+										SysColor.FromArgb(255,2,0,252),
+										SysColor.FromArgb(255,75,0,130),
+										SysColor.FromArgb(255,0,3,249),
+										SysColor.FromArgb(255,0,6,243),
+										SysColor.FromArgb(255,0,9,237),
+										SysColor.FromArgb(255,0,12,231),
+										SysColor.FromArgb(255,0,15,225),
+										SysColor.FromArgb(255,0,18,218),
+										SysColor.FromArgb(255,0,21,212),
+										SysColor.FromArgb(255,0,24,206),
+										SysColor.FromArgb(255,0,27,200),
+										SysColor.FromArgb(255,0,31,194),
+										SysColor.FromArgb(255,0,34,188),
+										SysColor.FromArgb(255,0,37,182),
+										SysColor.FromArgb(255,0,40,176),
+										SysColor.FromArgb(255,0,43,170),
+										SysColor.FromArgb(255,0,46,164),
+										SysColor.FromArgb(255,0,49,157),
+										SysColor.FromArgb(255,0,52,151),
+										SysColor.FromArgb(255,0,55,145),
+										SysColor.FromArgb(255,0,58,139),
+										SysColor.FromArgb(255,0,61,134),
+										SysColor.FromArgb(255,0,64,128),
+										SysColor.FromArgb(255,0,67,122),
+										SysColor.FromArgb(255,0,70,116),
+										SysColor.FromArgb(255,0,73,110),
+										SysColor.FromArgb(255,0,76,104),
+										SysColor.FromArgb(255,0,79,98),
+										SysColor.FromArgb(255,0,82,91),
+										SysColor.FromArgb(255,0,85,85),
+										SysColor.FromArgb(255,0,88,79),
+										SysColor.FromArgb(255,0,91,73),
+										SysColor.FromArgb(255,0,95,67),
+										SysColor.FromArgb(255,0,98,61),
+										SysColor.FromArgb(255,0,101,55),
+										SysColor.FromArgb(255,0,104,49),
+										SysColor.FromArgb(255,0,107,43),
+										SysColor.FromArgb(255,0,110,37),
+										SysColor.FromArgb(255,0,113,30),
+										SysColor.FromArgb(255,0,116,24),
+										SysColor.FromArgb(255,0,119,18),
+										SysColor.FromArgb(255,0,122,12),
+										SysColor.FromArgb(255,0,125,6),
+										SysColor.FromArgb(255,0,0,255),
+										SysColor.FromArgb(255,6,131,0),
+										SysColor.FromArgb(255,12,134,0),
+										SysColor.FromArgb(255,18,137,0),
+										SysColor.FromArgb(255,24,140,0),
+										SysColor.FromArgb(255,31,143,0),
+										SysColor.FromArgb(255,37,146,0),
+										SysColor.FromArgb(255,43,149,0),
+										SysColor.FromArgb(255,49,152,0),
+										SysColor.FromArgb(255,55,155,0),
+										SysColor.FromArgb(255,61,159,0),
+										SysColor.FromArgb(255,67,162,0),
+										SysColor.FromArgb(255,73,165,0),
+										SysColor.FromArgb(255,79,168,0),
+										SysColor.FromArgb(255,85,171,0),
+										SysColor.FromArgb(255,91,174,0),
+										SysColor.FromArgb(255,98,177,0),
+										SysColor.FromArgb(255,104,180,0),
+										SysColor.FromArgb(255,110,183,0),
+										SysColor.FromArgb(255,116,186,0),
+										SysColor.FromArgb(255,122,189,0),
+										SysColor.FromArgb(255,128,192,0),
+										SysColor.FromArgb(255,134,195,0),
+										SysColor.FromArgb(255,139,197,0),
+										SysColor.FromArgb(255,145,200,0),
+										SysColor.FromArgb(255,151,203,0),
+										SysColor.FromArgb(255,158,206,0),
+										SysColor.FromArgb(255,164,209,0),
+										SysColor.FromArgb(255,170,212,0),
+										SysColor.FromArgb(255,176,215,0),
+										SysColor.FromArgb(255,182,218,0),
+										SysColor.FromArgb(255,188,222,0),
+										SysColor.FromArgb(255,194,225,0),
+										SysColor.FromArgb(255,200,228,0),
+										SysColor.FromArgb(255,206,231,0),
+										SysColor.FromArgb(255,212,234,0),
+										SysColor.FromArgb(255,218,237,0),
+										SysColor.FromArgb(255,225,240,0),
+										SysColor.FromArgb(255,231,243,0),
+										SysColor.FromArgb(255,237,246,0),
+										SysColor.FromArgb(255,243,249,0),
+										SysColor.FromArgb(255,249,252,0),
+										SysColor.FromArgb(255,0,128,0),
+										SysColor.FromArgb(255,255,253,0),
+										SysColor.FromArgb(255,255,250,0),
+										SysColor.FromArgb(255,255,248,0),
+										SysColor.FromArgb(255,255,246,0),
+										SysColor.FromArgb(255,255,244,0),
+										SysColor.FromArgb(255,255,242,0),
+										SysColor.FromArgb(255,255,240,0),
+										SysColor.FromArgb(255,255,238,0),
+										SysColor.FromArgb(255,255,236,0),
+										SysColor.FromArgb(255,255,234,0),
+										SysColor.FromArgb(255,255,232,0),
+										SysColor.FromArgb(255,255,230,0),
+										SysColor.FromArgb(255,255,227,0),
+										SysColor.FromArgb(255,255,225,0),
+										SysColor.FromArgb(255,255,223,0),
+										SysColor.FromArgb(255,255,221,0),
+										SysColor.FromArgb(255,255,219,0),
+										SysColor.FromArgb(255,255,217,0),
+										SysColor.FromArgb(255,255,215,0),
+										SysColor.FromArgb(255,255,212,0),
+										SysColor.FromArgb(255,255,210,0),
+										SysColor.FromArgb(255,255,208,0),
+										SysColor.FromArgb(255,255,205,0),
+										SysColor.FromArgb(255,255,203,0),
+										SysColor.FromArgb(255,255,201,0),
+										SysColor.FromArgb(255,255,199,0),
+										SysColor.FromArgb(255,255,197,0),
+										SysColor.FromArgb(255,255,195,0),
+										SysColor.FromArgb(255,255,193,0),
+										SysColor.FromArgb(255,255,191,0),
+										SysColor.FromArgb(255,255,189,0),
+										SysColor.FromArgb(255,255,187,0),
+										SysColor.FromArgb(255,255,185,0),
+										SysColor.FromArgb(255,255,182,0),
+										SysColor.FromArgb(255,255,180,0),
+										SysColor.FromArgb(255,255,178,0),
+										SysColor.FromArgb(255,255,176,0),
+										SysColor.FromArgb(255,255,174,0),
+										SysColor.FromArgb(255,255,172,0),
+										SysColor.FromArgb(255,255,170,0),
+										SysColor.FromArgb(255,255,167,0),
+										SysColor.FromArgb(255,255,255,0),
+										SysColor.FromArgb(255,255,161,0),
+										SysColor.FromArgb(255,255,157,0),
+										SysColor.FromArgb(255,255,153,0),
+										SysColor.FromArgb(255,255,149,0),
+										SysColor.FromArgb(255,255,145,0),
+										SysColor.FromArgb(255,255,141,0),
+										SysColor.FromArgb(255,255,137,0),
+										SysColor.FromArgb(255,255,133,0),
+										SysColor.FromArgb(255,255,130,0),
+										SysColor.FromArgb(255,255,126,0),
+										SysColor.FromArgb(255,255,122,0),
+										SysColor.FromArgb(255,255,118,0),
+										SysColor.FromArgb(255,255,114,0),
+										SysColor.FromArgb(255,255,110,0),
+										SysColor.FromArgb(255,255,106,0),
+										SysColor.FromArgb(255,255,102,0),
+										SysColor.FromArgb(255,255,98,0),
+										SysColor.FromArgb(255,255,94,0),
+										SysColor.FromArgb(255,255,91,0),
+										SysColor.FromArgb(255,255,87,0),
+										SysColor.FromArgb(255,255,83,0),
+										SysColor.FromArgb(255,255,79,0),
+										SysColor.FromArgb(255,255,75,0),
+										SysColor.FromArgb(255,255,71,0),
+										SysColor.FromArgb(255,255,67,0),
+										SysColor.FromArgb(255,255,63,0),
+										SysColor.FromArgb(255,255,59,0),
+										SysColor.FromArgb(255,255,55,0),
+										SysColor.FromArgb(255,255,51,0),
+										SysColor.FromArgb(255,255,47,0),
+										SysColor.FromArgb(255,255,43,0),
+										SysColor.FromArgb(255,255,39,0),
+										SysColor.FromArgb(255,255,35,0),
+										SysColor.FromArgb(255,255,31,0),
+										SysColor.FromArgb(255,255,28,0),
+										SysColor.FromArgb(255,255,24,0),
+										SysColor.FromArgb(255,255,20,0),
+										SysColor.FromArgb(255,255,16,0),
+										SysColor.FromArgb(255,255,12,0),
+										SysColor.FromArgb(255,255,8,0),
+										SysColor.FromArgb(255,255,4,0),
+										SysColor.FromArgb(255,255,0,0),
+										SysColor.FromArgb(255,0,0,0),
+										SysColor.FromArgb(255,0,0,0),
+										SysColor.FromArgb(255,0,0,0)
 
 
 		};
-        #endregion
+#endregion
        
     }
 

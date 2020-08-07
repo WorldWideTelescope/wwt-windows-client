@@ -1,9 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
 using System.Xml;
-
+#endif
 namespace TerraViewer
 {
     public class FileEntry
@@ -142,7 +151,8 @@ namespace TerraViewer
                     byte[] buffer = new byte[entry.Size];
                     if (fs.Read(buffer, 0, entry.Size) != entry.Size)
                     {
-                        throw new SystemException(Language.GetLocalizedText(214, "One of the files in the collection is missing, corrupt or inaccessable"));
+                        
+                        throw new System.Exception(Language.GetLocalizedText(214, "One of the files in the collection is missing, corrupt or inaccessable"));
                     }
                     output.Write(buffer, 0, entry.Size);
                     fs.Close();
@@ -176,7 +186,7 @@ namespace TerraViewer
                     int start = data.IndexOf("0x");
                     if (start == -1)
                     {
-                        throw new SystemException(Language.GetLocalizedText(215, "Invalid File Format"));
+                        throw new System.Exception(Language.GetLocalizedText(215, "Invalid File Format"));
                     }
                     headerSize = Convert.ToInt32(data.Substring(start, 10), 16);
 
@@ -188,7 +198,7 @@ namespace TerraViewer
                     data = Encoding.UTF8.GetString(buffer);
                     doc.LoadXml(data);
 
-                    XmlNode cab = doc["FileCabinet"];
+                    XmlNode cab = doc.GetChildByName("FileCabinet");
                     XmlNode files = cab["Files"];
 
                     int offset = headerSize;
@@ -200,9 +210,14 @@ namespace TerraViewer
                         offset += fe.Size;
                         FileList.Add(fe);
                     }
-
+                    bool isMaster = !overwrite;
                     foreach (FileEntry entry in FileList)
                     {
+                        if (isMaster)
+                        {
+                       //     entry.Filename = Guid.NewGuid().ToString() + ".xml";
+                        }
+
                         while (entry.Filename.StartsWith("\\"))
                         {
                             entry.Filename = entry.Filename.Substring(1);
@@ -221,6 +236,16 @@ namespace TerraViewer
                         {
                             Directory.CreateDirectory(dir);
                         }
+                        //// if we are merging alias the old GUID based tour file to a new one.
+                        //if (isMaster && !overwrite && File.Exists(fullPath))
+                        //{
+                        //    Guid newFileGuid = Guid.NewGuid();
+
+                        //    file = newFileGuid.ToString() + ".xml";
+
+                        //    fullPath.
+
+                        //}
 
                         if (overwrite || !File.Exists(fullPath))
                         {
@@ -229,11 +254,13 @@ namespace TerraViewer
                             fs.Seek(entry.Offset, SeekOrigin.Begin);
                             if (fs.Read(buffer, 0, entry.Size) != entry.Size)
                             {
-                                throw new SystemException(Language.GetLocalizedText(214, "One of the files in the collection is missing, corrupt or inaccessable"));
+                                throw new System.Exception(Language.GetLocalizedText(214, "One of the files in the collection is missing, corrupt or inaccessable"));
                             }
                             fileOut.Write(buffer, 0, entry.Size);
                             fileOut.Close();
                         }
+
+                        isMaster = false;
                     }
 
 

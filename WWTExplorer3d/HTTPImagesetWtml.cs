@@ -46,7 +46,7 @@ namespace TerraViewer
             try
             {
                 hash = Convert.ToInt32(id);
-                if (Earth3d.ImagesetHashTable.ContainsKey(hash))
+                if (RenderEngine.ImagesetHashTable.ContainsKey(hash))
                 {
                     
                     StringBuilder sb = new StringBuilder();
@@ -57,7 +57,7 @@ namespace TerraViewer
                         xmlWriter.WriteProcessingInstruction("xml", "version='1.0' encoding='UTF-8'");
                         xmlWriter.WriteStartElement("Folder");
                         
-                        IImageSet imageset = (IImageSet)Earth3d.ImagesetHashTable[hash];
+                        IImageSet imageset = (IImageSet)RenderEngine.ImagesetHashTable[hash];
                         string alternateUrl = "";
 
                         try

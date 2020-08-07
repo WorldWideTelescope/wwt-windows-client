@@ -1,16 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text;
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
 using System.Xml;
-
+#endif
 namespace TerraViewer
 {
-    public enum AltUnits { Meters, Feet, Inches, Miles, Kilometers, AstronomicalUnits, LightYears, Parsecs, MegaParsecs, Custom };
-    public enum FadeType { In, Out, Both, None };
-    public abstract class Layer : IAnimatable
+
+    public abstract class Layer : IAnimatable, IThumbnail
     {
         public virtual LayerUI GetPrimaryUI()
         {
@@ -197,7 +203,7 @@ namespace TerraViewer
             if (paramList.Length == 5)
             {
                 opacity = (float)paramList[4];
-                color = Color.FromArgb((int)(paramList[3] * 255), (int)(paramList[0] * 255), (int)(paramList[1]*255), (int)(paramList[2]*255));
+                color = Color.FromArgb((byte)(paramList[3] * 255), (byte)(paramList[0] * 255), (byte)(paramList[1]*255), (byte)(paramList[2]*255));
             }
         }
 
@@ -213,7 +219,7 @@ namespace TerraViewer
         }
 
 
-        public virtual IUiController GetEditUI()
+        public virtual object GetEditUI()
         {
             return null;
         }
@@ -257,7 +263,7 @@ namespace TerraViewer
             PropertyInfo pi = thisType.GetProperty(name);
             bool safeToSet = false;
             Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
+            var attributes = pi.GetCustomAttributes(false);
             foreach (object var in attributes)
             {
                 if (var.GetType() == layerPropType)
@@ -270,7 +276,7 @@ namespace TerraViewer
             if (safeToSet)
             {
                 //Convert.ChangeType(
-                if (pi.PropertyType.BaseType == typeof(Enum))
+                if (pi.PropertyType.BaseType() == typeof(Enum))
                 {
                     pi.SetValue(this, Enum.Parse(pi.PropertyType, value), null);
                 }
@@ -298,10 +304,14 @@ namespace TerraViewer
             doc.LoadXml(xml);
 
 
-            XmlNode root = doc["LayerApi"];
+            XmlNode root = doc.GetChildByName("LayerApi");
 
             XmlNode LayerNode = root["Layer"];
-            foreach (XmlAttribute attrib in LayerNode.Attributes)
+#if WINDOWS_UWP
+            foreach (var attrib in LayerNode.Attributes)
+#else
+            foreach(XmlAttribute attrib in  LayerNode.Attributes)
+#endif
             {
                 if (attrib.Name == "Class")
                 {
@@ -322,10 +332,10 @@ namespace TerraViewer
             PropertyInfo pi = thisType.GetProperty(name);
             bool safeToGet = false;
             Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
-            foreach (object var in attributes)
+            var attributes = pi.GetCustomAttributes(false);
+            foreach (var attr in attributes)
             {
-                if (var.GetType() == layerPropType)
+                if (attr.GetType() == layerPropType)
                 {
                     safeToGet = true;
                     break;
@@ -363,10 +373,10 @@ namespace TerraViewer
                 {
                     bool safeToGet = false;
 
-                    object[] attributes = pi.GetCustomAttributes(false);
-                    foreach (object var in attributes)
+                    var attributes = pi.GetCustomAttributes(false);
+                    foreach (var attr in attributes)
                     {
-                        if (var.GetType() == layerPropType)
+                        if (attr.GetType() == layerPropType)
                         {
                             safeToGet = true;
                             break;
@@ -467,8 +477,9 @@ namespace TerraViewer
             }
         }
 
+    
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Layer");
             xmlWriter.WriteAttributeString("Id", ID.ToString());
@@ -486,12 +497,12 @@ namespace TerraViewer
 
             xmlWriter.WriteEndElement();
         }
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
 
         }    
         
-        internal static Layer FromXml(System.Xml.XmlNode layerNode, bool someFlag)
+        internal static Layer FromXml(XmlNode layerNode, bool someFlag)
         {
             string layerClassName = layerNode.Attributes["Type"].Value.ToString();
 
@@ -502,7 +513,7 @@ namespace TerraViewer
             return newLayer;
         }
 
-        private void FromXml(System.Xml.XmlNode node)
+        private void FromXml(XmlNode node)
         {
             ID = new Guid(node.Attributes["Id"].Value);
             Name = node.Attributes["Name"].Value;
@@ -545,25 +556,61 @@ namespace TerraViewer
             return;
         }
 
-        public virtual void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             return;
         }
 
 
-/* End Load Save Support
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         */
-        
+        /* End Load Save Support
+                 * 
+                 * 
+                 * 
+                 * 
+                 * 
+                 * 
+                 */
 
 
+        string IThumbnail.Name => Name;
 
+        Bitmap IThumbnail.ThumbNail
+        {
+            get => UiTools.LoadThumbnailByName(Name);
+            set
+            {
 
+            }
+        }
+
+        Rectangle bounds = new Rectangle();
+        Rectangle IThumbnail.Bounds
+        {
+            get => bounds;
+            set => bounds = value;
+        }
+
+        bool IThumbnail.IsImage => false;
+
+        bool IThumbnail.IsTour => false;
+
+        bool IThumbnail.IsFolder => HasChildren();
+
+        bool IThumbnail.IsCloudCommunityItem => false;
+
+        bool IThumbnail.ReadOnly => true;
+
+        object[] IThumbnail.Children => GetChildren();
+
+        public virtual object[] GetChildren()
+        {
+            return null;
+        }
+
+        public virtual bool HasChildren()
+        {
+            return false;
+        }
     }
     class LayerCollection : Layer
     {

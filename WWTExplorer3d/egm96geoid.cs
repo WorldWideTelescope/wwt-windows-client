@@ -28,13 +28,23 @@ namespace TerraViewer
 
         static byte[] ReadData()
         {
+            //todo UWP port this loading code to read from resoruce files
+#if !WINDOWS_UWP
             string name = "TerraViewer.WW15MGH.DAC";
             Stream fs = Earth3d.MainWindow.GetType().Assembly.GetManifestResourceStream(name);
 
             long len = fs.Length;
             BinaryReader br = new BinaryReader(fs);
             return br.ReadBytes((int)fs.Length);
-            
+#else
+
+            string name = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "UwpRenderEngine\\Resources\\cosmos.bin");
+            Stream fs = File.OpenRead(name);
+
+            long len = fs.Length;
+            BinaryReader br = new BinaryReader(fs);
+            return br.ReadBytes((int)fs.Length);
+#endif
         }
         /// <summary>
         /// Returns the EGM96Geoid height for the specified latitude, longitude.

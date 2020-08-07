@@ -311,7 +311,10 @@ namespace TerraViewer
             foreach (XmlNode tourStop in TourStops)
             {
                 currentTourstopIndex++;
-                InsertTourStop(TourStop.FromXml(this, tourStop));
+
+                TourStop ts = TourStop.FromXml(this, tourStop);
+                ts.Id = Guid.NewGuid().ToString();
+                InsertTourStop(ts);
             }
 
             XmlNode Frames = root["ReferenceFrames"];

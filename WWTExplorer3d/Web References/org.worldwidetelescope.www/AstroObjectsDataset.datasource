@@ -6,5 +6,5 @@
     cause the file to be unrecognizable by the program.
 -->
 <GenericObjectDataSource DisplayName="AstroObjectsDataset" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>TerraViewer.org.worldwidetelescope.www.AstroObjectsDataset, WWTExplorer, Version=5.1.9.1, Culture=neutral, PublicKeyToken=null</TypeInfo>
+   <TypeInfo>TerraViewer.org.worldwidetelescope.www.AstroObjectsDataset, Web References.org.worldwidetelescope.www.Reference.cs.dll, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>

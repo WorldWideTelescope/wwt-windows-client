@@ -1,13 +1,18 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
+using System.Xml;
+#endif
 using System.IO;
-using System.IO.Compression;
-using System.Text;
 
 namespace TerraViewer
 {
@@ -70,6 +75,7 @@ namespace TerraViewer
 
             if (!ReadyToRender)
             {
+                this.HighPriority = MakeHighPriority;
                 TileCache.AddTileToQueue(this);
                 if (texture == null)
                 {
@@ -89,8 +95,16 @@ namespace TerraViewer
             renderContext.SetIndexBuffer(indexBuffer);
             renderContext.PreDraw();
             renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            renderContext.devContext.DrawIndexed(6, 0, 0);
-
+            
+            if (RenderContext11.ExternalProjection)
+            {
+                //draw instaced for stereo
+                renderContext.devContext.DrawIndexedInstanced(6, 2, 0, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.DrawIndexed(6, 0, 0);
+            }
 
             return true;
         }
@@ -196,13 +210,13 @@ namespace TerraViewer
                             Height = texture.Height;
                             if (dataset.WcsImage != null)
                             {
-                                if (dataset.WcsImage.SizeX != 0)
+                                if (((WcsImage)dataset.WcsImage).SizeX != 0)
                                 {
-                                    Width = dataset.WcsImage.SizeX;
+                                    Width = ((WcsImage)dataset.WcsImage).SizeX;
                                 }
-                                if (dataset.WcsImage.SizeY != 0)
+                                if (((WcsImage)dataset.WcsImage).SizeY != 0)
                                 {
-                                    Height = dataset.WcsImage.SizeY;
+                                    Height = ((WcsImage)dataset.WcsImage).SizeY;
                                 }
 
                             }
@@ -223,7 +237,7 @@ namespace TerraViewer
                     {
                         if (dataset.WcsImage is FitsImage)
                         {
-                            SetTexture(dataset.WcsImage.GetBitmap());
+                            SetTexture(((WcsImage)dataset.WcsImage).GetBitmap());
                             ReadyToRender = true;
                         }
                     }
@@ -234,7 +248,7 @@ namespace TerraViewer
                         {
                             if (dataset.WcsImage is FitsImage)
                             {
-                                SetTexture(dataset.WcsImage.GetBitmap());
+                                SetTexture(((WcsImage)dataset.WcsImage).GetBitmap());
                                 ReadyToRender = true;
                             }
                         }
@@ -244,8 +258,8 @@ namespace TerraViewer
                         paintColor = Color.White;
                         if (dataset.WcsImage != null)
                         {
-                            paintColor = dataset.WcsImage.Color;
-                            blend = !dataset.WcsImage.ColorCombine;
+                            paintColor = ((WcsImage)dataset.WcsImage).Color;
+                            blend = !((WcsImage)dataset.WcsImage).ColorCombine;
                         }
 
 
@@ -259,7 +273,7 @@ namespace TerraViewer
 
                             try
                             {
-                                texture = Texture11.FromFile(RenderContext11.PrepDevice, FileName);
+                                texture = Texture11.FromFileImediate(RenderContext11.PrepDevice, FileName);
                                 ReadyToRender = true;
            
 
@@ -270,13 +284,13 @@ namespace TerraViewer
                                     Height = texture.Height;
                                     if (dataset.WcsImage != null)
                                     {
-                                        if (dataset.WcsImage.SizeX != 0)
+                                        if (((WcsImage)dataset.WcsImage).SizeX != 0)
                                         {
-                                            Width = dataset.WcsImage.SizeX;
+                                            Width = ((WcsImage)dataset.WcsImage).SizeX;
                                         }
-                                        if (dataset.WcsImage.SizeY != 0)
+                                        if (((WcsImage)dataset.WcsImage).SizeY != 0)
                                         {
-                                            Height = dataset.WcsImage.SizeY;
+                                            Height = ((WcsImage)dataset.WcsImage).SizeY;
                                         }
 
                                     }
@@ -286,19 +300,17 @@ namespace TerraViewer
                             {
                                 try
                                 {
-                                    //texture = Texture.FromBitmap(prepDevice, bmp, Usage.AutoGenerateMipMap, Tile.PoolToUse);
-
-                                    texture = Texture11.FromFile(RenderContext11.PrepDevice, FileName);
+                                    texture = Texture11.FromFileImediate(RenderContext11.PrepDevice, FileName);
                                     ReadyToRender = true;
                                     Width = texture.Width;
                                     Height = texture.Height;
-                                    if (dataset.WcsImage.SizeX != 0)
+                                    if (((WcsImage)dataset.WcsImage).SizeX != 0)
                                     {
-                                        Width = dataset.WcsImage.SizeX;
+                                        Width = ((WcsImage)dataset.WcsImage).SizeX;
                                     }
-                                    if (dataset.WcsImage.SizeY != 0)
+                                    if (((WcsImage)dataset.WcsImage).SizeY != 0)
                                     {
-                                        Height = dataset.WcsImage.SizeY;
+                                        Height = ((WcsImage)dataset.WcsImage).SizeY;
                                     }
                                 }
                                 catch
@@ -310,7 +322,7 @@ namespace TerraViewer
                         }
                     }
                 }
-                
+ 
             }
 
             if (vertexBuffer == null)
@@ -321,10 +333,7 @@ namespace TerraViewer
                 this.OnCreateVertexBuffer(vertexBuffer);
 
             }
-                
-
-            
-            
+                          
             return true;
         }
         public override bool IsTileInFrustum(PlaneD[] frustum)

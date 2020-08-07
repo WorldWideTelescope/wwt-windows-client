@@ -47,7 +47,7 @@ namespace TerraViewer
                     string[] keywords = tour.Keywords.Split(new char[] { ';', ':'});
                     foreach (string id in keywords)
                     {
-                        IPlace place = Search.FindCatalogObject(id);
+                        IPlace place = Catalogs.FindCatalogObject(id);
                         if (place != null)
                         {
                             Place tourPlace = Place.FromIPlace(place);
@@ -56,7 +56,7 @@ namespace TerraViewer
                             tourPlace.Classification = Classification.Unidentified;
                             tourPlace.Tour = tour;
                             ContextSearch.AddPlaceToContextSearch(tourPlace);
-                            Search.AddParts(place.Name, tourPlace);
+                            Catalogs.AddParts(place.Name, tourPlace);
                         }
                     }
                 }
@@ -1018,9 +1018,9 @@ namespace TerraViewer
                         //if (p.StudyImageset.Projection != ProjectionType.SkyImage && p.StudyImageset.Projection != ProjectionType.Tangent)
                         if (p.RA == 0 && p.Dec == 0)
                         {
-                            Earth3d.MainWindow.GotoTarget(p, false, doubleClick, true);
+                            RenderEngine.Engine.GotoTarget(p, false, doubleClick, true);
                             //Earth3d.MainWindow.SetStudyImageset(imageSet, null);
-                            Earth3d.MainWindow.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
+                            RenderEngine.Engine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
                             return;
                         }
                     }
@@ -1037,7 +1037,7 @@ namespace TerraViewer
                     }
                     else
                     {
-                        Earth3d.MainWindow.GotoTarget(p, false, doubleClick, true);
+                        RenderEngine.Engine.GotoTarget(p, false, doubleClick, true);
                     }
 
                 }
@@ -1048,10 +1048,16 @@ namespace TerraViewer
                 else if (e is IImageSet)
                 {
                     IImageSet imageSet = (IImageSet)e;
+                    if(imageSet.Projection == ProjectionType.Healpix && imageSet.Extension == "tsv")
+                    {
+                        LayerManager.AddImagesetLayer(imageSet, "Sky");
+                        return;
+                    }
+
                     if (imageSet.Projection == ProjectionType.SkyImage || imageSet.Projection == ProjectionType.Tangent)
                     {
-                        Earth3d.MainWindow.GotoTarget(new TourPlace("", imageSet.CenterY, imageSet.CenterX / 15, Classification.Unidentified, "UMA", ImageSetType.Sky, imageSet.BaseTileDegrees * 10), false, doubleClick, true);
-                        Earth3d.MainWindow.SetStudyImageset(imageSet, null);
+                        RenderEngine.Engine.GotoTarget(new TourPlace("", imageSet.CenterY, imageSet.CenterX / 15, Classification.Unidentified, "UMA", ImageSetType.Sky, imageSet.BaseTileDegrees * 10), false, doubleClick, true);
+                        RenderEngine.Engine.SetStudyImageset(imageSet, null);
 
                     }
                     else
@@ -1490,12 +1496,12 @@ namespace TerraViewer
 
                 if (imageset != null)
                 {
-                    Earth3d.MainWindow.PreviewImageset = imageset;
-                    Earth3d.MainWindow.PreviewBlend.TargetState = true;
+                    RenderEngine.Engine.PreviewImageset = imageset;
+                    RenderEngine.Engine.PreviewBlend.TargetState = true;
                 }
                 else
                 {
-                    Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                    RenderEngine.Engine.PreviewBlend.TargetState = false;
                 }
             }
             else
@@ -1505,7 +1511,7 @@ namespace TerraViewer
                     toolTips.SetToolTip(BrowseList, ((IThumbnail)e).Name);
                 }
                 Earth3d.MainWindow.SetLabelText(null, false);
-                Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                RenderEngine.Engine.PreviewBlend.TargetState = false;
 
             }
         }
@@ -1516,7 +1522,7 @@ namespace TerraViewer
             {
                 IPlace p = (IPlace)e;
 
-                Earth3d.MainWindow.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
+                RenderEngine.Engine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
             }
             
         }
@@ -1762,74 +1768,5 @@ namespace TerraViewer
         }
     }
 
-    public class FolderUp : IThumbnail
-    {
-
-        #region IThumbnail Members
-
-        public string Name
-        {
-            get { return Language.GetLocalizedText(946, "Up Level"); }
-        }
-
-        public Bitmap ThumbNail
-        {
-            get
-            {
-                return Properties.Resources.FolderUp;
-            }
-            set
-            {
-                return ;
-            }
-        }
-
-        Rectangle bounds;
-        public Rectangle Bounds
-        {
-            get
-            {
-                return bounds;
-            }
-            set
-            {
-                bounds = value;
-            }
-        }
-
-        public bool IsImage
-        {
-            get { return false; }
-        }
-
-        public bool IsCloudCommunityItem
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public bool IsTour
-        {
-            get { return false; }
-        }
-
-        public bool IsFolder
-        {
-            get { return false; }
-        }
-
-        public bool ReadOnly
-        {
-            get { return true; }
-        }
-
-        public object[] Children
-        {
-            get { return null; }
-        }
-
-        #endregion
-    }
+   
 }

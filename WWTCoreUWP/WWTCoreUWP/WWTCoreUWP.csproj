@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C05266FE-6947-42F1-9863-7CDBEED60869}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WWTCoreUWP</RootNamespace>
+    <AssemblyName>WWTCoreUWP</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAAberration.cs">
+      <Link>Astrocalc\AAAberration.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAAngularSeparation.cs">
+      <Link>Astrocalc\AAAngularSeparation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AABinaryStar.cs">
+      <Link>Astrocalc\AABinaryStar.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AACoordinateTransformation.cs">
+      <Link>Astrocalc\AACoordinateTransformation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AADate.cs">
+      <Link>Astrocalc\AADate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AADiameters.cs">
+      <Link>Astrocalc\AADiameters.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AADynamicalTime.cs">
+      <Link>Astrocalc\AADynamicalTime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAEarth.cs">
+      <Link>Astrocalc\AAEarth.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAEaster.cs">
+      <Link>Astrocalc\AAEaster.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAEclipses.cs">
+      <Link>Astrocalc\AAEclipses.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAEclipticalElements.cs">
+      <Link>Astrocalc\AAEclipticalElements.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAElementsPlanetaryOrbit.cs">
+      <Link>Astrocalc\AAElementsPlanetaryOrbit.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAElliptical.cs">
+      <Link>Astrocalc\AAElliptical.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAEquationOfTime.cs">
+      <Link>Astrocalc\AAEquationOfTime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAEquinoxesAndSolstices.cs">
+      <Link>Astrocalc\AAEquinoxesAndSolstices.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAFK5.cs">
+      <Link>Astrocalc\AAFK5.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAGalileanMoons.cs">
+      <Link>Astrocalc\AAGalileanMoons.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAGlobe.cs">
+      <Link>Astrocalc\AAGlobe.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAIlluminatedFraction.cs">
+      <Link>Astrocalc\AAIlluminatedFraction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAInterpolate.cs">
+      <Link>Astrocalc\AAInterpolate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAJewishCalendar.cs">
+      <Link>Astrocalc\AAJewishCalendar.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAJupiter.cs">
+      <Link>Astrocalc\AAJupiter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAKepler.cs">
+      <Link>Astrocalc\AAKepler.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMars.cs">
+      <Link>Astrocalc\AAMars.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMercury.cs">
+      <Link>Astrocalc\AAMercury.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoon.cs">
+      <Link>Astrocalc\AAMoon.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoonIlluminatedFraction.cs">
+      <Link>Astrocalc\AAMoonIlluminatedFraction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoonMaxDeclinations.cs">
+      <Link>Astrocalc\AAMoonMaxDeclinations.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoonNodes.cs">
+      <Link>Astrocalc\AAMoonNodes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoonPerigeeApogee.cs">
+      <Link>Astrocalc\AAMoonPerigeeApogee.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoonPhases.cs">
+      <Link>Astrocalc\AAMoonPhases.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAMoslemCalendar.cs">
+      <Link>Astrocalc\AAMoslemCalendar.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AANearParabolic.cs">
+      <Link>Astrocalc\AANearParabolic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AANeptune.cs">
+      <Link>Astrocalc\AANeptune.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AANodes.cs">
+      <Link>Astrocalc\AANodes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AANutation.cs">
+      <Link>Astrocalc\AANutation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAParabolic.cs">
+      <Link>Astrocalc\AAParabolic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAParallactic.cs">
+      <Link>Astrocalc\AAParallactic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAParallax.cs">
+      <Link>Astrocalc\AAParallax.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPhysicalJupiter.cs">
+      <Link>Astrocalc\AAPhysicalJupiter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPhysicalMars.cs">
+      <Link>Astrocalc\AAPhysicalMars.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPhysicalMoon.cs">
+      <Link>Astrocalc\AAPhysicalMoon.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPhysicalSun.cs">
+      <Link>Astrocalc\AAPhysicalSun.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPlanetaryPhenomena.cs">
+      <Link>Astrocalc\AAPlanetaryPhenomena.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPlanetPerihelionAphelion.cs">
+      <Link>Astrocalc\AAPlanetPerihelionAphelion.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPluto.cs">
+      <Link>Astrocalc\AAPluto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAPrecession.cs">
+      <Link>Astrocalc\AAPrecession.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AARefraction.cs">
+      <Link>Astrocalc\AARefraction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AARiseTransitSet.cs">
+      <Link>Astrocalc\AARiseTransitSet.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AASaturn.cs">
+      <Link>Astrocalc\AASaturn.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AASaturnMoons.cs">
+      <Link>Astrocalc\AASaturnMoons.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AASaturnRings.cs">
+      <Link>Astrocalc\AASaturnRings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AASidereal.cs">
+      <Link>Astrocalc\AASidereal.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAStellarMagnitudes.cs">
+      <Link>Astrocalc\AAStellarMagnitudes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AASun.cs">
+      <Link>Astrocalc\AASun.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AATest.cs">
+      <Link>Astrocalc\AATest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAUranus.cs">
+      <Link>Astrocalc\AAUranus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AAVenus.cs">
+      <Link>Astrocalc\AAVenus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Astrocalc\AstroCalc.cs">
+      <Link>Astrocalc\AstroCalc.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\BlendState.cs">
+      <Link>BlendState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\BufferPool11.cs">
+      <Link>BufferPool11.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Constants.cs">
+      <Link>Constants.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\ConstellationFilters.cs">
+      <Link>ConstellationFilters.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Coordinates.cs">
+      <Link>Coordinates.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\double3d.cs">
+      <Link>double3d.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\DX11Tools.cs">
+      <Link>DX11Tools.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\HiResTimer.cs">
+      <Link>HiResTimer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\IScriptable.cs">
+      <Link>IScriptable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\ISettings.cs">
+      <Link>ISettings.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Primitives3d.cs">
+      <Link>Primitives3d.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\RenderContext11.cs">
+      <Link>RenderContext11.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Shaders.cs">
+      <Link>Shaders.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Shaders11.cs">
+      <Link>Shaders11.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\SpaceTimeController.cs">
+      <Link>SpaceTimeController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Texture11.cs">
+      <Link>Texture11.cs</Link>
+    </Compile>
+    <Compile Include="..\..\WWTCore\WWTCore\Triangle.cs">
+      <Link>Triangle.cs</Link>
+    </Compile>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Color.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializableAttribute.cs" />
+    <EmbeddedResource Include="Properties\WWTCoreUWP.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.2.3</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.D3DCompiler">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct2D1">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct3D11">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics">
+      <Version>3.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

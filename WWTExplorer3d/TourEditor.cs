@@ -10,20 +10,8 @@ using System.Text;
 
 namespace TerraViewer
 {
-    public interface IUiController
-    {
-        void Render(Earth3d window);
-        void PreRender(Earth3d window);
-        bool MouseDown(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseUp(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseMove(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool MouseClick(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool Click(object sender, EventArgs e);
-        bool MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e);
-        bool KeyDown(object sender, System.Windows.Forms.KeyEventArgs e);
-        bool KeyUp(object sender, System.Windows.Forms.KeyEventArgs e);
-        bool Hover(Point pnt);
-    }
+
+  
 
     public class TourEditor : IUiController , IDisposable
     {
@@ -49,9 +37,9 @@ namespace TerraViewer
 
         public static IUiController CurrentEditor = null;
 
-        public void PreRender(Earth3d window)
+        public void PreRender(RenderEngine renderEngine)
         {
-            if (tour.CurrentTourStop != null)
+            if (tour?.CurrentTourStop != null)
             {
                 if (Scrubbing)
                 {
@@ -89,7 +77,7 @@ namespace TerraViewer
                 {
                     if (CurrentEditor != null)
                     {
-                        CurrentEditor.PreRender(window);
+                        CurrentEditor.PreRender(renderEngine);
                     }
                 }
             }
@@ -134,17 +122,17 @@ namespace TerraViewer
             }
         }
 
-        public void Render(Earth3d window)
+        public void Render(RenderEngine renderEngine)
         {
-            window.SetupMatricesOverlays();
-            window.RenderContext11.DepthStencilMode = DepthStencilMode.Off;
+            renderEngine.SetupMatricesOverlays();
+            renderEngine.RenderContext11.DepthStencilMode = DepthStencilMode.Off;
 
 
             if (tour == null || tour.CurrentTourStop == null)
             {
                 if (Properties.Settings.Default.ShowSafeArea && tour != null && tour.EditMode && !Capturing)
                 {
-                    DrawSafeZone(window);
+                    DrawSafeZone(renderEngine);
                 }
                 return;
             }
@@ -159,29 +147,29 @@ namespace TerraViewer
                 {
                     overlay.TweenFactor = tour.CurrentTourStop.TweenPosition < .5f ? 0f : 1f;
                 }
-                overlay.Draw3D(window.RenderContext11, 1.0f, true);
+                overlay.Draw3D(renderEngine.RenderContext11, 1.0f, true);
             }
 
             if (Properties.Settings.Default.ShowSafeArea && tour != null && tour.EditMode && !Capturing)
             {
-                DrawSafeZone(window);
+                DrawSafeZone(renderEngine);
             }
-            selection.Draw3D(window.RenderContext11, 1.0f);
+            selection.Draw3D(renderEngine.RenderContext11, 1.0f);
 
             if (!Scrubbing)
             {
                 if (CurrentEditor != null)
                 {
-                    CurrentEditor.Render(window);
+                    CurrentEditor.Render(renderEngine);
                 }
 
                 Settings.TourSettings = null;
             }
         }
         
-        private void DrawSafeZone(Earth3d window)
+        private void DrawSafeZone(RenderEngine renderEngine)
         {
-            Rectangle rect = window.RenderWindow.ClientRectangle;
+            Rectangle rect = new Rectangle(0, 0, renderEngine.RenderContext11.Width, renderEngine.RenderContext11.Height);
 
             int x = rect.Width / 2;
             int y = rect.Height / 2;
@@ -190,8 +178,8 @@ namespace TerraViewer
             int halfWidth = (rect.Width - ratioWidth)/2;
             
 
-            DrawTranparentBox(window.RenderContext11, new Rectangle(-x, -y, halfWidth, rect.Height));
-            DrawTranparentBox(window.RenderContext11, new Rectangle((rect.Width - halfWidth)-x, -y, halfWidth, rect.Height));
+            DrawTranparentBox(renderEngine.RenderContext11, new Rectangle(-x, -y, halfWidth, rect.Height));
+            DrawTranparentBox(renderEngine.RenderContext11, new Rectangle((rect.Width - halfWidth)-x, -y, halfWidth, rect.Height));
         }
 
         PositionColoredTextured[] boxPoints = new PositionColoredTextured[4];

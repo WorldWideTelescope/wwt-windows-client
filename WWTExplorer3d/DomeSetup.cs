@@ -58,7 +58,7 @@ namespace TerraViewer
         {
             Properties.Settings.Default.CustomWarpFilename = customWarpFilename.Text;
             Properties.Settings.Default.DomeTypeIndex = domeTypeCombo.SelectedIndex;
-            Earth3d.MainWindow.CreateWarpVertexBuffer();
+            RenderEngine.Engine.CreateWarpVertexBuffer();
 
             if (domeTypeCombo.SelectedIndex == 3 && String.IsNullOrEmpty(Properties.Settings.Default.CustomWarpFilename))
             {
@@ -78,7 +78,7 @@ namespace TerraViewer
             Properties.Settings.Default.DomeTypeIndex = domeTypeCombo.SelectedIndex;
             browseButton.Enabled = domeTypeCombo.SelectedIndex == 3;
             customWarpFilename.Enabled = domeTypeCombo.SelectedIndex == 3;
-            Earth3d.MainWindow.CreateWarpVertexBuffer();
+            RenderEngine.Engine.CreateWarpVertexBuffer();
 
         }
 
@@ -90,7 +90,7 @@ namespace TerraViewer
             {
                 customWarpFilename.Text = openFile.FileName;
                 Properties.Settings.Default.CustomWarpFilename = openFile.FileName;
-                Earth3d.MainWindow.CreateWarpVertexBuffer();
+                RenderEngine.Engine.CreateWarpVertexBuffer();
             }
         }
 
@@ -103,8 +103,8 @@ namespace TerraViewer
             domeTypeCombo.SelectedIndex = Properties.Settings.Default.DomeTypeIndex;
             customWarpFilename.Text = Properties.Settings.Default.CustomWarpFilename;
             flatScreenWarp.Checked = Properties.Settings.Default.FlatScreenWarp;
-            DomeAlt.Text = Earth3d.MainWindow.viewCamera.DomeAlt.ToString();
-            DomeAz.Text = Earth3d.MainWindow.viewCamera.DomeAz.ToString();
+            DomeAlt.Text = RenderEngine.Engine.viewCamera.DomeAlt.ToString();
+            DomeAz.Text = RenderEngine.Engine.viewCamera.DomeAz.ToString();
             DomeNorth.Checked = Properties.Settings.Default.FaceNorth;
         }
 
@@ -117,7 +117,7 @@ namespace TerraViewer
         {
             try
             {
-                Earth3d.MainWindow.viewCamera.DomeAlt = Convert.ToDouble(DomeAlt.Text);
+                RenderEngine.Engine.viewCamera.DomeAlt = Convert.ToDouble(DomeAlt.Text);
                 DomeAlt.BackColor = customWarpFilename.BackColor;
             }
             catch
@@ -130,7 +130,7 @@ namespace TerraViewer
         {
             try
             {
-                Earth3d.MainWindow.viewCamera.DomeAz = Convert.ToDouble(DomeAz.Text);
+                RenderEngine.Engine.viewCamera.DomeAz = Convert.ToDouble(DomeAz.Text);
                 DomeAz.BackColor = customWarpFilename.BackColor;
             }
             catch

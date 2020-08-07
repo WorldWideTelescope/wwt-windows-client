@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace TerraViewer
 {
+#if WINDOWS_UWP
+    using VoTable= System.Object;
+#endif
     public interface IImageSet
     {
         string DemUrl { get; set; }
@@ -34,9 +39,11 @@ namespace TerraViewer
         string ThumbnailUrl { get; set; }
         string Url { get; set; }
         double WidthFactor { get; set; }
-        WcsImage WcsImage { get; set; }
+        Object WcsImage { get; set; }
         double MeanRadius { get; set; }
         string ReferenceFrame { get; set; }
         UInt16 InternalID { get; set; }
+        Dictionary<string, string> Properties { get; set; }
+        VoTable TableMetadata { get; set; }
     }
 }

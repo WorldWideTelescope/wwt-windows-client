@@ -1,0 +1,3242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D088C806-C0AA-44A5-AD5D-CE9AE754727C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UwpRenderEngine</RootNamespace>
+    <AssemblyName>UwpRenderEngine</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;BASICWWT</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\WWTExplorer3d\Camera.cs">
+      <Link>Layers\Camera.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Catalogs.cs">
+      <Link>Data\Catalogs.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Config.cs">
+      <Link>Utilities\Config.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Constellations.cs">
+      <Link>Layers\Constellations.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ContextSearch.cs">
+      <Link>Data\ContextSearch.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Dataset.cs">
+      <Link>Imagesets\Dataset.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\DataSetManager.cs">
+      <Link>Imagesets\DataSetManager.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\AdaptiveModel.cs">
+      <Link>Tiles\DEM\AdaptiveModel.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\BitIO.cs">
+      <Link>Tiles\DEM\BitIO.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\BitstreamDecoder.cs">
+      <Link>Tiles\DEM\BitstreamDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\CAdaptiveHuffman.cs">
+      <Link>Tiles\DEM\CAdaptiveHuffman.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\CCodingContext.cs">
+      <Link>Tiles\DEM\CCodingContext.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\ContainerDecoder.cs">
+      <Link>Tiles\DEM\ContainerDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\DemCodec.cs">
+      <Link>Tiles\DEM\DemCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\DemTile.cs">
+      <Link>Tiles\DEM\DemTile.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\HDPhotoBase.cs">
+      <Link>Tiles\DEM\HDPhotoBase.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\HDPhotoDecoder.cs">
+      <Link>Tiles\DEM\HDPhotoDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\PointerArray.cs">
+      <Link>Tiles\DEM\PointerArray.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\dem\SimpleBitIO.cs">
+      <Link>Tiles\DEM\SimpleBitIO.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\egm96geoid.cs">
+      <Link>Utilities\egm96geoid.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\EquirectangularTile.cs">
+      <Link>Tiles\EquirectangularTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FastBitmap.cs">
+      <Link>Utilities\FastBitmap.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FieldOfView.cs">
+      <Link>Layers\FieldOfView.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\FileCabnet.cs">
+      <Link>Utilities\FileCabnet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FinderPanel.cs">
+      <Link>UI\FinderPanel.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FitsImage.cs">
+      <Link>Layers\FitsImage.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Folder.cs">
+      <Link>Imagesets\Folder.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FolderPanel.cs">
+      <Link>UI\FolderPanel.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\FolderUp.cs">
+      <Link>UI\FolderUp.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Folder_Metadata.cs">
+      <Link>Imagesets\Folder_Metadata.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\GreatCirlceRouteLayer.cs">
+      <Link>Layers\GreatCirlceRouteLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Grids.cs">
+      <Link>Layers\Grids.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\GroundOverlayLayer.cs">
+      <Link>Layers\GroundOverlayLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\HandController.cs">
+      <Link>Utilities\HandController.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IAnimatable.cs">
+      <Link>Rendering\IAnimatable.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IImageSet.cs">
+      <Link>Imagesets\IImageSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Imager.cs">
+      <Link>Layers\Imager.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ImageSet.cs">
+      <Link>Imagesets\ImageSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ImageSetLayer.cs">
+      <Link>Layers\ImageSetLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IPlace.cs">
+      <Link>Imagesets\IPlace.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ISSLayer.cs">
+      <Link>Layers\ISSLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IThumbnail.cs">
+      <Link>Imagesets\IThumbnail.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ITimeSeriesDescription.cs">
+      <Link>Layers\ITimeSeriesDescription.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ITourResult.cs">
+      <Link>Imagesets\ITourResult.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IUiController.cs">
+      <Link>Rendering\IUiController.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\IViewMover.cs">
+      <Link>Rendering\IViewMover.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\KmlLabels.cs">
+      <Link>Layers\KmlLabels.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\KmlLayer.cs">
+      <Link>Layers\KmlLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\KmlObject.cs">
+      <Link>Layers\KmlObject.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Language.cs">
+      <Link>Utilities\Language.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Layer.cs">
+      <Link>Layers\Layer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LayerContainer.cs">
+      <Link>Layers\LayerContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LayerInfo.cs">
+      <Link>Layers\LayerInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LayerManagerCore.cs">
+      <Link>Layers\LayerManagerCore.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LayerMap.cs">
+      <Link>Layers\LayerMap.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LayerScripting.cs">
+      <Link>Layers\LayerScripting.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LayerUI.cs">
+      <Link>Layers\LayerUI.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\LineSet.cs">
+      <Link>Layers\LineSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\MercatorTile.cs">
+      <Link>Tiles\MercatorTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Object3d.cs">
+      <Link>Layers\Object3d.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Orbit.cs">
+      <Link>Layers\Orbit.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\OrbitLayer.cs">
+      <Link>Layers\OrbitLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Place.cs">
+      <Link>Imagesets\Place.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Places.cs">
+      <Link>Imagesets\Places.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Planets.cs">
+      <Link>Layers\Planets.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\PointerRay.cs">
+      <Link>Rendering\PointerRay.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\PointSpriteSet.cs">
+      <Link>Rendering\PointSpriteSet.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\PortableUtilities.cs">
+      <Link>Utilities\PortableUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ReferenceFrame.cs">
+      <Link>Layers\ReferenceFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\RenderEngine.cs">
+      <Link>Rendering\RenderEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\RingMenu.cs">
+      <Link>UI\RingMenu.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SavedColor.cs">
+      <Link>Utilities\SavedColor.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SearchCriteria.cs">
+      <Link>Data\SearchCriteria.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Settings.cs">
+      <Link>Utilities\Settings.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ShapeFileRenderer.cs">
+      <Link>Layers\ShapeFileRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Shapefile\FileHeader.cs">
+      <Link>ShapeFile\FileHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Shapefile\Shape.cs">
+      <Link>ShapeFile\Shape.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Shapefile\ShapeFile.cs">
+      <Link>ShapeFile\ShapeFile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SkyImage.cs">
+      <Link>Tiles\SkyImage.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SkyOverlays.cs">
+      <Link>Layers\SkyOverlays.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SkyText.cs">
+      <Link>Layers\SkyText.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\SphericalTile.cs">
+      <Link>Tiles\SphericalTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Sprite2d.cs">
+      <Link>Rendering\Sprite2d.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TangentTile.cs">
+      <Link>Tiles\TangentTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Telescope.cs">
+      <Link>Layers\Telescope.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TextObject.cs">
+      <Link>Layers\TextObject.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ThumbnailCache.cs">
+      <Link>Utilities\ThumbnailCache.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ThumbnailPanel.cs">
+      <Link>UI\ThumbnailPanel.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Tile.cs">
+      <Link>Tiles\Tile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TileCache.cs">
+      <Link>Tiles\TileCache.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ToastTile.cs">
+      <Link>Tiles\ToastTile.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TreeDictionary.cs">
+      <Link>Data\TreeDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TreeDictionaryKeyEnumerator.cs">
+      <Link>Data\TreeDictionaryKeyEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TreeDictionaryKeyValuePairEnumerator.cs">
+      <Link>Data\TreeDictionaryKeyValuePairEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\TreeDictionaryValueEnumerator.cs">
+      <Link>Data\TreeDictionaryValueEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\UiGraphics.cs">
+      <Link>UI\UiGraphics.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\UiTools.cs">
+      <Link>Utilities\UiTools.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\Utils.cs">
+      <Link>Utilities\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\VideoOutputType.cs">
+      <Link>Utilities\VideoOutputType.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\ViewMover.cs">
+      <Link>Rendering\ViewMover.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\WcsImage.cs">
+      <Link>Layers\WcsImage.cs</Link>
+    </Compile>
+    <Compile Include="..\WWTExplorer3d\XmlAbstractions.cs">
+      <Link>Utilities\XmlAbstractions.cs</Link>
+    </Compile>
+    <Compile Include="..\wwtexplorer3d\ZipArchive.cs">
+      <Link>Utilities\ZipArchive.cs</Link>
+    </Compile>
+    <Compile Include="Class1.cs" />
+    <Compile Include="CompatibleTypes\ApplicationScopedSettingAttribute.cs" />
+    <Compile Include="CompatibleTypes\Bitmap.cs" />
+    <Compile Include="CompatibleTypes\DefaultSettingValueAttribute.cs" />
+    <Compile Include="CompatibleTypes\Properties.Settings.cs" />
+    <Compile Include="CompatibleTypes\Properties.Resources.cs" />
+    <Compile Include="CompatibleTypes\UserScopedSettingAttribute.cs" />
+    <Compile Include="CompatibleTypes\WebClient.cs" />
+    <Compile Include="CompatibleTypes\WinformsTypes.cs" />
+    <Compile Include="CompatibleTypes\XmlNode.cs" />
+    <Compile Include="CompatibleTypes\XmlTextWriter.cs" />
+    <Compile Include="Layers\GltfModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tiles\ToastPlotTile.cs" />
+    <Compile Include="Utilities\DataRow.cs" />
+    <Compile Include="Utilities\ThumbMenuNode.cs" />
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_000.jpg">
+      <Link>Resources\Cosmos\Gal_000.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0000.jpg">
+      <Link>Resources\Cosmos\gal_0000.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0001.jpg">
+      <Link>Resources\Cosmos\gal_0001.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0002.jpg">
+      <Link>Resources\Cosmos\gal_0002.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0003.jpg">
+      <Link>Resources\Cosmos\gal_0003.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0004.jpg">
+      <Link>Resources\Cosmos\gal_0004.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0005.jpg">
+      <Link>Resources\Cosmos\gal_0005.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0006.jpg">
+      <Link>Resources\Cosmos\gal_0006.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0007.jpg">
+      <Link>Resources\Cosmos\gal_0007.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0008.jpg">
+      <Link>Resources\Cosmos\gal_0008.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0009.jpg">
+      <Link>Resources\Cosmos\gal_0009.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_001.jpg">
+      <Link>Resources\Cosmos\Gal_001.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0010.jpg">
+      <Link>Resources\Cosmos\gal_0010.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0011.jpg">
+      <Link>Resources\Cosmos\gal_0011.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0012.jpg">
+      <Link>Resources\Cosmos\gal_0012.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0013.jpg">
+      <Link>Resources\Cosmos\gal_0013.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0014.jpg">
+      <Link>Resources\Cosmos\gal_0014.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0015.jpg">
+      <Link>Resources\Cosmos\gal_0015.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0016.jpg">
+      <Link>Resources\Cosmos\gal_0016.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0017.jpg">
+      <Link>Resources\Cosmos\gal_0017.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0018.jpg">
+      <Link>Resources\Cosmos\gal_0018.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0019.jpg">
+      <Link>Resources\Cosmos\gal_0019.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_002.jpg">
+      <Link>Resources\Cosmos\Gal_002.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0020.jpg">
+      <Link>Resources\Cosmos\gal_0020.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0021.jpg">
+      <Link>Resources\Cosmos\gal_0021.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0022.jpg">
+      <Link>Resources\Cosmos\gal_0022.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0023.jpg">
+      <Link>Resources\Cosmos\gal_0023.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0024.jpg">
+      <Link>Resources\Cosmos\gal_0024.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0025.jpg">
+      <Link>Resources\Cosmos\gal_0025.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0026.jpg">
+      <Link>Resources\Cosmos\gal_0026.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0027.jpg">
+      <Link>Resources\Cosmos\gal_0027.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0028.jpg">
+      <Link>Resources\Cosmos\gal_0028.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0029.jpg">
+      <Link>Resources\Cosmos\gal_0029.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_003.jpg">
+      <Link>Resources\Cosmos\Gal_003.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0030.jpg">
+      <Link>Resources\Cosmos\gal_0030.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0031.jpg">
+      <Link>Resources\Cosmos\gal_0031.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0032.jpg">
+      <Link>Resources\Cosmos\gal_0032.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0033.jpg">
+      <Link>Resources\Cosmos\gal_0033.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0034.jpg">
+      <Link>Resources\Cosmos\gal_0034.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0035.jpg">
+      <Link>Resources\Cosmos\gal_0035.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0036.jpg">
+      <Link>Resources\Cosmos\gal_0036.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0037.jpg">
+      <Link>Resources\Cosmos\gal_0037.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0038.jpg">
+      <Link>Resources\Cosmos\gal_0038.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0039.jpg">
+      <Link>Resources\Cosmos\gal_0039.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_004.jpg">
+      <Link>Resources\Cosmos\Gal_004.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0040.jpg">
+      <Link>Resources\Cosmos\gal_0040.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0041.jpg">
+      <Link>Resources\Cosmos\gal_0041.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0042.jpg">
+      <Link>Resources\Cosmos\gal_0042.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0043.jpg">
+      <Link>Resources\Cosmos\gal_0043.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0044.jpg">
+      <Link>Resources\Cosmos\gal_0044.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0045.jpg">
+      <Link>Resources\Cosmos\gal_0045.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0046.jpg">
+      <Link>Resources\Cosmos\gal_0046.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0047.jpg">
+      <Link>Resources\Cosmos\gal_0047.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0048.jpg">
+      <Link>Resources\Cosmos\gal_0048.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0049.jpg">
+      <Link>Resources\Cosmos\gal_0049.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_005.jpg">
+      <Link>Resources\Cosmos\Gal_005.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0050.jpg">
+      <Link>Resources\Cosmos\gal_0050.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0051.jpg">
+      <Link>Resources\Cosmos\gal_0051.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0052.jpg">
+      <Link>Resources\Cosmos\gal_0052.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0053.jpg">
+      <Link>Resources\Cosmos\gal_0053.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0054.jpg">
+      <Link>Resources\Cosmos\gal_0054.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0055.jpg">
+      <Link>Resources\Cosmos\gal_0055.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0056.jpg">
+      <Link>Resources\Cosmos\gal_0056.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0057.jpg">
+      <Link>Resources\Cosmos\gal_0057.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0058.jpg">
+      <Link>Resources\Cosmos\gal_0058.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0059.jpg">
+      <Link>Resources\Cosmos\gal_0059.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_006.jpg">
+      <Link>Resources\Cosmos\Gal_006.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0060.jpg">
+      <Link>Resources\Cosmos\gal_0060.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0061.jpg">
+      <Link>Resources\Cosmos\gal_0061.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0062.jpg">
+      <Link>Resources\Cosmos\gal_0062.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0063.jpg">
+      <Link>Resources\Cosmos\gal_0063.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0064.jpg">
+      <Link>Resources\Cosmos\gal_0064.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0065.jpg">
+      <Link>Resources\Cosmos\gal_0065.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0066.jpg">
+      <Link>Resources\Cosmos\gal_0066.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0067.jpg">
+      <Link>Resources\Cosmos\gal_0067.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0068.jpg">
+      <Link>Resources\Cosmos\gal_0068.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0069.jpg">
+      <Link>Resources\Cosmos\gal_0069.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_007.jpg">
+      <Link>Resources\Cosmos\Gal_007.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0070.jpg">
+      <Link>Resources\Cosmos\gal_0070.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0071.jpg">
+      <Link>Resources\Cosmos\gal_0071.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0072.jpg">
+      <Link>Resources\Cosmos\gal_0072.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0073.jpg">
+      <Link>Resources\Cosmos\gal_0073.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0074.jpg">
+      <Link>Resources\Cosmos\gal_0074.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0075.jpg">
+      <Link>Resources\Cosmos\gal_0075.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0076.jpg">
+      <Link>Resources\Cosmos\gal_0076.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0077.jpg">
+      <Link>Resources\Cosmos\gal_0077.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0078.jpg">
+      <Link>Resources\Cosmos\gal_0078.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0079.jpg">
+      <Link>Resources\Cosmos\gal_0079.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_008.jpg">
+      <Link>Resources\Cosmos\Gal_008.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0080.jpg">
+      <Link>Resources\Cosmos\gal_0080.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0081.jpg">
+      <Link>Resources\Cosmos\gal_0081.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0082.jpg">
+      <Link>Resources\Cosmos\gal_0082.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0083.jpg">
+      <Link>Resources\Cosmos\gal_0083.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0084.jpg">
+      <Link>Resources\Cosmos\gal_0084.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0085.jpg">
+      <Link>Resources\Cosmos\gal_0085.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0086.jpg">
+      <Link>Resources\Cosmos\gal_0086.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0087.jpg">
+      <Link>Resources\Cosmos\gal_0087.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0088.jpg">
+      <Link>Resources\Cosmos\gal_0088.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0089.jpg">
+      <Link>Resources\Cosmos\gal_0089.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_009.jpg">
+      <Link>Resources\Cosmos\Gal_009.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0090.jpg">
+      <Link>Resources\Cosmos\gal_0090.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0091.jpg">
+      <Link>Resources\Cosmos\gal_0091.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0092.jpg">
+      <Link>Resources\Cosmos\gal_0092.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0093.jpg">
+      <Link>Resources\Cosmos\gal_0093.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0094.jpg">
+      <Link>Resources\Cosmos\gal_0094.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0095.jpg">
+      <Link>Resources\Cosmos\gal_0095.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0096.jpg">
+      <Link>Resources\Cosmos\gal_0096.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0097.jpg">
+      <Link>Resources\Cosmos\gal_0097.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0098.jpg">
+      <Link>Resources\Cosmos\gal_0098.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0099.jpg">
+      <Link>Resources\Cosmos\gal_0099.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_010.jpg">
+      <Link>Resources\Cosmos\Gal_010.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0100.jpg">
+      <Link>Resources\Cosmos\gal_0100.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0101.jpg">
+      <Link>Resources\Cosmos\gal_0101.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0102.jpg">
+      <Link>Resources\Cosmos\gal_0102.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0103.jpg">
+      <Link>Resources\Cosmos\gal_0103.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0104.jpg">
+      <Link>Resources\Cosmos\gal_0104.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0105.jpg">
+      <Link>Resources\Cosmos\gal_0105.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0106.jpg">
+      <Link>Resources\Cosmos\gal_0106.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0107.jpg">
+      <Link>Resources\Cosmos\gal_0107.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0108.jpg">
+      <Link>Resources\Cosmos\gal_0108.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0109.jpg">
+      <Link>Resources\Cosmos\gal_0109.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_011.jpg">
+      <Link>Resources\Cosmos\Gal_011.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0110.jpg">
+      <Link>Resources\Cosmos\gal_0110.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0111.jpg">
+      <Link>Resources\Cosmos\gal_0111.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0112.jpg">
+      <Link>Resources\Cosmos\gal_0112.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0113.jpg">
+      <Link>Resources\Cosmos\gal_0113.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0114.jpg">
+      <Link>Resources\Cosmos\gal_0114.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0115.jpg">
+      <Link>Resources\Cosmos\gal_0115.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0116.jpg">
+      <Link>Resources\Cosmos\gal_0116.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0117.jpg">
+      <Link>Resources\Cosmos\gal_0117.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0118.jpg">
+      <Link>Resources\Cosmos\gal_0118.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0119.jpg">
+      <Link>Resources\Cosmos\gal_0119.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_012.jpg">
+      <Link>Resources\Cosmos\Gal_012.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0120.jpg">
+      <Link>Resources\Cosmos\gal_0120.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0121.jpg">
+      <Link>Resources\Cosmos\gal_0121.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0122.jpg">
+      <Link>Resources\Cosmos\gal_0122.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0123.jpg">
+      <Link>Resources\Cosmos\gal_0123.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0124.jpg">
+      <Link>Resources\Cosmos\gal_0124.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0125.jpg">
+      <Link>Resources\Cosmos\gal_0125.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0126.jpg">
+      <Link>Resources\Cosmos\gal_0126.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0127.jpg">
+      <Link>Resources\Cosmos\gal_0127.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0128.jpg">
+      <Link>Resources\Cosmos\gal_0128.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0129.jpg">
+      <Link>Resources\Cosmos\gal_0129.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_013.jpg">
+      <Link>Resources\Cosmos\Gal_013.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0130.jpg">
+      <Link>Resources\Cosmos\gal_0130.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0131.jpg">
+      <Link>Resources\Cosmos\gal_0131.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0132.jpg">
+      <Link>Resources\Cosmos\gal_0132.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0133.jpg">
+      <Link>Resources\Cosmos\gal_0133.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0134.jpg">
+      <Link>Resources\Cosmos\gal_0134.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0135.jpg">
+      <Link>Resources\Cosmos\gal_0135.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0136.jpg">
+      <Link>Resources\Cosmos\gal_0136.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0137.jpg">
+      <Link>Resources\Cosmos\gal_0137.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0138.jpg">
+      <Link>Resources\Cosmos\gal_0138.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0139.jpg">
+      <Link>Resources\Cosmos\gal_0139.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_014.jpg">
+      <Link>Resources\Cosmos\Gal_014.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0140.jpg">
+      <Link>Resources\Cosmos\gal_0140.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0141.jpg">
+      <Link>Resources\Cosmos\gal_0141.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0142.jpg">
+      <Link>Resources\Cosmos\gal_0142.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0143.jpg">
+      <Link>Resources\Cosmos\gal_0143.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0144.jpg">
+      <Link>Resources\Cosmos\gal_0144.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0145.jpg">
+      <Link>Resources\Cosmos\gal_0145.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0146.jpg">
+      <Link>Resources\Cosmos\gal_0146.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0147.jpg">
+      <Link>Resources\Cosmos\gal_0147.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0148.jpg">
+      <Link>Resources\Cosmos\gal_0148.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0149.jpg">
+      <Link>Resources\Cosmos\gal_0149.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_015.jpg">
+      <Link>Resources\Cosmos\Gal_015.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0150.jpg">
+      <Link>Resources\Cosmos\gal_0150.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0151.jpg">
+      <Link>Resources\Cosmos\gal_0151.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0152.jpg">
+      <Link>Resources\Cosmos\gal_0152.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0153.jpg">
+      <Link>Resources\Cosmos\gal_0153.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0154.jpg">
+      <Link>Resources\Cosmos\gal_0154.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0155.jpg">
+      <Link>Resources\Cosmos\gal_0155.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0156.jpg">
+      <Link>Resources\Cosmos\gal_0156.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0157.jpg">
+      <Link>Resources\Cosmos\gal_0157.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0158.jpg">
+      <Link>Resources\Cosmos\gal_0158.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0159.jpg">
+      <Link>Resources\Cosmos\gal_0159.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_016.jpg">
+      <Link>Resources\Cosmos\Gal_016.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0160.jpg">
+      <Link>Resources\Cosmos\gal_0160.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0161.jpg">
+      <Link>Resources\Cosmos\gal_0161.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0162.jpg">
+      <Link>Resources\Cosmos\gal_0162.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0163.jpg">
+      <Link>Resources\Cosmos\gal_0163.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0164.jpg">
+      <Link>Resources\Cosmos\gal_0164.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0165.jpg">
+      <Link>Resources\Cosmos\gal_0165.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0166.jpg">
+      <Link>Resources\Cosmos\gal_0166.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0167.jpg">
+      <Link>Resources\Cosmos\gal_0167.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0168.jpg">
+      <Link>Resources\Cosmos\gal_0168.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0169.jpg">
+      <Link>Resources\Cosmos\gal_0169.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_017.jpg">
+      <Link>Resources\Cosmos\Gal_017.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0170.jpg">
+      <Link>Resources\Cosmos\gal_0170.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0171.jpg">
+      <Link>Resources\Cosmos\gal_0171.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0172.jpg">
+      <Link>Resources\Cosmos\gal_0172.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0173.jpg">
+      <Link>Resources\Cosmos\gal_0173.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0174.jpg">
+      <Link>Resources\Cosmos\gal_0174.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0175.jpg">
+      <Link>Resources\Cosmos\gal_0175.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0176.jpg">
+      <Link>Resources\Cosmos\gal_0176.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0177.jpg">
+      <Link>Resources\Cosmos\gal_0177.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0178.jpg">
+      <Link>Resources\Cosmos\gal_0178.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0179.jpg">
+      <Link>Resources\Cosmos\gal_0179.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_018.jpg">
+      <Link>Resources\Cosmos\Gal_018.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0180.jpg">
+      <Link>Resources\Cosmos\gal_0180.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0181.jpg">
+      <Link>Resources\Cosmos\gal_0181.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0182.jpg">
+      <Link>Resources\Cosmos\gal_0182.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0183.jpg">
+      <Link>Resources\Cosmos\gal_0183.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0184.jpg">
+      <Link>Resources\Cosmos\gal_0184.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0185.jpg">
+      <Link>Resources\Cosmos\gal_0185.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0186.jpg">
+      <Link>Resources\Cosmos\gal_0186.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0187.jpg">
+      <Link>Resources\Cosmos\gal_0187.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0188.jpg">
+      <Link>Resources\Cosmos\gal_0188.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0189.jpg">
+      <Link>Resources\Cosmos\gal_0189.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_019.jpg">
+      <Link>Resources\Cosmos\Gal_019.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0190.jpg">
+      <Link>Resources\Cosmos\gal_0190.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0191.jpg">
+      <Link>Resources\Cosmos\gal_0191.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0192.jpg">
+      <Link>Resources\Cosmos\gal_0192.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0193.jpg">
+      <Link>Resources\Cosmos\gal_0193.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0194.jpg">
+      <Link>Resources\Cosmos\gal_0194.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0195.jpg">
+      <Link>Resources\Cosmos\gal_0195.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0196.jpg">
+      <Link>Resources\Cosmos\gal_0196.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0197.jpg">
+      <Link>Resources\Cosmos\gal_0197.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0198.jpg">
+      <Link>Resources\Cosmos\gal_0198.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0199.jpg">
+      <Link>Resources\Cosmos\gal_0199.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_020.jpg">
+      <Link>Resources\Cosmos\Gal_020.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0200.jpg">
+      <Link>Resources\Cosmos\gal_0200.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0201.jpg">
+      <Link>Resources\Cosmos\gal_0201.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0202.jpg">
+      <Link>Resources\Cosmos\gal_0202.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0203.jpg">
+      <Link>Resources\Cosmos\gal_0203.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0204.jpg">
+      <Link>Resources\Cosmos\gal_0204.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0205.jpg">
+      <Link>Resources\Cosmos\gal_0205.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0206.jpg">
+      <Link>Resources\Cosmos\gal_0206.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0207.jpg">
+      <Link>Resources\Cosmos\gal_0207.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0208.jpg">
+      <Link>Resources\Cosmos\gal_0208.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0209.jpg">
+      <Link>Resources\Cosmos\gal_0209.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_021.jpg">
+      <Link>Resources\Cosmos\Gal_021.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0210.jpg">
+      <Link>Resources\Cosmos\gal_0210.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0211.jpg">
+      <Link>Resources\Cosmos\gal_0211.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0212.jpg">
+      <Link>Resources\Cosmos\gal_0212.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0213.jpg">
+      <Link>Resources\Cosmos\gal_0213.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0214.jpg">
+      <Link>Resources\Cosmos\gal_0214.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0215.jpg">
+      <Link>Resources\Cosmos\gal_0215.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0216.jpg">
+      <Link>Resources\Cosmos\gal_0216.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0217.jpg">
+      <Link>Resources\Cosmos\gal_0217.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0218.jpg">
+      <Link>Resources\Cosmos\gal_0218.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0219.jpg">
+      <Link>Resources\Cosmos\gal_0219.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_022.jpg">
+      <Link>Resources\Cosmos\Gal_022.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0220.jpg">
+      <Link>Resources\Cosmos\gal_0220.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0221.jpg">
+      <Link>Resources\Cosmos\gal_0221.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0222.jpg">
+      <Link>Resources\Cosmos\gal_0222.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0223.jpg">
+      <Link>Resources\Cosmos\gal_0223.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0224.jpg">
+      <Link>Resources\Cosmos\gal_0224.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0225.jpg">
+      <Link>Resources\Cosmos\gal_0225.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0226.jpg">
+      <Link>Resources\Cosmos\gal_0226.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0227.jpg">
+      <Link>Resources\Cosmos\gal_0227.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0228.jpg">
+      <Link>Resources\Cosmos\gal_0228.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0229.jpg">
+      <Link>Resources\Cosmos\gal_0229.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_023.jpg">
+      <Link>Resources\Cosmos\Gal_023.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0230.jpg">
+      <Link>Resources\Cosmos\gal_0230.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0231.jpg">
+      <Link>Resources\Cosmos\gal_0231.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0232.jpg">
+      <Link>Resources\Cosmos\gal_0232.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0233.jpg">
+      <Link>Resources\Cosmos\gal_0233.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0234.jpg">
+      <Link>Resources\Cosmos\gal_0234.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0235.jpg">
+      <Link>Resources\Cosmos\gal_0235.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0236.jpg">
+      <Link>Resources\Cosmos\gal_0236.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0237.jpg">
+      <Link>Resources\Cosmos\gal_0237.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0238.jpg">
+      <Link>Resources\Cosmos\gal_0238.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0239.jpg">
+      <Link>Resources\Cosmos\gal_0239.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_024.jpg">
+      <Link>Resources\Cosmos\Gal_024.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0240.jpg">
+      <Link>Resources\Cosmos\gal_0240.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0241.jpg">
+      <Link>Resources\Cosmos\gal_0241.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0242.jpg">
+      <Link>Resources\Cosmos\gal_0242.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0243.jpg">
+      <Link>Resources\Cosmos\gal_0243.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0244.jpg">
+      <Link>Resources\Cosmos\gal_0244.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0245.jpg">
+      <Link>Resources\Cosmos\gal_0245.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0246.jpg">
+      <Link>Resources\Cosmos\gal_0246.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0247.jpg">
+      <Link>Resources\Cosmos\gal_0247.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0248.jpg">
+      <Link>Resources\Cosmos\gal_0248.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0249.jpg">
+      <Link>Resources\Cosmos\gal_0249.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_025.jpg">
+      <Link>Resources\Cosmos\Gal_025.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0250.jpg">
+      <Link>Resources\Cosmos\gal_0250.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0251.jpg">
+      <Link>Resources\Cosmos\gal_0251.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0252.jpg">
+      <Link>Resources\Cosmos\gal_0252.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0253.jpg">
+      <Link>Resources\Cosmos\gal_0253.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0254.jpg">
+      <Link>Resources\Cosmos\gal_0254.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\gal_0255.jpg">
+      <Link>Resources\Cosmos\gal_0255.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_026.jpg">
+      <Link>Resources\Cosmos\Gal_026.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_027.jpg">
+      <Link>Resources\Cosmos\Gal_027.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_028.jpg">
+      <Link>Resources\Cosmos\Gal_028.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_029.jpg">
+      <Link>Resources\Cosmos\Gal_029.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_030.jpg">
+      <Link>Resources\Cosmos\Gal_030.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_031.jpg">
+      <Link>Resources\Cosmos\Gal_031.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_032.jpg">
+      <Link>Resources\Cosmos\Gal_032.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_033.jpg">
+      <Link>Resources\Cosmos\Gal_033.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_034.jpg">
+      <Link>Resources\Cosmos\Gal_034.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_035.jpg">
+      <Link>Resources\Cosmos\Gal_035.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_036.jpg">
+      <Link>Resources\Cosmos\Gal_036.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_037.jpg">
+      <Link>Resources\Cosmos\Gal_037.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_038.jpg">
+      <Link>Resources\Cosmos\Gal_038.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_039.jpg">
+      <Link>Resources\Cosmos\Gal_039.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_040.jpg">
+      <Link>Resources\Cosmos\Gal_040.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_041.jpg">
+      <Link>Resources\Cosmos\Gal_041.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_042.jpg">
+      <Link>Resources\Cosmos\Gal_042.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_043.jpg">
+      <Link>Resources\Cosmos\Gal_043.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_044.jpg">
+      <Link>Resources\Cosmos\Gal_044.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_045.jpg">
+      <Link>Resources\Cosmos\Gal_045.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_046.jpg">
+      <Link>Resources\Cosmos\Gal_046.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_047.jpg">
+      <Link>Resources\Cosmos\Gal_047.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_048.jpg">
+      <Link>Resources\Cosmos\Gal_048.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_049.jpg">
+      <Link>Resources\Cosmos\Gal_049.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_050.jpg">
+      <Link>Resources\Cosmos\Gal_050.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_051.jpg">
+      <Link>Resources\Cosmos\Gal_051.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_052.jpg">
+      <Link>Resources\Cosmos\Gal_052.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_053.jpg">
+      <Link>Resources\Cosmos\Gal_053.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_054.jpg">
+      <Link>Resources\Cosmos\Gal_054.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_055.jpg">
+      <Link>Resources\Cosmos\Gal_055.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_056.jpg">
+      <Link>Resources\Cosmos\Gal_056.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_057.jpg">
+      <Link>Resources\Cosmos\Gal_057.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_058.jpg">
+      <Link>Resources\Cosmos\Gal_058.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_059.jpg">
+      <Link>Resources\Cosmos\Gal_059.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_060.jpg">
+      <Link>Resources\Cosmos\Gal_060.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_061.jpg">
+      <Link>Resources\Cosmos\Gal_061.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_062.jpg">
+      <Link>Resources\Cosmos\Gal_062.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_063.jpg">
+      <Link>Resources\Cosmos\Gal_063.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_064.jpg">
+      <Link>Resources\Cosmos\Gal_064.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_065.jpg">
+      <Link>Resources\Cosmos\Gal_065.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_066.jpg">
+      <Link>Resources\Cosmos\Gal_066.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_067.jpg">
+      <Link>Resources\Cosmos\Gal_067.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_068.jpg">
+      <Link>Resources\Cosmos\Gal_068.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_069.jpg">
+      <Link>Resources\Cosmos\Gal_069.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_070.jpg">
+      <Link>Resources\Cosmos\Gal_070.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_071.jpg">
+      <Link>Resources\Cosmos\Gal_071.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_072.jpg">
+      <Link>Resources\Cosmos\Gal_072.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_073.jpg">
+      <Link>Resources\Cosmos\Gal_073.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_074.jpg">
+      <Link>Resources\Cosmos\Gal_074.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_075.jpg">
+      <Link>Resources\Cosmos\Gal_075.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_076.jpg">
+      <Link>Resources\Cosmos\Gal_076.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_077.jpg">
+      <Link>Resources\Cosmos\Gal_077.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_078.jpg">
+      <Link>Resources\Cosmos\Gal_078.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_079.jpg">
+      <Link>Resources\Cosmos\Gal_079.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_080.jpg">
+      <Link>Resources\Cosmos\Gal_080.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_081.jpg">
+      <Link>Resources\Cosmos\Gal_081.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_082.jpg">
+      <Link>Resources\Cosmos\Gal_082.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_083.jpg">
+      <Link>Resources\Cosmos\Gal_083.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_084.jpg">
+      <Link>Resources\Cosmos\Gal_084.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_085.jpg">
+      <Link>Resources\Cosmos\Gal_085.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_086.jpg">
+      <Link>Resources\Cosmos\Gal_086.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_087.jpg">
+      <Link>Resources\Cosmos\Gal_087.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_088.jpg">
+      <Link>Resources\Cosmos\Gal_088.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_089.jpg">
+      <Link>Resources\Cosmos\Gal_089.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_090.jpg">
+      <Link>Resources\Cosmos\Gal_090.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_091.jpg">
+      <Link>Resources\Cosmos\Gal_091.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_092.jpg">
+      <Link>Resources\Cosmos\Gal_092.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_093.jpg">
+      <Link>Resources\Cosmos\Gal_093.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_094.jpg">
+      <Link>Resources\Cosmos\Gal_094.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_095.jpg">
+      <Link>Resources\Cosmos\Gal_095.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_096.jpg">
+      <Link>Resources\Cosmos\Gal_096.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_097.jpg">
+      <Link>Resources\Cosmos\Gal_097.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_098.jpg">
+      <Link>Resources\Cosmos\Gal_098.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_099.jpg">
+      <Link>Resources\Cosmos\Gal_099.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_100.jpg">
+      <Link>Resources\Cosmos\Gal_100.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_101.jpg">
+      <Link>Resources\Cosmos\Gal_101.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_102.jpg">
+      <Link>Resources\Cosmos\Gal_102.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_103.jpg">
+      <Link>Resources\Cosmos\Gal_103.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_104.jpg">
+      <Link>Resources\Cosmos\Gal_104.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_105.jpg">
+      <Link>Resources\Cosmos\Gal_105.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_106.jpg">
+      <Link>Resources\Cosmos\Gal_106.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_107.jpg">
+      <Link>Resources\Cosmos\Gal_107.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_108.jpg">
+      <Link>Resources\Cosmos\Gal_108.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_109.jpg">
+      <Link>Resources\Cosmos\Gal_109.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_110.jpg">
+      <Link>Resources\Cosmos\Gal_110.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_111.jpg">
+      <Link>Resources\Cosmos\Gal_111.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_112.jpg">
+      <Link>Resources\Cosmos\Gal_112.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_113.jpg">
+      <Link>Resources\Cosmos\Gal_113.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_114.jpg">
+      <Link>Resources\Cosmos\Gal_114.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_115.jpg">
+      <Link>Resources\Cosmos\Gal_115.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_116.jpg">
+      <Link>Resources\Cosmos\Gal_116.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_117.jpg">
+      <Link>Resources\Cosmos\Gal_117.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_118.jpg">
+      <Link>Resources\Cosmos\Gal_118.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_119.jpg">
+      <Link>Resources\Cosmos\Gal_119.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_120.jpg">
+      <Link>Resources\Cosmos\Gal_120.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_121.jpg">
+      <Link>Resources\Cosmos\Gal_121.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_122.jpg">
+      <Link>Resources\Cosmos\Gal_122.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_123.jpg">
+      <Link>Resources\Cosmos\Gal_123.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_124.jpg">
+      <Link>Resources\Cosmos\Gal_124.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_125.jpg">
+      <Link>Resources\Cosmos\Gal_125.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_126.jpg">
+      <Link>Resources\Cosmos\Gal_126.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_127.jpg">
+      <Link>Resources\Cosmos\Gal_127.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_128.jpg">
+      <Link>Resources\Cosmos\Gal_128.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_129.jpg">
+      <Link>Resources\Cosmos\Gal_129.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_130.jpg">
+      <Link>Resources\Cosmos\Gal_130.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_131.jpg">
+      <Link>Resources\Cosmos\Gal_131.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_132.jpg">
+      <Link>Resources\Cosmos\Gal_132.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_133.jpg">
+      <Link>Resources\Cosmos\Gal_133.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_134.jpg">
+      <Link>Resources\Cosmos\Gal_134.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_135.jpg">
+      <Link>Resources\Cosmos\Gal_135.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_136.jpg">
+      <Link>Resources\Cosmos\Gal_136.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_137.jpg">
+      <Link>Resources\Cosmos\Gal_137.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_138.jpg">
+      <Link>Resources\Cosmos\Gal_138.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_139.jpg">
+      <Link>Resources\Cosmos\Gal_139.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_140.jpg">
+      <Link>Resources\Cosmos\Gal_140.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_141.jpg">
+      <Link>Resources\Cosmos\Gal_141.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_142.jpg">
+      <Link>Resources\Cosmos\Gal_142.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_143.jpg">
+      <Link>Resources\Cosmos\Gal_143.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_144.jpg">
+      <Link>Resources\Cosmos\Gal_144.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_145.jpg">
+      <Link>Resources\Cosmos\Gal_145.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_146.jpg">
+      <Link>Resources\Cosmos\Gal_146.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_147.jpg">
+      <Link>Resources\Cosmos\Gal_147.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_148.jpg">
+      <Link>Resources\Cosmos\Gal_148.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_149.jpg">
+      <Link>Resources\Cosmos\Gal_149.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_150.jpg">
+      <Link>Resources\Cosmos\Gal_150.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_151.jpg">
+      <Link>Resources\Cosmos\Gal_151.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_152.jpg">
+      <Link>Resources\Cosmos\Gal_152.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_153.jpg">
+      <Link>Resources\Cosmos\Gal_153.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_154.jpg">
+      <Link>Resources\Cosmos\Gal_154.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_155.jpg">
+      <Link>Resources\Cosmos\Gal_155.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_156.jpg">
+      <Link>Resources\Cosmos\Gal_156.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_157.jpg">
+      <Link>Resources\Cosmos\Gal_157.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_158.jpg">
+      <Link>Resources\Cosmos\Gal_158.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_159.jpg">
+      <Link>Resources\Cosmos\Gal_159.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_160.jpg">
+      <Link>Resources\Cosmos\Gal_160.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_161.jpg">
+      <Link>Resources\Cosmos\Gal_161.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_162.jpg">
+      <Link>Resources\Cosmos\Gal_162.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_163.jpg">
+      <Link>Resources\Cosmos\Gal_163.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_164.jpg">
+      <Link>Resources\Cosmos\Gal_164.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_165.jpg">
+      <Link>Resources\Cosmos\Gal_165.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_166.jpg">
+      <Link>Resources\Cosmos\Gal_166.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_167.jpg">
+      <Link>Resources\Cosmos\Gal_167.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_168.jpg">
+      <Link>Resources\Cosmos\Gal_168.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_169.jpg">
+      <Link>Resources\Cosmos\Gal_169.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_170.jpg">
+      <Link>Resources\Cosmos\Gal_170.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_171.jpg">
+      <Link>Resources\Cosmos\Gal_171.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_172.jpg">
+      <Link>Resources\Cosmos\Gal_172.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_173.jpg">
+      <Link>Resources\Cosmos\Gal_173.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_174.jpg">
+      <Link>Resources\Cosmos\Gal_174.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_175.jpg">
+      <Link>Resources\Cosmos\Gal_175.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_176.jpg">
+      <Link>Resources\Cosmos\Gal_176.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_177.jpg">
+      <Link>Resources\Cosmos\Gal_177.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_178.jpg">
+      <Link>Resources\Cosmos\Gal_178.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_179.jpg">
+      <Link>Resources\Cosmos\Gal_179.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_180.jpg">
+      <Link>Resources\Cosmos\Gal_180.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_181.jpg">
+      <Link>Resources\Cosmos\Gal_181.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_182.jpg">
+      <Link>Resources\Cosmos\Gal_182.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_183.jpg">
+      <Link>Resources\Cosmos\Gal_183.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_184.jpg">
+      <Link>Resources\Cosmos\Gal_184.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_185.jpg">
+      <Link>Resources\Cosmos\Gal_185.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_186.jpg">
+      <Link>Resources\Cosmos\Gal_186.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_187.jpg">
+      <Link>Resources\Cosmos\Gal_187.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_188.jpg">
+      <Link>Resources\Cosmos\Gal_188.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_189.jpg">
+      <Link>Resources\Cosmos\Gal_189.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_190.jpg">
+      <Link>Resources\Cosmos\Gal_190.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_191.jpg">
+      <Link>Resources\Cosmos\Gal_191.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_192.jpg">
+      <Link>Resources\Cosmos\Gal_192.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_193.jpg">
+      <Link>Resources\Cosmos\Gal_193.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_194.jpg">
+      <Link>Resources\Cosmos\Gal_194.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_195.jpg">
+      <Link>Resources\Cosmos\Gal_195.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_196.jpg">
+      <Link>Resources\Cosmos\Gal_196.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_197.jpg">
+      <Link>Resources\Cosmos\Gal_197.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_198.jpg">
+      <Link>Resources\Cosmos\Gal_198.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_199.jpg">
+      <Link>Resources\Cosmos\Gal_199.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_200.jpg">
+      <Link>Resources\Cosmos\Gal_200.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_201.jpg">
+      <Link>Resources\Cosmos\Gal_201.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_202.jpg">
+      <Link>Resources\Cosmos\Gal_202.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_203.jpg">
+      <Link>Resources\Cosmos\Gal_203.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_204.jpg">
+      <Link>Resources\Cosmos\Gal_204.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_205.jpg">
+      <Link>Resources\Cosmos\Gal_205.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_206.jpg">
+      <Link>Resources\Cosmos\Gal_206.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_207.jpg">
+      <Link>Resources\Cosmos\Gal_207.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_208.jpg">
+      <Link>Resources\Cosmos\Gal_208.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_209.jpg">
+      <Link>Resources\Cosmos\Gal_209.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_210.jpg">
+      <Link>Resources\Cosmos\Gal_210.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_211.jpg">
+      <Link>Resources\Cosmos\Gal_211.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_212.jpg">
+      <Link>Resources\Cosmos\Gal_212.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_213.jpg">
+      <Link>Resources\Cosmos\Gal_213.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_214.jpg">
+      <Link>Resources\Cosmos\Gal_214.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_215.jpg">
+      <Link>Resources\Cosmos\Gal_215.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_216.jpg">
+      <Link>Resources\Cosmos\Gal_216.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_217.jpg">
+      <Link>Resources\Cosmos\Gal_217.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_218.jpg">
+      <Link>Resources\Cosmos\Gal_218.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_219.jpg">
+      <Link>Resources\Cosmos\Gal_219.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_220.jpg">
+      <Link>Resources\Cosmos\Gal_220.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_221.jpg">
+      <Link>Resources\Cosmos\Gal_221.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_222.jpg">
+      <Link>Resources\Cosmos\Gal_222.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_223.jpg">
+      <Link>Resources\Cosmos\Gal_223.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_224.jpg">
+      <Link>Resources\Cosmos\Gal_224.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_225.jpg">
+      <Link>Resources\Cosmos\Gal_225.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_226.jpg">
+      <Link>Resources\Cosmos\Gal_226.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_227.jpg">
+      <Link>Resources\Cosmos\Gal_227.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_228.jpg">
+      <Link>Resources\Cosmos\Gal_228.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_229.jpg">
+      <Link>Resources\Cosmos\Gal_229.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_230.jpg">
+      <Link>Resources\Cosmos\Gal_230.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_231.jpg">
+      <Link>Resources\Cosmos\Gal_231.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_232.jpg">
+      <Link>Resources\Cosmos\Gal_232.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_233.jpg">
+      <Link>Resources\Cosmos\Gal_233.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_234.jpg">
+      <Link>Resources\Cosmos\Gal_234.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_235.jpg">
+      <Link>Resources\Cosmos\Gal_235.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_236.jpg">
+      <Link>Resources\Cosmos\Gal_236.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_237.jpg">
+      <Link>Resources\Cosmos\Gal_237.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_238.jpg">
+      <Link>Resources\Cosmos\Gal_238.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_239.jpg">
+      <Link>Resources\Cosmos\Gal_239.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_240.jpg">
+      <Link>Resources\Cosmos\Gal_240.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_241.jpg">
+      <Link>Resources\Cosmos\Gal_241.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_242.jpg">
+      <Link>Resources\Cosmos\Gal_242.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_243.jpg">
+      <Link>Resources\Cosmos\Gal_243.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_244.jpg">
+      <Link>Resources\Cosmos\Gal_244.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_245.jpg">
+      <Link>Resources\Cosmos\Gal_245.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_246.jpg">
+      <Link>Resources\Cosmos\Gal_246.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_247.jpg">
+      <Link>Resources\Cosmos\Gal_247.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_248.jpg">
+      <Link>Resources\Cosmos\Gal_248.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_249.jpg">
+      <Link>Resources\Cosmos\Gal_249.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_250.jpg">
+      <Link>Resources\Cosmos\Gal_250.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_251.jpg">
+      <Link>Resources\Cosmos\Gal_251.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_252.jpg">
+      <Link>Resources\Cosmos\Gal_252.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_253.jpg">
+      <Link>Resources\Cosmos\Gal_253.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_254.jpg">
+      <Link>Resources\Cosmos\Gal_254.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_255.jpg">
+      <Link>Resources\Cosmos\Gal_255.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_256.jpg">
+      <Link>Resources\Cosmos\Gal_256.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_257.jpg">
+      <Link>Resources\Cosmos\Gal_257.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_258.jpg">
+      <Link>Resources\Cosmos\Gal_258.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_259.jpg">
+      <Link>Resources\Cosmos\Gal_259.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_260.jpg">
+      <Link>Resources\Cosmos\Gal_260.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_261.jpg">
+      <Link>Resources\Cosmos\Gal_261.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_262.jpg">
+      <Link>Resources\Cosmos\Gal_262.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_263.jpg">
+      <Link>Resources\Cosmos\Gal_263.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_264.jpg">
+      <Link>Resources\Cosmos\Gal_264.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_265.jpg">
+      <Link>Resources\Cosmos\Gal_265.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_266.jpg">
+      <Link>Resources\Cosmos\Gal_266.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_267.jpg">
+      <Link>Resources\Cosmos\Gal_267.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_268.jpg">
+      <Link>Resources\Cosmos\Gal_268.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_269.jpg">
+      <Link>Resources\Cosmos\Gal_269.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_270.jpg">
+      <Link>Resources\Cosmos\Gal_270.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_271.jpg">
+      <Link>Resources\Cosmos\Gal_271.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_272.jpg">
+      <Link>Resources\Cosmos\Gal_272.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_273.jpg">
+      <Link>Resources\Cosmos\Gal_273.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_274.jpg">
+      <Link>Resources\Cosmos\Gal_274.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_275.jpg">
+      <Link>Resources\Cosmos\Gal_275.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_276.jpg">
+      <Link>Resources\Cosmos\Gal_276.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_277.jpg">
+      <Link>Resources\Cosmos\Gal_277.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_278.jpg">
+      <Link>Resources\Cosmos\Gal_278.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_279.jpg">
+      <Link>Resources\Cosmos\Gal_279.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_280.jpg">
+      <Link>Resources\Cosmos\Gal_280.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_281.jpg">
+      <Link>Resources\Cosmos\Gal_281.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_282.jpg">
+      <Link>Resources\Cosmos\Gal_282.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_283.jpg">
+      <Link>Resources\Cosmos\Gal_283.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_284.jpg">
+      <Link>Resources\Cosmos\Gal_284.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_285.jpg">
+      <Link>Resources\Cosmos\Gal_285.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_286.jpg">
+      <Link>Resources\Cosmos\Gal_286.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_287.jpg">
+      <Link>Resources\Cosmos\Gal_287.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_288.jpg">
+      <Link>Resources\Cosmos\Gal_288.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_289.jpg">
+      <Link>Resources\Cosmos\Gal_289.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_290.jpg">
+      <Link>Resources\Cosmos\Gal_290.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_291.jpg">
+      <Link>Resources\Cosmos\Gal_291.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_292.jpg">
+      <Link>Resources\Cosmos\Gal_292.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_293.jpg">
+      <Link>Resources\Cosmos\Gal_293.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_294.jpg">
+      <Link>Resources\Cosmos\Gal_294.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_295.jpg">
+      <Link>Resources\Cosmos\Gal_295.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_296.jpg">
+      <Link>Resources\Cosmos\Gal_296.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_297.jpg">
+      <Link>Resources\Cosmos\Gal_297.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_298.jpg">
+      <Link>Resources\Cosmos\Gal_298.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_299.jpg">
+      <Link>Resources\Cosmos\Gal_299.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_300.jpg">
+      <Link>Resources\Cosmos\Gal_300.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_301.jpg">
+      <Link>Resources\Cosmos\Gal_301.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_302.jpg">
+      <Link>Resources\Cosmos\Gal_302.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_303.jpg">
+      <Link>Resources\Cosmos\Gal_303.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_304.jpg">
+      <Link>Resources\Cosmos\Gal_304.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_305.jpg">
+      <Link>Resources\Cosmos\Gal_305.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_306.jpg">
+      <Link>Resources\Cosmos\Gal_306.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_307.jpg">
+      <Link>Resources\Cosmos\Gal_307.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_308.jpg">
+      <Link>Resources\Cosmos\Gal_308.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_309.jpg">
+      <Link>Resources\Cosmos\Gal_309.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_310.jpg">
+      <Link>Resources\Cosmos\Gal_310.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_311.jpg">
+      <Link>Resources\Cosmos\Gal_311.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_312.jpg">
+      <Link>Resources\Cosmos\Gal_312.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_313.jpg">
+      <Link>Resources\Cosmos\Gal_313.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_314.jpg">
+      <Link>Resources\Cosmos\Gal_314.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_315.jpg">
+      <Link>Resources\Cosmos\Gal_315.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_316.jpg">
+      <Link>Resources\Cosmos\Gal_316.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_317.jpg">
+      <Link>Resources\Cosmos\Gal_317.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_318.jpg">
+      <Link>Resources\Cosmos\Gal_318.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_319.jpg">
+      <Link>Resources\Cosmos\Gal_319.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_320.jpg">
+      <Link>Resources\Cosmos\Gal_320.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_321.jpg">
+      <Link>Resources\Cosmos\Gal_321.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_322.jpg">
+      <Link>Resources\Cosmos\Gal_322.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_323.jpg">
+      <Link>Resources\Cosmos\Gal_323.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_324.jpg">
+      <Link>Resources\Cosmos\Gal_324.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_325.jpg">
+      <Link>Resources\Cosmos\Gal_325.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_326.jpg">
+      <Link>Resources\Cosmos\Gal_326.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_327.jpg">
+      <Link>Resources\Cosmos\Gal_327.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_328.jpg">
+      <Link>Resources\Cosmos\Gal_328.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_329.jpg">
+      <Link>Resources\Cosmos\Gal_329.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_330.jpg">
+      <Link>Resources\Cosmos\Gal_330.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_331.jpg">
+      <Link>Resources\Cosmos\Gal_331.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_332.jpg">
+      <Link>Resources\Cosmos\Gal_332.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_333.jpg">
+      <Link>Resources\Cosmos\Gal_333.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_334.jpg">
+      <Link>Resources\Cosmos\Gal_334.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_335.jpg">
+      <Link>Resources\Cosmos\Gal_335.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_336.jpg">
+      <Link>Resources\Cosmos\Gal_336.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_337.jpg">
+      <Link>Resources\Cosmos\Gal_337.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_338.jpg">
+      <Link>Resources\Cosmos\Gal_338.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_339.jpg">
+      <Link>Resources\Cosmos\Gal_339.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_340.jpg">
+      <Link>Resources\Cosmos\Gal_340.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_341.jpg">
+      <Link>Resources\Cosmos\Gal_341.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_342.jpg">
+      <Link>Resources\Cosmos\Gal_342.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_343.jpg">
+      <Link>Resources\Cosmos\Gal_343.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_344.jpg">
+      <Link>Resources\Cosmos\Gal_344.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_345.jpg">
+      <Link>Resources\Cosmos\Gal_345.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_346.jpg">
+      <Link>Resources\Cosmos\Gal_346.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_347.jpg">
+      <Link>Resources\Cosmos\Gal_347.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_348.jpg">
+      <Link>Resources\Cosmos\Gal_348.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Cosmos\Gal_349.jpg">
+      <Link>Resources\Cosmos\Gal_349.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Properties\Resources.resx">
+      <Link>Resources\Resources.resx</Link>
+      <SubType>Designer</SubType>
+    </Content>
+    <EmbeddedResource Include="Properties\UwpRenderEngine.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="glTF2Loader">
+      <Version>1.1.0-alpha</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.2.3</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.D3DCompiler">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct2D1">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct3D11">
+      <Version>3.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics">
+      <Version>3.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WWTCoreUWP\WWTCoreUWP\WWTCoreUWP.csproj">
+      <Project>{c05266fe-6947-42f1-9863-7cdbeed60869}</Project>
+      <Name>WWTCoreUWP</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsBottomHS.png">
+      <Link>Resources\AlignObjectsBottomHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsCenteredHorizontalHS.png">
+      <Link>Resources\AlignObjectsCenteredHorizontalHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsCenteredVerticalHS.png">
+      <Link>Resources\AlignObjectsCenteredVerticalHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsCenteredVerticalHS1.png">
+      <Link>Resources\AlignObjectsCenteredVerticalHS1.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsLeftHS.png">
+      <Link>Resources\AlignObjectsLeftHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsRightHS.png">
+      <Link>Resources\AlignObjectsRightHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AlignObjectsTopHS.png">
+      <Link>Resources\AlignObjectsTopHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ascom.jpg">
+      <Link>Resources\ascom.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\AudioHS.png">
+      <Link>Resources\AudioHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BadImage.png">
+      <Link>Resources\BadImage.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\boldhs.png">
+      <Link>Resources\boldhs.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnEndDisabled.png">
+      <Link>Resources\BtnEndDisabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnEndHover.png">
+      <Link>Resources\BtnEndHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnEndPushed.png">
+      <Link>Resources\BtnEndPushed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnEndRest.png">
+      <Link>Resources\BtnEndRest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnEndSelected.png">
+      <Link>Resources\BtnEndSelected.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnStartDisabled.png">
+      <Link>Resources\BtnStartDisabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnStartHover.png">
+      <Link>Resources\BtnStartHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnStartPushed.png">
+      <Link>Resources\BtnStartPushed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnStartRest.png">
+      <Link>Resources\BtnStartRest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\BtnStartSelected.png">
+      <Link>Resources\BtnStartSelected.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\buttonBackground.png">
+      <Link>Resources\buttonBackground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_down_disabled.png">
+      <Link>Resources\button_arrow_down_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_down_hover.png">
+      <Link>Resources\button_arrow_down_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_down_normal.png">
+      <Link>Resources\button_arrow_down_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_down_pressed.png">
+      <Link>Resources\button_arrow_down_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_up_disabled.png">
+      <Link>Resources\button_arrow_up_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_up_hover.png">
+      <Link>Resources\button_arrow_up_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_up_normal.png">
+      <Link>Resources\button_arrow_up_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_arrow_up_pressed.png">
+      <Link>Resources\button_arrow_up_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_pause_disabled.png">
+      <Link>Resources\button_pause_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_pause_hover.png">
+      <Link>Resources\button_pause_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_pause_normal.png">
+      <Link>Resources\button_pause_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_pause_pressed.png">
+      <Link>Resources\button_pause_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_play_disabled.png">
+      <Link>Resources\button_play_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_play_hover.png">
+      <Link>Resources\button_play_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_play_normal.png">
+      <Link>Resources\button_play_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\button_play_pressed.png">
+      <Link>Resources\button_play_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\callisto.png">
+      <Link>Resources\callisto.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\callistoMap.jpg">
+      <Link>Resources\callistoMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\chandra.png">
+      <Link>Resources\chandra.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_checked_disabled.png">
+      <Link>Resources\checkbox_checked_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_checked_hover.png">
+      <Link>Resources\checkbox_checked_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_checked_press.png">
+      <Link>Resources\checkbox_checked_press.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_checked_rest.png">
+      <Link>Resources\checkbox_checked_rest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_unchecked_disabled.png">
+      <Link>Resources\checkbox_unchecked_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_unchecked_hover.png">
+      <Link>Resources\checkbox_unchecked_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_unchecked_press.png">
+      <Link>Resources\checkbox_unchecked_press.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\checkbox_unchecked_rest.png">
+      <Link>Resources\checkbox_unchecked_rest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\circle.png">
+      <Link>Resources\circle.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\CloseHover.png">
+      <Link>Resources\CloseHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ClosePush.png">
+      <Link>Resources\ClosePush.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\CloseRest.png">
+      <Link>Resources\CloseRest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ColorHS.png">
+      <Link>Resources\ColorHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ColorPickerHex.png">
+      <Link>Resources\ColorPickerHex.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Color_font.png">
+      <Link>Resources\Color_font.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\constellations.png">
+      <Link>Resources\constellations.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DarkNebula.jpg">
+      <Link>Resources\DarkNebula.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DataContainer_MoveFirstHS.png">
+      <Link>Resources\DataContainer_MoveFirstHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DataContainer_MoveLastHS.png">
+      <Link>Resources\DataContainer_MoveLastHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DataContainer_MoveNextHS.png">
+      <Link>Resources\DataContainer_MoveNextHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DataContainer_MoveNextHS1.png">
+      <Link>Resources\DataContainer_MoveNextHS1.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DataContainer_MovePreviousHS.png">
+      <Link>Resources\DataContainer_MovePreviousHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DataContainer_MovePreviousHS1.png">
+      <Link>Resources\DataContainer_MovePreviousHS1.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DeleteHS.png">
+      <Link>Resources\DeleteHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DelKey.png">
+      <Link>Resources\DelKey.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DomeOutline.png">
+      <Link>Resources\DomeOutline.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DoubleLeftArrowHS.png">
+      <Link>Resources\DoubleLeftArrowHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DoubleRightArrowHS.png">
+      <Link>Resources\DoubleRightArrowHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DoubleStar.jpg">
+      <Link>Resources\DoubleStar.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DragInsertMarker.png">
+      <Link>Resources\DragInsertMarker.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DropDisabled.png">
+      <Link>Resources\DropDisabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DropHover.png">
+      <Link>Resources\DropHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DropPressed.png">
+      <Link>Resources\DropPressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\DropRest.png">
+      <Link>Resources\DropRest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\earth.png">
+      <Link>Resources\earth.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\earthMap.jpg">
+      <Link>Resources\earthMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\earthMapNight.jpg">
+      <Link>Resources\earthMapNight.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\earthsMapSpec.jpg">
+      <Link>Resources\earthsMapSpec.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\EditDisabled.png">
+      <Link>Resources\EditDisabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\EditHover.png">
+      <Link>Resources\EditHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\EditPressed.png">
+      <Link>Resources\EditPressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\EditRest.png">
+      <Link>Resources\EditRest.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Edit_UndoHS.png">
+      <Link>Resources\Edit_UndoHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ElipticalGalaxy.jpg">
+      <Link>Resources\ElipticalGalaxy.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\europa.png">
+      <Link>Resources\europa.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\europaMap.jpg">
+      <Link>Resources\europaMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\FocusHandles.png">
+      <Link>Resources\FocusHandles.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Folder.png">
+      <Link>Resources\Folder.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\FolderUp.png">
+      <Link>Resources\FolderUp.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\FontDialogHS.png">
+      <Link>Resources\FontDialogHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\FormRunHS.png">
+      <Link>Resources\FormRunHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g000.png">
+      <Link>Resources\g000.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g001.png">
+      <Link>Resources\g001.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g002.png">
+      <Link>Resources\g002.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g003.png">
+      <Link>Resources\g003.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g004.png">
+      <Link>Resources\g004.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g005.png">
+      <Link>Resources\g005.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g006.png">
+      <Link>Resources\g006.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g007.png">
+      <Link>Resources\g007.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g008.png">
+      <Link>Resources\g008.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g009.png">
+      <Link>Resources\g009.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g010.png">
+      <Link>Resources\g010.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g011.png">
+      <Link>Resources\g011.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g012.png">
+      <Link>Resources\g012.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g013.png">
+      <Link>Resources\g013.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g014.png">
+      <Link>Resources\g014.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g015.png">
+      <Link>Resources\g015.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g016.png">
+      <Link>Resources\g016.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g017.png">
+      <Link>Resources\g017.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g018.png">
+      <Link>Resources\g018.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\g019.png">
+      <Link>Resources\g019.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\GalacticCloud.png">
+      <Link>Resources\GalacticCloud.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Galaxy.jpg">
+      <Link>Resources\Galaxy.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\galSpiral.png">
+      <Link>Resources\galSpiral.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ganymede.png">
+      <Link>Resources\ganymede.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ganymedeMap.jpg">
+      <Link>Resources\ganymedeMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\GlobularCluster.jpg">
+      <Link>Resources\GlobularCluster.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyphs1.png">
+      <Link>Resources\glyphs1.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyphs1.xml">
+      <Link>Resources\glyphs1.xml</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyphs2.png">
+      <Link>Resources\glyphs2.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyphs2.xml">
+      <Link>Resources\glyphs2.xml</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyph_close.png">
+      <Link>Resources\glyph_close.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyph_mute_off_disabled.png">
+      <Link>Resources\glyph_mute_off_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyph_mute_off_enabled.png">
+      <Link>Resources\glyph_mute_off_enabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyph_mute_on_disabled.png">
+      <Link>Resources\glyph_mute_on_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyph_mute_on_enabled.png">
+      <Link>Resources\glyph_mute_on_enabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\glyph_replay.png">
+      <Link>Resources\glyph_replay.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\hist.png">
+      <Link>Resources\hist.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\hubble.png">
+      <Link>Resources\hubble.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\icon_rating_star_large_off.png">
+      <Link>Resources\icon_rating_star_large_off.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\icon_rating_star_large_on.png">
+      <Link>Resources\icon_rating_star_large_on.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\icon_rating_star_off.png">
+      <Link>Resources\icon_rating_star_off.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\icon_rating_star_on.png">
+      <Link>Resources\icon_rating_star_on.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\info.png">
+      <Link>Resources\info.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\InsertHyperlinkHS.png">
+      <Link>Resources\InsertHyperlinkHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\InsertPictureHS.png">
+      <Link>Resources\InsertPictureHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\io.png">
+      <Link>Resources\io.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ioMap.jpg">
+      <Link>Resources\ioMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ItalicHS.png">
+      <Link>Resources\ItalicHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\jupiter.png">
+      <Link>Resources\jupiter.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\jupiterMap.jpg">
+      <Link>Resources\jupiterMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Key.png">
+      <Link>Resources\Key.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\KioskControls.png">
+      <Link>Resources\KioskControls.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\layersButton.png">
+      <Link>Resources\layersButton.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\layersButtonHover.png">
+      <Link>Resources\layersButtonHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\LeftArrow.png">
+      <Link>Resources\LeftArrow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\LeftArrowDisabled.png">
+      <Link>Resources\LeftArrowDisabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\LeftArrowHS.png">
+      <Link>Resources\LeftArrowHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\LineColorHS.png">
+      <Link>Resources\LineColorHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\List_BulletsHS.png">
+      <Link>Resources\List_BulletsHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\List_NumberedHS.png">
+      <Link>Resources\List_NumberedHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\liveidicon.png">
+      <Link>Resources\liveidicon.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\mars.png">
+      <Link>Resources\mars.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\marsMap.jpg">
+      <Link>Resources\marsMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\master.png">
+      <Link>Resources\master.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\menuArrow.png">
+      <Link>Resources\menuArrow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\mercury.png">
+      <Link>Resources\mercury.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\mercuryMap.jpg">
+      <Link>Resources\mercuryMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\messier.png">
+      <Link>Resources\messier.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\milkyWay.png">
+      <Link>Resources\milkyWay.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\milkywaybar.jpg">
+      <Link>Resources\milkywaybar.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\milkywaybarsmall.jpg">
+      <Link>Resources\milkywaybarsmall.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\moon.png">
+      <Link>Resources\moon.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\moonMap.jpg">
+      <Link>Resources\moonMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\moonshadow.png">
+      <Link>Resources\moonshadow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\MultiSelhand.bmp">
+      <Link>Resources\MultiSelhand.bmp</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\neptune.png">
+      <Link>Resources\neptune.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\neptuneMap.jpg">
+      <Link>Resources\neptuneMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\NGC3015-PS.jpg">
+      <Link>Resources\NGC3015-PS.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\OpenCluster.jpg">
+      <Link>Resources\OpenCluster.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Pano Stitch small.png">
+      <Link>Resources\Pano Stitch small.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PauseHS.png">
+      <Link>Resources\PauseHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_C_D.png">
+      <Link>Resources\PinB_C_D.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_C_H.png">
+      <Link>Resources\PinB_C_H.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_C_P.png">
+      <Link>Resources\PinB_C_P.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_C_R.png">
+      <Link>Resources\PinB_C_R.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_E_D.png">
+      <Link>Resources\PinB_E_D.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_E_H.png">
+      <Link>Resources\PinB_E_H.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_E_P.png">
+      <Link>Resources\PinB_E_P.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinB_E_R.png">
+      <Link>Resources\PinB_E_R.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\pins.png">
+      <Link>Resources\pins.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_C_D.png">
+      <Link>Resources\PinT_C_D.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_C_H.png">
+      <Link>Resources\PinT_C_H.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_C_P.png">
+      <Link>Resources\PinT_C_P.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_C_R.png">
+      <Link>Resources\PinT_C_R.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_E_D.png">
+      <Link>Resources\PinT_E_D.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_E_H.png">
+      <Link>Resources\PinT_E_H.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_E_P.png">
+      <Link>Resources\PinT_E_P.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PinT_E_R.png">
+      <Link>Resources\PinT_E_R.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PlanetaryNebula.jpg">
+      <Link>Resources\PlanetaryNebula.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\planetShadow.png">
+      <Link>Resources\planetShadow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PlayHS.png">
+      <Link>Resources\PlayHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\pluto.png">
+      <Link>Resources\pluto.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\plutoMap.jpg">
+      <Link>Resources\plutoMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\point.png">
+      <Link>Resources\point.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\pointsourcemoon.png">
+      <Link>Resources\pointsourcemoon.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PropertiesBackground.png">
+      <Link>Resources\PropertiesBackground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PropertiesBackgroundNoFinder.png">
+      <Link>Resources\PropertiesBackgroundNoFinder.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PropertiesHS.png">
+      <Link>Resources\PropertiesHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PublishToWebHS.png">
+      <Link>Resources\PublishToWebHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PunchIn.png">
+      <Link>Resources\PunchIn.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PunchInOutBlock.png">
+      <Link>Resources\PunchInOutBlock.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\PunchOut.png">
+      <Link>Resources\PunchOut.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\pushpin.png">
+      <Link>Resources\pushpin.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RecordHS.png">
+      <Link>Resources\RecordHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ReflectionNebula.jpg">
+      <Link>Resources\ReflectionNebula.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Reticle.png">
+      <Link>Resources\Reticle.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RightArrow.png">
+      <Link>Resources\RightArrow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RIghtArrowDisabled.png">
+      <Link>Resources\RIghtArrowDisabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RightArrowHS.png">
+      <Link>Resources\RightArrowHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RingMenu\Collections.png">
+      <Link>Resources\RingMenu\Collections.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\RingMenu\Hubble.png">
+      <Link>Resources\RingMenu\Hubble.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ringShadow.png">
+      <Link>Resources\ringShadow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\saturn.png">
+      <Link>Resources\saturn.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\saturnMap.jpg">
+      <Link>Resources\saturnMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\SaturnRings.png">
+      <Link>Resources\SaturnRings.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\saveHS.png">
+      <Link>Resources\saveHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\scroll_background_left.png">
+      <Link>Resources\scroll_background_left.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\scroll_background_middle.png">
+      <Link>Resources\scroll_background_middle.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\scroll_background_right.png">
+      <Link>Resources\scroll_background_right.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\scroll_bar_left.png">
+      <Link>Resources\scroll_bar_left.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\scroll_bar_middle.png">
+      <Link>Resources\scroll_bar_middle.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\scroll_bar_right.png">
+      <Link>Resources\scroll_bar_right.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Selhand.bmp">
+      <Link>Resources\Selhand.bmp</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\sloan.png">
+      <Link>Resources\sloan.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\solarSystem.png">
+      <Link>Resources\solarSystem.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\SpeechMicHS.png">
+      <Link>Resources\SpeechMicHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\SpiralGalaxy.jpg">
+      <Link>Resources\SpiralGalaxy.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Spitzer.png">
+      <Link>Resources\Spitzer.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Star.jpg">
+      <Link>Resources\Star.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StarProfile.png">
+      <Link>Resources\StarProfile.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StarProfileAlpha.png">
+      <Link>Resources\StarProfileAlpha.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StarRatingBackground.png">
+      <Link>Resources\StarRatingBackground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StarRatingBackgroundSmall.png">
+      <Link>Resources\StarRatingBackgroundSmall.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StarRatingForeground.png">
+      <Link>Resources\StarRatingForeground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StarRatingForegroundSmall.png">
+      <Link>Resources\StarRatingForegroundSmall.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\StopHS.png">
+      <Link>Resources\StopHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\sun.png">
+      <Link>Resources\sun.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\sunCorona.png">
+      <Link>Resources\sunCorona.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\sunEclipse.png">
+      <Link>Resources\sunEclipse.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\sunMap.jpg">
+      <Link>Resources\sunMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabBackground.png">
+      <Link>Resources\tabBackground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabHover.png">
+      <Link>Resources\tabHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabHoverMenu.png">
+      <Link>Resources\tabHoverMenu.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabHoverTab.png">
+      <Link>Resources\tabHoverTab.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabPlain.png">
+      <Link>Resources\tabPlain.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabSelected.png">
+      <Link>Resources\tabSelected.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tabSelectedHover.png">
+      <Link>Resources\tabSelectedHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\target1.png">
+      <Link>Resources\target1.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\target2.png">
+      <Link>Resources\target2.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\thumbBackground.png">
+      <Link>Resources\thumbBackground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ThumbBackgroundHover.png">
+      <Link>Resources\ThumbBackgroundHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\thumbBackgroundWide.png">
+      <Link>Resources\thumbBackgroundWide.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ThumbBackgroundWideHover.png">
+      <Link>Resources\ThumbBackgroundWideHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ThumbnailLoadingHS.png">
+      <Link>Resources\ThumbnailLoadingHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tool_icon_picture_24.png">
+      <Link>Resources\tool_icon_picture_24.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tool_icon_shape_24.png">
+      <Link>Resources\tool_icon_shape_24.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tool_icon_text_24.png">
+      <Link>Resources\tool_icon_text_24.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tool_icon_video_24.png">
+      <Link>Resources\tool_icon_video_24.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TouchControls.png">
+      <Link>Resources\TouchControls.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TouchControlsNoHold.png">
+      <Link>Resources\TouchControlsNoHold.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tourHover.png">
+      <Link>Resources\tourHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TourIcon.png">
+      <Link>Resources\TourIcon.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tourSelected.png">
+      <Link>Resources\tourSelected.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\tourSelectedHover.png">
+      <Link>Resources\tourSelectedHover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_gripper_disabled.png">
+      <Link>Resources\trackbar_gripper_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_gripper_hover.png">
+      <Link>Resources\trackbar_gripper_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_gripper_normal.png">
+      <Link>Resources\trackbar_gripper_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_gripper_pressed.png">
+      <Link>Resources\trackbar_gripper_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_selection_disabled.png">
+      <Link>Resources\trackbar_selection_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_selection_hover.png">
+      <Link>Resources\trackbar_selection_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_selection_normal.png">
+      <Link>Resources\trackbar_selection_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_selection_pressed.png">
+      <Link>Resources\trackbar_selection_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_track_disabled.png">
+      <Link>Resources\trackbar_track_disabled.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_track_hover.png">
+      <Link>Resources\trackbar_track_hover.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_track_normal.png">
+      <Link>Resources\trackbar_track_normal.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\trackbar_track_pressed.png">
+      <Link>Resources\trackbar_track_pressed.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TrackerButton.png">
+      <Link>Resources\TrackerButton.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransArrow.png">
+      <Link>Resources\TransArrow.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransBackground.png">
+      <Link>Resources\TransBackground.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransCrossfade.png">
+      <Link>Resources\TransCrossfade.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransCut.png">
+      <Link>Resources\TransCut.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransFadeIn.png">
+      <Link>Resources\TransFadeIn.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransFadeOut.png">
+      <Link>Resources\TransFadeOut.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransFadeOutIn.png">
+      <Link>Resources\TransFadeOutIn.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\TransHighlight.png">
+      <Link>Resources\TransHighlight.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\Unidentified.jpg">
+      <Link>Resources\Unidentified.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\uranus.png">
+      <Link>Resources\uranus.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\uranusMap.jpg">
+      <Link>Resources\uranusMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\venus.png">
+      <Link>Resources\venus.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\venusMap.jpg">
+      <Link>Resources\venusMap.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\video.png">
+      <Link>Resources\video.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\WelcomeLogo.png">
+      <Link>Resources\WelcomeLogo.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\wwt_icon1.png">
+      <Link>Resources\wwt_icon1.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\wwt_wordmark.png">
+      <Link>Resources\wwt_wordmark.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\xbox.png">
+      <Link>Resources\xbox.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\xbox360.png">
+      <Link>Resources\xbox360.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\xbox360Layour.jpg">
+      <Link>Resources\xbox360Layour.jpg</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\xBoxController.png">
+      <Link>Resources\xBoxController.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ZoomHS.png">
+      <Link>Resources\ZoomHS.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ZoomIn.png">
+      <Link>Resources\ZoomIn.png</Link>
+    </Content>
+    <Content Include="..\WWTExplorer3d\Resources\ZoomOut.png">
+      <Link>Resources\ZoomOut.png</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\WWTExplorer3d\Resources\Thumbs.db">
+      <Link>Resources\Thumbs.db</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\WWTExplorer3d\Cosmos\cosmos.bin">
+      <Link>Resources\cosmos.bin</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\WWTExplorer3d\WW15MGH.DAC">
+      <Link>Resources\WW15MGH.DAC</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WWTThumbnails">
+      <HintPath>..\WWTExplorer3d\WWTThumbnails.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\WWTExplorer3d\Resources\HandControllerRight.glb">
+      <Link>Resources\HandControllerRight.glb</Link>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,155 @@
+# Copyright 2020 the .NET Foundation
+# Licensed under the MIT License
+
+trigger:
+- master
+- pipelines-codesign  # TEMPORARY
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+
+    # Custom agents are needed to build the installer MSI.
+    # (E.g.: https://developercommunity.visualstudio.com/idea/628434/azure-devops-cannot-build-msi-via-vdproj-project.html)
+    pool:
+      name: 'Custom Windows'
+
+    variables:
+      buildPlatform: 'AnyCPU'
+      buildConfiguration: 'Release'
+
+    steps:
+
+    # There is a known issue with building MSI installer projects that demands a
+    # registry hack: https://stackoverflow.com/a/41788791/3760486 . The hack is
+    # user-specific, and because we're using a VM Scale Set agent pool, which
+    # dynamically provisions the VMs with the Pipelines agent, we don't know
+    # which user account will be used for the build. So we have to apply this
+    # hack at runtime, rather than while constructing the VM image:
+    - powershell: |
+        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild"
+        .\DisableOutOfProcBuild.exe
+      displayName: Work around HRESULT=8000000A vdproj error
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: 'WWTExplorer.sln'
+
+    - task: VSBuild@1
+      displayName: Build Explorer app
+      inputs:
+        solution: 'WWTExplorer3d/WWTExplorer.csproj'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: VSBuild@1
+      displayName: Build MakeDataCabinetFile app
+      inputs:
+        solution: 'MakeDataCabinetFile/MakeDataCabinetFile.csproj'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    # TODO: for tagged releases, download a fullsize / up-to-date package
+    - powershell: |
+        Invoke-WebRequest `
+          "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
+          -OutFile ".\Setup1\datafiles.cabinet"
+      displayName: Download installer data files bundle
+
+    - powershell: |
+        &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
+          .\WWTExplorer.sln `
+          /Build "$(buildConfiguration)|$(buildPlatform)" `
+          /Project .\Setup1\Setup1.vdproj
+      displayName: Build installer
+
+    - task: CopyFiles@2
+      displayName: Copy build artifacts for staging
+      inputs:
+        sourceFolder: '$(Build.SourcesDirectory)'
+        contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb|*.msi)'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish staged build artifacts
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifactName: drop-unsigned
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish CI support files
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/ci'
+        artifactName: ci-support
+
+- stage: CodeSign
+  condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
+  jobs:
+  - deployment: CodeSign
+    displayName: Code Signing
+    pool:
+      vmImage: windows-latest
+
+    environment: App Code Signing
+
+    variables:
+    - group: Sign Client Credentials
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # TODO: need to install this somehow
+          # - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
+          #   displayName: AntiMalware Scan
+          #   inputs:
+          #     EnableServices: true
+          #     FileDirPath: $(Pipeline.Workspace)\drop-unsigned
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . SignClient
+            displayName: Install SignTool tool
+
+          # See: https://github.com/dotnet/SignService#client-configuration
+          # and https://github.com/novotnyllc/CodeSigningDemo
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
+              --input "WWTExplorer3d\bin\Release\WWTExplorer.exe" `
+              --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "AASWorldWideTelescopeWindowsClient" `
+              --description "AAS WorldWide Telescope Windows client" `
+              --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
+            displayName: Sign main executable
+
+          # Note: this command doesn't seem to sign the contents of the
+          # installer package as might be hoped, but that seems to be OK -- if
+          # you download and run the installer there aren't any complaints
+          # when launching the software.
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
+              --input "Setup1\Release\WWTSetup.msi" `
+              --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
+              --filelist "$(Pipeline.Workspace)\ci-support\codesign-setup-filelist.txt" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "AASWorldWideTelescopeWindowsClient" `
+              --description "AAS WorldWide Telescope Windows client" `
+              --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
+            displayName: Sign installer
+
+          - publish: $(Pipeline.Workspace)/drop-unsigned
+            displayName: Publish Signed Packages
+            artifact: drop-signed

@@ -28,140 +28,260 @@ using System;
 
 /////////////////////// Classes ///////////////////////////////////////////////
 
-public class  CAARiseTransitSetDetails
+public class CAARiseTransitSetDetails
 {
-//Constructors / Destructors
-  public CAARiseTransitSetDetails()
-  {
-	  bValid = false;
-	  Rise = 0;
-	  Transit = 0;
-	  Set = 0;
-  }
+    //Constructors / Destructors
+    public CAARiseTransitSetDetails()
+    {
+        RiseValid = false;
+        SetValid = false;
+        TransitValid = false;
+        Rise = 0;
+        Transit = 0;
+        Set = 0;
+    }
 
-//Member variables
-  public bool bValid;
-  public double Rise;
-  public double Transit;
-  public double Set;
+    //Member variables
+    public double Rise;
+    public double Transit;
+    public double Set;
+    internal bool RiseValid;
+    internal bool SetValid;
+    internal bool TransitAboveHorizon;
+    internal bool TransitValid;
 }
 
-public class  CAARiseTransitSet
+public class CAARiseTransitSet
 {
-//Static methods
+    //Static methods
 
-  ///////////////////////////// Implementation //////////////////////////////////
-  
-  public static CAARiseTransitSetDetails Rise(double JD, double Alpha1, double Delta1, double Alpha2, double Delta2, double Alpha3, double Delta3, double Longitude, double Latitude, double h0)
-  {
-	//What will be the return value
-	CAARiseTransitSetDetails details = new CAARiseTransitSetDetails();
-	details.bValid = false;
-  
-	//Calculate the sidereal time
-	double theta0 = CAASidereal.ApparentGreenwichSiderealTime(JD);
-	theta0 *= 15; //Express it as degrees
-  
-	//Calculate deltat
-	double deltaT = CAADynamicalTime.DeltaT(JD);
-  
-	//Convert values to radians
-	double Delta2Rad = CAACoordinateTransformation.DegreesToRadians(Delta2);
-	double LatitudeRad = CAACoordinateTransformation.DegreesToRadians(Latitude);
-  
-	//Convert the standard latitude to radians
-	double h0Rad = CAACoordinateTransformation.DegreesToRadians(h0);
-  
-	double cosH0 = (Math.Sin(h0Rad) - Math.Sin(LatitudeRad)*Math.Sin(Delta2Rad)) / (Math.Cos(LatitudeRad) * Math.Cos(Delta2Rad));
-  
-	//Check that the object actually rises
-	if ((cosH0 > 1) || (cosH0 < -1))
-	  return details;
-  
-	double H0 = Math.Acos(cosH0);
-	H0 = CAACoordinateTransformation.RadiansToDegrees(H0);
-  
-	double M0 = (Alpha2 *15 + Longitude - theta0) / 360;
-	double M1 = M0 - H0/360;
-	double M2 = M0 + H0/360;
-  
-	if (M0 > 1)
-	  M0 -= 1;
-	else if (M0 < 0)
-	  M0 += 1;
-  
-	if (M1 > 1)
-	  M1 -= 1;
-	else if (M1 < 0)
-	  M1 += 1;
-  
-	if (M2 > 1)
-	  M2 -= 1;
-	else if (M2 < 0)
-	  M2 += 1;
-  
-	for (int i =0; i<2; i++)
-	{
-	  //Calculate the details of rising
-  
-	  double theta1 = theta0 + 360.985647 *M1;
-	  theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
-  
-	  double n = M1 + deltaT/86400;
-  
-	  double Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
-	  double Delta = CAAInterpolate.Interpolate(n, Delta1, Delta2, Delta3);
-  
-	  double H = theta1 - Longitude - Alpha *15;
-	  CAA2DCoordinate Horizontal = CAACoordinateTransformation.Equatorial2Horizontal(H/15, Delta, Latitude);
-  
-	  double DeltaM = (Horizontal.Y - h0) / (360 *Math.Cos(CAACoordinateTransformation.DegreesToRadians(Delta))*Math.Cos(LatitudeRad)*Math.Sin(CAACoordinateTransformation.DegreesToRadians(H)));
-	  M1 += DeltaM;
-  
-  
-	  //Calculate the details of transit
-  
-	  theta1 = theta0 + 360.985647 *M0;
-	  theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
-  
-	  n = M0 + deltaT/86400;
-  
-	  Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
-  
-	  H = theta1 - Longitude - Alpha *15;
-  
-	  if (H < -180)
-	  {
-		  H+=360;
-	  }
-  
-	  DeltaM = -H / 360;
-	  M0 += DeltaM;
-  
-  
-	  //Calculate the details of setting
-  
-	  theta1 = theta0 + 360.985647 *M2;
-	  theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
-  
-	  n = M2 + deltaT/86400;
-  
-	  Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
-	  Delta = CAAInterpolate.Interpolate(n, Delta1, Delta2, Delta3);
-  
-	  H = theta1 - Longitude - Alpha *15;
-	  Horizontal = CAACoordinateTransformation.Equatorial2Horizontal(H/15, Delta, Latitude);
-  
-	  DeltaM = (Horizontal.Y - h0) / (360 *Math.Cos(CAACoordinateTransformation.DegreesToRadians(Delta))*Math.Cos(LatitudeRad)*Math.Sin(CAACoordinateTransformation.DegreesToRadians(H)));
-	  M2 += DeltaM;
-	}
-  
-	//Finally before we exit, convert to hours
-	details.bValid = true;
-	details.Rise = M1 * 24;
-	details.Set = M2 * 24;
-	details.Transit = M0 * 24;
-  
-	return details;
-  }
+    ///////////////////////////// Implementation //////////////////////////////////
+
+
+    static double ConstraintM(double M)
+    {
+        while (M > 1)
+            M -= 1;
+        while (M < 0)
+            M += 1;
+
+        return M;
+    }
+
+    static double CalculateTransit(double Alpha2, double theta0, double Longitude)
+    {
+        //Calculate and ensure the M0 is in the range 0 to +1
+        double M0 = (Alpha2 * 15 + Longitude - theta0) / 360;
+        M0 = ConstraintM(M0);
+
+        return M0;
+    }
+
+    static void CalculateRiseSet(double M0, double cosH0, CAARiseTransitSetDetails details, ref double M1, ref double M2)
+    {
+        M1 = 0;
+        M2 = 0;
+
+        if ((cosH0 > -1) && (cosH0 < 1))
+        {
+            details.RiseValid = true;
+            details.SetValid = true;
+            details.TransitAboveHorizon = true;
+
+            double H0 = Math.Acos(cosH0);
+            H0 = CAACoordinateTransformation.RadiansToDegrees(H0);
+
+            //Calculate and ensure the M1 and M2 is in the range 0 to +1
+            M1 = M0 - H0 / 360;
+            M2 = M0 + H0 / 360;
+
+            M1 = ConstraintM(M1);
+            M2 = ConstraintM(M2);
+        }
+        else if (cosH0 < 1)
+        {
+            details.TransitAboveHorizon = true;
+        }
+    }
+
+    static void CorrectRAValuesForInterpolation(ref double Alpha1, ref double Alpha2, ref double Alpha3)
+    {
+        //Ensure the RA values are corrected for interpolation. Due to important Remark 2 by Meeus on Interopolation of RA values
+        Alpha1 = CAACoordinateTransformation.MapTo0To24Range(Alpha1);
+        Alpha2 = CAACoordinateTransformation.MapTo0To24Range(Alpha2);
+        Alpha3 = CAACoordinateTransformation.MapTo0To24Range(Alpha3);
+        if (Math.Abs(Alpha2 - Alpha1) > 12.0)
+        {
+            if (Alpha2 > Alpha1)
+                Alpha1 += 24;
+            else
+                Alpha2 += 24;
+        }
+        if (Math.Abs(Alpha3 - Alpha2) > 12.0)
+        {
+            if (Alpha3 > Alpha2)
+                Alpha2 += 24;
+            else
+                Alpha3 += 24;
+        }
+        if (Math.Abs(Alpha2 - Alpha1) > 12.0)
+        {
+            if (Alpha2 > Alpha1)
+                Alpha1 += 24;
+            else
+                Alpha2 += 24;
+        }
+        if (Math.Abs(Alpha3 - Alpha2) > 12.0)
+        {
+            if (Alpha3 > Alpha2)
+                Alpha2 += 24;
+            else
+                Alpha3 += 24;
+        }
+    }
+
+    static void CalculateRiseHelper(CAARiseTransitSetDetails details, double theta0, double deltaT, double Alpha1, double Delta1, double Alpha2, double Delta2, double Alpha3, double Delta3, double Longitude, double Latitude, double LatitudeRad, double h0, ref double M1)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            //Calculate the details of rising
+            if (details.RiseValid)
+            {
+                double theta1 = theta0 + 360.985647 * M1;
+                theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
+
+                double n = M1 + deltaT / 86400;
+
+                double Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
+                double Delta = CAAInterpolate.Interpolate(n, Delta1, Delta2, Delta3);
+
+                double H = theta1 - Longitude - Alpha * 15;
+                CAA2DCoordinate Horizontal = CAACoordinateTransformation.Equatorial2Horizontal(H / 15, Delta, Latitude);
+
+                double DeltaM = (Horizontal.Y - h0) / (360 * Math.Cos(CAACoordinateTransformation.DegreesToRadians(Delta)) * Math.Cos(LatitudeRad) * Math.Sin(CAACoordinateTransformation.DegreesToRadians(H)));
+                M1 += DeltaM;
+
+                if ((M1 < 0) || (M1 >= 1))
+                    details.RiseValid = false;
+            }
+        }
+    }
+
+    static void CalculateSetHelper(CAARiseTransitSetDetails details, double theta0, double deltaT, double Alpha1, double Delta1, double Alpha2, double Delta2, double Alpha3, double Delta3, double Longitude, double Latitude, double LatitudeRad, double h0, ref double M2)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            //Calculate the details of setting
+            if (details.SetValid)
+            {
+                double theta1 = theta0 + 360.985647 * M2;
+                theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
+
+                double n = M2 + deltaT / 86400;
+
+                double Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
+                double Delta = CAAInterpolate.Interpolate(n, Delta1, Delta2, Delta3);
+
+                double H = theta1 - Longitude - Alpha * 15;
+                CAA2DCoordinate Horizontal = CAACoordinateTransformation.Equatorial2Horizontal(H / 15, Delta, Latitude);
+
+                double DeltaM = (Horizontal.Y - h0) / (360 * Math.Cos(CAACoordinateTransformation.DegreesToRadians(Delta)) * Math.Cos(LatitudeRad) * Math.Sin(CAACoordinateTransformation.DegreesToRadians(H)));
+                M2 += DeltaM;
+
+                if ((M2 < 0) || (M2 >= 1))
+                    details.SetValid = false;
+            }
+        }
+    }
+
+    static void CalculateTransitHelper(CAARiseTransitSetDetails details, double theta0, double deltaT, double Alpha1, double Alpha2, double Alpha3, double Longitude, ref double M0)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            //Calculate the details of transit
+            if (details.TransitValid)
+            {
+                double theta1 = theta0 + 360.985647 * M0;
+                theta1 = CAACoordinateTransformation.MapTo0To360Range(theta1);
+
+                double n = M0 + deltaT / 86400;
+
+                double Alpha = CAAInterpolate.Interpolate(n, Alpha1, Alpha2, Alpha3);
+
+                double H = theta1 - Longitude - Alpha * 15;
+                H = CAACoordinateTransformation.MapTo0To360Range(H);
+                if (H > 180)
+                    H -= 360;
+
+                double DeltaM = -H / 360;
+                M0 += DeltaM;
+
+                if (M0 < 0 || M0 >= 1)
+                    details.TransitValid = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Updated to use new Code from CAA 
+    /// </summary>
+    /// <param name="JD"></param>
+    /// <param name="Alpha1"></param>
+    /// <param name="Delta1"></param>
+    /// <param name="Alpha2"></param>
+    /// <param name="Delta2"></param>
+    /// <param name="Alpha3"></param>
+    /// <param name="Delta3"></param>
+    /// <param name="Longitude"></param>
+    /// <param name="Latitude"></param>
+    /// <param name="h0"></param>
+    /// <returns></returns>
+    public static CAARiseTransitSetDetails Compute(double JD, double Alpha1, double Delta1, double Alpha2, double Delta2, double Alpha3, double Delta3, double Longitude, double Latitude, double h0)
+    {
+        //What will be the return value
+        CAARiseTransitSetDetails details = new CAARiseTransitSetDetails();
+        details.RiseValid = false;
+        details.SetValid = false;
+        details.TransitValid = true;
+        details.TransitAboveHorizon = false;
+
+        //Calculate the sidereal time
+        double theta0 = CAASidereal.ApparentGreenwichSiderealTime(JD);
+        theta0 *= 15; //Express it as degrees
+
+        //Calculate deltat
+        double deltaT = CAADynamicalTime.DeltaT(JD);
+
+        //Convert values to radians
+        double Delta2Rad = CAACoordinateTransformation.DegreesToRadians(Delta2);
+        double LatitudeRad = CAACoordinateTransformation.DegreesToRadians(Latitude);
+
+        //Convert the standard latitude to radians
+        double h0Rad = CAACoordinateTransformation.DegreesToRadians(h0);
+
+        //Calculate cosH0
+        double cosH0 = (Math.Sin(h0Rad) - Math.Sin(LatitudeRad) * Math.Sin(Delta2Rad)) / (Math.Cos(LatitudeRad) * Math.Cos(Delta2Rad));
+
+        //Calculate M0
+        double M0 = CalculateTransit(Alpha2, theta0, Longitude);
+
+        //Calculate M1 & M2
+        double M1 = 0;
+        double M2 = 0;
+        CalculateRiseSet(M0, cosH0, details, ref M1, ref M2);
+
+        //Ensure the RA values are corrected for interpolation. Due to important Remark 2 by Meeus on Interopolation of RA values
+        CorrectRAValuesForInterpolation(ref Alpha1, ref Alpha2, ref Alpha3);
+
+        //Do the main work
+        CalculateTransitHelper(details, theta0, deltaT, Alpha1, Alpha2, Alpha3, Longitude, ref M0);
+        CalculateRiseHelper(details, theta0, deltaT, Alpha1, Delta1, Alpha2, Delta2, Alpha3, Delta3, Longitude, Latitude, LatitudeRad, h0, ref M1);
+        CalculateSetHelper(details, theta0, deltaT, Alpha1, Delta1, Alpha2, Delta2, Alpha3, Delta3, Longitude, Latitude, LatitudeRad, h0, ref M2);
+
+        details.Rise = details.RiseValid ? (M1 * 24) : 0.0;
+        details.Set = details.SetValid ? (M2 * 24) : 0.0;
+        details.Transit = details.TransitValid ? (M0 * 24) : 0.0;
+
+        return details;
+    }
 }

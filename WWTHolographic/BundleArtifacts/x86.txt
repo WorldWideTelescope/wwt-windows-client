@@ -1,0 +1,2 @@
+MainPackage=C:\github\WWTHolographic\bin\x86\Debug\WWTHolographic_1.0.4.0_x86_Debug.appx
+SymbolPackage=C:\github\WWTHolographic\AppPackages\WWTHolographic_1.0.4.0_Debug_Test\WWTHolographic_1.0.4.0_x86_Debug.appxsym

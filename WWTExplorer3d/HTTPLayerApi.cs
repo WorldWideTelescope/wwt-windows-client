@@ -36,100 +36,17 @@ namespace TerraViewer
             return request.ToLower().StartsWith(_sig);
         }
 
-        static Dictionary<string, ScriptableProperty> SettingsList;
+        static Dictionary<string, ScriptableProperty> SettingsList
+        {
+            get
+            {
+                return Settings.SettingsList;
+            }
+        }
 
         static HTTPLayerApi()
         {
-            // These are the settings allowed access thru the LCAPI
-            SettingsList = new Dictionary<string, ScriptableProperty>();
-            SettingsList.Add("AutoHideContext", new ScriptableProperty("AutoHideContext", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("AutoHideTabs", new ScriptableProperty("AutoHideTabs", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("AutoRepeatTour", new ScriptableProperty("AutoRepeatTour", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("AutoRepeatTourAll", new ScriptableProperty("AutoRepeatTourAll", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ConstellationBoundryColor", new ScriptableProperty("ConstellationBoundryColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("ConstellationFigureColor", new ScriptableProperty("ConstellationFigureColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("Constellations", new ScriptableProperty("Constellations", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ConstellationSelectionColor", new ScriptableProperty("ConstellationSelectionColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("ConstellationsEnabled", new ScriptableProperty("ConstellationsEnabled", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("DomeTilt", new ScriptableProperty("DomeTilt", ScriptablePropertyTypes.Float, ScriptablePropertyScale.Linear, -90, +180, false));
-            SettingsList.Add("DomeView", new ScriptableProperty("DomeView", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("EarthCutawayView", new ScriptableProperty("EarthCutawayView", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("EclipticColor", new ScriptableProperty("EclipticColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("FollowMouseOnZoom", new ScriptableProperty("FollowMouseOnZoom", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("FovCamera", new ScriptableProperty("FovCamera", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("FovColor", new ScriptableProperty("FovColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("FovEyepiece", new ScriptableProperty("FovEyepiece", ScriptablePropertyTypes.Integer));
-            SettingsList.Add("FovTelescope", new ScriptableProperty("FovTelescope", ScriptablePropertyTypes.Integer));
-            SettingsList.Add("FullScreenTours", new ScriptableProperty("FullScreenTours", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("GridColor", new ScriptableProperty("GridColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("ImageQuality", new ScriptableProperty("ImageQuality", ScriptablePropertyTypes.Integer, ScriptablePropertyScale.Linear, 0, 100, false));
-            SettingsList.Add("LargeDomeTextures", new ScriptableProperty("LargeDomeTextures", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("LineSmoothing", new ScriptableProperty("LineSmoothing", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ListenMode", new ScriptableProperty("ListenMode", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("LocalHorizonMode", new ScriptableProperty("LocalHorizonMode", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("GalacticMode", new ScriptableProperty("GalacticMode", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("MilkyWayModel", new ScriptableProperty("MilkyWayModel", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("LocationAltitude", new ScriptableProperty("LocationAltitude", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, 0, 10000, false));
-            SettingsList.Add("LocationLat", new ScriptableProperty("LocationLat", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -90, 90, true));
-            SettingsList.Add("LocationLng", new ScriptableProperty("LocationLng", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -180, 180, false));
-            SettingsList.Add("LocationName", new ScriptableProperty("LocationName", ScriptablePropertyTypes.String));
-            SettingsList.Add("MasterController", new ScriptableProperty("MasterController", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ShowAltAzGrid", new ScriptableProperty("ShowAltAzGrid", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowAltAzGridText", new ScriptableProperty("ShowAltAzGridText", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowClouds", new ScriptableProperty("ShowClouds", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowConstellationBoundries", new ScriptableProperty("ShowConstellationBoundries", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowConstellationFigures", new ScriptableProperty("ShowConstellationFigures", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowConstellationLabels", new ScriptableProperty("ShowConstellationLabels", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowConstellationNames", new ScriptableProperty("ShowConstellationNames", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowConstellationPictures", new ScriptableProperty("ShowConstellationPictures", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowConstellationSelection", new ScriptableProperty("ShowConstellationSelection", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowCrosshairs", new ScriptableProperty("ShowCrosshairs", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowDatasetNames", new ScriptableProperty("ShowDatasetNames", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowEarthSky", new ScriptableProperty("ShowEarthSky", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ShowEcliptic", new ScriptableProperty("ShowEcliptic", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowEclipticGrid", new ScriptableProperty("ShowEclipticGrid", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowEclipticGridText", new ScriptableProperty("ShowEclipticGridText", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowEclipticOverviewText", new ScriptableProperty("ShowEclipticOverviewText", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowElevationModel", new ScriptableProperty("ShowElevationModel", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ShowEquatorialGridText", new ScriptableProperty("ShowEquatorialGridText", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowFieldOfView", new ScriptableProperty("ShowFieldOfView", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowGalacticGrid", new ScriptableProperty("ShowGalacticGrid", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowGalacticGridText", new ScriptableProperty("ShowGalacticGridText", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowGrid", new ScriptableProperty("ShowGrid", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowISSModel", new ScriptableProperty("ShowISSModel", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ShowPrecessionChart", new ScriptableProperty("ShowPrecessionChart", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowSkyGrids", new ScriptableProperty("ShowSkyGrids", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowSkyNode", new ScriptableProperty("ShowSkyNode", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowSkyOverlays", new ScriptableProperty("ShowSkyOverlays", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowSkyOverlaysIn3d", new ScriptableProperty("ShowSkyOverlaysIn3d", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowSolarSystem", new ScriptableProperty("ShowSolarSystem", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("ShowTouchControls", new ScriptableProperty("ShowTouchControls", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("ShowUTCTime", new ScriptableProperty("ShowUTCTime", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("SolarSystemCosmos", new ScriptableProperty("SolarSystemCosmos", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemCMB", new ScriptableProperty("SolarSystemCMB", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemLighting", new ScriptableProperty("SolarSystemLighting", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("SolarSystemMilkyWay", new ScriptableProperty("SolarSystemMilkyWay", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemMinorOrbits", new ScriptableProperty("SolarSystemMinorOrbits", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemMinorPlanets", new ScriptableProperty("SolarSystemMinorPlanets", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemMultiRes", new ScriptableProperty("SolarSystemMultiRes", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("SolarSystemOrbitColor", new ScriptableProperty("SolarSystemOrbitColor", ScriptablePropertyTypes.Color));
-            SettingsList.Add("SolarSystemOrbits", new ScriptableProperty("SolarSystemOrbits", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemOverlays", new ScriptableProperty("SolarSystemOverlays", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemPlanets", new ScriptableProperty("SolarSystemPlanets", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("SolarSystemScale", new ScriptableProperty("SolarSystemScale", ScriptablePropertyTypes.Integer, ScriptablePropertyScale.Linear, 1, 100, false));
-            SettingsList.Add("SolarSystemStars", new ScriptableProperty("SolarSystemStars", ScriptablePropertyTypes.BlendState));
-            SettingsList.Add("StartUpLookAt", new ScriptableProperty("StartUpLookAt", ScriptablePropertyTypes.Enum));
-            
-            SettingsList.Add("ConstellationFiguresFilter", new ScriptableProperty("ConstellationFiguresFilter", ScriptablePropertyTypes.ConstellationFilter));
-            SettingsList.Add("ConstellationBoundariesFilter", new ScriptableProperty("ConstellationBoundariesFilter", ScriptablePropertyTypes.ConstellationFilter));
-            SettingsList.Add("ConstellationNamesFilter", new ScriptableProperty("ConstellationNamesFilter", ScriptablePropertyTypes.ConstellationFilter));
-            SettingsList.Add("ConstellationArtFilter", new ScriptableProperty("ConstellationArtFilter", ScriptablePropertyTypes.ConstellationFilter));
-            SettingsList.Add("PerspectiveOffsetX", new ScriptableProperty("PerspectiveOffsetX", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -1, +1, false));
-            SettingsList.Add("PerspectiveOffsetY", new ScriptableProperty("PerspectiveOffsetY", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -1, +1, false));
-            SettingsList.Add("OverSampleTerrain", new ScriptableProperty("OverSampleTerrain", ScriptablePropertyTypes.Bool));
-            SettingsList.Add("SwingScaleFront", new ScriptableProperty("SwingScaleFront", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, 0, 10, false));
-            SettingsList.Add("SwingScaleBack", new ScriptableProperty("SwingScaleBack", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, 0, 10, false));
-
+           
 
         }
 
@@ -738,8 +655,8 @@ namespace TerraViewer
                         break;
                     case "state":
                         {
-                            CameraParameters cam = Earth3d.MainWindow.viewCamera;
-                            if (Earth3d.MainWindow.Space)
+                            CameraParameters cam = RenderEngine.Engine.viewCamera;
+                            if (RenderEngine.Engine.Space)
                             {
                                 data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><ViewState lookat=\"{7}\" ra=\"{0}\" dec=\"{1}\" zoom=\"{2}\" rotation=\"{4}\" time=\"{5}\" timerate=\"{6}\" ReferenceFrame=\"Sky\" ViewToken=\"SD8834DFA\" ZoomText=\"{8}\"></ViewState></LayerApi>",
                                     cam.RA, cam.Dec, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.contextPanel.ViewLabelText);
@@ -747,7 +664,7 @@ namespace TerraViewer
                             else
                             {
                                 data = string.Format("<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status><ViewState lookat=\"{7}\" lat=\"{0}\" lng=\"{1}\" zoom=\"{2}\" angle=\"{3}\" rotation=\"{4}\" time=\"{5}\" timerate=\"{6}\" ReferenceFrame=\"{8}\" ViewToken=\"{10}\" ZoomText=\"{9}\"></ViewState></LayerApi>",
-                                    cam.Lat, cam.Lng, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.FocusReferenceFrame(), Earth3d.MainWindow.contextPanel.ViewLabelText, Earth3d.MainWindow.viewCamera.ToToken());
+                                    cam.Lat, cam.Lng, cam.Zoom, cam.Angle, cam.Rotation, SpaceTimeController.Now.ToString(), SpaceTimeController.TimeRate.ToString(), Earth3d.MainWindow.CurrentImageSet.DataSetType.ToString(), Earth3d.MainWindow.FocusReferenceFrame(), Earth3d.MainWindow.contextPanel.ViewLabelText, RenderEngine.Engine.viewCamera.ToToken());
                             }
                         }
                         break;
@@ -762,7 +679,7 @@ namespace TerraViewer
                         break;
                     case "uisettings":
                         {
-                            if (String.IsNullOrEmpty(propName) || SetSetting(propName, propValue, false))
+                            if (String.IsNullOrEmpty(propName) || Settings.SetSetting(propName, propValue, false))
                             {
 
                                 data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><LayerApi><Status>Success</Status></LayerApi>";
@@ -842,18 +759,18 @@ namespace TerraViewer
                                         CameraParameters cameraParams;
                                         double lat = result.Lat;
                                         double lng = result.Lng;
-                                        double zoom = Convert.ToDouble(Earth3d.MainWindow.ZoomFactor);
-                                        double rotation = Convert.ToDouble(Earth3d.MainWindow.CameraRotate);
-                                        double angle = Convert.ToDouble(Earth3d.MainWindow.CameraAngle);
+                                        double zoom = Convert.ToDouble(RenderEngine.Engine.ZoomFactor);
+                                        double rotation = Convert.ToDouble(RenderEngine.Engine.CameraRotate);
+                                        double angle = Convert.ToDouble(RenderEngine.Engine.CameraAngle);
                                         cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
-                                        if (Earth3d.MainWindow.Space)
+                                        if (RenderEngine.Engine.Space)
                                         {
                                             cameraParams.RA = result.RA;
                                         }
 
                                         MethodInvoker doIt = delegate
                                         {
-                                            Earth3d.MainWindow.GotoTarget(cameraParams, false, instant);
+                                            RenderEngine.Engine.GotoTarget(cameraParams, false, instant);
                                         };
 
                                         if (Earth3d.MainWindow.InvokeRequired)
@@ -944,7 +861,7 @@ namespace TerraViewer
 
                                         double lat = double.Parse(latLng[0]);
                                         double lng = double.Parse(latLng[1]);
-                                        double alt = Earth3d.MainWindow.GetAltitudeForLatLong(lat, lng) - EGM96Geoid.Height(lat, lng);
+                                        double alt = RenderEngine.Engine.GetAltitudeForLatLong(lat, lng) - EGM96Geoid.Height(lat, lng);
                                         sb.Append(string.Format("<Coordinates Lat=\"{0}\" Lng=\"{1}\" Altitude=\"{2}\" />", lat, lng, alt));
 
                                     }
@@ -999,7 +916,7 @@ namespace TerraViewer
                     double rotation = Convert.ToDouble(lines[3]);
                     double angle = Convert.ToDouble(lines[4]);
                     cameraParams = new CameraParameters(lat, lng, zoom, rotation, angle, 100);
-                    if (Earth3d.MainWindow.Space)
+                    if (RenderEngine.Engine.Space)
                     {
                         cameraParams.RA = Convert.ToDouble(lines[1]);
                     }
@@ -1007,7 +924,7 @@ namespace TerraViewer
 
                     MethodInvoker doIt = delegate
                     {
-                        Earth3d.MainWindow.GotoTarget(cameraParams, false, instant);
+                        RenderEngine.Engine.GotoTarget(cameraParams, false, instant);
                     };
 
                     if (Earth3d.MainWindow.InvokeRequired)
@@ -1069,7 +986,7 @@ namespace TerraViewer
                             }
                             MethodInvoker doIt2 = delegate
                             {
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, instant);
+                                RenderEngine.Engine.GotoTarget(cameraParams, false, instant);
                             };
 
                             if (Earth3d.MainWindow.InvokeRequired)
@@ -1118,7 +1035,7 @@ namespace TerraViewer
 
                         MethodInvoker doIt = delegate
                         {
-                            Earth3d.MainWindow.GotoTarget(pl, false, false, true);
+                            RenderEngine.Engine.GotoTarget(pl, false, false, true);
                         };
 
                         if (Earth3d.MainWindow.InvokeRequired)
@@ -1142,191 +1059,7 @@ namespace TerraViewer
 
             SendHeaderAndData(data, ref socket, sMimeType);
         }
-        public static bool SetSetting(string name, string value, bool quickChange)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                return false;
-            }
-
-            if (quickChange)
-            {
-                Earth3d.ignoreChanges = true;
-            }
-            try
-            {
-
-                bool safeToSet = SettingsList.ContainsKey(name);
-
-                if (safeToSet)
-                {
-                    Type thisType = Properties.Settings.Default.GetType();
-                    PropertyInfo pi = thisType.GetProperty(name);
-                    if (pi.PropertyType.BaseType == typeof(Enum))
-                    {
-                        pi.SetValue(Properties.Settings.Default, Enum.Parse(pi.PropertyType, value), null);
-                    }
-                    else if (pi.PropertyType == typeof(TimeSpan))
-                    {
-                        pi.SetValue(Properties.Settings.Default, TimeSpan.Parse(value), null);
-                    }
-                    else if (pi.PropertyType == typeof(BlendState))
-                    {
-                        try
-                        {
-                            
-
-                            BlendState blendState = Properties.Settings.Default[name] as BlendState;
-                            if (blendState != null)
-                            {
-                                if (value.ToLower() == "true" || value.ToLower() == "false")
-                                {
-                                    blendState.TargetState = value.ToLower() == "true";
-                                }
-                                else
-                                {
-                                    float val = float.Parse(value);
-                                    blendState.Opacity = val;
-                                }
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    else if (pi.PropertyType == typeof(ConstellationFilter))
-                    {
-                        try
-                        {
-                            ConstellationFilter filter = Properties.Settings.Default[name] as ConstellationFilter;
-                            if (filter != null)
-                            {
-                                filter.Clone(ConstellationFilter.Families[value]);
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    else
-                    {
-                        pi.SetValue(Properties.Settings.Default, Convert.ChangeType(value, pi.PropertyType), null);
-                    }
-                    return true;
-                }
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
-            finally
-            {
-                Earth3d.ignoreChanges = false;
-            }
-        }
-
-        public static object GetSetting(string name)
-        {
-            try
-            {
-                bool safeToSet = SettingsList.ContainsKey(name);
-
-                if (safeToSet)
-                {
-                    Type thisType = Properties.Settings.Default.GetType();
-                    PropertyInfo pi = thisType.GetProperty(name);
-                    
-                    return pi.GetValue(Properties.Settings.Default, null);
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public static bool ToggleSetting(string name)
-        {
-            bool status = false;
-            try
-            {
-                bool safeToSet = SettingsList.ContainsKey(name);
-
-                if (safeToSet)
-                {
-                    Type thisType = Properties.Settings.Default.GetType();
-                    PropertyInfo pi = thisType.GetProperty(name);
-                    if (pi.PropertyType == typeof(bool))
-                    {
-                        Boolean val = (bool)pi.GetValue(Properties.Settings.Default, null);
-                        pi.SetValue(Properties.Settings.Default, (Boolean)(!val), null);
-                        status = !val;
-                    }
-                    else if (pi.PropertyType == typeof(BlendState))
-                    {
-                        BlendState bval = (BlendState)pi.GetValue(Properties.Settings.Default, null);
-                        bval.TargetState = !bval.TargetState;
-                        status = bval.TargetState;
-                    }
-                    else
-                    {
-                        return status;
-                    }
-
-                    return status;
-                }
-                return status;
-            }
-            catch
-            {
-                return status;
-            }
-        }
-
-        public static string[] GetBoolSettings()
-        {
-            List<string> boolSettings = new List<string>();
-
-            foreach (string setting in SettingsList.Keys)
-            {
-                Type thisType = Properties.Settings.Default.GetType();
-                PropertyInfo pi = thisType.GetProperty(setting);
-                if (pi.PropertyType == typeof(bool))
-                {
-                    boolSettings.Add(setting);
-                }
-            }
-            return boolSettings.ToArray();
-        }
-
-        public static ScriptableProperty[] GetSettingsList()
-        {
-            List<ScriptableProperty> settingsList = new List<ScriptableProperty>();
-
-            foreach (ScriptableProperty setting in SettingsList.Values)
-            {
-                settingsList.Add(setting);
-            }
-            return settingsList.ToArray();
-        }
-
-        public static string[] GetSettingsByType(Type type)
-        {
-            List<string> SettingsByType = new List<string>();
-
-            foreach (string setting in SettingsList.Keys)
-            {
-                Type thisType = Properties.Settings.Default.GetType();
-                PropertyInfo pi = thisType.GetProperty(setting);
-                if (pi.PropertyType == type)
-                {
-                    SettingsByType.Add(setting);
-                }
-            }
-            return SettingsByType.ToArray();
-        }
+       
 
         public static bool DispatchCommand(string targetType, string bindingType, string propertyName, string value )
         {

@@ -1,8 +1,17 @@
 using System;
-using System.Xml;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
+#if WINDOWS_UWP
+using VoTable= System.Object;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
+using System.Xml;
+#endif
 
 // Written by Jonathan Fay
 // Next Media Research
@@ -24,9 +33,9 @@ namespace TerraViewer
             set { projection = value; }
         }
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private WcsImage wcsImage;
+        private object wcsImage;
 
-        public WcsImage WcsImage
+        public object WcsImage
         {
             get { return wcsImage; }
             set { wcsImage = value; }
@@ -273,8 +282,6 @@ namespace TerraViewer
             {
                 ImageSetType type = ImageSetType.Sky;
 
-
-
                 ProjectionType projection = ProjectionType.Tangent;
                 if (node.Attributes["DataSetType"] != null)
                 {
@@ -419,7 +426,7 @@ namespace TerraViewer
             }
         }
 
-        public static void SaveToXml(System.Xml.XmlTextWriter xmlWriter, IImageSet imageset, string alternateUrl)
+        public static void SaveToXml(XmlTextWriter xmlWriter, IImageSet imageset, string alternateUrl)
         {
             xmlWriter.WriteStartElement("ImageSet");
 
@@ -496,10 +503,6 @@ namespace TerraViewer
                 }
             }
         }
-
-
-
-
         public override bool Equals(object obj)
         {
             if (obj == null)
@@ -600,7 +603,7 @@ namespace TerraViewer
             matrix.Multiply(Matrix3d.RotationZ(((CenterY) / 180f * Math.PI)));
             matrix.Multiply(Matrix3d.RotationY((((360 - CenterX) + 180) / 180f * Math.PI)));
 
-            Earth3d.AddImageSetToTable(this.GetHash(), this);
+            RenderEngine.AddImageSetToTable(this.GetHash(), this);
 
         }
 
@@ -665,6 +668,19 @@ namespace TerraViewer
             }
         }
 
+        private Dictionary<string, string> properties = new Dictionary<string, string>();
+
+        public Dictionary<string, string> Properties
+        {
+            get
+            {
+                return properties;
+            }
+            set
+            {
+                properties = value;
+            }
+        }
 
         public ImageSetHelper(string name, string url, ImageSetType dataSetType, BandPass bandPass, ProjectionType projection, int imageSetID, int baseLevel, int levels, int tileSize, double baseTileDegrees, string extension, bool bottomsUp, string quadTreeMap, double centerX, double centerY, double rotation, bool sparse, string thumbnailUrl, bool defaultSet, bool elevationModel, int wf, double offsetX, double offsetY, string credits, string creditsUrl, string demUrlIn, string alturl, double meanRadius, string referenceFrame)
         {
@@ -699,13 +715,10 @@ namespace TerraViewer
             this.rotation = rotation;
             this.thumbnailUrl = thumbnailUrl;
 
-
-
-
             ComputeMatrix();
             //if (Earth3d.multiMonClient)
             {
-                Earth3d.AddImageSetToTable(this.GetHash(), this);
+                RenderEngine.AddImageSetToTable(this.GetHash(), this);
             }
         }
 
@@ -743,9 +756,46 @@ namespace TerraViewer
             return sb.ToString();
         }
 
-        public static long GetTileKey(IImageSet imageset, int level, int x, int y)
+        public static long GetTileKey(IImageSet imageset, int level, int x, int y, Tile parent)
         {
+            #if !WINDOWS_UWP
+            if (parent != null)
+            {
+                if (imageset.Projection.Equals(ProjectionType.Healpix))
+                {
+                    HealpixTile tile = (HealpixTile)parent;
+                    int tileIndex;
+                    if (tile.tileIndex == -1)
+                    {
+                        tileIndex = y * 2 + x;
+                    }
+                    else
+                    {
+
+                        tileIndex = tile.tileIndex * 4 + y * 2 + x;
+                    }
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42) + ((long)(tileIndex * 4 + y * 2 + x) << 50) + tile.Key;
+                    //return 0L;
+                }
+                else
+                {
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42);
+                }
+            }
+            else
+            {
+                if (imageset.Projection.Equals(ProjectionType.Healpix))
+                {
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42) + ((long)(x * 4 + y) << 50);
+                }
+                else
+                {
+                    return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42);
+                }
+            }
+#else
             return (long)imageset.InternalID + ((long)level << 16) + ((long)x << 21) + ((long)y << 42);
+#endif
         }
 
 
@@ -776,10 +826,16 @@ namespace TerraViewer
                     {
                         return new SkyImageTile(level, x, y, imageset, parent);
                     }
+#if !WINDOWS_UWP
                 case ProjectionType.Plotted:
                     {
                         return new PlotTile(level, x, y, imageset, parent);
                     }
+                case ProjectionType.Healpix:
+                    {
+                        return new HealpixTile(level, x, y, imageset, parent);
+                    }
+#endif
                 default:
                 case ProjectionType.Tangent:
                     {
@@ -825,5 +881,18 @@ namespace TerraViewer
             }
         }
 
+        private VoTable tableMetadata = null;
+
+        public VoTable TableMetadata
+        { 
+            get
+            {
+                return tableMetadata;
+            }
+            set
+            {
+                tableMetadata = value;
+            }
+        }
     }
 }

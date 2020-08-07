@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+#if WINDOWS_UWP
+using SysColor = TerraViewer.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
+
 using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
@@ -41,9 +45,9 @@ namespace TerraViewer
         public bool UseNonRotatingFrame = false;
    
         List<Vector3d> linePoints = new List<Vector3d>();
-        List<Color> lineColors = new List<Color>();
+        List<SysColor> lineColors = new List<SysColor>();
         List<Dates> lineDates = new List<Dates>();
-        public void AddLine(Vector3d v1, Vector3d v2, Color color, Dates date)
+        public void AddLine(Vector3d v1, Vector3d v2, SysColor color, Dates date)
         {
 
             linePoints.Add(v1);
@@ -54,7 +58,7 @@ namespace TerraViewer
 
         }
 
-        public void AddLine(Vector3d v1, Vector3d v2, Color color)
+        public void AddLine(Vector3d v1, Vector3d v2, SysColor color)
         {
 
             linePoints.Add(v1);
@@ -271,7 +275,7 @@ namespace TerraViewer
         Vector3d localCenter;
         public bool Sky = true;
         public bool aaFix = true;
-        public void DrawLines(RenderContext11 renderContext, float opacity, Color color)
+        public void DrawLines(RenderContext11 renderContext, float opacity, SysColor color)
         {
             if (linePoints.Count < 2)
             {
@@ -301,14 +305,20 @@ namespace TerraViewer
 
             renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.LineList;
 
-            Color col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
+            SysColor col = SysColor.FromArgb((byte)(color.A * opacity), (byte)(color.R * opacity), (byte)(color.G * opacity), (byte)(color.B * opacity));
 
 
             SimpleLineShader11.Color = col;
             
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
-            mat.Transpose();
+ 
 
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
+
+            mat.Transpose();
             SimpleLineShader11.WVPMatrix = mat;
             SimpleLineShader11.CameraPosition = Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector3;
             SimpleLineShader11.ShowFarSide = true;
@@ -335,7 +345,14 @@ namespace TerraViewer
             {
                 renderContext.SetVertexBuffer(lineBuffer);
                 renderContext.SetIndexBuffer(null);
-                renderContext.devContext.Draw(lineBuffer.Count, 0);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.devContext.DrawInstanced(lineBuffer.Count, 2, 0, 0);
+                }
+                else
+                {
+                    renderContext.devContext.Draw(lineBuffer.Count, 0);
+                }
             }
 
             if (aaFix)
@@ -443,7 +460,7 @@ namespace TerraViewer
         }
 
         List<Vector3> trianglePoints = new List<Vector3>();
-        List<Color> triangleColors = new List<Color>();
+        List<SysColor> triangleColors = new List<SysColor>();
         List<Dates> triangleDates = new List<Dates>();
 
         public bool TimeSeries = false;
@@ -456,7 +473,7 @@ namespace TerraViewer
         public bool AutoTime = true;
         public double JNow = 0;
         bool dataToDraw = false;
-        public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, Color color, Dates date)
+        public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, SysColor color, Dates date)
         {
             trianglePoints.Add(v1);
             trianglePoints.Add(v2);
@@ -465,7 +482,7 @@ namespace TerraViewer
             triangleDates.Add(date);
             EmptyTriangleBuffer();
         }
-        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, Color color, Dates date)
+        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, SysColor color, Dates date)
         {
             trianglePoints.Add(v1.Vector311);
             trianglePoints.Add(v2.Vector311);
@@ -474,7 +491,7 @@ namespace TerraViewer
             triangleDates.Add(date);
             EmptyTriangleBuffer();
         }
-        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, Color color, Dates date, int subdivisions)
+        public void AddTriangle(Vector3d v1, Vector3d v2, Vector3d v3, SysColor color, Dates date, int subdivisions)
         {
             subdivisions--;
 
@@ -504,7 +521,7 @@ namespace TerraViewer
             }
         }
 
-        public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Color color, Dates date)
+        public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, SysColor color, Dates date)
         {
             trianglePoints.Add(v1);
             trianglePoints.Add(v3);
@@ -519,7 +536,7 @@ namespace TerraViewer
             EmptyTriangleBuffer();
         }
 
-        public void AddQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, Color color, Dates date)
+        public void AddQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, SysColor color, Dates date)
         {
             trianglePoints.Add(v1.Vector311);
             trianglePoints.Add(v3.Vector311);
@@ -651,37 +668,51 @@ namespace TerraViewer
             if (AutoTime)
             {
                 DateTime baseDate = new DateTime(2010, 1, 1, 12, 00, 00);
-                LineShaderNormalDates11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
+                TriangleShaderNormalDates11.Constants.JNow = (float)(SpaceTimeController.JNow - SpaceTimeController.UtcToJulian(baseDate));
             }
             else
             {
-                LineShaderNormalDates11.Constants.JNow = (float)JNow;
+                TriangleShaderNormalDates11.Constants.JNow = (float)JNow;
             }
 
-            LineShaderNormalDates11.Constants.Sky = 0 ;
-            LineShaderNormalDates11.Constants.ShowFarSide = ShowFarSide ? 1 : 0;
+            TriangleShaderNormalDates11.Constants.Sky = 0 ;
+            TriangleShaderNormalDates11.Constants.ShowFarSide = ShowFarSide ? 1 : 0;
             if (TimeSeries)
             {
-                LineShaderNormalDates11.Constants.Decay = (float)Decay;
+                TriangleShaderNormalDates11.Constants.Decay = (float)Decay;
             }
             else
             {
-                LineShaderNormalDates11.Constants.Decay = 0;
+                TriangleShaderNormalDates11.Constants.Decay = 0;
             }
-            LineShaderNormalDates11.Constants.Opacity = opacity;
-            LineShaderNormalDates11.Constants.CameraPosition = new SharpDX.Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
+            TriangleShaderNormalDates11.Constants.Opacity = opacity;
+            TriangleShaderNormalDates11.Constants.CameraPosition = new SharpDX.Vector4(Vector3d.TransformCoordinate(renderContext.CameraPosition, Matrix3d.Invert(renderContext.World)).Vector311, 1);
 
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
+
+
             mat.Transpose();
 
-            LineShaderNormalDates11.Constants.WorldViewProjection = mat;
+            TriangleShaderNormalDates11.Constants.WorldViewProjection = mat;
 
-            LineShaderNormalDates11.Use(renderContext.devContext);
+            TriangleShaderNormalDates11.Use(renderContext.devContext);
 
             foreach (TimeSeriesLineVertexBuffer11 vertBuffer in triangleBuffers)
             {
                 renderContext.SetVertexBuffer(vertBuffer);
-                renderContext.devContext.Draw(vertBuffer.Count, 0);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.devContext.DrawInstanced(vertBuffer.Count, 2, 0, 0);
+                }
+                else
+                {
+                    renderContext.devContext.Draw(vertBuffer.Count, 0);
+                }
             }
   
         }
@@ -691,11 +722,11 @@ namespace TerraViewer
         public Vector3 Position;
         public Vector3 Normal;
         public uint color;
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {
@@ -720,11 +751,11 @@ namespace TerraViewer
         public Vector3 Position;
         public float PointSize;
         public uint color;
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {

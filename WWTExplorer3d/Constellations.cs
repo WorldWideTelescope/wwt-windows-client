@@ -2,22 +2,24 @@
 // Written by Jonathan Fay
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
-using System.Drawing;
+using System.IO;
 using System.Text;
+#if WINDOWS_UWP
+#else
+using Color = System.Drawing.Color;
+using System.Drawing;
 using System.Windows.Forms;
-using System.ComponentModel;
-using System.Configuration;
+#endif
+
 
 namespace TerraViewer
 {
-	/// <summary>
-	/// Summary description for Constellation.
-	/// </summary>
-	public class Constellations
+    /// <summary>
+    /// Summary description for Constellation.
+    /// </summary>
+    public class Constellations
 	{
         string name;
 
@@ -93,11 +95,12 @@ namespace TerraViewer
             lines = new List<Lineset>();
 			this.name = name;
 			this.url = url;
+#if !WINDOWS_UWP
             if (!Directory.Exists(Properties.Settings.Default.CahceDirectory))
             {
                 Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory);
             }
-
+#endif
             if (boundry)
             {
 
@@ -110,12 +113,12 @@ namespace TerraViewer
                 extention = ".wwtfig";
             }
 
-
+#if !WINDOWS_UWP
             if (!Directory.Exists(targetPath))
             {
                 Directory.CreateDirectory(targetPath);
             }
-
+#endif
             if (!string.IsNullOrEmpty(url))
             {
                 DataSetManager.DownloadFile(url, targetPath + name + extention, false, true);
@@ -125,92 +128,88 @@ namespace TerraViewer
 
             try
             {
-                using (StreamReader sr = new StreamReader(targetPath + name + extention))
+                string[] fileLines = DataSetManager.ReadAllFileLines(targetPath + name + extention);
+
+                string abrv;
+                string abrvOld = "";
+                double ra;
+                double dec;
+                double lastRa = 0;
+                PointType type = PointType.Move;
+                foreach (string fileLine in fileLines)
                 {
-                    string line;
-                    string abrv;
-                    string abrvOld = "";
-                    double ra;
-                    double dec;
-                    double lastRa = 0;
-                    PointType type = PointType.Move;
-                    while (sr.Peek() >= 0)
+                    string line = fileLine;
+                    if (line.Substring(11, 2) == "- ")
                     {
-                        line = sr.ReadLine();
+                        line = line.Substring(0, 11) + " -" + line.Substring(13, (line.Length - 13));
+                    }
+                    if (line.Substring(11, 2) == "+ ")
+                    {
+                        line = line.Substring(0, 11) + " +" + line.Substring(13, (line.Length - 13));
+                    }
+                    dec = Convert.ToDouble(line.Substring(11, 10));
+                    if (noInterpollation)
+                    {
+                        ra = Convert.ToDouble(line.Substring(0, 10));
+                    }
+                    else
+                    {
+                        ra = ((Convert.ToDouble(line.Substring(0, 10)) / 24.0 * 360) - 180);
+                    }
 
-                        if (line.Substring(11, 2) == "- ")
+                    abrv = line.Substring(23, 4).Trim();
+                    if (!boundry)
+                    {
+                        if (line.Substring(28, 1).Trim() != "")
                         {
-                            line = line.Substring(0, 11) + " -" + line.Substring(13, (line.Length - 13));
+                            type = (PointType)Convert.ToInt32(line.Substring(28, 1));
                         }
-                        if (line.Substring(11, 2) == "+ ")
+                    }
+                    else
+                    {
+                        if (this.noInterpollation && line.Substring(28, 1) != "O")
                         {
-                            line = line.Substring(0, 11) + " +" + line.Substring(13, (line.Length - 13));
+                            continue;
                         }
-                        dec = Convert.ToDouble(line.Substring(11, 10));
-                        if (noInterpollation)
-                        {
-                            ra = Convert.ToDouble(line.Substring(0, 10));
-                        }
-                        else
-                        {
-                            ra = ((Convert.ToDouble(line.Substring(0, 10)) / 24.0 * 360) - 180);
-                        }
+                    }
 
-                        abrv = line.Substring(23, 4).Trim();
-                        if (!boundry)
+                    if (abrv != abrvOld)
+                    {
+                        type = PointType.Start;
+                        lineSet = new Lineset(abrv);
+                        lines.Add(lineSet);
+                        if (boundry && !noInterpollation)
                         {
-                            if (line.Substring(28, 1).Trim() != "")
-                            {
-                                type = (PointType)Convert.ToInt32(line.Substring(28, 1));
-                            }
+                            boundries.Add(abrv, lineSet);
                         }
-                        else
-                        {
-                            if (this.noInterpollation && line.Substring(28, 1) != "O")
-                            {
-                                continue;
-                            }
-                        }
-
-                        if (abrv != abrvOld)
-                        {
-                            type = PointType.Start;
-                            lineSet = new Lineset(abrv);
-                            lines.Add(lineSet);
-                            if (boundry && !noInterpollation)
-                            {
-                                boundries.Add(abrv, lineSet);
-                            }
-                            abrvOld = abrv;
-                            lastRa = 0;
-                        }
+                        abrvOld = abrv;
+                        lastRa = 0;
+                    }
 
 
-                        if (this.noInterpollation)
+                    if (this.noInterpollation)
+                    {
+                        if (Math.Abs(ra - lastRa) > 12)
                         {
-                            if (Math.Abs(ra - lastRa) > 12)
-                            {
-                                ra = ra - (24 * Math.Sign(ra - lastRa));
-
-                            }
-                            lastRa = ra;
+                            ra = ra - (24 * Math.Sign(ra - lastRa));
 
                         }
-                        string starName = null;
-                        if (line.Length > 30)
-                        {
-                            starName = line.Substring(30).Trim();
-                        }
-
-                        if (starName == null || starName != "Empty")
-                        {
-                            lineSet.Add(ra, dec, type, starName);
-                        }
-                        pointCount++;
-                        type = PointType.Line;
+                        lastRa = ra;
 
                     }
-                    sr.Close();
+                    string starName = null;
+                    if (line.Length > 30)
+                    {
+                        starName = line.Substring(30).Trim();
+                    }
+
+                    if (starName == null || starName != "Empty")
+                    {
+                        lineSet.Add(ra, dec, type, starName);
+                    }
+                    pointCount++;
+                    type = PointType.Line;
+
                 }
             }
             catch
@@ -314,9 +313,23 @@ namespace TerraViewer
 
         protected SharpDX.Vector3[] points;
 
-        public Color DrawColor = Color.CadetBlue;
+        public Color DrawColor = Color.FromArgb(255, 95, 158, 160);//CadetBlue;
         public virtual bool Draw3D(RenderContext11 renderContext, bool showOnlySelected, float opacity, string focusConsteallation, bool reverse)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double log = Math.Log(zoom);
+
+
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255-Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return false;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             constToDraw = focusConsteallation;
 
             Lineset lsSelected = null;
@@ -347,20 +360,56 @@ namespace TerraViewer
         }
 
         static Text3dBatch NamesBatch;
+        static Text3dBatch[] IndividualNameBatches = new Text3dBatch[89];
+
         public static void DrawConstellationNames(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (NamesBatch == null)
             {
                 InitializeConstellationNames();
             }
-            NamesBatch.Draw(renderContext, opacity, drawColor);
+
+            if (DrawNamesFiltered)
+            {
+                int index = 0;
+                foreach (var abrv in Abbreviations.Values)
+                {
+                    BlendState bs = PictureBlendStates[abrv];
+                    bs.TargetState = Settings.Active.ConstellationNamesFilter.IsSet(abrv);
+
+                    if (bs.State)
+                    {
+                        IndividualNameBatches[index].Draw(renderContext, opacity, drawColor);
+                    }
+                    index++;
+                }
+            }
+            else
+            {
+                NamesBatch.Draw(renderContext, opacity, drawColor);
+            }
         }
+
+        public static bool DrawNamesFiltered = false;
 
         public static void InitializeConstellationNames()
         {
             NamesBatch = new Text3dBatch(80);
+            int index = 0;
             foreach (IPlace centroid in ConstellationNamePositions.Values)
             {
+                IndividualNameBatches[index] = new Text3dBatch(80);
                 Vector3d center = Coordinates.RADecTo3d(centroid.RA + 12, centroid.Dec, 1);
                 Vector3d up = new Vector3d(0, 1, 0);
                 string name = centroid.Name;
@@ -372,6 +421,8 @@ namespace TerraViewer
                     name = name.Replace(" ", "\n   ");
                 }
                 NamesBatch.Add(new Text3d(center, up, name, 80, .000125));
+                IndividualNameBatches[index].Add(new Text3d(center, up, name, 80, .000125));
+                index++;
             }
         }
 
@@ -380,6 +431,17 @@ namespace TerraViewer
 
         public static void DrawConstellationArt(RenderContext11 renderContext, float opacity, Color drawColor)
         {
+            double zoom = RenderEngine.Engine.ZoomFactor;
+            double distAlpha = Math.Max(Math.Min(255, (Math.Log(zoom) - 16) * 128), 0);
+
+            int alpha = 255 - Math.Min(255, Math.Max(0, (int)distAlpha));
+            if (alpha < 1)
+            {
+                return;
+            }
+
+            opacity = opacity * (float)(alpha / 255.0);
+
             if (ConstellationArt == null)
             {
                 InitializeArt();
@@ -393,7 +455,7 @@ namespace TerraViewer
 
                 if (bs.State)
                 {
-                    Earth3d.MainWindow.PaintLayerFullTint11(imageset, opacity * bs.Opacity * 100 * (drawColor.A / 255.0f), drawColor);
+                    RenderEngine.Engine.PaintLayerFullTint11(imageset, opacity * bs.Opacity * 100 * (drawColor.A / 255.0f), drawColor);
                 }
             }
             renderContext.BlendMode = BlendMode.Alpha;
@@ -599,7 +661,7 @@ namespace TerraViewer
         {
             try
             {
-
+#if !WINDOWS_UWP
                 if (!Directory.Exists(Properties.Settings.Default.CahceDirectory))
                 {
                     Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory);
@@ -609,6 +671,7 @@ namespace TerraViewer
                 {
                     Directory.CreateDirectory(Properties.Settings.Default.CahceDirectory + @"data");
                 }
+#endif
                 ConstellationCentroids = new Dictionary<string, IPlace>();
                 DataSetManager.DownloadFile("http://www.worldwidetelescope.org/data/constellationNames_RADEC_EN.txt", Properties.Settings.Default.CahceDirectory + @"data\constellationNamesRADEC.txt", true, true);
                 FullNames = new Dictionary<string, string>();
@@ -617,11 +680,10 @@ namespace TerraViewer
                 PictureBlendStates = new Dictionary<string, BlendState>();
                 int id = 0;
 
-                StreamReader sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\constellationNamesRADEC.txt");
-                string line;
-                while (sr.Peek() >= 0)
+
+                string[] fileLines = DataSetManager.ReadAllFileLines(Properties.Settings.Default.CahceDirectory + @"data\constellationNamesRADEC.txt");
+                foreach (string line in fileLines)
                 {
-                    line = sr.ReadLine();
                     string[] data = line.Split(new char[] { ',' });
 
                     ConstellationFilter.BitIDs.Add(data[1], id++);
@@ -629,24 +691,24 @@ namespace TerraViewer
 
                     ConstellationCentroids.Add(data[1], new TourPlace(data[0], Convert.ToDouble(data[3]), Convert.ToDouble(data[2]), Classification.Constellation, data[1], ImageSetType.Sky, 360));
                 }
-                sr.Close();
 
                 ConstellationNamePositions = new Dictionary<string, IPlace>();
                 DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?q=ConstellationNamePositions_EN", Properties.Settings.Default.CahceDirectory + @"data\ConstellationNamePositions.txt", true, true);
-                sr = new StreamReader(Properties.Settings.Default.CahceDirectory + @"data\ConstellationNamePositions.txt");
-                while (sr.Peek() >= 0)
+                fileLines = DataSetManager.ReadAllFileLines(Properties.Settings.Default.CahceDirectory + @"data\ConstellationNamePositions.txt");
+
+                foreach (string line in fileLines)
                 {
-                    line = sr.ReadLine();
                     string[] data = line.Split(new char[] { ',' });
                     ConstellationNamePositions.Add(data[1], new TourPlace(data[0], Convert.ToDouble(data[3]), Convert.ToDouble(data[2]), Classification.Constellation, data[1], ImageSetType.Sky, 360));
                 }
-                sr.Close();
 
                 string path = ArtworkPath;
+#if !WINDOWS_UWP
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
+#endif
                 DataSetManager.DownloadFile("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=hevelius", ArtworkPath + "default.wtml", false, true);
                 AddAllNameMappings();
                 ConstellationFilter.InitSets();
@@ -794,6 +856,7 @@ namespace TerraViewer
             }
         }
 
+#if !WINDOWS_UWP
         internal static void ImportArtFile()
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -822,5 +885,6 @@ namespace TerraViewer
                 }
             }
         }
+#endif
     }
 }

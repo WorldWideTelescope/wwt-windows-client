@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
-using SharpDX;
-using SharpDX.DXGI;
-using SharpDX.Windows;
+﻿using SharpDX;
+using System;
 
 namespace TerraViewer
 {
@@ -169,7 +162,15 @@ namespace TerraViewer
                 case RenderStrategy.GeometryShader:
                     renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
                     renderContext.SetVertexBuffer(0, vertexBuffer);
-                    renderContext.devContext.Draw(count, 0);
+                    if (RenderContext11.ExternalProjection)
+                    {
+                        renderContext.devContext.DrawInstanced(count, 2, 0, 0);
+                    }
+                    else
+                    {
+                        renderContext.devContext.Draw(count, 0);
+                    }
+
                     renderContext.Device.ImmediateContext.GeometryShader.Set(null);
                     break;
 
@@ -203,7 +204,14 @@ namespace TerraViewer
                     renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.PointList;
                     renderContext.SetVertexBuffer(0, vertexBuffer);
                     renderContext.SetIndexBuffer(indexBufferIn);
-                    renderContext.devContext.DrawIndexed(count, 0, 0);
+                    if (RenderContext11.ExternalProjection)
+                    {
+                        renderContext.devContext.DrawIndexedInstanced(count, 2, 0, 0, 0);
+                    }
+                    else
+                    {
+                        renderContext.devContext.DrawIndexed(count, 0, 0);
+                    }
                     renderContext.Device.ImmediateContext.GeometryShader.Set(null);
                     break;
 
@@ -346,6 +354,10 @@ namespace TerraViewer
         protected override void setupShader(RenderContext11 renderContext, Texture11 texture, float opacity)
         {
             SharpDX.Matrix mvp = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+            if (RenderContext11.ExternalProjection)
+            {
+                mvp = mvp * RenderContext11.ExternalScalingFactor;
+            }
             mvp.Transpose();
 
             float aspectRatio = renderContext.ViewPort.Width / renderContext.ViewPort.Height;

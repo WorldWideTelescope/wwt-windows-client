@@ -12,7 +12,7 @@ namespace TerraViewer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -787,7 +787,7 @@ namespace TerraViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot6")]
         public string ExploreRootUrl {
             get {
                 return ((string)(this["ExploreRootUrl"]));
@@ -799,7 +799,7 @@ namespace TerraViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets6")]
         public string ImageSetUrl {
             get {
                 return ((string)(this["ImageSetUrl"]));

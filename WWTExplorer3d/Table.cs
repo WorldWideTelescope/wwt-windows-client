@@ -203,6 +203,10 @@ namespace TerraViewer
             if (sr.Peek() >= 0)
             {
                 string headerLine = sr.ReadLine();
+                while(headerLine.StartsWith("#") && sr.Peek() >= 0)
+                {
+                    headerLine = sr.ReadLine();
+                }
                 table.Rows.Clear();
                 table.Header = UiTools.SplitString(headerLine, delimiter);
             }
@@ -215,6 +219,14 @@ namespace TerraViewer
             while (sr.Peek() >= 0)
             {
                 string line = sr.ReadLine();
+                while (line.StartsWith("#") ) 
+                {
+                    if (sr.Peek() == -1)
+                    {
+                        break;
+                    }
+                    line = sr.ReadLine();
+                }
                 string[] rowData = UiTools.SplitString(line, delimiter);
                 if (rowData.Length < 2)
                 {

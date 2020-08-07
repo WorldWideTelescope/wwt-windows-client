@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+#if !WINDOWS_UWP
 using System.Drawing;
+//using SharpDX.Windows;
+#endif
 using System.Linq;
 using System.Text;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D;
 using SharpDX;
 using SharpDX.DXGI;
-using SharpDX.Windows;
+
 using System.Diagnostics;
 
 using Buffer = SharpDX.Direct3D11.Buffer;
@@ -446,7 +449,7 @@ namespace TerraViewer
 
         public static Texture11 GetTexture(string filename)
         {
-            return Texture11.FromFile(RenderContext11.PrepDevice, filename);
+            return Texture11.FromFileImediate(RenderContext11.PrepDevice, filename);
         }
 
         public static Texture11 GetTexture(Stream stream)
@@ -454,59 +457,12 @@ namespace TerraViewer
             return Texture11.FromStream(RenderContext11.PrepDevice, stream);
         }
 
+#if !WINDOWS_UWP
         public static Texture11 GetTexture(Bitmap bitmap)
         {
             return Texture11.FromBitmap(RenderContext11.PrepDevice, bitmap);
-
-            //todo11 reenable the pooling of textures
-            //if (bitmap.Width != 256 || bitmap.Height != 256 | !(bitmap.PixelFormat == PixelFormat.Format32bppArgb | bitmap.PixelFormat == PixelFormat.Format24bppRgb))
-            //{
-            //    return UiTools.LoadTextureFromBmp(Tile.prepDevice, bitmap);
-            //}
-
-            //Texture11 texture = null;
-            //if (TexturePool256.Count > 0)
-            //{
-            //    texture = TexturePool256.Pop();
-            //}
-            //else
-            //{
-            //    texture = new Texture11(Tile.prepDevice, 256, 256, 0, Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Managed);
-
-            //}
-
-            //if (bitmap.PixelFormat == PixelFormat.Format32bppArgb | bitmap.PixelFormat == PixelFormat.Format24bppRgb)
-            //{
-            //    BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            //    int pitch;
-            //    GraphicsStream textureData = texture.LockRectangle(0, LockFlags.Discard, out pitch);
-            //    unsafe
-            //    {
-            //        uint* texturePointer = (uint*)textureData.InternalDataPointer;
-            //        for (int y = 0; y < bitmap.Height; y++)
-            //        {
-            //            uint* bitmapLinePointer = (uint*)bitmapData.Scan0 + y * (bitmapData.Stride / sizeof(int));
-            //            uint* textureLinePointer = texturePointer + y * (pitch / sizeof(int));
-            //            int length = bitmap.Width;
-
-            //            while (--length >= 0)
-            //            {
-            //                *textureLinePointer++ = *bitmapLinePointer++;
-            //            }
-
-            //        }
-            //    }
-
-            //    bitmap.UnlockBits(bitmapData);
-            //    texture.UnlockRectangle(0);
-            //    //   texture.GenerateMipSubLevels();
-            //}
-
-            //return texture;
         }
-
-
-
+#endif
     }
 
     public class Buffers

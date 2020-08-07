@@ -1,10 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using SharpDX;
 
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+using Point = TerraViewer.Point;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using Point = System.Drawing.Point;
+using System.Drawing;
+using System.Xml;
+using System.Windows.Forms;
+#endif
 
 namespace TerraViewer
 {
@@ -37,18 +47,33 @@ namespace TerraViewer
                     double p11 = renderContext.Projection.M11;
                     double p34 = renderContext.Projection.M34;
                     double p44 = renderContext.Projection.M44;
+
+                    if (RenderContext11.ExternalProjection)
+                    {
+                        p11 = Math.Abs(RenderContext11.ExternalProjectionLeft.M11);
+                        p34 = RenderContext11.ExternalProjectionLeft.M34;
+                        p44 = RenderContext11.ExternalProjectionLeft.M44;
+                    }
+
+
                     double w = Math.Abs(p34) * dist + p44;
                     float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
                     float radiusInPixels = (float)(radius * pixelsPerUnit);
                     if (radiusInPixels > 0.5f)
                     {
+                       
+#if WINDOWS_UWP
+                        var t = System.Threading.Tasks.Task.Run(() =>
+                        {
+                            LoadBackground();
+                        });
+#else
                         BackInitDelegate initBackground = LoadBackground;
                         initBackground.BeginInvoke(null, null);
+#endif
                     }
                 }
-
-
-               
+       
             }
 
             object3d = issmodel;
@@ -106,7 +131,7 @@ namespace TerraViewer
             }
 
             loading = true;
-            string path = Properties.Settings.Default.CahceDirectory + @"\mdl\155\";
+            string path = Properties.Settings.Default.CahceDirectory + @"mdl\155\";
             string filename = path + "mdl.zip";
             if (!Directory.Exists(path))
             {
@@ -129,13 +154,15 @@ namespace TerraViewer
                     CopyStream(input, output);
                     input.Close();
                     output.Close();
+                    input.Dispose();
+                    output.Dispose();
                 }
             }
 
             filename = path + "mdl.3ds";
             if (File.Exists(filename))
             {
-                Object3d o3d = new Object3d(filename, true, false, true, System.Drawing.Color.White);
+                Object3d o3d = new Object3d(filename, true, false, true, Color.White);
                 if (o3d != null)
                 {
                     o3d.ISSLayer = true;

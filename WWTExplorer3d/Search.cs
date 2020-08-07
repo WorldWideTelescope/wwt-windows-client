@@ -13,7 +13,6 @@ namespace TerraViewer
 {
     public partial class Search : TabForm
     {
-        static TreeDictionary<string, IPlace> autoCompleteList = new TreeDictionary<string, IPlace>(true);
 
         public Search()
         {
@@ -42,23 +41,7 @@ namespace TerraViewer
             searchResults.Focus();
         }
 
-        public static void AddParts(string key, IPlace place)
-        {
-
-            key = key.ToLower();
-            autoCompleteList.Add(key, place);
-            string[] parts = key.Split(new char[] { ' ' });
-            if (parts.Length > 1)
-            {
-                foreach (string part in parts)
-                {
-                    if (!string.IsNullOrEmpty(part))
-                    {
-                        autoCompleteList.Add(part, place);
-                    }
-                }
-            }
-        }
+       
 
 
         bool textChanged = false;
@@ -77,7 +60,7 @@ namespace TerraViewer
 
         private void SearchView_Click(object sender, EventArgs e)
         {
-            Coordinates[] corners = Earth3d.MainWindow.CurrentViewCorners;
+            Coordinates[] corners = RenderEngine.Engine.CurrentViewCorners;
 
             if (corners != null && !String.IsNullOrEmpty(Earth3d.MainWindow.Constellation))
             {
@@ -96,88 +79,15 @@ namespace TerraViewer
 
         }
 
-        public static IPlace FindCatalogObject(string name)
-        {
-            InitSearchTable();
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
-            {
-                if (kv.Key.ToLower().Replace(" ", "") == name.ToLower().Replace(" ", ""))
-                {
-                    if (kv.Value.StudyImageset == null)
-                    {
-                        return kv.Value;
-                    }
-                }
-
-            }
-            return null;
-
-
-        }
-
-        public static IPlace FindCatalogObjectExact(string name)
-        {
-            InitSearchTable();
-
-            string shortName = name.ToLower().Replace(" ", "");
-
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
-            {
-                IPlace place = kv.Value as IPlace;
-
-                if (place != null && place.Name.ToLower().Replace(" ", "") == shortName)
-                {
-                    //if (kv.Value.StudyImageset == null)
-                    {
-                        return kv.Value;
-                    }
-                }
-
-            }
-
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
-            {
-                if (kv.Key.ToLower().Replace(" ", "") == shortName )
-                {
-                    if (kv.Value.StudyImageset == null)
-                    {
-                        return kv.Value;
-                    }
-                }
-
-            }
-
-            foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(name.ToLower(), TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
-            {
-                if (kv.Key.ToLower().Replace(" ", "").StartsWith(shortName))
-                {
-                    //if (kv.Value.StudyImageset == null)
-                    {
-                        return kv.Value;
-                    }
-                }
-
-            }
-            return null;
-
-
-        }
-
-        public static void InitSearchTable()
-        {
-            if (!searchTableInitialized)
-            {
-                LoadSearchTable();
-            }
-        }
+       
 
         private void searchTimer_Tick(object sender, EventArgs e)
         {
-            InitSearchTable();
+            Catalogs.InitSearchTable();
 
-            if (Earth3d.MainWindow.Space != plotResults.Visible)
+            if (RenderEngine.Engine.Space != plotResults.Visible)
             {
-                plotResults.Visible = Earth3d.MainWindow.Space;
+                plotResults.Visible = RenderEngine.Engine.Space;
             }
 
 
@@ -189,8 +99,9 @@ namespace TerraViewer
                     searchResults.Clear();
                     textChanged = false;
                     return;
-                }               
-                string searchString = CleanSearchString(searchText.Text);
+                }
+
+                string searchString = Catalogs.CleanSearchString(searchText.Text);
 
                 
                 SearchCriteria sc = new SearchCriteria(searchString);
@@ -199,7 +110,7 @@ namespace TerraViewer
 
                 List<Object> tempList = new List<Object>();
  
-                foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(sc.Target, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+                foreach (KeyValuePair<string, IPlace> kv in Catalogs.AutoCompleteList.StartFromKey(sc.Target, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
                 {
                     if (tempList.Count > 100)
                     {
@@ -256,7 +167,7 @@ namespace TerraViewer
                 {
                     foreach (string keyword in sc.Keywords)
                     {
-                        foreach (KeyValuePair<string, IPlace> kv in autoCompleteList.StartFromKey(keyword, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
+                        foreach (KeyValuePair<string, IPlace> kv in Catalogs.AutoCompleteList.StartFromKey(keyword, TraversalStartingPoint.EqualOrMore, TraversalDirection.LowToHigh))
                         {
                             length = keyword.Length;
 
@@ -325,48 +236,7 @@ namespace TerraViewer
 
         }
 
-        private string CleanSearchString(string searchString)
-        {
-            searchString = searchString.ToLower();
-
-            if (searchString.Contains("ngc "))
-            {
-                for(int i =0; i<10; i++)
-                {
-                    searchString = searchString.Replace(string.Format("ngc {0}",i),string.Format("ngc{0}",i));
-                }
-            }
-
-            if (searchString.Contains("ic "))
-            {
-                for(int i =0; i<10; i++)
-                {
-                    searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
-                }
-            }
-            if (searchString.Contains("hr "))
-            {
-                for(int i =0; i<10; i++)
-                {
-                    searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
-                }
-            } 
-            if (searchString.Contains("hd "))
-            {
-                for(int i =0; i<10; i++)
-                {
-                    searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
-                }
-            }    
-            if (searchString.Contains("sao "))
-            {
-                for(int i =0; i<10; i++)
-                {
-                    searchString = searchString.Replace(string.Format("ic {0}",i),string.Format("ic{0}",i));
-                }
-            }            
-            return searchString;
-        }
+       
 
         public override bool AdvanceSlide(bool fromStart)
         {
@@ -385,13 +255,13 @@ namespace TerraViewer
                 }
             }
             
-            Earth3d.MainWindow.GotoTarget((IPlace)e, false, false, true);
+            RenderEngine.Engine.GotoTarget((IPlace)e, false, false, true);
 
         }
 
         private void searchResults_ItemDoubleClicked(object sender, Object e)
         {
-            Earth3d.MainWindow.GotoTarget((IPlace)e, false, true, true);
+            RenderEngine.Engine.GotoTarget((IPlace)e, false, true, true);
 
         }
 
@@ -426,12 +296,12 @@ namespace TerraViewer
 
                 if (imageset != null)
                 {
-                    Earth3d.MainWindow.PreviewImageset = imageset;
-                    Earth3d.MainWindow.PreviewBlend.TargetState = true;
+                    RenderEngine.Engine.PreviewImageset = imageset;
+                    RenderEngine.Engine.PreviewBlend.TargetState = true;
                 }
                 else
                 {
-                    Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                    RenderEngine.Engine.PreviewBlend.TargetState = false;
                 }
             }
             else
@@ -441,7 +311,7 @@ namespace TerraViewer
                     toolTips.SetToolTip(searchResults, ((IThumbnail)e).Name);
                 }
                 Earth3d.MainWindow.SetLabelText(null, false);
-                Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                RenderEngine.Engine.PreviewBlend.TargetState = false;
 
             }
 
@@ -520,49 +390,7 @@ namespace TerraViewer
             coordinateType.SelectedIndex = 0;
         }
 
-        static bool searchTableInitialized = false;
-        static Mutex LoadSearchMutex = new Mutex();
-        static public void LoadSearchTable()
-        {
-            try
-            {
-                LoadSearchMutex.WaitOne();
-                if (searchTableInitialized)
-                {
-                    return;
-                }
-                foreach (string abreviation in ContextSearch.constellationObjects.Keys)
-                {
-                    foreach (IPlace place in ContextSearch.constellationObjects[abreviation])
-                    {
-                        try
-                        {
-                            foreach (string name in place.Names)
-                            {
-                                AddParts(name, place);
-                            }
-
-                            if (place.Classification != Classification.Unidentified)
-                            {
-                                AddParts(place.Classification.ToString(), place);
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-                }
-            }
-            catch
-            {
-            }
-            finally
-            {
-                searchTableInitialized = true;
-                LoadSearchMutex.ReleaseMutex();
-            }
-
-        }
+  
 
         public void DisplaySearchResults(VoTable table)
         {
@@ -585,7 +413,7 @@ namespace TerraViewer
 
         private void plotResults_CheckedChanged(object sender, EventArgs e)
         {
-            Earth3d.MainWindow.ShowKmlMarkers = plotResults.Checked;
+            RenderEngine.Engine.ShowKmlMarkers = plotResults.Checked;
 
             UpdateMarkers();
             
@@ -593,15 +421,15 @@ namespace TerraViewer
 
         private void UpdateMarkers()
         {
-            if (Earth3d.MainWindow.KmlMarkers != null)
+            if (RenderEngine.Engine.KmlMarkers != null)
             {
-                Earth3d.MainWindow.KmlMarkers.ClearPoints();
+                RenderEngine.Engine.KmlMarkers.ClearPoints();
                 if (plotResults.Checked)
                 {
                     foreach (object o in searchResults.Items)
                     {
                         IPlace p = (IPlace)o;
-                        Earth3d.MainWindow.KmlMarkers.AddPoint(p.Name, p.RA, p.Dec);
+                        RenderEngine.Engine.KmlMarkers.AddPoint(p.Name, p.RA, p.Dec);
                     }
                 }
             }
@@ -698,14 +526,14 @@ namespace TerraViewer
                     pnt.Normalize();
                     Vector2d radec = Coordinates.CartesianToLatLng(pnt);
 
-                    Earth3d.MainWindow.TargetLat = radec.Y;
-                    Earth3d.MainWindow.TargetLong = radec.X - 90;
+                    RenderEngine.Engine.TargetLat = radec.Y;
+                    RenderEngine.Engine.TargetLong = radec.X - 90;
 
                 }
                 else
                 {
 
-                    Earth3d.MainWindow.GotoTargetRADec(ra, dec, true, false);
+                    RenderEngine.Engine.GotoTargetRADec(ra, dec, true, false);
                 }
             }
         }
@@ -812,118 +640,5 @@ namespace TerraViewer
         }
     }
 
-    public class SearchCriteria
-    {
-        public SearchCriteria(string searchString)
-        {
-            searchString = searchString.Trim().ToLower();
-            Target = searchString;
-            MagnitudeMin = -100.0;
-            MagnitudeMax = 100.0;
-
-            
-            
-
-            List<string> keywords = new List<string>(searchString.ToLower().Split(new char[] { ' ' }));
-            if (keywords.Count > 1)
-            {
-                for (int i = keywords.Count - 1; i > -1; i--)
-                {
-                    if (keywords[i] == ">" && i > 0 && i < keywords.Count - 1)
-                    {
-                        if (keywords[i - 1] == "m" || keywords[i - 1] == "mag" || keywords[i - 1] == "magnitude")
-                        {
-                            try
-                            {
-                                MagnitudeMin = Convert.ToDouble(keywords[i + 1]);
-                            }
-                            catch
-                            {
-                            }
-                            keywords.RemoveAt(i + 1);
-                            keywords.RemoveAt(i);
-                            keywords.RemoveAt(i - 1);
-                            i -= 2;
-                            continue;
-                        }
-                    }
-
-                    if (keywords[i] == "<" && i > 0 && i < keywords.Count - 2)
-                    {
-                        if (keywords[i - 1] == "m" || keywords[i - 1] == "mag" || keywords[i - 1] == "magnitude")
-                        {
-                            try
-                            {
-                                MagnitudeMax = Convert.ToDouble(keywords[i + 1]);
-                            }
-                            catch
-                            {
-                            }
-                            keywords.RemoveAt(i + 1);
-                            keywords.RemoveAt(i );
-                            keywords.RemoveAt(i - 1);
-                            i-=2;
-                            continue;
-                        }
-                    }
-                    bool brokeOut = false;
-
-                    foreach (string classId in Enum.GetNames(typeof(Classification)))
-                    {
-                        if (keywords[i] == classId.ToLower())
-                        {
-                            Classification |= (Classification)Enum.Parse(typeof(Classification), classId);
-                            keywords.RemoveAt(i);
-                            brokeOut = true;
-                            break;
-                        }
-
-                    }
-
-                    if (brokeOut)
-                    {
-                        continue;
-                    }
-
-                    if (Constellations.Abbreviations.ContainsKey(keywords[i].ToUpper()))
-                    {
-                        Constellation = keywords[i].ToUpper();
-                        keywords.RemoveAt(i);
-                        continue;
-                    }
-
-                    if (Constellations.FullNames.ContainsKey(keywords[i].ToUpper()))
-                    {
-                        Constellation = Constellations.Abbreviation(keywords[i].ToUpper());
-                        keywords.RemoveAt(i);
-                        continue;
-                    }
-                }
-                //keywords.Add(searchString);
-                Keywords = keywords;
-                string spacer = "";
-                Target = "";
-                foreach (string keyword in Keywords)
-                {
-                    Target += spacer + keyword;
-                    spacer = " ";
-                }
-            }
-            else
-            {
-                Keywords = null;
-            }
-
-            if (Classification == 0)
-            {
-                Classification = Classification.Unfiltered;
-            }
-        }
-        public string Target;
-        public string Constellation;
-        public List<string> Keywords;
-        public Classification Classification = 0;
-        public double MagnitudeMin;
-        public double MagnitudeMax;
-    }
+ 
 }

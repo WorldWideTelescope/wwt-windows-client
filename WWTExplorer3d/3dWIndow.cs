@@ -25,25 +25,34 @@ using System.Security.Permissions;
 using MSAuth;
 using System.Threading.Tasks;
 using OculusWrap;
+using SharpDX.DirectWrite;
 
 namespace TerraViewer
 {
     public class Earth3d : Form, IScriptable
     {
         const float FOVMULT = 343.774f;
-        public enum ZoomSpeeds { SLOW = 0, MEDIUM, FAST };
-
         private System.Windows.Forms.Timer timer;
         private ToolStripMenuItem viewOverlayTopo;
         private System.Windows.Forms.ToolStripMenuItem menuItem7;
 
         DataSetManager dsm;
 
-        public RenderContext11 RenderContext11 = null;
+        public RenderContext11 RenderContext11
+        {
+            get
+            {
+                return RenderEngine.RenderContext11;
+            }
+            set
+            {
+                RenderEngine.RenderContext11 = value;
+            }
+        }
 
+        public RenderEngine RenderEngine = new RenderEngine();
 
         public static bool NoStealFocus = false;
-
 
         public bool SandboxMode
         {
@@ -76,19 +85,18 @@ namespace TerraViewer
 
         public event EventHandler ImageSetChanged;
 
-        IImageSet currentImageSetfield;
 
         public IImageSet CurrentImageSet
         {
-            get { return currentImageSetfield; }
+            get { return RenderEngine.currentImageSetfield; }
             set
             {
-                if (currentImageSetfield != value)
+                if (RenderEngine.currentImageSetfield != value)
                 {
-                    bool solarSytemOld = (currentImageSetfield != null && currentImageSetfield.DataSetType == ImageSetType.SolarSystem);
-                    currentImageSetfield = value;
+                    bool solarSytemOld = (RenderEngine.currentImageSetfield != null && RenderEngine.currentImageSetfield.DataSetType == ImageSetType.SolarSystem);
+                    RenderEngine.currentImageSetfield = value;
 
-                    if (currentImageSetfield.DataSetType == ImageSetType.SolarSystem && !solarSytemOld)
+                    if (RenderEngine.currentImageSetfield.DataSetType == ImageSetType.SolarSystem && !solarSytemOld)
                     {
                         if (contextPanel != null)
                         {
@@ -106,15 +114,12 @@ namespace TerraViewer
                     if (value != null)
                     {
                         int hash = value.GetHash();
-                        AddImageSetToTable(hash, value);
+                        RenderEngine.AddImageSetToTable(hash, value);
                     }
                 }
             }
         }
-        int viewTileLevel = 0;
-        double baseTileDegrees = 90;
-        int MaxLevels = 2;
-        int tileSizeX = 256;
+
         private ToolStripMenuItem toggleFullScreenModeF11ToolStripMenuItem;
         private ToolStripMenuItem nEDSearchToolStripMenuItem;
         private ToolStripMenuItem sDSSSearchToolStripMenuItem;
@@ -236,219 +241,19 @@ namespace TerraViewer
         private ToolStripMenuItem DownloadMPC;
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripMenuItem exportCurrentCitiesViewAs3DMeshToolStripMenuItem;
+        private ToolStripMenuItem showTileEdgesToolStripMenuItem;
+        private ToolStripMenuItem hIPSProgressiveSurveyToolStripMenuItem;
         private ToolStripMenuItem enableExport3dCitiesModeToolStripMenuItem;
-        int tileSizeY = 256;
 
         public void StartFadeTransition(double milliseconds)
         {
-            Render();
+            RenderEngine.Render();
             if (milliseconds > 0)
             {
-                fadeImageSet.DelayTime = milliseconds;
+                RenderEngine.fadeImageSet.DelayTime = milliseconds;
             }
-            fadeImageSet.State = true;
-            fadeImageSet.TargetState = false;
-        }
-
-        public double ViewLat
-        {
-            get { return viewCamera.Lat; }
-            set { viewCamera.Lat = value; }
-        }
-
-        public double GetEarthAltitude()
-        {
-            if (SolarSystemMode)
-            {
-                Vector3d pnt = Coordinates.GeoTo3dDouble(ViewLat, ViewLong + 90);
-
-                Matrix3d EarthMat = Planets.EarthMatrixInv;
-
-                pnt = Vector3d.TransformCoordinate(pnt, EarthMat);
-                pnt.Normalize();
-
-                Vector2d point = Coordinates.CartesianToLatLng(pnt);
-
-                return GetAltitudeForLatLongForPlanet((int)viewCamera.Target, point.Y, point.X);
-            }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Earth)
-            {
-                return TargetAltitude;
-            }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Planet)
-            {
-                return GetAltitudeForLatLong(ViewLat, ViewLong);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public Vector2d GetEarthCoordinates()
-        {
-            if (SolarSystemMode)
-            {
-
-                Vector3d pnt = Coordinates.GeoTo3dDouble(ViewLat, ViewLong + 90);
-                Matrix3d EarthMat = Planets.EarthMatrixInv;
-                pnt = Vector3d.TransformCoordinate(pnt, EarthMat);
-                pnt.Normalize();
-
-                return Coordinates.CartesianToLatLng(pnt);
-            }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Earth || CurrentImageSet.DataSetType == ImageSetType.Planet)
-            {
-                return new Vector2d(viewCamera.Lng, viewCamera.Lat);
-            }
-            else
-            {
-                return new Vector2d();
-            }
-        }
-
-
-        public enum ViewTypes { Equatorial, AltAz, Galactic, Ecliptic, Planet };
-
-        private ViewTypes viewType = ViewTypes.Equatorial;
-
-        public ViewTypes ViewType
-        {
-            get { return viewType; }
-            set { viewType = value; }
-        }
-
-
-        public bool Space
-        {
-            get
-            {
-                if (CurrentImageSet != null)
-                {
-                    return CurrentImageSet.DataSetType == ImageSetType.Sky;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-
-        public bool PlanetLike
-        {
-            get
-            {
-                if (CurrentImageSet != null)
-                {
-                    return CurrentImageSet.DataSetType == ImageSetType.Earth || CurrentImageSet.DataSetType == ImageSetType.Planet;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-
-        public double RA
-        {
-            get
-            {
-                return ((((180 - (ViewLong - 180)) / 360) * 24.0) % 24);
-            }
-            set
-            {
-                if (double.NaN == value)
-                {
-                    // Break Here
-                    value = 0;
-                }
-                double temp = 180 - ((value) / 24.0 * 360) - 180;
-                if (temp != this.TargetLong)
-                {
-                    this.TargetLong = temp;
-                }
-            }
-        }
-
-
-        public double Dec
-        {
-            get
-            {
-                return this.ViewLat;
-            }
-            set
-            {
-                if (TargetLat != value)
-                {
-                    if (double.NaN == value)
-                    {
-                        // Break Here
-                        value = 0;
-                    }
-                    this.TargetLat = value;
-                }
-            }
-        }
-
-
-
-        public double ViewLong
-        {
-            get { return viewCamera.Lng; }
-            set
-            {
-                if (double.NaN == value)
-                {
-                    // Break Here
-                    value = 0;
-                }
-                viewCamera.Lng = value;
-            }
-        }
-
-
-        public double ZoomFactor
-        {
-            get { return viewCamera.Zoom; }
-            set { viewCamera.Zoom = value; }
-        }
-
-
-        public double TargetZoom
-        {
-            get { return targetViewCamera.Zoom; }
-            set { targetViewCamera.Zoom = value; }
-        }
-        double finalZoom = 360;
-        double targetLat = 0;
-
-        public double TargetLat
-        {
-            get { return targetViewCamera.Lat; }
-            set
-            {
-                if (double.NaN == value)
-                {
-                    // Break Here
-                    value = 0;
-                }
-                targetViewCamera.Lat = value;
-            }
-        }
-
-        public double TargetLong
-        {
-            get { return targetViewCamera.Lng; }
-            set
-            {
-                if (double.NaN == value)
-                {
-                    // Break Here
-                    value = 0;
-                }
-                targetViewCamera.Lng = value;
-            }
+            RenderEngine.fadeImageSet.State = true;
+            RenderEngine.fadeImageSet.TargetState = false;
         }
 
         public static bool IsLoggedIn
@@ -459,10 +264,6 @@ namespace TerraViewer
             }
         }
 
-
-
-        bool findingTargetGeo = false;
-        bool zoomingUp = false;
         bool smoothZoom = true;
         private Timer InputTimer;
         private ContextMenuStrip contextMenu;
@@ -575,7 +376,6 @@ namespace TerraViewer
             set { renderWindow = value; }
         }
 
-
         private ToolStripMenuItem setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem;
         private ToolStripMenuItem selectLanguageToolStripMenuItem;
         private ToolStripMenuItem undoToolStripMenuItem;
@@ -584,7 +384,6 @@ namespace TerraViewer
         private ToolStripMenuItem setAsForegroundImageryToolStripMenuItem;
         private ToolStripMenuItem setAsBackgroundImageryToolStripMenuItem;
         private ToolStripSeparator ImagerySeperator;
-
 
         public bool ControllerConnected()
         {
@@ -595,45 +394,9 @@ namespace TerraViewer
             }
 
             return false;
-
         }
-
-
-
-        public int ViewWidth
-        {
-            get
-            {
-                if (rift)
-                {
-                    return leftEyeWidth;
-                }
-
-                if ((!Space || rift) && (StereoMode == StereoModes.CrossEyed || StereoMode == StereoModes.SideBySide || StereoMode == StereoModes.OculusRift))
-                {
-                    return renderWindow.Width / 2;
-                }
-                else
-                {
-                    return renderWindow.Width;
-                }
-            }
-        }
-        public int ViewHeight
-        {
-            get
-            {
-                if (rift)
-                {
-                    return rightEyeHeight;
-                }
-                return renderWindow.Height;
-            }
-        }
-
 
         bool JoyInMotion = false;
-
         bool rSholderDown = false;
         bool lSholderDown = false;
         bool startDown = false;
@@ -649,12 +412,11 @@ namespace TerraViewer
         bool dPadLeftDown = false;
         bool dPadRightDown = false;
         bool slowRates = true;
-
         bool reticleControl = false;
         int retId = 0;
+
         public void UpdateXInputState()
         {
-
             if (Properties.Settings.Default.XboxCustomMapping)
             {
                 ProcessCustomXboxMapping();
@@ -662,7 +424,7 @@ namespace TerraViewer
             }
 
             // lastFrameTime gives us fraction of seconds for update of motion factor for zooms
-            double factor = lastFrameTime / (1.0 / 60.0);
+            double factor = RenderEngine.lastFrameTime / (1.0 / 60.0);
             JoyInMotion = false;
             XInputState state;
             try
@@ -676,6 +438,7 @@ namespace TerraViewer
             {
                 return;
             }
+
             double trigger = 0;
 
             if (state.Gamepad.RightTrigger > 0)
@@ -689,16 +452,15 @@ namespace TerraViewer
 
             if (Math.Abs(trigger) > 4)
             {
-                ZoomFactor = TargetZoom = ZoomFactor * (1 + (trigger / 16000) * factor);
-
-                if (ZoomFactor > ZoomMax)
+                RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomFactor * (1 + (trigger / 16000) * factor);
+                if (RenderEngine.ZoomFactor > RenderEngine.ZoomMax)
                 {
-                    ZoomFactor = TargetZoom = ZoomMax;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomMax;
                 }
 
-                if (ZoomFactor < ZoomMin)
+                if (RenderEngine.ZoomFactor < RenderEngine.ZoomMin)
                 {
-                    ZoomFactor = TargetZoom = ZoomMin;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomMin;
                 }
                 JoyInMotion = true;
             }
@@ -752,16 +514,13 @@ namespace TerraViewer
                 {
                     leftThumbDown = true;
                     CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-                    GotoTarget(camParams, false, false);
-
+                    RenderEngine.GotoTarget(camParams, false, false);
                 }
             }
             else
             {
                 leftThumbDown = false;
             }
-
-
 
             if ((state.Gamepad.Buttons & XInputButtons.RightThumb) == XInputButtons.RightThumb)
             {
@@ -787,15 +546,12 @@ namespace TerraViewer
                 rightThumbDown = false;
             }
 
-
-
             if (state.Gamepad.IsStartButtonDown)
             {
                 if (!startDown)
                 {
                     NextMode();
                     startDown = true;
-
                 }
             }
             else
@@ -809,7 +565,6 @@ namespace TerraViewer
                 {
                     PreviousMode();
                     backDown = true;
-
                 }
             }
             else
@@ -836,12 +591,12 @@ namespace TerraViewer
             {
                 if (Math.Abs((double)state.Gamepad.RightThumbX) > 8000)
                 {
-                    CameraRotateTarget = (CameraRotateTarget + ((((double)state.Gamepad.RightThumbX / (zoomRate * 100)) * factor)));
+                    RenderEngine.CameraRotateTarget = (RenderEngine.CameraRotateTarget + ((((double)state.Gamepad.RightThumbX / (zoomRate * 100)) * factor)));
                 }
 
                 if (Math.Abs((double)state.Gamepad.RightThumbY) > 8000)
                 {
-                    CameraAngleTarget = (CameraAngleTarget + ((((double)state.Gamepad.RightThumbY / (zoomRate * 100)) * factor)));
+                    RenderEngine.CameraAngleTarget = (RenderEngine.CameraAngleTarget + ((((double)state.Gamepad.RightThumbY / (zoomRate * 100)) * factor)));
                 }
             }
             else
@@ -865,16 +620,14 @@ namespace TerraViewer
                 }
             }
 
-
-
-            if (CameraAngleTarget < TiltMin)
+            if (RenderEngine.CameraAngleTarget < TiltMin)
             {
-                CameraAngleTarget = TiltMin;
+                RenderEngine.CameraAngleTarget = TiltMin;
             }
 
-            if (CameraAngleTarget > 0)
+            if (RenderEngine.CameraAngleTarget > 0)
             {
-                CameraAngleTarget = 0;
+                RenderEngine.CameraAngleTarget = 0;
             }
 
             if (Math.Abs((double)state.Gamepad.LeftThumbX) > 8000 || Math.Abs((double)state.Gamepad.LeftThumbY) > 8000)
@@ -947,7 +700,6 @@ namespace TerraViewer
                                     Properties.Settings.Default.SolarSystemOrbits.TargetState = true;
                                     Properties.Settings.Default.SolarSystemMinorOrbits.TargetState = false;
                                 }
-
                             }
                             break;
                         default:
@@ -989,7 +741,6 @@ namespace TerraViewer
             {
                 yDown = false;
             }
-
 
             if (state.Gamepad.IsAButtonDown)
             {
@@ -1049,9 +800,7 @@ namespace TerraViewer
             {
                 bDown = false;
             }
-
             return;
-
         }
 
         private void NextMode()
@@ -1129,7 +878,7 @@ namespace TerraViewer
         public void ProcessCustomXboxMapping()
         {
             // lastFrameTime gives us fraction of seconds for update of motion factor for zooms
-            double factor = lastFrameTime / (1.0 / 60.0);
+            double factor = RenderEngine.lastFrameTime / (1.0 / 60.0);
             JoyInMotion = false;
             XInputState state;
             try
@@ -1156,14 +905,12 @@ namespace TerraViewer
                 XBoxConfig.DispatchXboxEvent(XBoxConfig.XboxButtons.LeftTrigger, state.Gamepad.LeftTrigger / 255.0);
             }
 
-
             if (state.Gamepad.IsDPadRightButtonDown)
             {
                 if (!dPadRightDown)
                 {
                     dPadRightDown = XBoxConfig.DispatchXboxEvent(XBoxConfig.XboxButtons.DirectionPadRight, 1);
                 }
-
             }
             else
             {
@@ -1176,7 +923,6 @@ namespace TerraViewer
                 {
                     dPadLeftDown = XBoxConfig.DispatchXboxEvent(XBoxConfig.XboxButtons.DirectionPadLeft, 1);
                 }
-
             }
             else
             {
@@ -1195,8 +941,6 @@ namespace TerraViewer
                 leftThumbDown = false;
             }
 
-
-
             if (state.Gamepad.IsRightThumbClick)
             {
                 if (!rightThumbDown)
@@ -1208,8 +952,6 @@ namespace TerraViewer
             {
                 rightThumbDown = false;
             }
-
-
 
             if (state.Gamepad.IsStartButtonDown)
             {
@@ -1258,8 +1000,6 @@ namespace TerraViewer
             {
                 dPadDownDown = false;
             }
-
-
 
             if (Math.Abs((double)state.Gamepad.RightThumbX) > 8000)
             {
@@ -1331,7 +1071,6 @@ namespace TerraViewer
                 yDown = false;
             }
 
-
             if (state.Gamepad.IsAButtonDown)
             {
                 if (!aDown)
@@ -1359,7 +1098,6 @@ namespace TerraViewer
             }
         }
 
-
         Config config = null;
 
         public Config Config
@@ -1367,13 +1105,13 @@ namespace TerraViewer
             get { return config; }
             set { config = value; }
         }
+
         MainMenu holder = null;
         string mainWindowText = Language.GetLocalizedText(3, "Microsoft WorldWide Telescope");
 
         public static bool HideSplash = false;
         public Earth3d()
         {
-          
             AudioPlayer.Initialize();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
@@ -1384,27 +1122,24 @@ namespace TerraViewer
 
             // Set the initial size of our form
             this.ClientSize = new System.Drawing.Size(400, 300);
-            // And its caption
-
-
 
             config = new Config();
+            RenderEngine.MonitorX = config.MonitorX;
+            RenderEngine.MonitorY = config.MonitorY;
+            RenderEngine.MonitorCountX = config.MonitorCountX;
+            RenderEngine.MonitorCountY = config.MonitorCountY;
+            RenderEngine.monitorHeight = config.Height;
+            RenderEngine.monitorWidth = config.Width;
+            RenderEngine.bezelSpacing = (float)config.Bezel;
+            RenderEngine.config = config;
 
-            this.MonitorX = config.MonitorX;
-            this.MonitorY = config.MonitorY;
-            this.MonitorCountX = config.MonitorCountX;
-            this.MonitorCountY = config.MonitorCountY;
-            this.monitorHeight = config.Height;
-            this.monitorWidth = config.Width;
-            this.bezelSpacing = (float)config.Bezel;
-
-
-            ProjectorServer = !config.Master;
+            RenderEngine.ProjectorServer = !config.Master;
             if (DomeViewer)
             {
-                ProjectorServer = true;
+                RenderEngine.ProjectorServer = true;
             }
-            multiMonClient = !config.Master && (MonitorCountX > 1 || MonitorCountY > 1);
+
+            RenderEngine.multiMonClient = !config.Master && (RenderEngine.MonitorCountX > 1 || RenderEngine.MonitorCountY > 1);
 
             InitializeComponent();
             SetUiStrings();
@@ -1417,27 +1152,19 @@ namespace TerraViewer
                 Close();
             }
 
-
             // This code is used for dumping shader code when porting to Windows RT/phone where compiling shaders is not possible at runtime
             if (DumpShaders)
             {
                 //ShaderLibrary.DumpShaderLibrary();
             }
 
-
-
-
-            if (!InitializeImageSets())
+            if (!RenderEngine.InitializeImageSets())
             {
                 Close();
             }
 
-
             BackInitDelegate initBackground = BackgroundInit;
-
-
             initBackground.BeginInvoke(null, null);
-
 
             if (TargetScreenId != -1)
             {
@@ -1454,493 +1181,20 @@ namespace TerraViewer
                 {
                 }
             }
-
-
-        }
-        PositionColorTexturedVertexBuffer11 distortVertexBuffer;
-        IndexBuffer11 distortIndexBuffer;
-        int distortVertexCount = 0;
-        int distortTriangleCount = 0;
-
-        public bool refreshWarp = true;
-        private void RenderDistort()
-        {
-            SetupMatricesDistort();
-
-            if (distortVertexBuffer == null || refreshWarp)
-            {
-                MakeDistortionGrid();
-                refreshWarp = false;
-
-            }
-
-            RenderContext11.SetDisplayRenderTargets();
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-            RenderContext11.SetVertexBuffer(distortVertexBuffer);
-            RenderContext11.SetIndexBuffer(distortIndexBuffer);
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            RenderContext11.BlendMode = BlendMode.Alpha;
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-
-            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
-            mat.Transpose();
-
-            WarpOutputShader.MatWVP = mat;
-
-            WarpOutputShader.Use(RenderContext11.devContext, true);
-
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, undistorted.RenderTexture.ResourceView);
-            RenderContext11.devContext.DrawIndexed(distortIndexBuffer.Count, 0, 0);
-            PresentFrame11(false);
-
         }
 
-
-
-        private void MakeDistortionGrid()
-        {
-            if (Config.UsingSgcWarpMap)
-            {
-                //MakeDistortionGridSgc();
-                MakeDistortionGridSgcWithBlend();
-                return;
-            }
-
-            Bitmap bmpBlend = new Bitmap(config.BlendFile);
-            FastBitmap fastBlend = new FastBitmap(bmpBlend);
-            Bitmap bmpDistort = new Bitmap(config.DistortionGrid);
-            FastBitmap fastDistort = new FastBitmap(bmpDistort);
-
-
-            fastBlend.LockBitmapRgb();
-            fastDistort.LockBitmapRgb();
-            int subX = bmpBlend.Width - 1;
-            int subY = subX;
-
-            if (distortIndexBuffer != null)
-            {
-                distortIndexBuffer.Dispose();
-                GC.SuppressFinalize(distortIndexBuffer);
-            }
-
-            if (distortVertexBuffer != null)
-            {
-                distortVertexBuffer.Dispose();
-                GC.SuppressFinalize(distortVertexBuffer);
-            }
-
-
-            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
-            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
-
-            distortVertexCount = (subX + 1) * (subY + 1);
-
-
-            int index = 0;
-
-
-            // Create a vertex buffer 
-            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-            int x1, y1;
-
-            unsafe
-            {
-                double maxU = 0;
-                double maxV = 0;
-                double textureStepX = 1.0f / subX;
-                double textureStepY = 1.0f / subY;
-                for (y1 = 0; y1 <= subY; y1++)
-                {
-                    double tv;
-                    for (x1 = 0; x1 <= subX; x1++)
-                    {
-                        double tu;
-
-
-                        index = y1 * (subX + 1) + x1;
-                        PixelDataRgb* pdata = fastDistort.GetRgbPixel(x1, y1);
-
-                        tu = (float)(pdata->blue + ((uint)pdata->red % 16) * 256) / 4095f;
-                        tv = (float)(pdata->green + ((uint)pdata->red / 16) * 256) / 4095f;
-
-                        //tu = (tu - .5f) * 1.7777778 + .5f;
-
-                        if (tu > maxU)
-                        {
-                            maxU = tu;
-                        }
-                        if (tv > maxV)
-                        {
-                            maxV = tv;
-                        }
-
-                        verts[index].Position = new SharpDX.Vector4(((float)x1 / subX) - .5f, (1f - ((float)y1 / subY)) - .5f, .9f, 1f);
-                        verts[index].Tu = (float)tu;
-                        verts[index].Tv = (float)tv;
-                        PixelDataRgb* pPixel = fastBlend.GetRgbPixel(x1, y1);
-
-                        verts[index].Color = Color.FromArgb(255, pPixel->red, pPixel->green, pPixel->blue);
-
-                    }
-                }
-                distortVertexBuffer.Unlock();
-                distortTriangleCount = (subX) * (subY) * 2;
-                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
-                index = 0;
-                for (y1 = 0; y1 < subY; y1++)
-                {
-                    for (x1 = 0; x1 < subX; x1++)
-                    {
-                        // First triangle in quad
-                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
-                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
-
-                        // Second triangle in quad
-                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
-                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
-                        index += 6;
-                    }
-                }
-                this.distortIndexBuffer.Unlock();
-            }
-            fastDistort.UnlockBitmap();
-            fastBlend.UnlockBitmap();
-            fastDistort.Dispose();
-            GC.SuppressFinalize(fastDistort);
-            fastBlend.Dispose();
-            GC.SuppressFinalize(fastBlend);
-        }
-
-        private void MakeDistortionGridSgc()
-        {
-            int subX = config.DistortionGridWidth-1;
-            int subY = config.DistortionGridHeight-1;
-
-            if (distortIndexBuffer != null)
-            {
-                distortIndexBuffer.Dispose();
-                GC.SuppressFinalize(distortIndexBuffer);
-            }
-
-            if (distortVertexBuffer != null)
-            {
-                distortVertexBuffer.Dispose();
-                GC.SuppressFinalize(distortVertexBuffer);
-            }
-
-
-            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
-            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
-
-            distortVertexCount = (subX + 1) * (subY + 1);
-
-
-            int index = 0;
-
-
-            // Create a vertex buffer 
-            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-            int x1, y1;
-
-            unsafe
-            {
-                double maxU = 0;
-                double maxV = 0;
-                double textureStepX = 1.0f / subX;
-                double textureStepY = 1.0f / subY;
-                for (y1 = 0; y1 <= subY; y1++)
-                {
-                    double tv;
-                    for (x1 = 0; x1 <= subX; x1++)
-                    {
-                        double tu;
-
-
-                        index = y1 * (subX + 1) + x1;
-                        Vector6 vec = config.DistortionGridVertices[x1, y1];
-                        tu = vec.T;
-                        tv = 1-vec.U;
-
-                        //tu = (tu - .5f) * 1.7777778 + .5f;
-
-                        if (tu > maxU)
-                        {
-                            maxU = tu;
-                        }
-                        if (tv > maxV)
-                        {
-                            maxV = tv;
-                        }
-                        float xx = ((float)x1 / subX) - .5f;
-                        float yy = (((float)y1 / subY)) - .5f;
-
-                        float difX = xx - vec.X;
-                        float difY = vec.Y+yy;
-
-                        verts[index].Position = new SharpDX.Vector4(xx,yy, .9f, 1f);
-                        verts[index].Tu = (float)tu;
-                        verts[index].Tv = (float)tv;
-                        
-
-                        verts[index].Color = Color.FromArgb(255, 255, 255, 255);
-
-                    }
-                }
-                distortVertexBuffer.Unlock();
-                distortTriangleCount = (subX) * (subY) * 2;
-                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
-                index = 0;
-                for (y1 = 0; y1 < subY; y1++)
-                {
-                    for (x1 = 0; x1 < subX; x1++)
-                    {
-                        // First triangle in quad
-                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
-                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
-
-                        // Second triangle in quad
-                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
-                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
-                        index += 6;
-                    }
-                }
-                this.distortIndexBuffer.Unlock();
-            }
-         
-      
-        }
-        private void MakeDistortionGridSgcWithBlend()
-        {
-
-            Bitmap bmpBlend = new Bitmap(config.BlendFile);
-            FastBitmap fastBlend = new FastBitmap(bmpBlend);
-          
-
-            fastBlend.LockBitmapRgb();
-      
-            int subX = bmpBlend.Width - 1;
-            int subY = bmpBlend.Height -1;
-
-            if (distortIndexBuffer != null)
-            {
-                distortIndexBuffer.Dispose();
-                GC.SuppressFinalize(distortIndexBuffer);
-            }
-
-            if (distortVertexBuffer != null)
-            {
-                distortVertexBuffer.Dispose();
-                GC.SuppressFinalize(distortVertexBuffer);
-            }
-
-            GridSampler gridSampler = new GridSampler(bmpBlend.Width, bmpBlend.Height, config.DistortionGridWidth, config.DistortionGridHeight, config.DistortionGridVertices);
-
-            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
-            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
-
-            distortVertexCount = (subX + 1) * (subY + 1);
-
-
-            int index = 0;
-
-
-            // Create a vertex buffer 
-            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-            int x1, y1;
-
-            unsafe
-            {
-                double maxU = 0;
-                double maxV = 0;
-                double textureStepX = 1.0f / subX;
-                double textureStepY = 1.0f / subY;
-                for (y1 = 0; y1 <= subY; y1++)
-                {
-                    double tv;
-                    for (x1 = 0; x1 <= subX; x1++)
-                    {
-                        double tu;
-
-
-                        index = y1 * (subX + 1) + x1;
-                        
-                        SharpDX.Vector2 sample = gridSampler.Sample(x1, y1);
-
-                        tu = sample.X;
-                        tv = 1-sample.Y;
-
-                        if (tu > maxU)
-                        {
-                            maxU = tu;
-                        }
-                        if (tv > maxV)
-                        {
-                            maxV = tv;
-                        }
-
-                        verts[index].Position = new SharpDX.Vector4(((float)x1 / subX) - .5f, (((float)y1 / subY)) - .5f, .9f, 1f);
-                        verts[index].Tu = (float)tu;
-                        verts[index].Tv = (float)tv;
-                        PixelDataRgb* pPixel = fastBlend.GetRgbPixel(x1, subY-y1);
-
-                        verts[index].Color = Color.FromArgb(255, pPixel->red, pPixel->green, pPixel->blue);
-
-                    }
-                }
-                distortVertexBuffer.Unlock();
-                distortTriangleCount = (subX) * (subY) * 2;
-                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
-                index = 0;
-                for (y1 = 0; y1 < subY; y1++)
-                {
-                    for (x1 = 0; x1 < subX; x1++)
-                    {
-                        // First triangle in quad
-                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
-                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
-
-                        // Second triangle in quad
-                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
-                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
-                        index += 6;
-                    }
-                }
-                this.distortIndexBuffer.Unlock();
-            }
-            
-            fastBlend.UnlockBitmap();
-            fastBlend.Dispose();
-            GC.SuppressFinalize(fastBlend);
-        }
-
-
-        private void MakeDistortionGridSgcWithBlend2()
-        {
-
-            Bitmap bmpBlend = new Bitmap(config.BlendFile);
-            FastBitmap fastBlend = new FastBitmap(bmpBlend);
-
-
-            fastBlend.LockBitmapRgb();
-
-            int subX = bmpBlend.Width - 1;
-            int subY = bmpBlend.Height - 1;
-
-            if (distortIndexBuffer != null)
-            {
-                distortIndexBuffer.Dispose();
-                GC.SuppressFinalize(distortIndexBuffer);
-            }
-
-            if (distortVertexBuffer != null)
-            {
-                distortVertexBuffer.Dispose();
-                GC.SuppressFinalize(distortVertexBuffer);
-            }
-
-            GridSampler gridSampler = new GridSampler(bmpBlend.Width, bmpBlend.Height, config.DistortionGridWidth, config.DistortionGridHeight, config.DistortionGridVertices);
-
-            distortIndexBuffer = new IndexBuffer11(typeof(int), (subX * subY * 6), RenderContext11.PrepDevice);
-            distortVertexBuffer = new PositionColorTexturedVertexBuffer11(((subX + 1) * (subY + 1)), RenderContext11.PrepDevice);
-
-            distortVertexCount = (subX + 1) * (subY + 1);
-
-
-            int index = 0;
-
-
-            // Create a vertex buffer 
-            PositionColoredTextured[] verts = (PositionColoredTextured[])distortVertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-            int x1, y1;
-
-            unsafe
-            {
-                double maxU = 0;
-                double maxV = 0;
-                double textureStepX = 1.0f / subX;
-                double textureStepY = 1.0f / subY;
-                for (y1 = 0; y1 <= subY; y1++)
-                {
-                    double tv;
-                    for (x1 = 0; x1 <= subX; x1++)
-                    {
-                        double tu;
-
-
-                        index = y1 * (subX + 1) + x1;
-
-                        SharpDX.Vector2 sample = gridSampler.Sample(x1, y1);
-
-                        tu = sample.X;
-                        tv = sample.Y;
-
-                        if (tu > maxU)
-                        {
-                            maxU = tu;
-                        }
-                        if (tv > maxV)
-                        {
-                            maxV = tv;
-                        }
-
-                        verts[index].Position = new SharpDX.Vector4(((float)x1 / subX) - .5f, (1f - ((float)y1 / subY)) - .5f, .9f, 1f);
-                        verts[index].Tu = (float)tu;
-                        verts[index].Tv = (float)tv;
-                        PixelDataRgb* pPixel = fastBlend.GetRgbPixel(x1, y1);
-
-                        verts[index].Color = Color.FromArgb(255, pPixel->red, pPixel->green, pPixel->blue);
-
-                    }
-                }
-                distortVertexBuffer.Unlock();
-                distortTriangleCount = (subX) * (subY) * 2;
-                uint[] indexArray = (uint[])distortIndexBuffer.Lock();
-                index = 0;
-                for (y1 = 0; y1 < subY; y1++)
-                {
-                    for (x1 = 0; x1 < subX; x1++)
-                    {
-                        // First triangle in quad
-                        indexArray[index] = (uint)(y1 * (subX + 1) + x1);
-                        indexArray[index + 1] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 2] = (uint)(y1 * (subX + 1) + (x1 + 1));
-
-                        // Second triangle in quad
-                        indexArray[index + 3] = (uint)(y1 * (subX + 1) + (x1 + 1));
-                        indexArray[index + 4] = (uint)((y1 + 1) * (subX + 1) + x1);
-                        indexArray[index + 5] = (uint)((y1 + 1) * (subX + 1) + (x1 + 1));
-                        index += 6;
-                    }
-                }
-                this.distortIndexBuffer.Unlock();
-            }
-
-            fastBlend.UnlockBitmap();
-            fastBlend.Dispose();
-            GC.SuppressFinalize(fastBlend);
-        }
         public static void BackgroundInit()
         {
             Grids.InitStarVertexBuffer(RenderContext11.PrepDevice);
             Grids.MakeMilkyWay(RenderContext11.PrepDevice);
             Grids.InitCosmosVertexBuffer();
             Planets.InitPlanetResources();
-
         }
 
         public static void SearchInit()
         {
-            Search.InitSearchTable();
+            Catalogs.InitSearchTable();
         }
-
 
         SpaceNavigator._3DxMouse myMouse;
 
@@ -1957,7 +1211,6 @@ namespace TerraViewer
                 myMouse.MotionEvent += new SpaceNavigator._3DxMouse.MotionEventHandler(myMouse_MotionEvent);
                 myMouse.ButtonEvent += new SpaceNavigator._3DxMouse.ButtonEventHandler(myMouse_ButtonEvent);
                 return true;
-
             }
             catch
             {
@@ -1974,13 +1227,12 @@ namespace TerraViewer
             CameraParameters cameraParams;
             if ((e.ButtonMask.Pressed & 1) == 1)
             {
-                CameraRotateTarget = 0;
+                RenderEngine.CameraRotateTarget = 0;
             }
             if ((e.ButtonMask.Pressed & 2) == 2)
             {
                 cameraParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-                this.GotoTarget(cameraParams, false, false);
-
+                RenderEngine.GotoTarget(cameraParams, false, false);
             }
         }
 
@@ -1988,7 +1240,6 @@ namespace TerraViewer
         {
             if (e.TranslationVector != null)
             {
-
                 // Swap axes from HID orientation to a right handed coordinate system that matches WPF model space
                 SensorTranslation.X = e.TranslationVector.X;
                 SensorTranslation.Y = -e.TranslationVector.Z;
@@ -2027,22 +1278,22 @@ namespace TerraViewer
         {
             bool interupt = false;
 
-            double factor = lastFrameTime / (1.0 / 15.0);
+            double factor = RenderEngine.lastFrameTime / (1.0 / 15.0);
             double units = .15;
             try
             {
                 if (Math.Abs(SensorTranslation.Y) > 0)
                 {
-                    ZoomFactor = TargetZoom = ZoomFactor * (1 + ((SensorTranslation.Y / sensitivity) * factor));
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomFactor * (1 + ((SensorTranslation.Y / sensitivity) * factor));
 
-                    if (ZoomFactor > ZoomMax)
+                    if (RenderEngine.ZoomFactor > RenderEngine.ZoomMax)
                     {
-                        ZoomFactor = ZoomMax;
+                        RenderEngine.ZoomFactor = RenderEngine.ZoomMax;
                     }
 
-                    if (ZoomFactor < ZoomMin)
+                    if (RenderEngine.ZoomFactor < RenderEngine.ZoomMin)
                     {
-                        ZoomFactor = ZoomMin;
+                        RenderEngine.ZoomFactor = RenderEngine.ZoomMin;
                     }
                     interupt = true;
                 }
@@ -2050,11 +1301,11 @@ namespace TerraViewer
                 if (Math.Abs(SensorRotation.Y) > 0)
                 {
                     double angle = ((((double)SensorRotation.Y / sensitivity) * factor));
-                    if (!PlanetLike)
+                    if (!RenderEngine.PlanetLike)
                     {
                         angle = -angle;
                     }
-                    CameraRotateTarget = (CameraRotateTarget + angle);
+                    RenderEngine.CameraRotateTarget = (RenderEngine.CameraRotateTarget + angle);
                     interupt = true;
                 }
 
@@ -2062,14 +1313,14 @@ namespace TerraViewer
                 {
                     double angle = ((((double)SensorRotation.X / sensitivity) * factor));
 
-                    CameraAngleTarget = (CameraAngleTarget + angle);
-                    if (CameraAngleTarget < TiltMin)
+                    RenderEngine.CameraAngleTarget = (RenderEngine.CameraAngleTarget + angle);
+                    if (RenderEngine.CameraAngleTarget < TiltMin)
                     {
-                        CameraAngleTarget = TiltMin;
+                        RenderEngine.CameraAngleTarget = TiltMin;
                     }
-                    if (CameraAngleTarget > 0)
+                    if (RenderEngine.CameraAngleTarget > 0)
                     {
-                        CameraAngleTarget = 0;
+                        RenderEngine.CameraAngleTarget = 0;
                     }
                     interupt = true;
                 }
@@ -2079,15 +1330,14 @@ namespace TerraViewer
                     MoveView(SensorTranslation.X * factor * units, -SensorTranslation.Z * factor * units, false);
                     if (SolarSystemMode)
                     {
-                        if (TargetLat > 87)
+                        if (RenderEngine.TargetLat > 87)
                         {
-                            TargetLat = 87;
+                            RenderEngine.TargetLat = 87;
                         }
-                        if (TargetLat < -87)
+                        if (RenderEngine.TargetLat < -87)
                         {
-                            TargetLat = -87;
+                            RenderEngine.TargetLat = -87;
                         }
-
                     }
                     interupt = true;
                 }
@@ -2100,6 +1350,7 @@ namespace TerraViewer
                 UserInterupt();
             }
         }
+
         // User is taking control...stop automated moves
         void UserInterupt()
         {
@@ -2108,13 +1359,12 @@ namespace TerraViewer
                 SlideAdvanceTimer.Enabled = false;
                 SlideAdvanceTimer.Enabled = true;
             }
-            if (mover != null)
+
+            if (RenderEngine.Mover != null)
             {
-                CameraParameters newCam = mover.CurrentPosition;
-
-                viewCamera = targetViewCamera = newCam;
-
-                mover = null;
+                CameraParameters newCam = RenderEngine.Mover.CurrentPosition;
+                RenderEngine.viewCamera = RenderEngine.targetViewCamera = newCam;
+                RenderEngine.Mover = null;
             }
         }
 
@@ -2124,24 +1374,15 @@ namespace TerraViewer
             switch (keyCode)
             {
                 case 1:
-                    CameraRotateTarget = 0;
+                    RenderEngine.CameraRotateTarget = 0;
                     break;
                 case 2:
                     cameraParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-                    this.GotoTarget(cameraParams, false, false);
+                    RenderEngine.GotoTarget(cameraParams, false, false);
                     break;
             }
         }
 
-
-        static bool readyToRender = false;
-
-        static public bool ReadyToRender
-        {
-            get { return readyToRender && Initialized; }
-            set { readyToRender = value; }
-        }
-        public static bool Initialized = false;
 
         public static Earth3d MainWindow = null;
 
@@ -2168,44 +1409,171 @@ namespace TerraViewer
             fitter.AddPoint(Coordinates.FromRaDec(5.59, -5.89722), new Vector2d(258, 836));
             fitter.Solve();
         }
+        private void PreRenderStage()
+        {
+            if (contextPanel != null)
+            {
+                contextPanel.QueueProgress = TileCache.QueuePercent;
+            }
+
+            UpdateSpaceNavigator();
+            UpdateXInputState();
+            UpdateNetControlState();
+        }
+
+        private void PostRenderStage()
+        {
+            if (blink)
+            {
+                TimeSpan ts = DateTime.Now - lastBlink;
+                if (ts.TotalMilliseconds > 500)
+                {
+                    if (RenderEngine.StudyOpacity > 0)
+                    {
+                        RenderEngine.StudyOpacity = 0;
+                    }
+                    else
+                    {
+                        RenderEngine.StudyOpacity = 100;
+                    }
+                    lastBlink = DateTime.Now;
+                }
+            }
+            if (Settings.MasterController)
+            {
+                SendMove();
+            }
+
+            if (contextPanel != null)
+            {
+                contextPanel.QueueProgress = TileCache.QueuePercent;
+
+                if (RenderEngine.Space)
+                {
+                    contextPanel.ViewLevel = RenderEngine.FovAngle;
+                    contextPanel.RA = RenderEngine.RA;
+                    contextPanel.Dec = RenderEngine.Dec;
+
+                    if (RenderEngine.constellationCheck != null)
+                    {
+                        RenderEngine.Constellation = RenderEngine.constellationCheck.FindConstellationForPoint(RenderEngine.RA, RenderEngine.Dec);
+                        contextPanel.Constellation = Constellations.FullName(Constellation);
+                    }
+                }
+                else if (SolarSystemMode || SandboxMode)
+                {
+                    if (SandboxMode)
+                    {
+                        contextPanel.Sandbox = true;
+                        contextPanel.Distance = RenderEngine.SolarSystemCameraDistance;
+                    }
+                    else
+                    {
+                        contextPanel.Sandbox = false;
+                        contextPanel.Distance = RenderEngine.SolarSystemCameraDistance;
+                    }
+
+                    if (!SandboxMode && (RenderEngine.viewCamera.Target != SolarSystemObjects.Custom && RenderEngine.viewCamera.Target != SolarSystemObjects.Undefined))
+                    {
+                        Vector3d pnt = Coordinates.GeoTo3dDouble(RenderEngine.ViewLat, RenderEngine.ViewLong + 90);
+
+                        Matrix3d EarthMat = Planets.EarthMatrixInv;
+
+                        pnt = Vector3d.TransformCoordinate(pnt, EarthMat);
+                        pnt.Normalize();
+
+                        Vector2d radec = Coordinates.CartesianToLatLng(pnt);
+
+                        if (RenderEngine.viewCamera.Target != SolarSystemObjects.Earth)
+                        {
+                            if (radec.X < 0)
+                            {
+                                radec.X += 360;
+                            }
+                        }
+
+                        contextPanel.RA = radec.X;
+                        contextPanel.Dec = radec.Y;
+                    }
+                    else
+                    {
+                        contextPanel.RA = RenderEngine.ViewLong;
+                        contextPanel.Dec = RenderEngine.ViewLat;
+                    }
+                    contextPanel.Constellation = null;
+                }
+                else if (RenderEngine.PlanetLike)
+                {
+                    contextPanel.Sandbox = false;
+                    contextPanel.Distance = RenderEngine.SolarSystemCameraDistance / UiTools.KilometersPerAu * 370;
+                    contextPanel.RA = RenderEngine.ViewLong;
+                    contextPanel.Dec = RenderEngine.ViewLat;
+                    contextPanel.Constellation = null;
+                }
+                else
+                {
+                    contextPanel.Sandbox = false;
+                    contextPanel.ViewLevel = RenderEngine.FovAngle;
+                    contextPanel.RA = RenderEngine.ViewLong;
+                    contextPanel.Dec = RenderEngine.ViewLat;
+                    contextPanel.Constellation = null;
+                }
+            }
+        }
+        private void OpacityChanged()
+        {
+            if (contextPanel != null)
+            {
+                contextPanel.studyOpacity.Value = (int)RenderEngine.viewCamera.Opacity;
+            }
+        }
 
         private void Earth3d_Load(object sender, System.EventArgs e)
         {
             CheckOSVersion();
             string path = Properties.Settings.Default.ImageSetUrl;
+            RenderEngine.NotifyMoveComplete = new RenderEngine.NotifyComplete(NotifyMoveComplete);
+            RenderEngine.NotifyStudyImagesetChanged = new RenderEngine.NotifyStudyChanged(StudySetChanged);
+            RenderEngine.PreRenderStage = new RenderEngine.RenderNotify(PreRenderStage);
+            RenderEngine.PostRenderStage = new RenderEngine.RenderNotify(PostRenderStage);
+            RenderEngine.OpacityChanged = new RenderEngine.NotifyOpacityUpdate(OpacityChanged);
+            RenderEngine.EndRenderStage = new RenderEngine.RenderNotify(UpdateStats);
+
+            RenderEngine.zoomMaxSolarSystem = Properties.Settings.Default.MaxZoomLimitSolar;
+            RenderEngine.zoomMinSolarSystem = Properties.Settings.Default.MinZoonLimitSolar;
+            RenderEngine.config = config;
 
             if (Properties.Settings.Default.ImageSetUrl.ToLower().Contains("imagesetsnew"))
             {
-                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5";
+                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets6";
             }
 
             Earth3d.MainWindow = this;
             this.dsm = new DataSetManager();
-            Constellations.Containment = this.constellationCheck;
+            Constellations.Containment = RenderEngine.constellationCheck;
 
             ContextSearch.InitializeDatabase(true);
 
-            LoadExploreRoot();
-            if (explorerRoot != null)
+            var t = System.Threading.Tasks.Task.Run(() =>
             {
-                ContextSearch.AddFolderToSearch(explorerRoot, true);
-            }
-            ContextSearch.AddCatalogs(true);
-
-            BackInitDelegate initBackground = SearchInit;
-
-            initBackground.BeginInvoke(null, null);
+                Catalogs.Initializing = true;
+                LoadExploreRoot();
+                if (explorerRoot != null)
+                {
+                    ContextSearch.AddFolderToSearch(explorerRoot, true);
+                }
+                ContextSearch.AddCatalogs(true);
+                Catalogs.LoadSearchTable();
+                ContextSearch.Initialized = true;
+            });
 
             this.WindowState = FormWindowState.Maximized;
-
-
-
             this.FormBorderStyle = TouchKiosk ? FormBorderStyle.None : FormBorderStyle.Sizable;
             TileCache.StartQueue();
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.UserPaint, true);
             Earth3d.MainWindow.Config.DomeTilt = (float)Properties.Settings.Default.DomeTilt;
-            if (ProjectorServer)
+            if (RenderEngine.ProjectorServer)
             {
                 ShowFullScreen(true);
                 this.timer.Interval = 1000;
@@ -2214,7 +1582,6 @@ namespace TerraViewer
                 Properties.Settings.Default.ShowCrosshairs = false;
                 Properties.Settings.Default.SolarSystemMultiRes = true;
                 NetControl.Start();
-
             }
             else
             {
@@ -2249,9 +1616,6 @@ namespace TerraViewer
             }
 
             Tile.GrayscaleStyle = Properties.Settings.Default.MonochromeImageStyle;
-
-
-
             // This forces a init at startup does not do anything but force the static contstuctor to fire now
             LayerManager.LoadTree();
 
@@ -2269,26 +1633,26 @@ namespace TerraViewer
                 Properties.Settings.Default.LastLookAtMode = id;
             }
 
-            CurrentImageSet = GetDefaultImageset((ImageSetType)id, BandPass.Visible);
+            CurrentImageSet = RenderEngine.GetDefaultImageset((ImageSetType)id, BandPass.Visible);
 
             Properties.Settings.Default.SettingChanging += new System.Configuration.SettingChangingEventHandler(Default_SettingChanging);
             Properties.Settings.Default.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Default_PropertyChanged);
 
             if (Properties.Settings.Default.LocalHorizonMode)
             {
-                viewType = ViewTypes.AltAz;
+                RenderEngine.ViewType = RenderEngine.ViewTypes.AltAz;
             }
             else
             {
-                viewType = ViewTypes.Equatorial;
+                RenderEngine.ViewType = RenderEngine.ViewTypes.Equatorial;
             }
             InitSpaceNavigator();
-            ReadyToRender = true;
+            RenderEngine.ReadyToRender = true;
             Refresh();
 
             try
             {
-                fov = new FieldOfView(Properties.Settings.Default.FovTelescope, Properties.Settings.Default.FovCamera, Properties.Settings.Default.FovEyepiece);
+                RenderEngine.Fov = new FieldOfView(Properties.Settings.Default.FovTelescope, Properties.Settings.Default.FovCamera, Properties.Settings.Default.FovEyepiece);
             }
             catch
             {
@@ -2298,16 +1662,16 @@ namespace TerraViewer
             SpaceTimeController.Location = Coordinates.FromLatLng(Properties.Settings.Default.LocationLat, Properties.Settings.Default.LocationLng);
 
             TourPlayer.TourEnded += new EventHandler(TourPlayer_TourEnded);
-            if (KmlMarkers == null)
+            if (RenderEngine.KmlMarkers == null)
             {
-                KmlMarkers = new KmlLabels();
+                RenderEngine.KmlMarkers = new KmlLabels();
             }
-            ReadyToRender = true;
-            Initialized = true;
+            RenderEngine.ReadyToRender = true;
+            RenderEngine.Initialized = true;
             this.Activate();
-            fadeImageSet.State = false;
-            fadeImageSet.State = true;
-            fadeImageSet.TargetState = false;
+            RenderEngine.fadeImageSet.State = false;
+            RenderEngine.fadeImageSet.State = true;
+            RenderEngine.fadeImageSet.TargetState = false;
 
             // Force settings 
             Properties.Settings.Default.ActualPlanetScale = true;
@@ -2317,9 +1681,9 @@ namespace TerraViewer
 
             toolStripMenuItem2.Checked = Settings.MasterController;
 
-            viewCamera.Target = SolarSystemObjects.Sun;
+            RenderEngine.viewCamera.Target = SolarSystemObjects.Sun;
 
-            if (!ProjectorServer)
+            if (!RenderEngine.ProjectorServer)
             {
                 webServer.Startup();
 
@@ -2337,7 +1701,7 @@ namespace TerraViewer
 
             }
 
-            Fader.TargetState = false;
+            RenderEngine.Fader.TargetState = false;
 
             hold = new Text3dBatch(80);
             hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), " 0hr123456789-+", 80, .0001f));
@@ -2346,11 +1710,23 @@ namespace TerraViewer
             hold.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), "jxGHILPRTU", 80, .0001f));
             hold.PrepareBatch();
 
+
+            Text3dBatch asciiTable;
+            asciiTable = new Text3dBatch(12);
+            string table = "";
+            for (char c = ' '; c < 127; c++)
+            {
+                table += c;
+            }
+
+            asciiTable.Add(new Text3d(new Vector3d(0, 0, 1), new Vector3d(0, 1, 0), table, 80, .0001f));
+            asciiTable.PrepareBatch();
+            asciiTable.Draw(RenderContext11, 1, Color.White);
+
             Constellations.InitializeConstellationNames();
 
-            if (Properties.Settings.Default.ShowClientNodeList && !ProjectorServer)
+            if (Properties.Settings.Default.ShowClientNodeList && !RenderEngine.ProjectorServer)
             {
-
                 ClientNodeList.ShowNodeList();
             }
 
@@ -2365,7 +1741,7 @@ namespace TerraViewer
             }
             if (Properties.Settings.Default.RiftStartup)
             {
-                StartRift();
+                RenderEngine.StartRift();
             }
         }
         Text3dBatch hold;
@@ -2397,15 +1773,11 @@ namespace TerraViewer
                         doIt();
                     }
                 }
-
-
-
             }
             else if (Samp.sampKnownTableUrls.ContainsKey(url))
             {
 
             }
-
         }
 
         void NetworkChange_NetworkAddressChanged(object sender, EventArgs e)
@@ -2435,7 +1807,6 @@ namespace TerraViewer
             {
                 doIt();
             }
-
         }
 
         public void DownloadFitsImage(string url)
@@ -2479,13 +1850,12 @@ namespace TerraViewer
             {
                 doIt();
             }
-
         }
         void SampGoto(double ra, double dec)
         {
             MethodInvoker doIt = delegate
             {
-                GotoTargetRADec(ra, dec, true, false);
+                RenderEngine.GotoTargetRADec(ra, dec, true, false);
             };
 
             if (this.InvokeRequired)
@@ -2511,16 +1881,11 @@ namespace TerraViewer
         public static int DetachScreenId = -1;
         public void ShowFullScreen(bool showFull)
         {
-            // This might be useful to look into for full screen mode but can't be used with RIFT
-            //RenderContext11.SetFullScreenState(showFull);
-            //RenderContext11.Resize(renderWindow);
-            //return;
-
             this.SuspendLayout();
             menuTabs.IsVisible = !showFull && !TouchKiosk;
             if (showFull)
             {
-                bool doubleWide = (StereoMode == StereoModes.SideBySide || StereoMode == StereoModes.CrossEyed) && !rift;
+                bool doubleWide = (RenderEngine.StereoMode == RenderEngine.StereoModes.SideBySide || RenderEngine.StereoMode == RenderEngine.StereoModes.CrossEyed) && !RenderEngine.rift;
                 this.FormBorderStyle = FormBorderStyle.None;
                 if (doubleWide || Properties.Settings.Default.FullScreenHeight != 0)
                 {
@@ -2551,11 +1916,8 @@ namespace TerraViewer
             }
             fullScreen = showFull;
             this.ResumeLayout();
-            RenderContext11.Resize(renderWindow);
+            RenderContext11.Resize(renderWindow.ClientSize.Height, renderWindow.ClientSize.Width);
         }
-
-
-
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
@@ -2589,7 +1951,7 @@ namespace TerraViewer
         {
             try
             {
-                if (ProjectorServer || NoUi)
+                if (RenderEngine.ProjectorServer || NoUi)
                 {
                     return;
                 }
@@ -2621,14 +1983,11 @@ namespace TerraViewer
             catch
             {
             }
-
         }
 
-        public bool ShowKmlMarkers = true;
         public bool KmlAutoRefresh = false;
 
         public ConstellationFigureEditor figureEditor = null;
-
 
         public LayerManager layerManager = null;
         private void ShowLayersWindow()
@@ -2664,11 +2023,7 @@ namespace TerraViewer
             Properties.Settings.Default.ShowConstellationFigures.TargetState = true;
 
             figureEditor.Figures = figures;
-
-
-
             ShowFiguresEditorWindow();
-
         }
 
         private void ShowFiguresEditorWindow()
@@ -2677,7 +2032,6 @@ namespace TerraViewer
             {
                 Rectangle rectContext = contextPanel.Bounds;
                 Rectangle rectCurrentTab = currentTab.Bounds;
-
 
                 Point pnt = PointToScreen(new Point(ClientRectangle.Right, (ClientRectangle.Bottom - contextPanel.Height)));
                 Point pntTab = rectCurrentTab.Location;
@@ -2691,6 +2045,7 @@ namespace TerraViewer
                 figureEditor.Show();
             }
         }
+
         ImageStack stack = null;
 
         public ImageStack Stack
@@ -2706,9 +2061,12 @@ namespace TerraViewer
             set
             {
                 imageStackVisible = value;
+                RenderEngine.imageStackVisible = value;
                 ShowImageStack();
             }
         }
+
+
         public void ShowImageStack()
         {
             if (stack == null)
@@ -2722,7 +2080,7 @@ namespace TerraViewer
             {
                 stack.Visible = false;
             }
-            else if (!ProjectorServer)
+            else if (!RenderEngine.ProjectorServer)
             {
                 Rectangle rectContext = contextPanel.Bounds;
                 Rectangle rectCurrentTab = currentTab.Bounds;
@@ -2750,12 +2108,21 @@ namespace TerraViewer
             get { return tourEdit; }
             set { tourEdit = value; }
         }
+
         IUiController uiController = null;
 
         public IUiController UiController
         {
-            get { return uiController; }
-            set { uiController = value; }
+            get
+            {
+
+                return uiController;
+            }
+            set
+            {
+                uiController = value;
+                RenderEngine.uiController = uiController;
+            }
         }
 
         void menuTabs_MenuClicked(object sender, ApplicationMode e)
@@ -2821,11 +2188,7 @@ namespace TerraViewer
 
         private void menuTabs_TabClicked(object sender, ApplicationMode e)
         {
-            if (currentMode == e)
-            {
-                //Show Menus
-            }
-            else
+            if (currentMode != e)
             {
                 //switch modes
                 SetAppMode(e);
@@ -2885,11 +2248,11 @@ namespace TerraViewer
         public void CloseTour(bool silent)
         {
             Undo.Clear();
-            FreezeView();
+            RenderEngine.FreezeView();
             if (tourEdit != null)
             {
                 TourPopup.CloseTourPopups();
-                mover = null;
+                RenderEngine.Mover = null;
                 TourPlayer.Playing = false;
                 KeyFramer.HideTimeline();
                 if (LayerManager.TourLayers == false && !silent)
@@ -2916,7 +2279,7 @@ namespace TerraViewer
                 tourEdit.TourEditorUI.Close();
                 tourEdit.Close();
                 tourEdit = null;
-                uiController = null;
+                UiController = null;
                 Settings.TourSettings = null;
                 if (toursTab == null)
                 {
@@ -2940,7 +2303,7 @@ namespace TerraViewer
 
         void SetAppMode(ApplicationMode mode)
         {
-            if (ProjectorServer || NoUi)
+            if (RenderEngine.ProjectorServer || NoUi)
             {
                 return;
             }
@@ -3138,7 +2501,7 @@ namespace TerraViewer
 
                             if (tourEdit.Tour.EditMode && !TourPlayer.Playing)
                             {
-                                uiController = tourEdit.TourEditorUI;
+                                UiController = tourEdit.TourEditorUI;
                             }
                             TimeLine.SetTour(tourEdit.Tour);
                         }
@@ -3281,11 +2644,11 @@ namespace TerraViewer
             }
         }
         int changeCount = 0;
-        public static bool ignoreChanges = false;
+
 
         void Default_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (ignoreChanges)
+            if (Settings.ignoreChanges)
             {
                 return;
             }
@@ -3314,23 +2677,23 @@ namespace TerraViewer
 
         public void SuspendChanges()
         {
-            ignoreChanges = true;
+            Settings.ignoreChanges = true;
         }
 
         public void ProcessChanged()
         {
-            ignoreChanges = false;
+            Settings.ignoreChanges = false;
 
 
             Planets.ShowActualSize = Settings.Active.ActualPlanetScale;
 
             if (Properties.Settings.Default.LocalHorizonMode)
             {
-                viewType = ViewTypes.AltAz;
+                RenderEngine.ViewType = RenderEngine.ViewTypes.AltAz;
             }
             else
             {
-                viewType = ViewTypes.Equatorial;
+                RenderEngine.ViewType = RenderEngine.ViewTypes.Equatorial;
             }
 
         }
@@ -3368,30 +2731,30 @@ namespace TerraViewer
 
                 if (resetViewmode)
                 {
-                    SetViewMode();
+                    RenderEngine.SetViewMode();
                 }
-                TrackingFrame = targetReferenceFrame;
-                TargetLat = ViewLat = lat;
-                TargetLong = ViewLong = lng;
-                ZoomFactor = TargetZoom = zoom;
-                if (Space && Settings.Active.GalacticMode)
+                RenderEngine.TrackingFrame = targetReferenceFrame;
+                RenderEngine.TargetLat = RenderEngine.ViewLat = lat;
+                RenderEngine.TargetLong = RenderEngine.ViewLong = lng;
+                RenderEngine.ZoomFactor = RenderEngine.TargetZoom = zoom;
+                if (RenderEngine.Space && Settings.Active.GalacticMode)
                 {
-                    double[] gPoint = Coordinates.J2000toGalactic(viewCamera.RA * 15, viewCamera.Dec);
-                    targetAlt = alt = gPoint[1];
-                    targetAz = az = gPoint[0];
+                    double[] gPoint = Coordinates.J2000toGalactic(RenderEngine.viewCamera.RA * 15, RenderEngine.viewCamera.Dec);
+                    RenderEngine.targetAlt = RenderEngine.Alt = gPoint[1];
+                    RenderEngine.targetAz = RenderEngine.Az = gPoint[0];
                 }
-                else if (Space && Settings.Active.LocalHorizonMode)
+                else if (RenderEngine.Space && Settings.Active.LocalHorizonMode)
                 {
-                    Coordinates currentAltAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(viewCamera.RA, viewCamera.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
+                    Coordinates currentAltAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(RenderEngine.viewCamera.RA, RenderEngine.viewCamera.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
 
-                    targetAlt = alt = currentAltAz.Alt;
-                    targetAz = az = currentAltAz.Az;
+                    RenderEngine.targetAlt = RenderEngine.Alt = currentAltAz.Alt;
+                    RenderEngine.targetAz = RenderEngine.Az = currentAltAz.Az;
                 }
-                this.CameraAngle = cameraAngle;
-                this.CameraRotate = cameraRotate;
-                this.StudyOpacity = blendOpacity;
-                this.SolarSystemTrack = target;
-                this.viewCamera.ViewTarget = targetPoint;
+                RenderEngine.CameraAngle = cameraAngle;
+                RenderEngine.CameraRotate = cameraRotate;
+                RenderEngine.StudyOpacity = blendOpacity;
+                RenderEngine.SolarSystemTrack = target;
+                RenderEngine.viewCamera.ViewTarget = targetPoint;
                 if (Properties.Settings.Default.SolarSystemScale != solarSystemScale)
                 {
                     Properties.Settings.Default.SolarSystemScale = solarSystemScale;
@@ -3408,27 +2771,16 @@ namespace TerraViewer
         }
 
 
-        static public Dictionary<int, IImageSet> ImagesetHashTable = new Dictionary<int, IImageSet>();
 
-        public static void AddImageSetToTable(int hash, IImageSet set)
-        {
-            if (!ImagesetHashTable.ContainsKey(hash))
-            {
-                if (set != null)
-                {
-                    ImagesetHashTable.Add(hash, set);
-                }
-            }
-        }
 
         public static int bgImagesetGets = 0;
         public static int bgImagesetFails = 0;
 
         private void SetImageSetByHash(int backgroundImageSetHash)
         {
-            if (ImagesetHashTable.ContainsKey(backgroundImageSetHash))
+            if (RenderEngine.ImagesetHashTable.ContainsKey(backgroundImageSetHash))
             {
-                CurrentImageSet = ImagesetHashTable[backgroundImageSetHash];
+                CurrentImageSet = RenderEngine.ImagesetHashTable[backgroundImageSetHash];
             }
             else
             {
@@ -3437,7 +2789,7 @@ namespace TerraViewer
                     if (backgroundImageSetHash != 0)
                     {
                         bgImagesetGets++;
-                        if (Earth3d.Logging) { Earth3d.WriteLogMessage("Get Background Imageset from Server"); }
+                        if (Utils.Logging) { Utils.WriteLogMessage("Get Background Imageset from Server"); }
                         WebClient client = new WebClient();
                         string url = string.Format("http://{0}:5050/imagesetwtml?id={1}", NetControl.MasterAddress, backgroundImageSetHash);
                         string wtml = client.DownloadString(url);
@@ -3456,7 +2808,7 @@ namespace TerraViewer
 
                 if (CurrentImageSet == null)
                 {
-                    CurrentImageSet = ImageSets[0];
+                    CurrentImageSet = RenderEngine.ImageSets[0];
                 }
             }
         }
@@ -3466,9 +2818,9 @@ namespace TerraViewer
 
         private void SetStudyImagesetByHash(int foregroundImageSetHash)
         {
-            if (ImagesetHashTable.ContainsKey(foregroundImageSetHash))
+            if (RenderEngine.ImagesetHashTable.ContainsKey(foregroundImageSetHash))
             {
-                StudyImageset = ImagesetHashTable[foregroundImageSetHash];
+                StudyImageset = RenderEngine.ImagesetHashTable[foregroundImageSetHash];
             }
             else
             {
@@ -3476,7 +2828,7 @@ namespace TerraViewer
                 {
                     if (foregroundImageSetHash != 0)
                     {
-                        if (Earth3d.Logging) { Earth3d.WriteLogMessage("Get Background Imageset from Server"); }
+                        if (Utils.Logging) { Utils.WriteLogMessage("Get Background Imageset from Server"); }
                         fgImagesetGets++;
                         WebClient client = new WebClient();
                         string url = string.Format("http://{0}:5050/imagesetwtml?id={1}", NetControl.MasterAddress, foregroundImageSetHash);
@@ -3824,6 +3176,7 @@ namespace TerraViewer
             this.downloadQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showTileEdgesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileLoadingThrottlingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tpsToolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.tpsToolStripMenuItem30 = new System.Windows.Forms.ToolStripMenuItem();
@@ -3871,6 +3224,7 @@ namespace TerraViewer
             this.saveCurrentViewImageToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enableExport3dCitiesModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.screenBroadcastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -3920,7 +3274,6 @@ namespace TerraViewer
             this.fPSToolStripMenuItem60 = new System.Windows.Forms.ToolStripMenuItem();
             this.fPSToolStripMenuItem30 = new System.Windows.Forms.ToolStripMenuItem();
             this.fPSToolStripMenuItem24 = new System.Windows.Forms.ToolStripMenuItem();
-            this.enableExport3dCitiesModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StatupTimer = new System.Windows.Forms.Timer(this.components);
             this.SlideAdvanceTimer = new System.Windows.Forms.Timer(this.components);
             this.TourEndCheck = new System.Windows.Forms.Timer(this.components);
@@ -3929,6 +3282,7 @@ namespace TerraViewer
             this.kioskTitleBar = new TerraViewer.KioskTitleBar();
             this.renderWindow = new TerraViewer.RenderTarget();
             this.menuTabs = new TerraViewer.MenuTabs();
+            this.hIPSProgressiveSurveyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu.SuspendLayout();
             this.communitiesMenu.SuspendLayout();
             this.searchMenu.SuspendLayout();
@@ -3983,21 +3337,21 @@ namespace TerraViewer
             this.editToolStripMenuItem,
             this.sAMPToolStripMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(225, 352);
+            this.contextMenu.Size = new System.Drawing.Size(312, 502);
             this.contextMenu.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.contextMenu_Closing);
             this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
             // 
             // nameToolStripMenuItem
             // 
             this.nameToolStripMenuItem.Name = "nameToolStripMenuItem";
-            this.nameToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.nameToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.nameToolStripMenuItem.Text = "Name:";
             this.nameToolStripMenuItem.Click += new System.EventHandler(this.nameToolStripMenuItem_Click);
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(308, 6);
             // 
             // informationToolStripMenuItem
             // 
@@ -4009,48 +3363,48 @@ namespace TerraViewer
             this.lookUpOnNEDToolStripMenuItem,
             this.lookUpOnSDSSToolStripMenuItem});
             this.informationToolStripMenuItem.Name = "informationToolStripMenuItem";
-            this.informationToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.informationToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.informationToolStripMenuItem.Text = "Information";
             // 
             // lookupOnSimbadToolStripMenuItem
             // 
             this.lookupOnSimbadToolStripMenuItem.Name = "lookupOnSimbadToolStripMenuItem";
-            this.lookupOnSimbadToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.lookupOnSimbadToolStripMenuItem.Size = new System.Drawing.Size(346, 34);
             this.lookupOnSimbadToolStripMenuItem.Text = "Look up on SIMBAD";
             this.lookupOnSimbadToolStripMenuItem.Click += new System.EventHandler(this.lookupOnSimbadToolStripMenuItem_Click);
             // 
             // lookupOnSEDSToolStripMenuItem
             // 
             this.lookupOnSEDSToolStripMenuItem.Name = "lookupOnSEDSToolStripMenuItem";
-            this.lookupOnSEDSToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.lookupOnSEDSToolStripMenuItem.Size = new System.Drawing.Size(346, 34);
             this.lookupOnSEDSToolStripMenuItem.Text = "Look up on SEDS";
             this.lookupOnSEDSToolStripMenuItem.Click += new System.EventHandler(this.lookupOnSEDSToolStripMenuItem_Click);
             // 
             // lookupOnWikipediaToolStripMenuItem
             // 
             this.lookupOnWikipediaToolStripMenuItem.Name = "lookupOnWikipediaToolStripMenuItem";
-            this.lookupOnWikipediaToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.lookupOnWikipediaToolStripMenuItem.Size = new System.Drawing.Size(346, 34);
             this.lookupOnWikipediaToolStripMenuItem.Text = "Look up on Wikipedia";
             this.lookupOnWikipediaToolStripMenuItem.Click += new System.EventHandler(this.lookupOnWikipediaToolStripMenuItem_Click);
             // 
             // publicationsToolStripMenuItem
             // 
             this.publicationsToolStripMenuItem.Name = "publicationsToolStripMenuItem";
-            this.publicationsToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.publicationsToolStripMenuItem.Size = new System.Drawing.Size(346, 34);
             this.publicationsToolStripMenuItem.Text = "Look up publications on ADS";
             this.publicationsToolStripMenuItem.Click += new System.EventHandler(this.publicationsToolStripMenuItem_Click);
             // 
             // lookUpOnNEDToolStripMenuItem
             // 
             this.lookUpOnNEDToolStripMenuItem.Name = "lookUpOnNEDToolStripMenuItem";
-            this.lookUpOnNEDToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.lookUpOnNEDToolStripMenuItem.Size = new System.Drawing.Size(346, 34);
             this.lookUpOnNEDToolStripMenuItem.Text = "Look up on NED";
             this.lookUpOnNEDToolStripMenuItem.Click += new System.EventHandler(this.lookUpOnNEDToolStripMenuItem_Click);
             // 
             // lookUpOnSDSSToolStripMenuItem
             // 
             this.lookUpOnSDSSToolStripMenuItem.Name = "lookUpOnSDSSToolStripMenuItem";
-            this.lookUpOnSDSSToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.lookUpOnSDSSToolStripMenuItem.Size = new System.Drawing.Size(346, 34);
             this.lookUpOnSDSSToolStripMenuItem.Text = "Look up on SDSS";
             this.lookUpOnSDSSToolStripMenuItem.Click += new System.EventHandler(this.lookUpOnSDSSToolStripMenuItem_Click);
             // 
@@ -4061,27 +3415,27 @@ namespace TerraViewer
             this.getSDSSImageToolStripMenuItem,
             this.getDSSFITSToolStripMenuItem});
             this.imageryToolStripMenuItem.Name = "imageryToolStripMenuItem";
-            this.imageryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.imageryToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.imageryToolStripMenuItem.Text = "Imagery";
             // 
             // getDSSImageToolStripMenuItem
             // 
             this.getDSSImageToolStripMenuItem.Name = "getDSSImageToolStripMenuItem";
-            this.getDSSImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.getDSSImageToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.getDSSImageToolStripMenuItem.Text = "Get DSS image";
             this.getDSSImageToolStripMenuItem.Click += new System.EventHandler(this.getDSSImageToolStripMenuItem_Click);
             // 
             // getSDSSImageToolStripMenuItem
             // 
             this.getSDSSImageToolStripMenuItem.Name = "getSDSSImageToolStripMenuItem";
-            this.getSDSSImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.getSDSSImageToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.getSDSSImageToolStripMenuItem.Text = "Get SDSS image";
             this.getSDSSImageToolStripMenuItem.Click += new System.EventHandler(this.getSDSSImageToolStripMenuItem_Click);
             // 
             // getDSSFITSToolStripMenuItem
             // 
             this.getDSSFITSToolStripMenuItem.Name = "getDSSFITSToolStripMenuItem";
-            this.getDSSFITSToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.getDSSFITSToolStripMenuItem.Size = new System.Drawing.Size(243, 34);
             this.getDSSFITSToolStripMenuItem.Text = "Get DSS FITS";
             this.getDSSFITSToolStripMenuItem.Click += new System.EventHandler(this.getDSSFITSToolStripMenuItem_Click);
             // 
@@ -4094,14 +3448,14 @@ namespace TerraViewer
             this.sDSSSearchToolStripMenuItem,
             this.toolStripMenuItem3});
             this.virtualObservatorySearchesToolStripMenuItem.Name = "virtualObservatorySearchesToolStripMenuItem";
-            this.virtualObservatorySearchesToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.virtualObservatorySearchesToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.virtualObservatorySearchesToolStripMenuItem.Text = "Virtual Observatory Searches";
             this.virtualObservatorySearchesToolStripMenuItem.Click += new System.EventHandler(this.virtualObservatorySearchesToolStripMenuItem_Click);
             // 
             // uSNONVOConeSearchToolStripMenuItem
             // 
             this.uSNONVOConeSearchToolStripMenuItem.Name = "uSNONVOConeSearchToolStripMenuItem";
-            this.uSNONVOConeSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.uSNONVOConeSearchToolStripMenuItem.Size = new System.Drawing.Size(399, 34);
             this.uSNONVOConeSearchToolStripMenuItem.Text = "USNO NVO cone search";
             this.uSNONVOConeSearchToolStripMenuItem.Visible = false;
             this.uSNONVOConeSearchToolStripMenuItem.Click += new System.EventHandler(this.uSNONVOConeSearchToolStripMenuItem_Click);
@@ -4110,7 +3464,7 @@ namespace TerraViewer
             // 
             this.hLAFootprintsToolStripMenuItem.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.hLAFootprintsToolStripMenuItem.Name = "hLAFootprintsToolStripMenuItem";
-            this.hLAFootprintsToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.hLAFootprintsToolStripMenuItem.Size = new System.Drawing.Size(399, 34);
             this.hLAFootprintsToolStripMenuItem.Text = "HLA Footprints";
             this.hLAFootprintsToolStripMenuItem.Visible = false;
             this.hLAFootprintsToolStripMenuItem.Click += new System.EventHandler(this.hLAFootprintsToolStripMenuItem_Click);
@@ -4118,54 +3472,54 @@ namespace TerraViewer
             // nEDSearchToolStripMenuItem
             // 
             this.nEDSearchToolStripMenuItem.Name = "nEDSearchToolStripMenuItem";
-            this.nEDSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.nEDSearchToolStripMenuItem.Size = new System.Drawing.Size(399, 34);
             this.nEDSearchToolStripMenuItem.Text = "NED Search";
             this.nEDSearchToolStripMenuItem.Click += new System.EventHandler(this.NEDSearchToolStripMenuItem_Click);
             // 
             // sDSSSearchToolStripMenuItem
             // 
             this.sDSSSearchToolStripMenuItem.Name = "sDSSSearchToolStripMenuItem";
-            this.sDSSSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.sDSSSearchToolStripMenuItem.Size = new System.Drawing.Size(399, 34);
             this.sDSSSearchToolStripMenuItem.Text = "SDSS Search";
             this.sDSSSearchToolStripMenuItem.Click += new System.EventHandler(this.sDSSSearchToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(264, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(399, 34);
             this.toolStripMenuItem3.Text = "VO Cone Search / Registry Lookup...";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.vORegistryToolStripMenuItem_Click);
             // 
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(308, 6);
             // 
             // setAsForegroundImageryToolStripMenuItem
             // 
             this.setAsForegroundImageryToolStripMenuItem.Name = "setAsForegroundImageryToolStripMenuItem";
-            this.setAsForegroundImageryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.setAsForegroundImageryToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.setAsForegroundImageryToolStripMenuItem.Text = "Set as Forground Imagery";
             this.setAsForegroundImageryToolStripMenuItem.Click += new System.EventHandler(this.setAsForegroundImageryToolStripMenuItem_Click);
             // 
             // setAsBackgroundImageryToolStripMenuItem
             // 
             this.setAsBackgroundImageryToolStripMenuItem.Name = "setAsBackgroundImageryToolStripMenuItem";
-            this.setAsBackgroundImageryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.setAsBackgroundImageryToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.setAsBackgroundImageryToolStripMenuItem.Text = "Set as Background Imagery";
             this.setAsBackgroundImageryToolStripMenuItem.Click += new System.EventHandler(this.setAsBackgroundImageryToolStripMenuItem_Click);
             // 
             // addToImageStackToolStripMenuItem
             // 
             this.addToImageStackToolStripMenuItem.Name = "addToImageStackToolStripMenuItem";
-            this.addToImageStackToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.addToImageStackToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.addToImageStackToolStripMenuItem.Text = "Add to Image Stack";
             this.addToImageStackToolStripMenuItem.Click += new System.EventHandler(this.addToImageStackToolStripMenuItem_Click);
             // 
             // addAsNewLayerToolStripMenuItem
             // 
             this.addAsNewLayerToolStripMenuItem.Name = "addAsNewLayerToolStripMenuItem";
-            this.addAsNewLayerToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.addAsNewLayerToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.addAsNewLayerToolStripMenuItem.Text = "Add as New Layer";
             this.addAsNewLayerToolStripMenuItem.Click += new System.EventHandler(this.addAsNewLayerToolStripMenuItem_Click);
             // 
@@ -4176,46 +3530,46 @@ namespace TerraViewer
             this.showCacheSpaceUsedToolStripMenuItem,
             this.removeFromImageCacheToolStripMenuItem});
             this.cacheManagementToolStripMenuItem1.Name = "cacheManagementToolStripMenuItem1";
-            this.cacheManagementToolStripMenuItem1.Size = new System.Drawing.Size(224, 22);
+            this.cacheManagementToolStripMenuItem1.Size = new System.Drawing.Size(311, 32);
             this.cacheManagementToolStripMenuItem1.Text = "Cache Management";
             // 
             // cacheImageryTilePyramidToolStripMenuItem
             // 
             this.cacheImageryTilePyramidToolStripMenuItem.Name = "cacheImageryTilePyramidToolStripMenuItem";
-            this.cacheImageryTilePyramidToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.cacheImageryTilePyramidToolStripMenuItem.Size = new System.Drawing.Size(344, 34);
             this.cacheImageryTilePyramidToolStripMenuItem.Text = "Cache Imagery Tile Pyramid...";
             this.cacheImageryTilePyramidToolStripMenuItem.Click += new System.EventHandler(this.cacheImageryTilePyramidToolStripMenuItem_Click);
             // 
             // showCacheSpaceUsedToolStripMenuItem
             // 
             this.showCacheSpaceUsedToolStripMenuItem.Name = "showCacheSpaceUsedToolStripMenuItem";
-            this.showCacheSpaceUsedToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.showCacheSpaceUsedToolStripMenuItem.Size = new System.Drawing.Size(344, 34);
             this.showCacheSpaceUsedToolStripMenuItem.Text = "Show Cache Space Used...";
             this.showCacheSpaceUsedToolStripMenuItem.Click += new System.EventHandler(this.showCacheSpaceUsedToolStripMenuItem_Click);
             // 
             // removeFromImageCacheToolStripMenuItem
             // 
             this.removeFromImageCacheToolStripMenuItem.Name = "removeFromImageCacheToolStripMenuItem";
-            this.removeFromImageCacheToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.removeFromImageCacheToolStripMenuItem.Size = new System.Drawing.Size(344, 34);
             this.removeFromImageCacheToolStripMenuItem.Text = "Remove from Image Cache";
             this.removeFromImageCacheToolStripMenuItem.Click += new System.EventHandler(this.removeFromImageCacheToolStripMenuItem_Click);
             // 
             // ImagerySeperator
             // 
             this.ImagerySeperator.Name = "ImagerySeperator";
-            this.ImagerySeperator.Size = new System.Drawing.Size(221, 6);
+            this.ImagerySeperator.Size = new System.Drawing.Size(308, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.propertiesToolStripMenuItem.Text = "Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
             // copyShortcutToolStripMenuItem
             // 
             this.copyShortcutToolStripMenuItem.Name = "copyShortcutToolStripMenuItem";
-            this.copyShortcutToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.copyShortcutToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.copyShortcutToolStripMenuItem.Text = "Copy Shortcut";
             this.copyShortcutToolStripMenuItem.Click += new System.EventHandler(this.copyShortcutToolStripMenuItem_Click);
             // 
@@ -4224,7 +3578,7 @@ namespace TerraViewer
             this.addToCollectionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newCollectionToolStripMenuItem});
             this.addToCollectionsToolStripMenuItem.Name = "addToCollectionsToolStripMenuItem";
-            this.addToCollectionsToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.addToCollectionsToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.addToCollectionsToolStripMenuItem.Text = "Add to Collection";
             this.addToCollectionsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.addToCollectionsToolStripMenuItem_DropDownOpening);
             this.addToCollectionsToolStripMenuItem.Click += new System.EventHandler(this.addToCollectionsToolStripMenuItem_Click);
@@ -4232,20 +3586,20 @@ namespace TerraViewer
             // newCollectionToolStripMenuItem
             // 
             this.newCollectionToolStripMenuItem.Name = "newCollectionToolStripMenuItem";
-            this.newCollectionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.newCollectionToolStripMenuItem.Size = new System.Drawing.Size(244, 34);
             this.newCollectionToolStripMenuItem.Text = "New Collection...";
             // 
             // removeFromCollectionToolStripMenuItem
             // 
             this.removeFromCollectionToolStripMenuItem.Name = "removeFromCollectionToolStripMenuItem";
-            this.removeFromCollectionToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.removeFromCollectionToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.removeFromCollectionToolStripMenuItem.Text = "Remove from Collection";
             this.removeFromCollectionToolStripMenuItem.Click += new System.EventHandler(this.removeFromCollectionToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.editToolStripMenuItem.Text = "Edit...";
             this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
             // 
@@ -4255,7 +3609,7 @@ namespace TerraViewer
             this.sendImageToToolStripMenuItem,
             this.sendTableToToolStripMenuItem});
             this.sAMPToolStripMenuItem.Name = "sAMPToolStripMenuItem";
-            this.sAMPToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.sAMPToolStripMenuItem.Size = new System.Drawing.Size(311, 32);
             this.sAMPToolStripMenuItem.Text = "SAMP";
             // 
             // sendImageToToolStripMenuItem
@@ -4263,13 +3617,13 @@ namespace TerraViewer
             this.sendImageToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.broadcastToolStripMenuItem});
             this.sendImageToToolStripMenuItem.Name = "sendImageToToolStripMenuItem";
-            this.sendImageToToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sendImageToToolStripMenuItem.Size = new System.Drawing.Size(232, 34);
             this.sendImageToToolStripMenuItem.Text = "Send Image To";
             // 
             // broadcastToolStripMenuItem
             // 
             this.broadcastToolStripMenuItem.Name = "broadcastToolStripMenuItem";
-            this.broadcastToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.broadcastToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
             this.broadcastToolStripMenuItem.Text = "Broadcast";
             this.broadcastToolStripMenuItem.Click += new System.EventHandler(this.broadcastToolStripMenuItem_Click);
             // 
@@ -4278,13 +3632,13 @@ namespace TerraViewer
             this.sendTableToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.broadcastToolStripMenuItem1});
             this.sendTableToToolStripMenuItem.Name = "sendTableToToolStripMenuItem";
-            this.sendTableToToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sendTableToToolStripMenuItem.Size = new System.Drawing.Size(232, 34);
             this.sendTableToToolStripMenuItem.Text = "Send Table To";
             // 
             // broadcastToolStripMenuItem1
             // 
             this.broadcastToolStripMenuItem1.Name = "broadcastToolStripMenuItem1";
-            this.broadcastToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
+            this.broadcastToolStripMenuItem1.Size = new System.Drawing.Size(192, 34);
             this.broadcastToolStripMenuItem1.Text = "Broadcast";
             // 
             // HoverTimer
@@ -4304,7 +3658,7 @@ namespace TerraViewer
             this.uploadObservingListToCommunityMenuItem,
             this.uploadImageToCommunityMenuItem});
             this.communitiesMenu.Name = "communitiesMenu";
-            this.communitiesMenu.Size = new System.Drawing.Size(281, 120);
+            this.communitiesMenu.Size = new System.Drawing.Size(393, 170);
             this.communitiesMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.communitiesMenu.Opening += new System.ComponentModel.CancelEventHandler(this.communitiesMenu_Opening);
             this.communitiesMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4312,14 +3666,14 @@ namespace TerraViewer
             // joinCoomunityMenuItem
             // 
             this.joinCoomunityMenuItem.Name = "joinCoomunityMenuItem";
-            this.joinCoomunityMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.joinCoomunityMenuItem.Size = new System.Drawing.Size(392, 32);
             this.joinCoomunityMenuItem.Text = "Join a Community...";
             this.joinCoomunityMenuItem.Click += new System.EventHandler(this.joinCoomunityMenuItem_Click);
             // 
             // updateLoginCredentialsMenuItem
             // 
             this.updateLoginCredentialsMenuItem.Name = "updateLoginCredentialsMenuItem";
-            this.updateLoginCredentialsMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.updateLoginCredentialsMenuItem.Size = new System.Drawing.Size(392, 32);
             this.updateLoginCredentialsMenuItem.Text = "Update Login Credentials...";
             this.updateLoginCredentialsMenuItem.Click += new System.EventHandler(this.associateLiveIDToolStripMenuItem_Click);
             // 
@@ -4327,27 +3681,27 @@ namespace TerraViewer
             // 
             this.logoutMenuItem.Enabled = false;
             this.logoutMenuItem.Name = "logoutMenuItem";
-            this.logoutMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.logoutMenuItem.Size = new System.Drawing.Size(392, 32);
             this.logoutMenuItem.Text = "Logout";
             this.logoutMenuItem.Visible = false;
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(277, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(389, 6);
             this.toolStripSeparator8.Visible = false;
             // 
             // uploadObservingListToCommunityMenuItem
             // 
             this.uploadObservingListToCommunityMenuItem.Name = "uploadObservingListToCommunityMenuItem";
-            this.uploadObservingListToCommunityMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.uploadObservingListToCommunityMenuItem.Size = new System.Drawing.Size(392, 32);
             this.uploadObservingListToCommunityMenuItem.Text = "Upload Observing List to Community...";
             this.uploadObservingListToCommunityMenuItem.Visible = false;
             // 
             // uploadImageToCommunityMenuItem
             // 
             this.uploadImageToCommunityMenuItem.Name = "uploadImageToCommunityMenuItem";
-            this.uploadImageToCommunityMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.uploadImageToCommunityMenuItem.Size = new System.Drawing.Size(392, 32);
             this.uploadImageToCommunityMenuItem.Text = "Upload Image to Community... ";
             this.uploadImageToCommunityMenuItem.Visible = false;
             // 
@@ -4359,7 +3713,7 @@ namespace TerraViewer
             this.vORegistryToolStripMenuItem,
             this.findEarthBasedLocationToolStripMenuItem});
             this.searchMenu.Name = "contextMenuStrip1";
-            this.searchMenu.Size = new System.Drawing.Size(265, 70);
+            this.searchMenu.Size = new System.Drawing.Size(370, 100);
             this.searchMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.searchMenu.Opening += new System.ComponentModel.CancelEventHandler(this.searchMenu_Opening);
             this.searchMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4367,21 +3721,21 @@ namespace TerraViewer
             // sIMBADSearchToolStripMenuItem
             // 
             this.sIMBADSearchToolStripMenuItem.Name = "sIMBADSearchToolStripMenuItem";
-            this.sIMBADSearchToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.sIMBADSearchToolStripMenuItem.Size = new System.Drawing.Size(369, 32);
             this.sIMBADSearchToolStripMenuItem.Text = "SIMBAD Search...";
             this.sIMBADSearchToolStripMenuItem.Click += new System.EventHandler(this.sIMBADSearchToolStripMenuItem_Click);
             // 
             // vORegistryToolStripMenuItem
             // 
             this.vORegistryToolStripMenuItem.Name = "vORegistryToolStripMenuItem";
-            this.vORegistryToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.vORegistryToolStripMenuItem.Size = new System.Drawing.Size(369, 32);
             this.vORegistryToolStripMenuItem.Text = "VO Cone Search / Registry Lookup...";
             this.vORegistryToolStripMenuItem.Click += new System.EventHandler(this.vORegistryToolStripMenuItem_Click);
             // 
             // findEarthBasedLocationToolStripMenuItem
             // 
             this.findEarthBasedLocationToolStripMenuItem.Name = "findEarthBasedLocationToolStripMenuItem";
-            this.findEarthBasedLocationToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.findEarthBasedLocationToolStripMenuItem.Size = new System.Drawing.Size(369, 32);
             this.findEarthBasedLocationToolStripMenuItem.Text = "Find Earth Based Location...";
             this.findEarthBasedLocationToolStripMenuItem.Click += new System.EventHandler(this.findEarthBasedLocationToolStripMenuItem_Click);
             // 
@@ -4412,7 +3766,7 @@ namespace TerraViewer
             this.sendTourToProjectorServersToolStripMenuItem,
             this.automaticTourSyncWithProjectorServersToolStripMenuItem});
             this.toursMenu.Name = "contextMenuStrip1";
-            this.toursMenu.Size = new System.Drawing.Size(303, 408);
+            this.toursMenu.Size = new System.Drawing.Size(423, 578);
             this.toursMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.toursMenu.Opening += new System.ComponentModel.CancelEventHandler(this.toursMenu_Opening);
             this.toursMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4420,14 +3774,14 @@ namespace TerraViewer
             // tourHomeMenuItem
             // 
             this.tourHomeMenuItem.Name = "tourHomeMenuItem";
-            this.tourHomeMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.tourHomeMenuItem.Size = new System.Drawing.Size(422, 32);
             this.tourHomeMenuItem.Text = "Tour Home";
             this.tourHomeMenuItem.Click += new System.EventHandler(this.tourHomeMenuItem_Click);
             // 
             // tourSearchWebPageMenuItem
             // 
             this.tourSearchWebPageMenuItem.Name = "tourSearchWebPageMenuItem";
-            this.tourSearchWebPageMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.tourSearchWebPageMenuItem.Size = new System.Drawing.Size(422, 32);
             this.tourSearchWebPageMenuItem.Text = "Tour Search Web Page";
             this.tourSearchWebPageMenuItem.Visible = false;
             this.tourSearchWebPageMenuItem.Click += new System.EventHandler(this.tourSearchWebPageMenuItem_Click);
@@ -4435,47 +3789,47 @@ namespace TerraViewer
             // musicAndOtherTourResourceToolStripMenuItem
             // 
             this.musicAndOtherTourResourceToolStripMenuItem.Name = "musicAndOtherTourResourceToolStripMenuItem";
-            this.musicAndOtherTourResourceToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.musicAndOtherTourResourceToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.musicAndOtherTourResourceToolStripMenuItem.Text = "Music and other Tour Resource";
             this.musicAndOtherTourResourceToolStripMenuItem.Click += new System.EventHandler(this.musicAndOtherTourResourceToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(299, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(419, 6);
             // 
             // createANewTourToolStripMenuItem
             // 
             this.createANewTourToolStripMenuItem.Name = "createANewTourToolStripMenuItem";
-            this.createANewTourToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.createANewTourToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.createANewTourToolStripMenuItem.Text = "Create a New Tour...";
             this.createANewTourToolStripMenuItem.Click += new System.EventHandler(this.newSlideBasedTour);
             // 
             // saveTourAsToolStripMenuItem
             // 
             this.saveTourAsToolStripMenuItem.Name = "saveTourAsToolStripMenuItem";
-            this.saveTourAsToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.saveTourAsToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.saveTourAsToolStripMenuItem.Text = "Save Tour As...";
             this.saveTourAsToolStripMenuItem.Click += new System.EventHandler(this.saveTourAsToolStripMenuItem_Click);
             // 
             // publishTourMenuItem
             // 
             this.publishTourMenuItem.Name = "publishTourMenuItem";
-            this.publishTourMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.publishTourMenuItem.Size = new System.Drawing.Size(422, 32);
             this.publishTourMenuItem.Text = "Submit Tour for Publication...";
             this.publishTourMenuItem.Click += new System.EventHandler(this.publishTourMenuItem_Click);
             // 
             // renderToVideoToolStripMenuItem
             // 
             this.renderToVideoToolStripMenuItem.Name = "renderToVideoToolStripMenuItem";
-            this.renderToVideoToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.renderToVideoToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.renderToVideoToolStripMenuItem.Text = "Render to Video...";
             this.renderToVideoToolStripMenuItem.Click += new System.EventHandler(this.renderToVideoToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(299, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(419, 6);
             // 
             // autoRepeatToolStripMenuItem
             // 
@@ -4484,68 +3838,68 @@ namespace TerraViewer
             this.allToolStripMenuItem,
             this.offToolStripMenuItem});
             this.autoRepeatToolStripMenuItem.Name = "autoRepeatToolStripMenuItem";
-            this.autoRepeatToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.autoRepeatToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.autoRepeatToolStripMenuItem.Text = "Auto Repeat";
             // 
             // oneToolStripMenuItem
             // 
             this.oneToolStripMenuItem.Name = "oneToolStripMenuItem";
-            this.oneToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.oneToolStripMenuItem.Size = new System.Drawing.Size(147, 34);
             this.oneToolStripMenuItem.Text = "One";
             this.oneToolStripMenuItem.Click += new System.EventHandler(this.oneToolStripMenuItem_Click);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(147, 34);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.allToolStripMenuItem_Click);
             // 
             // offToolStripMenuItem
             // 
             this.offToolStripMenuItem.Name = "offToolStripMenuItem";
-            this.offToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.offToolStripMenuItem.Size = new System.Drawing.Size(147, 34);
             this.offToolStripMenuItem.Text = "Off";
             this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
             // 
             // editTourToolStripMenuItem
             // 
             this.editTourToolStripMenuItem.Name = "editTourToolStripMenuItem";
-            this.editTourToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.editTourToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.editTourToolStripMenuItem.Text = "Edit Tour";
             this.editTourToolStripMenuItem.Click += new System.EventHandler(this.editTourToolStripMenuItem_Click);
             // 
             // showOverlayListToolStripMenuItem
             // 
             this.showOverlayListToolStripMenuItem.Name = "showOverlayListToolStripMenuItem";
-            this.showOverlayListToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.showOverlayListToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.showOverlayListToolStripMenuItem.Text = "Show Overlay List";
             this.showOverlayListToolStripMenuItem.Click += new System.EventHandler(this.showOverlayListToolStripMenuItem_Click);
             // 
             // showKeyframerToolStripMenuItem
             // 
             this.showKeyframerToolStripMenuItem.Name = "showKeyframerToolStripMenuItem";
-            this.showKeyframerToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.showKeyframerToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.showKeyframerToolStripMenuItem.Text = "Show Timeline Editor";
             this.showKeyframerToolStripMenuItem.Click += new System.EventHandler(this.showKeyframerToolStripMenuItem_Click);
             // 
             // showSlideNumbersToolStripMenuItem
             // 
             this.showSlideNumbersToolStripMenuItem.Name = "showSlideNumbersToolStripMenuItem";
-            this.showSlideNumbersToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.showSlideNumbersToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.showSlideNumbersToolStripMenuItem.Text = "Show Slide Numbers";
             this.showSlideNumbersToolStripMenuItem.Click += new System.EventHandler(this.showSlideNumbersToolStripMenuItem_Click);
             // 
             // toolStripMenuItem12
             // 
             this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(299, 6);
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(419, 6);
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.undoToolStripMenuItem.Text = "&Undo:";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -4553,38 +3907,38 @@ namespace TerraViewer
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.redoToolStripMenuItem.Text = "Redo:";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripMenuItem13
             // 
             this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new System.Drawing.Size(299, 6);
+            this.toolStripMenuItem13.Size = new System.Drawing.Size(419, 6);
             // 
             // publishTourToCommunityToolStripMenuItem
             // 
             this.publishTourToCommunityToolStripMenuItem.Name = "publishTourToCommunityToolStripMenuItem";
-            this.publishTourToCommunityToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.publishTourToCommunityToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.publishTourToCommunityToolStripMenuItem.Text = "Publish Tour to Community...";
             this.publishTourToCommunityToolStripMenuItem.Click += new System.EventHandler(this.publishTourToCommunityToolStripMenuItem_Click);
             // 
             // toolStripSeparator23
             // 
             this.toolStripSeparator23.Name = "toolStripSeparator23";
-            this.toolStripSeparator23.Size = new System.Drawing.Size(299, 6);
+            this.toolStripSeparator23.Size = new System.Drawing.Size(419, 6);
             // 
             // sendTourToProjectorServersToolStripMenuItem
             // 
             this.sendTourToProjectorServersToolStripMenuItem.Name = "sendTourToProjectorServersToolStripMenuItem";
-            this.sendTourToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.sendTourToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.sendTourToProjectorServersToolStripMenuItem.Text = "Send Tour to Projector Servers";
             this.sendTourToProjectorServersToolStripMenuItem.Click += new System.EventHandler(this.sendTourToProjectorServersToolStripMenuItem_Click);
             // 
             // automaticTourSyncWithProjectorServersToolStripMenuItem
             // 
             this.automaticTourSyncWithProjectorServersToolStripMenuItem.Name = "automaticTourSyncWithProjectorServersToolStripMenuItem";
-            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(302, 22);
+            this.automaticTourSyncWithProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
             this.automaticTourSyncWithProjectorServersToolStripMenuItem.Text = "Automatic Tour Sync with Projector Servers";
             this.automaticTourSyncWithProjectorServersToolStripMenuItem.Click += new System.EventHandler(this.automaticTourSyncWithProjectorServersToolStripMenuItem_Click);
             // 
@@ -4604,7 +3958,7 @@ namespace TerraViewer
             this.toolStripSeparator13,
             this.ASCOMPlatformHomePage});
             this.telescopeMenu.Name = "contextMenuStrip1";
-            this.telescopeMenu.Size = new System.Drawing.Size(241, 198);
+            this.telescopeMenu.Size = new System.Drawing.Size(332, 278);
             this.telescopeMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.telescopeMenu.Opening += new System.ComponentModel.CancelEventHandler(this.telescopeMenu_Opening);
             this.telescopeMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4613,7 +3967,7 @@ namespace TerraViewer
             // 
             this.slewTelescopeMenuItem.MergeIndex = 0;
             this.slewTelescopeMenuItem.Name = "slewTelescopeMenuItem";
-            this.slewTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.slewTelescopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.slewTelescopeMenuItem.Text = "Slew To Object";
             this.slewTelescopeMenuItem.Click += new System.EventHandler(this.slewTelescopeMenuItem_Click);
             // 
@@ -4621,7 +3975,7 @@ namespace TerraViewer
             // 
             this.centerTelescopeMenuItem.MergeIndex = 1;
             this.centerTelescopeMenuItem.Name = "centerTelescopeMenuItem";
-            this.centerTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.centerTelescopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.centerTelescopeMenuItem.Text = "Center on Scope";
             this.centerTelescopeMenuItem.Click += new System.EventHandler(this.centerTelescopeMenuItem_Click);
             // 
@@ -4629,7 +3983,7 @@ namespace TerraViewer
             // 
             this.SyncTelescopeMenuItem.MergeIndex = 2;
             this.SyncTelescopeMenuItem.Name = "SyncTelescopeMenuItem";
-            this.SyncTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.SyncTelescopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.SyncTelescopeMenuItem.Text = "Sync Scope to Current Location";
             this.SyncTelescopeMenuItem.Click += new System.EventHandler(this.SyncTelescopeMenuItem_Click);
             // 
@@ -4637,13 +3991,13 @@ namespace TerraViewer
             // 
             this.toolStripSeparator3.MergeIndex = 3;
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(237, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(328, 6);
             // 
             // chooseTelescopeMenuItem
             // 
             this.chooseTelescopeMenuItem.MergeIndex = 4;
             this.chooseTelescopeMenuItem.Name = "chooseTelescopeMenuItem";
-            this.chooseTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.chooseTelescopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.chooseTelescopeMenuItem.Text = "Choose Telescope";
             this.chooseTelescopeMenuItem.Click += new System.EventHandler(this.chooseTelescopeMenuItem_Click);
             // 
@@ -4652,7 +4006,7 @@ namespace TerraViewer
             this.connectTelescopeMenuItem.AccessibleName = "";
             this.connectTelescopeMenuItem.MergeIndex = 5;
             this.connectTelescopeMenuItem.Name = "connectTelescopeMenuItem";
-            this.connectTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.connectTelescopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.connectTelescopeMenuItem.Text = "Connect";
             this.connectTelescopeMenuItem.Click += new System.EventHandler(this.connectTelescopeMenuItem_Click);
             // 
@@ -4660,7 +4014,7 @@ namespace TerraViewer
             // 
             this.trackScopeMenuItem.MergeIndex = 6;
             this.trackScopeMenuItem.Name = "trackScopeMenuItem";
-            this.trackScopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.trackScopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.trackScopeMenuItem.Text = "Track Telescope";
             this.trackScopeMenuItem.Click += new System.EventHandler(this.trackScopeMenuItem_Click);
             // 
@@ -4668,25 +4022,25 @@ namespace TerraViewer
             // 
             this.toolStripSeparator12.MergeIndex = 7;
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(237, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(328, 6);
             // 
             // parkTelescopeMenuItem
             // 
             this.parkTelescopeMenuItem.MergeIndex = 8;
             this.parkTelescopeMenuItem.Name = "parkTelescopeMenuItem";
-            this.parkTelescopeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.parkTelescopeMenuItem.Size = new System.Drawing.Size(331, 32);
             this.parkTelescopeMenuItem.Text = "Park";
             this.parkTelescopeMenuItem.Click += new System.EventHandler(this.parkTelescopeMenuItem_Click);
             // 
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(237, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(328, 6);
             // 
             // ASCOMPlatformHomePage
             // 
             this.ASCOMPlatformHomePage.Name = "ASCOMPlatformHomePage";
-            this.ASCOMPlatformHomePage.Size = new System.Drawing.Size(240, 22);
+            this.ASCOMPlatformHomePage.Size = new System.Drawing.Size(331, 32);
             this.ASCOMPlatformHomePage.Text = "ASCOM Platform";
             this.ASCOMPlatformHomePage.Click += new System.EventHandler(this.AscomPlatformMenuItem_Click);
             // 
@@ -4708,7 +4062,7 @@ namespace TerraViewer
             this.toolStripSeparator4,
             this.exitMenuItem});
             this.exploreMenu.Name = "contextMenuStrip1";
-            this.exploreMenu.Size = new System.Drawing.Size(254, 242);
+            this.exploreMenu.Size = new System.Drawing.Size(352, 375);
             this.exploreMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.exploreMenu.Opening += new System.ComponentModel.CancelEventHandler(this.exploreMenu_Opening);
             this.exploreMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4720,25 +4074,25 @@ namespace TerraViewer
             this.toolStripSeparator5,
             this.newSimpleTourMenuItem});
             this.createNewObservingListToolStripMenuItem.Name = "createNewObservingListToolStripMenuItem";
-            this.createNewObservingListToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.createNewObservingListToolStripMenuItem.Size = new System.Drawing.Size(351, 32);
             this.createNewObservingListToolStripMenuItem.Text = "New";
             // 
             // newObservingListpMenuItem
             // 
             this.newObservingListpMenuItem.Name = "newObservingListpMenuItem";
-            this.newObservingListpMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.newObservingListpMenuItem.Size = new System.Drawing.Size(257, 34);
             this.newObservingListpMenuItem.Text = "Collection...";
             this.newObservingListpMenuItem.Click += new System.EventHandler(this.newObservingListpMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(168, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(254, 6);
             // 
             // newSimpleTourMenuItem
             // 
             this.newSimpleTourMenuItem.Name = "newSimpleTourMenuItem";
-            this.newSimpleTourMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.newSimpleTourMenuItem.Size = new System.Drawing.Size(257, 34);
             this.newSimpleTourMenuItem.Text = "Slide-Based Tour...";
             this.newSimpleTourMenuItem.Click += new System.EventHandler(this.newSlideBasedTour);
             // 
@@ -4751,45 +4105,46 @@ namespace TerraViewer
             this.openImageMenuItem,
             this.openKMLMenuItem,
             this.vOTableToolStripMenuItem,
+            this.hIPSProgressiveSurveyToolStripMenuItem,
             this.shapeFileToolStripMenuItem,
             this.layerManagerToolStripMenuItem,
             this.customGalaxyFileToolStripMenuItem});
             this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(351, 32);
             this.openFileToolStripMenuItem.Text = "&Open";
             // 
             // openTourMenuItem
             // 
             this.openTourMenuItem.Name = "openTourMenuItem";
-            this.openTourMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openTourMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openTourMenuItem.Text = "Tour...";
             this.openTourMenuItem.Click += new System.EventHandler(this.openTourMenuItem_Click);
             // 
             // openObservingListMenuItem
             // 
             this.openObservingListMenuItem.Name = "openObservingListMenuItem";
-            this.openObservingListMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openObservingListMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openObservingListMenuItem.Text = "Collection...";
             this.openObservingListMenuItem.Click += new System.EventHandler(this.openObservingListMenuItem_Click);
             // 
             // layersToolStripMenuItem
             // 
             this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
-            this.layersToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.layersToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.layersToolStripMenuItem.Text = "Layers...";
             this.layersToolStripMenuItem.Click += new System.EventHandler(this.layersToolStripMenuItem_Click);
             // 
             // openImageMenuItem
             // 
             this.openImageMenuItem.Name = "openImageMenuItem";
-            this.openImageMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openImageMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openImageMenuItem.Text = "Astronomical Image...";
             this.openImageMenuItem.Click += new System.EventHandler(this.openImageMenuItem_Click);
             // 
             // openKMLMenuItem
             // 
             this.openKMLMenuItem.Name = "openKMLMenuItem";
-            this.openKMLMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openKMLMenuItem.Size = new System.Drawing.Size(310, 34);
             this.openKMLMenuItem.Text = "KML...";
             this.openKMLMenuItem.Visible = false;
             this.openKMLMenuItem.Click += new System.EventHandler(this.openKMLMenuItem_Click);
@@ -4797,14 +4152,14 @@ namespace TerraViewer
             // vOTableToolStripMenuItem
             // 
             this.vOTableToolStripMenuItem.Name = "vOTableToolStripMenuItem";
-            this.vOTableToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.vOTableToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.vOTableToolStripMenuItem.Text = "VO Table...";
             this.vOTableToolStripMenuItem.Click += new System.EventHandler(this.vOTableToolStripMenuItem_Click);
             // 
             // shapeFileToolStripMenuItem
             // 
             this.shapeFileToolStripMenuItem.Name = "shapeFileToolStripMenuItem";
-            this.shapeFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.shapeFileToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.shapeFileToolStripMenuItem.Text = "Shape File...";
             this.shapeFileToolStripMenuItem.Visible = false;
             this.shapeFileToolStripMenuItem.Click += new System.EventHandler(this.shapeFileToolStripMenuItem_Click);
@@ -4812,85 +4167,85 @@ namespace TerraViewer
             // layerManagerToolStripMenuItem
             // 
             this.layerManagerToolStripMenuItem.Name = "layerManagerToolStripMenuItem";
-            this.layerManagerToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.layerManagerToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.layerManagerToolStripMenuItem.Text = "Layer Manager";
             this.layerManagerToolStripMenuItem.Click += new System.EventHandler(this.layerManagerToolStripMenuItem_Click);
             // 
             // customGalaxyFileToolStripMenuItem
             // 
             this.customGalaxyFileToolStripMenuItem.Name = "customGalaxyFileToolStripMenuItem";
-            this.customGalaxyFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.customGalaxyFileToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
             this.customGalaxyFileToolStripMenuItem.Text = "Custom Galaxy File...";
             this.customGalaxyFileToolStripMenuItem.Click += new System.EventHandler(this.customGalaxyFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(250, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(348, 6);
             // 
             // showFinderToolStripMenuItem
             // 
             this.showFinderToolStripMenuItem.Name = "showFinderToolStripMenuItem";
-            this.showFinderToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.showFinderToolStripMenuItem.Size = new System.Drawing.Size(351, 32);
             this.showFinderToolStripMenuItem.Text = "Show Finder";
             this.showFinderToolStripMenuItem.Click += new System.EventHandler(this.showFinderToolStripMenuItem_Click);
             // 
             // playCollectionAsSlideShowToolStripMenuItem
             // 
             this.playCollectionAsSlideShowToolStripMenuItem.Name = "playCollectionAsSlideShowToolStripMenuItem";
-            this.playCollectionAsSlideShowToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.playCollectionAsSlideShowToolStripMenuItem.Size = new System.Drawing.Size(351, 32);
             this.playCollectionAsSlideShowToolStripMenuItem.Text = "Play Collection as Slide Show";
             this.playCollectionAsSlideShowToolStripMenuItem.Click += new System.EventHandler(this.playCollectionAsSlideShowToolStripMenuItem_Click);
             // 
             // addCollectionAsTourStopsToolStripMenuItem
             // 
             this.addCollectionAsTourStopsToolStripMenuItem.Name = "addCollectionAsTourStopsToolStripMenuItem";
-            this.addCollectionAsTourStopsToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.addCollectionAsTourStopsToolStripMenuItem.Size = new System.Drawing.Size(351, 32);
             this.addCollectionAsTourStopsToolStripMenuItem.Text = "Add Collection as Tour Stops";
             this.addCollectionAsTourStopsToolStripMenuItem.Click += new System.EventHandler(this.addCollectionAsTourStopsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(250, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(348, 6);
             // 
             // ShowWelcomeTips
             // 
             this.ShowWelcomeTips.Name = "ShowWelcomeTips";
-            this.ShowWelcomeTips.Size = new System.Drawing.Size(253, 22);
+            this.ShowWelcomeTips.Size = new System.Drawing.Size(351, 32);
             this.ShowWelcomeTips.Text = "Show Welcome Tips";
             this.ShowWelcomeTips.Click += new System.EventHandler(this.ShowWelcomeTips_Click);
             // 
             // aboutMenuItem
             // 
             this.aboutMenuItem.Name = "aboutMenuItem";
-            this.aboutMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.aboutMenuItem.Size = new System.Drawing.Size(351, 32);
             this.aboutMenuItem.Text = "About WorldWide Telescope";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // gettingStarteMenuItem
             // 
             this.gettingStarteMenuItem.Name = "gettingStarteMenuItem";
-            this.gettingStarteMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.gettingStarteMenuItem.Size = new System.Drawing.Size(351, 32);
             this.gettingStarteMenuItem.Text = "Getting Started (Help)";
             this.gettingStarteMenuItem.Click += new System.EventHandler(this.gettingStarteMenuItem_Click);
             // 
             // homepageMenuItem
             // 
             this.homepageMenuItem.Name = "homepageMenuItem";
-            this.homepageMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.homepageMenuItem.Size = new System.Drawing.Size(351, 32);
             this.homepageMenuItem.Text = "WorldWide Telescope Home Page";
             this.homepageMenuItem.Click += new System.EventHandler(this.homepageMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(250, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(348, 6);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(351, 32);
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -4912,7 +4267,7 @@ namespace TerraViewer
             this.selectLanguageToolStripMenuItem,
             this.regionalDataCacheToolStripMenuItem});
             this.settingsMenu.Name = "contextMenuStrip1";
-            this.settingsMenu.Size = new System.Drawing.Size(207, 226);
+            this.settingsMenu.Size = new System.Drawing.Size(280, 316);
             this.settingsMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.settingsMenu.Opening += new System.ComponentModel.CancelEventHandler(this.settingsMenu_Opening);
             this.settingsMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -4920,38 +4275,38 @@ namespace TerraViewer
             // checkForUpdatesToolStripMenuItem
             // 
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(203, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(276, 6);
             // 
             // feedbackToolStripMenuItem
             // 
             this.feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
-            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.feedbackToolStripMenuItem.Text = "Product Support...";
             this.feedbackToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click);
             // 
             // toolStripSeparator17
             // 
             this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(203, 6);
+            this.toolStripSeparator17.Size = new System.Drawing.Size(276, 6);
             // 
             // restoreDefaultsToolStripMenuItem
             // 
             this.restoreDefaultsToolStripMenuItem.Name = "restoreDefaultsToolStripMenuItem";
-            this.restoreDefaultsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.restoreDefaultsToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.restoreDefaultsToolStripMenuItem.Text = "Restore Defaults";
             this.restoreDefaultsToolStripMenuItem.Click += new System.EventHandler(this.restoreDefaultsToolStripMenuItem_Click);
             // 
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(203, 6);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(276, 6);
             // 
             // advancedToolStripMenuItem
             // 
@@ -4959,6 +4314,7 @@ namespace TerraViewer
             this.downloadQueueToolStripMenuItem,
             this.startQueueToolStripMenuItem,
             this.stopQueueToolStripMenuItem,
+            this.showTileEdgesToolStripMenuItem,
             this.tileLoadingThrottlingToolStripMenuItem,
             this.toolStripMenuItem8,
             this.DownloadMPC,
@@ -4976,30 +4332,37 @@ namespace TerraViewer
             this.toolStripMenuItem6,
             this.sendLayersToProjectorServersToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.advancedToolStripMenuItem.Text = "Advanced";
             this.advancedToolStripMenuItem.DropDownOpening += new System.EventHandler(this.advancedToolStripMenuItem_DropDownOpening);
             // 
             // downloadQueueToolStripMenuItem
             // 
             this.downloadQueueToolStripMenuItem.Name = "downloadQueueToolStripMenuItem";
-            this.downloadQueueToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.downloadQueueToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.downloadQueueToolStripMenuItem.Text = "Show Download Queue";
             this.downloadQueueToolStripMenuItem.Click += new System.EventHandler(this.showQueue_Click);
             // 
             // startQueueToolStripMenuItem
             // 
             this.startQueueToolStripMenuItem.Name = "startQueueToolStripMenuItem";
-            this.startQueueToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.startQueueToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.startQueueToolStripMenuItem.Text = "Start Queue";
             this.startQueueToolStripMenuItem.Click += new System.EventHandler(this.startQueue_Click);
             // 
             // stopQueueToolStripMenuItem
             // 
             this.stopQueueToolStripMenuItem.Name = "stopQueueToolStripMenuItem";
-            this.stopQueueToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.stopQueueToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.stopQueueToolStripMenuItem.Text = "Stop Queue";
             this.stopQueueToolStripMenuItem.Click += new System.EventHandler(this.stopQueue_Click);
+            // 
+            // showTileEdgesToolStripMenuItem
+            // 
+            this.showTileEdgesToolStripMenuItem.Name = "showTileEdgesToolStripMenuItem";
+            this.showTileEdgesToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
+            this.showTileEdgesToolStripMenuItem.Text = "Show Tile Edges";
+            this.showTileEdgesToolStripMenuItem.Click += new System.EventHandler(this.showTileEdgesToolStripMenuItem_Click);
             // 
             // tileLoadingThrottlingToolStripMenuItem
             // 
@@ -5010,177 +4373,177 @@ namespace TerraViewer
             this.tpsToolStripMenuItem120,
             this.tpsToolStripMenuItemUnlimited});
             this.tileLoadingThrottlingToolStripMenuItem.Name = "tileLoadingThrottlingToolStripMenuItem";
-            this.tileLoadingThrottlingToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.tileLoadingThrottlingToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.tileLoadingThrottlingToolStripMenuItem.Text = "Tile Loading Throttling";
             this.tileLoadingThrottlingToolStripMenuItem.DropDownOpening += new System.EventHandler(this.tileLoadingThrottlingToolStripMenuItem_DropDownOpening);
             // 
             // tpsToolStripMenuItem15
             // 
             this.tpsToolStripMenuItem15.Name = "tpsToolStripMenuItem15";
-            this.tpsToolStripMenuItem15.Size = new System.Drawing.Size(126, 22);
+            this.tpsToolStripMenuItem15.Size = new System.Drawing.Size(190, 34);
             this.tpsToolStripMenuItem15.Text = "15 tps";
             this.tpsToolStripMenuItem15.Click += new System.EventHandler(this.tpsToolStripMenuItem15_Click);
             // 
             // tpsToolStripMenuItem30
             // 
             this.tpsToolStripMenuItem30.Name = "tpsToolStripMenuItem30";
-            this.tpsToolStripMenuItem30.Size = new System.Drawing.Size(126, 22);
+            this.tpsToolStripMenuItem30.Size = new System.Drawing.Size(190, 34);
             this.tpsToolStripMenuItem30.Text = "30 tps";
             this.tpsToolStripMenuItem30.Click += new System.EventHandler(this.tpsToolStripMenuItem30_Click);
             // 
             // tpsToolStripMenuItem60
             // 
             this.tpsToolStripMenuItem60.Name = "tpsToolStripMenuItem60";
-            this.tpsToolStripMenuItem60.Size = new System.Drawing.Size(126, 22);
+            this.tpsToolStripMenuItem60.Size = new System.Drawing.Size(190, 34);
             this.tpsToolStripMenuItem60.Text = "60 tps";
             this.tpsToolStripMenuItem60.Click += new System.EventHandler(this.tpsToolStripMenuItem60_Click);
             // 
             // tpsToolStripMenuItem120
             // 
             this.tpsToolStripMenuItem120.Name = "tpsToolStripMenuItem120";
-            this.tpsToolStripMenuItem120.Size = new System.Drawing.Size(126, 22);
+            this.tpsToolStripMenuItem120.Size = new System.Drawing.Size(190, 34);
             this.tpsToolStripMenuItem120.Text = "120 tps";
             this.tpsToolStripMenuItem120.Click += new System.EventHandler(this.tpsToolStripMenuItem120_Click);
             // 
             // tpsToolStripMenuItemUnlimited
             // 
             this.tpsToolStripMenuItemUnlimited.Name = "tpsToolStripMenuItemUnlimited";
-            this.tpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(126, 22);
+            this.tpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(190, 34);
             this.tpsToolStripMenuItemUnlimited.Text = "Unlimited";
             this.tpsToolStripMenuItemUnlimited.Click += new System.EventHandler(this.tpsToolStripMenuItemUnlimited_Click);
             // 
             // toolStripMenuItem8
             // 
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(288, 6);
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(436, 6);
             // 
             // DownloadMPC
             // 
             this.DownloadMPC.Name = "DownloadMPC";
-            this.DownloadMPC.Size = new System.Drawing.Size(291, 22);
+            this.DownloadMPC.Size = new System.Drawing.Size(439, 34);
             this.DownloadMPC.Text = "Download New Minor Planet Center Data";
             this.DownloadMPC.Click += new System.EventHandler(this.DownloadMPC_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(288, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(436, 6);
             // 
             // saveCacheAsCabinetFileToolStripMenuItem
             // 
             this.saveCacheAsCabinetFileToolStripMenuItem.Name = "saveCacheAsCabinetFileToolStripMenuItem";
-            this.saveCacheAsCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.saveCacheAsCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.saveCacheAsCabinetFileToolStripMenuItem.Text = "Save Cache as Cabinet File...";
             this.saveCacheAsCabinetFileToolStripMenuItem.Click += new System.EventHandler(this.saveCacheAsCabinetFileToolStripMenuItem_Click);
             // 
             // restoreCacheFromCabinetFileToolStripMenuItem
             // 
             this.restoreCacheFromCabinetFileToolStripMenuItem.Name = "restoreCacheFromCabinetFileToolStripMenuItem";
-            this.restoreCacheFromCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.restoreCacheFromCabinetFileToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.restoreCacheFromCabinetFileToolStripMenuItem.Text = "Restore Cache from Cabinet File...";
             this.restoreCacheFromCabinetFileToolStripMenuItem.Click += new System.EventHandler(this.restoreCacheFromCabinetFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator22
             // 
             this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new System.Drawing.Size(288, 6);
+            this.toolStripSeparator22.Size = new System.Drawing.Size(436, 6);
             // 
             // flushCacheToolStripMenuItem
             // 
             this.flushCacheToolStripMenuItem.Name = "flushCacheToolStripMenuItem";
-            this.flushCacheToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.flushCacheToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.flushCacheToolStripMenuItem.Text = "Flush Cache";
             this.flushCacheToolStripMenuItem.Click += new System.EventHandler(this.helpFlush_Click);
             // 
             // toolStripSeparator18
             // 
             this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new System.Drawing.Size(288, 6);
+            this.toolStripSeparator18.Size = new System.Drawing.Size(436, 6);
             // 
             // showPerformanceDataToolStripMenuItem
             // 
             this.showPerformanceDataToolStripMenuItem.CheckOnClick = true;
             this.showPerformanceDataToolStripMenuItem.Name = "showPerformanceDataToolStripMenuItem";
-            this.showPerformanceDataToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.showPerformanceDataToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.showPerformanceDataToolStripMenuItem.Text = "Show Performance Data";
             this.showPerformanceDataToolStripMenuItem.Click += new System.EventHandler(this.showPerformanceDataToolStripMenuItem_Click);
             // 
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(288, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(436, 6);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.MergeIndex = 1;
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(291, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(439, 34);
             this.toolStripMenuItem2.Text = "Master Controller";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.menuMasterControler_Click);
             // 
             // multiChanelCalibrationToolStripMenuItem
             // 
             this.multiChanelCalibrationToolStripMenuItem.Name = "multiChanelCalibrationToolStripMenuItem";
-            this.multiChanelCalibrationToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.multiChanelCalibrationToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.multiChanelCalibrationToolStripMenuItem.Text = "Multi-Channel Calibration";
             this.multiChanelCalibrationToolStripMenuItem.Click += new System.EventHandler(this.multiChanelCalibrationToolStripMenuItem_Click);
             // 
             // clientNodeListToolStripMenuItem
             // 
             this.clientNodeListToolStripMenuItem.Name = "clientNodeListToolStripMenuItem";
-            this.clientNodeListToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.clientNodeListToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.clientNodeListToolStripMenuItem.Text = "Projector Server List";
             this.clientNodeListToolStripMenuItem.Click += new System.EventHandler(this.clientNodeListToolStripMenuItem_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(288, 6);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(436, 6);
             // 
             // sendLayersToProjectorServersToolStripMenuItem
             // 
             this.sendLayersToProjectorServersToolStripMenuItem.Name = "sendLayersToProjectorServersToolStripMenuItem";
-            this.sendLayersToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.sendLayersToProjectorServersToolStripMenuItem.Size = new System.Drawing.Size(439, 34);
             this.sendLayersToProjectorServersToolStripMenuItem.Text = "Send Layers to Projector Servers";
             this.sendLayersToProjectorServersToolStripMenuItem.Click += new System.EventHandler(this.sendLayersToProjectorServersToolStripMenuItem_Click);
             // 
             // mIDIControllerSetupToolStripMenuItem
             // 
             this.mIDIControllerSetupToolStripMenuItem.Name = "mIDIControllerSetupToolStripMenuItem";
-            this.mIDIControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.mIDIControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.mIDIControllerSetupToolStripMenuItem.Text = "Controller Setup...";
             this.mIDIControllerSetupToolStripMenuItem.Click += new System.EventHandler(this.mIDIControllerSetupToolStripMenuItem_Click);
             // 
             // xBoxControllerSetupToolStripMenuItem
             // 
             this.xBoxControllerSetupToolStripMenuItem.Name = "xBoxControllerSetupToolStripMenuItem";
-            this.xBoxControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.xBoxControllerSetupToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.xBoxControllerSetupToolStripMenuItem.Text = "Xbox Controller Setup...";
             this.xBoxControllerSetupToolStripMenuItem.Click += new System.EventHandler(this.xBoxControllerSetupToolStripMenuItem_Click);
             // 
             // remoteAccessControlToolStripMenuItem
             // 
             this.remoteAccessControlToolStripMenuItem.Name = "remoteAccessControlToolStripMenuItem";
-            this.remoteAccessControlToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.remoteAccessControlToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.remoteAccessControlToolStripMenuItem.Text = "Remote Access Control...";
             this.remoteAccessControlToolStripMenuItem.Click += new System.EventHandler(this.remoteAccessControlToolStripMenuItem_Click);
             // 
             // toolStripMenuItem14
             // 
             this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-            this.toolStripMenuItem14.Size = new System.Drawing.Size(203, 6);
+            this.toolStripMenuItem14.Size = new System.Drawing.Size(276, 6);
             // 
             // selectLanguageToolStripMenuItem
             // 
             this.selectLanguageToolStripMenuItem.Name = "selectLanguageToolStripMenuItem";
-            this.selectLanguageToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.selectLanguageToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.selectLanguageToolStripMenuItem.Text = "Select Language...";
             this.selectLanguageToolStripMenuItem.Click += new System.EventHandler(this.selectLanguageToolStripMenuItem_Click);
             // 
             // regionalDataCacheToolStripMenuItem
             // 
             this.regionalDataCacheToolStripMenuItem.Name = "regionalDataCacheToolStripMenuItem";
-            this.regionalDataCacheToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.regionalDataCacheToolStripMenuItem.Size = new System.Drawing.Size(279, 32);
             this.regionalDataCacheToolStripMenuItem.Text = "Regional Data Cache...";
             this.regionalDataCacheToolStripMenuItem.Click += new System.EventHandler(this.regionalDataCacheToolStripMenuItem_Click);
             // 
@@ -5216,7 +4579,7 @@ namespace TerraViewer
             this.lockVerticalSyncToolStripMenuItem,
             this.targetFrameRateToolStripMenuItem});
             this.viewMenu.Name = "contextMenuStrip1";
-            this.viewMenu.Size = new System.Drawing.Size(341, 540);
+            this.viewMenu.Size = new System.Drawing.Size(488, 738);
             this.viewMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.PopupClosed);
             this.viewMenu.Opening += new System.ComponentModel.CancelEventHandler(this.viewMenu_Opening);
             this.viewMenu.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.exploreMenu_PreviewKeyDown);
@@ -5224,35 +4587,35 @@ namespace TerraViewer
             // resetCameraMenuItem
             // 
             this.resetCameraMenuItem.Name = "resetCameraMenuItem";
-            this.resetCameraMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.resetCameraMenuItem.Size = new System.Drawing.Size(487, 32);
             this.resetCameraMenuItem.Text = "Reset Camera";
             this.resetCameraMenuItem.Click += new System.EventHandler(this.resetCameraToolStripMenuItem_Click);
             // 
             // showTouchControlsToolStripMenuItem
             // 
             this.showTouchControlsToolStripMenuItem.Name = "showTouchControlsToolStripMenuItem";
-            this.showTouchControlsToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.showTouchControlsToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.showTouchControlsToolStripMenuItem.Text = "Show On-Screen Controls";
             this.showTouchControlsToolStripMenuItem.Click += new System.EventHandler(this.showTouchControlsToolStripMenuItem_Click);
             // 
             // monochromeStyleToolStripMenuItem
             // 
             this.monochromeStyleToolStripMenuItem.Name = "monochromeStyleToolStripMenuItem";
-            this.monochromeStyleToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.monochromeStyleToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.monochromeStyleToolStripMenuItem.Text = "Monochrome Style";
             this.monochromeStyleToolStripMenuItem.Click += new System.EventHandler(this.monochromeStyleToolStripMenuItem_Click);
             // 
             // allowUnconstrainedTiltToolStripMenuItem
             // 
             this.allowUnconstrainedTiltToolStripMenuItem.Name = "allowUnconstrainedTiltToolStripMenuItem";
-            this.allowUnconstrainedTiltToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.allowUnconstrainedTiltToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.allowUnconstrainedTiltToolStripMenuItem.Text = "Allow Unconstrained Tilt";
             this.allowUnconstrainedTiltToolStripMenuItem.Click += new System.EventHandler(this.allowUnconstrainedTiltToolStripMenuItem_Click);
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(337, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(484, 6);
             // 
             // startupToolStripMenuItem
             // 
@@ -5265,142 +4628,149 @@ namespace TerraViewer
             this.lastToolStripMenuItem,
             this.randomToolStripMenuItem});
             this.startupToolStripMenuItem.Name = "startupToolStripMenuItem";
-            this.startupToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.startupToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.startupToolStripMenuItem.Text = "Startup Look At";
             this.startupToolStripMenuItem.DropDownOpening += new System.EventHandler(this.startupToolStripMenuItem_DropDownOpening);
             // 
             // earthToolStripMenuItem
             // 
             this.earthToolStripMenuItem.Name = "earthToolStripMenuItem";
-            this.earthToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.earthToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.earthToolStripMenuItem.Text = "Earth";
             this.earthToolStripMenuItem.Click += new System.EventHandler(this.earthToolStripMenuItem_Click);
             // 
             // planetToolStripMenuItem
             // 
             this.planetToolStripMenuItem.Name = "planetToolStripMenuItem";
-            this.planetToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.planetToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.planetToolStripMenuItem.Text = "Planet";
             this.planetToolStripMenuItem.Click += new System.EventHandler(this.planetToolStripMenuItem_Click);
             // 
             // skyToolStripMenuItem
             // 
             this.skyToolStripMenuItem.Name = "skyToolStripMenuItem";
-            this.skyToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.skyToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.skyToolStripMenuItem.Text = "Sky";
             this.skyToolStripMenuItem.Click += new System.EventHandler(this.skyToolStripMenuItem_Click);
             // 
             // panoramaToolStripMenuItem
             // 
             this.panoramaToolStripMenuItem.Name = "panoramaToolStripMenuItem";
-            this.panoramaToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.panoramaToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.panoramaToolStripMenuItem.Text = "Panorama";
             this.panoramaToolStripMenuItem.Click += new System.EventHandler(this.panoramaToolStripMenuItem_Click);
             // 
             // solarSystemToolStripMenuItem
             // 
             this.solarSystemToolStripMenuItem.Name = "solarSystemToolStripMenuItem";
-            this.solarSystemToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.solarSystemToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.solarSystemToolStripMenuItem.Text = "Solar System";
             this.solarSystemToolStripMenuItem.Click += new System.EventHandler(this.solarSystemToolStripMenuItem_Click);
             // 
             // lastToolStripMenuItem
             // 
             this.lastToolStripMenuItem.Name = "lastToolStripMenuItem";
-            this.lastToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.lastToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.lastToolStripMenuItem.Text = "Last";
             this.lastToolStripMenuItem.Click += new System.EventHandler(this.lastToolStripMenuItem_Click);
             // 
             // randomToolStripMenuItem
             // 
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(216, 34);
             this.randomToolStripMenuItem.Text = "Random";
             this.randomToolStripMenuItem.Click += new System.EventHandler(this.randomToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(337, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(484, 6);
             // 
             // copyCurrentViewToClipboardToolStripMenuItem
             // 
             this.copyCurrentViewToClipboardToolStripMenuItem.Name = "copyCurrentViewToClipboardToolStripMenuItem";
-            this.copyCurrentViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.copyCurrentViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.copyCurrentViewToClipboardToolStripMenuItem.Text = "Copy Current View Image";
             this.copyCurrentViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyCurrentViewToClipboardToolStripMenuItem_Click);
             // 
             // copyShortCutToThisViewToClipboardToolStripMenuItem
             // 
             this.copyShortCutToThisViewToClipboardToolStripMenuItem.Name = "copyShortCutToThisViewToClipboardToolStripMenuItem";
-            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.copyShortCutToThisViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.copyShortCutToThisViewToClipboardToolStripMenuItem.Text = "Copy Shortcut to this View";
             this.copyShortCutToThisViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyShortcutMenuItem_Click);
             // 
             // saveCurrentViewImageToFileToolStripMenuItem
             // 
             this.saveCurrentViewImageToFileToolStripMenuItem.Name = "saveCurrentViewImageToFileToolStripMenuItem";
-            this.saveCurrentViewImageToFileToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.saveCurrentViewImageToFileToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.saveCurrentViewImageToFileToolStripMenuItem.Text = "Save Current View Image to File...";
             this.saveCurrentViewImageToFileToolStripMenuItem.Click += new System.EventHandler(this.saveCurrentViewImageToFileToolStripMenuItem_Click);
             // 
             // setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem
             // 
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Name = "setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem";
-            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Text = "Set Current View as Windows Desktop Background";
             this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem.Click += new System.EventHandler(this.setCurrentViewAsWindowsDesktopBackgroundToolStripMenuItem_Click);
             // 
             // exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem
             // 
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Name = "exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem";
-            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Text = "Export Current View as STL File for 3D Printing...";
             this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Click += new System.EventHandler(this.exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem_Click);
+            // 
+            // enableExport3dCitiesModeToolStripMenuItem
+            // 
+            this.enableExport3dCitiesModeToolStripMenuItem.Name = "enableExport3dCitiesModeToolStripMenuItem";
+            this.enableExport3dCitiesModeToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
+            this.enableExport3dCitiesModeToolStripMenuItem.Text = "Enable Export 3d Cities Mode";
+            this.enableExport3dCitiesModeToolStripMenuItem.Click += new System.EventHandler(this.enableExport3dCitiesModeToolStripMenuItem_Click);
             // 
             // exportCurrentCitiesViewAs3DMeshToolStripMenuItem
             // 
             this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Name = "exportCurrentCitiesViewAs3DMeshToolStripMenuItem";
-            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Text = "Export Current Cities View as 3D Mesh...";
             this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem.Click += new System.EventHandler(this.exportCurrentCitiesViewAs3DMeshToolStripMenuItem_Click);
             // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(337, 6);
+            this.toolStripSeparator21.Size = new System.Drawing.Size(484, 6);
             // 
             // screenBroadcastToolStripMenuItem
             // 
             this.screenBroadcastToolStripMenuItem.Name = "screenBroadcastToolStripMenuItem";
-            this.screenBroadcastToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.screenBroadcastToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.screenBroadcastToolStripMenuItem.Text = "Screen Broadcast...";
             this.screenBroadcastToolStripMenuItem.Click += new System.EventHandler(this.screenBroadcastToolStripMenuItem_Click);
             // 
             // toolStripSeparator14
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(337, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(484, 6);
             this.toolStripSeparator14.Visible = false;
             // 
             // imageStackToolStripMenuItem
             // 
             this.imageStackToolStripMenuItem.Name = "imageStackToolStripMenuItem";
-            this.imageStackToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.imageStackToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.imageStackToolStripMenuItem.Text = "Image Stack";
             this.imageStackToolStripMenuItem.Click += new System.EventHandler(this.imageStackToolStripMenuItem_Click);
             // 
             // showLayerManagerToolStripMenuItem
             // 
             this.showLayerManagerToolStripMenuItem.Name = "showLayerManagerToolStripMenuItem";
-            this.showLayerManagerToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.showLayerManagerToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.showLayerManagerToolStripMenuItem.Text = "Show Layer Manager";
             this.showLayerManagerToolStripMenuItem.Click += new System.EventHandler(this.showLayerManagerToolStripMenuItem_Click);
             // 
             // toolStripSeparator20
             // 
             this.toolStripSeparator20.Name = "toolStripSeparator20";
-            this.toolStripSeparator20.Size = new System.Drawing.Size(337, 6);
+            this.toolStripSeparator20.Size = new System.Drawing.Size(484, 6);
             // 
             // stereoToolStripMenuItem
             // 
@@ -5414,63 +4784,63 @@ namespace TerraViewer
             this.alternatingLinesEvenToolStripMenuItem,
             this.oculusRiftToolStripMenuItem});
             this.stereoToolStripMenuItem.Name = "stereoToolStripMenuItem";
-            this.stereoToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.stereoToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.stereoToolStripMenuItem.Text = "Stereo";
             this.stereoToolStripMenuItem.DropDownOpening += new System.EventHandler(this.stereoToolStripMenuItem_DropDownOpening);
             // 
             // enabledToolStripMenuItem
             // 
             this.enabledToolStripMenuItem.Name = "enabledToolStripMenuItem";
-            this.enabledToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.enabledToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.enabledToolStripMenuItem.Text = "Disabled";
             this.enabledToolStripMenuItem.Click += new System.EventHandler(this.enabledToolStripMenuItem_Click);
             // 
             // anaglyphToolStripMenuItem
             // 
             this.anaglyphToolStripMenuItem.Name = "anaglyphToolStripMenuItem";
-            this.anaglyphToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.anaglyphToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.anaglyphToolStripMenuItem.Text = "Anaglyph (Red-Cyan)";
             this.anaglyphToolStripMenuItem.Click += new System.EventHandler(this.anaglyphToolStripMenuItem_Click);
             // 
             // anaglyphYellowBlueToolStripMenuItem
             // 
             this.anaglyphYellowBlueToolStripMenuItem.Name = "anaglyphYellowBlueToolStripMenuItem";
-            this.anaglyphYellowBlueToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.anaglyphYellowBlueToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.anaglyphYellowBlueToolStripMenuItem.Text = "Anaglyph (Yellow-Blue)";
             this.anaglyphYellowBlueToolStripMenuItem.Click += new System.EventHandler(this.anaglyphYellowBlueToolStripMenuItem_Click);
             // 
             // sideBySideProjectionToolStripMenuItem
             // 
             this.sideBySideProjectionToolStripMenuItem.Name = "sideBySideProjectionToolStripMenuItem";
-            this.sideBySideProjectionToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.sideBySideProjectionToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.sideBySideProjectionToolStripMenuItem.Text = "Side by Side Projection";
             this.sideBySideProjectionToolStripMenuItem.Click += new System.EventHandler(this.sideBySideProjectionToolStripMenuItem_Click);
             // 
             // sideBySideCrossEyedToolStripMenuItem
             // 
             this.sideBySideCrossEyedToolStripMenuItem.Name = "sideBySideCrossEyedToolStripMenuItem";
-            this.sideBySideCrossEyedToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.sideBySideCrossEyedToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.sideBySideCrossEyedToolStripMenuItem.Text = "Side by Side Cross-Eyed";
             this.sideBySideCrossEyedToolStripMenuItem.Click += new System.EventHandler(this.sideBySideCrossEyedToolStripMenuItem_Click);
             // 
             // alternatingLinesOddToolStripMenuItem
             // 
             this.alternatingLinesOddToolStripMenuItem.Name = "alternatingLinesOddToolStripMenuItem";
-            this.alternatingLinesOddToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.alternatingLinesOddToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.alternatingLinesOddToolStripMenuItem.Text = "Alternating Lines Odd";
             this.alternatingLinesOddToolStripMenuItem.Click += new System.EventHandler(this.alternatingLinesOddToolStripMenuItem_Click);
             // 
             // alternatingLinesEvenToolStripMenuItem
             // 
             this.alternatingLinesEvenToolStripMenuItem.Name = "alternatingLinesEvenToolStripMenuItem";
-            this.alternatingLinesEvenToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.alternatingLinesEvenToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.alternatingLinesEvenToolStripMenuItem.Text = "Alternating Lines Even";
             this.alternatingLinesEvenToolStripMenuItem.Click += new System.EventHandler(this.alternatingLinesEvenToolStripMenuItem_Click);
             // 
             // oculusRiftToolStripMenuItem
             // 
             this.oculusRiftToolStripMenuItem.Name = "oculusRiftToolStripMenuItem";
-            this.oculusRiftToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.oculusRiftToolStripMenuItem.Size = new System.Drawing.Size(306, 34);
             this.oculusRiftToolStripMenuItem.Text = "Oculus Rift";
             this.oculusRiftToolStripMenuItem.Click += new System.EventHandler(this.oculusRiftToolStripMenuItem_Click);
             // 
@@ -5480,21 +4850,21 @@ namespace TerraViewer
             this.monoModeToolStripMenuItem,
             this.startInOculusModeToolStripMenuItem});
             this.oculusVRHeadsetToolStripMenuItem.Name = "oculusVRHeadsetToolStripMenuItem";
-            this.oculusVRHeadsetToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.oculusVRHeadsetToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.oculusVRHeadsetToolStripMenuItem.Text = "Oculus VR Headset";
             this.oculusVRHeadsetToolStripMenuItem.DropDownOpening += new System.EventHandler(this.oculusVRHeadsetToolStripMenuItem_DropDownOpening);
             // 
             // monoModeToolStripMenuItem
             // 
             this.monoModeToolStripMenuItem.Name = "monoModeToolStripMenuItem";
-            this.monoModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.monoModeToolStripMenuItem.Size = new System.Drawing.Size(280, 34);
             this.monoModeToolStripMenuItem.Text = "Mono Mode";
             this.monoModeToolStripMenuItem.Click += new System.EventHandler(this.monoModeToolStripMenuItem_Click);
             // 
             // startInOculusModeToolStripMenuItem
             // 
             this.startInOculusModeToolStripMenuItem.Name = "startInOculusModeToolStripMenuItem";
-            this.startInOculusModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.startInOculusModeToolStripMenuItem.Size = new System.Drawing.Size(280, 34);
             this.startInOculusModeToolStripMenuItem.Text = "Start in Oculus Mode";
             this.startInOculusModeToolStripMenuItem.Click += new System.EventHandler(this.startInOculusModeToolStripMenuItem_Click);
             // 
@@ -5512,13 +4882,13 @@ namespace TerraViewer
             this.toolStripMenuItem10,
             this.fullDomePreviewToolStripMenuItem});
             this.expermentalToolStripMenuItem.Name = "expermentalToolStripMenuItem";
-            this.expermentalToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.expermentalToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.expermentalToolStripMenuItem.Text = "Single Channel Full Dome";
             // 
             // fullDomeToolStripMenuItem
             // 
             this.fullDomeToolStripMenuItem.Name = "fullDomeToolStripMenuItem";
-            this.fullDomeToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.fullDomeToolStripMenuItem.Size = new System.Drawing.Size(410, 34);
             this.fullDomeToolStripMenuItem.Text = "Dome View";
             this.fullDomeToolStripMenuItem.Click += new System.EventHandler(this.fullDomeToolStripMenuItem_Click);
             // 
@@ -5534,14 +4904,14 @@ namespace TerraViewer
             this.monitorSevenToolStripMenuItem,
             this.monitorEightToolStripMenuItem});
             this.newFullDomeViewInstanceToolStripMenuItem.Name = "newFullDomeViewInstanceToolStripMenuItem";
-            this.newFullDomeViewInstanceToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.newFullDomeViewInstanceToolStripMenuItem.Size = new System.Drawing.Size(410, 34);
             this.newFullDomeViewInstanceToolStripMenuItem.Text = "New Full Dome View Instance";
             this.newFullDomeViewInstanceToolStripMenuItem.DropDownOpening += new System.EventHandler(this.newFullDomeViewInstanceToolStripMenuItem_DropDownOpening);
             // 
             // monitorOneToolStripMenuItem
             // 
             this.monitorOneToolStripMenuItem.Name = "monitorOneToolStripMenuItem";
-            this.monitorOneToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorOneToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorOneToolStripMenuItem.Tag = "1";
             this.monitorOneToolStripMenuItem.Text = "Monitor One";
             this.monitorOneToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5549,7 +4919,7 @@ namespace TerraViewer
             // monitorTwoToolStripMenuItem
             // 
             this.monitorTwoToolStripMenuItem.Name = "monitorTwoToolStripMenuItem";
-            this.monitorTwoToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorTwoToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorTwoToolStripMenuItem.Tag = "2";
             this.monitorTwoToolStripMenuItem.Text = "Monitor Two";
             this.monitorTwoToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5557,7 +4927,7 @@ namespace TerraViewer
             // monitorThreeToolStripMenuItem
             // 
             this.monitorThreeToolStripMenuItem.Name = "monitorThreeToolStripMenuItem";
-            this.monitorThreeToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorThreeToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorThreeToolStripMenuItem.Tag = "3";
             this.monitorThreeToolStripMenuItem.Text = "Monitor Three";
             this.monitorThreeToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5565,7 +4935,7 @@ namespace TerraViewer
             // monitorFourToolStripMenuItem
             // 
             this.monitorFourToolStripMenuItem.Name = "monitorFourToolStripMenuItem";
-            this.monitorFourToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorFourToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorFourToolStripMenuItem.Tag = "4";
             this.monitorFourToolStripMenuItem.Text = "Monitor Four";
             this.monitorFourToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5573,7 +4943,7 @@ namespace TerraViewer
             // monitorFiveToolStripMenuItem
             // 
             this.monitorFiveToolStripMenuItem.Name = "monitorFiveToolStripMenuItem";
-            this.monitorFiveToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorFiveToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorFiveToolStripMenuItem.Tag = "5";
             this.monitorFiveToolStripMenuItem.Text = "Monitor Five";
             this.monitorFiveToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5581,7 +4951,7 @@ namespace TerraViewer
             // monitorSixToolStripMenuItem
             // 
             this.monitorSixToolStripMenuItem.Name = "monitorSixToolStripMenuItem";
-            this.monitorSixToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorSixToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorSixToolStripMenuItem.Tag = "6";
             this.monitorSixToolStripMenuItem.Text = "Monitor Six";
             this.monitorSixToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5589,7 +4959,7 @@ namespace TerraViewer
             // monitorSevenToolStripMenuItem
             // 
             this.monitorSevenToolStripMenuItem.Name = "monitorSevenToolStripMenuItem";
-            this.monitorSevenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorSevenToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorSevenToolStripMenuItem.Tag = "7";
             this.monitorSevenToolStripMenuItem.Text = "Monitor Seven";
             this.monitorSevenToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5597,7 +4967,7 @@ namespace TerraViewer
             // monitorEightToolStripMenuItem
             // 
             this.monitorEightToolStripMenuItem.Name = "monitorEightToolStripMenuItem";
-            this.monitorEightToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.monitorEightToolStripMenuItem.Size = new System.Drawing.Size(230, 34);
             this.monitorEightToolStripMenuItem.Tag = "8";
             this.monitorEightToolStripMenuItem.Text = "Monitor Eight";
             this.monitorEightToolStripMenuItem.Click += new System.EventHandler(this.CreateDomeInstanceToolStripMenuItem_Click);
@@ -5605,50 +4975,50 @@ namespace TerraViewer
             // toolStripMenuItem15
             // 
             this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-            this.toolStripMenuItem15.Size = new System.Drawing.Size(268, 6);
+            this.toolStripMenuItem15.Size = new System.Drawing.Size(407, 6);
             // 
             // domeSetupToolStripMenuItem
             // 
             this.domeSetupToolStripMenuItem.Name = "domeSetupToolStripMenuItem";
-            this.domeSetupToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.domeSetupToolStripMenuItem.Size = new System.Drawing.Size(410, 34);
             this.domeSetupToolStripMenuItem.Text = "Dome Setup";
             this.domeSetupToolStripMenuItem.Click += new System.EventHandler(this.domeSetupToolStripMenuItem_Click);
             // 
             // listenUpBoysToolStripMenuItem
             // 
             this.listenUpBoysToolStripMenuItem.Name = "listenUpBoysToolStripMenuItem";
-            this.listenUpBoysToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.listenUpBoysToolStripMenuItem.Size = new System.Drawing.Size(410, 34);
             this.listenUpBoysToolStripMenuItem.Text = "Start Listener";
             this.listenUpBoysToolStripMenuItem.Click += new System.EventHandler(this.listenUpBoysToolStripMenuItem_Click);
             // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(268, 6);
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(407, 6);
             // 
             // detachMainViewToSecondMonitor
             // 
             this.detachMainViewToSecondMonitor.Name = "detachMainViewToSecondMonitor";
-            this.detachMainViewToSecondMonitor.Size = new System.Drawing.Size(271, 22);
+            this.detachMainViewToSecondMonitor.Size = new System.Drawing.Size(410, 34);
             this.detachMainViewToSecondMonitor.Text = "Detach Main View to Second Monitor";
             this.detachMainViewToSecondMonitor.Click += new System.EventHandler(this.detatchMainViewMenuItem_Click);
             // 
             // detachMainViewToThirdMonitorToolStripMenuItem
             // 
             this.detachMainViewToThirdMonitorToolStripMenuItem.Name = "detachMainViewToThirdMonitorToolStripMenuItem";
-            this.detachMainViewToThirdMonitorToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.detachMainViewToThirdMonitorToolStripMenuItem.Size = new System.Drawing.Size(410, 34);
             this.detachMainViewToThirdMonitorToolStripMenuItem.Text = "Detach Main View to Third Monitor";
             this.detachMainViewToThirdMonitorToolStripMenuItem.Click += new System.EventHandler(this.detachMainViewToThirdMonitorToolStripMenuItem_Click);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(268, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(407, 6);
             // 
             // fullDomePreviewToolStripMenuItem
             // 
             this.fullDomePreviewToolStripMenuItem.Name = "fullDomePreviewToolStripMenuItem";
-            this.fullDomePreviewToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.fullDomePreviewToolStripMenuItem.Size = new System.Drawing.Size(410, 34);
             this.fullDomePreviewToolStripMenuItem.Text = "Full Dome Preview";
             this.fullDomePreviewToolStripMenuItem.Click += new System.EventHandler(this.fullDomePreviewToolStripMenuItem_Click);
             // 
@@ -5657,7 +5027,7 @@ namespace TerraViewer
             this.toggleFullScreenModeF11ToolStripMenuItem.Name = "toggleFullScreenModeF11ToolStripMenuItem";
             this.toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeyDisplayString = "F11";
             this.toggleFullScreenModeF11ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
-            this.toggleFullScreenModeF11ToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.toggleFullScreenModeF11ToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.toggleFullScreenModeF11ToolStripMenuItem.Text = "Toggle Full Screen Mode";
             this.toggleFullScreenModeF11ToolStripMenuItem.Click += new System.EventHandler(this.toggleFullScreenModeF11ToolStripMenuItem_Click);
             // 
@@ -5668,35 +5038,35 @@ namespace TerraViewer
             this.fourSamplesToolStripMenuItem,
             this.eightSamplesToolStripMenuItem});
             this.multiSampleAntialiasingToolStripMenuItem.Name = "multiSampleAntialiasingToolStripMenuItem";
-            this.multiSampleAntialiasingToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.multiSampleAntialiasingToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.multiSampleAntialiasingToolStripMenuItem.Text = "Multi-Sample Antialiasing";
             this.multiSampleAntialiasingToolStripMenuItem.DropDownOpening += new System.EventHandler(this.multiSampleAntialiasingToolStripMenuItem_DropDownOpening);
             // 
             // noneToolStripMenuItem
             // 
             this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-            this.noneToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.noneToolStripMenuItem.Size = new System.Drawing.Size(226, 34);
             this.noneToolStripMenuItem.Text = "None";
             this.noneToolStripMenuItem.Click += new System.EventHandler(this.noneToolStripMenuItem_Click);
             // 
             // fourSamplesToolStripMenuItem
             // 
             this.fourSamplesToolStripMenuItem.Name = "fourSamplesToolStripMenuItem";
-            this.fourSamplesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.fourSamplesToolStripMenuItem.Size = new System.Drawing.Size(226, 34);
             this.fourSamplesToolStripMenuItem.Text = "Four Samples";
             this.fourSamplesToolStripMenuItem.Click += new System.EventHandler(this.fourSamplesToolStripMenuItem_Click);
             // 
             // eightSamplesToolStripMenuItem
             // 
             this.eightSamplesToolStripMenuItem.Name = "eightSamplesToolStripMenuItem";
-            this.eightSamplesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.eightSamplesToolStripMenuItem.Size = new System.Drawing.Size(226, 34);
             this.eightSamplesToolStripMenuItem.Text = "Eight Samples";
             this.eightSamplesToolStripMenuItem.Click += new System.EventHandler(this.eightSamplesToolStripMenuItem_Click);
             // 
             // lockVerticalSyncToolStripMenuItem
             // 
             this.lockVerticalSyncToolStripMenuItem.Name = "lockVerticalSyncToolStripMenuItem";
-            this.lockVerticalSyncToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.lockVerticalSyncToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.lockVerticalSyncToolStripMenuItem.Text = "Lock Vertical Sync";
             this.lockVerticalSyncToolStripMenuItem.Click += new System.EventHandler(this.lockVerticalSyncToolStripMenuItem_Click);
             // 
@@ -5708,44 +5078,37 @@ namespace TerraViewer
             this.fPSToolStripMenuItem30,
             this.fPSToolStripMenuItem24});
             this.targetFrameRateToolStripMenuItem.Name = "targetFrameRateToolStripMenuItem";
-            this.targetFrameRateToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
+            this.targetFrameRateToolStripMenuItem.Size = new System.Drawing.Size(487, 32);
             this.targetFrameRateToolStripMenuItem.Text = "Target Frame Rate";
             this.targetFrameRateToolStripMenuItem.DropDownOpening += new System.EventHandler(this.targetFrameRateToolStripMenuItem_DropDownOpening);
             // 
             // fpsToolStripMenuItemUnlimited
             // 
             this.fpsToolStripMenuItemUnlimited.Name = "fpsToolStripMenuItemUnlimited";
-            this.fpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(126, 22);
+            this.fpsToolStripMenuItemUnlimited.Size = new System.Drawing.Size(190, 34);
             this.fpsToolStripMenuItemUnlimited.Text = "Unlimited";
             this.fpsToolStripMenuItemUnlimited.Click += new System.EventHandler(this.fpsToolStripMenuItemUnlimited_Click);
             // 
             // fPSToolStripMenuItem60
             // 
             this.fPSToolStripMenuItem60.Name = "fPSToolStripMenuItem60";
-            this.fPSToolStripMenuItem60.Size = new System.Drawing.Size(126, 22);
+            this.fPSToolStripMenuItem60.Size = new System.Drawing.Size(190, 34);
             this.fPSToolStripMenuItem60.Text = "60 FPS";
             this.fPSToolStripMenuItem60.Click += new System.EventHandler(this.fPSToolStripMenuItem60_Click);
             // 
             // fPSToolStripMenuItem30
             // 
             this.fPSToolStripMenuItem30.Name = "fPSToolStripMenuItem30";
-            this.fPSToolStripMenuItem30.Size = new System.Drawing.Size(126, 22);
+            this.fPSToolStripMenuItem30.Size = new System.Drawing.Size(190, 34);
             this.fPSToolStripMenuItem30.Text = "30 FPS";
             this.fPSToolStripMenuItem30.Click += new System.EventHandler(this.fPSToolStripMenuItem30_Click);
             // 
             // fPSToolStripMenuItem24
             // 
             this.fPSToolStripMenuItem24.Name = "fPSToolStripMenuItem24";
-            this.fPSToolStripMenuItem24.Size = new System.Drawing.Size(126, 22);
+            this.fPSToolStripMenuItem24.Size = new System.Drawing.Size(190, 34);
             this.fPSToolStripMenuItem24.Text = "24 FPS";
             this.fPSToolStripMenuItem24.Click += new System.EventHandler(this.fPSToolStripMenuItem24_Click);
-            // 
-            // enableExport3dCitiesModeToolStripMenuItem
-            // 
-            this.enableExport3dCitiesModeToolStripMenuItem.Name = "enableExport3dCitiesModeToolStripMenuItem";
-            this.enableExport3dCitiesModeToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
-            this.enableExport3dCitiesModeToolStripMenuItem.Text = "Enable Export 3d Cities Mode";
-            this.enableExport3dCitiesModeToolStripMenuItem.Click += new System.EventHandler(this.enableExport3dCitiesModeToolStripMenuItem_Click);
             // 
             // StatupTimer
             // 
@@ -5827,6 +5190,13 @@ namespace TerraViewer
             this.menuTabs.ControlEvent += new TerraViewer.ControlEventHandler(this.menuTabs_ControlEvent);
             this.menuTabs.Load += new System.EventHandler(this.menuTabs_Load);
             // 
+            // hIPSProgressiveSurveyToolStripMenuItem
+            // 
+            this.hIPSProgressiveSurveyToolStripMenuItem.Name = "hIPSProgressiveSurveyToolStripMenuItem";
+            this.hIPSProgressiveSurveyToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
+            this.hIPSProgressiveSurveyToolStripMenuItem.Text = "HIPS Progrsesive Survey...";
+            this.hIPSProgressiveSurveyToolStripMenuItem.Click += new System.EventHandler(this.hIPSProgressiveSurveyToolStripMenuItem_Click);
+            // 
             // Earth3d
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -5899,7 +5269,7 @@ namespace TerraViewer
 
 
                 UiTools.ShowFullScreen(renderHost, false, id);
-                RenderContext11.Resize(renderWindow);
+                RenderContext11.Resize(renderWindow.ClientSize.Height, renderWindow.ClientSize.Width);
             }
         }
 
@@ -5926,7 +5296,7 @@ namespace TerraViewer
                     renderHost.Show();
                     renderHost.Controls.Add(renderWindow);
                     UiTools.ShowFullScreen(renderHost, false, id);
-                    RenderContext11.Resize(renderWindow);
+                    RenderContext11.Resize(renderWindow.ClientSize.Height, renderWindow.ClientSize.Width);
                 }
             }
         }
@@ -5974,11 +5344,10 @@ namespace TerraViewer
             }
         }
 
-        SkyLabel label = null;
-        public KmlLabels KmlMarkers = null;
+
         public bool InitializeGraphics()
         {
-            if (ReadyToRender)
+            if (RenderEngine.ReadyToRender)
             {
                 return true;
             }
@@ -5992,7 +5361,7 @@ namespace TerraViewer
                 RenderContext11.MultiSampleCount = Math.Max(1, Properties.Settings.Default.MultiSampling);
                 RenderContext11 = new RenderContext11(renderWindow, Properties.Settings.Default.RiftStartup);
 
-                ReadyToRender = true;
+                RenderEngine.ReadyToRender = true;
                 pause = false;
                 return true;
             }
@@ -6004,395 +5373,7 @@ namespace TerraViewer
         }
 
 
-        PositionColorTexturedVertexBuffer11[] domeVertexBuffer;
-        IndexBuffer11[] domeIndexBuffer;
-        int domeVertexCount;
 
-        int domeTriangleCount;
-
-
-        void CreateDomeFaceVertexBuffer(int face)
-        {
-            int domeSubX = 50;
-            int domeSubY = 50;
-
-            CleanupDomeVertexBuffer(face);
-
-            double fea = Math.Min(250, Properties.Settings.Default.FisheyeAngle) / 180;
-            double fa = Math.Min(250, Properties.Settings.Default.FisheyeAngle);
-
-            domeIndexBuffer[face] = new IndexBuffer11(typeof(short), (domeSubX * domeSubY * 6), RenderContext11.PrepDevice);
-            domeVertexBuffer[face] = new PositionColorTexturedVertexBuffer11(((domeSubX + 1) * (domeSubY + 1)), RenderContext11.PrepDevice);
-
-            domeVertexCount = domeSubX * domeSubY * 6;
-
-
-            int index = 0;
-
-            PositionColorTexturedVertexBuffer11 vb = domeVertexBuffer[face];
-
-            PositionColoredTextured[] verts = (PositionColoredTextured[])vb.Lock(0, 0);
-            int x1, y1;
-
-
-
-            Vector3d topLeft = new Vector3d();
-            Vector3d topRight = new Vector3d();
-            Vector3d bottomLeft = new Vector3d();
-            Vector3d bottomRight = new Vector3d();
-
-            RenderTypes faceType = (RenderTypes)face;
-
-            switch (faceType)
-            {
-                case RenderTypes.DomeFront:
-                    topLeft = new Vector3d(-1, 1, 1);
-                    topRight = new Vector3d(1, 1, 1);
-                    bottomLeft = new Vector3d(-1, -1, 1);
-                    bottomRight = new Vector3d(1, -1, 1);
-                    break;
-                case RenderTypes.DomeRight:
-                    topLeft = new Vector3d(1, 1, 1);
-                    topRight = new Vector3d(1, 1, -1);
-                    bottomLeft = new Vector3d(1, -1, 1);
-                    bottomRight = new Vector3d(1, -1, -1);
-                    break;
-                case RenderTypes.DomeUp:
-                    topLeft = new Vector3d(-1, 1, -1);
-                    topRight = new Vector3d(1, 1, -1);
-                    bottomLeft = new Vector3d(-1, 1, 1);
-                    bottomRight = new Vector3d(1, 1, 1);
-                    break;
-                case RenderTypes.DomeLeft:
-                    topLeft = new Vector3d(-1, 1, -1);
-                    topRight = new Vector3d(-1, 1, 1);
-                    bottomLeft = new Vector3d(-1, -1, -1);
-                    bottomRight = new Vector3d(-1, -1, 1);
-                    break;
-                case RenderTypes.DomeBack:
-                    topLeft = new Vector3d(1, 1, -1);
-                    topRight = new Vector3d(-1, 1, -1);
-                    bottomLeft = new Vector3d(1, -1, -1);
-                    bottomRight = new Vector3d(-1, -1, -1);
-                    break;
-            }
-
-            double textureStepX = 1.0f / domeSubX;
-            double textureStepY = 1.0f / domeSubY;
-            for (y1 = 0; y1 <= domeSubY; y1++)
-            {
-                double tv;
-                if (y1 != domeSubY)
-                {
-                    tv = textureStepY * y1;
-                }
-                else
-                {
-                    tv = 1;
-                }
-
-                for (x1 = 0; x1 <= domeSubX; x1++)
-                {
-                    double tu;
-                    if (x1 != domeSubX)
-                    {
-                        tu = textureStepX * x1;
-                    }
-                    else
-                    {
-                        tu = 1;
-                    }
-
-                    Vector3d top = Vector3d.Lerp(topLeft, topRight, tu);
-                    Vector3d bottom = Vector3d.Lerp(bottomLeft, bottomRight, tu);
-                    Vector3d net = Vector3d.Lerp(top, bottom, tv);
-                    net.Normalize();
-                    Coordinates netNet = Coordinates.CartesianToSpherical2(net.Vector3);
-                    double dist = (180 - (netNet.Lat + 90)) / (180 * fea);
-                    dist = Math.Min(.5, dist);
-
-                    double x = Math.Sin((netNet.Lng + 90) / 180 * Math.PI) * dist;
-                    double y = Math.Cos((netNet.Lng + 90) / 180 * Math.PI) * dist;
-
-                    index = y1 * (domeSubX + 1) + x1;
-                    verts[index].Position = new SharpDX.Vector4((float)x, (float)y, .9f, 1);
-                    verts[index].Tu = (float)tu;
-                    verts[index].Tv = (float)tv;
-                    verts[index].Color = Color.White;
-                }
-            }
-            vb.Unlock();
-            domeTriangleCount = (domeSubX) * (domeSubY) * 2;
-            short[] indexArray = (short[])domeIndexBuffer[face].Lock();
-            index = 0;
-            for (y1 = 0; y1 < domeSubY; y1++)
-            {
-                for (x1 = 0; x1 < domeSubX; x1++)
-                {
-                    //index = (y1 * domeSubX * 6) + 6 * x1;
-                    // First triangle in quad
-                    indexArray[index] = (short)(y1 * (domeSubX + 1) + x1);
-                    indexArray[index + 1] = (short)((y1 + 1) * (domeSubX + 1) + x1);
-                    indexArray[index + 2] = (short)(y1 * (domeSubX + 1) + (x1 + 1));
-
-                    // Second triangle in quad
-                    indexArray[index + 3] = (short)(y1 * (domeSubX + 1) + (x1 + 1));
-                    indexArray[index + 4] = (short)((y1 + 1) * (domeSubX + 1) + x1);
-                    indexArray[index + 5] = (short)((y1 + 1) * (domeSubX + 1) + (x1 + 1));
-                    index += 6;
-                }
-            }
-            this.domeIndexBuffer[face].Unlock();
-        }
-
-        private void CleanupDomeVertexBuffers()
-        {
-            if (domeIndexBuffer != null)
-            {
-                for (int face = 0; face < 5; face++)
-                {
-                    CleanupDomeVertexBuffer(face);
-                }
-            }
-        }
-
-        private void CleanupDomeVertexBuffer(int face)
-        {
-            if (domeIndexBuffer[face] != null)
-            {
-                domeIndexBuffer[face].Dispose();
-                GC.SuppressFinalize(domeIndexBuffer[face]);
-            }
-
-            if (domeVertexBuffer[face] != null)
-            {
-                domeVertexBuffer[face].Dispose();
-                GC.SuppressFinalize(domeVertexBuffer[face]);
-            }
-        }
-
-        PositionColorTexturedVertexBuffer11 warpVertexBuffer;
-        IndexBuffer11 warpIndexBuffer;
-        int warpVertexCount;
-        int warpIndexCount;
-        int warpTriangleCount;
-
-        public void CreateWarpVertexBuffer()
-        {
-            ReadWarpMeshFile();
-            int warpSubX = meshX - 1;
-            int warpSubY = meshY - 1;
-
-            CleanUpWarpBuffers();
-
-
-            warpIndexBuffer = new IndexBuffer11(typeof(short), (warpSubX * warpSubY * 6), RenderContext11.PrepDevice);
-            warpVertexBuffer = new PositionColorTexturedVertexBuffer11(((warpSubX + 1) * (warpSubY + 1)), RenderContext11.PrepDevice);
-
-            warpVertexCount = ((warpSubX + 1) * (warpSubY + 1));
-
-
-            int index = 0;
-
-            PositionColorTexturedVertexBuffer11 vb = warpVertexBuffer;
-            // Create a vertex buffer 
-            PositionColoredTextured[] verts = (PositionColoredTextured[])vb.Lock(0, 0); // Lock the buffer (which will return our structs)
-            int x1, y1;
-
-
-
-            double textureStepX = 1.0f / warpSubX;
-            double textureStepY = 1.0f / warpSubY;
-            for (y1 = 0; y1 <= warpSubY; y1++)
-            {
-
-                for (x1 = 0; x1 <= warpSubX; x1++)
-                {
-
-                    index = y1 * (warpSubX + 1) + x1;
-                    verts[index].Position = mesh[x1, y1].Position;
-                    verts[index].Tu = mesh[x1, y1].Tu;
-                    verts[index].Tv = mesh[x1, y1].Tv;
-                    verts[index].Color = mesh[x1, y1].Color;
-                }
-            }
-            vb.Unlock();
-            warpTriangleCount = (warpSubX) * (warpSubY) * 2;
-            short[] indexArray = (short[])warpIndexBuffer.Lock();
-            index = 0;
-            for (y1 = 0; y1 < warpSubY; y1++)
-            {
-                for (x1 = 0; x1 < warpSubX; x1++)
-                {
-                    // First triangle in quad
-                    indexArray[index] = (short)(y1 * (warpSubX + 1) + x1);
-                    indexArray[index + 1] = (short)((y1 + 1) * (warpSubX + 1) + x1);
-                    indexArray[index + 2] = (short)(y1 * (warpSubX + 1) + (x1 + 1));
-
-                    // Second triangle in quad
-                    indexArray[index + 3] = (short)(y1 * (warpSubX + 1) + (x1 + 1));
-                    indexArray[index + 4] = (short)((y1 + 1) * (warpSubX + 1) + x1);
-                    indexArray[index + 5] = (short)((y1 + 1) * (warpSubX + 1) + (x1 + 1));
-                    index += 6;
-                }
-            }
-            this.warpIndexBuffer.Unlock();
-        }
-
-        private void CleanUpWarpBuffers()
-        {
-            if (warpIndexBuffer != null)
-            {
-                warpIndexBuffer.Dispose();
-                GC.SuppressFinalize(warpIndexBuffer);
-            }
-
-            if (warpVertexBuffer != null)
-            {
-                warpVertexBuffer.Dispose();
-                GC.SuppressFinalize(warpVertexBuffer);
-            }
-        }
-
-        PositionColoredTextured[,] mesh;
-        // bool WarpedDome = true;
-        int meshX = 0;
-        int meshY = 0;
-
-        public void ReadWarpMeshFile()
-        {
-
-            string filename = Properties.Settings.Default.CahceDirectory + "meshwarp.txt";
-            string appdir = Path.GetDirectoryName(Application.ExecutablePath);
-            if (Properties.Settings.Default.DomeTypeIndex == 3 && String.IsNullOrEmpty(Properties.Settings.Default.CustomWarpFilename))
-            {
-                Properties.Settings.Default.DomeTypeIndex = 1;
-            }
-
-
-            switch (Properties.Settings.Default.DomeTypeIndex)
-            {
-                default:
-                case 1:
-                    filename = appdir + "\\MeshWarps\\warp_mirror_16x9.data";
-                    break;
-                case 2:
-                    filename = appdir + "\\MeshWarps\\warp_mirror_4x3.data";
-                    break;
-                case 3:
-                    filename = Properties.Settings.Default.CustomWarpFilename;
-                    break;
-            }
-
-            if (!File.Exists(filename))
-            {
-                return;
-            }
-
-
-            StreamReader sr = new StreamReader(filename, Encoding.ASCII);
-            string buffer = sr.ReadLine();
-            buffer = sr.ReadLine();
-            string[] parts = buffer.Split(new char[] { ' ' });
-
-            meshX = Convert.ToInt32(parts[0]);
-            meshY = Convert.ToInt32(parts[1]);
-            mesh = new PositionColoredTextured[meshX, meshY];
-
-            for (int y = 0; y < meshY; y++)
-            {
-                for (int x = 0; x < meshX; x++)
-                {
-                    buffer = sr.ReadLine();
-                    parts = buffer.Split(new char[] { ' ', '\t' });
-                    mesh[x, y].Position = new SharpDX.Vector4((Convert.ToSingle(parts[0])) / 2, Convert.ToSingle(parts[1]) / 2, .9f, 1);
-                    mesh[x, y].Tu = Convert.ToSingle(parts[2]);
-                    mesh[x, y].Tv = 1.0f - Convert.ToSingle(parts[3]);
-                    byte col = (Byte)(Convert.ToSingle(parts[4]) * 255);
-                    mesh[x, y].Color = Color.FromArgb(255, col, col, col);
-                }
-            }
-
-            sr.Close();
-        }
-
-        private void CleanupStereoAndDomeBuffers()
-        {
-
-
-            if (leftEye != null)
-            {
-                leftEye.Dispose();
-                GC.SuppressFinalize(leftEye);
-                leftEye = null;
-            }
-
-            if (rightEye != null)
-            {
-                rightEye.Dispose();
-                GC.SuppressFinalize(rightEye);
-                rightEye = null;
-            }
-
-            if (stereoRenderTextureLeft != null)
-            {
-                stereoRenderTextureLeft.Dispose();
-                GC.SuppressFinalize(stereoRenderTextureLeft);
-                stereoRenderTextureLeft = null;
-            }
-
-            if (stereoRenderTextureRight != null)
-            {
-                stereoRenderTextureRight.Dispose();
-                GC.SuppressFinalize(stereoRenderTextureRight);
-                stereoRenderTextureRight = null;
-            }
-
-            if (leftDepthBuffer != null)
-            {
-                leftDepthBuffer.Dispose();
-                GC.SuppressFinalize(leftDepthBuffer);
-                leftDepthBuffer = null;
-            }
-
-            if (rightDepthBuffer != null)
-            {
-                rightDepthBuffer.Dispose();
-                GC.SuppressFinalize(rightDepthBuffer);
-                rightDepthBuffer = null;
-            }
-
-            if (domeZbuffer != null)
-            {
-                domeZbuffer.Dispose();
-                GC.SuppressFinalize(domeZbuffer);
-                domeZbuffer = null;
-            }
-
-            for (int face = 0; face < 5; face++)
-            {
-                if (domeCube[face] != null)
-                {
-                    domeCube[face].Dispose();
-                    GC.SuppressFinalize(domeCube[face]);
-                    domeCube[face] = null;
-                }
-            }
-
-            if (domeCubeFaceMultisampled != null)
-            {
-                domeCubeFaceMultisampled.Dispose();
-                GC.SuppressFinalize(domeCubeFaceMultisampled);
-                domeCubeFaceMultisampled = null;
-            }
-
-            if (undistorted != null)
-            {
-                undistorted.Dispose();
-                GC.SuppressFinalize(undistorted);
-                undistorted = null;
-            }
-        }
 
         void device_DeviceResizing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -6401,2468 +5382,72 @@ namespace TerraViewer
                 e.Cancel = true;
             }
         }
-        const double RC = (double)(3.1415927 / 180);
-        const int subDivisionsX = 48 * 4;
-        const int subDivisionsY = 24 * 4;
-        bool showWireFrame = false;
-
-        Color FogColor = Color.LightBlue;
-        Color SkyColor = Color.Black;
-        public static PlaneD[] frustum = new PlaneD[6];
-        public static double front = -1;
-        public static double back = 0;
-        public static Vector3d cameraTarget = new Vector3d(0f, 0f, 1f);
-        double colorBlend = 0.0;
-        static public Matrix3d WorldMatrix;
-        static public Matrix3d ViewMatrix;
-        static public Matrix3d ProjMatrix;
-        double m_nearPlane;
-
-        int MonitorX = 0;
-        int MonitorY = 0;
-        int MonitorCountX = 3;
-        int MonitorCountY = 3;
-
-        public static bool multiMonClient = false;
-        public static bool ProjectorServer = false;
-
-        KmlViewInformation kmlViewInfo = new KmlViewInformation();
-
         public KmlViewInformation KmlViewInfo
         {
-            get { return kmlViewInfo; }
-            set { kmlViewInfo = value; }
-        }
-
-        int monitorWidth = 1920;
-        int monitorHeight = 1200;
-
-        double alt = 0;
-        double targetAlt = 0;
-
-        public double Alt
-        {
-            get { return alt; }
-            set { alt = value; }
-        }
-        double az = 0;
-        double targetAz = 0;
-        public double Az
-        {
-            get { return az; }
-            set { az = value; }
-        }
-
-        float bezelSpacing = 1.07f;
-        static Vector3d viewPoint;
-
-        static public Vector3d ViewPoint
-        {
-            get { return viewPoint; }
-            set { viewPoint = value; }
-        }
-
-        private void SetupMatricesFisheye()
-        {
-
-            RenderContext11.World = Matrix3d.Identity;
-
-            Matrix3d view = Matrix3d.Identity;
-            Matrix3d ProjMatrix = Matrix3d.Identity;
-            RenderContext11.View = view;
-
-
-
-            m_nearPlane = 0f;
-            if (ViewWidth > ViewHeight)
-            {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(((float)ViewWidth / (float)renderWindow.ClientRectangle.Height) * 1f, 1f, 1, -1);
-            }
-            else
-            {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(1f, ((float)renderWindow.ClientRectangle.Height / (float)ViewWidth) * 1f, 1, -1);
-            }
-            RenderContext11.Projection = ProjMatrix;
-
-        }
-
-        private void SetupMatricesWarpFisheye(float width)
-        {
-
-            RenderContext11.World = Matrix3d.Identity;
-
-            Matrix3d view = Matrix3d.Identity;
-
-            RenderContext11.View = view;
-
-            m_nearPlane = 0f;
-
-
-
-            if (ViewWidth > ViewHeight)
-            {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(width, 1f, 1, -1);
-            }
-            else
-            {
-                ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(width, 1f, 1, -1);
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-        }
-
-        private void SetupMatricesDistort()
-        {
-            RenderContext11.World = Matrix3d.Identity;
-
-            Matrix3d view = Matrix3d.Identity;
-
-            RenderContext11.View = view;
-
-            m_nearPlane = 0f;
-            ProjMatrix.Matrix11 = SharpDX.Matrix.OrthoLH(1f, 1f, 1, -1);
-
-            RenderContext11.Projection = ProjMatrix;
-
-        }
-        Matrix3d domeMatrix;
-        bool domeMatrixFresh = false;
-        bool domeAngleMatrixFresh = false;
-
-        public bool DomeMatrixFresh
-        {
-            get { return domeMatrixFresh; }
-            set
-            {
-                domeMatrixFresh = value;
-                domeAngleMatrixFresh = value;
-            }
-        }
-
-
-        Matrix3d DomeMatrix
-        {
-            get
-            {
-                if (!domeMatrixFresh)
-                {
-                    domeMatrix = Matrix3d.RotationX(((-(config.TotalDomeTilt + viewCamera.DomeAlt)) / 180 * Math.PI)) * Matrix3d.RotationY((config.DomeAngle + viewCamera.DomeAz) / 180 * Math.PI);
-                    domeMatrixFresh = true;
-                }
-                return domeMatrix;
-            }
-        }
-
-        Matrix3d DomeAngleMatrix
-        {
-            get
-            {
-                if (!domeAngleMatrixFresh)
-                {
-                    domeMatrix = Matrix3d.RotationX((-viewCamera.DomeAlt / 180 * Math.PI)) * Matrix3d.RotationY((config.DomeAngle + viewCamera.DomeAz) / 180 * Math.PI);
-                    domeAngleMatrixFresh = true;
-                }
-                return domeMatrix;
-            }
-        }
-
-        public void SetupMatricesOverlays()
-        {
-
-            RenderContext11.World = Matrix3d.Identity;
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            Vector3d lookFrom = new Vector3d(0, 0, 0);
-            Vector3d lookAt = new Vector3d(0, 0, 1);
-            Vector3d lookUp = new Vector3d(0, 1, 0);
-
-            bool dome = false;
-
-            Matrix3d view;
-
-            switch (CurrentRenderType)
-            {
-                case RenderTypes.DomeUp:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeLeft:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeRight:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
-                    break;
-                case RenderTypes.DomeFront:
-                    dome = true;
-                    break;
-                case RenderTypes.DomeBack:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
-                    dome = true;
-                    break;
-                default:
-                    break;
-            }
-
-            if (config.MultiChannelDome1)
-            {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-
-                view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
-            }
-            else
-            {
-                if (Settings.DomeView)
-                {
-                    view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * DomeMatrix * lookAtAdjust;
-
-                }
-                else
-                {
-                    if (DomePreviewPopup.Active && !dome)
-                    {
-                        Matrix3d matDomePreview =
-                             Matrix3d.RotationY((DomePreviewPopup.Az / 180 * Math.PI)) *
-                             Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * DomeMatrix * matDomePreview;
-                    }
-                    else if (rift)
-                    {
-                     
-                        Matrix3d matRiftView = Matrix3d.Identity;
-
-                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
-                        matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
-
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView ;
-                    }
-                    else
-                    {
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust;
-                    }
-
-                }
-
-                if (multiMonClient)
-                {
-                    RenderContext11.View = RenderContext11.View * Matrix3d.RotationY((config.Heading / 180 * Math.PI));
-                }
-            }
-
-            Matrix3d viewXform = Matrix3d.Scaling(1, -1, 1);
-
-            view = viewXform * view;
-
-            RenderContext11.View = view;
-
-            double back = 10000;
-            m_nearPlane = .1f;
-
-            if (config.MultiChannelDome1)
-            {
-                double aspect = config.Aspect;
-                double top = m_nearPlane * 2 / ((1 / Math.Tan(config.UpFov / 180 * Math.PI))) / 2;
-                double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
-                double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
-                double left = -right;
-
-
-
-                ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
-                    left,
-                    right,
-                    bottom,
-                    top,
-                    m_nearPlane,
-                    back);
-
-            }
-            else if (config.MultiProjector)
-            {
-                RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-                ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
-                RenderContext11.ViewBase = RenderContext11.View;
-            }
-            else if (multiMonClient)
-            {
-                double fov = (((config.UpFov + config.DownFov) / 2 / 180 * Math.PI));
-                if (fov == 0)
-                {
-                    fov = (Math.PI / 4.0);
-                }
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, (double)(monitorWidth * MonitorCountX) / ((double)monitorHeight * (double)MonitorCountY), m_nearPlane, back);
-            }
-            else if (dome)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
-            }
-            else if (rift)
-            {
-                var fovPort = eyeTextures[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
-                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
-
-                RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                projMat.Transpose();
-
-                ProjMatrix = new Matrix3d();
-                ProjMatrix.Matrix11 = projMat;
-            }
-            else if (megaFrameDump)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, (double)megaWidth / (double)megaHeight, m_nearPlane, back);
-
-            }
-            else
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
-            }
-
-            if (multiMonClient && !config.MultiChannelDome1 && !config.MultiProjector && !config.MultiChannelGlobe)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            if (rift)
-            {
-                if (CurrentRenderType == RenderTypes.LeftEye)
-                {
-
-                    ProjMatrix.M31 += iod;
-                }
-                else
-                {
-                    ProjMatrix.M31 -= iod;
-                }
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-
-        }
-
-
-
-
-        public void SetupMatricesAltAz()
-        {
-            RenderContext11.World = Matrix3d.Identity;
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            Vector3d lookFrom = new Vector3d(0, 0, 0);
-            Vector3d lookAt = new Vector3d(0, 0, 1);
-            Vector3d lookUp = new Vector3d(0, 1, 0);
-
-            bool dome = false;
-
-            Matrix3d view;
-            Matrix3d ProjMatrix;
-
-            switch (CurrentRenderType)
-            {
-                case RenderTypes.DomeUp:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeLeft:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeRight:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
-                    break;
-                case RenderTypes.DomeFront:
-                    dome = true;
-                    break;
-                case RenderTypes.DomeBack:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
-                    dome = true;
-                    break;
-                default:
-                    break;
-            }
-
-            if (config.MultiChannelDome1)
-            {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-
-                view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * matHeadingPitchRoll;
-            }
-            else
-            {
-                if (Settings.DomeView)
-                {
-                    view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust;
-
-                }
-                else
-                {
-                    if (DomePreviewPopup.Active && !dome)
-                    {
-                        Matrix3d matDomePreview =
-                             Matrix3d.RotationY((DomePreviewPopup.Az / 180 * Math.PI)) *
-                             Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * matDomePreview;
-                    }
-
-                    else if (rift)
-                    {
-                        Matrix3d matRiftView = Matrix3d.Identity;
-
-                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
-                        matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
-
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * lookAtAdjust * matRiftView;
-                    }
-                    else
-                    {
-                        view = Matrix3d.LookAtLH(lookFrom, lookAt, lookUp) * DomeMatrix * lookAtAdjust;
-                    }
-
-                    if (multiMonClient)
-                    {
-                        RenderContext11.View = RenderContext11.View * Matrix3d.RotationY((config.Heading / 180 * Math.PI));
-                    }
-                }
-            }
-
-            Matrix3d viewXform = Matrix3d.Scaling(1, 1, 1);
-
-            view = viewXform * view;
-
-            RenderContext11.View = view;
-
-            double back = 10000;
-            m_nearPlane = .1f;
-
-            if (config.MultiChannelDome1)
-            {
-                double aspect = config.Aspect;
-                double top = m_nearPlane * 2 / ((1 / Math.Tan(config.UpFov / 180 * Math.PI))) / 2;
-                double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
-                double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
-                double left = -right;
-
-
-
-                ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
-                    left,
-                    right,
-                    bottom,
-                    top,
-                    m_nearPlane,
-                    back);
-
-            }
-            else if (config.MultiProjector)
-            {
-                RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-                ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
-                RenderContext11.ViewBase = RenderContext11.View;
-            }
-            else if (multiMonClient)
-            {
-                double fov = (((config.UpFov + config.DownFov) / 2 / 180 * Math.PI));
-                if (fov == 0)
-                {
-                    fov = (Math.PI / 4.0);
-                }
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, (double)(monitorWidth * MonitorCountX) / ((double)monitorHeight * (double)MonitorCountY), m_nearPlane, back);
-            }
-            else if (dome)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
-            }
-            else if (rift)
-            {
-                var fovPort = eyeTextures[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
-                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
-
-                RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                projMat.Transpose();
-
-                ProjMatrix = new Matrix3d();
-                ProjMatrix.Matrix11 = projMat;
-            }
-            else if (megaFrameDump)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(RenderContext11.PerspectiveFov, (double)megaWidth / (double)megaHeight, m_nearPlane, back);
-
-            }
-            else
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(RenderContext11.PerspectiveFov, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
-            }
-
-            if (multiMonClient && !config.MultiChannelDome1 && !config.MultiProjector)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-
-
-            RenderContext11.Projection = ProjMatrix;
-        }
-
-        bool galMatInit = false;
-        Matrix3d galacticMatrix = Matrix3d.Identity;
-
-        private void SetupMatricesSpace11(double localZoomFactor, RenderTypes renderType)
-        {
-            if (config.MultiChannelDome1 || config.MultiProjector || DomePreviewPopup.Active || rift)
-            {
-                SetupMatricesSpaceMultiChannel(localZoomFactor, renderType);
-                return;
-            }
-
-            if ((Settings.Active.GalacticMode && !Settings.Active.LocalHorizonMode) && CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                // Show in galactic coordinates
-                if (!galMatInit)
-                {
-                    galacticMatrix = Matrix3d.Identity;
-                    galacticMatrix.Multiply(Matrix3d.RotationY(-(90 - (17.7603329867975 * 15)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationX(-((-28.9361739586894)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783) - 90) / 180.0 * Math.PI));
-                    galMatInit = true;
-                }
-
-                WorldMatrix = galacticMatrix;
-                WorldMatrix.Multiply(Matrix3d.RotationY(((az)) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(-((alt)) / 180.0 * Math.PI));
-
-
-                double[] gPoint = Coordinates.GalactictoJ2000(az, alt);
-
-                this.RA = gPoint[0] / 15;
-                this.Dec = gPoint[1];
-                viewCamera.Lat = targetViewCamera.Lat;
-                viewCamera.Lng = targetViewCamera.Lng;
-
-            }
-            else
-            {
-                // Show in Ecliptic
-
-                WorldMatrix = Matrix3d.RotationY(-((this.ViewLong + 90.0) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180.0 * Math.PI)));
-            }
-            double camLocal = CameraRotate;
-
-            // altaz
-            if ((Settings.Active.LocalHorizonMode && !Settings.Active.GalacticMode) && CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                Coordinates zenithAltAz = new Coordinates(0, 0);
-
-                zenithAltAz.Az = 0;
-
-                zenithAltAz.Alt = 0;
-
-
-
-                if (!config.Master)
-                {
-                    alt = 0;
-                    az = 0;
-                    config.DomeTilt = 0;
-                    if (Properties.Settings.Default.DomeTilt != 0)
-                    {
-                        Properties.Settings.Default.DomeTilt = 0;
-                    }
-                }
-
-                Coordinates zenith = Coordinates.HorizonToEquitorial(zenithAltAz, SpaceTimeController.Location, SpaceTimeController.Now);
-
-                double raPart = -((zenith.RA - 6) / 24.0 * (Math.PI * 2));
-                double decPart = -(((zenith.Dec)) / 360.0 * (Math.PI * 2));
-                string raText = Coordinates.FormatDMS(zenith.RA);
-                WorldMatrix = Matrix3d.RotationY(-raPart);
-                WorldMatrix.Multiply(Matrix3d.RotationX(decPart));
-
-                if (SpaceTimeController.Location.Lat < 0)
-                {
-                    WorldMatrix.Multiply(Matrix3d.RotationY(((az) / 180.0 * Math.PI)));
-
-                    WorldMatrix.Multiply(Matrix3d.RotationX(((alt) / 180.0 * Math.PI)));
-                    camLocal += Math.PI;
-                }
-                else
-                {
-                    WorldMatrix.Multiply(Matrix3d.RotationY(((-az) / 180.0 * Math.PI)));
-
-                    WorldMatrix.Multiply(Matrix3d.RotationX(((-alt) / 180.0 * Math.PI)));
-                }
-
-                Coordinates currentRaDec = Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(alt, az), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                TargetLat = ViewLat = currentRaDec.Dec;
-                TargetLong = ViewLong = RAtoViewLng(currentRaDec.RA);
-            }
-
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-            // altaz
-
-            ViewPoint = Coordinates.RADecTo3d(this.RA, -this.Dec, 1.0);
-
-
-
-            double distance = (4.0 * (localZoomFactor / 180)) + 0.000001;
-
-            FovAngle = ((localZoomFactor/**16*/) / FOVMULT) / Math.PI * 180;
-            RenderContext11.CameraPosition = new Vector3d(0.0, 0.0, 0.0);
-            // This is for distance Calculation. For space everything is the same distance, so camera target is key.
-
-            RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, new Vector3d(0.0, 0.0, -1.0), new Vector3d(Math.Sin(camLocal), Math.Cos(camLocal), 0.0));
-
-            if (config.MultiChannelGlobe)
-            {
-                Matrix3d globeCameraRotation =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-                RenderContext11.View = RenderContext11.View * globeCameraRotation;
-            }
-
-
-
-            if (multiMonClient)
-            {
-                RenderContext11.View = RenderContext11.View * Matrix3d.RotationY((config.Heading / 180 * Math.PI));
-            }
-
-
-            RenderContext11.ViewBase = RenderContext11.View;
-
-            m_nearPlane = 0f;
-            if (multiMonClient)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)(monitorWidth * MonitorCountX) / (double)(monitorHeight * MonitorCountY), .1, -2.0);
-
-            }
-            else if (megaFrameDump)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)megaWidth / (double)megaHeight, .1, -2.0);
-
-            }
-            else
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((localZoomFactor/**16*/) / FOVMULT, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, .1, -2.0);
-
-            }
-            RenderContext11.PerspectiveFov = (localZoomFactor) / FOVMULT;
-
-
-            if (multiMonClient)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            if (config.MultiChannelGlobe)
-            {
-                ProjMatrix = Matrix3d.OrthoLH(config.Aspect * 2.0, 2.0, 0.0, 2.0);
-            }
-
-
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-
-            MakeFrustum();
-
-        }
-        bool megaFrameDump = false;
-        int megaWidth = 4096;
-        int megaHeight = 4096;
-
-        private void SetupMatricesSpaceMultiChannel(double localZoomFactor, RenderTypes renderType)
-        {
-            bool faceSouth = false;
-
-            if ((Settings.Active.LocalHorizonMode && !Settings.Active.GalacticMode) && CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                faceSouth = !Properties.Settings.Default.FaceNorth;
-                Coordinates currentRaDec = Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(0, 0), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                alt = 0;
-                az = 0;
-                config.DomeTilt = 0;
-                if (Properties.Settings.Default.DomeTilt != 0)
-                {
-                    Properties.Settings.Default.DomeTilt = 0;
-                }
-
-                TargetLat = ViewLat = currentRaDec.Dec;
-                TargetLong = ViewLong = RAtoViewLng(currentRaDec.RA);
-
-            }
-
-            if (SolarSystemTrack != SolarSystemObjects.Custom && SolarSystemTrack != SolarSystemObjects.Undefined)
-            {
-                viewCamera.ViewTarget = Planets.GetPlanetTargetPoint(SolarSystemTrack, ViewLat, ViewLong, 0);
-            }
-
-            RenderContext11.LightingEnabled = false;
-
-            double localZoom = ZoomFactor * 20;
-            Vector3d lookAt = new Vector3d(0, 0, -1);
-            FovAngle = ((ZoomFactor/**16*/) / FOVMULT) / Math.PI * 180;
-
-            // for constellations
-            ViewPoint = Coordinates.RADecTo3d(this.RA, -this.Dec, 1.0);
-
-
-            double distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
-
-            RenderContext11.CameraPosition = new Vector3d(0, 0, distance);
-            Vector3d lookUp = new Vector3d(Math.Sin(CameraRotate), Math.Cos(CameraRotate), 0.0001f);
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            if ((Settings.Active.GalacticMode && !Settings.Active.LocalHorizonMode) && CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                if (!galMatInit)
-                {
-                    galacticMatrix = Matrix3d.Identity;
-                    galacticMatrix.Multiply(Matrix3d.RotationY(-(90 - (17.7603329867975 * 15)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationX(-((-28.9361739586894)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783) - 90) / 180.0 * Math.PI));
-                    galMatInit = true;
-                }
-
-                WorldMatrix = galacticMatrix;
-                WorldMatrix.Multiply(Matrix3d.RotationY(((az)) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(-((alt)) / 180.0 * Math.PI));
-
-
-                double[] gPoint = Coordinates.GalactictoJ2000(az, alt);
-
-                this.RA = gPoint[0] / 15;
-                this.Dec = gPoint[1];
-                targetViewCamera.Lat = viewCamera.Lat;
-                targetViewCamera.Lng = viewCamera.Lng;
-            }
-            else
-            {
-                // Show in Ecliptic
-
-                WorldMatrix = Matrix3d.RotationY(-((this.ViewLong + 90) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180.0 * Math.PI)));
-            }
-
-
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-
-
-
-            lookAt.TransformCoordinate(lookAtAdjust);
-            Matrix3d matHeadingPitchRoll;
-
-            if (DomePreviewPopup.Active)
-            {
-                matHeadingPitchRoll =
-
-                      Matrix3d.RotationY((DomePreviewPopup.Az / 180 * Math.PI)) *
-                      Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
-            }
-            else
-            {
-                matHeadingPitchRoll =
-                      Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                      Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                      Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-            }
-            if (rift)
-            {
-                Matrix3d matRiftView = Matrix3d.Identity;
-
-                var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[0].Orientation);
-                matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * matRiftView;
-            }
-            else
-            {
-                Matrix3d matNorth = Matrix3d.RotationY(faceSouth ? Math.PI : 0);
-
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * matNorth * DomeMatrix * matHeadingPitchRoll;
-            }
-
-            Vector3d temp = lookAt - RenderContext11.CameraPosition;
-            temp.Normalize();
-            ViewPoint = temp;
-
-            // Set the near clip plane close enough that the sky dome isn't clipped
-            double cameraZ = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
-            m_nearPlane = (float)(1.0 + cameraZ) * 0.5f;
-
-            back = 12;
-            double aspect = config.Aspect;
-            double top = m_nearPlane * 2 / ((1 / Math.Tan(config.UpFov / 180 * Math.PI))) / 2;
-            double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
-            double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
-            double left = -right;
-
-
-            if (config.MultiChannelDome1)
-            {
-                ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
-                    left,
-                    right,
-                    bottom,
-                    top,
-                    m_nearPlane,
-                    back);
-            }
-            else if (rift)
-            {
-                var fovPort = eyeTextures[renderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
-                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
-
-                RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                projMat.Transpose();
-
-                ProjMatrix = new Matrix3d();
-                ProjMatrix.Matrix11 = projMat;
-            }
-            else
-            {
-                RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-                ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
-
-            }
-
-            if (rift)
-            {
-                if (renderType == RenderTypes.LeftEye)
-                {
-
-                    ProjMatrix.M31 += iod;
-                }
-                else
-                {
-                    ProjMatrix.M31 -= iod;
-                }
-            }
-
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-            RenderContext11.ViewBase = RenderContext11.View;
-            MakeFrustum();
-        }
-
-        // video
-        private void SetupMatricesVideoOverlay(double localZoomFactor)
-        {
-            if (config.MultiChannelDome1 || config.MultiProjector || DomePreviewPopup.Active)
-            {
-                SetupMatricesVideoOverlayMultiChannel(localZoomFactor);
-                return;
-            }
-
-            WorldMatrix = Matrix3d.RotationY(-((0 + 90) / 180.0 * Math.PI));
-            WorldMatrix.Multiply(Matrix3d.RotationX(((-0) / 180.0 * Math.PI)));
-
-            double camLocal = 0;
-
-
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-            // altaz
-
-            ViewPoint = Coordinates.RADecTo3d(0, 0, 1.0);
-
-
-            FovAngle = ((360) / FOVMULT) / Math.PI * 180;
-            RenderContext11.CameraPosition = new Vector3d(0.0, 0.0, 0.0);
-            // This is for distance Calculation. For space everything is the same distance, so camera target is key.
-            if (rift)
-            {
-                Matrix3d matRiftView = Matrix3d.Identity;
-                var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
-                matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, new Vector3d(0.0, 0.0, -1.0), new Vector3d(Math.Sin(camLocal), Math.Cos(camLocal), 0.0)) * matRiftView;
-                RenderContext11.ViewBase = RenderContext11.View;
-            }
-            else
-            {
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, new Vector3d(0.0, 0.0, -1.0), new Vector3d(Math.Sin(camLocal), Math.Cos(camLocal), 0.0));
-                RenderContext11.ViewBase = RenderContext11.View;
-            }
-            m_nearPlane = 0f;
-            if (multiMonClient)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, (double)(monitorWidth * MonitorCountX) / (double)(monitorHeight * MonitorCountY), 0, -2.0);
-
-            }
-            else if (rift)
-            {
-                var fovPort = eyeTextures[Earth3d.CurrentRenderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
-                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
-
-                RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                projMat.Transpose();
-
-                ProjMatrix = new Matrix3d();
-                ProjMatrix.Matrix11 = projMat;
-            }
-            else if (megaFrameDump)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, (double)megaWidth / (double)megaHeight, 0, -2.0);
-
-            }
-            else
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((360/**16*/) / FOVMULT, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, 0, -2.0);
-
-            }
-
-
-
-            if (multiMonClient)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-
-            MakeFrustum();
-
-        }
-        private void SetupMatricesVideoOverlayMultiChannel(double localZoomFactor)
-        {
-
-            RenderContext11.LightingEnabled = false;
-
-            Vector3d lookAt = new Vector3d(-1, 0, 0);
-
-            RenderContext11.CameraPosition = new Vector3d(0, 0, 0);
-            Vector3d lookUp = new Vector3d(0, 1, 0);
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            WorldMatrix = Matrix3d.Identity;
-
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-
-
-
-            lookAt.TransformCoordinate(lookAtAdjust);
-            Matrix3d matHeadingPitchRoll;
-
-            if (DomePreviewPopup.Active)
-            {
-                matHeadingPitchRoll =
-
-                      Matrix3d.RotationY((DomePreviewPopup.Az / 180 * Math.PI)) *
-                      Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
-            }
-            else
-            {
-                matHeadingPitchRoll =
-                      Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                      Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                      Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-            }
-
-
-            RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
-
-
-            m_nearPlane = .000000001;
-            back = 12;
-            double aspect = config.Aspect;
-            double top = m_nearPlane * 2 / ((1 / Math.Tan(config.UpFov / 180 * Math.PI))) / 2;
-            double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
-            double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
-            double left = -right;
-
-
-            if (config.MultiChannelDome1)
-            {
-                ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
-                    left,
-                    right,
-                    bottom,
-                    top,
-                    m_nearPlane,
-                    back);
-            }
-            else
-            {
-                RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-
-                ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
-
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-            RenderContext11.ViewBase = RenderContext11.View;
-            MakeFrustum();
-        }
-
-
-        public static Matrix3d inverseWorld;
-
-        public void MakeFrustum()
-        {
-            Matrix3d viewProjection = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection);
-
-            inverseWorld = RenderContext11.World;
-            inverseWorld.Invert();
-
-            // Left plane 
-            frustum[0].A = (float)(viewProjection.M14 + viewProjection.M11);
-            frustum[0].B = (float)(viewProjection.M24 + viewProjection.M21);
-            frustum[0].C = (float)(viewProjection.M34 + viewProjection.M31);
-            frustum[0].D = (float)(viewProjection.M44 + viewProjection.M41);
-
-            // Right plane 
-            frustum[1].A = (float)(viewProjection.M14 - viewProjection.M11);
-            frustum[1].B = (float)(viewProjection.M24 - viewProjection.M21);
-            frustum[1].C = (float)(viewProjection.M34 - viewProjection.M31);
-            frustum[1].D = (float)(viewProjection.M44 - viewProjection.M41);
-
-            // Top plane 
-            frustum[2].A = (float)(viewProjection.M14 - viewProjection.M12);
-            frustum[2].B = (float)(viewProjection.M24 - viewProjection.M22);
-            frustum[2].C = (float)(viewProjection.M34 - viewProjection.M32);
-            frustum[2].D = (float)(viewProjection.M44 - viewProjection.M42);
-
-            // Bottom plane 
-            frustum[3].A = (float)(viewProjection.M14 + viewProjection.M12);
-            frustum[3].B = (float)(viewProjection.M24 + viewProjection.M22);
-            frustum[3].C = (float)(viewProjection.M34 + viewProjection.M32);
-            frustum[3].D = (float)(viewProjection.M44 + viewProjection.M42);
-
-            // Near plane 
-            frustum[4].A = (float)(viewProjection.M13);
-            frustum[4].B = (float)(viewProjection.M23);
-            frustum[4].C = (float)(viewProjection.M33);
-            frustum[4].D = (float)(viewProjection.M43);
-
-            // Far plane 
-            frustum[5].A = (float)(viewProjection.M14 - viewProjection.M13);
-            frustum[5].B = (float)(viewProjection.M24 - viewProjection.M23);
-            frustum[5].C = (float)(viewProjection.M34 - viewProjection.M33);
-            frustum[5].D = (float)(viewProjection.M44 - viewProjection.M43);
-
-            // Normalize planes 
-            for (int i = 0; i < 6; i++)
-            {
-                frustum[i].Normalize();
-            }
-            RenderContext11.MakeFrustum();
-        }
-
-
-        double targetHeight = 1;
-        double targetAltitude = 0;
-
-        public double TargetAltitude
-        {
-            get { return targetAltitude; }
-            set { targetAltitude = value; }
-        }
-
-
-        double fovLocal = (Math.PI / 4.0);
-
-        private void SetupMatricesLand11(RenderTypes renderType)
-        {
-            WorldMatrix = Matrix3d.RotationY(((this.ViewLong + 90f) / 180f * Math.PI));
-            WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180f * Math.PI)));
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-
-
-            double distance = 0;
-            if (CurrentImageSet.IsMandelbrot)
-            {
-
-                distance = (4.0 * (ZoomFactor / 180)) + 0.00000000000000000000000000000000000000001;
-            }
-            else
-            {
-
-                distance = (4.0 * (ZoomFactor / 180)) + 0.000001;
-            }
-
-            if (Settings.Active.ShowElevationModel)
-            {
-                targetAltitude = GetScaledAltitudeForLatLong(ViewLat, ViewLong);
-                double heightNow = 1 + targetAltitude;
-                targetAltitude *= RenderContext11.NominalRadius;
-                if ((double.IsNaN(heightNow)))
-                {
-                    heightNow = 0;
-                }
-
-                if (targetHeight < heightNow)
-                {
-                    targetHeight = (((targetHeight * 2) + heightNow) / 3);
-                }
-                else
-                {
-                    targetHeight = (((targetHeight * 9) + heightNow) / 10);
-                }
-                if (double.IsNaN(targetHeight))
-                {
-                    targetHeight = 0;
-                }
-                if (config.MultiChannelDome1 || config.MultiProjector)
-                {
-                    targetHeight = heightNow = NetControl.focusAltitude;
-                }
-
-            }
-            else
-            {
-                targetAltitude = 0;
-                targetHeight = 1;
-            }
-            double rotLocal = CameraRotate;
-            if (!rift)
-            {
-                if (renderType == RenderTypes.RightEye)
-                {
-                    rotLocal -= .008;
-                }
-                if (renderType == RenderTypes.LeftEye)
-                {
-                    rotLocal += .008;
-                }
-            }
-
-            RenderContext11.CameraPosition = new Vector3d(
-                (Math.Sin(rotLocal) * Math.Sin(CameraAngle) * distance),
-                (Math.Cos(rotLocal) * Math.Sin(CameraAngle) * distance),
-                (-targetHeight - (Math.Cos(CameraAngle) * distance)));
-            cameraTarget = new Vector3d(0.0f, 0.0f, -targetHeight);
-
-            double camHeight = RenderContext11.CameraPosition.Length();
-            if (Tile.GrayscaleStyle)
-            {
-                if (CurrentImageSet.Projection == ProjectionType.Toast && (CurrentImageSet.MeanRadius > 0 && CurrentImageSet.MeanRadius < 4000000))
-                {
-                    int val = (int)Math.Max(0, Math.Min(255, 255 - Math.Min(255, (camHeight - 1) * 5000)));
-                    SkyColor = Color.FromArgb(213 * val / 255, 165 * val / 255, 118 * val / 255);
-                }
-                else if (CurrentImageSet.DataSetType == ImageSetType.Earth)
-                {
-                    SkyColor = Color.FromArgb(255, 184, 184, 184);
-                }
-                else
-                {
-                    SkyColor = Color.Black;
-                }
-            }
-            else
-            {
-                if (CurrentImageSet.ReferenceFrame == "Mars" && Settings.Active.ShowEarthSky)
-                {
-                    int val = (int)Math.Max(0, Math.Min(255, 255 - Math.Min(255, (camHeight - 1) * 5000)));
-                    SkyColor = Color.FromArgb(213 * val / 255, 165 * val / 255, 118 * val / 255);
-                }
-                else if (CurrentImageSet.DataSetType == ImageSetType.Earth && Settings.Active.ShowEarthSky)
-                {
-                    int val = (int)Math.Max(0, Math.Min(255, 255 - Math.Min(255, (camHeight - 1) * 5000)));
-                    SkyColor = Color.FromArgb(255, val / 3, val / 3, val);
-                }
-                else
-                {
-                    SkyColor = Color.Black;
-                }
-            }
-
-            Matrix3d trackingMatrix = Matrix3d.Identity;
-
-            if (config.MultiChannelGlobe)
-            {
-                // Move the camera to some fixed distance from the globe
-                RenderContext11.CameraPosition *= 50.0 / RenderContext11.CameraPosition.Length();
-
-                // Modify camera position in globe mode
-                Matrix3d globeCameraRotation =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-                RenderContext11.CameraPosition = globeCameraRotation.Transform(RenderContext11.CameraPosition);
-                cameraTarget = globeCameraRotation.Transform(cameraTarget);
-                RenderContext11.View = Matrix3d.LookAtLH(
-                    RenderContext11.CameraPosition,
-                    cameraTarget,
-                    new Vector3d(Math.Sin(rotLocal) * Math.Cos(CameraAngle), Math.Cos(rotLocal) * Math.Cos(CameraAngle), Math.Sin(CameraAngle)));
-            }
-            else if (config.MultiChannelDome1)
-            {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-                RenderContext11.View = Matrix3d.LookAtLH(
-                            RenderContext11.CameraPosition,
-                            cameraTarget,
-                            new Vector3d(Math.Sin(rotLocal) * Math.Cos(CameraAngle), Math.Cos(rotLocal) * Math.Cos(CameraAngle), Math.Sin(CameraAngle)))
-                            * DomeMatrix
-                            * matHeadingPitchRoll;
-                RenderContext11.ViewBase = RenderContext11.View;
-            }
-            else
-            {
-
-                Vector3d lookUp = new Vector3d(Math.Sin(rotLocal) * Math.Cos(CameraAngle), Math.Cos(rotLocal) * Math.Cos(CameraAngle), Math.Sin(CameraAngle));
-
-                if (DomePreviewPopup.Active)
-                {
-                    Matrix3d matDomePreview =
-                         Matrix3d.RotationY((DomePreviewPopup.Az / 180 * Math.PI)) *
-                         Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
-                    RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, cameraTarget, lookUp) * Matrix3d.RotationX(((-config.TotalDomeTilt) / 180 * Math.PI)) * matDomePreview;
-                }
-                else if (rift)
-                {
-                    double amount = distance / 100;
-                    Matrix3d stereoTranslate = Matrix3d.Translation(renderType == RenderTypes.LeftEye ? amount : -amount, 0, 0);
-                    Matrix3d matRiftView = Matrix3d.Identity;
-
-                    if (rift)
-                    {
-                        SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
-                        amount *= 10;
-                        stereoTranslate = Matrix3d.Translation(-pos.X * amount, -pos.Y * amount, pos.Z * amount);
-
-                        var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
-                        matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1,1,1));
-                        
-
-                        //float yaw = 0;
-                        //float pitch = 0;
-                        //float roll = 0;
-                        //SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation).GetEulerAngles(out yaw, out pitch, out roll);
-
-                        // matRiftView = Matrix3d.RotationY(yaw) * Matrix3d.RotationX(pitch) * Matrix3d.RotationZ(-roll);
-                    }
-                    RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, cameraTarget, lookUp) * matRiftView * stereoTranslate;
-                }
-                else
-                {
-                    RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, cameraTarget, lookUp) * Matrix3d.Translation(HeadPosition);
-                }
-
-                if (multiMonClient)
-                {
-                    RenderContext11.View = RenderContext11.View * Matrix3d.RotationY((config.Heading / 180 * Math.PI));
-                }
-
-
-                RenderContext11.ViewBase = RenderContext11.View;
-
-
-            }
-
-            back = Math.Sqrt((distance + 1f) * (distance + 1f) - 1);
-            back = Math.Max(.5, back);
-
-            if (Properties.Settings.Default.EarthCutawayView.State)
-            {
-                back = 20;
-            }
-            m_nearPlane = distance * .05f;
-            if (config.MultiChannelGlobe)
-            {
-                m_nearPlane = RenderContext11.CameraPosition.Length() - 2.0;
-                back = m_nearPlane + 4.0;
-                ProjMatrix = Matrix3d.OrthoLH(config.Aspect * 2.0, 2.0, m_nearPlane, back);
-            }
-            else if (config.MultiChannelDome1)
-            {
-                double aspect = config.Aspect;
-                double top = m_nearPlane * 2 / ((1 / Math.Tan(config.UpFov / 180 * Math.PI))) / 2;
-                double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
-                double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
-                double left = -right;
-
-                ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
-                    left,
-                    right,
-                    bottom,
-                    top,
-                    m_nearPlane,
-                    back);
-
-
-            }
-            else if (config.MultiProjector)
-            {
-                RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-                ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
-                RenderContext11.ViewBase = RenderContext11.View;
-
-            }
-            else if (multiMonClient)
-            {
-                double fov = (((config.UpFov + config.DownFov) / 2 / 180 * Math.PI));
-                if (fov == 0)
-                {
-                    fov = (Math.PI / 4.0);
-                }
-
-                m_nearPlane = distance * .05f;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fov, (monitorWidth * MonitorCountX) / (monitorHeight * MonitorCountY), m_nearPlane, back);
-            }
-            else if (rift)
-            {
-                var fovPort = eyeTextures[renderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
-                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
-
-                RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                projMat.Transpose();
-
-                ProjMatrix = new Matrix3d();
-                ProjMatrix.Matrix11 = projMat;
-            }
-            else if (megaFrameDump)
-            {
-
-                m_nearPlane = distance * .05f;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, megaWidth / megaHeight, m_nearPlane, back);
-                RenderContext11.PerspectiveFov = fovLocal;
-            }
-            else
-            {
-
-                m_nearPlane = distance * .05f;
-                ProjMatrix = Matrix3d.PerspectiveFovLH(fovLocal, (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
-                RenderContext11.PerspectiveFov = fovLocal;
-            }
-
-
-            if (multiMonClient && !config.MultiChannelDome1 && !Config.MultiProjector && !Config.MultiChannelGlobe)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            if (rift)
-            {
-                if (renderType == RenderTypes.LeftEye)
-                {
-
-                    ProjMatrix.M31 += iod;
-                }
-                else
-                {
-                    ProjMatrix.M31 -= iod;
-                }
-            }
-
-
-            RenderContext11.Projection = ProjMatrix;
-
-            colorBlend = 1 / distance;
-
-            ViewMatrix = RenderContext11.View;
-
-
-            MakeFrustum();
-        }
-
-
-        public double GetScaledAltitudeForLatLong(double viewLat, double viewLong)
-        {
-            IImageSet layer = CurrentImageSet;
-
-            if (layer == null)
-            {
-                return 0;
-            }
-
-            int maxX = GetTilesXForLevel(layer, layer.BaseLevel);
-            int maxY = GetTilesYForLevel(layer, layer.BaseLevel);
-
-            for (int x = 0; x < maxX; x++)
-            {
-                for (int y = 0; y < maxY; y++)
-                {
-                    Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                    if (tile != null)
-                    {
-                        if (tile.IsPointInTile(viewLat, viewLong))
-                        {
-                            return tile.GetSurfacePointAltitude(viewLat, viewLong, false);
-                        }
-                    }
-                }
-            }
-            return 0;
-        }
-
-        public double GetAltitudeForLatLong(double viewLat, double viewLong)
-        {
-            IImageSet layer = CurrentImageSet;
-
-            if (layer == null)
-            {
-                return 0;
-            }
-
-            int maxX = GetTilesXForLevel(layer, layer.BaseLevel);
-            int maxY = GetTilesYForLevel(layer, layer.BaseLevel);
-
-            for (int x = 0; x < maxX; x++)
-            {
-                for (int y = 0; y < maxY; y++)
-                {
-                    Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                    if (tile != null)
-                    {
-                        if (tile.IsPointInTile(viewLat, viewLong))
-                        {
-                            return tile.GetSurfacePointAltitude(viewLat, viewLong, true);
-                        }
-                    }
-                }
-            }
-            return 0;
-        }
-
-        public double GetAltitudeForLatLongNow(double viewLat, double viewLong)
-        {
-            IImageSet layer = CurrentImageSet;
-
-            if (layer == null)
-            {
-                return 0;
-            }
-
-            int maxX = GetTilesXForLevel(layer, layer.BaseLevel);
-            int maxY = GetTilesYForLevel(layer, layer.BaseLevel);
-
-            for (int x = 0; x < maxX; x++)
-            {
-                for (int y = 0; y < maxY; y++)
-                {
-                    Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                    if (tile != null)
-                    {
-                        if (tile.IsPointInTile(viewLat, viewLong))
-                        {
-                            return tile.GetSurfacePointAltitudeNow(viewLat, viewLong, true, Tile.lastDeepestLevel + 1);
-                        }
-                    }
-                }
-            }
-            return 0;
-        }
-
-        public double GetAltitudeForLatLongForPlanet(int planetID, double viewLat, double viewLong)
-        {
-
-            IImageSet layer = GetImagesetByName(Planets.GetNameFrom3dId(planetID));
-
-            if (layer == null)
-            {
-                return 0;
-            }
-
-            int maxX = GetTilesXForLevel(layer, layer.BaseLevel);
-            int maxY = GetTilesYForLevel(layer, layer.BaseLevel);
-
-            for (int x = 0; x < maxX; x++)
-            {
-                for (int y = 0; y < maxY; y++)
-                {
-                    Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                    if (tile != null)
-                    {
-                        if (tile.IsPointInTile(viewLat, viewLong))
-                        {
-                            return tile.GetSurfacePointAltitude(viewLat, viewLong, true);
-                        }
-                    }
-                }
-            }
-            return 0;
-        }
-
-        private void SetupMatricesLandDome(RenderTypes renderType)
-        {
-            FovAngle = 60;
-
-            RenderContext11.LightingEnabled = false;
-
-            double localZoom = ZoomFactor * 20;
-            double distance = (4.0 * (ZoomFactor / 180)) + 0.000001;
-
-
-            Vector3d lookAt = new Vector3d(0.0f, 0.0f, -targetHeight);
-
-            if (Settings.Active.ShowElevationModel)
-            {
-                double heightNow = 1 + GetScaledAltitudeForLatLong(ViewLat, ViewLong);
-                if (targetHeight < heightNow)
-                {
-                    targetHeight = (((targetHeight * 2) + heightNow) / 3);
-                }
-                else
-                {
-                    targetHeight = (((targetHeight * 9) + heightNow) / 10);
-                }
-
-            }
-            else
-            {
-                targetHeight = 1;
-            }
-
-            double rotLocal = CameraRotate;
-
-            if (renderType == RenderTypes.RightEye)
-            {
-                rotLocal -= .008;
-            }
-            if (renderType == RenderTypes.LeftEye)
-            {
-                rotLocal += .008;
-            }
-
-            RenderContext11.CameraPosition = new Vector3d(
-                (Math.Sin(rotLocal) * Math.Sin(CameraAngle) * distance),
-                (Math.Cos(rotLocal) * Math.Sin(CameraAngle) * distance),
-                (-targetHeight - (Math.Cos(CameraAngle) * distance)));
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            Vector3d lookUp = new Vector3d(Math.Sin(rotLocal) * Math.Cos(CameraAngle), Math.Cos(rotLocal) * Math.Cos(CameraAngle), Math.Sin(CameraAngle));
-
-            Matrix3d cubeMat = Matrix3d.Identity;
-
-            switch (renderType)
-            {
-                case RenderTypes.DomeUp:
-                    cubeMat = Matrix3d.RotationX((Math.PI / 2));
-                    break;
-                case RenderTypes.DomeLeft:
-                    cubeMat = Matrix3d.RotationY((Math.PI / 2));
-                    break;
-                case RenderTypes.DomeRight:
-                    cubeMat = Matrix3d.RotationY(-(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeFront:
-                    break;
-                case RenderTypes.DomeBack:
-                    cubeMat = Matrix3d.RotationY((Math.PI));
-                    break;
-                default:
-                    break;
-            }
-            double camHeight = RenderContext11.CameraPosition.Length();
-
-            if (CurrentImageSet.Projection == ProjectionType.Toast && (CurrentImageSet.MeanRadius > 0 && CurrentImageSet.MeanRadius < 4000000))
-            {
-                int val = (int)Math.Max(0, Math.Min(255, 255 - Math.Min(255, (camHeight - 1) * 5000)));
-                SkyColor = Color.FromArgb(213 * val / 255, 165 * val / 255, 118 * val / 255);
-            }
-            else if (CurrentImageSet.DataSetType == ImageSetType.Earth && Settings.Active.ShowEarthSky)
-            {
-                int val = (int)Math.Max(0, Math.Min(255, 255 - Math.Min(255, (camHeight - 1) * 5000)));
-                SkyColor = Color.FromArgb(255, val / 3, val / 3, val);
-            }
-            else
-            {
-                SkyColor = Color.Black;
-            }
-
-            WorldMatrix = Matrix3d.RotationY(((this.ViewLong + 90f) / 180f * Math.PI));
-            WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180f * Math.PI)));
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-
-            if (config.MultiChannelDome1)
-            {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationX((config.Pitch / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI));
-
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp)
-                    * DomeMatrix
-                    * matHeadingPitchRoll;
-            }
-            else
-            {
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * cubeMat;
-            }
-
-            Vector3d temp = lookAt - RenderContext11.CameraPosition;
-            temp.Normalize();
-            ViewPoint = temp;
-
-
-            back = Math.Sqrt((distance + 1f) * (distance + 1f) - 1);
-            m_nearPlane = distance * .1f;
-
-
-            ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
-            if (config.MultiChannelDome1)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH(((config.UpFov + config.DownFov) / 180 * Math.PI), (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
-            }
-
-            else if (multiMonClient)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
-                RenderContext11.PerspectiveFov = (Math.PI / 2.0);
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-
-            ViewMatrix = RenderContext11.View;
-            RenderContext11.ViewBase = RenderContext11.View;
-
-            MakeFrustum();
-        }
-
-
-        public SolarSystemObjects SolarSystemTrack
-        {
-            get
-            {
-                return viewCamera.Target;
-            }
-            set
-            {
-                viewCamera.Target = value;
-            }
-        }
-        public double SolarSystemCameraDistance
-        {
-            get
-            {
-                return (4.0 * (ZoomFactor / 9)) + 0.000001;
-            }
-
-        }
-
-
-
-        public string TrackingFrame
-        {
-            get { return viewCamera.TargetReferenceFrame; }
-            set { viewCamera.TargetReferenceFrame = value; }
+            get { return RenderEngine.KmlViewInfo; }
+            set { RenderEngine.kmlViewInfo = value; }
         }
 
 
 
 
 
-        bool useSolarSystemTilt = true;
-
-        CameraParameters CustomTrackingParams = new CameraParameters();
-
-        Vector3d cameraOffset = new Vector3d();
-
-
-        private void SetupMatricesSolarSystem11(bool forStars, RenderTypes renderType)
-        {
-            if (SandboxMode)
-            {
-                if (SolarSystemTrack != SolarSystemObjects.Custom && SolarSystemTrack != SolarSystemObjects.Undefined)
-                {
-                    viewCamera.ViewTarget = new Vector3d();
-                }
-            }
-            else
-            {
-                if (SolarSystemTrack != SolarSystemObjects.Custom && SolarSystemTrack != SolarSystemObjects.Undefined)
-                {
-                    viewCamera.ViewTarget = Planets.GetPlanetTargetPoint(SolarSystemTrack, ViewLat, ViewLong, 0);
-                }
-            }
-
-
-
-            double cameraDistance = SolarSystemCameraDistance;
-
-            
-
-            Matrix3d trackingMatrix = Matrix3d.Identity;
-            cameraDistance -= 0.000001;
-
-            if (NetControl.DistanceOffsetPercent == NetControl.LastDistanceOffsetPercent)
-            {
-                //no distnace update since we sample 30 FPS but render 60FPS
-                NetControl.DistanceOffsetPercent += NetControl.DeltaDistanceOffset;
-            }
-
-
-
-            cameraDistance += cameraDistance * NetControl.DistanceOffsetPercent;
-
-
-            bool activeTrackingFrame = false;
-            if (SolarSystemTrack == SolarSystemObjects.Custom && !string.IsNullOrEmpty(TrackingFrame))
-            {
-                activeTrackingFrame = true;
-                viewCamera.ViewTarget = LayerManager.GetFrameTarget(RenderContext11, TrackingFrame, out trackingMatrix);
-            }
-            else if (!string.IsNullOrEmpty(TrackingFrame))
-            {
-                TrackingFrame = "";
-            }
-
-
-            Vector3d center = viewCamera.ViewTarget;
-            Vector3d lightPosition = -center;
-
-            double localZoom = ZoomFactor * 20;
-            Vector3d lookAt = new Vector3d(0, 0, 0);
-
-            Matrix3d viewAdjust = Matrix3d.Identity;
-            viewAdjust.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180f * Math.PI)));
-            viewAdjust.Multiply(Matrix3d.RotationY(((-this.ViewLong) / 180f * Math.PI)));
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-
-            bool dome = false;
-
-            Vector3d lookUp;
-
-
-
-
-
-            if (useSolarSystemTilt && !SandboxMode)
-            {
-                double angle = CameraAngle;
-                if (cameraDistance > 0.0008)
-                {
-                    angle = 0;
-                }
-                else if (cameraDistance > 0.00001)
-                {
-                    double val = Math.Min(1.903089987, Math.Log(cameraDistance, 10) + 5) / 1.903089987;
-
-                    angle = angle * Math.Max(0, 1 - val);
-                }
-
-
-
-                RenderContext11.CameraPosition = new Vector3d(
-                (Math.Sin(-CameraRotate) * Math.Sin(angle) * cameraDistance),
-                (Math.Cos(-CameraRotate) * Math.Sin(angle) * cameraDistance),
-                ((Math.Cos(angle) * cameraDistance)));
-                lookUp = new Vector3d(Math.Sin(-CameraRotate), Math.Cos(-CameraRotate), 0.00001f);
-            }
-            else
-            {
-                RenderContext11.CameraPosition = new Vector3d(0, 0, ((cameraDistance)));
-
-                lookUp = new Vector3d(Math.Sin(-CameraRotate), Math.Cos(-CameraRotate), 0.0001f);
-            }
-
-
-            RenderContext11.CameraPosition.TransformCoordinate(viewAdjust);
-
-            cameraOffset = RenderContext11.CameraPosition;
-
-            cameraOffset.TransformCoordinate(Matrix3d.Invert(trackingMatrix));
-
-
-
-            lookUp.TransformCoordinate(viewAdjust);
-
-
-
-            switch (renderType)
-            {
-                case RenderTypes.DomeUp:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeLeft:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeRight:
-                    dome = true;
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
-                    break;
-                case RenderTypes.DomeFront:
-                    dome = true;
-                    break;
-                case RenderTypes.DomeBack:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
-                    dome = true;
-                    break;
-                default:
-                    break;
-            }
-            WorldMatrix = Matrix3d.Identity;
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = RenderContext11.World;
-
-            if (config.MultiChannelDome1)
-            {
-                Matrix3d matHeadingPitchRoll =
-                    Matrix3d.RotationZ((config.Roll / 180 * Math.PI)) *
-                    Matrix3d.RotationY((config.Heading / 180 * Math.PI)) *
-                    Matrix3d.RotationX(((config.Pitch) / 180 * Math.PI));
-
-                RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matHeadingPitchRoll;
-            }
-            else
-            {
-                if (Settings.DomeView)
-                {
-                    RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * lookAtAdjust;
-
-                }
-                else
-                {
-                    if (DomePreviewPopup.Active && !dome)
-                    {
-                        Matrix3d matDomePreview =
-                             Matrix3d.RotationY((DomePreviewPopup.Az / 180 * Math.PI)) *
-                             Matrix3d.RotationX((DomePreviewPopup.Alt / 180 * Math.PI));
-                        RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * matDomePreview;
-                    }
-                    else if (rift || renderType == RenderTypes.RightEye || renderType == RenderTypes.LeftEye)
-                    {
-                        double amount = cameraDistance / 100;
-                        Matrix3d stereoTranslate = Matrix3d.Translation(renderType == RenderTypes.LeftEye ? amount : -amount, 0, 0);
-                        Matrix3d matRiftView = Matrix3d.Identity;
-
-                        if (rift)
-                        {
-                            SharpDX.Vector3 pos = eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Position.ToVector3();
-                            amount *= 10;
-                            var pose = this.trackingState.HeadPose.ThePose.Position;
-                            stereoTranslate = Matrix3d.Translation((-pos.X- pose.X) * amount, (-pos.Y - pose.Y) * amount, (-pos.Z + pose.Z*10) * amount);
-
-                            var rotationQuaternion = SharpDXHelpers.ToQuaternion(eyeRenderPose[renderType == RenderTypes.LeftEye ? 0 : 1].Orientation);
-                            matRiftView.Matrix11 = (SharpDX.Matrix.RotationQuaternion(rotationQuaternion) * SharpDX.Matrix.Scaling(1, 1, 1));
-                        }
-                        RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * matRiftView * stereoTranslate;
-                    }
-                    else
-                    {
-                        Matrix3d swingTranslation;
-                        if (NetControl.DistanceOffsetPercent < 0)
-                        {
-                            swingTranslation = Matrix3d.Translation(0, -(1 - Math.Cos(NetControl.DistanceOffsetPercent)) * Properties.Settings.Default.SwingScaleFront * SolarSystemCameraDistance / 4, 0);
-                        }
-                        else
-                        {
-                            swingTranslation = Matrix3d.Translation(0, -(1 - Math.Cos(NetControl.DistanceOffsetPercent)) * Properties.Settings.Default.SwingScaleBack * SolarSystemCameraDistance / 4, 0);
-                        }
-                        var tt = Properties.Settings.Default.SwingScaleFront;
-
-                        RenderContext11.View = trackingMatrix * Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * lookAtAdjust * swingTranslation;
-                    }
-
-                    if (multiMonClient)
-                    {
-                        RenderContext11.View = RenderContext11.View * Matrix3d.RotationY((config.Heading / 180 * Math.PI));
-                    }
-
-                }
-            }
-
-            RenderContext11.ViewBase = RenderContext11.View;
-
-
-            Vector3d temp = lookAt - RenderContext11.CameraPosition;
-            temp.Normalize();
-            temp = Vector3d.TransformCoordinate(temp, trackingMatrix);
-            temp.Normalize();
-            ViewPoint = temp;
-
-
-
-            if (activeTrackingFrame)
-            {
-                Vector3d atfCamPos = RenderContext11.CameraPosition;
-                Vector3d atfLookAt = lookAt;
-                Vector3d atfLookUp = lookUp;
-                Matrix3d mat = trackingMatrix;
-                mat.Invert();
-
-                atfCamPos.TransformCoordinate(mat);
-                atfLookAt.TransformCoordinate(mat);
-                atfLookUp.TransformCoordinate(mat);
-                atfLookAt.Normalize();
-                atfLookUp.Normalize();
-
-                CustomTrackingParams.Angle = 0;
-                CustomTrackingParams.Rotation = 0;
-                CustomTrackingParams.DomeAlt = viewCamera.DomeAlt;
-                CustomTrackingParams.DomeAz = viewCamera.DomeAz;
-                CustomTrackingParams.TargetReferenceFrame = "";
-                CustomTrackingParams.ViewTarget = viewCamera.ViewTarget;
-                CustomTrackingParams.Zoom = viewCamera.Zoom;
-                CustomTrackingParams.Target = SolarSystemObjects.Custom;
-
-
-                Vector3d atfLook = atfCamPos - atfLookAt;
-                atfLook.Normalize();
-
-
-
-                Coordinates latlng = Coordinates.CartesianToSpherical2(atfLook);
-                CustomTrackingParams.Lat = latlng.Lat;
-                CustomTrackingParams.Lng = latlng.Lng - 90;
-
-                Vector3d up = Coordinates.GeoTo3dDouble(latlng.Lat + 90, latlng.Lng - 90);
-                Vector3d left = Vector3d.Cross(atfLook, up);
-
-                double dotU = Math.Acos(Vector3d.Dot(atfLookUp, up));
-                double dotL = Math.Acos(Vector3d.Dot(atfLookUp, left));
-
-                CustomTrackingParams.Rotation = dotU;// -Math.PI / 2;
-            }
-
-
-            double radius = Planets.GetAdjustedPlanetRadius((int)SolarSystemTrack);
-
-
-            if (cameraDistance < radius * 2.0 && !forStars)
-            {
-                m_nearPlane = cameraDistance * 0.03;
-
-                m_nearPlane = Math.Max(m_nearPlane, .00000000001);
-                back = 1900;
-            }
-            else
-            {
-                if (forStars)
-                {
-                    back = 900056;
-                    back = cameraDistance > 900056 ? cameraDistance * 3 : 900056;
-                    m_nearPlane = .00003f;
-
-                }
-                else
-                {
-                    // Github Issue #149
-                    // Orbits past Neptune are clipping 
-
-                    back = cameraDistance > 950 ? cameraDistance + 2500 : 1900;
-
-                    if (Settings.Active.SolarSystemScale < 13)
-                    {
-                        m_nearPlane = (float)Math.Min(cameraDistance * 0.03, 0.01);
-                    }
-                    else
-                    {
-                        m_nearPlane = .001f;
-                    }
-                }
-            }
-            if (config.MultiChannelDome1)
-            {
-                double aspect = config.Aspect;
-                double top = m_nearPlane * 2 / ((1 / Math.Tan(config.UpFov / 180 * Math.PI))) / 2;
-                double bottom = m_nearPlane * 2 / -(1 / Math.Tan(config.DownFov / 180 * Math.PI)) / 2;
-                double right = m_nearPlane * 2 / (1 / Math.Tan((config.UpFov + config.DownFov) / 2 / 180 * Math.PI)) * aspect / 2;
-                double left = -right;
-
-
-                ProjMatrix = Matrix3d.PerspectiveOffCenterLH(
-                    left,
-                    right,
-                    bottom,
-                    top,
-                    m_nearPlane,
-                    back);
-            }
-            else if (config.MultiProjector)
-            {
-
-                RenderContext11.View = RenderContext11.View * config.ViewMatrix;
-
-                ProjMatrix = Matrix3d.PerspectiveFovLH((75f / 180f) * Math.PI, 1.777778, m_nearPlane, back);
-
-                RenderContext11.ViewBase = RenderContext11.View;
-            }
-            else if (multiMonClient && !dome)
-            {
-                double fov = (((config.UpFov + config.DownFov) / 2 / 180 * Math.PI));
-                if (fov == 0)
-                {
-                    fov = (Math.PI / 4.0);
-                }
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 4.0), (double)(monitorWidth * MonitorCountX) / ((double)monitorHeight * (double)MonitorCountY), m_nearPlane, back);
-            }
-            else if (dome)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, back);
-            }
-            else if (rift)
-            {
-                var fovPort = eyeTextures[renderType == RenderTypes.LeftEye ? 0 : 1].FieldOfView;
-                var projMat = wrap.Matrix4f_Projection(fovPort, (float)m_nearPlane, (float)back, OVRTypes.ProjectionModifier.LeftHanded).ToMatrix();
-
-                RenderContext11.PerspectiveFov = Math.Atan(fovPort.UpTan + fovPort.DownTan);
-                projMat.Transpose();
-
-                ProjMatrix = new Matrix3d();
-                ProjMatrix.Matrix11 = projMat;
-            }
-            else if (megaFrameDump)
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), megaWidth / megaHeight, m_nearPlane, back);
-                RenderContext11.PerspectiveFov = fovLocal;
-            }
-            else
-            {
-                ProjMatrix = Matrix3d.PerspectiveFovLH((fovLocal), (double)ViewWidth / (double)renderWindow.ClientRectangle.Height, m_nearPlane, back);
-                RenderContext11.PerspectiveFov = fovLocal;
-                if (Properties.Settings.Default.PerspectiveOffsetX != 0 || Properties.Settings.Default.PerspectiveOffsetY != 0)
-                {
-                    ProjMatrix.M31 += Properties.Settings.Default.PerspectiveOffsetX;
-                    ProjMatrix.M32 += Properties.Settings.Default.PerspectiveOffsetY;
-                }
-            }
-
-            if (multiMonClient && !config.MultiChannelDome1 && !config.MultiProjector)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            if (rift)
-            {
-                if (renderType == RenderTypes.LeftEye)
-                {
-
-                    ProjMatrix.M31 += iod;
-                }
-                else
-                {
-                    ProjMatrix.M31 -= iod;
-                }
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-            RenderContext11.ViewBase = RenderContext11.View;
-
-            MakeFrustum();
-        }
-
-        float iod = .07f;
-        private void SetupMatricesSpaceDome(bool forStars, RenderTypes renderType)
-        {
-
-            if (SolarSystemTrack != SolarSystemObjects.Custom && SolarSystemTrack != SolarSystemObjects.Undefined)
-            {
-                viewCamera.ViewTarget = Planets.GetPlanetTargetPoint(SolarSystemTrack, ViewLat, ViewLong, 0);
-            }
-
-
-            double camLocal = CameraRotate;
-            if ((Settings.Active.LocalHorizonMode && !Settings.Active.GalacticMode) && CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                if (Properties.Settings.Default.ShowHorizon != false)
-                {
-                    Properties.Settings.Default.ShowHorizon = false;
-                }
-                Coordinates zenithAltAz = new Coordinates(0, 0);
-
-                zenithAltAz.Az = 0;
-
-                zenithAltAz.Alt = 0;
-
-                ZoomFactor = TargetZoom = ZoomMax;
-                alt = 0;
-                az = 0;
-
-                Coordinates zenith = Coordinates.HorizonToEquitorial(zenithAltAz, SpaceTimeController.Location, SpaceTimeController.Now);
-
-                double raPart = -((zenith.RA - 6) / 24.0 * (Math.PI * 2));
-                double decPart = -(((zenith.Dec)) / 360.0 * (Math.PI * 2));
-                string raText = Coordinates.FormatDMS(zenith.RA);
-                WorldMatrix = Matrix3d.RotationY(-raPart);
-                WorldMatrix.Multiply(Matrix3d.RotationX(decPart));
-
-                if (SpaceTimeController.Location.Lat < 0)
-                {
-                    WorldMatrix.Multiply(Matrix3d.RotationY(((az) / 180.0 * Math.PI)));
-
-                    WorldMatrix.Multiply(Matrix3d.RotationX(((alt) / 180.0 * Math.PI)));
-                    camLocal += Math.PI;
-                }
-                else
-                {
-                    WorldMatrix.Multiply(Matrix3d.RotationY(((-az) / 180.0 * Math.PI)));
-
-                    WorldMatrix.Multiply(Matrix3d.RotationX(((-alt) / 180.0 * Math.PI)));
-                }
-
-                Coordinates currentRaDec = Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(alt, az), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                TargetLat = ViewLat = currentRaDec.Dec;
-                TargetLong = ViewLong = RAtoViewLng(currentRaDec.RA);
-
-            }
-
-            Vector3d center = viewCamera.ViewTarget;
-            RenderContext11.LightingEnabled = false;
-
-            double localZoom = ZoomFactor * 20;
-            Vector3d lookAt = new Vector3d(0, 0, -1);
-            FovAngle = ((ZoomFactor/**16*/) / FOVMULT) / Math.PI * 180;
-
-
-            double distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
-
-            RenderContext11.CameraPosition = new Vector3d(0, 0, distance);
-            Vector3d lookUp = new Vector3d(Math.Sin(-CameraRotate), Math.Cos(-CameraRotate), 0.0001f);
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            switch (renderType)
-            {
-                case RenderTypes.DomeUp:
-                    lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeLeft:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeRight:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
-                    break;
-                case RenderTypes.DomeFront:
-                    break;
-                case RenderTypes.DomeBack:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
-                    break;
-                default:
-                    break;
-            }
-
-
-            if ((Settings.Active.GalacticMode && !Settings.Active.LocalHorizonMode) && CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                if (!galMatInit)
-                {
-                    galacticMatrix = Matrix3d.Identity;
-                    galacticMatrix.Multiply(Matrix3d.RotationY(-(90 - (17.7603329867975 * 15)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationX(-((-28.9361739586894)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783) - 90) / 180.0 * Math.PI));
-                    galMatInit = true;
-                }
-
-                WorldMatrix = galacticMatrix;
-                WorldMatrix.Multiply(Matrix3d.RotationY(((az)) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(-((alt)) / 180.0 * Math.PI));
-
-
-                double[] gPoint = Coordinates.GalactictoJ2000(az, alt);
-
-                this.RA = gPoint[0] / 15;
-                this.Dec = gPoint[1];
-                targetViewCamera.Lat = viewCamera.Lat;
-                targetViewCamera.Lng = viewCamera.Lng;
-            }
-            else
-            {
-                // Show in Ecliptic
-
-                WorldMatrix = Matrix3d.RotationY(-((this.ViewLong + 90.0) / 180.0 * Math.PI));
-                WorldMatrix.Multiply(Matrix3d.RotationX(((-this.ViewLat) / 180.0 * Math.PI)));
-            }
-
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-
-
-            if (Settings.Active.LocalHorizonMode)
-            {
-                Matrix3d matNorth = Matrix3d.RotationY(Properties.Settings.Default.FaceNorth ? 0 : Math.PI);
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * matNorth * DomeAngleMatrix * lookAtAdjust;
-            }
-            else
-            {
-                RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * lookAtAdjust;
-            }
-            Vector3d temp = lookAt - RenderContext11.CameraPosition;
-            temp.Normalize();
-            ViewPoint = temp;
-
-            // Set the near clip plane close enough that the sky dome isn't clipped
-            double cameraZ = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
-            m_nearPlane = (float)(1.0 + cameraZ) * 0.5f;
-
-            ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, -1f);
-            RenderContext11.PerspectiveFov = (Math.PI / 2.0);
-            if (multiMonClient)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-            RenderContext11.ViewBase = RenderContext11.View;
-            MakeFrustum();
-        }
-
-        private void SetupMatricesVideoOverlayDome(bool forStars, RenderTypes renderType)
-        {
-
-
-            Vector3d center = viewCamera.ViewTarget;
-            RenderContext11.LightingEnabled = false;
-
-            double localZoom = ZoomFactor * 20;
-            Vector3d lookAt = new Vector3d(0, 0, -1);
-            FovAngle = ((360) / FOVMULT) / Math.PI * 180;
-
-            double distance = 1;
-
-            RenderContext11.CameraPosition = new Vector3d(0, 0, distance);
-            Vector3d lookUp = new Vector3d(Math.Sin(-0), Math.Cos(-0), 0.0001f);
-
-            Matrix3d lookAtAdjust = Matrix3d.Identity;
-
-            switch (renderType)
-            {
-                case RenderTypes.DomeUp:
-                    lookAtAdjust.Multiply(Matrix3d.RotationX(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeLeft:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI / 2));
-                    break;
-                case RenderTypes.DomeRight:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(-Math.PI / 2));
-                    break;
-                case RenderTypes.DomeFront:
-                    break;
-                case RenderTypes.DomeBack:
-                    lookAtAdjust.Multiply(Matrix3d.RotationY(Math.PI));
-                    break;
-                default:
-                    break;
-            }
-
-            WorldMatrix = Matrix3d.RotationY(-((0 + 90) / 180f * Math.PI));
-            WorldMatrix.Multiply(Matrix3d.RotationX(((0) / 180f * Math.PI)));
-            RenderContext11.World = WorldMatrix;
-            RenderContext11.WorldBase = WorldMatrix;
-
-
-            RenderContext11.View = Matrix3d.LookAtLH(RenderContext11.CameraPosition, lookAt, lookUp) * DomeMatrix * lookAtAdjust;
-
-            Vector3d temp = lookAt - RenderContext11.CameraPosition;
-            temp.Normalize();
-            ViewPoint = temp;
-
-
-            m_nearPlane = ((.000000001));
-
-
-            ProjMatrix = Matrix3d.PerspectiveFovLH((Math.PI / 2.0), 1.0f, m_nearPlane, -1f);
-
-
-            if (multiMonClient)
-            {
-                ProjMatrix.M11 *= MonitorCountX * bezelSpacing;
-                ProjMatrix.M22 *= MonitorCountY * bezelSpacing;
-                ProjMatrix.M31 = (MonitorCountX - 1) - (MonitorX * bezelSpacing * 2);
-                ProjMatrix.M32 = -((MonitorCountY - 1) - (MonitorY * bezelSpacing * 2));
-            }
-
-            if (rift)
-            {
-                if (renderType == RenderTypes.LeftEye)
-                {
-
-                    ProjMatrix.M31 += iod;
-                }
-                else
-                {
-                    ProjMatrix.M31 -= iod;
-                }
-            }
-
-            RenderContext11.Projection = ProjMatrix;
-
-            ViewMatrix = RenderContext11.View;
-            RenderContext11.ViewBase = RenderContext11.View;
-            MakeFrustum();
-        }
-
-
-
-        public bool IsSphereInViewFrustum(SharpDX.Vector3 center, float radius)
-        {
-            Vector4d centerV4 = new Vector4d(center.X, center.Y, center.Z, 1f);
-            for (int i = 0; i < 6; i++)
-            {
-                if (frustum[i].Dot(centerV4) + radius < 0)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
 
 
         public void SetLabelText(IPlace place, bool showText)
         {
-            if (label != null)
+            if (RenderEngine.label != null)
             {
-                label.Dispose();
-                GC.SuppressFinalize(label);
-                label = null;
+                RenderEngine.label.Dispose();
+                GC.SuppressFinalize(RenderEngine.label);
+                RenderEngine.label = null;
             }
             if (place != null)
             {
 
-                if (SolarSystemMode || PlanetLike)
+                if (SolarSystemMode || RenderEngine.PlanetLike)
                 {
-                    if (PlanetLike)
+                    if (RenderEngine.PlanetLike)
                     {
-                        label = new SkyLabel(RenderContext11, ((place.Lng / 15)) + 180, place.Lat, showText ? place.Name : "", LabelSytle.Telrad, 1.0);
+                        RenderEngine.label = new SkyLabel(RenderContext11, ((place.Lng / 15)) + 180, place.Lat, showText ? place.Name : "", LabelSytle.Telrad, 1.0);
                     }
                     else if (place.Classification == Classification.SolarSystem)
                     {
                         Vector3d temp = Planets.GetPlanet3dLocation((SolarSystemObjects)Planets.GetPlanetIDFromName(place.Name));
 
-                        temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
-                        temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
+                        temp.Subtract(RenderEngine.viewCamera.ViewTarget);
+                        temp.Subtract(RenderEngine.viewCamera.ViewTarget);
 
-                        label = new SkyLabel(RenderContext11, temp, showText ? place.Name : "", LabelSytle.Telrad);
+                        RenderEngine.label = new SkyLabel(RenderContext11, temp, showText ? place.Name : "", LabelSytle.Telrad);
 
                     }
                     else
                     {
-                        label = new SkyLabel(RenderContext11, place.RA, -place.Dec, showText ? place.Name : "", LabelSytle.Telrad, place.Distance != 0 ? place.Distance : 100000000.0);
+                        RenderEngine.label = new SkyLabel(RenderContext11, place.RA, -place.Dec, showText ? place.Name : "", LabelSytle.Telrad, place.Distance != 0 ? place.Distance : 100000000.0);
                     }
                 }
                 else
                 {
-                    label = new SkyLabel(RenderContext11, place.RA, place.Dec, showText ? place.Name : "", LabelSytle.Telrad, place.Distance != 0 ? place.Distance : 1.0);
+                    RenderEngine.label = new SkyLabel(RenderContext11, place.RA, place.Dec, showText ? place.Name : "", LabelSytle.Telrad, place.Distance != 0 ? place.Distance : 1.0);
                 }
             }
         }
 
 
-
-        string constellation;
-
         public string Constellation
         {
-            get { return constellation; }
+            get { return RenderEngine.Constellation; }
         }
 
-        Coordinates[] currentViewCorners = null;
 
-        public Coordinates[] CurrentViewCorners
-        {
-            get { return currentViewCorners; }
-            set { currentViewCorners = value; }
-        }
-
-        bool hemisphereView = false;
 
         int frameCount = 0;
 
         long lastSampleTime;
-        public static int masterSyncFrameNumber = 0;
 
-        static bool logging = false;
 
-        public static bool Logging
-        {
-            get { return logging; }
-            set
-            {
-                if (logging != value)
-                {
-                    logging = value;
 
-                    if (logFilestream != null)
-                    {
-                        logFilestream.Close();
-                        logFilestream = null;
-                    }
 
-                    if (logging)
-                    {
-                        FrameNumber = masterSyncFrameNumber;
-                        logFilestream = new StreamWriter("C:\\wwtconfig\\wwtrenderlog.txt");
-                        logFilestream.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", "Frame Number", "Master Frame", "Render Time", "Tiles Loaded", "Textures", "Garbage Collections", "Memory", "Status Report");
-                    }
-                }
-            }
-        }
-        private static System.Threading.Mutex logMutex = new System.Threading.Mutex();
-        public static void WriteLogMessage(string message)
-        {
-            if (logging)
-            {
-                long ticks = HiResTimer.TickCount - lastRender;
-
-                int ms = (int)((ticks * 1000) / HiResTimer.Frequency);
-
-                logMutex.WaitOne();
-                logFilestream.WriteLine("{0}\t{1}\t{2}\t{3}", frameNumber, masterSyncFrameNumber, ms, message);
-                logMutex.ReleaseMutex();
-            }
-        }
-
-        static StreamWriter logFilestream = null;
-        static int frameNumber = 0;
-
-        public static int FrameNumber
-        {
-            get { return Earth3d.frameNumber; }
-            set { Earth3d.frameNumber = value; }
-        }
         static int lastGcCount = 0;
         public static float LastFPS = 0;
         static DateTime lastPing = DateTime.Now;
@@ -8904,12 +5489,12 @@ namespace TerraViewer
             }
 
 
-            frameNumber++;
-            if (logging)
+            Utils.frameNumber++;
+            if (Utils.Logging)
             {
-                if (logFilestream != null)
+                if (Utils.logFilestream != null)
                 {
-                    ticks = HiResTimer.TickCount - lastRender;
+                    ticks = HiResTimer.TickCount - Utils.lastRender;
 
                     int ms = (int)((ticks * 1000) / HiResTimer.Frequency);
                     int gcCount = GC.CollectionCount(2);
@@ -8924,7 +5509,7 @@ namespace TerraViewer
                     }
                     long mem = memNow - lastMem;
                     lastMem = memNow;
-                    logFilestream.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", frameNumber, masterSyncFrameNumber, ms, TileCache.tilesLoadedThisFrame, Tile.TexturesLoaded, thisCount, mem, statusReport);
+                    Utils.logFilestream.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", Utils.frameNumber, Utils.masterSyncFrameNumber, ms, TileCache.tilesLoadedThisFrame, Tile.TexturesLoaded, thisCount, mem, statusReport);
                     TileCache.tilesLoadedThisFrame = 0;
                     Tile.TexturesLoaded = 0;
                     bgImagesetGets = 0;
@@ -8939,968 +5524,42 @@ namespace TerraViewer
         long lastMem = 0;
         Random pingRandom = new Random();
         BlendState panoramaBlend = new BlendState();
-        BlendState fovBlend = new BlendState();
-        BlendState fadeImageSet = new BlendState(true, 2000);
-        IViewMover mover = null;
-
-        internal IViewMover Mover
-        {
-            get { return mover; }
-            set { mover = value; }
-        }
 
 
-        public CameraParameters viewCamera = new CameraParameters(0, 0, 360, 0, 0, 100);
-        public CameraParameters targetViewCamera = new CameraParameters(0, 0, 360, 0, 0, 100);
 
-        public bool IsMoving
-        {
-            get
-            {
-                return (mover != null || zooming == true || targetViewCamera != viewCamera) || JoyInMotion;
-            }
-        }
-
-        double fovAngle;
-
-        public double FovAngle
-        {
-            get { return fovAngle; }
-            set
-            {
-                fovAngle = value;
-                degreesPerPixel = fovAngle / (double)renderWindow.ClientRectangle.Height;
-            }
-        }
-
-        private double degreesPerPixel;
-
-        public double DegreesPerPixel
-        {
-            get { return degreesPerPixel; }
-            set { degreesPerPixel = value; }
-        }
         delegate void RenderDelegate();
         delegate void BackInitDelegate();
         public void RenderCrossThread()
         {
-            Invoke(new RenderDelegate(Render));
+            Invoke(new RenderDelegate(RenderEngine.Render));
         }
 
         bool blink = false;
         DateTime lastBlink = DateTime.Now;
 
-        public static int LoadTileBudget = 1;
 
-
-        bool refreshDomeTextures = true;
-        bool usingLargeTextures = true;
-        int currentCubeFaceSize = 0;
-        public bool SyncLayerNeeded = false;
-        public bool SyncTourNeeded = false;
-        public bool ChronoZoomOpen = false;
-
-        public void Render()
-        {
-            if (!readyToRender)
-            {
-                return;
-            }
-
-
-            if (SyncLayerNeeded)
-            {
-                NetControl.SyncLayersUiThread();
-            }
-
-            if (SyncTourNeeded)
-            {
-                NetControl.SyncTourUiThread();
-            }
-
-            if (Tile.fastLoad)
-            {
-                Tile.fastLoadAutoReset = true;
-            }
-
-            if (!TourPlayer.Playing)
-            {
-                Earth3d.MainWindow.CrossFadeFrame = false;
-            }
-
-
-
-            Int64 ticks = HiResTimer.TickCount;
-
-            double elapsedSeconds = ((double)(ticks - lastRenderTickCount)) / HiResTimer.Frequency;
-
-            if (!rift)
-            {
-
-                if (Properties.Settings.Default.TargetFrameRate != 0 && !(Properties.Settings.Default.FrameSync && Properties.Settings.Default.TargetFrameRate == 60))
-                {
-                    int frameRate = Properties.Settings.Default.TargetFrameRate;
-
-
-                    if (elapsedSeconds < (1.0 / (double)frameRate))
-                    {
-                        return;
-                    }
-                }
-            }
-
-            lastRenderTickCount = ticks;
-
-            lastFrameTime = (Math.Min(.1, elapsedSeconds));
-
-            //Update MetaNow to current realtime for entire frame to render exactly on time
-            SpaceTimeController.MetaNow = DateTime.Now;
-
-
-            LoadTileBudget = 1;
-
-            if (IsPaused() || !Initialized)
-            {
-                System.Threading.Thread.Sleep(100);
-                return;
-            }
-
-
-
-            if (ProjectorServer)
-            {
-                UpdateNetworkStatus();
-            }
-
-
-            //oculus rift support
-            rift = StereoMode == StereoModes.OculusRift;
-            if (rift)
-            {
-                GetRiftSample();
-            }
-
-            if (!megaFrameDump)
-            {
-                TileCache.PurgeLRU();
-            }
-
-            TileCache.DecimateQueue();
-
-            Tile.imageQuality = Properties.Settings.Default.ImageQuality;
-
-            Tile.CurrentRenderGeneration++;
-            IconCacheEntry.CurrentFrame = Tile.CurrentRenderGeneration;
-
-            Tile.lastDeepestLevel = Tile.deepestLevel;
-            Tile.TilesInView = 0;
-            Tile.TrianglesRendered = 0;
-            Tile.TilesTouched = 0;
-
-
-            if (ZoomFactor == 0 || TargetZoom == 0 || double.IsNaN(ZoomFactor) || double.IsNaN(TargetZoom))
-            {
-                ZoomFactor = TargetZoom = 360;
-            }
-
-            if (contextPanel != null)
-            {
-                contextPanel.QueueProgress = TileCache.QueuePercent;
-            }
-
-            TileCache.InitNextWaitingTile();
-
-            // reset dome matrix Cache
-            DomeMatrixFresh = false;
-
-
-            if (mover != null)
-            {
-                SpaceTimeController.Now = mover.CurrentDateTime;
-            }
-            else
-            {
-                SpaceTimeController.UpdateClock();
-                LayerManager.UpdateLayerTime();
-            }
-
-            if (uiController != null)
-            {
-                {
-                    uiController.PreRender(this);
-                }
-            }
-
-            if (Space)
-            {
-                Planets.UpdatePlanetLocations(false);
-            }
-            else if (CurrentImageSet.DataSetType == ImageSetType.SolarSystem)
-            {
-                // todo allow update of focus planet
-                Planets.UpdatePlanetLocations(true);
-                Planets.UpdateOrbits(0);
-            }
-
-            UpdateSpaceNavigator();
-            UpdateXInputState();
-            UpdateNetControlState();
-            if (mover != null)
-            {
-                UpdateMover(mover);
-            }
-            else
-            {
-                if (!SandboxMode)
-                {
-                    if (SolarSystemTrack == SolarSystemObjects.Undefined | (SolarSystemTrack == SolarSystemObjects.Custom && viewCamera.ViewTarget == Vector3d.Empty))
-                    {
-                        SolarSystemTrack = SolarSystemObjects.Sun;
-                    }
-                }
-            }
-
-            UpdateViewParameters();
-
-            if (SolarSystemMode)
-            {
-                if (SolarSystemTrack != SolarSystemObjects.Custom)
-                {
-                    viewCamera.ViewTarget = Planets.GetPlanet3dLocation(SolarSystemTrack);
-                }
-            }
-
-            ClampZoomValues();
-
-            if (blink)
-            {
-                TimeSpan ts = DateTime.Now - lastBlink;
-                if (ts.TotalMilliseconds > 500)
-                {
-                    if (StudyOpacity > 0)
-                    {
-                        StudyOpacity = 0;
-                    }
-                    else
-                    {
-                        StudyOpacity = 100;
-                    }
-                    lastBlink = DateTime.Now;
-                }
-            }
-
-            LayerManager.PrepTourLayers();
-
-            if (Settings.MasterController)
-            {
-                SendMove();
-            }
-
-
-
-            if (contextPanel != null)
-            {
-
-                contextPanel.QueueProgress = TileCache.QueuePercent;
-
-                if (Space)
-                {
-                    contextPanel.ViewLevel = fovAngle;
-                    contextPanel.RA = RA;
-                    contextPanel.Dec = Dec;
-
-                    if (constellationCheck != null)
-                    {
-                        constellation = this.constellationCheck.FindConstellationForPoint(RA, Dec);
-                        contextPanel.Constellation = Constellations.FullName(Constellation);
-                    }
-                }
-                else if (SolarSystemMode || SandboxMode)
-                {
-                    if (SandboxMode)
-                    {
-                        contextPanel.Sandbox = true;
-                        contextPanel.Distance = SolarSystemCameraDistance;
-                    }
-                    else
-                    {
-                        contextPanel.Sandbox = false;
-                        contextPanel.Distance = SolarSystemCameraDistance;
-                    }
-
-
-                    if (!SandboxMode && (viewCamera.Target != SolarSystemObjects.Custom && viewCamera.Target != SolarSystemObjects.Undefined))
-                    {
-                        Vector3d pnt = Coordinates.GeoTo3dDouble(ViewLat, ViewLong + 90);
-
-                        Matrix3d EarthMat = Planets.EarthMatrixInv;
-
-
-                        pnt = Vector3d.TransformCoordinate(pnt, EarthMat);
-                        pnt.Normalize();
-
-
-                        Vector2d radec = Coordinates.CartesianToLatLng(pnt);
-
-                        if (viewCamera.Target != SolarSystemObjects.Earth)
-                        {
-                            if (radec.X < 0)
-                            {
-                                radec.X += 360;
-                            }
-                        }
-
-                        contextPanel.RA = radec.X;
-                        contextPanel.Dec = radec.Y;
-                    }
-                    else
-                    {
-                        contextPanel.RA = ViewLong;
-                        contextPanel.Dec = ViewLat;
-                    }
-                    contextPanel.Constellation = null;
-                }
-                else if (PlanetLike)
-                {
-                    contextPanel.Sandbox = false;
-                    contextPanel.Distance = SolarSystemCameraDistance / UiTools.KilometersPerAu * 370;
-                    contextPanel.RA = ViewLong;
-                    contextPanel.Dec = ViewLat;
-                    contextPanel.Constellation = null;
-                }
-                else
-                {
-                    contextPanel.Sandbox = false;
-                    contextPanel.ViewLevel = fovAngle;
-                    contextPanel.RA = ViewLong;
-                    contextPanel.Dec = ViewLat;
-                    contextPanel.Constellation = null;
-                }
-            }
-
-            //Capture this state once to avoid race condition where its false now, but changes before the frame is done
-            bool tilesAllLoaded = TileCache.QueuePercent == 100;
-
-            if (!megaFrameDump)
-            {
-
-
-                if (StereoMode != StereoModes.Off && (!Space || rift))
-                {
-                    RenderContext11.ViewPort = new SharpDX.ViewportF(0, 0, ViewWidth, ViewHeight, 0.0f, 1.0f);
-
-                    // Ensure that the dome depth/stencil buffer matches our requirements
-                    if (domeZbuffer != null)
-                    {
-                        if (domeZbuffer.Width != ViewWidth || domeZbuffer.Height != ViewHeight)
-                        {
-                            domeZbuffer.Dispose();
-                            GC.SuppressFinalize(domeZbuffer);
-                            domeZbuffer = null;
-                        }
-                    }
-
-                    if (leftEye != null)
-                    {
-                        if (leftEye.RenderTexture.Height != ViewHeight || leftEye.RenderTexture.Width != ViewWidth)
-                        {
-                            leftEye.Dispose();
-                            GC.SuppressFinalize(leftEye);
-                            leftEye = null;
-                        }
-                    }
-
-                    if (rightEye != null)
-                    {
-                        if (rightEye.RenderTexture.Height != ViewHeight || rightEye.RenderTexture.Width != ViewWidth)
-                        {
-                            rightEye.Dispose();
-                            GC.SuppressFinalize(rightEye);
-                            rightEye = null;
-                        }
-                    }
-
-                    if (stereoRenderTextureLeft != null)
-                    {
-                        if (stereoRenderTextureLeft.RenderTexture.Height != ViewHeight || stereoRenderTextureLeft.RenderTexture.Width != ViewWidth)
-                        {
-                            stereoRenderTextureLeft.Dispose();
-                            GC.SuppressFinalize(stereoRenderTextureLeft);
-                            stereoRenderTextureLeft = null;
-
-                            stereoRenderTextureRight.Dispose();
-                            GC.SuppressFinalize(stereoRenderTextureRight);
-                            stereoRenderTextureRight = null;
-                        }
-                    }
-
-
-                    if (leftEye == null)
-                    {
-                        leftEye = new RenderTargetTexture(ViewWidth, ViewHeight, 1);
-                    }
-
-                    if (rightEye == null)
-                    {
-                        rightEye = new RenderTargetTexture(ViewWidth, ViewHeight, 1);
-                    }
-
-                    if (leftDepthBuffer != null)
-                    {
-                        if (leftDepthBuffer.Width != ViewWidth || leftDepthBuffer.Height != ViewHeight)
-                        {
-                            leftDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
-
-                            rightDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
-
-                            leftDepthBuffer.Dispose();
-                            GC.SuppressFinalize(leftDepthBuffer);
-                            leftDepthBuffer = null;
-
-                            rightDepthBuffer.Dispose();
-                            GC.SuppressFinalize(rightDepthBuffer);
-                            rightDepthBuffer = null;
-                        }
-                    }
-
-                    if (RenderContext11.MultiSampleCount > 1)
-                    {
-                        if (rift)
-                        {
-                            // When multisample anti-aliasing is enabled, render to an offscreen buffer and then
-                            // resolve to the left and then the right eye textures. 
-                            if (stereoRenderTextureLeft == null)
-                            {
-                                stereoRenderTextureLeft = new RenderTargetTexture(leftEyeWidth, leftEyeHeight, riftFormat);
-                            }
-
-                            if (stereoRenderTextureRight == null)
-                            {
-                                stereoRenderTextureRight = new RenderTargetTexture(leftEyeWidth, leftEyeHeight, riftFormat);
-                            }
-
-                            if (leftDepthBuffer == null)
-                            {
-                                leftDepthBuffer = new DepthBuffer(leftEyeWidth, leftEyeHeight);
-                            }
-
-                            if (rightDepthBuffer == null)
-                            {
-                                rightDepthBuffer = new DepthBuffer(leftEyeWidth, leftEyeHeight);
-                            }
-
-                            int eye = 0;
-                            var swapTexture = eyeTextures[(int)eye];
-                            int textureIndex;
-                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
-                            RenderFrame(stereoRenderTextureLeft.renderView, leftDepthBuffer.DepthView, RenderTypes.LeftEye, ViewWidth, ViewHeight);
-                            SharpDX.Direct3D11.Resource dest = eyeTextures[eye].RenderTargetViews[textureIndex].Resource;
-                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
-                                                                                            dest, 0,
-                                                                                           riftFormat);
-                            eyeTextures[eye].SwapTextureSet.Commit();
-                            eye = 1;
-                            swapTexture = eyeTextures[(int)eye];
-                            
-                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
-                        
-                            if (Properties.Settings.Default.RiftMonoMode)
-                            {
-                                // Resolve a single buffer for each eye, cuts rendering cost in half
-
-                                dest = eyeTextures[eye].RenderTargetViews[textureIndex].Resource;
-                                RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
-                                                                                                 dest, 0,
-                                                                                                riftFormat);
-                                eyeTextures[eye].SwapTextureSet.Commit();
-                            }
-                            else
-                            {
-                                RenderFrame(stereoRenderTextureRight.renderView, rightDepthBuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
-
-                                dest = eyeTextures[eye].RenderTargetViews[textureIndex].Resource;
-                                RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureRight.RenderTexture.Texture, 0,
-                                                                                                 dest, 0,
-                                                                                                riftFormat);
-                                eyeTextures[eye].SwapTextureSet.Commit();
-                            }
-                        }
-                        else
-                        {
-                            // When multisample anti-aliasing is enabled, render to an offscreen buffer and then
-                            // resolve to the left and then the right eye textures. 
-                            if (stereoRenderTextureLeft == null)
-                            {
-                                stereoRenderTextureLeft = new RenderTargetTexture(ViewWidth, ViewHeight);
-                            }
-
-                            if (stereoRenderTextureRight == null)
-                            {
-                                stereoRenderTextureRight = new RenderTargetTexture(ViewWidth, ViewHeight);
-                            }
-
-                            if (leftDepthBuffer == null)
-                            {
-                                leftDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
-                            }
-
-                            if (rightDepthBuffer == null)
-                            {
-                                rightDepthBuffer = new DepthBuffer(ViewWidth, ViewHeight);
-                            }
-
-                            RenderFrame(stereoRenderTextureLeft.renderView, leftDepthBuffer.DepthView, RenderTypes.LeftEye, ViewWidth, ViewHeight);
-
-                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureLeft.RenderTexture.Texture, 0,
-                                                                                           leftEye.RenderTexture.Texture, 0,
-                                                                                           RenderContext11.DefaultColorFormat);
-
-                            RenderFrame(stereoRenderTextureRight.renderView, rightDepthBuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
-
-                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(stereoRenderTextureRight.RenderTexture.Texture, 0,
-                                                                                           rightEye.RenderTexture.Texture, 0,
-                                                                                           RenderContext11.DefaultColorFormat);
-
-                        }
-                    }
-                    else
-                    {
-                        if (rift)
-                        {
-                            int eye = 0;
-                            int textureIndex;
-                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
-                            var swapTexture = eyeTextures[eye].RenderTargetViews[textureIndex];               
-
-                            RenderFrame(swapTexture, eyeTextures[eye].DepthStencilView, RenderTypes.LeftEye, leftEyeWidth, leftEyeHeight);
-             
-                            eyeTextures[eye].SwapTextureSet.Commit();
-                            eye = 1;
-                            eyeTextures[eye].SwapTextureSet.GetCurrentIndex(out textureIndex);
-                            swapTexture = eyeTextures[eye].RenderTargetViews[textureIndex];
-
-                            RenderFrame(swapTexture, eyeTextures[eye].DepthStencilView, RenderTypes.RightEye, rightEyeWidth, rightEyeHeight);
-
-                            eyeTextures[eye].SwapTextureSet.Commit();
-
-                        }
-                        else
-                        {
-                            // When anti-aliasing is not enabled, render directly to the left and right eye textures.
-                            RenderFrame(leftEye.renderView, domeZbuffer.DepthView, RenderTypes.LeftEye, ViewWidth, ViewHeight);
-                            RenderFrame(rightEye.renderView, domeZbuffer.DepthView, RenderTypes.RightEye, ViewWidth, ViewHeight);
-                        }
-                    }
-
-                    if (StereoMode == StereoModes.InterlineEven || StereoMode == StereoModes.InterlineOdd)
-                    {
-                        RenderSteroPairInterline(leftEye, rightEye);
-                    }
-                    else if (StereoMode == StereoModes.AnaglyphMagentaGreen || StereoMode == StereoModes.AnaglyphRedCyan || StereoMode == StereoModes.AnaglyphYellowBlue)
-                    {
-                        RenderSteroPairAnaglyph(leftEye, rightEye);
-                    }
-                    else if (StereoMode == StereoModes.OculusRift)
-                    {
-                        var result = hmd.SubmitFrame(0, layers);
-                        riftFrameIndex++;
-
-                        RenderTextureToScreen(mirror.ResourceView, mirrorTexture.Description.Width, mirrorTexture.Description.Height);
-
-                    }
-                    else
-                    {
-                        if (StereoMode == StereoModes.CrossEyed)
-                        {
-
-                            RenderSteroPairSideBySide(rightEye, leftEye);
-                        }
-                        else
-                        {
-                            RenderSteroPairSideBySide(leftEye, rightEye);
-                        }
-                    }
-                }
-                else if (Settings.DomeView)
-                {
-                    int cubeFaceSize = 512;
-                    if (usingLargeTextures)
-                    {
-                        cubeFaceSize = 1024;
-                    }
-
-                    if (CaptureVideo && dumpFrameParams.Dome)
-                    {
-                        cubeFaceSize = 2048;
-                    }
-
-
-
-                    if (usingLargeTextures != Properties.Settings.Default.LargeDomeTextures)
-                    {
-                        refreshDomeTextures = true;
-                    }
-
-                    if (currentCubeFaceSize != cubeFaceSize)
-                    {
-                        refreshDomeTextures = true;
-                    }
-
-                    if (refreshDomeTextures)
-                    {
-                        usingLargeTextures = Properties.Settings.Default.LargeDomeTextures;
-                        for (int face = 0; face < 5; face++)
-                        {
-                            if (domeCube[face] != null)
-                            {
-                                domeCube[face].Dispose();
-                                GC.SuppressFinalize(domeCube[face]);
-                                domeCube[face] = null;
-                            }
-                        }
-                        if (domeZbuffer != null)
-                        {
-                            domeZbuffer.Dispose();
-                            GC.SuppressFinalize(domeZbuffer);
-                            domeZbuffer = null;
-                        }
-                        if (domeCubeFaceMultisampled != null)
-                        {
-                            domeCubeFaceMultisampled.Dispose();
-                            GC.SuppressFinalize(domeCubeFaceMultisampled);
-                            domeCubeFaceMultisampled = null;
-                        }
-                    }
-
-
-                    // Ensure that the dome depth/stencil buffer matches our requirements
-                    if (domeZbuffer != null)
-                    {
-                        if (domeZbuffer.Width != cubeFaceSize || domeZbuffer.Height != cubeFaceSize)
-                        {
-                            domeZbuffer.Dispose();
-                            GC.SuppressFinalize(domeZbuffer);
-                            domeZbuffer = null;
-                        }
-                    }
-
-                    if (domeZbuffer == null)
-                    {
-                        domeZbuffer = new DepthBuffer(cubeFaceSize, cubeFaceSize);
-                    }
-
-                    if (domeCubeFaceMultisampled == null && RenderContext11.MultiSampleCount > 1)
-                    {
-                        domeCubeFaceMultisampled = new RenderTargetTexture(cubeFaceSize, cubeFaceSize);
-                    }
-
-                    for (int face = 0; face < 5; face++)
-                    {
-                        if (domeCube[face] == null)
-                        {
-                            domeCube[face] = new RenderTargetTexture(cubeFaceSize, cubeFaceSize, 1);
-                            currentCubeFaceSize = cubeFaceSize;
-                            refreshDomeTextures = false;
-                        }
-
-                        if (RenderContext11.MultiSampleCount > 1)
-                        {
-                            // When MSAA is enabled, we render each face to the same multisampled render target,
-                            // then resolve to a different texture for each face. This saves memory and works around
-                            // the fact that multisample textures are not permitted to have mipmaps.
-                            RenderFrame(domeCubeFaceMultisampled.renderView, domeZbuffer.DepthView, (RenderTypes)face, cubeFaceSize, cubeFaceSize);
-                            RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(domeCubeFaceMultisampled.RenderTexture.Texture, 0,
-                                                                                           domeCube[face].RenderTexture.Texture, 0,
-                                                                                           RenderContext11.DefaultColorFormat);
-                        }
-                        else
-                        {
-                            RenderFrame(domeCube[face].renderView, domeZbuffer.DepthView, (RenderTypes)face, cubeFaceSize, cubeFaceSize);
-                        }
-                        RenderContext11.PrepDevice.ImmediateContext.GenerateMips(domeCube[face].RenderTexture.ResourceView);
-                    }
-
-                    if (Properties.Settings.Default.DomeTypeIndex > 0)
-                    {
-                        RenderWarpedFisheye();
-                    }
-                    else
-                    {
-                        if (CaptureVideo && dumpFrameParams.Dome)
-                        {
-                            if (!dumpFrameParams.WaitDownload || tilesAllLoaded)
-                            {
-                                RenderDomeMaster();
-                            }
-                        }
-                        RenderFisheye(false);
-                    }
-
-                }
-                else if (config.UseDistrotionAndBlend)
-                {
-                    if (undistorted == null)
-                    {
-                        undistorted = new RenderTargetTexture(config.Width, config.Height);
-                    }
-
-
-                    // Ensure that the dome depth/stencil buffer matches our requirements
-                    if (domeZbuffer != null)
-                    {
-                        if (domeZbuffer.Width != config.Width || domeZbuffer.Height != config.Height)
-                        {
-                            domeZbuffer.Dispose();
-                            GC.SuppressFinalize(domeZbuffer);
-                            domeZbuffer = null;
-                        }
-                    }
-
-                    if (domeZbuffer == null)
-                    {
-                        domeZbuffer = new DepthBuffer(config.Width, config.Height);
-
-                    }
-
-
-                    // * If there's no multisampling, draw directly into the undistorted texture
-                    // * When multisampling is on, draw into an intermediate buffer, then resolve 
-                    //   it into the undistorted texture
-                    RenderFrame(undistorted.renderView, domeZbuffer.DepthView, RenderTypes.Normal, config.Width, config.Height);
-
-                    RenderDistort();
-                }
-                else if (Properties.Settings.Default.FlatScreenWarp)
-                {
-                    if (undistorted == null)
-                    {
-                        undistorted = new RenderTargetTexture(ViewWidth, renderWindow.ClientRectangle.Height);
-                    }
-
-                    if (domeZbuffer != null)
-                    {
-                        if (domeZbuffer.Width != ViewWidth || domeZbuffer.Height != renderWindow.ClientRectangle.Height)
-                        {
-                            domeZbuffer.Dispose();
-                            GC.SuppressFinalize(domeZbuffer);
-                            domeZbuffer = null;
-                        }
-                    }
-
-                    if (domeZbuffer == null)
-                    {
-                        domeZbuffer = new DepthBuffer(ViewWidth, renderWindow.ClientRectangle.Height);
-
-                    }
-
-
-                    RenderFrame(undistorted.renderView, domeZbuffer.DepthView, RenderTypes.Normal, ViewWidth, renderWindow.ClientRectangle.Height);
-                    RenderFlatDistort();
-
-                }
-                else
-                {
-                    if (renderWindow.ClientSize.Height != RenderContext11.DisplayViewport.Height ||
-                                renderWindow.ClientSize.Width != RenderContext11.DisplayViewport.Width)
-                    {
-                        RenderContext11.Resize(renderWindow);
-                    }
-                    RenderFrame(null, null, RenderTypes.Normal, RenderContext11.DisplayViewport.Width, RenderContext11.DisplayViewport.Height);
-                }
-            }
-            UpdateStats();
-
-            lastRender = HiResTimer.TickCount;
-
-            if (CaptureVideo)
-            {
-                if (!dumpFrameParams.WaitDownload || tilesAllLoaded)
-                {
-                    if (!dumpFrameParams.Dome)
-                    {
-                        Int64 ticksa = HiResTimer.TickCount;
-                        SaveFrame();
-                    }
-                    SpaceTimeController.NextFrame();
-                }
-                if (SpaceTimeController.DoneDumping())
-                {
-                    SpaceTimeController.CancelFrameDump = false;
-                    DomeFrameDumping();
-                }
-            }
-
-            if (Tile.fastLoadAutoReset)
-            {
-                Tile.fastLoad = false;
-                Tile.fastLoadAutoReset = false;
-            }
-
-        }
-
-
-        public void CaptureMegaShot(string filename, int width, int height)
-        {
-
-            megaHeight = height;
-            megaWidth = width;
-            megaFrameDump = true;
-
-            RenderTargetTexture megaTextureAA = new RenderTargetTexture(width, height);
-            RenderTargetTexture megaTexture = new RenderTargetTexture(width, height, 1);
-
-            DepthBuffer megaZbuffer = new DepthBuffer(width, height);
-
-            while (true)
-            {
-
-                if (RenderContext11.MultiSampleCount > 1)
-                {
-                    // When MSAA is enabled, we render each face to the same multisampled render target,
-                    // then resolve to a different texture for each face. This saves memory and works around
-                    // the fact that multisample textures are not permitted to have mipmaps.
-                    RenderFrame(megaTextureAA.renderView, megaZbuffer.DepthView, RenderTypes.Normal, width, height);
-
-                    RenderContext11.PrepDevice.ImmediateContext.ResolveSubresource(megaTextureAA.RenderTexture.Texture, 0,
-                                                                                  megaTexture.RenderTexture.Texture, 0,
-                                                                                  RenderContext11.DefaultColorFormat);
-                }
-                else
-                {
-                    RenderFrame(megaTexture.renderView, megaZbuffer.DepthView, RenderTypes.Normal, width, height);
-                }
-
-                if (TileCache.QueuePercent == 100)
-                {
-                    break;
-                }
-
-                Application.DoEvents();
-            }
-            SharpDX.Direct3D11.Texture2D.ToFile(RenderContext11.devContext, megaTexture.RenderTexture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, filename);
-            megaFrameDump = false;
-            megaTexture.Dispose();
-            megaTextureAA.Dispose();
-            megaZbuffer.Dispose();
-        }
-
-        public void UpdateMover(IViewMover mover)
-        {
-            CameraParameters newCam = mover.CurrentPosition;
-
-            if (viewCamera.Opacity != newCam.Opacity)
-            {
-                if (contextPanel != null)
-                {
-                    contextPanel.studyOpacity.Value = (int)newCam.Opacity;
-                }
-
-            }
-            viewCamera = targetViewCamera = newCam;
-
-
-
-            if (Space && Settings.Active.GalacticMode)
-            {
-                double[] gPoint = Coordinates.J2000toGalactic(newCam.RA * 15, newCam.Dec);
-
-                targetAlt = alt = gPoint[1];
-                targetAz = az = gPoint[0];
-            }
-            else if (Space && Settings.Active.LocalHorizonMode)
-            {
-                Coordinates currentAltAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(newCam.RA, newCam.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                targetAlt = alt = currentAltAz.Alt;
-                targetAz = az = currentAltAz.Az;
-            }
-
-            if (mover.Complete)
-            {
-                targetViewCamera = viewCamera = newCam;
-                Earth3d.MainWindow.Mover = null;
-                //Todo Notify interested parties that move is complete
-
-                NotifyMoveComplete();
-            }
-        }
-
-
-        private void RenderFlatDistort()
-        {
-            if (warpTexture == null)
-            {
-                warpTexture = new RenderTargetTexture(2048, 2048);
-            }
-
-            SetupMatricesFisheye();
-
-            if (warpIndexBuffer == null)
-            {
-                CreateWarpVertexBuffer();
-            }
-
-            RenderContext11.SetDisplayRenderTargets();
-
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            RenderContext11.BlendMode = BlendMode.None;
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
-            mat.Transpose();
-
-            WarpOutputShader.MatWVP = mat;
-            WarpOutputShader.Use(RenderContext11.devContext, true);
-
-            RenderContext11.SetIndexBuffer(warpIndexBuffer);
-            RenderContext11.SetVertexBuffer(warpVertexBuffer);
-
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, undistorted.RenderTexture.ResourceView);
-            RenderContext11.devContext.DrawIndexed(warpIndexBuffer.Count, 0, 0);
-
-            PresentFrame11(false);
-
-        }
-
-        private void DomeFrameDumping()
-        {
-            SpaceTimeController.FrameDumping = false;
-            CaptureVideo = false;
-            if (domeMasterTexture != null)
-            {
-                domeMasterTexture.Dispose();
-                GC.SuppressFinalize(domeMasterTexture);
-                domeMasterTexture = null;
-            }
-            TourEdit.PauseTour();
-        }
-
-        private void SaveFrame()
-        {
-            RenderContext11.SaveBackBuffer(dumpFrameParams.Name.Replace(".", string.Format("_{0:0000}.", SpaceTimeController.CurrentFrameNumber)), SharpDX.Direct3D11.ImageFileFormat.Png);
-        }
 
 
 
         double NetZoomRate = 0;
         private void UpdateNetControlState()
         {
-            double factor = lastFrameTime / (1.0 / 60.0);
+            double factor = RenderEngine.lastFrameTime / (1.0 / 60.0);
 
 
 
             if (Math.Abs(NetZoomRate) > 4)
             {
-                ZoomFactor = TargetZoom = ZoomFactor * (1 + (NetZoomRate / 8000) * factor);
+                RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomFactor * (1 + (NetZoomRate / 8000) * factor);
 
-                if (ZoomFactor > ZoomMax)
+                if (RenderEngine.ZoomFactor > RenderEngine.ZoomMax)
                 {
-                    ZoomFactor = TargetZoom = ZoomMax;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomMax;
                 }
 
-                if (ZoomFactor < ZoomMin)
+                if (RenderEngine.ZoomFactor < RenderEngine.ZoomMin)
                 {
-                    ZoomFactor = TargetZoom = ZoomMin;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom = RenderEngine.ZoomMin;
                 }
             }
 
@@ -9910,1404 +5569,13 @@ namespace TerraViewer
 
         }
 
-        double lastFisheyAngle = 0;
 
-        private void RenderFisheye(bool forTexture)
-        {
-
-            if (!forTexture)
-            {
-                SetupMatricesFisheye();
-                RenderContext11.SetDisplayRenderTargets();
-            }
-
-
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-            if (domeVertexBuffer == null || lastFisheyAngle != Properties.Settings.Default.FisheyeAngle)
-            {
-                lastFisheyAngle = Properties.Settings.Default.FisheyeAngle;
-
-                domeVertexBuffer = new PositionColorTexturedVertexBuffer11[5];
-                domeIndexBuffer = new IndexBuffer11[5];
-
-                for (int face = 0; face < 5; face++)
-                {
-                    CreateDomeFaceVertexBuffer(face);
-                }
-            }
-
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            RenderContext11.BlendMode = BlendMode.None;
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
-            mat.Transpose();
-
-            WarpOutputShader.MatWVP = mat;
-            WarpOutputShader.Use(RenderContext11.devContext, true);
-
-
-            for (int face = 0; face < 5; face++)
-            {
-                RenderContext11.SetIndexBuffer(domeIndexBuffer[face]);
-                RenderContext11.SetVertexBuffer(domeVertexBuffer[face]);
-                RenderContext11.devContext.PixelShader.SetShaderResource(0, domeCube[face].RenderTexture.ResourceView);
-                RenderContext11.devContext.DrawIndexed(domeIndexBuffer[face].Count, 0, 0);
-            }
-
-            PresentFrame11(forTexture);
-
-        }
-
-        RenderTargetTexture domeMasterTexture = null;
-        private void RenderDomeMaster()
-        {
-
-            if (domeMasterTexture == null)
-            {
-                domeMasterTexture = new RenderTargetTexture(dumpFrameParams.Width, dumpFrameParams.Height, 1);
-            }
-
-            RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-
-            RenderContext11.SetOffscreenRenderTargets(domeMasterTexture, null);
-
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-            SetupMatricesWarpFisheye(1f);
-
-            if (domeVertexBuffer == null)
-            {
-                domeVertexBuffer = new PositionColorTexturedVertexBuffer11[5];
-                domeIndexBuffer = new IndexBuffer11[5];
-
-                for (int face = 0; face < 5; face++)
-                {
-                    CreateDomeFaceVertexBuffer(face);
-                }
-            }
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            RenderContext11.BlendMode = BlendMode.None;
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-            RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-
-            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
-            mat.Transpose();
-
-            WarpOutputShader.MatWVP = mat;
-            WarpOutputShader.Use(RenderContext11.devContext, true);
-
-
-
-            for (int face = 0; face < 5; face++)
-            {
-                RenderContext11.SetIndexBuffer(domeIndexBuffer[face]);
-                RenderContext11.SetVertexBuffer(domeVertexBuffer[face]);
-                RenderContext11.devContext.PixelShader.SetShaderResource(0, domeCube[face].RenderTexture.ResourceView);
-                RenderContext11.devContext.DrawIndexed(domeIndexBuffer[face].Count, 0, 0);
-            }
-
-            FadeDomeTexture();
-
-            SharpDX.Direct3D11.Texture2D.ToFile(RenderContext11.devContext, domeMasterTexture.RenderTexture.Texture, SharpDX.Direct3D11.ImageFileFormat.Png, dumpFrameParams.Name.Replace(".", string.Format("_{0:0000}.", SpaceTimeController.CurrentFrameNumber)));
-
-        }
-
-        RenderTargetTexture warpTexture;
-        RenderTargetTexture warpTextureMSAA;
-        private void RenderWarpedFisheye()
-        {
-            if (warpTexture == null)
-            {
-                warpTexture = new RenderTargetTexture(2048, 2048, 1);
-                if (RenderContext11.MultiSampleCount > 1)
-                {
-                    warpTextureMSAA = new RenderTargetTexture(2048, 2048);
-                }
-            }
-
-            // If MSAA is enabled, render to an MSAA target and perform a resolve to a non-MSAA texture.
-            // Otherwise, render directly to the non-MSAA texture
-            RenderTargetTexture warpRenderTarget = warpTextureMSAA != null ? warpTextureMSAA : warpTexture;
-
-            SetupMatricesWarpFisheye(1);
-            RenderContext11.SetOffscreenRenderTargets(warpRenderTarget, null);
-            RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-            RenderFisheye(true);
-
-            if (warpTextureMSAA != null)
-            {
-                RenderContext11.Device.ImmediateContext.ResolveSubresource(warpTextureMSAA.RenderTexture.Texture, 0, warpTexture.RenderTexture.Texture, 0, RenderContext11.DefaultColorFormat);
-            }
-            RenderContext11.Device.ImmediateContext.GenerateMips(warpTexture.RenderTexture.ResourceView);
-
-            SetupMatricesWarpFisheye((float)ViewWidth / (float)renderWindow.ClientRectangle.Height);
-
-            if (warpIndexBuffer == null)
-            {
-                CreateWarpVertexBuffer();
-            }
-
-
-            RenderContext11.SetDisplayRenderTargets();
-
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-            RenderContext11.BlendMode = BlendMode.None;
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-            SharpDX.Matrix mat = (RenderContext11.World * RenderContext11.View * RenderContext11.Projection).Matrix11;
-
-            mat.Transpose();
-
-            WarpOutputShader.MatWVP = mat;
-            WarpOutputShader.Use(RenderContext11.devContext, true);
-
-            RenderContext11.SetIndexBuffer(warpIndexBuffer);
-            RenderContext11.SetVertexBuffer(warpVertexBuffer);
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, warpTexture.RenderTexture.ResourceView);
-            RenderContext11.devContext.DrawIndexed(warpIndexBuffer.Count, 0, 0);
-
-            PresentFrame11(false);
-
-        }
-
-
-        // Stereo buffers
-        RenderTargetTexture leftEye;
-        RenderTargetTexture rightEye;
-        RenderTargetTexture stereoRenderTextureLeft;
-        RenderTargetTexture stereoRenderTextureRight;
-
-        // Distortion buffers
-        RenderTargetTexture undistorted;
-
-        // Full-dome buffers
-        RenderTargetTexture domeCubeFaceMultisampled = null;
-        RenderTargetTexture[] domeCube = new RenderTargetTexture[5];
-        DepthBuffer domeZbuffer = null;
-        DepthBuffer leftDepthBuffer = null;
-        DepthBuffer rightDepthBuffer = null;
-
-        public enum StereoModes { Off, AnaglyphRedCyan, AnaglyphYellowBlue, AnaglyphMagentaGreen, CrossEyed, SideBySide, InterlineEven, InterlineOdd, OculusRift, Right, Left };
-
-        public StereoModes StereoMode = StereoModes.Off;
-
-        enum RenderTypes { DomeFront, DomeRight, DomeUp, DomeLeft, DomeBack, Normal, RightEye, LeftEye };
-        static RenderTypes CurrentRenderType = RenderTypes.Normal;
-
-        SphereTest sphere = null;
-
-        IImageSet milkyWayBackground = null;
-        IImageSet cmbBackground = null;
-
-        private void RenderFrame(SharpDX.Direct3D11.RenderTargetView targetTextureView, SharpDX.Direct3D11.DepthStencilView depthBufferView, RenderTypes renderType, int width, int height)
-        {
-            CurrentRenderType = renderType;
-
-            bool offscreenRender = targetTextureView != null;
-
-            Tile.deepestLevel = 0;
-
-            try
-            {
-                if (offscreenRender)
-                {
-                    RenderContext11.SetOffscreenRenderTargets(targetTextureView, depthBufferView, width, height);
-                }
-                else
-                {
-                    RenderContext11.SetDisplayRenderTargets();
-                }
-
-                //Clear the backbuffer to a black color 
-
-                RenderContext11.ClearRenderTarget(new SharpDX.Color(SkyColor.R, SkyColor.G, SkyColor.B, SkyColor.A));
-
-
-
-                RenderContext11.RenderType = CurrentImageSet.DataSetType;
-
-                RenderContext11.BlendMode = BlendMode.Alpha;
-                if (CurrentImageSet.DataSetType == ImageSetType.Sandbox)
-                {
-                    // Start Sandbox mode
-                    RenderContext11.SunPosition = LayerManager.GetPrimarySandboxLight();
-                    RenderContext11.SunlightColor = LayerManager.GetPrimarySandboxLightColor();
-
-                    RenderContext11.ReflectedLightColor = Color.Black;
-                    RenderContext11.HemisphereLightColor = Color.Black;
-
-                    SkyColor = Color.Black;
-                    if ((int)SolarSystemTrack < (int)SolarSystemObjects.Custom)
-                    {
-                        double radius = Planets.GetAdjustedPlanetRadius((int)SolarSystemTrack);
-                        double distance = SolarSystemCameraDistance;
-                        double camAngle = fovLocal;
-                        double distrad = distance / (radius * Math.Tan(.5 * camAngle));
-                        if (distrad < 1)
-                        {
-                            planetFovWidth = Math.Asin(distrad);
-                        }
-                        else
-                        {
-                            planetFovWidth = Math.PI;
-                        }
-                    }
-                    else
-                    {
-                        planetFovWidth = Math.PI;
-                    }
-
-
-                    SetupMatricesSolarSystem11(false, renderType);
-
-
-                    Matrix3d matLocal = RenderContext11.World;
-                    matLocal.Multiply(Matrix3d.Translation(-viewCamera.ViewTarget));
-                    RenderContext11.World = matLocal;
-
-                    RenderContext11.WorldBase = RenderContext11.World;
-                    RenderContext11.WorldBaseNonRotating = RenderContext11.World;
-                    RenderContext11.NominalRadius = 1;
-
-                    Earth3d.MainWindow.MakeFrustum();
-
-                    double zoom = Earth3d.MainWindow.ZoomFactor;
-
-                    LayerManager.Draw(RenderContext11, 1.0f, false, "Sandbox", true, false);
-
-                    if ((SolarSystemMode) && label != null && !TourPlayer.Playing)
-                    {
-                        label.Draw(RenderContext11, true);
-                    }
-
-                    RenderContext11.setRasterizerState(TriangleCullMode.Off);
-                    // end Sandbox Mode
-                }
-                else if (CurrentImageSet.DataSetType == ImageSetType.SolarSystem)
-                {
-
-
-
-                    {
-                        SkyColor = Color.Black;
-                        if ((int)SolarSystemTrack < (int)SolarSystemObjects.Custom)
-                        {
-                            double radius = Planets.GetAdjustedPlanetRadius((int)SolarSystemTrack);
-                            double distance = SolarSystemCameraDistance;
-                            double camAngle = fovLocal;
-                            double distrad = distance / (radius * Math.Tan(.5 * camAngle));
-                            if (distrad < 1)
-                            {
-                                planetFovWidth = Math.Asin(distrad);
-                            }
-                            else
-                            {
-                                planetFovWidth = Math.PI;
-                            }
-                        }
-                        else
-                        {
-                            planetFovWidth = Math.PI;
-                        }
-
-
-                        if (trackingObject == null)
-                        {
-                            trackingObject = Search.FindCatalogObjectExact("Sun");
-                        }
-
-                        SetupMatricesSolarSystem11(true, renderType);
-
-
-
-                        float skyOpacity = 1.0f - Planets.CalculateSkyBrightnessFactor(RenderContext11.View, viewCamera.ViewTarget);
-                        if (float.IsNaN(skyOpacity))
-                        {
-                            skyOpacity = 0f;
-                        }
-
-                        double zoom = Earth3d.MainWindow.ZoomFactor;
-                        float milkyWayBlend = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 8.4)) / 4.2);
-                        float milkyWayBlendIn = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 17.9)) / 2.3);
-
-
-                        if (Properties.Settings.Default.SolarSystemMilkyWay.State)
-                        {
-                            if (milkyWayBlend < 1) // Solar System mode Milky Way background
-                            {
-                                if (milkyWayBackground == null)
-                                {
-                                    milkyWayBackground = GetImagesetByName("Digitized Sky Survey (Color)");
-                                }
-
-                                if (milkyWayBackground != null)
-                                {
-                                    float c = ((1 - milkyWayBlend)) / 4;
-                                    Matrix3d matOldMW = RenderContext11.World;
-                                    Matrix3d matLocalMW = RenderContext11.World;
-                                    matLocalMW.Multiply(Matrix3d.Scaling(100000, 100000, 100000));
-                                    matLocalMW.Multiply(Matrix3d.RotationX(-23.5 / 180 * Math.PI));
-                                    matLocalMW.Multiply(Matrix3d.RotationY(Math.PI));
-                                    matLocalMW.Multiply(Matrix3d.Translation(cameraOffset));
-                                    RenderContext11.World = matLocalMW;
-                                    RenderContext11.WorldBase = matLocalMW;
-                                    Earth3d.MainWindow.MakeFrustum();
-
-                                    RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, Color.White);
-                                    RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-                                    DrawTiledSphere(milkyWayBackground, c * Properties.Settings.Default.SolarSystemMilkyWay.Opacity, Color.FromArgb(255, 255, 255, 255));
-                                    RenderContext11.World = matOldMW;
-                                    RenderContext11.WorldBase = matOldMW;
-                                    RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                                }
-                            }
-                        }
-
-                        // CMB
-
-                        float cmbBlend = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 33)) / 2.3);
-
-
-                        double cmbLog = Math.Log(zoom);
-
-                        if (Properties.Settings.Default.SolarSystemCMB.State)
-                        {
-                            if (cmbBlend > 0) // Solar System mode Milky Way background
-                            {
-                                if (cmbBackground == null)
-                                {
-                                    cmbBackground = GetImagesetByName("Planck CMB");
-                                }
-
-                                if (cmbBackground != null)
-                                {
-                                    float c = ((cmbBlend)) / 16;
-                                    Matrix3d matOldMW = RenderContext11.World;
-                                    Matrix3d matLocalMW = RenderContext11.World;
-
-                                    matLocalMW.Multiply(Matrix3d.Scaling(2.9090248982E+15, 2.9090248982E+15, 2.9090248982E+15));
-                                    matLocalMW.Multiply(Matrix3d.RotationX(-23.5 / 180 * Math.PI));
-                                    matLocalMW.Multiply(Matrix3d.RotationY(Math.PI));
-
-                                    RenderContext11.World = matLocalMW;
-                                    RenderContext11.WorldBase = matLocalMW;
-                                    Earth3d.MainWindow.MakeFrustum();
-
-                                    RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, Color.White);
-
-                                    RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-                                    DrawTiledSphere(cmbBackground, c * Properties.Settings.Default.SolarSystemCMB.Opacity, Color.FromArgb(255, 255, 255, 255));
-                                    RenderContext11.World = matOldMW;
-                                    RenderContext11.WorldBase = matOldMW;
-                                    RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                                }
-                            }
-                        }
-
-
-
-
-                        {
-                            Matrix3d matOld = RenderContext11.World;
-
-                            Matrix3d matLocal = RenderContext11.World;
-                            matLocal.Multiply(Matrix3d.Translation(viewCamera.ViewTarget));
-                            RenderContext11.World = matLocal;
-                            Earth3d.MainWindow.MakeFrustum();
-
-                            if (Properties.Settings.Default.SolarSystemCosmos.State)
-                            {
-                                RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-                                Grids.DrawCosmos3D(RenderContext11, Properties.Settings.Default.SolarSystemCosmos.Opacity * skyOpacity);
-                                RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                            }
-
-                            if (true)
-                            {
-                                RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-
-                                Grids.DrawCustomCosmos3D(RenderContext11, skyOpacity);
-
-                                RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                            }
-
-
-                            if (Properties.Settings.Default.SolarSystemMilkyWay.State && milkyWayBlendIn > 0)
-                            {
-                                Grids.DrawGalaxy3D(RenderContext11, Properties.Settings.Default.SolarSystemMilkyWay.Opacity * skyOpacity * milkyWayBlendIn);
-                            }
-
-
-                            if (Properties.Settings.Default.SolarSystemStars.State)
-                            {
-                                Grids.DrawStars3D(RenderContext11, Properties.Settings.Default.SolarSystemStars.Opacity * skyOpacity);
-                            }
-
-
-                            LayerManager.Draw(RenderContext11, 1.0f, true, "Sky", true, false);
-
-                            RenderContext11.World = matOld;
-                            Earth3d.MainWindow.MakeFrustum();
-                        }
-
-
-                        if (SolarSystemCameraDistance < 15000)
-                        {
-                            SetupMatricesSolarSystem11(false, renderType);
-
-
-                            if (Properties.Settings.Default.SolarSystemMinorPlanets.State)
-                            {
-                                MinorPlanets.DrawMPC3D(RenderContext11, Properties.Settings.Default.SolarSystemMinorPlanets.Opacity, viewCamera.ViewTarget);
-                            }
-
-                            Planets.DrawPlanets3D(RenderContext11, Properties.Settings.Default.SolarSystemPlanets.Opacity, viewCamera.ViewTarget);
-                        }
-
-                        double p = Math.Log(zoom);
-                        double d = (180 / SolarSystemCameraDistance) * 100;
-
-                        float sunAtDistance = (float)Math.Min(1, Math.Max(0, (Math.Log(zoom) - 7.5)) / 3);
-
-                        if (sunAtDistance > 0 && Settings.Active.SolarSystemPlanets)
-                        {
-                            Planets.DrawPointPlanet(RenderContext11, new Vector3d(0, 0, 0), (float)d * sunAtDistance, Color.FromArgb(192, 191, 128), false, 1);
-                        }
-
-                        if ((SolarSystemMode) && label != null && !TourPlayer.Playing)
-                        {
-                            label.Draw(RenderContext11, true);
-                        }
-                    }
-
-                    RenderContext11.setRasterizerState(TriangleCullMode.Off);
-                }
-                else
-                {
-
-                    if (CurrentImageSet.DataSetType == ImageSetType.Panorama || CurrentImageSet.DataSetType == ImageSetType.Sky)
-                    {
-                        SkyColor = Color.Black;
-
-                        if ((int)renderType < 5)
-                        {
-                            SetupMatricesSpaceDome(false, renderType);
-                        }
-                        else
-                        {
-                            SetupMatricesSpace11(ZoomFactor, renderType);
-                        }
-                        RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-                    }
-                    else
-                    {
-
-                        if (Settings.DomeView)
-                        {
-                            SetupMatricesLandDome(renderType);
-                        }
-                        else
-                        {
-                            SetupMatricesLand11(renderType);
-                        }
-                        RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                    }
-
-                    ComputeViewParameters(CurrentImageSet);
-
-                    // Update Context pane
-                    CurrentViewCorners = new Coordinates[]
-                    {
-                        GetCoordinatesForScreenPoint(0, 0),
-                        GetCoordinatesForScreenPoint(ViewWidth, 0),
-                        GetCoordinatesForScreenPoint(ViewWidth, renderWindow.ClientRectangle.Height),
-                        GetCoordinatesForScreenPoint(0, renderWindow.ClientRectangle.Height)
-                    };
-
-                    Coordinates temp = GetCoordinatesForScreenPoint(ViewWidth / 2, renderWindow.ClientRectangle.Height / 2);
-
-                    if (contextPanel != null && ((int)renderType > 4 || renderType == RenderTypes.DomeFront))
-                    {
-                        contextPanel.SetViewRect(CurrentViewCorners);
-                    }
-                    UpdateKmlViewInfo();
-
-                    if (KmlMarkers != null)
-                    {
-                        KmlMarkers.ClearGroundOverlays();
-                    }
-
-                    string referenceFrame = GetCurrentReferenceFrame();
-
-
-                    if (PlanetLike || Space)
-                    {
-                        LayerManager.PreDraw(RenderContext11, 1.0f, Space, referenceFrame, true);
-                    }
-
-                    if (Properties.Settings.Default.EarthCutawayView.State && !Space && CurrentImageSet.DataSetType == ImageSetType.Earth)
-                    {
-                        Grids.DrawEarthStructure(RenderContext11, 1f);
-                    }
-
-                    RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1, Color.White);
-
-                    if (KmlMarkers != null)
-                    {
-                        KmlMarkers.SetupGroundOverlays(RenderContext11);
-                    }
-
-                    if (PlanetLike)
-                    {
-                        RenderContext11.setRasterizerState(TriangleCullMode.Off);
-                    }
-
-                    // Call DrawTiledSphere instead of PaintLayerFull, because PaintLayerFull
-                    // will reset ground layer state
-                    DrawTiledSphere(CurrentImageSet, 1.0f, Color.White);
-
-
-                    if (imageStackVisible)
-                    {
-                        foreach (ImageSet set in ImageStackList)
-                        {
-                            PaintLayerFull11(set, StudyOpacity);
-                        }
-                    }
-
-                    if (studyImageset != null)
-                    {
-                        if (studyImageset.DataSetType != CurrentImageSet.DataSetType)
-                        {
-                            StudyImageset = null;
-                        }
-                        else
-                        {
-                            PaintLayerFull11(studyImageset, StudyOpacity);
-                        }
-                    }
-
-
-                    if (previewImageset != null && PreviewBlend.State)
-                    {
-                        if (previewImageset.DataSetType != CurrentImageSet.DataSetType)
-                        {
-                            previewImageset = null;
-                        }
-                        else
-                        {
-                            PaintLayerFull11(previewImageset, PreviewBlend.Opacity * 100.0f);
-                        }
-                    }
-                    else
-                    {
-                        PreviewBlend.State = false;
-                        previewImageset = null;
-                    }
-
-
-                    if (Space && (CurrentImageSet.Name == "Plotted Sky"))
-                    {
-
-                        Grids.DrawStars(RenderContext11, 1f);
-                    }
-
-                    if (Space && Properties.Settings.Default.ShowSolarSystem.State)
-                    {
-                        Planets.DrawPlanets(RenderContext11, Properties.Settings.Default.ShowSolarSystem.Opacity);
-                    }
-
-
-                    if (PlanetLike || Space)
-                    {
-                        if (!Space)
-                        {
-                            //todo fix this for other planets..
-                            double angle = Coordinates.MstFromUTC2(SpaceTimeController.Now, 0) / 180.0 * Math.PI;
-                            RenderContext11.WorldBaseNonRotating = Matrix3d.RotationY(angle) * RenderContext11.WorldBase;
-                            RenderContext11.NominalRadius = CurrentImageSet.MeanRadius;
-                        }
-                        else
-                        {
-                            RenderContext11.WorldBaseNonRotating = RenderContext11.World;
-                            RenderContext11.NominalRadius = CurrentImageSet.MeanRadius;
-                            RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-                        }
-
-                        LayerManager.Draw(RenderContext11, 1.0f, Space, referenceFrame, true, Space);
-                    }
-
-                    if (Space && !hemisphereView && Settings.Active.LocalHorizonMode && !Settings.DomeView && !ProjectorServer)
-                    {
-                        Grids.DrawHorizon(RenderContext11, 1f);
-                    }
-
-                    if (Settings.Active.ShowClouds && !Space && CurrentImageSet.DataSetType == ImageSetType.Earth)
-                    {
-                        DrawClouds();
-                    }
-
-
-                    // Draw Field of view indicator
-
-                    if (Settings.Active.ShowFieldOfView)
-                    {
-                        fovBlend.TargetState = true;
-                    }
-                    else
-                    {
-                        fovBlend.TargetState = false;
-                    }
-
-                    if (fovBlend.State)
-                    {
-                        if (fov != null && Space)
-                        {
-                            fov.Draw3D(RenderContext11, fovBlend.Opacity, RA, Dec);
-                        }
-                    }
-
-                    if (label != null && !TourPlayer.Playing)
-                    {
-                        label.Draw(RenderContext11, PlanetLike);
-                    }
-
-                    if (ShowKmlMarkers && KmlMarkers != null)
-                    {
-                        KmlMarkers.DrawLabels(RenderContext11);
-                    }
-
-
-
-                    // End Planet & space
-                }
-
-                if (uiController != null)
-                {
-                    {
-                        uiController.Render(this);
-                    }
-                }
-
-                if (videoOverlay != null)
-                {
-                    if ((int)renderType < 5)
-                    {
-                        SetupMatricesVideoOverlayDome(false, renderType);
-                    }
-                    else
-                    {
-                        SetupMatricesVideoOverlay(ZoomFactor);
-                    }
-                    DepthStencilMode mode = RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-                    PaintLayerFull11(videoOverlay, 100f);
-                    RenderContext11.DepthStencilMode = mode;
-                }
-
-                if (measuringDrag && measureLines != null)
-                {
-                    measureLines.DrawLines(RenderContext11, 1.0f, Color.Yellow);
-
-                }
-
-                if (Properties.Settings.Default.ShowCrosshairs && !TourPlayer.Playing && renderType == RenderTypes.Normal && !megaFrameDump)
-                {
-                    float aspect = RenderContext11.ViewPort.Height / RenderContext11.ViewPort.Width;
-
-
-                    crossHairPoints[0].X = .01f * aspect;
-                    crossHairPoints[1].X = -.01f * aspect;
-                    crossHairPoints[0].Y = 0;
-                    crossHairPoints[1].Y = 0;
-                    crossHairPoints[0].Z = .9f;
-                    crossHairPoints[1].Z = .9f;
-                    crossHairPoints[0].W = 1f;
-                    crossHairPoints[1].W = 1f;
-                    crossHairPoints[0].Color = Color.White;
-                    crossHairPoints[1].Color = Color.White;
-
-                    crossHairPoints[2].X = 0;
-                    crossHairPoints[3].X = 0;
-                    crossHairPoints[2].Y = -.01f;
-                    crossHairPoints[3].Y = .01f;
-                    crossHairPoints[2].Z = .9f;
-                    crossHairPoints[3].Z = .9f;
-                    crossHairPoints[2].W = 1f;
-                    crossHairPoints[3].W = 1f;
-                    crossHairPoints[2].Color = Color.White;
-                    crossHairPoints[3].Color = Color.White;
-
-                    Sprite2d.DrawLines(RenderContext11, crossHairPoints, 4, SharpDX.Matrix.OrthoLH(1f, 1f, 1, -1), false);
-
-                }
-
-
-                if (Properties.Settings.Default.ShowTouchControls && (!TourPlayer.Playing || mover == null) && (renderType == RenderTypes.Normal || renderType == RenderTypes.LeftEye || renderType == RenderTypes.RightEye) && !rift && !megaFrameDump)
-                {
-                    DrawTouchControls();
-                }
-
-
-                DrawKinectUI();
-
-                SetupMatricesAltAz();
-                Reticle.DrawAll(RenderContext11);
-
-
-            }
-            catch (Exception e)
-            {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("RenderFrame: Exception"); }
-                if (offscreenRender)
-                {
-                    throw e;
-                }
-            }
-            finally
-            {
-                if (offscreenRender)
-                {
-
-                    RenderContext11.SetDisplayRenderTargets();
-                }
-            }
-
-            PresentFrame11(offscreenRender);
-        }
-
-        PositionColoredTextured[] crossHairPoints = new PositionColoredTextured[4];
-
-        private string GetCurrentReferenceFrame()
-        {
-            if (!string.IsNullOrEmpty(CurrentImageSet.ReferenceFrame))
-            {
-                return CurrentImageSet.ReferenceFrame;
-            }
-            if (CurrentImageSet.DataSetType == ImageSetType.Earth)
-            {
-                return "Earth";
-            }
-            if (CurrentImageSet.Name == "Visible Imagery" && CurrentImageSet.Url.ToLower().Contains("mars"))
-            {
-
-                CurrentImageSet.ReferenceFrame = "Mars";
-                return CurrentImageSet.ReferenceFrame;
-            }
-
-            if (CurrentImageSet.DataSetType == ImageSetType.Planet)
-            {
-                foreach (string name in Enum.GetNames(typeof(SolarSystemObjects)))
-                {
-                    if (CurrentImageSet.Name.ToLower().Contains(name.ToLower()))
-                    {
-                        CurrentImageSet.ReferenceFrame = name;
-                        return name;
-                    }
-                }
-            }
-            if (CurrentImageSet.DataSetType == ImageSetType.Sky)
-            {
-                return "Sky";
-            }
-            return "";
-        }
-
-        private static Matrix3d bias = Matrix3d.Scaling(.5f, -.5f, .5f) * Matrix3d.Translation(.5f, .5f, .5f);
-
-        bool flush = true;
-
-        SharpDX.Direct3D11.Query query = null;
-
-        private void PresentFrame11(bool renderToTexture)
-        {
-            // Update the screen
-            if (!renderToTexture)
-            {
-                FadeFrame();
-                NetControl.WaitForNetworkSync();
-                RenderContext11.Present(Properties.Settings.Default.FrameSync);
-
-                if (flush)
-                {
-                    RenderContext11.devContext.Flush();
-                    SharpDX.Direct3D11.QueryDescription qd = new SharpDX.Direct3D11.QueryDescription();
-
-                    qd.Type = SharpDX.Direct3D11.QueryType.Event;
-
-
-                    query = new SharpDX.Direct3D11.Query(RenderContext11.Device, qd);
-
-                    RenderContext11.devContext.End(query);
-
-                    bool result = false;
-                    bool retVal = false;
-                    while (!result && !retVal)
-                    {
-                        SharpDX.DataStream ds = RenderContext11.devContext.GetData(query);
-
-                        result = ds.ReadBoolean();
-                        ds.Close();
-                        ds.Dispose();
-
-                    }
-                    query.Dispose();
-                }
-            }
-
-        }
-
-        PositionColoredTextured[] fadePoints = new PositionColoredTextured[4];
-        public BlendState Fader = new BlendState(true, 2000);
-
-        private bool crossFadeFrame = false;
-
-        private Texture11 crossFadeTexture = null;
-        public bool CrossFadeFrame
-        {
-            set
-            {
-                if (value && crossFadeFrame != value)
-                {
-                    if (crossFadeTexture != null)
-                    {
-                        crossFadeTexture.Dispose();
-                    }
-                    crossFadeTexture = RenderContext11.GetScreenTexture();
-
-                }
-                crossFadeFrame = value;
-
-                if (!value)
-                {
-                    if (crossFadeTexture != null)
-                    {
-                        crossFadeTexture.Dispose();
-                        crossFadeTexture = null;
-                    }
-                }
-            }
-            get
-            {
-                return crossFadeFrame;
-            }
-        }
-
-        private void FadeFrame()
-        {
-
-            SettingParameter sp = Settings.Active.GetSetting(StockSkyOverlayTypes.FadeToBlack);
-
-
-
-            if ((sp.Opacity > 0) && !(Settings.MasterController && Properties.Settings.Default.FadeRemoteOnly))
-            {
-                Color color = Color.FromArgb(255 - (int)UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
-
-                if (!(sp.Opacity > 0))
-                {
-                    color = Color.FromArgb(255 - (int)UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
-                }
-
-
-                if (crossFadeFrame)
-                {
-                    color = Color.FromArgb((int)UiTools.Gamma((int)((sp.Opacity) * 255), 1 / 2.2f), Color.White);
-                }
-                else
-                {
-                    if (crossFadeTexture != null)
-                    {
-                        crossFadeTexture.Dispose();
-                        crossFadeTexture = null;
-                    }
-                }
-
-                fadePoints[0].X = 0;
-                fadePoints[0].Y = renderWindow.Height;
-                fadePoints[0].Z = 0;
-                fadePoints[0].Tu = 0;
-                fadePoints[0].Tv = 1;
-                fadePoints[0].W = 1;
-                fadePoints[0].Color = color;
-                fadePoints[1].X = 0;
-                fadePoints[1].Y = 0;
-                fadePoints[1].Z = 0;
-                fadePoints[1].Tu = 0;
-                fadePoints[1].Tv = 0;
-                fadePoints[1].W = 1;
-                fadePoints[1].Color = color;
-                fadePoints[2].X = renderWindow.Width;
-                fadePoints[2].Y = renderWindow.Height;
-                fadePoints[2].Z = 0;
-                fadePoints[2].Tu = 1;
-                fadePoints[2].Tv = 1;
-                fadePoints[2].W = 1;
-                fadePoints[2].Color = color;
-                fadePoints[3].X = renderWindow.Width;
-                fadePoints[3].Y = 0;
-                fadePoints[3].Z = 0;
-                fadePoints[3].Tu = 1;
-                fadePoints[3].Tv = 0;
-                fadePoints[3].W = 1;
-                fadePoints[3].Color = color;
-
-                Sprite2d.DrawForScreen(RenderContext11, fadePoints, 4, crossFadeTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
-            }
-        }
-
-        private void FadeDomeTexture()
-        {
-
-            SettingParameter sp = Settings.Active.GetSetting(StockSkyOverlayTypes.FadeToBlack);
-
-
-
-            if ((sp.Opacity > 0) && !(Settings.MasterController && Properties.Settings.Default.FadeRemoteOnly))
-            {
-                Color color = Color.FromArgb(255 - (int)UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
-
-                if (!(sp.Opacity > 0))
-                {
-                    color = Color.FromArgb(255 - (int)UiTools.Gamma(255 - (int)(sp.Opacity * 255), 1 / 2.2f), Color.Black);
-                }
-
-
-                if (crossFadeFrame)
-                {
-                    color = Color.FromArgb((int)UiTools.Gamma((int)((sp.Opacity) * 255), 1 / 2.2f), Color.White);
-                }
-                else
-                {
-                    if (crossFadeTexture != null)
-                    {
-                        crossFadeTexture.Dispose();
-                        crossFadeTexture = null;
-                    }
-                }
-
-                fadePoints[0].X = 0;
-                fadePoints[0].Y = dumpFrameParams.Height;
-                fadePoints[0].Z = 0;
-                fadePoints[0].Tu = 0;
-                fadePoints[0].Tv = 1;
-                fadePoints[0].W = 1;
-                fadePoints[0].Color = color;
-                fadePoints[1].X = 0;
-                fadePoints[1].Y = 0;
-                fadePoints[1].Z = 0;
-                fadePoints[1].Tu = 0;
-                fadePoints[1].Tv = 0;
-                fadePoints[1].W = 1;
-                fadePoints[1].Color = color;
-                fadePoints[2].X = dumpFrameParams.Width;
-                fadePoints[2].Y = dumpFrameParams.Height;
-                fadePoints[2].Z = 0;
-                fadePoints[2].Tu = 1;
-                fadePoints[2].Tv = 1;
-                fadePoints[2].W = 1;
-                fadePoints[2].Color = color;
-                fadePoints[3].X = dumpFrameParams.Width;
-                fadePoints[3].Y = 0;
-                fadePoints[3].Z = 0;
-                fadePoints[3].Tu = 1;
-                fadePoints[3].Tv = 0;
-                fadePoints[3].W = 1;
-                fadePoints[3].Color = color;
-
-                Sprite2d.DrawForScreen(RenderContext11, fadePoints, 4, crossFadeTexture, SharpDX.Direct3D.PrimitiveTopology.TriangleStrip);
-            }
-        }
-
-        TansformedPositionTexturedVertexBuffer11 ScreenVertexBuffer;
-
-        void RenderSteroPairAnaglyph(RenderTargetTexture left, RenderTargetTexture right)
-        {
-
-            RenderContext11.SetDisplayRenderTargets();
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-
-            if (ScreenVertexBuffer == null)
-            {
-                if (ScreenVertexBuffer != null)
-                {
-                    ScreenVertexBuffer.Dispose();
-                    GC.SuppressFinalize(ScreenVertexBuffer);
-                    ScreenVertexBuffer = null;
-                }
-
-                ScreenVertexBuffer = new TansformedPositionTexturedVertexBuffer11(6, RenderContext11.PrepDevice);
-
-                //PreTransformed
-                TansformedPositionTextured[] quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
-
-
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
-                quad[0].Tu = 0;
-                quad[0].Tv = 0;
-
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[1].Tu = 1;
-                quad[1].Tv = 0;
-
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[2].Tu = 0;
-                quad[2].Tv = 1;
-
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[3].Tu = 0;
-                quad[3].Tv = 1;
-
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[4].Tu = 1;
-                quad[4].Tv = 0;
-
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
-                quad[5].Tu = 1;
-                quad[5].Tv = 1;
-
-                ScreenVertexBuffer.Unlock();
-
-            }
-            Color leftEyeColor = Color.Red;
-            Color rightEyeColor = Color.Cyan;
-
-
-
-            if (StereoMode == StereoModes.AnaglyphYellowBlue)
-            {
-                leftEyeColor = Color.Yellow;
-                rightEyeColor = Color.Blue;
-
-            }
-
-            if (StereoMode == StereoModes.AnaglyphMagentaGreen)
-            {
-                leftEyeColor = Color.Yellow;
-                rightEyeColor = Color.Blue;
-
-            }
-
-
-            RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-
-            RenderContext11.BlendMode = BlendMode.Additive;
-
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-
-
-            //Left Eye
-
-            AnaglyphStereoShader.Color = new SharpDX.Color4(leftEyeColor.R / 255f, leftEyeColor.G / 255f, leftEyeColor.B / 255f, leftEyeColor.A / 255f);
-            AnaglyphStereoShader.Use(RenderContext11.devContext);
-
-
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, leftEye.RenderTexture.ResourceView);
-
-
-            RenderContext11.devContext.Draw(ScreenVertexBuffer.Count, 0);
-
-            //Right Eye
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, rightEye.RenderTexture.ResourceView);
-            AnaglyphStereoShader.Color = new SharpDX.Color4(rightEyeColor.R / 255f, rightEyeColor.G / 255f, rightEyeColor.B / 255f, rightEyeColor.A / 255f);
-            AnaglyphStereoShader.Use(RenderContext11.devContext);
-            RenderContext11.devContext.Draw(ScreenVertexBuffer.Count, 0);
-
-            RenderContext11.BlendMode = BlendMode.Alpha;
-
-            PresentFrame11(false);
-        }
-
-        void RenderSteroPairInterline(RenderTargetTexture left, RenderTargetTexture right)
-        {
-            if (renderWindow.ClientSize.Height != RenderContext11.DisplayViewport.Height ||
-                renderWindow.ClientSize.Width != RenderContext11.DisplayViewport.Width)
-            {
-                RenderContext11.Resize(renderWindow);
-            }
-
-            RenderContext11.SetDisplayRenderTargets();
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-
-            if (ScreenVertexBuffer == null)
-            {
-                if (ScreenVertexBuffer != null)
-                {
-                    ScreenVertexBuffer.Dispose();
-                    GC.SuppressFinalize(ScreenVertexBuffer);
-                    ScreenVertexBuffer = null;
-                }
-
-                ScreenVertexBuffer = new TansformedPositionTexturedVertexBuffer11(6, RenderContext11.PrepDevice);
-
-                //PreTransformed
-                TansformedPositionTextured[] quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
-
-
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
-                quad[0].Tu = 0;
-                quad[0].Tv = 0;
-
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[1].Tu = 1;
-                quad[1].Tv = 0;
-
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[2].Tu = 0;
-                quad[2].Tv = 1;
-
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[3].Tu = 0;
-                quad[3].Tv = 1;
-
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[4].Tu = 1;
-                quad[4].Tv = 0;
-
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
-                quad[5].Tu = 1;
-                quad[5].Tv = 1;
-
-                ScreenVertexBuffer.Unlock();
-
-            }
-
-
-            RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-
-            RenderContext11.BlendMode = BlendMode.Additive;
-
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-
-
-            InterlineStereoShader.Lines = renderWindow.Height;
-            InterlineStereoShader.Odd = StereoMode == StereoModes.InterlineOdd ? 1.0f : 0.0f;
-
-            InterlineStereoShader.Use(RenderContext11.devContext);
-
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, right.RenderTexture.ResourceView);
-            RenderContext11.devContext.PixelShader.SetShaderResource(1, left.RenderTexture.ResourceView);
-
-            RenderContext11.devContext.Draw(ScreenVertexBuffer.Count, 0);
-
-            RenderContext11.BlendMode = BlendMode.Alpha;
-
-            PresentFrame11(false);
-        }
-        void RenderSteroPairSideBySide(RenderTargetTexture left, RenderTargetTexture right)
-        {
-            RenderContext11.SetDisplayRenderTargets();
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-
-            if (ScreenVertexBuffer == null)
-            {
-                if (ScreenVertexBuffer != null)
-                {
-                    ScreenVertexBuffer.Dispose();
-                    GC.SuppressFinalize(ScreenVertexBuffer);
-                    ScreenVertexBuffer = null;
-                }
-
-                ScreenVertexBuffer = new TansformedPositionTexturedVertexBuffer11(6, RenderContext11.PrepDevice);
-
-                //PreTransformed
-                TansformedPositionTextured[] quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
-
-
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
-                quad[0].Tu = 0;
-                quad[0].Tv = 0;
-
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[1].Tu = 1;
-                quad[1].Tv = 0;
-
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[2].Tu = 0;
-                quad[2].Tv = 1;
-
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[3].Tu = 0;
-                quad[3].Tv = 1;
-
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[4].Tu = 1;
-                quad[4].Tv = 0;
-
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
-                quad[5].Tu = 1;
-                quad[5].Tv = 1;
-
-                ScreenVertexBuffer.Unlock();
-
-            }
-
-
-            RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-
-            RenderContext11.BlendMode = BlendMode.Additive;
-
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-
-            SideBySideStereoShader.Use(RenderContext11.devContext);
-
-
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, right.RenderTexture.ResourceView);
-            RenderContext11.devContext.PixelShader.SetShaderResource(1, left.RenderTexture.ResourceView);
-
-
-            RenderContext11.devContext.Draw(ScreenVertexBuffer.Count, 0);
-
-            RenderContext11.BlendMode = BlendMode.Alpha;
-
-            PresentFrame11(false);
-        }
-
-
-        void RenderTextureToScreen(SharpDX.Direct3D11.ShaderResourceView eye, int width, int height)
-        {
-            RenderContext11.SetDisplayRenderTargets();
-
-            RenderContext11.ClearRenderTarget(SharpDX.Color.Black);
-
-
-            if (ScreenVertexBuffer == null)
-            {
-                if (ScreenVertexBuffer != null)
-                {
-                    ScreenVertexBuffer.Dispose();
-                    GC.SuppressFinalize(ScreenVertexBuffer);
-                    ScreenVertexBuffer = null;
-                }
-
-                ScreenVertexBuffer = new TansformedPositionTexturedVertexBuffer11(6, RenderContext11.PrepDevice);
-
-                //PreTransformed
-                TansformedPositionTextured[] quad = (TansformedPositionTextured[])ScreenVertexBuffer.Lock(0, 0);
-
-
-                quad[0].Position = new SharpDX.Vector4(-1, 1, .9f, 1);
-                quad[0].Tu = 0;
-                quad[0].Tv = 0;
-
-                quad[1].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[1].Tu = 1;
-                quad[1].Tv = 0;
-
-                quad[2].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[2].Tu = 0;
-                quad[2].Tv = 1;
-
-                quad[3].Position = new SharpDX.Vector4(-1, -1, .9f, 1);
-                quad[3].Tu = 0;
-                quad[3].Tv = 1;
-
-                quad[4].Position = new SharpDX.Vector4(1, 1, .9f, 1);
-                quad[4].Tu = 1;
-                quad[4].Tv = 0;
-
-                quad[5].Position = new SharpDX.Vector4(1, -1, .9f, 1);
-                quad[5].Tu = 1;
-                quad[5].Tv = 1;
-
-                ScreenVertexBuffer.Unlock();
-
-            }
-
-
-            RenderContext11.SetVertexBuffer(ScreenVertexBuffer);
-
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-
-            RenderContext11.BlendMode = BlendMode.None;
-
-            RenderContext11.setRasterizerState(TriangleCullMode.Off);
-            // RenderContext11.DepthStencilMode = DepthStencilMode.Off;
-
-
-
-            RenderContext11.devContext.PixelShader.SetShaderResource(0, eye);
-
-            SimpleShader.Use(RenderContext11.devContext);
-
-            RenderContext11.devContext.Draw(ScreenVertexBuffer.Count, 0);
-
-
-            RenderContext11.BlendMode = BlendMode.Alpha;
-
-
-            PresentFrame11(false);
-        }
-
-        public void DrawClouds()
-        {
-            Texture11 cloudTexture = Planets.CloudTexture;
-            if (cloudTexture != null)
-            {
-                RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1.0f, Color.White);
-
-                RenderContext11.MainTexture = cloudTexture;
-
-                Matrix3d savedWorld = RenderContext11.World;
-                double cloudScale = 1.0 + Planets.EarthCloudHeightMeters / 6378100.0;
-                RenderContext11.World = Matrix3d.Scaling(cloudScale, cloudScale, cloudScale) * RenderContext11.World;
-
-                RenderContext11.setRasterizerState(TriangleCullMode.CullCounterClockwise);
-                RenderContext11.DepthStencilMode = DepthStencilMode.ZReadOnly;
-                RenderContext11.BlendMode = BlendMode.Alpha;
-
-                Planets.DrawFixedResolutionSphere(RenderContext11, 0);
-
-                RenderContext11.World = savedWorld;
-                RenderContext11.setRasterizerState(TriangleCullMode.CullClockwise);
-                RenderContext11.DepthStencilMode = DepthStencilMode.ZReadWrite;
-                RenderContext11.BlendMode = BlendMode.None;
-            }
-        }
-
-        private void ClampZoomValues()
-        {
-            if (ZoomFactor > ZoomMax)
-            {
-                ZoomFactor = ZoomMax;
-            }
-            if (ZoomFactor < ZoomMin)
-            {
-                ZoomFactor = ZoomMin;
-            }
-            if (TargetZoom > ZoomMax)
-            {
-                TargetZoom = ZoomMax;
-            }
-            if (TargetZoom < ZoomMin)
-            {
-                TargetZoom = ZoomMin;
-            }
-        }
-        double lastFrameTime = .1;
-        Int64 lastRenderTickCount = 0;
-
-        bool CaptureVideo = false;
-        public bool ScreenShot = false;
-        public VideoOut videoOut = null;
-        Bitmap bmpVideoOut = null;
 
         int lastTimeSyncFrame = 0;
 
-        private void UpdateNetworkStatus()
+        public void UpdateNetworkStatus()
         {
-            ignoreChanges = true;
+            Settings.ignoreChanges = true;
             NetControl.SetSettingsBelndStates();
             NetControl.SetSolarSystemsSettingsBlendStates();
 
@@ -11336,8 +5604,8 @@ namespace TerraViewer
             this.SetLocation(NetControl.lat, NetControl.lng, NetControl.zoom, NetControl.cameraRotate, NetControl.cameraAngle, NetControl.foregroundImageSetHash,
                 NetControl.backgroundImageSetHash, NetControl.blendOpacity, NetControl.runSetup, NetControl.flush, NetControl.target, NetControl.targetPoint, NetControl.solarSystemScale, NetControl.TrackingFrame);
 
-            viewCamera.DomeAlt = NetControl.domeAlt;
-            viewCamera.DomeAz = NetControl.domeAz;
+            RenderEngine.viewCamera.DomeAlt = NetControl.domeAlt;
+            RenderEngine.viewCamera.DomeAz = NetControl.domeAz;
 
             int currentVersion = Properties.Settings.Default.ColSettingsVersion;
 
@@ -11353,13 +5621,10 @@ namespace TerraViewer
             {
                 NetControl.GetColorSettings();
             }
-            ignoreChanges = false;
+            Settings.ignoreChanges = false;
         }
 
-        private void LoadCurrentFigures()
-        {
-            constellationsFigures = new Constellations("Default Figures", "http://www.worldwidetelescope.org/data/figures.txt", false, false);
-        }
+
 
         private void NotifyMoveComplete()
         {
@@ -11370,236 +5635,24 @@ namespace TerraViewer
             SendMoveComplete();
         }
 
-        private void UpdateKmlViewInfo()
+        internal void UpdateKmlViewInfo()
         {
-            KmlViewInfo.bboxNorth = Math.Max(CurrentViewCorners[0].Dec, CurrentViewCorners[1].Dec);
-            KmlViewInfo.bboxSouth = Math.Min(CurrentViewCorners[2].Dec, CurrentViewCorners[3].Dec);
-            KmlViewInfo.bboxEast = Math.Max(CurrentViewCorners[1].Lng, CurrentViewCorners[2].Lng);
-            KmlViewInfo.bboxWest = Math.Min(CurrentViewCorners[0].Lng, CurrentViewCorners[2].Lng);
+            KmlViewInfo.bboxNorth = Math.Max(RenderEngine.CurrentViewCorners[0].Dec, RenderEngine.CurrentViewCorners[1].Dec);
+            KmlViewInfo.bboxSouth = Math.Min(RenderEngine.CurrentViewCorners[2].Dec, RenderEngine.CurrentViewCorners[3].Dec);
+            KmlViewInfo.bboxEast = Math.Max(RenderEngine.CurrentViewCorners[1].Lng, RenderEngine.CurrentViewCorners[2].Lng);
+            KmlViewInfo.bboxWest = Math.Min(RenderEngine.CurrentViewCorners[0].Lng, RenderEngine.CurrentViewCorners[2].Lng);
             KmlViewInfo.viewMoving = false;
             KmlViewInfo.viewJustStopped = true;
             //todo Fill in completely from camera parameters..
-            if (KmlMarkers == null)
+            if (RenderEngine.KmlMarkers == null)
             {
-                KmlMarkers = new KmlLabels();
+                RenderEngine.KmlMarkers = new KmlLabels();
             }
         }
 
 
         private SharpDX.Direct3D11.InputLayout layout = null;
-        public void PaintLayerFull11(IImageSet layer, float opacityPercentage)
-        {
-            float opacity = opacityPercentage / 100.0f;
-            RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, opacity, Color.White);
-            DrawTiledSphere(layer, opacity, Color.White);
-        }
 
-        public void PaintLayerFullTint11(IImageSet layer, float opacityPercentage, Color color)
-        {
-            float opacity = opacityPercentage / 100.0f;
-            RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, opacity, color);
-            DrawTiledSphere(layer, opacity, color);
-        }
-
-        float brightness = .5f;
-        float contrast = .5f;
-
-        public void DrawTiledSphere(IImageSet layer, float opacity, Color color)
-        {
-            int maxX = GetTilesXForLevel(layer, layer.BaseLevel);
-            int maxY = GetTilesYForLevel(layer, layer.BaseLevel);
-
-            // Set up the input assembler; match the layout of the current shader
-            RenderContext11.Device.ImmediateContext.InputAssembler.InputLayout = RenderContext11.Shader.inputLayout(PlanetShader11.StandardVertexLayout.PositionNormalTex2);
-            RenderContext11.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-
-            Tile.Viewport = RenderContext11.ViewPort;
-            Tile.wvp = (RenderContext11.WorldBase * RenderContext11.ViewBase * RenderContext11.Projection).Matrix11;
-
-            RenderContext11.PreDraw();
-
-            if (layer.DataSetType == ImageSetType.Sky)
-            {
-                HDRPixelShader.constants.a = brightness;
-                HDRPixelShader.constants.b = contrast;
-                HDRPixelShader.constants.opacity = opacity;
-                HDRPixelShader.constants.tint = new SharpDX.Color4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
-
-                HDRPixelShader.Use(RenderContext11.devContext);
-            }
-
-            if (Properties.Settings.Default.EarthCutawayView.State && !SolarSystemMode && !Space && layer.DataSetType == ImageSetType.Earth)
-            {
-
-                RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, opacity, Color.White);
-                if (layer.Projection == ProjectionType.Toast)
-                {
-
-                    Tile tile = TileCache.GetTile(layer.BaseLevel + 1, 1, 0, layer, null);
-                    if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                    {
-                        tile.Draw3D(RenderContext11, opacity, null);
-                    }
-                    tile = TileCache.GetTile(layer.BaseLevel + 1, 1, 1, layer, null);
-                    if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                    {
-                        tile.Draw3D(RenderContext11, opacity, null);
-                    }
-                    tile = TileCache.GetTile(layer.BaseLevel + 1, 0, 0, layer, null);
-                    if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                    {
-                        tile.Draw3D(RenderContext11, opacity, null);
-                    }
-                    //Show if partially transparent
-                    if (Properties.Settings.Default.EarthCutawayView.Opacity != 1.0)
-                    {
-                        tile = TileCache.GetTile(layer.BaseLevel + 1, 0, 1, layer, null);
-                        if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                        {
-                            RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1.0f - Properties.Settings.Default.EarthCutawayView.Opacity, Color.White);
-                            tile.Draw3D(RenderContext11, opacity, null);
-                        }
-                    }
-                }
-                else
-                {
-                    for (int x = 0; x < maxX; x++)
-                    {
-                        for (int y = 0; y < maxY; y++)
-                        {
-
-                            if (!(x == 1))
-                            {
-                                Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                                if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                                {
-                                    tile.Draw3D(RenderContext11, opacity, null);
-                                }
-                            }
-                            else
-                            {
-                                Tile tile = TileCache.GetTile(layer.BaseLevel + 1, x * 2 + 1, y * 2, layer, null);
-                                if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                                {
-                                    tile.Draw3D(RenderContext11, opacity, null);
-                                }
-                                tile = TileCache.GetTile(layer.BaseLevel + 1, x * 2 + 1, y * 2 + 1, layer, null);
-                                if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                                {
-                                    tile.Draw3D(RenderContext11, opacity, null);
-                                }
-                                if (Properties.Settings.Default.EarthCutawayView.Opacity != 1.0 && !Space)
-                                {
-                                    RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1.0f - Properties.Settings.Default.EarthCutawayView.Opacity, Color.White);
-
-                                    tile = TileCache.GetTile(layer.BaseLevel + 1, x * 2, y * 2, layer, null);
-                                    if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                                    {
-                                        tile.Draw3D(RenderContext11, 1, null);
-                                    }
-                                    tile = TileCache.GetTile(layer.BaseLevel + 1, x * 2, y * 2 + 1, layer, null);
-                                    if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                                    {
-                                        tile.Draw3D(RenderContext11, 1, null);
-                                    }
-                                    RenderContext11.SetupBasicEffect(BasicEffect.TextureColorOpacity, 1.0f, Color.White);
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (int x = 0; x < maxX; x++)
-                {
-                    for (int y = 0; y < maxY; y++)
-                    {
-                        Tile tile = TileCache.GetTile(layer.BaseLevel, x, y, layer, null);
-                        if (tile != null && tile.IsTileInFrustum(RenderContext11.Frustum))
-                        {
-                            tile.Draw3D(RenderContext11, opacity, null);
-                        }
-                    }
-                }
-            }
-
-            RenderContext11.DisableEffect();
-
-            RenderContext11.LocalCenter = Vector3d.Empty;
-        }
-
-
-        internal static int GetTilesYForLevel(IImageSet layer, int level)
-        {
-            int maxY;
-
-            switch (layer.Projection)
-            {
-                case ProjectionType.Mercator:
-                    maxY = (int)Math.Pow(2, level);
-                    break;
-                case ProjectionType.Equirectangular:
-                    maxY = (int)(Math.Pow(2, level) * (180 / layer.BaseTileDegrees) + .9);
-                    break;
-                case ProjectionType.Tangent:
-                    maxY = (int)Math.Pow(2, level);
-
-                    break;
-                case ProjectionType.SkyImage:
-                case ProjectionType.Spherical:
-                    maxY = 1;
-                    break;
-                default:
-                    maxY = (int)Math.Pow(2, level);
-                    break;
-            }
-            return maxY;
-        }
-
-        internal static int GetTilesXForLevel(IImageSet layer, int level)
-        {
-            int maxX;
-            switch (layer.Projection)
-            {
-                case ProjectionType.Plotted:
-                case ProjectionType.Toast:
-                    maxX = (int)Math.Pow(2, level);
-                    break;
-                case ProjectionType.Mercator:
-                    maxX = (int)Math.Pow(2, level) * (int)(layer.BaseTileDegrees / 360.0);
-                    break;
-                case ProjectionType.Equirectangular:
-                    maxX = (int)(Math.Pow(2, level) * (layer.BaseTileDegrees / 90.0));
-                    maxX = (int)(Math.Pow(2, level) * (360 / layer.BaseTileDegrees) + .9);
-
-                    break;
-
-                case ProjectionType.Tangent:
-                    if (layer.WidthFactor == 1)
-                    {
-                        maxX = (int)Math.Pow(2, level) * 2;
-                    }
-                    else
-                    {
-                        maxX = (int)Math.Pow(2, level);
-                    }
-                    break;
-                case ProjectionType.SkyImage:
-                    maxX = 1;
-                    break;
-                case ProjectionType.Spherical:
-                    maxX = 1;
-                    break;
-                default:
-                    maxX = (int)Math.Pow(2, level) * 2;
-                    break;
-            }
-
-
-            return maxX;
-        }
 
         protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
         {
@@ -11624,10 +5677,10 @@ namespace TerraViewer
             }
             if (RenderContext11 != null)
             {
-                RenderContext11.Resize(renderWindow);
+                RenderContext11.Resize(renderWindow.ClientSize.Height, renderWindow.ClientSize.Width);
             }
 
-            if (ReadyToRender)
+            if (RenderEngine.ReadyToRender)
             {
 
                 SetAppMode(currentMode);
@@ -11639,7 +5692,7 @@ namespace TerraViewer
             return ((this.WindowState == FormWindowState.Minimized) || !this.Visible || pause);
         }
 
-        public static bool renderingVideo = false;
+
 
 
         static private void RegisterKnownFileTypes()
@@ -11730,8 +5783,10 @@ namespace TerraViewer
 
         private static void SendWMData(IntPtr hwnd, string argData)
         {
-
-            File.WriteAllText(Properties.Settings.Default.CahceDirectory + @"\launchfile.txt", argData);
+            if (!string.IsNullOrWhiteSpace(argData) && !string.IsNullOrWhiteSpace(Properties.Settings.Default.CahceDirectory))
+            {
+                File.WriteAllText(Properties.Settings.Default.CahceDirectory + @"\launchfile.txt", argData);
+            }
             PostMessage(hwnd, AlertMessage, 0, IntPtr.Zero);
 
         }
@@ -11819,9 +5874,6 @@ namespace TerraViewer
         [STAThread]
         static void Main(string[] args)
         {
-
-
-
             CultureInfo culture = new CultureInfo("en-US", false);
             System.Threading.Thread.CurrentThread.CurrentCulture = culture;
             Application.CurrentCulture = culture;
@@ -11837,7 +5889,7 @@ namespace TerraViewer
 
                 if (arg == "-logging")
                 {
-                    Logging = true;
+                    Utils.Logging = true;
                 }
 
 
@@ -11930,6 +5982,7 @@ namespace TerraViewer
                     return;
                 }
             }
+            AppSettings.SettingsBase = new SettingsWrapper();
 
             PulseMe.PulseForUpdate = Earth3d.PulseForUpdate;
 
@@ -12042,7 +6095,7 @@ namespace TerraViewer
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (ProjectorServer)
+            if (RenderEngine.ProjectorServer)
             {
 
                 File.WriteAllText(@"c:\wwtconfig\crashdump.txt", "Unhandled Exception in Current Domain");
@@ -12075,7 +6128,7 @@ namespace TerraViewer
                 {
                     if (Earth3d.MainWindow != null)
                     {
-                        Earth3d.MainWindow.Render();
+                        RenderEngine.Engine.Render();
                     }
                 }
             }
@@ -12110,7 +6163,7 @@ namespace TerraViewer
 
         static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-            if (ProjectorServer)
+            if (RenderEngine.ProjectorServer)
             {
                 LanguageReboot = true;
                 Earth3d.CloseNow = true;
@@ -12197,15 +6250,14 @@ namespace TerraViewer
         static bool resetProperties = false;
         private static void CheckDefaultProperties(bool checkDataCabinet)
         {
-            AppSettings.SettingsBase = Properties.Settings.Default;
-
             if (Properties.Settings.Default.UpgradeNeeded && !resetProperties)
             {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.SolarSystemCosmos.TargetState = true;
                 Properties.Settings.Default.SolarSystemOverlays.TargetState = false;
                 Properties.Settings.Default.ImageQuality = 100;
-                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets5";
+                Properties.Settings.Default.ImageSetUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?X=ImageSets6";
+                Properties.Settings.Default.ExploreRootUrl = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot6";
                 Properties.Settings.Default.UpgradeNeeded = false;
             }
 
@@ -12263,7 +6315,7 @@ namespace TerraViewer
                 ExtractDataCabinet(false);
             }
 
-            AppSettings.SettingsBase = Properties.Settings.Default;
+
         }
 
         private static void ExtractDataCabinet(bool eraseFirst)
@@ -12288,195 +6340,26 @@ namespace TerraViewer
         int mouseDownY;
 
 
-        public double CameraRotateTarget
-        {
-            get { return targetViewCamera.Rotation; }
-            set { targetViewCamera.Rotation = value; }
-        }
-
-        public double CameraRotate
-        {
-            get { return viewCamera.Rotation; }
-            set { viewCamera.Rotation = value; }
-        }
-
-        public double CameraAngle
-        {
-            get { return viewCamera.Angle; }
-            set { viewCamera.Angle = value; }
-        }
-
-        public double CameraAngleTarget
-        {
-            get { return targetViewCamera.Angle; }
-            set { targetViewCamera.Angle = value; }
-        }
-
-        private int GetLevelForImageSet(IImageSet imageSet)
-        {
-            return (int)(Math.Log(imageSet.BaseTileDegrees / ZoomFactor, 2) + .01);
-        }
-
-        double planetFovWidth = Math.PI;
-
-        private void ComputeViewParameters(IImageSet imageSet)
-        {
-
-            this.MaxLevels = imageSet.Levels - 1;
-            this.baseTileDegrees = (double)imageSet.BaseTileDegrees;
-
-
-            double level = (double)Math.Log(baseTileDegrees / ZoomFactor, 2) + 2.01F;
-
-            if ((int)level > MaxLevels)
-            {
-                viewTileLevel = MaxLevels;
-            }
-            else if (level < 0)
-            {
-                viewTileLevel = 0;
-            }
-            else
-            {
-                viewTileLevel = (int)level;
-            }
 
 
 
-            tileSizeY = (int)(256.0 * (1.0 * (((baseTileDegrees / ZoomFactor) / Math.Pow(2, viewTileLevel)))));
-
-            tileSizeX = tileSizeY;
-
-
-            if (TileCache.CurrentLevel != this.viewTileLevel)
-            {
-                TileCache.CurrentLevel = this.viewTileLevel;
-            }
-
-            return;
-        }
-
-        private int GetTileXFromLng(double lng)
-        {
-            double tile = ((lng + 180.0F) / (baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))));
-            if (tile < 0)
-            {
-                tile = -1;
-            }
-            return (int)tile;
-        }
-
-        private int GetTileYFromLat(double lat)
-        {
-
-            return (int)((lat + 90.0) / (baseTileDegrees / (Math.Pow(2, viewTileLevel)))) - 1;
-        }
-
-
-
-        public double GetPixelScaleX(bool mouseRelative)
-        {
-            double lat = ViewLat;
-
-            if (mouseRelative)
-            {
-                if (Space && Settings.Active.GalacticMode)
-                {
-                    Point cursor = renderWindow.PointToClient(Cursor.Position);
-                    Coordinates result = GetCoordinatesForScreenPoint(cursor.X, cursor.Y);
-
-                    double[] gPoint = Coordinates.J2000toGalactic(result.RA * 15, result.Dec);
-
-                    lat = gPoint[1];
-                }
-                else if (Space && Settings.Active.LocalHorizonMode)
-                {
-                    Point cursor = renderWindow.PointToClient(Cursor.Position);
-                    Coordinates currentAltAz = Coordinates.EquitorialToHorizon(GetCoordinatesForScreenPoint(cursor.X, cursor.Y), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                    lat = currentAltAz.Alt;
-                }
-                else
-                {
-                    Point cursor = renderWindow.PointToClient(Cursor.Position);
-                    Coordinates result = GetCoordinatesForScreenPoint(cursor.X, cursor.Y);
-                    lat = result.Lat;
-                }
-            }
-
-            if (CurrentImageSet != null && (CurrentImageSet.DataSetType == ImageSetType.Sky || CurrentImageSet.DataSetType == ImageSetType.Panorama || SandboxMode || SolarSystemMode || CurrentImageSet.DataSetType == ImageSetType.Earth || CurrentImageSet.DataSetType == ImageSetType.Planet))
-            {
-                double cosLat = 1;
-                if (ViewLat > 89.9999)
-                {
-                    cosLat = Math.Cos(89.9999 * RC);
-                }
-                else
-                {
-                    cosLat = Math.Cos(lat * RC);
-
-                }
-
-                double zz = (90 - ZoomFactor / 6);
-                double zcos = Math.Cos(zz * RC);
-
-                return GetPixelScaleY() / Math.Max(zcos, cosLat);
-            }
-            else
-            {
-                return (((baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))) / tileSizeX) / 5) / Math.Max(.2, Math.Cos(targetLat));
-            }
-
-        }
-
-        public double GetPixelScaleY()
-        {
-            if (SolarSystemMode)
-            {
-                if ((int)SolarSystemTrack < (int)SolarSystemObjects.Custom)
-                {
-                    return Math.Min(.06, 545000 * Math.Tan(Math.PI / 4) * ZoomFactor / renderWindow.ClientRectangle.Height);
-                }
-                else
-                {
-
-                    return .06;
-                }
-            }
-            else if (CurrentImageSet != null && (CurrentImageSet.DataSetType == ImageSetType.Sky || CurrentImageSet.DataSetType == ImageSetType.Panorama))
-            {
-                double val = fovAngle / renderWindow.ClientRectangle.Height;
-
-                return val;
-            }
-            else if (SandboxMode)
-            {
-                return .06;
-            }
-            else
-            {
-                return ((baseTileDegrees / ((double)Math.Pow(2, viewTileLevel))) / (double)tileSizeY) / 5;
-            }
-        }
-
-        SimpleLineList11 measureLines = null;
         Coordinates measureStart;
         Coordinates measureEnd;
 
-        private bool measuringDrag = false;
-        private bool measuring = false;
+
         public bool Measuring
         {
-            get { return measuring; }
+            get { return RenderEngine.measuring; }
             set
             {
-                if (measureLines != null)
+                if (RenderEngine.measureLines != null)
                 {
-                    measureLines.Clear();
+                    RenderEngine.measureLines.Clear();
                 }
-                measuring = value;
+                RenderEngine.measuring = value;
             }
         }
+
         private bool dragging = false;
         private bool spinning = false;
         private bool angle = false;
@@ -12500,9 +6383,9 @@ namespace TerraViewer
             {
                 // TODO fix this for earth, plantes, panoramas
                 Coordinates result = GetCoordinatesForScreenPoint(pntCenter.X, pntCenter.Y);
-                string constellation = this.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                string constellation = RenderEngine.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                 contextPanel.Constellation = Constellations.FullName(constellation);
-                IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, ZoomFactor / 1300);
+                IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, RenderEngine.ZoomFactor / 1300);
 
                 if (closetPlace == null)
                 {
@@ -12657,6 +6540,14 @@ namespace TerraViewer
             return (((180 - ((ra) / 24.0 * 360) - 180) + 540) % 360) - 180;
         }
 
+        public bool IsMoving
+        {
+            get
+            {
+                return (RenderEngine.Mover != null || RenderEngine.zooming == true || RenderEngine.targetViewCamera != RenderEngine.viewCamera) || JoyInMotion;
+            }
+        }
+
         Point lastMousePosition = new Point(-1, -1);
         private void MainWndow_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -12668,22 +6559,24 @@ namespace TerraViewer
 
         }
 
+
+
         public Coordinates GetCoordinatesForScreenPoint(int x, int y)
         {
             Coordinates result = new Coordinates(0, 0);
             Rectangle rect = renderWindow.ClientRectangle;
             Vector3d PickRayOrig;
             Vector3d PickRayDir;
-            Point pt = new Point(x, y);
-            TransformPickPointToWorldSpace(pt, rect.Width, rect.Height, out PickRayOrig, out PickRayDir);
-            if (Space)
+            Vector2d pt = new Vector2d(x, y);
+            RenderEngine.TransformPickPointToWorldSpace(pt, rect.Width, rect.Height, out PickRayOrig, out PickRayDir);
+            if (RenderEngine.Space)
             {
                 result = Coordinates.CartesianToSpherical(PickRayDir);
 
             }
-            else if (PlanetLike)
+            else if (RenderEngine.PlanetLike)
             {
-                bool inThere = SphereIntersectRay(PickRayOrig, PickRayDir, out result);
+                bool inThere = RenderEngine.SphereIntersectRay(PickRayOrig, PickRayDir, out result);
 
             }
 
@@ -12705,19 +6598,19 @@ namespace TerraViewer
 
             Vector3d pick = Coordinates.RADecTo3d(ret.Az / 15 - 6, ret.Alt, 1);
 
-            double distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
+            double distance = (Math.Min(1, (.5 * (RenderEngine.ZoomFactor / 180)))) - 1 + 0.0001;
 
             PickRayOrig = new Vector3d(0, 0, distance);
 
-            Matrix3d mat = WorldMatrix * Matrix3d.RotationX(((config.TotalDomeTilt) / 180 * Math.PI));
-            Matrix3d mat2 = WorldMatrix * Matrix3d.RotationZ(((config.TotalDomeTilt) / 180 * Math.PI));
+            Matrix3d mat = RenderEngine.WorldMatrix * Matrix3d.RotationX(((config.TotalDomeTilt) / 180 * Math.PI));
+            Matrix3d mat2 = RenderEngine.WorldMatrix * Matrix3d.RotationZ(((config.TotalDomeTilt) / 180 * Math.PI));
 
             mat.Invert();
             mat2.Invert();
             mat.MultiplyVector(ref pick);
             mat2.MultiplyVector(ref PickRayOrig);
             PickRayDir = pick;
-            SphereIntersectRay(PickRayOrig.Vector3, PickRayDir.Vector3, out result);
+            RenderEngine.SphereIntersectRay(PickRayOrig.Vector3, PickRayDir.Vector3, out result);
             return result;
         }
 
@@ -12737,11 +6630,11 @@ namespace TerraViewer
 
             Vector3d pick = Coordinates.RADecTo3d(ret.Az / 15 - 6, ret.Alt, 1);
 
-            double distance = (Math.Min(1, (.5 * (ZoomFactor / 180)))) - 1 + 0.0001;
+            double distance = (Math.Min(1, (.5 * (RenderEngine.ZoomFactor / 180)))) - 1 + 0.0001;
 
             PickRayOrig = new Vector3d(0, -distance, 0);
 
-            Matrix3d mat = WorldMatrix * Matrix3d.RotationX(((config.TotalDomeTilt) / 180 * Math.PI));
+            Matrix3d mat = RenderEngine.WorldMatrix * Matrix3d.RotationX(((config.TotalDomeTilt) / 180 * Math.PI));
 
             mat.Invert();
 
@@ -12749,252 +6642,41 @@ namespace TerraViewer
             mat.MultiplyVector(ref PickRayOrig);
             PickRayDir = pick;
             Vector3d temp = new Vector3d(PickRayOrig);
-            temp.Subtract(Earth3d.MainWindow.viewCamera.ViewTarget);
+            temp.Subtract(RenderEngine.viewCamera.ViewTarget);
 
             IPlace closetPlace = Grids.FindClosestObject(temp, new Vector3d(PickRayDir));
 
             if (closetPlace != null)
             {
-                GotoTarget(closetPlace, false, false, true);
+                RenderEngine.GotoTarget(closetPlace, false, false, true);
             }
         }
 
-        public bool SphereIntersectRay(Vector3d pickRayOrig, Vector3d pickRayDir, out Coordinates pointCoordinate)
-        {
-            pointCoordinate = new Coordinates(0, 0);
-            double r = 1;
-            //Compute A, B and C coefficients
-            double a = Vector3d.Dot(pickRayDir, pickRayDir);
-            double b = 2 * Vector3d.Dot(pickRayDir, pickRayOrig);
-            double c = Vector3d.Dot(pickRayOrig, pickRayOrig) - (r * r);
-
-            //Find discriminant
-            double disc = b * b - 4 * a * c;
-
-            // if discriminant is negative there are no real roots, so return 
-            // false as ray misses sphere
-            if (disc < 0)
-            {
-                return false;
-            }
-
-            // compute q as described above
-            double distSqrt = (double)Math.Sqrt(disc);
-            double q;
-            if (b < 0)
-            {
-                q = (-b - distSqrt) / 2.0f;
-            }
-            else
-            {
-                q = (-b + distSqrt) / 2.0f;
-            }
-
-            // compute t0 and t1
-            double t0 = q / a;
-            double t1 = c / q;
-
-            // make sure t0 is smaller than t1
-            if (t0 > t1)
-            {
-                // if t0 is bigger than t1 swap them around
-                double temp = t0;
-                t0 = t1;
-                t1 = temp;
-            }
-
-            // if t1 is less than zero, the object is in the ray's negative direction
-            // and consequently the ray misses the sphere
-            if (t1 < 0)
-            {
-                return false;
-            }
-            double t = 0;
-            // if t0 is less than zero, the intersection point is at t1
-            if (t0 < 0)
-            {
-                t = t1;
-            }
-            // else the intersection point is at t0
-            else
-            {
-                t = t0;
-            }
-
-            Vector3d point = pickRayDir * t;
-
-            point = pickRayOrig + point;
-
-            pointCoordinate = Coordinates.CartesianToSpherical2(point);
-
-            return true;
-        }
 
 
-        public bool SphereIntersectRay(SharpDX.Vector3 pickRayOrig, SharpDX.Vector3 pickRayDir, out Coordinates pointCoordinate)
-        {
-            pointCoordinate = new Coordinates(0, 0);
-            float r = 1;
-            //Compute A, B and C coefficients
-            float a = SharpDX.Vector3.Dot(pickRayDir, pickRayDir);
-            float b = 2 * SharpDX.Vector3.Dot(pickRayDir, pickRayOrig);
-            float c = SharpDX.Vector3.Dot(pickRayOrig, pickRayOrig) - (r * r);
 
-            //Find discriminant
-            float disc = b * b - 4 * a * c;
-
-            // if discriminant is negative there are no real roots, so return 
-            // false as ray misses sphere
-            if (disc < 0)
-            {
-                return false;
-            }
-
-            // compute q as described above
-            float distSqrt = (float)Math.Sqrt(disc);
-            float q;
-            if (b < 0)
-            {
-                q = (-b - distSqrt) / 2.0f;
-            }
-            else
-            {
-                q = (-b + distSqrt) / 2.0f;
-            }
-
-            // compute t0 and t1
-            float t0 = q / a;
-            float t1 = c / q;
-
-            // make sure t0 is smaller than t1
-            if (t0 > t1)
-            {
-                // if t0 is bigger than t1 swap them around
-                float temp = t0;
-                t0 = t1;
-                t1 = temp;
-            }
-
-            // if t1 is less than zero, the object is in the ray's negative direction
-            // and consequently the ray misses the sphere
-            if (t1 < 0)
-            {
-                return false;
-            }
-            float t = 0;
-            // if t0 is less than zero, the intersection point is at t1
-            if (t0 < 0)
-            {
-                t = t1;
-            }
-            // else the intersection point is at t0
-            else
-            {
-                t = t0;
-            }
-
-            SharpDX.Vector3 point = pickRayDir * t;
-
-            point = pickRayOrig + point;
-
-            pointCoordinate = Coordinates.CartesianToSpherical2(point);
-
-            return true;
-        }
-
-
-        public void TransformPickPointToWorldSpace(Point ptCursor, int backBufferWidth, int backBufferHeight, out Vector3d vPickRayOrig, out Vector3d vPickRayDir)
-        {
-            // Credit due to the DirectX 9 C++ Pick sample and MVP Robert Dunlop
-            // Get the pick ray from the mouse position
-
-            // Compute the vector of the pick ray in screen space
-            Vector3d v;
-            v.X = (((2.0 * (double)ptCursor.X) / (double)backBufferWidth) - 1) / ProjMatrix.M11;
-            v.Y = -(((2.0 * (double)ptCursor.Y) / backBufferHeight) - 1) / ProjMatrix.M22;
-            v.Z = 1.0;
-
-            //Matrix3d mInit = WorldMatrix * ViewMatrix;
-            Matrix3d mInit = RenderContext11.WorldBase * ViewMatrix;
-
-            Matrix3d m = Matrix3d.Invert(mInit);
-
-            // Transform the screen space pick ray into 3D space
-            vPickRayDir.X = v.X * m.M11 + v.Y * m.M21 + v.Z * m.M31;
-            vPickRayDir.Y = v.X * m.M12 + v.Y * m.M22 + v.Z * m.M32;
-            vPickRayDir.Z = v.X * m.M13 + v.Y * m.M23 + v.Z * m.M33;
-
-
-            vPickRayDir.Normalize();
-
-            vPickRayOrig.X = m.M41;
-            vPickRayOrig.Y = m.M42;
-            vPickRayOrig.Z = m.M43;
-        }
-
-        public void TransformStarPickPointToWorldSpace(Point ptCursor, int backBufferWidth, int backBufferHeight, out Vector3d vPickRayOrig, out Vector3d vPickRayDir)
-        {
-
-            Vector3d v;
-            v.X = (((2.0f * ptCursor.X) / backBufferWidth) - 1) / ProjMatrix.M11;
-            v.Y = -(((2.0f * ptCursor.Y) / backBufferHeight) - 1) / ProjMatrix.M22;
-            v.Z = 1.0f;
-
-            Matrix3d mInit = WorldMatrix * ViewMatrix;
-
-            Matrix3d m = Matrix3d.Invert(mInit);
-
-            // Transform the screen space pick ray into 3D space
-            vPickRayDir.X = v.X * m.M11 + v.Y * m.M21 + v.Z * m.M31;
-            vPickRayDir.Y = v.X * m.M12 + v.Y * m.M22 + v.Z * m.M32;
-            vPickRayDir.Z = v.X * m.M13 + v.Y * m.M23 + v.Z * m.M33;
-
-
-            vPickRayDir.Normalize();
-
-            // Transform the screen space pick ray into 3D space
-            vPickRayDir.X = v.X * m.M11 + v.Y * m.M21 + v.Z * m.M31;
-            vPickRayDir.Y = v.X * m.M12 + v.Y * m.M22 + v.Z * m.M32;
-            vPickRayDir.Z = v.X * m.M13 + v.Y * m.M23 + v.Z * m.M33;
-
-
-            vPickRayDir.Normalize();
-
-            vPickRayOrig.X = m.M41;
-            vPickRayOrig.Y = m.M42;
-            vPickRayOrig.Z = m.M43;
-
-            // Calculate the origin as intersection with near frustum
-
-            vPickRayOrig.X += vPickRayDir.X * m_nearPlane;
-            vPickRayOrig.Y += vPickRayDir.Y * m_nearPlane;
-            vPickRayOrig.Z += vPickRayDir.Z * m_nearPlane;
-        }
-
-        double deltaLat = 0;
-        double deltaLong = 0;
         private void MainWndow_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta != 0)
             {
-                if (Properties.Settings.Default.FollowMouseOnZoom && !PlanetLike)
+                if (Properties.Settings.Default.FollowMouseOnZoom && !RenderEngine.PlanetLike)
                 {
                     Coordinates point = GetCoordinatesForScreenPoint(e.X, e.Y);
-                    if (Space && Settings.Active.LocalHorizonMode && !tracking)
+                    if (RenderEngine.Space && Settings.Active.LocalHorizonMode && !RenderEngine.tracking)
                     {
                         Coordinates currentAltAz = Coordinates.EquitorialToHorizon(point, SpaceTimeController.Location, SpaceTimeController.Now);
 
-                        targetAlt = currentAltAz.Alt;
-                        targetAz = currentAltAz.Az;
+                        RenderEngine.targetAlt = currentAltAz.Alt;
+                        RenderEngine.targetAz = currentAltAz.Az;
 
                     }
                     else
                     {
-                        this.TargetLong = RAtoViewLng(point.RA);
-                        this.TargetLat = point.Lat;
+                        RenderEngine.TargetLong = RAtoViewLng(point.RA);
+                        RenderEngine.TargetLat = point.Lat;
                     }
                 }
-                zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
 
                 if (Math.Abs(e.Delta) == 120)
                 {
@@ -13036,11 +6718,11 @@ namespace TerraViewer
             switch (activeTouch)
             {
                 case TouchControls.ZoomIn:
-                    zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                    RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                     ZoomIn();
                     break;
                 case TouchControls.ZoomOut:
-                    zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                    RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                     ZoomOut();
                     break;
                 case TouchControls.Up:
@@ -13145,17 +6827,17 @@ namespace TerraViewer
 
         public void RotateView(double upDown, double leftRight)
         {
-            CameraRotateTarget = (CameraRotateTarget + leftRight);
-            CameraAngleTarget = (CameraAngleTarget + upDown);
+            RenderEngine.CameraRotateTarget = (RenderEngine.CameraRotateTarget + leftRight);
+            RenderEngine.CameraAngleTarget = (RenderEngine.CameraAngleTarget + upDown);
 
-            if (CameraAngleTarget < TiltMin)
+            if (RenderEngine.CameraAngleTarget < TiltMin)
             {
-                CameraAngleTarget = TiltMin;
+                RenderEngine.CameraAngleTarget = TiltMin;
             }
 
-            if (CameraAngleTarget > 0)
+            if (RenderEngine.CameraAngleTarget > 0)
             {
-                CameraAngleTarget = 0;
+                RenderEngine.CameraAngleTarget = 0;
             }
         }
         bool useAsymetricProj = false;
@@ -13178,13 +6860,13 @@ namespace TerraViewer
                     case Keys.OemMinus:
                     case Keys.PageUp:
                     case Keys.Subtract:
-                        zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                        RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                         ZoomOut();
                         break;
                     case Keys.PageDown:
                     case Keys.Oemplus:
                     case Keys.Add:
-                        zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                        RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                         ZoomIn();
                         break;
                     case Keys.F1:
@@ -13222,7 +6904,7 @@ namespace TerraViewer
                         break;
                     case Keys.F5:
                         Tile.PurgeRefresh = true;
-                        Render();
+                        RenderEngine.Render();
                         Tile.PurgeRefresh = false;
                         TileCache.ClearCache();
                         break;
@@ -13231,8 +6913,8 @@ namespace TerraViewer
                         {
                             // We can't really tell where this image came from so dirty everything.
                             FolderBrowser.AllDirty = true;
-                            uiController = new ImageAlignmentUI();
-                            Earth3d.MainWindow.StudyOpacity = 50;
+                            UiController = new ImageAlignmentUI();
+                            RenderEngine.StudyOpacity = 50;
 
                         }
                         else
@@ -13241,16 +6923,16 @@ namespace TerraViewer
                             {
                                 ((ImageAlignmentUI)uiController).Close();
                             }
-                            uiController = null;
+                            UiController = null;
                         }
                         break;
 
                     case Keys.L:
-                        Logging = !Logging;
+                        Utils.Logging = !Utils.Logging;
 
                         break;
                     case Keys.T:
-                        targetViewCamera = viewCamera = CustomTrackingParams;
+                        RenderEngine.targetViewCamera = RenderEngine.viewCamera = RenderEngine.CustomTrackingParams;
                         break;
                 }
             }
@@ -13259,10 +6941,10 @@ namespace TerraViewer
                 switch (e.KeyCode)
                 {
                     case Keys.C:
-                        iod *= .99f;
+                        RenderEngine.iod *= .99f;
                         break;
                     case Keys.V:
-                        iod *= 1.01f;
+                        RenderEngine.iod *= 1.01f;
                         break;
                     case Keys.F:
                         SpaceTimeController.Faster();
@@ -13284,10 +6966,10 @@ namespace TerraViewer
                         blink = !blink;
                         break;
                     case Keys.L:
-                        RenderContext11.SetLatency(3);
+                        //RenderContext11.SetLatency(3);
                         break;
                     case Keys.K:
-                        RenderContext11.SetLatency(1);
+                        // RenderContext11.SetLatency(1);
                         break;
                     case Keys.F5:
                         TileCache.ClearCache();
@@ -13299,13 +6981,13 @@ namespace TerraViewer
                     case Keys.OemMinus:
                     case Keys.PageUp:
                     case Keys.Subtract:
-                        zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                        RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                         ZoomOut();
                         break;
                     case Keys.Oemplus:
                     case Keys.PageDown:
                     case Keys.Add:
-                        zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                        RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                         ZoomIn();
                         break;
                     case Keys.F3:
@@ -13315,7 +6997,7 @@ namespace TerraViewer
                         LaunchHelp();
                         break;
                     case Keys.F2:
-                        showWireFrame = !showWireFrame;
+                        RenderEngine.showWireFrame = !RenderEngine.showWireFrame;
                         break;
                     case Keys.Left:
                         Control c = UiTools.GetFocusControl();
@@ -13386,31 +7068,116 @@ namespace TerraViewer
             MoveView(leftRight, upDown, false);
             ZoomView(zoom);
         }
+        const double RC = (double)(3.1415927 / 180);
 
+        public double GetPixelScaleX(bool mouseRelative)
+        {
+            double lat = RenderEngine.ViewLat;
+
+            if (mouseRelative)
+            {
+                if (RenderEngine.Space && Settings.Active.GalacticMode)
+                {
+                    Point cursor = renderWindow.PointToClient(Cursor.Position);
+                    Coordinates result = GetCoordinatesForScreenPoint(cursor.X, cursor.Y);
+
+                    double[] gPoint = Coordinates.J2000toGalactic(result.RA * 15, result.Dec);
+
+                    lat = gPoint[1];
+                }
+                else if (RenderEngine.Space && Settings.Active.LocalHorizonMode)
+                {
+                    Point cursor = renderWindow.PointToClient(Cursor.Position);
+                    Coordinates currentAltAz = Coordinates.EquitorialToHorizon(GetCoordinatesForScreenPoint(cursor.X, cursor.Y), SpaceTimeController.Location, SpaceTimeController.Now);
+
+                    lat = currentAltAz.Alt;
+                }
+                else
+                {
+                    Point cursor = renderWindow.PointToClient(Cursor.Position);
+                    Coordinates result = GetCoordinatesForScreenPoint(cursor.X, cursor.Y);
+                    lat = result.Lat;
+                }
+            }
+
+            if (RenderEngine.currentImageSetfield != null && (RenderEngine.currentImageSetfield.DataSetType == ImageSetType.Sky || RenderEngine.currentImageSetfield.DataSetType == ImageSetType.Panorama || SandboxMode || SolarSystemMode || RenderEngine.currentImageSetfield.DataSetType == ImageSetType.Earth || RenderEngine.currentImageSetfield.DataSetType == ImageSetType.Planet))
+            {
+                double cosLat = 1;
+                if (RenderEngine.ViewLat > 89.9999)
+                {
+                    cosLat = Math.Cos(89.9999 * RC);
+                }
+                else
+                {
+                    cosLat = Math.Cos(lat * RC);
+
+                }
+
+                double zz = (90 - RenderEngine.ZoomFactor / 6);
+                double zcos = Math.Cos(zz * RC);
+
+                return GetPixelScaleY() / Math.Max(zcos, cosLat);
+            }
+            else
+            {
+                return (((RenderEngine.baseTileDegrees / ((double)Math.Pow(2, RenderEngine.viewTileLevel))) / RenderEngine.tileSizeX) / 5) / Math.Max(.2, Math.Cos(RenderEngine.TargetLat));
+            }
+
+        }
+
+        public double GetPixelScaleY()
+        {
+            if (SolarSystemMode)
+            {
+                if ((int)RenderEngine.SolarSystemTrack < (int)SolarSystemObjects.Custom)
+                {
+                    return Math.Min(.06, 545000 * Math.Tan(Math.PI / 4) * RenderEngine.ZoomFactor / renderWindow.ClientRectangle.Height);
+                }
+                else
+                {
+
+                    return .06;
+                }
+            }
+            else if (RenderEngine.currentImageSetfield != null && (RenderEngine.currentImageSetfield.DataSetType == ImageSetType.Sky || RenderEngine.currentImageSetfield.DataSetType == ImageSetType.Panorama))
+            {
+                double val = RenderEngine.FovAngle / renderWindow.ClientRectangle.Height;
+
+                return val;
+            }
+            else if (SandboxMode)
+            {
+                return .06;
+            }
+            else
+            {
+                return ((RenderEngine.baseTileDegrees / ((double)Math.Pow(2, RenderEngine.viewTileLevel))) / (double)RenderEngine.tileSizeY) / 5;
+            }
+        }
 
         public void MoveView(double amountX, double amountY, bool mouseDrag)
         {
-            if (CurrentImageSet == null)
+            if (RenderEngine.currentImageSetfield == null)
             {
                 return;
             }
-            Tracking = false;
+            RenderEngine.Tracking = false;
             double angle = Math.Atan2(amountY, amountX);
             double distance = Math.Sqrt(amountY * amountY + amountX * amountX);
             if (SolarSystemMode)
             {
-                amountX = Math.Cos(angle - CameraRotate) * distance;
-                amountY = Math.Sin(angle - CameraRotate) * distance;
+                amountX = Math.Cos(angle - RenderEngine.CameraRotate) * distance;
+                amountY = Math.Sin(angle - RenderEngine.CameraRotate) * distance;
             }
-            else if (!PlanetLike)
+            else if (!RenderEngine.PlanetLike)
             {
-                amountX = Math.Cos(angle + CameraRotate) * distance;
-                amountY = Math.Sin(angle + CameraRotate) * distance;
+                amountX = Math.Cos(angle + RenderEngine.CameraRotate) * distance;
+                amountY = Math.Sin(angle + RenderEngine.CameraRotate) * distance;
             }
             else
             {
-                amountX = Math.Cos(angle - CameraRotate) * distance;
-                amountY = Math.Sin(angle - CameraRotate) * distance;
+                amountX = Math.Cos(angle - RenderEngine.CameraRotate) * distance;
+                amountY = Math.Sin(angle - RenderEngine.CameraRotate) * distance;
             }
 
             MoveViewNative(amountX, amountY, mouseDrag);
@@ -13424,7 +7191,7 @@ namespace TerraViewer
             double scaleX = GetPixelScaleX(mouseDrag);
 
 
-            if (CurrentImageSet.DataSetType == ImageSetType.SolarSystem || SandboxMode)
+            if (RenderEngine.currentImageSetfield.DataSetType == ImageSetType.SolarSystem || SandboxMode)
             {
                 if (scaleY > .05999)
                 {
@@ -13432,51 +7199,48 @@ namespace TerraViewer
                 }
             }
 
-            if (Space && Settings.Active.GalacticMode)
+            if (RenderEngine.Space && Settings.Active.GalacticMode)
             {
                 amountX = -amountX;
             }
 
-            if (Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
+            if (RenderEngine.Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
             {
-                targetAlt += (amountY) * scaleY;
-                if (targetAlt > Properties.Settings.Default.MaxLatLimit)
+                RenderEngine.targetAlt += (amountY) * scaleY;
+                if (RenderEngine.targetAlt > Properties.Settings.Default.MaxLatLimit)
                 {
-                    targetAlt = Properties.Settings.Default.MaxLatLimit;
+                    RenderEngine.targetAlt = Properties.Settings.Default.MaxLatLimit;
                 }
-                if (targetAlt < -Properties.Settings.Default.MaxLatLimit)
+                if (RenderEngine.targetAlt < -Properties.Settings.Default.MaxLatLimit)
                 {
-                    targetAlt = -Properties.Settings.Default.MaxLatLimit;
+                    RenderEngine.targetAlt = -Properties.Settings.Default.MaxLatLimit;
                 }
 
             }
             else
             {
-                TargetLat += (amountY) * scaleY;
+                RenderEngine.TargetLat += (amountY) * scaleY;
 
-                if (TargetLat > Properties.Settings.Default.MaxLatLimit)
+                if (RenderEngine.TargetLat > Properties.Settings.Default.MaxLatLimit)
                 {
-                    TargetLat = Properties.Settings.Default.MaxLatLimit;
+                    RenderEngine.TargetLat = Properties.Settings.Default.MaxLatLimit;
                 }
-                if (TargetLat < -Properties.Settings.Default.MaxLatLimit)
+                if (RenderEngine.TargetLat < -Properties.Settings.Default.MaxLatLimit)
                 {
-                    TargetLat = -Properties.Settings.Default.MaxLatLimit;
+                    RenderEngine.TargetLat = -Properties.Settings.Default.MaxLatLimit;
                 }
             }
-            if (Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
+            if (RenderEngine.Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
             {
-                targetAz = ((targetAz + amountX * scaleX) + 720) % 360;
+                RenderEngine.targetAz = ((RenderEngine.targetAz + amountX * scaleX) + 720) % 360;
             }
             else
             {
-                TargetLong += (amountX) * scaleX;
+                RenderEngine.TargetLong += (amountX) * scaleX;
 
-                TargetLong = ((TargetLong + 900.0) % 360.0) - 180.0;
+                RenderEngine.TargetLong = ((RenderEngine.TargetLong + 900.0) % 360.0) - 180.0;
             }
         }
-
-
-        //
 
         [DllImport("hhctrl.ocx", EntryPoint = "HtmlHelp", CharSet = CharSet.Unicode)]
         internal static extern IntPtr HtmlHelp(IntPtr hWndCaller, string helpFile, int command, string topic);
@@ -13492,9 +7256,9 @@ namespace TerraViewer
         private void Earth3d_FormClosing(object sender, FormClosingEventArgs e)
         {
             FormIsClosing = true;
-            if (videoOut != null)
+            if (RenderEngine.videoOut != null)
             {
-                videoOut.Close();
+                RenderEngine.videoOut.Close();
             }
 
             if (!CloseOpenToursOrAbort(true))
@@ -13504,7 +7268,7 @@ namespace TerraViewer
 
             TourPopup.CloseTourPopups();
 
-            Initialized = false;
+            RenderEngine.Initialized = false;
 
             if (renderHost != null)
             {
@@ -13588,10 +7352,7 @@ namespace TerraViewer
             TileCache.ClearCache();
             NetControl.Abort();
             BufferPool11.DisposeBuffers();
-            CleanUpWarpBuffers();
-
-            CleanupStereoAndDomeBuffers();
-            CleanupDomeVertexBuffers();
+            RenderEngine.CleanUp();
             Grids.CleanupGrids();
             GlyphCache.CleanUpAll();
             Constellations.CleanUpAll();
@@ -13617,7 +7378,7 @@ namespace TerraViewer
         public double GetNetzoom(double amount)
         {
             double net = 1;
-            switch (zoomSpeed)
+            switch (RenderEngine.ZoomSpeed)
             {
                 case ZoomSpeeds.SLOW:
                     net = .1;
@@ -13644,7 +7405,7 @@ namespace TerraViewer
             get
             {
                 double net = 1;
-                switch (zoomSpeed)
+                switch (RenderEngine.ZoomSpeed)
                 {
                     case ZoomSpeeds.SLOW:
                         net = .1;
@@ -13671,33 +7432,33 @@ namespace TerraViewer
         {
             if (amount == 99999)
             {
-                this.TargetZoom = this.ZoomFactor;
+                RenderEngine.TargetZoom = RenderEngine.ZoomFactor;
                 return;
             }
             if (amount > 0)
             {
-                if (this.TargetZoom > ZoomMin)
+                if (RenderEngine.TargetZoom > RenderEngine.ZoomMin)
                 {
-                    this.TargetZoom /= (1 + amount);
+                    RenderEngine.TargetZoom /= (1 + amount);
 
-                    this.ComputeViewParameters(CurrentImageSet);
+                    RenderEngine.ComputeViewParameters(CurrentImageSet);
                 }
                 else
                 {
-                    this.TargetZoom = ZoomMin;
+                    RenderEngine.TargetZoom = RenderEngine.ZoomMin;
                 }
             }
             if (amount < 0)
             {
-                if ((this.TargetZoom * (1 - amount)) <= ZoomMax)
+                if ((RenderEngine.TargetZoom * (1 - amount)) <= RenderEngine.ZoomMax)
                 {
-                    this.TargetZoom *= (1 - amount);
+                    RenderEngine.TargetZoom *= (1 - amount);
 
-                    this.ComputeViewParameters(CurrentImageSet);
+                    RenderEngine.ComputeViewParameters(CurrentImageSet);
                 }
                 else
                 {
-                    this.TargetZoom = ZoomMax;
+                    RenderEngine.TargetZoom = RenderEngine.ZoomMax;
                 }
             }
 
@@ -13705,22 +7466,22 @@ namespace TerraViewer
 
         public void DomeLeft(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAz += (float)amount;
+            RenderEngine.viewCamera.DomeAz += (float)amount;
         }
 
         public void DomeRight(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAz -= (float)amount;
+            RenderEngine.viewCamera.DomeAz -= (float)amount;
         }
 
         public void DomeUp(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAlt += (float)amount;
+            RenderEngine.viewCamera.DomeAlt += (float)amount;
         }
 
         public void DomeDown(double amount)
         {
-            Earth3d.MainWindow.viewCamera.DomeAlt -= (float)amount;
+            RenderEngine.viewCamera.DomeAlt -= (float)amount;
         }
 
         public void ZoomRateIn(double amount)
@@ -13756,349 +7517,116 @@ namespace TerraViewer
 
         public void ZoomIn(double amount)
         {
-            if (this.TargetZoom > this.ZoomFactor)
+            if (RenderEngine.TargetZoom > RenderEngine.ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                RenderEngine.TargetZoom = RenderEngine.ZoomFactor;
                 return;
             }
 
-            if (this.TargetZoom > ZoomMin)
+            if (RenderEngine.TargetZoom > RenderEngine.ZoomMin)
             {
-                this.TargetZoom /= 1 + GetNetzoom(amount);
+                RenderEngine.TargetZoom /= 1 + GetNetzoom(amount);
 
                 if (!smoothZoom)
                 {
-                    ZoomFactor = TargetZoom;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                RenderEngine.ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMin;
+                RenderEngine.TargetZoom = RenderEngine.ZoomMin;
             }
 
         }
 
         public void ZoomOut(double amount)
         {
-            if (this.TargetZoom < this.ZoomFactor)
+            if (RenderEngine.TargetZoom < RenderEngine.ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                RenderEngine.TargetZoom = RenderEngine.ZoomFactor;
                 return;
             }
 
-            if ((this.TargetZoom * GetNetzoom(amount)) <= ZoomMax)
+            if ((RenderEngine.TargetZoom * GetNetzoom(amount)) <= RenderEngine.ZoomMax)
             {
-                this.TargetZoom *= GetNetzoom(amount);
+                RenderEngine.TargetZoom *= GetNetzoom(amount);
                 if (!smoothZoom)
                 {
-                    ZoomFactor = TargetZoom;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                RenderEngine.ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMax;
+                RenderEngine.TargetZoom = RenderEngine.ZoomMax;
             }
         }
 
         public void ZoomIn()
         {
-            if (this.TargetZoom > this.ZoomFactor)
+            if (RenderEngine.TargetZoom > RenderEngine.ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                RenderEngine.TargetZoom = RenderEngine.ZoomFactor;
                 return;
             }
 
-            if (this.TargetZoom > ZoomMin)
+            if (RenderEngine.TargetZoom > RenderEngine.ZoomMin)
             {
-                this.TargetZoom /= NetZoomFactor;
+                RenderEngine.TargetZoom /= NetZoomFactor;
 
                 if (!smoothZoom)
                 {
-                    ZoomFactor = TargetZoom;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                RenderEngine.ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMin;
+                RenderEngine.TargetZoom = RenderEngine.ZoomMin;
             }
 
         }
 
         public void ZoomOut()
         {
-            if (this.TargetZoom < this.ZoomFactor)
+            if (RenderEngine.TargetZoom < RenderEngine.ZoomFactor)
             {
-                this.TargetZoom = this.ZoomFactor;
+                RenderEngine.TargetZoom = RenderEngine.ZoomFactor;
                 return;
             }
 
-            if ((this.TargetZoom * NetZoomFactor) <= ZoomMax)
+            if ((RenderEngine.TargetZoom * NetZoomFactor) <= RenderEngine.ZoomMax)
             {
-                this.TargetZoom *= NetZoomFactor;
+                RenderEngine.TargetZoom *= NetZoomFactor;
                 if (!smoothZoom)
                 {
-                    ZoomFactor = TargetZoom;
+                    RenderEngine.ZoomFactor = RenderEngine.TargetZoom;
                 }
-                this.ComputeViewParameters(CurrentImageSet);
+                RenderEngine.ComputeViewParameters(CurrentImageSet);
             }
             else
             {
-                this.TargetZoom = ZoomMax;
+                RenderEngine.TargetZoom = RenderEngine.ZoomMax;
             }
         }
-        double zoomMax = 360;
 
-        double zoomMaxSolarSystem = Properties.Settings.Default.MaxZoomLimitSolar;
-        double ZoomMax
-        {
-            get
-            {
-                if (currentImageSetfield.DataSetType == ImageSetType.SolarSystem)
-                {
-                    return zoomMaxSolarSystem;
-                }
-                else
-                {
-                    return zoomMax;
-                }
-            }
-        }
-        double zoomMin = 0.001373291015625;
-        double zoomMinSolarSystem = Properties.Settings.Default.MinZoonLimitSolar;
-
-        public double ZoomMin
-        {
-            get
-            {
-                if (currentImageSetfield.DataSetType == ImageSetType.SolarSystem)
-                {
-                    return (zoomMinSolarSystem / 10000000000) * Settings.Active.SolarSystemScale;
-                }
-                else
-                {
-                    if (currentImageSetfield.IsMandelbrot)
-                    {
-
-                        return 0.00000000000000000000000000000001;
-                    }
-                    return zoomMin / 64;
-                }
-            }
-            set { zoomMin = value; }
-        }
 
 
         private void zoomTimer_Tick(object sender, EventArgs e)
         {
 
         }
-        bool zooming = false;
-        bool tracking = false;
 
-        public bool Tracking
-        {
-            get { return tracking; }
-            set { tracking = value; }
-        }
-
-        IPlace trackingObject = null;
-
-        public IPlace TrackingObject
-        {
-            get { return trackingObject; }
-            set { trackingObject = value; }
-        }
-
-        private void UpdateViewParameters()
-        {
-            double speed = 8;
-            switch (zoomSpeed)
-            {
-                case ZoomSpeeds.FAST:
-                    speed = 8;
-                    break;
-                case ZoomSpeeds.MEDIUM:
-                    speed = 16;
-                    break;
-                case ZoomSpeeds.SLOW:
-                    speed = 32;
-                    break;
-            }
-
-            if (Math.Abs(ZoomFactor - TargetZoom) > (ZoomFactor / 2048))
-            {
-                ZoomFactor += (TargetZoom - ZoomFactor) / speed;
-                zooming = true;
-            }
-            else
-            {
-                zoomingUp = false;
-                ZoomFactor = TargetZoom;
-                if (zooming)
-                {
-                    zooming = false;
-                    NotifyMoveComplete();
-                }
-            }
-
-            if (Math.Abs(CameraRotateTarget - CameraRotate) > (.1 * RC))
-            {
-                this.CameraRotate += (CameraRotateTarget - CameraRotate) / 10;
-            }
-            else
-            {
-                CameraRotate = CameraRotateTarget;
-            }
-
-            if (Math.Abs(CameraAngleTarget - CameraAngle) > (.1 * RC))
-            {
-                this.CameraAngle += (CameraAngleTarget - CameraAngle) / 10;
-            }
-            else
-            {
-                CameraAngle = CameraAngleTarget;
-            }
-
-
-            if (mover == null)
-            {
-                if (this.Space && tracking && trackingObject != null)
-                {
-                    if (Space && Settings.Active.GalacticMode)
-                    {
-                        double[] gPoint = Coordinates.J2000toGalactic(trackingObject.RA * 15, trackingObject.Dec);
-
-                        targetAlt = alt = gPoint[1];
-                        targetAz = az = gPoint[0];
-                    }
-                    else if (Space && Settings.Active.LocalHorizonMode)
-                    {
-                        Coordinates currentAltAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(trackingObject.RA, trackingObject.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                        targetAlt = alt = currentAltAz.Alt;
-                        targetAz = az = currentAltAz.Az;
-                    }
-                    else
-                    {
-                        this.ViewLat = this.TargetLat = trackingObject.Dec;
-                        this.ViewLong = this.TargetLong = this.RAtoViewLng(trackingObject.RA);
-                    }
-                }
-                else if (!SolarSystemMode)
-                {
-
-                    //todo dome tilt looks fishey here...
-                    if (Space && Settings.Active.LocalHorizonMode && Settings.DomeView)
-                    {
-                        targetAlt = alt = -config.TotalDomeTilt;
-                        targetAz = az = 0;
-                    }
-
-                    tracking = false;
-                    trackingObject = null;
-                }
-            }
-
-            if (!zoomingUp && !tracking)
-            {
-                double minDelta = (ZoomFactor / 4000.0);
-                if (ZoomFactor > 360)
-                {
-                    minDelta = (360.0 / 40000.0);
-                }
-
-                if (Space && (Settings.Active.LocalHorizonMode || Settings.Active.GalacticMode))
-                {
-                    if (((Math.Abs(this.targetAlt - this.alt) >= (minDelta)) |
-                        ((Math.Abs(this.targetAz - this.az) >= (minDelta)))))
-                    {
-                        this.alt += (targetAlt - alt) / 10;
-
-                        if (Math.Abs(targetAz - az) > 170)
-                        {
-                            if (targetAz > az)
-                            {
-                                this.az += (targetAz - (360 + az)) / 10;
-                            }
-                            else
-                            {
-                                this.az += ((360 + targetAz) - az) / 10;
-                            }
-                        }
-                        else
-                        {
-                            this.az += (targetAz - az) / 10;
-                        }
-
-                        this.az = ((az + 720) % 360);
-                    }
-                }
-                else
-                {
-                    if (((Math.Abs(this.TargetLat - this.ViewLat) >= (minDelta)) |
-                        ((Math.Abs(this.TargetLong - this.ViewLong) >= (minDelta)))))
-                    {
-                        if (deltaLat != 0 | deltaLong != 0)
-                        {
-                            this.ViewLat += deltaLat;
-                            this.ViewLong += deltaLong;
-                        }
-                        else
-                        {
-                            this.ViewLat += (TargetLat - ViewLat) / 10;
-
-                            if (Math.Abs(TargetLong - ViewLong) > 170)
-                            {
-                                if (TargetLong > ViewLong)
-                                {
-                                    this.ViewLong += (TargetLong - (360 + ViewLong)) / 10;
-                                }
-                                else
-                                {
-                                    this.ViewLong += ((360 + TargetLong) - ViewLong) / 10;
-                                }
-                            }
-                            else
-                            {
-                                this.ViewLong += (TargetLong - ViewLong) / 10;
-                            }
-                        }
-                        this.ViewLong = ((ViewLong + 540) % 360) - 180;
-                    }
-                    else
-                    {
-                        if (this.ViewLat != this.TargetLat || this.ViewLong != this.TargetLong)
-                        {
-                            this.ViewLat = this.TargetLat;
-                            this.ViewLong = this.TargetLong;
-
-
-                            NotifyMoveComplete();
-                        }
-                        deltaLat = 0;
-                        deltaLong = 0;
-                        if (findingTargetGeo)
-                        {
-                            this.TargetZoom = finalZoom;
-                            findingTargetGeo = false;
-                        }
-                    }
-                }
-            }
-
-        }
         double lastMoveCompleteLat = 0;
         double lastMoveCompleteLng = 0;
         private void SendMoveComplete()
         {
-            if (this.ViewLat != lastMoveCompleteLat || this.ViewLong != lastMoveCompleteLng)
+            if (RenderEngine.ViewLat != lastMoveCompleteLat || RenderEngine.ViewLong != lastMoveCompleteLng)
             {
-                lastMoveCompleteLat = this.ViewLat;
-                lastMoveCompleteLng = this.ViewLong;
-                if (Space)
+                lastMoveCompleteLat = RenderEngine.ViewLat;
+                lastMoveCompleteLng = RenderEngine.ViewLong;
+                if (RenderEngine.Space)
                 {
 
                     UpdateSampClients();
@@ -14122,7 +7650,7 @@ namespace TerraViewer
 
         private void UpdateSampClientsCaller()
         {
-            sampConnection.GotoPoint(this.RA, this.Dec);
+            sampConnection.GotoPoint(RenderEngine.RA, RenderEngine.Dec);
         }
         int sendMoveCount = 0;
 
@@ -14133,9 +7661,9 @@ namespace TerraViewer
 
             sendMoveCount++;
 
-            if (studyImageset != null)
+            if (RenderEngine.studyImageset != null)
             {
-                fgHash = studyImageset.GetHash();
+                fgHash = RenderEngine.studyImageset.GetHash();
             }
             if (CurrentImageSet != null)
             {
@@ -14143,592 +7671,8 @@ namespace TerraViewer
             }
 
             // Moving to Binary Sync
-            NetControl.SendMoveBinary(ViewLat, ViewLong, ZoomFactor, CameraRotate, CameraAngle, fgHash, bgHash, StudyOpacity, autoUpdate, autoFlush, Settings.Active.LocalHorizonMode, (int)SolarSystemTrack, viewCamera.ViewTarget, Settings.Active.SolarSystemScale, targetHeight, TrackingFrame, Properties.Settings.Default.ReticleAlt, Properties.Settings.Default.ReticleAz);
+            NetControl.SendMoveBinary(RenderEngine.ViewLat, RenderEngine.ViewLong, RenderEngine.ZoomFactor, RenderEngine.CameraRotate, RenderEngine.CameraAngle, fgHash, bgHash, RenderEngine.StudyOpacity, autoUpdate, autoFlush, Settings.Active.LocalHorizonMode, (int)RenderEngine.SolarSystemTrack, RenderEngine.viewCamera.ViewTarget, Settings.Active.SolarSystemScale, RenderEngine.targetHeight, RenderEngine.TrackingFrame, Properties.Settings.Default.ReticleAlt, Properties.Settings.Default.ReticleAz);
             autoFlush = false;
-        }
-
-
-        public void GotoTarget(IPlace place, bool noZoom, bool instant, bool trackObject)
-        {
-            if (place == null)
-            {
-                return;
-            }
-            if ((trackObject && SolarSystemMode))
-            {
-                if ((place.Classification == Classification.SolarSystem && place.Type != ImageSetType.SolarSystem) || (place.Classification == Classification.Star) || (place.Classification == Classification.Galaxy) && place.Distance > 0)
-                {
-                    SolarSystemObjects target = SolarSystemObjects.Undefined;
-
-                    if (place.Classification == Classification.Star || place.Classification == Classification.Galaxy)
-                    {
-                        target = SolarSystemObjects.Custom;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            if (place.Target != SolarSystemObjects.Undefined)
-                            {
-                                target = place.Target;
-                            }
-                            else
-                            {
-                                target = (SolarSystemObjects)Enum.Parse(typeof(SolarSystemObjects), place.Name, true);
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    if (target != SolarSystemObjects.Undefined)
-                    {
-                        trackingObject = place;
-                        double jumpTime = 4;
-
-                        if (target == SolarSystemObjects.Custom)
-                        {
-                            jumpTime = 17;
-                        }
-                        else
-                        {
-                            jumpTime += 13 * (101 - Settings.Active.SolarSystemScale) / 100;
-                        }
-
-                        if (instant)
-                        {
-                            jumpTime = 1;
-                        }
-
-                        CameraParameters camTo = viewCamera;
-                        camTo.TargetReferenceFrame = "";
-                        camTo.Target = target;
-                        double zoom = 10;
-                        if (target == SolarSystemObjects.Custom)
-                        {
-                            if (place.Classification == Classification.Galaxy)
-                            {
-                                zoom = 1404946007758;
-                            }
-                            else
-                            {
-                                zoom = 63239.6717 * 100;
-                            }
-                            // Star or something outside of SS
-                            Vector3d vect = Coordinates.RADecTo3d(place.RA, place.Dec, place.Distance);
-                            double ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
-
-                            vect.RotateX(ecliptic);
-                            camTo.ViewTarget = -vect;
-                        }
-                        else
-                        {
-                            camTo.ViewTarget = Planets.GetPlanet3dLocation(target, SpaceTimeController.GetJNowForFutureTime(jumpTime));
-                            switch (target)
-                            {
-                                case SolarSystemObjects.Sun:
-                                    zoom = .6;
-                                    break;
-                                case SolarSystemObjects.Mercury:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Venus:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Mars:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Jupiter:
-                                    zoom = .007;
-                                    break;
-                                case SolarSystemObjects.Saturn:
-                                    zoom = .007;
-                                    break;
-                                case SolarSystemObjects.Uranus:
-                                    zoom = .004;
-                                    break;
-                                case SolarSystemObjects.Neptune:
-                                    zoom = .004;
-                                    break;
-                                case SolarSystemObjects.Pluto:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Moon:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Io:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Europa:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Ganymede:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Callisto:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Earth:
-                                    zoom = .0004;
-                                    break;
-                                case SolarSystemObjects.Custom:
-                                    zoom = 10;
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                            zoom = zoom * Settings.Active.SolarSystemScale;
-
-                        }
-
-                        CameraParameters fromParams = viewCamera;
-                        if (SolarSystemTrack == SolarSystemObjects.Custom && !string.IsNullOrEmpty(TrackingFrame))
-                        {
-                            fromParams = CustomTrackingParams;
-                            TrackingFrame = "";
-                        }
-                        camTo.Zoom = zoom;
-                        Vector3d toVector = camTo.ViewTarget;
-                        toVector.Subtract(fromParams.ViewTarget);
-
-
-                        if (place.Classification == Classification.Star)
-                        {
-                            toVector = -toVector;
-                        }
-
-                        if (toVector.Length() != 0)
-                        {
-
-                            Vector2d raDec = toVector.ToRaDec();
-
-                            if (target == SolarSystemObjects.Custom)
-                            {
-                                camTo.Lat = -raDec.Y;
-                            }
-                            else
-                            {
-                                camTo.Lat = raDec.Y;
-                            }
-                            camTo.Lng = raDec.X * 15 - 90;
-                        }
-                        else
-                        {
-                            camTo.Lat = viewCamera.Lat;
-                            camTo.Lng = viewCamera.Lng;
-                        }
-
-                        if (target != SolarSystemObjects.Custom)
-                        {
-                            // replace with planet surface
-                            camTo.ViewTarget = Planets.GetPlanetTargetPoint(target, camTo.Lat, camTo.Lng, SpaceTimeController.GetJNowForFutureTime(jumpTime));
-
-                        }
-
-
-
-                        ViewMoverKenBurnsStyle solarMover = new ViewMoverKenBurnsStyle(fromParams, camTo, jumpTime, SpaceTimeController.Now, SpaceTimeController.GetTimeForFutureTime(jumpTime), InterpolationType.EaseInOut);
-                        solarMover.FastDirectionMove = true;
-                        mover = solarMover;
-
-                        return;
-                    }
-                }
-            }
-
-
-            Tracking = false;
-            trackingObject = null;
-            CameraParameters camParams = place.CamParams;
-
-
-
-            if (place.Type != CurrentImageSet.DataSetType)
-            {
-                ZoomFactor = TargetZoom = ZoomMax;
-                CameraRotateTarget = CameraRotate = 0;
-                CameraAngleTarget = CameraAngle = 0;
-                viewCamera = place.CamParams;
-                if (place.BackgroundImageSet != null)
-                {
-                    FadeInImageSet(GetRealImagesetFromGeneric(place.BackgroundImageSet));
-                }
-                else
-                {
-                    CurrentImageSet = GetDefaultImageset(place.Type, BandPass.Visible);
-                }
-                instant = true;
-            }
-            else if (SolarSystemMode && place.Target != SolarSystemTrack)
-            {
-                ZoomFactor = TargetZoom = ZoomMax;
-                CameraRotateTarget = CameraRotate = 0;
-                CameraAngleTarget = CameraAngle = 0;
-                viewCamera = targetViewCamera = place.CamParams;
-                SolarSystemTrack = place.Target;
-                instant = true;
-            }
-
-
-            if (place.Classification == Classification.Constellation)
-            {
-                camParams.Zoom = ZoomMax;
-                GotoTarget(false, instant, camParams, null, null);
-            }
-            else
-            {
-                SolarSystemTrack = place.Target;
-                GotoTarget(noZoom, instant, camParams, place.StudyImageset, place.BackgroundImageSet);
-
-                if (trackObject)
-                {
-                    Tracking = true;
-                    TrackingObject = place;
-                }
-            }
-
-        }
-
-        public void FreezeView()
-        {
-            targetAlt = alt;
-            targetAz = az;
-            TargetLat = ViewLat;
-            TargetLong = ViewLong;
-            TargetZoom = ZoomFactor;
-            CameraRotateTarget = CameraRotate;
-        }
-
-        public void GotoTarget(CameraParameters camParams, bool noZoom, bool instant)
-        {
-            tracking = false;
-            trackingObject = null;
-            GotoTarget(noZoom, instant, camParams, this.studyImageset, this.CurrentImageSet);
-
-        }
-        public void GotoTargetRADec(double ra, double dec, bool noZoom, bool instant)
-        {
-            tracking = false;
-            trackingObject = null;
-            GotoTarget(noZoom, instant, new CameraParameters(dec, RAtoViewLng(ra), -1, viewCamera.Rotation, viewCamera.Angle, (float)viewCamera.Opacity), StudyImageset, CurrentImageSet);
-        }
-
-        IImageSet targetStudyImageset = null;
-        IImageSet targetBackgroundImageset = null;
-
-        public void SetStudyImageset(IImageSet studyImageSet, IImageSet backgroundImageSet)
-        {
-            targetStudyImageset = studyImageSet;
-            targetBackgroundImageset = backgroundImageSet;
-            if ((targetStudyImageset != null && StudyImageset == null) || (studyImageset != null && !studyImageset.Equals(targetStudyImageset)))
-            {
-                StudyImageset = targetStudyImageset;
-            }
-
-            if (targetBackgroundImageset != null && !CurrentImageSet.Equals(targetBackgroundImageset))
-            {
-                if (targetBackgroundImageset != null && targetBackgroundImageset.Generic)
-                {
-
-                    FadeInImageSet(GetRealImagesetFromGeneric(targetBackgroundImageset));
-                }
-                else
-                {
-                    FadeInImageSet(targetBackgroundImageset);
-                }
-            }
-        }
-
-        public void GotoTarget(bool noZoom, bool instant, CameraParameters cameraParams, IImageSet studyImageSet, IImageSet backgroundImageSet)
-        {
-            tracking = false;
-            trackingObject = null;
-            targetStudyImageset = studyImageSet;
-            targetBackgroundImageset = backgroundImageSet;
-
-
-            if (noZoom)
-            {
-                cameraParams.Zoom = viewCamera.Zoom;
-                cameraParams.Angle = viewCamera.Angle;
-                cameraParams.Rotation = viewCamera.Rotation;
-            }
-            else
-            {
-                if (cameraParams.Zoom == -1)
-                {
-                    if (Space)
-                    {
-                        cameraParams.Zoom = 1.40625;
-                    }
-                    else
-                    {
-                        cameraParams.Zoom = 0.09F;
-                    }
-                }
-            }
-
-            if (instant || (Math.Abs(ViewLat - cameraParams.Lat) < .000000000001 && Math.Abs(ViewLong - cameraParams.Lng) < .000000000001 && Math.Abs(ZoomFactor - cameraParams.Zoom) < .000000000001))
-            {
-                mover = null;
-                viewCamera = targetViewCamera = cameraParams;
-
-                if (Space && Settings.Active.GalacticMode)
-                {
-                    double[] gPoint = Coordinates.J2000toGalactic(viewCamera.RA * 15, viewCamera.Dec);
-                    targetAlt = alt = gPoint[1];
-                    targetAz = az = gPoint[0];
-                }
-                else if (Space && Settings.Active.LocalHorizonMode)
-                {
-                    Coordinates currentAltAz = Coordinates.EquitorialToHorizon(Coordinates.FromRaDec(viewCamera.RA, viewCamera.Dec), SpaceTimeController.Location, SpaceTimeController.Now);
-
-                    targetAlt = alt = currentAltAz.Alt;
-                    targetAz = az = currentAltAz.Az;
-                }
-                mover_Midpoint(this, new EventArgs());
-            }
-            else
-            {
-                if (TourPlayer.Playing)
-                {
-                    mover = new ViewMoverSlew(this.viewCamera, cameraParams);
-                }
-                else
-                {
-                    mover = new ViewMoverSlew(this.viewCamera, cameraParams, 1.2);
-                }
-                mover.Midpoint += new EventHandler(mover_Midpoint);
-            }
-        }
-
-        void mover_Midpoint(object sender, EventArgs e)
-        {
-            if ((targetStudyImageset != null && studyImageset == null) || (studyImageset != null && !studyImageset.Equals(targetStudyImageset)))
-            {
-                StudyImageset = targetStudyImageset;
-            }
-
-            if (targetBackgroundImageset != null && !CurrentImageSet.Equals(targetBackgroundImageset))
-            {
-                if (targetBackgroundImageset != null && targetBackgroundImageset.Generic)
-                {
-
-                    FadeInImageSet(GetRealImagesetFromGeneric(targetBackgroundImageset));
-                }
-                else
-                {
-                    FadeInImageSet(targetBackgroundImageset);
-                }
-
-
-            }
-        }
-
-        public void FadeInImageSet(IImageSet newImageSet)
-        {
-            if (newImageSet.DataSetType != CurrentImageSet.DataSetType)
-            {
-                fadeImageSet.State = true;
-                fadeImageSet.TargetState = false;
-            }
-            CurrentImageSet = newImageSet;
-        }
-
-        public IImageSet GetImagesetByName(string name)
-        {
-            foreach (IImageSet imageset in ImageSets)
-            {
-                if (imageset.Name.ToLower() == name.ToLower())
-                {
-                    return imageset;
-                }
-            }
-            return null;
-        }
-
-        public IImageSet GetDefaultImageset(ImageSetType imageSetType, BandPass bandPass)
-        {
-            foreach (IImageSet imageset in ImageSets)
-            {
-                if (imageset.DefaultSet && imageset.BandPass == bandPass && imageset.DataSetType == imageSetType)
-                {
-                    return imageset;
-                }
-
-            }
-            foreach (IImageSet imageset in ImageSets)
-            {
-                if (imageset.BandPass == bandPass && imageset.DataSetType == imageSetType)
-                {
-                    return imageset;
-                }
-
-            }
-            foreach (IImageSet imageset in ImageSets)
-            {
-                if (imageset.DataSetType == imageSetType)
-                {
-                    return imageset;
-                }
-
-            }
-            return ImageSets[0];
-        }
-
-        private IImageSet GetRealImagesetFromGeneric(IImageSet generic)
-        {
-            foreach (IImageSet imageset in ImageSets)
-            {
-                if (imageset.DefaultSet && imageset.BandPass == generic.BandPass && imageset.DataSetType == generic.DataSetType)
-                {
-                    return imageset;
-                }
-
-            }
-
-            foreach (IImageSet imageset in ImageSets)
-            {
-                if (imageset.BandPass == generic.BandPass && imageset.DataSetType == generic.DataSetType)
-                {
-                    return imageset;
-                }
-
-            }
-            return ImageSets[0];
-        }
-
-
-
-        // Begin Set View Mode
-
-        public void SetViewMode(IImageSet newImageSet)
-        {
-            if (newImageSet != null && CurrentImageSet != null && CurrentImageSet.DataSetType != newImageSet.DataSetType)
-            {
-                ZoomFactor = TargetZoom = ZoomMax;
-                CameraRotate = CameraRotateTarget = 0;
-            }
-            CurrentImageSet = newImageSet;
-            //TileCache.PurgeQueue();
-            //TileCache.ClearCache();
-        }
-
-
-        public void SetViewMode()
-        {
-
-        }
-
-        static public List<IImageSet> ImageSets = new List<IImageSet>();
-        static public Dictionary<string, IImageSet> ReplacementImageSets = new Dictionary<string, IImageSet>();
-        public bool InitializeImageSets()
-        {
-
-            string url = Properties.Settings.Default.ImageSetUrl;
-            string filename = String.Format(@"{0}data\imagesets_5_{1}.wtml", Properties.Settings.Default.CahceDirectory, Math.Abs(url.GetHashCode32()));
-
-            try
-            {
-                ImageSets.Clear();
-                DataSetManager.DownloadFile(url, filename, false, true);
-                XmlDocument doc = new XmlDocument();
-
-                doc.Load(filename);
-                XmlNode node = doc.SelectSingleNode("Folder");
-
-                foreach (XmlNode child in node.ChildNodes)
-                {
-                    ImageSetHelper ish = ImageSetHelper.FromXMLNode(child);
-
-                    ImageSets.Add(ish);
-                    if (!String.IsNullOrEmpty(ish.AltUrl))
-                    {
-                        ReplacementImageSets.Add(ish.AltUrl, ish);
-                    }
-                }
-
-                ImageSets.Add(new ImageSetHelper("SandBox", "", ImageSetType.Sandbox, BandPass.Visible, ProjectionType.Toast, 0, 0, 0, 0, 0, "", false, "", 0, 0, 0, false, "", false, false, 0, 0, 0, "", "", "", "", 1, "SandBox"));
-                return true;
-            }
-            catch
-            {
-                File.Delete(filename);
-                UiTools.ShowMessageBox(Language.GetLocalizedText(93, "The Imagery data file could not be downloaded or has been corrupted. WorldWide Telescope must close. You need a working internet connection to update this file. Try again later"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
-                return false;
-            }
-
-
-        }
-
-        /*
-         * Place Holder             Meaning
-         * RA                       Main View Center RA in decimal degrees
-         * DEC                      Main View Center DEC in degrees degrees
-         * FOV                      Main View Height in Decimal Degrees
-         * UL.RA                    Upper Left RA
-         * UL.DEC                   Upper Left Dec
-         * UL, UR, LL, LR           Corners of view display
-         * JD                       Decimal Julian Date
-         * ROTATION                 Rotation angle East of North Decimal Degrees
-         * OBJECT                   Catalog Name of Selected Object
-         * SR                       Search Cone Radius that will Cover
-         * LAT                      View From Latitude
-         * LNG                      View From Longitude
-         * ELEV                     View From Elevation
-         * WIDTH                    Screen Width in Pixels
-         * HEIGHT                   Screen Height in Pixels
-         * CONST                    Current Constellation Abbreviation (Three letter codes)
-         * ALT                      Local Altitude
-         * AZ                       Local Azimuth
-         * l                        Galactic Lat
-         * b                        Galactic Long
-         * CP1(a:b)Label            CP1, CP2, CP3, CP4 are custome sliders that show up when a folder specifies them
-         *                          Slider values are send on each update, and URL refreshes with slider change
-         
-         * */
-        /// <summary>
-        /// Substitudes placeholders with live values in URL
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public string PrepareUrl(string url)
-        {
-            url = url.Replace("{RA}", (RA * 15).ToString());
-            url = url.Replace("{DEC}", this.Dec.ToString());
-            url = url.Replace("{FOV}", this.FovAngle.ToString());
-            if (this.CurrentViewCorners != null)
-            {
-                url = url.Replace("{UL.RA}", (this.CurrentViewCorners[0].RA * 15).ToString());
-                url = url.Replace("{UL.DEC}", (this.CurrentViewCorners[0].Dec).ToString());
-                url = url.Replace("{UR.RA}", (this.CurrentViewCorners[1].RA * 15).ToString());
-                url = url.Replace("{UR.DEC}", (this.CurrentViewCorners[1].Dec).ToString());
-                url = url.Replace("{LL.RA}", (this.CurrentViewCorners[2].RA * 15).ToString());
-                url = url.Replace("{LL.DEC}", (this.CurrentViewCorners[2].Dec).ToString());
-                url = url.Replace("{LR.RA}", (this.CurrentViewCorners[3].RA * 15).ToString());
-                url = url.Replace("{LR.DEC}", (this.CurrentViewCorners[3].Dec).ToString());
-            }
-
-            url = url.Replace("{JD}", SpaceTimeController.JNow.ToString());
-            url = url.Replace("{ROTATION}", this.CameraRotate.ToString());
-            url = url.Replace("{SR}", (fovAngle * 1.5).ToString());
-            url = url.Replace("{LAT}", SpaceTimeController.Location.Lat.ToString());
-            url = url.Replace("{LNG}", SpaceTimeController.Location.Lng.ToString());
-            url = url.Replace("{ELEV}", SpaceTimeController.Altitude.ToString());
-            url = url.Replace("{WIDTH}", this.renderWindow.ClientRectangle.Width.ToString());
-            url = url.Replace("{HEIGHT}", this.renderWindow.ClientRectangle.Height.ToString());
-            url = url.Replace("{CONST}", this.constellation);
-            url = url.Replace("{ALT}", this.Alt.ToString());
-            url = url.Replace("{AZ}", this.Az.ToString());
-            //          url = url.Replace("{LiveToken}", CloudCommunities.GetTokenFromId(true));
-            double[] gal = J2000toGalactic(RA * 15, Dec);
-
-            url = url.Replace("{l}", gal[0].ToString());
-            url = url.Replace("{b}", gal[1].ToString());
-
-            return url;
         }
 
         private void startQueue_Click(object sender, System.EventArgs e)
@@ -14741,15 +7685,6 @@ namespace TerraViewer
             TileCache.ShutdownQueue();
         }
 
-        ZoomSpeeds zoomSpeed = ZoomSpeeds.MEDIUM;
-
-        public ZoomSpeeds ZoomSpeed
-        {
-            get { return zoomSpeed; }
-            set { zoomSpeed = value; }
-        }
-
-        static long lastRender = HiResTimer.TickCount;
 
         private void timer2_Tick(object sender, EventArgs e)
         {
@@ -14760,13 +7695,13 @@ namespace TerraViewer
             //    GetData();
             //}
             // Make sure we render when dialogs are up
-            long ticks = HiResTimer.TickCount - lastRender;
+            long ticks = HiResTimer.TickCount - Utils.lastRender;
 
             int ms = (int)((ticks * 1000) / HiResTimer.Frequency);
 
-            if (ms > 350 && !pause && Initialized && !SpaceTimeController.FrameDumping)
+            if (ms > 350 && !pause && RenderEngine.Initialized && !SpaceTimeController.FrameDumping)
             {
-                this.Render();
+                RenderEngine.Render();
             }
         }
 
@@ -14778,14 +7713,11 @@ namespace TerraViewer
         }
 
 
-        internal Constellations constellationsBoundries = new Constellations("Constellations", "http://www.worldwidetelescope.org/data/constellations.txt", true, false);
-        internal Constellations constellationsFigures = new Constellations("Default Figures", "http://www.worldwidetelescope.org/data/figures.txt", false, false);
-        internal Constellations constellationCheck = new Constellations("Constellations", "http://www.worldwidetelescope.org/data/constellations.txt", true, true);
 
         public Constellations ConstellationCheck
         {
-            get { return constellationCheck; }
-            set { constellationCheck = value; }
+            get { return RenderEngine.constellationCheck; }
+            set { RenderEngine.constellationCheck = value; }
         }
 
 
@@ -14810,8 +7742,6 @@ namespace TerraViewer
                 autoUpdate = true;
                 SendMove();
             }
-
-
         }
 
         private static bool CheckForUpdates(bool interactive)
@@ -14892,7 +7822,7 @@ namespace TerraViewer
                         }
                         pause = false;
 
-                        if (multiMonClient)
+                        if (RenderEngine.multiMonClient)
                         {
                             System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /q", Path.GetTempPath()));
                         }
@@ -14931,7 +7861,7 @@ namespace TerraViewer
                             }
                             pause = false;
 
-                            if (multiMonClient)
+                            if (RenderEngine.multiMonClient)
                             {
                                 System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /q", Path.GetTempPath()));
                             }
@@ -15011,7 +7941,7 @@ namespace TerraViewer
         }
 
 
-
+        //TOdo use Coordinate versions of these instead?
         public static double[] J2000toGalactic(double J2000RA, double J2000DEC)
         {
             double[] J2000pos = new double[] { Math.Cos(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000DEC / 180.0 * Math.PI) };
@@ -15046,7 +7976,7 @@ namespace TerraViewer
 
 
 
-
+        //TOdo use Coordinate versions of these instead?
         public static double[] GalactictoJ2000(double GalacticL2, double GalacticB2)
         {
             double[] Galacticpos = new double[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
@@ -15101,17 +8031,17 @@ namespace TerraViewer
 
         private void copyShortcutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA.ToString(), contextMenuTargetObject.Dec, ZoomFactor);
+            string link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA.ToString(), contextMenuTargetObject.Dec, RenderEngine.ZoomFactor);
             Clipboard.SetText(link);
         }
 
         private void copyShortcutMenuItem_Click(object sender, EventArgs e)
         {
 
-            string constellation = this.constellationCheck.FindConstellationForPoint(RA, Dec);
+            string constellation = RenderEngine.constellationCheck.FindConstellationForPoint(RenderEngine.RA, RenderEngine.Dec);
             contextPanel.Constellation = Constellations.FullName(constellation);
-            contextMenuTargetObject = new TourPlace("ViewShortcut", Dec, RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
-            string link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA.ToString(), contextMenuTargetObject.Dec, ZoomFactor);
+            contextMenuTargetObject = new TourPlace("ViewShortcut", RenderEngine.Dec, RenderEngine.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
+            string link = string.Format("http://www.worldwidetelescope.org/wwtweb/goto.aspx?object={0}&ra={1}&dec={2}&zoom={3}", contextMenuTargetObject.Name, contextMenuTargetObject.RA.ToString(), contextMenuTargetObject.Dec, RenderEngine.ZoomFactor);
             Clipboard.SetText(link);
         }
         private void lookupOnAladinToolStripMenuItem_Click(object sender, EventArgs e)
@@ -15199,69 +8129,47 @@ namespace TerraViewer
         }
 
 
-        FieldOfView fov = null;
 
-        public FieldOfView Fov
-        {
-            get { return fov; }
-            set { fov = value; }
-        }
-        private IImageSet previewImageset = null;
-
-        public IImageSet PreviewImageset
-        {
-            get { return previewImageset; }
-            set { previewImageset = value; }
-        }
-
-        public BlendState PreviewBlend = new BlendState(false, 500);
-
-        private IImageSet studyImageset = null;
-
-
-
-        public IImageSet videoOverlay = null;
-        public float StudyOpacity
-        {
-            get { return (float)this.viewCamera.Opacity; }
-            set { this.viewCamera.Opacity = value; }
-        }
 
         public IImageSet StudyImageset
         {
-            get { return studyImageset; }
+            get { return RenderEngine.studyImageset; }
             set
             {
-                studyImageset = value;
-                if (contextPanel != null)
+                RenderEngine.studyImageset = value;
+            }
+        }
+
+        private void StudySetChanged()
+        {
+            if (contextPanel != null)
+            {
+                if ((RenderEngine.studyImageset != null) != contextPanel.studyOpacity.Visible)
                 {
-                    if ((studyImageset != null) != contextPanel.studyOpacity.Visible)
-                    {
-                        contextPanel.studyOpacity.Visible = (studyImageset != null);
+                    contextPanel.studyOpacity.Visible = (RenderEngine.studyImageset != null);
 
-                        if (imageStackVisible)
-                        {
-                            stack.UpdateList();
-                        }
-                    }
-
-                    bool showHist = false;
-                    if (contextPanel.studyOpacity.Visible && studyImageset != null && studyImageset.WcsImage is FitsImage)
+                    if (imageStackVisible)
                     {
-                        showHist = true;
+                        stack.UpdateList();
                     }
+                }
 
-                    if (contextPanel.scaleButton.Visible != showHist)
-                    {
-                        contextPanel.scaleButton.Visible = contextPanel.scaleLabel.Visible = showHist;
-                    }
+                bool showHist = false;
+                if (contextPanel.studyOpacity.Visible && RenderEngine.studyImageset != null && RenderEngine.studyImageset.WcsImage is FitsImage)
+                {
+                    showHist = true;
+                }
+
+                if (contextPanel.scaleButton.Visible != showHist)
+                {
+                    contextPanel.scaleButton.Visible = contextPanel.scaleLabel.Visible = showHist;
                 }
             }
         }
 
         private void Earth3d_Move(object sender, EventArgs e)
         {
-            if (ReadyToRender)
+            if (RenderEngine.ReadyToRender)
             {
                 SetAppMode(currentMode);
             }
@@ -15284,7 +8192,7 @@ namespace TerraViewer
                 return;
             }
 
-            if (!ProjectorServer)
+            if (!RenderEngine.ProjectorServer)
             {
 
                 if (CurrentImageSet.ReferenceFrame == null)
@@ -15303,7 +8211,7 @@ namespace TerraViewer
                             CurrentImageSet.ReferenceFrame = "Panorama";
                             break;
                         case ImageSetType.SolarSystem:
-                            CurrentImageSet.ReferenceFrame = SolarSystemTrack.ToString();
+                            CurrentImageSet.ReferenceFrame = RenderEngine.SolarSystemTrack.ToString();
                             break;
                         default:
                             break;
@@ -15324,24 +8232,24 @@ namespace TerraViewer
 
 
 
-                if (Space)
+                if (RenderEngine.Space)
                 {
                     if (CurrentImageSet.DataSetType == ImageSetType.Sky)
                     {
 
-                        if (constellationCheck != null)
+                        if (RenderEngine.constellationCheck != null)
                         {
-                            IPlace closetPlace = LayerManager.FindClosest(result, (float)(ZoomFactor / 18000.00), true, "Sky");
+                            IPlace closetPlace = LayerManager.FindClosest(result, (float)(RenderEngine.ZoomFactor / 18000.00), true, "Sky");
 
                             if (closetPlace == null)
                             {
-                                string constellation = this.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
-                                closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, ZoomFactor / 900);
+                                string constellation = RenderEngine.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                                closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, RenderEngine.ZoomFactor / 900);
                             }
 
-                            if (ShowKmlMarkers && KmlMarkers != null)
+                            if (RenderEngine.ShowKmlMarkers && RenderEngine.KmlMarkers != null)
                             {
-                                closetPlace = KmlMarkers.HoverCheck(Coordinates.RADecTo3dDouble(result, 1.0).Vector311, closetPlace, (float)(ZoomFactor / 900.0));
+                                closetPlace = RenderEngine.KmlMarkers.HoverCheck(Coordinates.RADecTo3dDouble(result, 1.0).Vector311, closetPlace, (float)(RenderEngine.ZoomFactor / 900.0));
                             }
 
                             if (closetPlace != null)
@@ -15360,7 +8268,7 @@ namespace TerraViewer
 
 
                     // todo unify this with hover check..
-                    IPlace closetPlace = LayerManager.FindClosest(result, (float)(ZoomFactor / 900.00), false, CurrentImageSet.ReferenceFrame);
+                    IPlace closetPlace = LayerManager.FindClosest(result, (float)(RenderEngine.ZoomFactor / 900.00), false, CurrentImageSet.ReferenceFrame);
                     if (closetPlace != null)
                     {
                         Earth3d.MainWindow.SetLabelText(closetPlace, true);
@@ -15438,9 +8346,9 @@ namespace TerraViewer
             {
                 // Draw without safe areas
                 TourEditor.Capturing = true;
-                this.Render();
+                RenderEngine.Render();
                 System.Threading.Thread.Sleep(100);
-                this.Render();
+                RenderEngine.Render();
                 TourEditor.Capturing = false;
             }
 
@@ -15494,12 +8402,7 @@ namespace TerraViewer
             }
         }
 
-        internal bool OnTarget(IPlace place)
-        {
-            bool ot = ((Math.Abs(ViewLat - TargetLat) < .0000000001 && Math.Abs(ViewLong - TargetLong) < .0000000001 && Math.Abs(ZoomFactor - TargetZoom) < .000000000001) && mover == null);
-            return ot;
 
-        }
 
 
         private void newSlideBasedTour(object sender, EventArgs e)
@@ -15693,7 +8596,7 @@ namespace TerraViewer
             {
                 if (newFolder.Children[0] is Place)
                 {
-                    GotoTarget((IPlace)newFolder.Children[0], false, false, true);
+                    RenderEngine.GotoTarget((IPlace)newFolder.Children[0], false, false, true);
                 }
             }
             else if (newFolder.Group == FolderGroup.Community)
@@ -15704,7 +8607,7 @@ namespace TerraViewer
             {
                 ImageStackVisible = true;
                 LoadImageStack(newFolder, true);
-                if (newFolder.Browseable == FolderBrowseable.True && !ProjectorServer)
+                if (newFolder.Browseable == FolderBrowseable.True && !RenderEngine.ProjectorServer)
                 {
                     if (!explorePane.IsCollectionLoaded(filename, true))
                     {
@@ -15922,13 +8825,13 @@ namespace TerraViewer
                         0,
                         ""
                         );
-                    place = new TourPlace(UiTools.GetNamesStringFromArray(wcsImage.Keywords.ToArray()), wcsImage.CenterY, wcsImage.CenterX / 15, Classification.Unidentified, constellationCheck.FindConstellationForPoint(wcsImage.CenterX, wcsImage.CenterY), ImageSetType.Sky, -1);
+                    place = new TourPlace(UiTools.GetNamesStringFromArray(wcsImage.Keywords.ToArray()), wcsImage.CenterY, wcsImage.CenterX / 15, Classification.Unidentified, RenderEngine.constellationCheck.FindConstellationForPoint(wcsImage.CenterX, wcsImage.CenterY), ImageSetType.Sky, -1);
                 }
                 else
                 {
 
-                    imageSet = new ImageSetHelper(wcsImage.Description, filename, ImageSetType.Sky, BandPass.Visible, ProjectionType.SkyImage, Math.Abs(filename.GetHashCode32()), 0, 0, 256, .001, ".tif", false, "", RA * 15, ViewLat, 0, false, "", false, false, 1, bmp.Width / 2, bmp.Height / 2, wcsImage.Copyright, wcsImage.CreditsUrl, "", "", 0, "");
-                    place = new TourPlace(UiTools.GetNamesStringFromArray(wcsImage.Keywords.ToArray()), this.ViewLat, RA, Classification.Unidentified, constellationCheck.FindConstellationForPoint(wcsImage.CenterX, wcsImage.CenterY), ImageSetType.Sky, -1);
+                    imageSet = new ImageSetHelper(wcsImage.Description, filename, ImageSetType.Sky, BandPass.Visible, ProjectionType.SkyImage, Math.Abs(filename.GetHashCode32()), 0, 0, 256, .001, ".tif", false, "", RenderEngine.RA * 15, RenderEngine.ViewLat, 0, false, "", false, false, 1, bmp.Width / 2, bmp.Height / 2, wcsImage.Copyright, wcsImage.CreditsUrl, "", "", 0, "");
+                    place = new TourPlace(UiTools.GetNamesStringFromArray(wcsImage.Keywords.ToArray()), RenderEngine.ViewLat, RenderEngine.RA, Classification.Unidentified, RenderEngine.constellationCheck.FindConstellationForPoint(wcsImage.CenterX, wcsImage.CenterY), ImageSetType.Sky, -1);
                 }
                 imageSet.WcsImage = wcsImage;
                 place.StudyImageset = imageSet;
@@ -15937,7 +8840,7 @@ namespace TerraViewer
 
                 pl.ThumbNail = UiTools.MakeThumbnail(bmp);
                 StudyImageset = pl.StudyImageset;
-                GotoTarget(pl, false, false, true);
+                RenderEngine.GotoTarget(pl, false, false, true);
 
 
 
@@ -16171,7 +9074,7 @@ namespace TerraViewer
         private void ResetCamera()
         {
             CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-            GotoTarget(camParams, false, true);
+            RenderEngine.GotoTarget(camParams, false, true);
         }
 
 
@@ -16211,7 +9114,7 @@ namespace TerraViewer
 
         private void StatupTimer_Tick(object sender, EventArgs e)
         {
-            if (Initialized)
+            if (RenderEngine.Initialized)
             {
                 StatupTimer.Enabled = false;
                 this.Activate();
@@ -16333,7 +9236,7 @@ namespace TerraViewer
 
                         AstroObjectResult result = null;
 
-                        if (Space)
+                        if (RenderEngine.Space)
                         {
                             result = lookup.SkyLookup(targetName);
                         }
@@ -16341,13 +9244,13 @@ namespace TerraViewer
 
                         if (result != null)
                         {
-                            if (Space)
+                            if (RenderEngine.Space)
                             {
-                                GotoTarget(false, false, new CameraParameters(result.Dec, RAtoViewLng(result.RA), -1, 0, 0, 1.0f), null, null);
+                                RenderEngine.GotoTarget(false, false, new CameraParameters(result.Dec, RAtoViewLng(result.RA), -1, 0, 0, 1.0f), null, null);
                             }
                             else
                             {
-                                GotoTarget(false, false, new CameraParameters(result.Dec, result.RA, -1, 0, 0, 1.0f), null, null);
+                                RenderEngine.GotoTarget(false, false, new CameraParameters(result.Dec, result.RA, -1, 0, 0, 1.0f), null, null);
                             }
                             foundOrCanceled = true;
 
@@ -16400,7 +9303,7 @@ namespace TerraViewer
         {
             HSTFootprint footprint = new HSTFootprint();
 
-            STCRegion region = footprint.ACS_ConeFootprintL1((contextMenuTargetObject.RA * 15), contextMenuTargetObject.Dec, fovAngle);
+            STCRegion region = footprint.ACS_ConeFootprintL1((contextMenuTargetObject.RA * 15), contextMenuTargetObject.Dec, RenderEngine.FovAngle);
 
         }
 
@@ -16408,7 +9311,7 @@ namespace TerraViewer
         private void uSNONVOConeSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            string url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), fovAngle.ToString());
+            string url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), RenderEngine.FovAngle.ToString());
             WebClient client = new WebClient();
 
             try
@@ -16511,14 +9414,14 @@ namespace TerraViewer
                     {
                         // Draw without safe areas
                         TourEditor.Capturing = true;
-                        this.Render();
+                        RenderEngine.Render();
                         System.Threading.Thread.Sleep(100);
-                        this.Render();
+                        RenderEngine.Render();
                         TourEditor.Capturing = false;
                     }
                     if (megaCap)
                     {
-                        CaptureMegaShot(saveDialog.FileName, width, height);
+                        RenderEngine.CaptureMegaShot(saveDialog.FileName, width, height);
                     }
                     else
                     {
@@ -16544,9 +9447,9 @@ namespace TerraViewer
             {
                 // Draw without safe areas
                 TourEditor.Capturing = true;
-                this.Render();
+                RenderEngine.Render();
                 System.Threading.Thread.Sleep(100);
-                this.Render();
+                RenderEngine.Render();
                 TourEditor.Capturing = false;
             }
 
@@ -16577,8 +9480,8 @@ namespace TerraViewer
                 ShowFullScreen(true);
                 bool showCrossHairs = Properties.Settings.Default.ShowCrosshairs;
                 Properties.Settings.Default.ShowCrosshairs = false;
-                Render();
-                Render();
+                RenderEngine.Render();
+                RenderEngine.Render();
                 Properties.Settings.Default.ShowCrosshairs = showCrossHairs;
                 string path = Properties.Settings.Default.CahceDirectory + "wallpaper.bmp";
 
@@ -16623,7 +9526,7 @@ namespace TerraViewer
             lockVerticalSyncToolStripMenuItem.Checked = Properties.Settings.Default.FrameSync;
             allowUnconstrainedTiltToolStripMenuItem.Checked = Properties.Settings.Default.UnconstrainedTilt;
 
-            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Enabled = PlanetLike;
+            exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem.Enabled = RenderEngine.PlanetLike;
         }
 
         internal void joinCoomunityMenuItem_Click(object sender, EventArgs e)
@@ -16704,19 +9607,19 @@ namespace TerraViewer
             }
 
             Coordinates result = GetCoordinatesForScreenPoint(e.X, e.Y);
-            if (Space)
+            if (RenderEngine.Space)
             {
-                GotoTarget(false, false, new CameraParameters(result.Dec, RAtoViewLng(result.RA), viewCamera.Zoom > ZoomMin ? viewCamera.Zoom / 2 : viewCamera.Zoom, viewCamera.Rotation, viewCamera.Angle, (float)viewCamera.Opacity), studyImageset, CurrentImageSet);
+                RenderEngine.GotoTarget(false, false, new CameraParameters(result.Dec, RAtoViewLng(result.RA), RenderEngine.viewCamera.Zoom > RenderEngine.ZoomMin ? RenderEngine.viewCamera.Zoom / 2 : RenderEngine.viewCamera.Zoom, RenderEngine.viewCamera.Rotation, RenderEngine.viewCamera.Angle, (float)RenderEngine.viewCamera.Opacity), RenderEngine.studyImageset, CurrentImageSet);
             }
             else
             {
-                TargetLong += (double)(e.X - (this.Width / 2)) * GetPixelScaleX(false);
-                TargetLat -= (double)(e.Y - (this.Height / 2)) * GetPixelScaleY();
-                TargetLong = ((TargetLong + 180.0) % 360.0) - 180.0;
-                TargetLat = ((TargetLat + 90.0) % 180.0) - 90.0;
-                deltaLat = (this.TargetLat - this.ViewLat) / 20;
-                deltaLong = (this.TargetLong - this.ViewLong) / 20;
-                zoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
+                RenderEngine.TargetLong += (double)(e.X - (this.Width / 2)) * GetPixelScaleX(false);
+                RenderEngine.TargetLat -= (double)(e.Y - (this.Height / 2)) * GetPixelScaleY();
+                RenderEngine.TargetLong = ((RenderEngine.TargetLong + 180.0) % 360.0) - 180.0;
+                RenderEngine.TargetLat = ((RenderEngine.TargetLat + 90.0) % 180.0) - 90.0;
+                RenderEngine.deltaLat = (RenderEngine.TargetLat - RenderEngine.ViewLat) / 20;
+                RenderEngine.deltaLong = (RenderEngine.TargetLong - RenderEngine.ViewLong) / 20;
+                RenderEngine.ZoomSpeed = (ZoomSpeeds)Properties.Settings.Default.ZoomSpeed;
                 ZoomIn();
             }
         }
@@ -16771,7 +9674,7 @@ namespace TerraViewer
                             CurrentImageSet.ReferenceFrame = "Panorama";
                             break;
                         case ImageSetType.SolarSystem:
-                            CurrentImageSet.ReferenceFrame = SolarSystemTrack.ToString();
+                            CurrentImageSet.ReferenceFrame = RenderEngine.SolarSystemTrack.ToString();
                             break;
                         default:
                             break;
@@ -16797,15 +9700,15 @@ namespace TerraViewer
                     spinning = true;
                     angle = true;
                 }
-                else if (Control.ModifierKeys == Keys.Shift || measuring)
+                else if (Control.ModifierKeys == Keys.Shift || RenderEngine.measuring)
                 {
-                    if (Space)
+                    if (RenderEngine.Space)
                     {
-                        measuringDrag = true;
+                        RenderEngine.measuringDrag = true;
                         measureEnd = measureStart = GetCoordinatesForScreenPoint(e.X, e.Y);
-                        if (measureLines != null)
+                        if (RenderEngine.measureLines != null)
                         {
-                            measureLines.Clear();
+                            RenderEngine.measureLines.Clear();
                         }
                     }
                 }
@@ -17013,8 +9916,8 @@ namespace TerraViewer
 
             if (contrastMode)
             {
-                contrast = (1 - (e.Y / (float)ClientSize.Height));
-                brightness = e.X / (float)ClientSize.Width;
+                RenderEngine.contrast = (1 - (e.Y / (float)ClientSize.Height));
+                RenderEngine.brightness = e.X / (float)ClientSize.Width;
                 return;
             }
 
@@ -17098,7 +10001,7 @@ namespace TerraViewer
                 mouseMoved = true;
                 lastMouseMove = DateTime.Now;
 
-                if (!CursorVisible && !ProjectorServer)
+                if (!CursorVisible && !RenderEngine.ProjectorServer)
                 {
                     Cursor.Show();
                     CursorVisible = true;
@@ -17106,19 +10009,19 @@ namespace TerraViewer
 
             }
 
-            if (measuringDrag)
+            if (RenderEngine.measuringDrag)
             {
                 measureEnd = GetCoordinatesForScreenPoint(e.X, e.Y);
 
-                if (measureLines == null)
+                if (RenderEngine.measureLines == null)
                 {
 
-                    measureLines = new SimpleLineList11();
-                    measureLines.DepthBuffered = false;
+                    RenderEngine.measureLines = new SimpleLineList11();
+                    RenderEngine.measureLines.DepthBuffered = false;
 
                 }
-                measureLines.Clear();
-                measureLines.AddLine(Coordinates.RADecTo3d(measureStart.RA + 12, measureStart.Dec, 1), Coordinates.RADecTo3d(measureEnd.RA + 12, measureEnd.Dec, 1));
+                RenderEngine.measureLines.Clear();
+                RenderEngine.measureLines.AddLine(Coordinates.RADecTo3d(measureStart.RA + 12, measureStart.Dec, 1), Coordinates.RADecTo3d(measureEnd.RA + 12, measureEnd.Dec, 1));
                 double angularSperation = CAAAngularSeparation.Separation(measureStart.RA, measureStart.Dec, measureEnd.RA, measureEnd.Dec);
 
 
@@ -17127,20 +10030,20 @@ namespace TerraViewer
                 SetLabelText(pl, true);
 
             }
-            else if (Space && Settings.Active.GalacticMode)
+            else if (RenderEngine.Space && Settings.Active.GalacticMode)
             {
                 if (dragging)
                 {
-                    Tracking = false;
+                    RenderEngine.Tracking = false;
 
                     MoveView(-(e.X - this.mouseDownX), (e.Y - this.mouseDownY), true);
                     if (!Properties.Settings.Default.SmoothPan)
                     {
-                        az = targetAz;
-                        alt = targetAlt;
-                        double[] gPoint = Coordinates.GalactictoJ2000(az, alt);
-                        TargetLat = ViewLat = gPoint[1];
-                        TargetLong = ViewLong = RAtoViewLng(gPoint[0] / 15);
+                        RenderEngine.Az = RenderEngine.targetAz;
+                        RenderEngine.Alt = RenderEngine.targetAlt;
+                        double[] gPoint = Coordinates.GalactictoJ2000(RenderEngine.Az, RenderEngine.Alt);
+                        RenderEngine.TargetLat = RenderEngine.ViewLat = gPoint[1];
+                        RenderEngine.TargetLong = RenderEngine.ViewLong = RAtoViewLng(gPoint[0] / 15);
                         NotifyMoveComplete();
                     }
                     this.mouseDownX = e.X;
@@ -17149,24 +10052,24 @@ namespace TerraViewer
                 else if (spinning || angle)
                 {
 
-                    CameraRotateTarget = (CameraRotateTarget + (((double)(e.X - this.mouseDownX)) / 1000 * Math.PI));
+                    RenderEngine.CameraRotateTarget = (RenderEngine.CameraRotateTarget + (((double)(e.X - this.mouseDownX)) / 1000 * Math.PI));
 
-                    CameraAngleTarget = (CameraAngleTarget + (((double)(e.Y - this.mouseDownY)) / 1000 * Math.PI));
+                    RenderEngine.CameraAngleTarget = (RenderEngine.CameraAngleTarget + (((double)(e.Y - this.mouseDownY)) / 1000 * Math.PI));
 
-                    if (CameraAngleTarget < TiltMin)
+                    if (RenderEngine.CameraAngleTarget < TiltMin)
                     {
-                        CameraAngleTarget = TiltMin;
+                        RenderEngine.CameraAngleTarget = TiltMin;
                     }
 
-                    if (CameraAngleTarget > 0)
+                    if (RenderEngine.CameraAngleTarget > 0)
                     {
-                        CameraAngleTarget = 0;
+                        RenderEngine.CameraAngleTarget = 0;
                     }
 
                     if (!Properties.Settings.Default.SmoothPan)
                     {
-                        CameraRotate = CameraRotateTarget;
-                        CameraAngle = CameraAngleTarget;
+                        RenderEngine.CameraRotate = RenderEngine.CameraRotateTarget;
+                        RenderEngine.CameraAngle = RenderEngine.CameraAngleTarget;
                     }
 
                     this.mouseDownX = e.X;
@@ -17178,24 +10081,24 @@ namespace TerraViewer
                     lastMouseMove = DateTime.Now;
                 }
             }
-            else if (Space && Settings.Active.LocalHorizonMode)
+            else if (RenderEngine.Space && Settings.Active.LocalHorizonMode)
             {
                 if (dragging)
                 {
                     if (!SolarSystemMode)
                     {
-                        Tracking = false;
+                        RenderEngine.Tracking = false;
                     }
 
                     MoveView(-(e.X - this.mouseDownX), (e.Y - this.mouseDownY), true);
                     if (!Properties.Settings.Default.SmoothPan)
                     {
-                        az = targetAz;
-                        alt = targetAlt;
-                        Coordinates currentRaDec = Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(alt, az), SpaceTimeController.Location, SpaceTimeController.Now);
+                        RenderEngine.Az = RenderEngine.targetAz;
+                        RenderEngine.Alt = RenderEngine.targetAlt;
+                        Coordinates currentRaDec = Coordinates.HorizonToEquitorial(Coordinates.FromLatLng(RenderEngine.Alt, RenderEngine.Az), SpaceTimeController.Location, SpaceTimeController.Now);
 
-                        TargetLat = ViewLat = currentRaDec.Dec;
-                        TargetLong = ViewLong = RAtoViewLng(currentRaDec.RA);
+                        RenderEngine.TargetLat = RenderEngine.ViewLat = currentRaDec.Dec;
+                        RenderEngine.TargetLong = RenderEngine.ViewLong = RAtoViewLng(currentRaDec.RA);
                         NotifyMoveComplete();
                     }
                     this.mouseDownX = e.X;
@@ -17213,14 +10116,14 @@ namespace TerraViewer
                 {
                     if (!SolarSystemMode)
                     {
-                        Tracking = false;
+                        RenderEngine.Tracking = false;
                     }
 
                     MoveView(-(e.X - this.mouseDownX), (e.Y - this.mouseDownY), true);
                     if (!Properties.Settings.Default.SmoothPan)
                     {
-                        ViewLat = TargetLat;
-                        ViewLong = TargetLong;
+                        RenderEngine.ViewLat = RenderEngine.TargetLat;
+                        RenderEngine.ViewLong = RenderEngine.TargetLong;
                         NotifyMoveComplete();
                     }
                     this.mouseDownX = e.X;
@@ -17229,24 +10132,24 @@ namespace TerraViewer
                 else if (spinning || angle)
                 {
 
-                    CameraRotateTarget = (CameraRotateTarget + (((double)(e.X - this.mouseDownX)) / 1000 * Math.PI));
+                    RenderEngine.CameraRotateTarget = (RenderEngine.CameraRotateTarget + (((double)(e.X - this.mouseDownX)) / 1000 * Math.PI));
 
-                    CameraAngleTarget = (CameraAngleTarget + (((double)(e.Y - this.mouseDownY)) / 1000 * Math.PI));
+                    RenderEngine.CameraAngleTarget = (RenderEngine.CameraAngleTarget + (((double)(e.Y - this.mouseDownY)) / 1000 * Math.PI));
 
-                    if (CameraAngleTarget < TiltMin)
+                    if (RenderEngine.CameraAngleTarget < TiltMin)
                     {
-                        CameraAngleTarget = TiltMin;
+                        RenderEngine.CameraAngleTarget = TiltMin;
                     }
 
-                    if (CameraAngleTarget > 0)
+                    if (RenderEngine.CameraAngleTarget > 0)
                     {
-                        CameraAngleTarget = 0;
+                        RenderEngine.CameraAngleTarget = 0;
                     }
 
                     if (!Properties.Settings.Default.SmoothPan)
                     {
-                        CameraRotate = CameraRotateTarget;
-                        CameraAngle = CameraAngleTarget;
+                        RenderEngine.CameraRotate = RenderEngine.CameraRotateTarget;
+                        RenderEngine.CameraAngle = RenderEngine.CameraAngleTarget;
                     }
 
                     this.mouseDownX = e.X;
@@ -17299,14 +10202,14 @@ namespace TerraViewer
                         if (TouchKiosk)
                         {
                             Properties.Settings.Default.SolarSystemScale = 1;
-                            FadeInImageSet(GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible));
+                            RenderEngine.FadeInImageSet(RenderEngine.GetDefaultImageset(ImageSetType.SolarSystem, BandPass.Visible));
                             CameraParameters camParams = new CameraParameters(45, 0, 360, 0, 0, 100);
-                            GotoTarget(camParams, false, true);
+                            RenderEngine.GotoTarget(camParams, false, true);
                         }
                         else
                         {
                             CameraParameters camParams = new CameraParameters(0, 0, 360, 0, 0, 100);
-                            GotoTarget(camParams, false, true);
+                            RenderEngine.GotoTarget(camParams, false, true);
                         }
                     }
                     else
@@ -17333,10 +10236,10 @@ namespace TerraViewer
             {
                 dragging = false;
                 spinning = false;
-                measuringDrag = false;
-                measuring = false;
+                RenderEngine.measuringDrag = false;
+                RenderEngine.measuring = false;
                 angle = false;
-                if (!moved && ShowKmlMarkers && Space)
+                if (!moved && RenderEngine.ShowKmlMarkers && RenderEngine.Space)
                 {
 
                     Point cursor = renderWindow.PointToClient(Cursor.Position);
@@ -17345,13 +10248,13 @@ namespace TerraViewer
 
                     if (CurrentImageSet.DataSetType == ImageSetType.Sky)
                     {
-                        if (!ProjectorServer)
+                        if (!RenderEngine.ProjectorServer)
                         {
-                            if (constellationCheck != null)
+                            if (RenderEngine.constellationCheck != null)
                             {
-                                if (ShowKmlMarkers && KmlMarkers != null)
+                                if (RenderEngine.ShowKmlMarkers && RenderEngine.KmlMarkers != null)
                                 {
-                                    KmlMarkers.ItemClick(Coordinates.RADecTo3dDouble(result, 1.0).Vector311, (float)(ZoomFactor / 900.0));
+                                    RenderEngine.KmlMarkers.ItemClick(Coordinates.RADecTo3dDouble(result, 1.0).Vector311, (float)(RenderEngine.ZoomFactor / 900.0));
                                 }
                             }
                         }
@@ -17368,9 +10271,9 @@ namespace TerraViewer
                     {
                         // TODO fix this for earth, plantes, panoramas
                         Coordinates result = GetCoordinatesForScreenPoint(e.X, e.Y);
-                        string constellation = this.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
+                        string constellation = RenderEngine.constellationCheck.FindConstellationForPoint(result.RA, result.Dec);
                         contextPanel.Constellation = Constellations.FullName(constellation);
-                        IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, Earth3d.MainWindow.DegreesPerPixel * 80);
+                        IPlace closetPlace = ContextSearch.FindClosestMatch(constellation, result.RA, result.Dec, RenderEngine.DegreesPerPixel * 80);
                         if (closetPlace == null)
                         {
                             closetPlace = new TourPlace(Language.GetLocalizedText(90, "No Object"), result.Dec, result.RA, Classification.Unidentified, constellation, ImageSetType.Sky, -1);
@@ -17411,9 +10314,9 @@ namespace TerraViewer
 
         private void renderWindow_Paint(object sender, PaintEventArgs e)
         {
-            if (RenderContext11 != null && RenderContext11.Device != null && ReadyToRender && !pause && !SpaceTimeController.FrameDumping)
+            if (RenderContext11 != null && RenderContext11.Device != null && RenderEngine.ReadyToRender && !pause && !SpaceTimeController.FrameDumping)
             {
-                Render();
+                RenderEngine.Render();
             }
             else
             {
@@ -17518,7 +10421,7 @@ namespace TerraViewer
             {
                 if (SlideAdvanceTimer.Interval == 500)
                 {
-                    if (mover == null)
+                    if (RenderEngine.Mover == null)
                     {
                         SlideAdvanceTimer.Interval = 10000;
                     }
@@ -17965,7 +10868,7 @@ namespace TerraViewer
                     imageSet = place.BackgroundImageSet;
                 }
 
-                Earth3d.MainWindow.SetStudyImageset(imageSet, null);
+                RenderEngine.SetStudyImageset(imageSet, null);
             }
             catch
             {
@@ -18000,7 +10903,7 @@ namespace TerraViewer
 
             }
         }
-        public List<IImageSet> ImageStackList = new List<IImageSet>();
+
         private void addToImageStackToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -18030,7 +10933,7 @@ namespace TerraViewer
 
             if (imageSet != null)
             {
-                ImageStackList.Add(ImageSet.FromIImage(imageSet));
+                RenderEngine.ImageStackList.Add(ImageSet.FromIImage(imageSet));
                 if (refresh)
                 {
                     stack.UpdateList();
@@ -18058,14 +10961,14 @@ namespace TerraViewer
             if (imageSet != null)
             {
                 IImageSet itemToRemove = null;
-                foreach (IImageSet set in ImageStackList)
+                foreach (IImageSet set in RenderEngine.ImageStackList)
                 {
                     if (set.GetHash() == imageSet.GetHash())
                     {
                         itemToRemove = set;
                     }
                 }
-                ImageStackList.Remove(itemToRemove);
+                RenderEngine.ImageStackList.Remove(itemToRemove);
                 if (refresh)
                 {
                     stack.UpdateList();
@@ -18084,7 +10987,7 @@ namespace TerraViewer
 
         private void NEDSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), (FovAngle) < (1.0 / 60.0) ? (FovAngle).ToString() : (1.0 / 60.0).ToString());
+            string url = String.Format("http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA={0}&DEC={1}&SR={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), (RenderEngine.FovAngle) < (1.0 / 60.0) ? (RenderEngine.FovAngle).ToString() : (1.0 / 60.0).ToString());
 
             RunVoSearch(url, null);
 
@@ -18114,7 +11017,14 @@ namespace TerraViewer
                         Samp.sampKnownTableIds.Add(ID, layer);
 
                     }
-                    Samp.sampKnownTableUrls.Add(url, layer);
+                    try
+                    {
+                        Samp.sampKnownTableUrls.Add(url, layer);
+                    }
+                    catch
+                    {
+
+                    }
                     viewer.Layer = layer;
                     viewer.Show();
                     ShowLayersWindows = true;
@@ -18175,31 +11085,31 @@ namespace TerraViewer
 
         private void sDSSSearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string url = String.Format("http://casjobs.sdss.org/vo/dr5cone/sdssConeSearch.asmx/ConeSearch?ra={0}&dec={1}&sr={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), fovAngle.ToString());
+            string url = String.Format("http://casjobs.sdss.org/vo/dr5cone/sdssConeSearch.asmx/ConeSearch?ra={0}&dec={1}&sr={2}", (contextMenuTargetObject.RA * 15).ToString(), contextMenuTargetObject.Dec.ToString(), RenderEngine.FovAngle.ToString());
 
             RunVoSearch(url, null);
         }
 
         private void stereoToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            oculusRiftToolStripMenuItem.Checked = StereoMode == StereoModes.OculusRift;
-            enabledToolStripMenuItem.Checked = StereoMode == StereoModes.Off;
-            anaglyphToolStripMenuItem.Checked = StereoMode == StereoModes.AnaglyphRedCyan;
-            anaglyphYellowBlueToolStripMenuItem.Checked = StereoMode == StereoModes.AnaglyphYellowBlue;
-            sideBySideProjectionToolStripMenuItem.Checked = StereoMode == StereoModes.SideBySide;
-            sideBySideCrossEyedToolStripMenuItem.Checked = StereoMode == StereoModes.CrossEyed;
-            alternatingLinesEvenToolStripMenuItem.Checked = StereoMode == StereoModes.InterlineEven;
-            alternatingLinesOddToolStripMenuItem.Checked = StereoMode == StereoModes.InterlineOdd;
+            oculusRiftToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.OculusRift;
+            enabledToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.Off;
+            anaglyphToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.AnaglyphRedCyan;
+            anaglyphYellowBlueToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.AnaglyphYellowBlue;
+            sideBySideProjectionToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.SideBySide;
+            sideBySideCrossEyedToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.CrossEyed;
+            alternatingLinesEvenToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.InterlineEven;
+            alternatingLinesOddToolStripMenuItem.Checked = RenderEngine.StereoMode == RenderEngine.StereoModes.InterlineOdd;
         }
 
         private void enabledToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
+            if (RenderEngine.rift)
             {
-                rift = false;
+                RenderEngine.rift = false;
                 AttachRenderWindow();
             }
-            StereoMode = StereoModes.Off;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.Off;
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
@@ -18207,306 +11117,56 @@ namespace TerraViewer
 
         private void anaglyphYellowBlueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
+            if (RenderEngine.rift)
             {
-                rift = false;
+                RenderEngine.rift = false;
                 AttachRenderWindow();
             }
-            StereoMode = StereoModes.AnaglyphYellowBlue;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.AnaglyphYellowBlue;
             Properties.Settings.Default.ColSettingsVersion++;
         }
         private void anaglyphToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
+            if (RenderEngine.rift)
             {
-                rift = false;
+                RenderEngine.rift = false;
                 AttachRenderWindow();
             }
-            StereoMode = StereoModes.AnaglyphRedCyan;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.AnaglyphRedCyan;
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
         private void sideBySideProjectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rift)
+            if (RenderEngine.rift)
             {
-                rift = false;
+                RenderEngine.rift = false;
                 AttachRenderWindow();
             }
-            StereoMode = StereoModes.SideBySide;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.SideBySide;
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
-        bool rift = false;
-        bool riftInit = false;
-        private Wrap wrap = new Wrap();
-        private Hmd hmd;
-        private EyeTexture[] eyeTextures = null;
 
-        private SharpDX.Direct3D11.Texture2D mirrorTexture;
-        private Texture11 mirror;
-
-        private OVRTypes.Posef[] eyeRenderPose = new OVRTypes.Posef[2];
-
-        private SharpDX.Vector3[] hmdToEyeViewOffset = new SharpDX.Vector3[2];
-
-        private SharpDX.Vector3 headPos = new SharpDX.Vector3(0f, 0f, -5f);
-        private float bodyYaw = 3.141592f;
-        private Layers layers = null;
-        LayerEyeFov layerEyeFov;
-        private int leftEyeWidth = 1;
-        private int leftEyeHeight = 1;
-        private int rightEyeWidth = 1;
-        private int rightEyeHeight = 1;
-
-        uint riftFrameIndex = 0;
-
-        SharpDX.DXGI.Format riftFormat = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
-
-        protected void InitializeRift()
-        {
-
-            
-
-            SharpDX.DXGI.Factory factory = null;
-            MirrorTexture mirrorTextureWrap = null;
-            Guid textureInterfaceId = new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c"); // Interface ID of the Direct3D Texture2D interface.
-
-            // Define initialization parameters with debug flag.
-            OVRTypes.InitParams initializationParameters = new OVRTypes.InitParams();
-
-            //todo remove detbug flag
-            //initializationParameters.Flags = OVRTypes.InitFlags.Debug;
-            initializationParameters.Flags = OVRTypes.InitFlags.RequestVersion;
-            initializationParameters.RequestedMinorVersion = 8;
-
-            // Initialize the Oculus runtime.
-            bool success = wrap.Initialize(initializationParameters);
-            if (!success)
-            {
-                MessageBox.Show("Failed to initialize the Oculus runtime library.", "Uh oh", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Use the head mounted display.
-            OVRTypes.GraphicsLuid graphicsLuid;
-            hmd = wrap.Hmd_Create(out graphicsLuid);
-            if (hmd == null)
-            {
-                MessageBox.Show("Oculus Rift not detected.", "Uh oh", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (hmd.ProductName == string.Empty)
-            {
-                MessageBox.Show("The HMD is not enabled.", "There's a tear in the Rift", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                // Create a set of layers to submit.
-                eyeTextures = new EyeTexture[2];
-                OVRTypes.Result result;
-
-                // Create DirectX drawing device.
-                SharpDX.Direct3D11.Device device = RenderContext11.Device;
-
-                // Create DirectX Graphics Interface factory, used to create the swap chain.
-                factory = new SharpDX.DXGI.Factory();
-
-
-                // Retrieve the DXGI device, in order to set the maximum frame latency.
-                using (SharpDX.DXGI.Device1 dxgiDevice = device.QueryInterface<SharpDX.DXGI.Device1>())
-                {
-                    dxgiDevice.MaximumFrameLatency = 1;
-                }
-
-                layers = new Layers();
-                layerEyeFov = layers.AddLayerEyeFov();
-
-                for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
-                {
-                    OVRTypes.EyeType eye = (OVRTypes.EyeType)eyeIndex;
-                    EyeTexture eyeTexture = new EyeTexture();
-                    eyeTextures[eyeIndex] = eyeTexture;
-
-                    // Retrieve size and position of the texture for the current eye.
-                    eyeTexture.FieldOfView = hmd.DefaultEyeFov[eyeIndex];
-                    eyeTexture.TextureSize = hmd.GetFovTextureSize(eye, hmd.DefaultEyeFov[eyeIndex], 1.0f);
-                    eyeTexture.RenderDescription		= hmd.GetRenderDesc(eye, hmd.DefaultEyeFov[eyeIndex]);
-                    eyeTexture.HmdToEyeViewOffset = eyeTexture.RenderDescription.HmdToEyeOffset;
-                    eyeTexture.ViewportSize.Position = new OVRTypes.Vector2i(0, 0);
-                    eyeTexture.ViewportSize.Size = eyeTexture.TextureSize;
-                    eyeTexture.Viewport = new SharpDX.Viewport(0, 0, eyeTexture.TextureSize.Width, eyeTexture.TextureSize.Height, 0.0f, 1.0f);
-
-                    // Define a texture at the size recommended for the eye texture.
-                    eyeTexture.Texture2DDescription = new SharpDX.Direct3D11.Texture2DDescription();
-                    eyeTexture.Texture2DDescription.Width = eyeTexture.TextureSize.Width;
-                    eyeTexture.Texture2DDescription.Height = eyeTexture.TextureSize.Height;
-                    eyeTexture.Texture2DDescription.ArraySize = 1;
-                    eyeTexture.Texture2DDescription.MipLevels = 1;
-                    eyeTexture.Texture2DDescription.Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
-                    eyeTexture.Texture2DDescription.SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0);
-                    eyeTexture.Texture2DDescription.Usage = SharpDX.Direct3D11.ResourceUsage.Default;
-                    eyeTexture.Texture2DDescription.CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None;
-                    eyeTexture.Texture2DDescription.BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource | SharpDX.Direct3D11.BindFlags.RenderTarget;
-
-                    // Convert the SharpDX texture description to the Oculus texture swap chain description.
-                    OVRTypes.TextureSwapChainDesc textureSwapChainDesc = SharpDXHelpers.CreateTextureSwapChainDescription(eyeTexture.Texture2DDescription);
-
-                    // Create a texture swap chain, which will contain the textures to render to, for the current eye.
-                    result = hmd.CreateTextureSwapChainDX(device.NativePointer, textureSwapChainDesc, out eyeTexture.SwapTextureSet);
-
-
-                    // Retrieve the number of buffers of the created swap chain.
-                    int textureSwapChainBufferCount;
-                    result = eyeTexture.SwapTextureSet.GetLength(out textureSwapChainBufferCount);
-
-                    // Create room for each DirectX texture in the SwapTextureSet.
-                    eyeTexture.Textures = new SharpDX.Direct3D11.Texture2D[textureSwapChainBufferCount];
-                    eyeTexture.RenderTargetViews = new SharpDX.Direct3D11.RenderTargetView[textureSwapChainBufferCount];
-
-                    // Create a texture 2D and a render target view, for each unmanaged texture contained in the SwapTextureSet.
-                    for (int textureIndex = 0; textureIndex < textureSwapChainBufferCount; textureIndex++)
-                    {
-                        // Retrieve the Direct3D texture contained in the Oculus TextureSwapChainBuffer.
-                        IntPtr swapChainTextureComPtr = IntPtr.Zero;
-                        result = eyeTexture.SwapTextureSet.GetBufferDX(textureIndex, textureInterfaceId, out swapChainTextureComPtr);
-
-                        // Create a managed Texture2D, based on the unmanaged texture pointer.
-                        eyeTexture.Textures[textureIndex] = new SharpDX.Direct3D11.Texture2D(swapChainTextureComPtr);
-
-                        // Create a render target view for the current Texture2D.
-                        eyeTexture.RenderTargetViews[textureIndex] = new SharpDX.Direct3D11.RenderTargetView(device, eyeTexture.Textures[textureIndex]);
-                    }
-
-                    // Define the depth buffer, at the size recommended for the eye texture.
-                    eyeTexture.DepthBufferDescription = new SharpDX.Direct3D11.Texture2DDescription();
-                    eyeTexture.DepthBufferDescription.Format = SharpDX.DXGI.Format.D32_Float;
-                    eyeTexture.DepthBufferDescription.Width = eyeTexture.TextureSize.Width;
-                    eyeTexture.DepthBufferDescription.Height = eyeTexture.TextureSize.Height;
-                    eyeTexture.DepthBufferDescription.ArraySize = 1;
-                    eyeTexture.DepthBufferDescription.MipLevels = 1;
-                    eyeTexture.DepthBufferDescription.SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0);
-                    eyeTexture.DepthBufferDescription.Usage = SharpDX.Direct3D11.ResourceUsage.Default;
-                    eyeTexture.DepthBufferDescription.BindFlags = SharpDX.Direct3D11.BindFlags.DepthStencil;
-                    eyeTexture.DepthBufferDescription.CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None;
-                    eyeTexture.DepthBufferDescription.OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None;
-
-                    // Create the depth buffer.
-                    eyeTexture.DepthBuffer = new SharpDX.Direct3D11.Texture2D(device, eyeTexture.DepthBufferDescription);
-                    eyeTexture.DepthStencilView = new SharpDX.Direct3D11.DepthStencilView(device, eyeTexture.DepthBuffer);
-
-                    // Specify the texture to show on the HMD.
-                    layerEyeFov.ColorTexture[eyeIndex] = eyeTexture.SwapTextureSet.TextureSwapChainPtr;
-                    layerEyeFov.Viewport[eyeIndex].Position = new OVRTypes.Vector2i(0, 0);
-                    layerEyeFov.Viewport[eyeIndex].Size = eyeTexture.TextureSize;
-                    layerEyeFov.Fov[eyeIndex] = eyeTexture.FieldOfView;
-                    layerEyeFov.Header.Flags = OVRTypes.LayerFlags.None;
-                }
-
-
-
-                OVRTypes.MirrorTextureDesc mirrorTextureDescription = new OVRTypes.MirrorTextureDesc();
-                mirrorTextureDescription.Format = OVRTypes.TextureFormat.R8G8B8A8_UNORM_SRGB;
-                mirrorTextureDescription.Width = RenderContext11.BackBuffer.Description.Width;
-                mirrorTextureDescription.Height = RenderContext11.BackBuffer.Description.Height;
-                mirrorTextureDescription.MiscFlags = OVRTypes.TextureMiscFlags.None;
-
-                // Create the texture used to display the rendered result on the computer monitor.
-                result = hmd.CreateMirrorTextureDX(device.NativePointer, mirrorTextureDescription, out mirrorTextureWrap);
-
-                // Retrieve the Direct3D texture contained in the Oculus MirrorTexture.
-                IntPtr mirrorTextureComPtr = IntPtr.Zero;
-                result = mirrorTextureWrap.GetBufferDX(textureInterfaceId, out mirrorTextureComPtr);
-
-                // Create a managed Texture2D, based on the unmanaged texture pointer.
-                mirrorTexture = new SharpDX.Direct3D11.Texture2D(mirrorTextureComPtr);
-                mirror = new Texture11(mirrorTexture);
-                riftInit = true;
-                leftEyeWidth = eyeTextures[0].TextureSize.Width;
-                leftEyeHeight = eyeTextures[0].TextureSize.Height;
-                rightEyeWidth = eyeTextures[1].TextureSize.Width;
-                rightEyeHeight = eyeTextures[1].TextureSize.Height;
-            }
-            catch
-            {
-
-            }
-        }
-
-
-
-
-        OVRTypes.TrackingState trackingState;
-        void GetRiftSample()
-        {
-
-
-            OVRTypes.Vector3f[] hmdToEyeViewOffsets = { eyeTextures[0].HmdToEyeViewOffset, eyeTextures[1].HmdToEyeViewOffset };
-            double displayMidpoint = hmd.GetPredictedDisplayTime(0);
-            trackingState = hmd.GetTrackingState(displayMidpoint, true);
-
-            // Calculate the position and orientation of each eye.
-            wrap.CalcEyePoses(trackingState.HeadPose.ThePose, hmdToEyeViewOffsets, ref eyeRenderPose);
-
-            for (int eyeIndex = 0; eyeIndex < 2; eyeIndex++)
-            {
-                OVRTypes.EyeType eye = (OVRTypes.EyeType)eyeIndex;
-                EyeTexture eyeTexture = eyeTextures[eyeIndex];
-
-                layerEyeFov.RenderPose[eyeIndex] = eyeRenderPose[eyeIndex];
-
-                // Update the render description at each frame, as the HmdToEyeOffset can change at runtime.
-                eyeTexture.RenderDescription = hmd.GetRenderDesc(eye, hmd.DefaultEyeFov[eyeIndex]);
-
-            }
-        }
-
-        private void oculusRiftToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            StartRift();
-        }
-
-        private void StartRift()
-        {
-            try
-            {
-                if (!riftInit)
-                {
-                    InitializeRift();
-                }
-
-                rift = true;
-                StereoMode = StereoModes.OculusRift;
-
-                Properties.Settings.Default.ColSettingsVersion++;
-            }
-            catch
-            {
-                UiTools.ShowMessageBox("Unable to connect to Oculus Rift. Please make sure its not already in use or check setup using the Rift Configuration tool and try the test scene.");
-            }
-        }
 
         private void sideBySideCrossEyedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-                StereoMode = StereoModes.CrossEyed;
-                Properties.Settings.Default.ColSettingsVersion++;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.CrossEyed;
+            Properties.Settings.Default.ColSettingsVersion++;
 
         }
 
 
         private void alternatingLinesOddToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StereoMode = StereoModes.InterlineOdd;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.InterlineOdd;
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
         private void alternatingLinesEvenToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            StereoMode = StereoModes.InterlineEven;
+            RenderEngine.StereoMode = RenderEngine.StereoModes.InterlineEven;
             Properties.Settings.Default.ColSettingsVersion++;
         }
 
@@ -18529,7 +11189,7 @@ namespace TerraViewer
             {
                 string url = "http://nedwww.ipac.caltech.edu/cgi-bin/nph-objsearch?in_csys=Equatorial&in_equinox=J2000.0&lon={0}d&lat={1}d&radius={2}&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&search_type=Near+Position+Search&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=Distance+to+search+center&of=pre_text&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
                 WebWindow.OpenUrl(String.Format(url, contextMenuTargetObject.RA, contextMenuTargetObject.Dec.ToString(),
-                    (FovAngle * 60) < 1 ? (FovAngle * 60).ToString() : "1.0"), false);
+                    (RenderEngine.FovAngle * 60) < 1 ? (RenderEngine.FovAngle * 60).ToString() : "1.0"), false);
             }
             else
             {
@@ -18598,7 +11258,7 @@ namespace TerraViewer
             Folder target = Earth3d.MainWindow.ExplorerRoot;
 
 
-            foreach (IImageSet set in Earth3d.ImageSets)
+            foreach (IImageSet set in RenderEngine.ImageSets)
             {
                 if (set.Name.ToLower().Contains(name.ToLower()))
                 {
@@ -18666,7 +11326,7 @@ namespace TerraViewer
                         {
                             this.CurrentImageSet = imageSet;
                         }
-                        GotoTarget(place, false, false, true);
+                        RenderEngine.GotoTarget(place, false, false, true);
                         return true;
                     }
                 }
@@ -18777,7 +11437,7 @@ namespace TerraViewer
         public static void LoadLayerFile(bool referenceFrameRightClick)
         {
             OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "All Data Files|*.wwtl;*.txt;*.csv;*.tdf;*.3ds;*.obj;*.shp;*.png;*.jpg;*.tle|WorldWide Telescope Layer File(*.wwtl)|*.wwtl|Data Table(*.txt;*.csv;*.tdf)|*.txt;*.csv;*.tdf|ESRI Shape File(*.shp)|*.shp|3d Model(*.3ds;*.obj)|*.3ds;*.obj|Image Overlays (*.png;*.jpg)|*.png;*.jpg";
+            openFile.Filter = "All Data Files|*.wwtl;*.txt;*.csv;*.tdf;*.3ds;*.obj;*.shp;*.png;*.jpg;*.tle;*.glb|WorldWide Telescope Layer File(*.wwtl)|*.wwtl|Data Table(*.txt;*.csv;*.tdf)|*.txt;*.csv;*.tdf|ESRI Shape File(*.shp)|*.shp|3d Model(*.3ds;*.obj;*.gltfmodel)|*.3ds;*.obj;*.glb|Image Overlays (*.png;*.jpg)|*.png;*.jpg";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 string filename = openFile.FileName;
@@ -18802,7 +11462,7 @@ namespace TerraViewer
 
         private void Earth3d_Shown(object sender, EventArgs e)
         {
-            if (config.MultiChannelDome1 | ProjectorServer | config.MultiProjector | NoUi)
+            if (config.MultiChannelDome1 | RenderEngine.ProjectorServer | config.MultiProjector | NoUi)
             {
                 this.TopMost = true;
                 this.Refresh();
@@ -18827,7 +11487,7 @@ namespace TerraViewer
 
         public async Task WindowsLiveSignIn()
         {
- 
+
             await SignIn();
 
 
@@ -18840,6 +11500,18 @@ namespace TerraViewer
 
         private OAuthTicket Connection { get; set; }
 
+        //object IAppSettings.this[string key]
+        //{
+        //    get
+        //    {
+        //        return Properties.Settings.Default[key];
+        //    }
+        //    set
+        //    {
+        //        Properties.Settings.Default[key] = value;
+        //    }
+        //}
+
         private async Task SignIn()
         {
             Connection = await OAuthAuthenticator.SignInToMicrosoftAccount(this);
@@ -18850,9 +11522,9 @@ namespace TerraViewer
 
                 profile = wc.DownloadString("https://apis.live.net/v5.0//me?access_token=" + Connection.AccessToken);
                 var user = Newtonsoft.Json.JsonConvert.DeserializeObject<UserObject>(profile);
-  
+
                 //ready
-             
+
                 Properties.Settings.Default.LiveIdWWTId = user.Id;
                 Properties.Settings.Default.LiveIdUser = user.Name;
                 Properties.Settings.Default.LiveIdToken = Connection.AccessToken;
@@ -19020,7 +11692,7 @@ namespace TerraViewer
 
         private void multiChanelCalibrationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
             TerraViewer.Callibration.Calibration calibrate = new TerraViewer.Callibration.Calibration();
 
             calibrate.Show();
@@ -19110,7 +11782,8 @@ namespace TerraViewer
                     SpaceTimeController.TotalFrames = videoDialog.RenderValues.TotalFrames;
                     SpaceTimeController.CurrentFrameNumber = videoDialog.RenderValues.StartFrame;
                     dumpFrameParams = videoDialog.RenderValues;
-                    CaptureVideo = true;
+                    RenderEngine.dumpFrameParams = dumpFrameParams;
+                    RenderEngine.CaptureVideo = true;
                     RenderProgress = new RenderProgress();
                     RenderProgress.Owner = this;
                     RenderProgress.Show();
@@ -19126,10 +11799,10 @@ namespace TerraViewer
         Texture11 trackerButton = null;
         bool kioskControl = false;
         PositionColoredTextured[] TouchControlPoints = new PositionColoredTextured[4];
-        private void DrawTouchControls()
+        public void DrawTouchControls()
         {
 
-            if (Properties.Settings.Default.ShowTouchControls && !TourEditor.Capturing && !CaptureVideo)
+            if (Properties.Settings.Default.ShowTouchControls && !TourEditor.Capturing && !RenderEngine.CaptureVideo)
             {
 
                 MakeTouchPoints();
@@ -19147,7 +11820,7 @@ namespace TerraViewer
                     if (File.Exists(customImageFile))
                     {
                         Bitmap bmp = new Bitmap(customImageFile);
-                        touchControl = Planets.LoadPlanetTexture(bmp); 
+                        touchControl = Planets.LoadPlanetTexture(bmp);
                         bmp.Dispose();
                     }
                     else
@@ -19158,7 +11831,7 @@ namespace TerraViewer
                     if (File.Exists(customImageFileNoHold))
                     {
                         Bitmap bmp = new Bitmap(customImageFileNoHold);
-                        touchControlNoHold = Planets.LoadPlanetTexture(bmp); 
+                        touchControlNoHold = Planets.LoadPlanetTexture(bmp);
                         bmp.Dispose();
                     }
                     else
@@ -19218,7 +11891,7 @@ namespace TerraViewer
                 {
                     if (Friction && activeTouch == TouchControls.None)
                     {
-                        float frictionFactor = (float)(1 - (lastFrameTime / 2));
+                        float frictionFactor = (float)(1 - (RenderEngine.lastFrameTime / 2));
                         moveVector.X *= frictionFactor;
                         moveVector.Y *= frictionFactor;
                         OrbitVector *= frictionFactor;
@@ -19252,7 +11925,7 @@ namespace TerraViewer
         Folder kinectUi = null;
 
         bool kinectInit = false;
-        private void DrawKinectUI()
+        public void DrawKinectUI()
         {
             int index = 0;
             int itemStride = 600;
@@ -19263,7 +11936,7 @@ namespace TerraViewer
 
                 try
                 {
-                   kinectUi = Folder.LoadFromUrl("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?w=kinect", false);
+                    kinectUi = Folder.LoadFromUrl("http://www.worldwidetelescope.org/wwtweb/catalog.aspx?w=kinect", false);
                 }
                 catch
                 {
@@ -19325,7 +11998,7 @@ namespace TerraViewer
                                           ),
                                       Color.White
                                       );
-                                 }
+                                }
                                 else if (id > 0)// && id != 18)
                                 {
                                     Sprite2d.Draw2D(
@@ -19377,12 +12050,12 @@ namespace TerraViewer
                             SpaceTimeController.Now = new DateTime(2017, 08, 21, 16, 00, 00);
                             SpaceTimeController.TimeRate = 200;
                             SpaceTimeController.SyncToClock = true;
-                            GotoTarget(earthPlace, false, false, true);
+                            RenderEngine.GotoTarget(earthPlace, false, false, true);
                         }
                         else
                         {
                             kinectEclipseMode = false;
-                            GotoTarget(currentPlace, false, false, true);
+                            RenderEngine.GotoTarget(currentPlace, false, false, true);
                         }
                     }
                     showNextObject = false;
@@ -19519,12 +12192,12 @@ namespace TerraViewer
                     Vector2d radec = Coordinates.CartesianToLatLng(pnt);
 
 
-                    TargetLat = radec.Y;
-                    TargetLong = radec.X - 90;
+                    RenderEngine.TargetLat = radec.Y;
+                    RenderEngine.TargetLong = radec.X - 90;
                 }
                 else
                 {
-                    GotoTarget(locationSearch.Result, false, false, false);
+                    RenderEngine.GotoTarget(locationSearch.Result, false, false, false);
                 }
             }
         }
@@ -19620,7 +12293,7 @@ namespace TerraViewer
             props.Add(new ScriptableProperty("Declination", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -90, +90, false));
             props.Add(new ScriptableProperty("Latitude", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -90, 90, false));
             props.Add(new ScriptableProperty("Longitude", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -180, 180, false));
-            props.Add(new ScriptableProperty("Zoom", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Log, ZoomMin, ZoomMax, false));
+            props.Add(new ScriptableProperty("Zoom", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Log, RenderEngine.ZoomMin, RenderEngine.ZoomMax, false));
             props.Add(new ScriptableProperty("Angle", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -Math.PI / 2, 0, false));
             props.Add(new ScriptableProperty("Rotation", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -3.14, 3.14, false));
             props.Add(new ScriptableProperty("ZoomRate", ScriptablePropertyTypes.Double, ScriptablePropertyScale.Linear, -54, 54, false));
@@ -19660,9 +12333,9 @@ namespace TerraViewer
                     switch (action)
                     {
                         case NavigationActions.ResetRiftView:
-                            if (rift)
+                            if (RenderEngine.rift)
                             {
-                              //  ResetRift();
+                                //  ResetRift();
                             }
                             break;
                         case NavigationActions.AllStop:
@@ -19723,7 +12396,7 @@ namespace TerraViewer
                             if (!string.IsNullOrEmpty(value))
                             {
                                 ZoomOut(double.Parse(value));
-                             }
+                            }
                             else
                             {
                                 ZoomOut();
@@ -19987,71 +12660,71 @@ namespace TerraViewer
                             break;
                         case NavigationActions.GotoSun:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Sun");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Sun");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoMercury:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Mercury");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Mercury");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoVenus:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Venus");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Venus");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoEarth:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Earth");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Earth");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoMars:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Mars");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Mars");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoJupiter:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Jupiter");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Jupiter");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoSaturn:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Saturn");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Saturn");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoUranus:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Uranus");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Uranus");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoNeptune:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Neptune");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Neptune");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
                         case NavigationActions.GotoPluto:
                             {
-                                IPlace place = Search.FindCatalogObjectExact("Pluto");
-                                GotoTarget(place, false, false, true);
+                                IPlace place = Catalogs.FindCatalogObjectExact("Pluto");
+                                RenderEngine.GotoTarget(place, false, false, true);
 
                             }
                             break;
@@ -20059,7 +12732,7 @@ namespace TerraViewer
                             {
                                 CameraParameters cameraParams = new CameraParameters(45, 45, 300, 0, 0, 100);
 
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, false);
+                                RenderEngine.GotoTarget(cameraParams, false, false);
 
                             }
                             break;
@@ -20067,7 +12740,7 @@ namespace TerraViewer
                             {
                                 CameraParameters cameraParams = new CameraParameters(45, 45, 10000000000, 0, 0, 100);
 
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, false);
+                                RenderEngine.GotoTarget(cameraParams, false, false);
 
                             }
                             break;
@@ -20075,7 +12748,7 @@ namespace TerraViewer
                             {
                                 CameraParameters cameraParams = new CameraParameters(45, 45, 300000000000000, 0, 0, 100);
 
-                                Earth3d.MainWindow.GotoTarget(cameraParams, false, false);
+                                RenderEngine.GotoTarget(cameraParams, false, false);
 
                             }
                             break;
@@ -20107,29 +12780,29 @@ namespace TerraViewer
                 switch (prop)
                 {
                     case NavigationProperties.Ra:
-                        TargetLong = RAtoViewLng(double.Parse(value));
+                        RenderEngine.TargetLong = RAtoViewLng(double.Parse(value));
                         break;
                     case NavigationProperties.Declination:
-                        TargetLat = double.Parse(value);
+                        RenderEngine.TargetLat = double.Parse(value);
                         break;
                     case NavigationProperties.Latitude:
-                        TargetLat = double.Parse(value);
+                        RenderEngine.TargetLat = double.Parse(value);
                         break;
                     case NavigationProperties.Longitude:
-                        TargetLong = double.Parse(value);
+                        RenderEngine.TargetLong = double.Parse(value);
                         break;
                     case NavigationProperties.Zoom:
                         break;
                     case NavigationProperties.Angle:
                         {
                             double val = double.Parse(value);
-                            targetViewCamera.Angle = val;
+                            RenderEngine.targetViewCamera.Angle = val;
                         }
                         break;
                     case NavigationProperties.Rotation:
                         {
                             double val = double.Parse(value);
-                            targetViewCamera.Rotation = val;
+                            RenderEngine.targetViewCamera.Rotation = val;
                         }
                         break;
                     case NavigationProperties.ZoomRate:
@@ -20165,14 +12838,14 @@ namespace TerraViewer
                     case NavigationProperties.DomeAlt:
                         {
                             double val = double.Parse(value);
-                            viewCamera.DomeAlt = val;
+                            RenderEngine.viewCamera.DomeAlt = val;
                         }
                         break;
 
                     case NavigationProperties.DomeAz:
                         {
                             double val = double.Parse(value);
-                            viewCamera.DomeAz = val;
+                            RenderEngine.viewCamera.DomeAz = val;
                         }
                         break;
 
@@ -20199,14 +12872,14 @@ namespace TerraViewer
                     case NavigationProperties.ImageCrossfade:
                         {
                             double val = double.Parse(value);
-                            StudyOpacity = (float)(val);
+                            RenderEngine.StudyOpacity = (float)(val);
 
                         }
                         break;
                     case NavigationProperties.FadeToBlack:
                         {
                             double val = double.Parse(value);
-                            Fader.Opacity = 1f - (float)(val);
+                            RenderEngine.Fader.Opacity = 1f - (float)(val);
                         }
                         break;
                     case NavigationProperties.SystemVolume:
@@ -20225,7 +12898,7 @@ namespace TerraViewer
                     case NavigationProperties.ScreenFOV:
                         {
                             double val = double.Parse(value);
-                            fovLocal = (float)val / 180 * Math.PI;
+                            RenderEngine.fovLocal = (float)val / 180 * Math.PI;
                         }
                         break;
 
@@ -20248,14 +12921,14 @@ namespace TerraViewer
                     //todo Fix maps for Get properties to match set
                     case NavigationProperties.ImageCrossfade:
                         {
-                            if (StudyOpacity > 0)
+                            if (RenderEngine.StudyOpacity > 0)
                             {
-                                StudyOpacity = 100;
+                                RenderEngine.StudyOpacity = 100;
                                 return true.ToString();
                             }
                             else
                             {
-                                StudyOpacity = 0;
+                                RenderEngine.StudyOpacity = 0;
                                 return false.ToString();
                             }
                         }
@@ -20263,7 +12936,7 @@ namespace TerraViewer
                     case NavigationProperties.FadeToBlack:
                         {
 
-                            return Fader.TargetState.ToString();
+                            return RenderEngine.Fader.TargetState.ToString();
                         }
                     case NavigationProperties.SystemVolume:
                         {
@@ -20276,43 +12949,43 @@ namespace TerraViewer
                         }
 
                     case NavigationProperties.ScreenFOV:
-                        return (fovLocal / Math.PI * 180).ToString();
+                        return (RenderEngine.fovLocal / Math.PI * 180).ToString();
 
                     case NavigationProperties.Ra:
-                        return RA.ToString();
+                        return RenderEngine.RA.ToString();
 
                     case NavigationProperties.Declination:
-                        return TargetLat.ToString();
+                        return RenderEngine.TargetLat.ToString();
 
                     case NavigationProperties.Latitude:
-                        return TargetLat.ToString();
+                        return RenderEngine.TargetLat.ToString();
 
                     case NavigationProperties.Longitude:
-                        return TargetLong.ToString();
+                        return RenderEngine.TargetLong.ToString();
 
                     case NavigationProperties.Zoom:
-                        return ZoomFactor.ToString();
+                        return RenderEngine.ZoomFactor.ToString();
 
                     case NavigationProperties.Angle:
                         {
-                            return targetViewCamera.Angle.ToString();
+                            return RenderEngine.targetViewCamera.Angle.ToString();
                         }
 
                     case NavigationProperties.Rotation:
                         {
-                            return targetViewCamera.Rotation.ToString();
+                            return RenderEngine.targetViewCamera.Rotation.ToString();
                         }
 
 
                     case NavigationProperties.DomeAlt:
                         {
-                            return viewCamera.DomeAlt.ToString();
+                            return RenderEngine.viewCamera.DomeAlt.ToString();
                         }
 
 
                     case NavigationProperties.DomeAz:
                         {
-                            return viewCamera.DomeAz.ToString();
+                            return RenderEngine.viewCamera.DomeAz.ToString();
                         }
 
                     case NavigationProperties.DomeTilt:
@@ -20353,22 +13026,22 @@ namespace TerraViewer
 
                 case NavigationProperties.ImageCrossfade:
                     {
-                        if (StudyOpacity > 0)
+                        if (RenderEngine.StudyOpacity > 0)
                         {
-                            StudyOpacity = 100;
+                            RenderEngine.StudyOpacity = 100;
                             return true;
                         }
                         else
                         {
-                            StudyOpacity = 0;
+                            RenderEngine.StudyOpacity = 0;
                             return false;
                         }
                     }
 
                 case NavigationProperties.FadeToBlack:
                     {
-                        Fader.TargetState = !Fader.TargetState;
-                        return Fader.TargetState;
+                        RenderEngine.Fader.TargetState = !RenderEngine.Fader.TargetState;
+                        return RenderEngine.Fader.TargetState;
                     }
 
 
@@ -20395,8 +13068,8 @@ namespace TerraViewer
                 }
                 try
                 {
-                    IPlace place = Search.FindCatalogObjectExact(name);
-                    MainWindow.GotoTarget(place, false, false, true);
+                    IPlace place = Catalogs.FindCatalogObjectExact(name);
+                    RenderEngine.GotoTarget(place, false, false, true);
                 }
                 catch
                 {
@@ -20754,25 +13427,18 @@ namespace TerraViewer
 
 
 
-        internal void SetHeadPosition(Vector3d head)
-        {
-            // Need to filter this for noise and jitter;
-            HeadPosition = head;
-
-        }
-        Vector3d HeadPosition = new Vector3d();
 
         private void exportCurrentViewAsSTLFileFor3DPrintingToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             GeoRect rect = new GeoRect();
 
-            double amount = ZoomFactor/10;
+            double amount = RenderEngine.ZoomFactor / 10;
 
-            rect.North = Earth3d.MainWindow.viewCamera.Lat + amount;
-            rect.South = Earth3d.MainWindow.viewCamera.Lat - amount;
-            rect.West = Earth3d.MainWindow.viewCamera.Lng - amount;
-            rect.East = Earth3d.MainWindow.viewCamera.Lng + amount;
+            rect.North = RenderEngine.viewCamera.Lat + amount;
+            rect.South = RenderEngine.viewCamera.Lat - amount;
+            rect.West = RenderEngine.viewCamera.Lng - amount;
+            rect.East = RenderEngine.viewCamera.Lng + amount;
 
             ExportSTL props = new ExportSTL();
             props.Rect = rect;
@@ -20796,6 +13462,11 @@ namespace TerraViewer
             RestartNow();
         }
 
+        private void oculusRiftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RenderEngine.StartRift();
+        }
+
         private void oculusVRHeadsetToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             monoModeToolStripMenuItem.Checked = Properties.Settings.Default.RiftMonoMode;
@@ -20815,12 +13486,12 @@ namespace TerraViewer
                 MercatorTile.SaveDsmDirectory = fbd.SelectedPath;
                 MercatorTile.SaveDsmTileList.Clear();
                 MercatorTile.SaveDsmTiles = true;
-                this.Render();
+                RenderEngine.Render();
                 MercatorTile.SaveDsmTiles = false;
 
                 StringBuilder sb = new StringBuilder();
 
-                foreach(string item in MercatorTile.SaveDsmTileList)
+                foreach (string item in MercatorTile.SaveDsmTileList)
                 {
                     sb.AppendLine(item);
                 }
@@ -20842,11 +13513,242 @@ namespace TerraViewer
             TileCache.ClearCache();
             enable3dCitiesExport = true;
         }
+
+        private void showTileEdgesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Tile.ShowDebugTileEdges = !Tile.ShowDebugTileEdges;
+            showTileEdgesToolStripMenuItem.Checked = Tile.ShowDebugTileEdges;
+            TileCache.PurgeQueue();
+            TileCache.ClearCache();
+        }
+
+        private void hIPSProgressiveSurveyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Control.ModifierKeys == Keys.Control)
+            {
+                GetMasterHipsListAsWtml();
+                return;
+            }
+
+            SimpleInput input = new SimpleInput("Create HIPS Layer", Language.GetLocalizedText(542, "Url"), "http://axel.u-strasbg.fr/HiPSCatService/I/345/gaia2", 2048);
+            if (input.ShowDialog() == DialogResult.OK)
+            {
+                string url = input.ResultText;
+                string baseUrl = "";
+
+                if (url.Contains("/Norder"))
+                {
+                    baseUrl = url.Substring(0, url.IndexOf("/Norder"));
+                }
+                else
+                {
+                    baseUrl = url;
+                }
+                if (!baseUrl.EndsWith("/"))
+                {
+                    baseUrl = baseUrl + "/";
+                }
+
+                url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
+
+                HipsProperties hipsProperties = HipsProperties.GetProperties(url);
+
+                if (!hipsProperties.Properties.ContainsKey("dummy"))
+                {
+                    var props = hipsProperties.Properties;
+
+                    ImageSetHelper ish = ImageSetHelperFromHipsProperties(url, baseUrl, props);
+                    ish.TableMetadata = hipsProperties.VoTable;
+                    LayerManager.AddImagesetLayer(ish, "Sky");
+                }
+            }
+        }
+
+        private static ImageSetHelper ImageSetHelperFromHipsProperties(string url, string baseUrl, Dictionary<string, string> props)
+        {
+            ImageSetHelper ish = new ImageSetHelper(
+                props["obs_title"],
+                url,
+                ImageSetType.Sky,
+                GetBandPassFromString(props.ContainsKey("obs_regime") ? props["obs_regime"] : ""),
+                ProjectionType.Healpix,
+                Math.Abs(url.GetHashCode32()),
+                0,
+                int.Parse(props["hips_order"]),
+                props.ContainsKey("hips_tile_width") ? int.Parse(props["hips_tile_width"]) : 512,
+                180,
+                props["hips_tile_format"],
+                false,
+                "0123",
+                0, 0, 0, false,
+                baseUrl + "preview.jpg",
+                false,
+                false,
+                1,
+                0,
+                0,
+                props.ContainsKey("obs_copyright") ? props["obs_copyright"] : "",
+                props.ContainsKey("obs_copyright_url") ? props["obs_copyright_url"] : "",
+                "",
+                "",
+                1,
+                "Sky");
+            ish.Properties = props;
+            return ish;
+        }
+
+        private void GetMasterHipsListAsWtml()
+        {
+            Folder folder = new Folder();
+
+            folder.Name = "HIPS Surveys";
+
+            Folder catalog = new Folder();
+            catalog.Name = "Catalogs";
+
+            Folder images = new Folder();
+            images.Name = "Images";
+
+            Folder heatmaps = new Folder();
+            heatmaps.Name = "Heatmaps";
+            Folder heatmapsByObject = new Folder();
+            heatmapsByObject.Name = "By Object Type";
+            Folder heatmapsByDate = new Folder();
+            heatmapsByDate.Name = "By Date";
+
+            folder.AddChildFolder(images);
+            folder.AddChildFolder(catalog);
+            folder.AddChildFolder(heatmaps);
+            heatmaps.AddChildFolder(heatmapsByObject);
+            heatmaps.AddChildFolder(heatmapsByDate);
+
+            int uncategorized = (int)BandPass.Radio+1;
+
+            Folder[] imageBands = new Folder[((int)BandPass.Radio)+2];
+            for (int i = 0; i < (int)BandPass.VisibleNight; i++)
+            {
+                imageBands[i] = new Folder();
+                imageBands[i].Name = ((BandPass)i).ToString();
+                images.AddChildFolder(imageBands[i]);
+            }
+
+            imageBands[uncategorized] = new Folder();
+            imageBands[uncategorized].Name = "Uncategorized";
+            images.AddChildFolder(imageBands[uncategorized]);
+
+            WebClient client = new WebClient();
+            string data = client.DownloadString("http://aladin.u-strasbg.fr/hips/globalhipslist");
+
+            StringReader sr = new StringReader(data);
+            StringBuilder sb = new StringBuilder();
+
+            List<HipsProperties> propsList = new List<HipsProperties>();
+
+            while(sr.Peek() > -1)
+            {
+                string line = sr.ReadLine();
+
+                if (line.StartsWith("ID "))
+                {
+                    // if we have a data item already add it.
+                    if (sb.Length > 0)
+                    {
+                        var props = HipsProperties.ParseProperties(sb.ToString());
+                        propsList.Add(props);
+                        sb = new StringBuilder();
+                    }
+                }
+                sb.AppendLine(line);
+            }
+            foreach (var prop in propsList)
+            {
+                bool isHeatmap = false;
+
+                if (!HipsProperties.IsValid(prop))
+                {
+                    continue;
+                }
+
+                if(prop.Properties.ContainsKey("client_category") && prop.Properties["client_category"].ToLower().StartsWith("data"))
+                {
+                    isHeatmap = true;
+                }
+
+                string url = prop.Properties["hips_service_url"];
+                string baseUrl = "";
+
+                if (url.Contains("/Norder"))
+                {
+                    baseUrl = url.Substring(0, url.IndexOf("/Norder"));
+                }
+                else
+                {
+                    baseUrl = url;
+                }
+                if (!baseUrl.EndsWith("/"))
+                {
+                    baseUrl = baseUrl + "/";
+                }
+
+                url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
+
+                ImageSetHelper ish = ImageSetHelperFromHipsProperties(url, baseUrl, prop.Properties);
+
+                if (ish.Extension == "tsv")
+                {
+                    catalog.AddChildImageSet(ImageSet.FromIImage(ish));
+                }
+                else if (isHeatmap)
+                {
+                    switch (prop.Properties["client_category"])
+                    {
+                        case "Data base/Simbad ancillary/Biblio heatmaps by dates":
+                            heatmapsByDate.AddChildImageSet(ImageSet.FromIImage(ish));
+                            break;
+                        case "Data base/Simbad ancillary/Biblio heatmaps by object types":
+                            heatmapsByObject.AddChildImageSet(ImageSet.FromIImage(ish));
+                            break;
+                        default:
+                            heatmaps.AddChildImageSet(ImageSet.FromIImage(ish));
+                            break;
+                    }
+                }
+                else
+                {
+                    imageBands[(int)ish.BandPass].AddChildImageSet(ImageSet.FromIImage(ish));
+                }
+            }
+
+            folder.SaveToFile(@"c:\temp\allhips.wtml");
+
+        }
+
+        private static BandPass GetBandPassFromString(string bandPass)
+        {
+            switch (bandPass)
+            {
+                case "Gamma-ray":
+                    return BandPass.Gamma;
+                case "IR":
+                case "Infrared,Infrared":
+                case "Infrared":
+                case "Infrared/AKARI-FIS": 
+                    return BandPass.IR;
+                case "Mlillimeter":
+                case "Radio":
+                    return BandPass.Radio;
+                case "UV":
+                    return BandPass.Ultraviolet;
+                case "X-ray":
+                    return BandPass.XRay;
+                case "Optical":
+                case "Optical,Infrared":
+                    return BandPass.Visible;
+                default:
+                    return BandPass.Visible;
+            }          
+        }
     }
-
-
-
-
 
     [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
     public class DataMessageFilter : IMessageFilter
@@ -21078,7 +13980,4 @@ namespace TerraViewer
             data[baseIndex + 5] = 1 - (float)((lat + 90) / 180);
         }
     }
-
-
-
 }

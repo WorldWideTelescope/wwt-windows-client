@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
+using System.Xml;
+#endif
+
 namespace TerraViewer
 {
     public class GreatCirlceRouteLayer : Layer
@@ -121,7 +133,7 @@ namespace TerraViewer
             {
                 percentComplete = paramList[0];
                 Opacity = (float)paramList[5];
-                System.Drawing.Color color = System.Drawing.Color.FromArgb((int)(paramList[4] * 255), (int)(paramList[1] * 255), (int)(paramList[2] * 255), (int)(paramList[3] * 255));
+                Color color = Color.FromArgb((int)(paramList[4] * 255), (int)(paramList[1] * 255), (int)(paramList[2] * 255), (int)(paramList[3] * 255));
                 Color = color;
             }
         }
@@ -219,7 +231,7 @@ namespace TerraViewer
             }
         }
 
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("LatStart", LatStart.ToString());
             xmlWriter.WriteAttributeString("LngStart", LngStart.ToString());
@@ -232,7 +244,7 @@ namespace TerraViewer
 
 
 
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             latStart = double.Parse(node.Attributes["LatStart"].Value);
             lngStart = double.Parse(node.Attributes["LngStart"].Value);

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
-using System.Text;
-using System.IO;
+#if WINDOWS_UWP
+#else
 using System.Drawing;
-using WwtDataUtils;
+#endif
+using System.IO;
 using System.IO.Compression;
+using System.Text;
+using WwtDataUtils;
 
 
 
 namespace TerraViewer
 {
-    public enum ScaleTypes { Linear, Log, Power, SquareRoot, HistogramEqualization };
-    public enum DataTypes { Byte, Int16, Int32, Float, Double, None };
+
     public class FitsImage : WcsImage
     {
         Dictionary<String, String> header = new Dictionary<string, string>();
@@ -45,7 +46,7 @@ namespace TerraViewer
         public double BlankValue = double.MinValue;
         public double MaxVal = int.MinValue;
         public double MinVal = int.MaxValue;
-
+        public bool TransparentBlack = true;
         public int lastMin = 0;
         public int lastMax = 255;
         bool color = false;
@@ -186,6 +187,11 @@ namespace TerraViewer
                         color = true;
                     }
                 }
+
+                if (NumAxis > 2)
+                { 
+                    sizeZ = Depth = AxisSize[2];
+                }
                 sizeX = Width = AxisSize[0];
                 sizeY = Height = AxisSize[1];
                 ComputeWcs();
@@ -193,7 +199,30 @@ namespace TerraViewer
             }
         }
 
+        public string GetZDescription()
+        {
+            string description = "";
 
+            if (header["RESTFREQ"] != null && header["CRPIX3"] != null 
+                && header["CDELT3"] != null && header["CRVAL3"] != null)
+            {
+                double c = 299792.458;
+                var f0 = double.Parse(header["RESTFREQ"]);
+                var crpix3 = double.Parse(header["CRPIX3"]);
+                var cdelt3 = double.Parse(header["CDELT3"]);
+                var crval3 = double.Parse(header["CRVAL3"]);
+
+                double f = ((lastBitmapZ + 1) - crpix3) * cdelt3 + crval3;
+                double fval = ((f0 - f) / f0) * c;
+                description = string.Format("Velocity {0} km/s", (int)fval);
+            }
+
+            return description;
+        }
+
+
+        private int sizeZ = 1;
+        public int Depth = 1;
 
         private void AddKeyword(string keyword, string[] values)
         {
@@ -293,7 +322,7 @@ namespace TerraViewer
 
             if (galactic)
             {
-                double[] result = Earth3d.GalactictoJ2000(centerX, centerY);
+                double[] result = Coordinates.GalactictoJ2000(centerX, centerY);
                 centerX = result[0];
                 centerY = result[1];
             }
@@ -323,6 +352,9 @@ namespace TerraViewer
 
         public Bitmap GetHistogramBitmap(int max)
         {
+
+            //todo UWP fix for UWP
+#if !WINDOWS_UWP
             Bitmap bmp = new Bitmap(Histogram.Length, 150);
             Graphics g = Graphics.FromImage(bmp);
             g.Clear(Color.FromArgb(68, 82, 105));
@@ -344,6 +376,9 @@ namespace TerraViewer
             g.Dispose();
 
             return bmp;
+#else
+            return null;
+#endif
         }
 
         public int[] ComputeHistogram(int count, out int maxCount)
@@ -581,6 +616,8 @@ namespace TerraViewer
         public ScaleTypes lastScale = ScaleTypes.Linear;
         public double lastBitmapMin = 0;
         public double lastBitmapMax = 0;
+        public int lastBitmapZ = 0;
+
         override public Bitmap GetBitmap()
         {
             if (lastBitmapMax == 0 && lastBitmapMin == 0)
@@ -590,15 +627,18 @@ namespace TerraViewer
             }
 
 
-            return GetBitmap(lastBitmapMin, lastBitmapMax, lastScale);
+            return GetBitmap(lastBitmapMin, lastBitmapMax, lastScale, lastBitmapZ);
         }
 
-        public Bitmap GetBitmap(double min, double max, ScaleTypes scaleType)
+        public Bitmap GetBitmap(double min, double max, ScaleTypes scaleType, int z)
         {
+
+            z = Math.Min(z, sizeZ);
             ScaleMap scale;
             lastScale = scaleType;
             lastBitmapMin = min;
             lastBitmapMax = max;
+            lastBitmapZ = z;
 
             switch (scaleType)
             {
@@ -625,15 +665,15 @@ namespace TerraViewer
                 switch (DataType)
                 {
                     case DataTypes.Byte:
-                        return GetBitmapByte(min, max, scale);
+                        return GetBitmapByte(min, max, scale, lastBitmapZ);
                     case DataTypes.Int16:
-                        return GetBitmapShort(min, max, scale);
+                        return GetBitmapShort(min, max, scale, lastBitmapZ);
                     case DataTypes.Int32:
-                        return GetBitmapInt(min, max, scale);
+                        return GetBitmapInt(min, max, scale, lastBitmapZ);
                     case DataTypes.Float:
-                        return GetBitmapFloat(min, max, scale);
+                        return GetBitmapFloat(min, max, scale, lastBitmapZ);
                     case DataTypes.Double:
-                        return GetBitmapDouble(min, max, scale);
+                        return GetBitmapDouble(min, max, scale, lastBitmapZ);
                     case DataTypes.None:
                     default:
                         return new Bitmap(100, 100);
@@ -645,12 +685,12 @@ namespace TerraViewer
             }
         }
 
-        private Bitmap GetBitmapByte(double min, double max, ScaleMap scale)
+        private Bitmap GetBitmapByte(double min, double max, ScaleMap scale, int z)
         {
             byte[] buf = (byte[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1] * z;
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -682,7 +722,7 @@ namespace TerraViewer
                         }
                         else
                         {
-                            int dataValue = buf[x + indexY * stride];
+                            int dataValue = buf[x + indexY * stride + page];
                             if (ContainsBlanks && (double)dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
@@ -691,7 +731,7 @@ namespace TerraViewer
                             {
                                 Byte val = scale.Map(dataValue);
 
-                                *pData++ = new PixelData(val, val, val, 255);
+                                *pData++ = new PixelData(val, val, val, (TransparentBlack && val == 0) ? 0 : 255);
                             }
                         }
                     }
@@ -701,12 +741,12 @@ namespace TerraViewer
             return bmp;
         }
 
-        private Bitmap GetBitmapDouble(double min, double max, ScaleMap scale)
+        private Bitmap GetBitmapDouble(double min, double max, ScaleMap scale, int z)
         {
             double[] buf = (double[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1] * z;
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -738,7 +778,7 @@ namespace TerraViewer
                         }
                         else
                         {
-                            double dataValue = buf[x + indexY * stride];
+                            double dataValue = buf[x + indexY * stride + page];
                             if (ContainsBlanks && (double)dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
@@ -746,7 +786,7 @@ namespace TerraViewer
                             else
                             {
                                 Byte val = scale.Map(dataValue);
-                                *pData++ = new PixelData(val, val, val, 255);
+                                *pData++ = new PixelData(val, val, val, ( TransparentBlack && val == 0) ? 0 : 255);
                             }
                         }
                     }
@@ -756,12 +796,12 @@ namespace TerraViewer
             return bmp;
         }
 
-        private Bitmap GetBitmapFloat(double min, double max, ScaleMap scale)
+        private Bitmap GetBitmapFloat(double min, double max, ScaleMap scale, int z)
         {
             float[] buf = (float[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1] * z;
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -793,7 +833,7 @@ namespace TerraViewer
                         }
                         else
                         {
-                            double dataValue = buf[x + indexY * stride];
+                            double dataValue = buf[x + indexY * stride + page];
                             if (ContainsBlanks && (double)dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
@@ -801,7 +841,7 @@ namespace TerraViewer
                             else
                             {
                                 Byte val = scale.Map(dataValue);
-                                *pData++ = new PixelData(val, val, val, 255);
+                                *pData++ = new PixelData(val, val, val, (TransparentBlack && val == 0) ? 0 : 255);
                             }
                         }
                     }
@@ -811,12 +851,12 @@ namespace TerraViewer
             return bmp;
         }
 
-        private Bitmap GetBitmapInt(double min, double max, ScaleMap scale)
+        private Bitmap GetBitmapInt(double min, double max, ScaleMap scale, int z)
         {
             int[] buf = (int[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1] * z;
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -848,7 +888,7 @@ namespace TerraViewer
                         }
                         else
                         {
-                            int dataValue = buf[x + indexY * stride];
+                            int dataValue = buf[x + indexY * stride + page];
                             if (ContainsBlanks && (double)dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
@@ -856,7 +896,7 @@ namespace TerraViewer
                             else
                             {
                                 Byte val = scale.Map(dataValue);
-                                *pData++ = new PixelData(val, val, val, 255);
+                                *pData++ = new PixelData(val, val, val, (TransparentBlack && val == 0) ? 0 : 255);
                             }
                         }
                     }
@@ -866,13 +906,14 @@ namespace TerraViewer
 
             return bmp;
         }
-        public Bitmap GetBitmapShort(double min, double max, ScaleMap scale)
+
+        public Bitmap GetBitmapShort(double min, double max, ScaleMap scale, int z)
         {
 
             short[] buf = (short[])DataBuffer;
             double factor = max - min;
             int stride = AxisSize[0];
-            int page = AxisSize[0] * AxisSize[1];
+            int page = AxisSize[0] * AxisSize[1] * z;
             Bitmap bmp = new Bitmap(AxisSize[0], AxisSize[1]);
             FastBitmap fastBmp = new FastBitmap(bmp);
 
@@ -904,7 +945,7 @@ namespace TerraViewer
                         }
                         else
                         {
-                            int dataValue = buf[x + indexY * stride];
+                            int dataValue = buf[x + indexY * stride + page];
                             if (ContainsBlanks && (double)dataValue == BlankValue)
                             {
                                 *pData++ = new PixelData(0, 0, 0, 0);
@@ -912,7 +953,7 @@ namespace TerraViewer
                             else
                             {
                                 Byte val = scale.Map(dataValue);
-                                *pData++ = new PixelData(val, val, val, 255);
+                                *pData++ = new PixelData(val, val, val, (TransparentBlack && val == 0) ? 0 : 255);
                             }
                         }
 

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text;
-using System.Data;
-using System.Data.OleDb;
 using System.Text.RegularExpressions;
-
+using TerraViewer;
 
 namespace ShapefileTools
 {
@@ -186,10 +185,14 @@ namespace ShapefileTools
             }
              GeographicCoordinateSystem gcs = new GeographicCoordinateSystem();
              Projection prj = new Projection();
-
-             System.IO.TextReader tr = new StreamReader(prjFile);
+#if WINDOWS_UWP
+            string[] lines = DataSetManager.ReadAllFileLines(prjFile);
+            string prjContent = lines[0];
+#else
+            System.IO.TextReader tr = new StreamReader(prjFile);
              string prjContent = tr.ReadLine();
-
+               tr.Close();
+#endif
             Regex projected = new Regex("(?:PROJCS\\[\")(?<PRJName>.*)(?:\",GEOGCS\\[\")(?<CRSName>.*"+
       ")(?:\",DATUM\\[\")(?<DatumName>.*)(?:\",SPHEROID\\[\")(?<Sph"+
       "eroidName>.*)(?:\",)(?<InverseFlatteningRatio>.*)(?:,)(?<Ax"+
@@ -268,7 +271,7 @@ namespace ShapefileTools
                                 prj.Parameters = prjParams;
                             }
 
-             tr.Close();
+          
 
              this.fileHeader.ProjectionInfo = prj;
              this.fileHeader.CoordinateReferenceSystem = gcs;
@@ -950,7 +953,11 @@ namespace ShapefileTools
 
             FileInfo fInfo = new FileInfo(dbfFile);
             string dirName = fInfo.DirectoryName;
-            string fName = fInfo.Name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+#if WINDOWS_UWP
+            string fName = fInfo.Name.ToUpper();
+#else
+             string fName = fInfo.Name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+#endif
             if (fName.EndsWith(".DBF"))
                 fName = fName.Substring(0, fName.Length - 4);
 
@@ -1100,13 +1107,13 @@ namespace ShapefileTools
             fh.YMin = ReadDoubleLittleEndian(data, 44);
             fh.XMax = ReadDoubleLittleEndian(data, 52);
             fh.YMax = ReadDoubleLittleEndian(data, 60);
-            # region optionalContent
+#region optionalContent
             // Unused, with value 0.0, if not Measured or Z type 
             fh.ZMin = ReadDoubleLittleEndian(data, 68);
             fh.ZMax = ReadDoubleLittleEndian(data, 76);
             fh.MMin = ReadDoubleLittleEndian(data, 84);
             fh.MMax = ReadDoubleLittleEndian(data, 92);
-            # endregion
+#endregion
             if (fh.FileCode != FileHeader.shapefileDefaultCode)
             {
                 throw new Exception("Unrecognized file format.");
@@ -1256,6 +1263,7 @@ namespace ShapefileTools
             s.Dispose();
         }
     }
+
 
     internal class DBFField
     {

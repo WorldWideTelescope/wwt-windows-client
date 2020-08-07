@@ -1,8 +1,6 @@
+using Solver;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Solver;
-using TerraViewer.Callibration;
 
 namespace TerraViewer
 {

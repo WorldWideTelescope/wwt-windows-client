@@ -177,11 +177,11 @@ namespace TerraViewer
 
         private static void CleanUpImageSets()
         {
-            if (Earth3d.MainWindow != null && Earth3d.MainWindow.videoOverlay != null)
+            if (Earth3d.MainWindow != null && RenderEngine.Engine.videoOverlay != null)
             {
-                Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
+                Tile tile = TileCache.GetTile(0, 0, 0, RenderEngine.Engine.videoOverlay, null);
                 tile.CleanUp(false);
-                Earth3d.MainWindow.videoOverlay = null;
+                RenderEngine.Engine.videoOverlay = null;
             }
         }
         private static Thread CaptureThread;
@@ -224,19 +224,19 @@ namespace TerraViewer
 
                     if (Properties.Settings.Default.ScreenOverlayShowLocal)
                     {
-                        if (Earth3d.MainWindow.videoOverlay == null)
+                        if (RenderEngine.Engine.videoOverlay == null)
                         {
-                            Earth3d.MainWindow.videoOverlay = new ImageSetHelper("video", url, ImageSetType.Sky,
+                            RenderEngine.Engine.videoOverlay = new ImageSetHelper("video", url, ImageSetType.Sky,
                                   BandPass.Visible, ProjectionType.SkyImage,
                                       Math.Abs(url.GetHashCode32()), 0, 0, 256, Properties.Settings.Default.ScreenOverlayScale / 1000,
                                       ".tif", false, "", Properties.Settings.Default.ScreenOverlayAz, Properties.Settings.Default.ScreenOverlayAlt, 0, false, "", false, false, 2,
                                       960, 600, "", "", "", "", 0, "");
                         }
 
-                        Earth3d.MainWindow.videoOverlay.CenterX = Properties.Settings.Default.ScreenOverlayAz;
-                        Earth3d.MainWindow.videoOverlay.CenterY = Properties.Settings.Default.ScreenOverlayAlt;
-                        Earth3d.MainWindow.videoOverlay.BaseTileDegrees = Properties.Settings.Default.ScreenOverlayScale / 1000;
-                        Tile tile = TileCache.GetTile(0, 0, 0, Earth3d.MainWindow.videoOverlay, null);
+                        RenderEngine.Engine.videoOverlay.CenterX = Properties.Settings.Default.ScreenOverlayAz;
+                        RenderEngine.Engine.videoOverlay.CenterY = Properties.Settings.Default.ScreenOverlayAlt;
+                        RenderEngine.Engine.videoOverlay.BaseTileDegrees = Properties.Settings.Default.ScreenOverlayScale / 1000;
+                        Tile tile = TileCache.GetTile(0, 0, 0, RenderEngine.Engine.videoOverlay, null);
                         if (Dirty)
                         {
                             tile.CleanUpGeometryOnly();
@@ -247,7 +247,7 @@ namespace TerraViewer
                         tile.TextureReady = false;
                         tile.Volitile = true;
                     }
-                    else if (Earth3d.MainWindow.videoOverlay != null)
+                    else if (RenderEngine.Engine.videoOverlay != null)
                     {
                         CleanUpImageSets();
                     }

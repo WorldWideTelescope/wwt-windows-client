@@ -1,20 +1,22 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;	
-using System.Threading;
-using System.Text;
 using System.Xml;
+#endif
 
 namespace TerraViewer
 {
-	/// <summary>
-	/// Summary description for Dataset.
-	/// </summary>
+    /// <summary>
+    /// Summary description for Dataset.
+    /// </summary>
     public enum DataSetType { Place, Imageset, KML };
 	public class DataSet
 	{
@@ -65,7 +67,7 @@ namespace TerraViewer
 			dataSets = new Dictionary<string, Places>();
 
 
-            XmlNode root = doc["root"];
+            XmlNode root = doc.GetChildByName("root");
             XmlNode dataSetsNode = root.SelectSingleNode("dataset");
             this.groupingName = dataSetsNode.Attributes["Groups"].InnerXml;
             DataSetType dst = DataSetType.Place;

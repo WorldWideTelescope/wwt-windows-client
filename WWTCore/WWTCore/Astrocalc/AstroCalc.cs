@@ -26,23 +26,26 @@ namespace AstroCalc
 	}
 	public struct RiseSetDetails
 	{
-		//Constructors / Destructors
-		  public RiseSetDetails(bool bValid, double Rise, double Transit, double Set, bool neverRises)
-		  {
-			  this.bValid = bValid;
-			  this.Rise = Rise;
-			  this.Transit = Transit;
-			  this.Set = Set;
-              this.bNeverRises = neverRises;
-		  }
+        //Constructors / Destructors
+        public RiseSetDetails(bool bValidRise, bool bValidSet, bool bValidTransit, double Rise, double Transit, double Set, bool neverRises)
+        {
+            this.bValidRise = bValidRise;
+            this.bValidSet = bValidSet;
+            this.bValidTransit = bValidTransit;
+            this.Rise = Rise;
+            this.Transit = Transit;
+            this.Set = Set;
+            this.bNeverRises = neverRises;
+        }
 
 		//Member variables
-		  public bool bValid;
-		  public double Rise;
+		  public bool bValidRise;
+          public bool bValidSet;
+          public bool bValidTransit;
+          public double Rise;
 		  public double Transit;
 		  public double Set;
           public bool bNeverRises;
-
 	}
 	public class AstroCalc
 	{
@@ -211,16 +214,11 @@ namespace AstroCalc
 					alt = 0.125;
 					break;
 			}
-			CAARiseTransitSetDetails RiseTransitSetTime = CAARiseTransitSet.Rise(jd, ra1, dec1, ra2, dec2, ra3, dec3, lng, lat, alt);
+			CAARiseTransitSetDetails RiseTransitSetTime = CAARiseTransitSet.Compute(jd, ra1, dec1, ra2, dec2, ra3, dec3, lng, lat, alt);
 
-            bool neverRises = false;
-            if (!RiseTransitSetTime.bValid)
-            {
-                neverRises = Math.Sign(lat) != Math.Sign(dec2);
+            bool neverRises = Math.Sign(lat) != Math.Sign(dec2);
 
-            }
-
-            return new RiseSetDetails(RiseTransitSetTime.bValid, RiseTransitSetTime.Rise, RiseTransitSetTime.Transit, RiseTransitSetTime.Set, neverRises);
+            return new RiseSetDetails(RiseTransitSetTime.RiseValid, RiseTransitSetTime.SetValid, RiseTransitSetTime.TransitValid, RiseTransitSetTime.Rise, RiseTransitSetTime.Transit, RiseTransitSetTime.Set, neverRises);
 		}
 	}
 }

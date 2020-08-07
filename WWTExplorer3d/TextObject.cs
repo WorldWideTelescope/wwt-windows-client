@@ -1,9 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+#if WINDOWS_UWP
+using XmlNode = Windows.Data.Xml.Dom.IXmlNode;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
+using XmlNode = System.Xml.XmlNode;
+#endif
 
 namespace TerraViewer
 {
@@ -35,6 +40,7 @@ namespace TerraViewer
         public Color BackgroundColor;
         public TextBorderStyle BorderStyle;
 
+#if !WINDOWS_UWP
         public Font Font
         {
             get
@@ -45,13 +51,6 @@ namespace TerraViewer
 
 
             }
-        }
-
-
-
-        public override string ToString()
-        {
-            return Text;
         }
 
         internal void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
@@ -69,8 +68,13 @@ namespace TerraViewer
             xmlWriter.WriteString(this.Text);
             xmlWriter.WriteEndElement();
         }
+#endif
+        public override string ToString()
+        {
+            return Text;
+        }
 
-        internal static TextObject FromXml(System.Xml.XmlNode node)
+        internal static TextObject FromXml(XmlNode node)
         {
             TextObject newTextObject = new TextObject();
             newTextObject.Text = node.InnerText;

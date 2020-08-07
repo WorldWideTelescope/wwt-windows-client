@@ -950,7 +950,7 @@ namespace TerraViewer.Callibration
             }
 
             MousePad.Invalidate();
-
+            ScreenPreview.Invalidate();
         }
 
         private void Calibration_FormClosed(object sender, FormClosedEventArgs e)
@@ -1071,11 +1071,7 @@ namespace TerraViewer.Callibration
                                 rad = pe.Width / 2;
 
                                 double az2 = az - 90;
-                                //pnt.X = cX - (float)Math.Cos(az2 / 180 * Math.PI) * ((90 - alt) / 90) * rad;
-                                //pnt.Y = cY + (float)Math.Sin(az2 / 180 * Math.PI) * ((90 - alt) / 90) * rad;
 
-                                //pnt.X += rnd.NextDouble() / 1000f;
-                                //pnt.Y += rnd.NextDouble() / 1000f;
                                 pnt.X = pe.Width / 2;
                                 pnt.Y = pe.Height / 2;
 
@@ -1108,7 +1104,6 @@ namespace TerraViewer.Callibration
                             }
                         }
                     }
-
 
                     return;
                 }
@@ -1530,10 +1525,12 @@ namespace TerraViewer.Callibration
                 if (PointTree.SelectedNode.Tag is ProjectorEntry && !Align.Selected)
                 {
                     transferFromEdgesToolStripMenuItem.Visible = true;
+                    generateGridToolStripMenuItem.Visible = false;
                 }
                 else
                 {
                     transferFromEdgesToolStripMenuItem.Visible = false;
+                    generateGridToolStripMenuItem.Visible = true;
                 }
 
                 if (PointTree.SelectedNode.Tag is GroundTruthPoint)
@@ -1545,6 +1542,15 @@ namespace TerraViewer.Callibration
                 {
                     contextSeperator2.Visible = false;
                     propertiesToolStripMenuItem.Visible = false;
+                }
+
+                if (PointTree.SelectedNode.Tag is Edge)
+                {
+                    calculateCorrespondencePointsToolStripMenuItem.Visible = true;
+                }
+                else
+                {
+                    calculateCorrespondencePointsToolStripMenuItem.Visible = false;
                 }
             }
         }
@@ -2656,7 +2662,7 @@ namespace TerraViewer.Callibration
                 int currentID = -1;
                 List<GroundTruthPoint> gtPoints = new List<GroundTruthPoint>();
                 int id = 1;
-                foreach(string line in lines)
+                foreach (string line in lines)
                 {
                     string[] parts = line.Split(new char[] { ',' });
 
@@ -2667,7 +2673,7 @@ namespace TerraViewer.Callibration
                             currentID = int.Parse(parts[1]);
                             gtPoints = new List<GroundTruthPoint>();
 
-                            foreach(var pe in this.CalibrationInfo.Projectors)
+                            foreach (var pe in this.CalibrationInfo.Projectors)
                             {
                                 if (pe.ID == currentID)
                                 {
@@ -2693,6 +2699,196 @@ namespace TerraViewer.Callibration
                 }
 
             }
+        }
+
+        private void loadReferenceImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter =  "Image (*.png)|*.png";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = ofd.FileName;
+
+                ScreenPreview.Image = Image.FromFile(fileName);
+                PreviewPanel.Visible = true;
+                MousePad.Visible = false;
+            }
+        }
+
+        private void generateGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GridCreator gridCreator = new GridCreator();
+
+            if (gridCreator.ShowDialog() == DialogResult.OK)
+            {
+                GridCreatorParams gridParams = gridCreator.Paramaters;
+                // Code to build sets of points
+
+                bool North = Control.ModifierKeys == (Keys.Alt | Keys.Shift);
+
+                if (PointTree.SelectedNode.Tag is ProjectorEntry)
+                {
+                    ProjectorEntry pe = PointTree.SelectedNode.Tag as ProjectorEntry;
+
+                    for (double alt = gridParams.AltMin; alt <= gridParams.AltMax; alt += gridParams.AltStep)
+                    {
+                        for (double az = gridParams.AzMin; az <= gridParams.AzMax; az += gridParams.AzStep)
+                        {
+                            GroundTruthPoint pnt = new GroundTruthPoint();
+
+                            int cX = pe.Width / 2;
+                            int cY = pe.Height / 2;
+
+                            pnt.X = cX;
+                            pnt.Y = cY;
+
+                            pnt.Alt = alt;
+                            pnt.Az = az;
+                            pnt.AxisType = AxisTypes.Both;
+
+                            pe.Constraints.Add(pnt);
+                            pe.SelectedGroundTruth = pe.Constraints.Count - 1;
+
+                            TreeNode child = PointTree.SelectedNode.Nodes.Add(pnt.ToString());
+                            child.Tag = pnt;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ScreenPreview_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (Align.Selected)
+            {
+                GroundTruthPoint gt = PointTree.SelectedNode.Tag as GroundTruthPoint;
+                ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                EdgePoint ep = PointTree.SelectedNode.Tag as EdgePoint;
+                Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
+
+                if (gt != null && pe != null)
+                {
+                    gt.X = e.Location.X;
+                    gt.Y = e.Location.Y;
+                    SendAlignPointEditUpdate(pe, false);
+                    ScreenPreview.Invalidate();
+                }
+                if (ep != null && edge != null)
+                {
+                    Point delta = new Point(e.Location.X - pntLast.X, e.Location.Y - pntLast.Y);
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        ep.Left.X += delta.X;
+                        ep.Left.Y += delta.Y;
+                    }
+                    else if (e.Button == MouseButtons.Right)
+                    {
+                        ep.Right.X += delta.X;
+                        ep.Right.Y += delta.Y;
+                    }
+                    SendEdgePointEditUpdate(edge);
+                    MousePad.Invalidate();
+
+                }
+
+            }
+        }
+
+        private void ScreenPreview_Paint(object sender, PaintEventArgs e)
+        {
+            object tag = null;
+            if (PointTree.SelectedNode != null)
+            {
+                tag = PointTree.SelectedNode.Tag;
+            }
+            else
+            {
+                return;
+            }
+
+            if (Align.Selected && PointTree.SelectedNode.Parent != null)
+            {
+                ProjectorEntry pe = PointTree.SelectedNode.Parent.Tag as ProjectorEntry;
+                Edge edge = PointTree.SelectedNode.Parent.Tag as Edge;
+
+                if ( pe != null)
+                {
+                 
+                    foreach (GroundTruthPoint gt in pe.Constraints)
+                    {
+                        int size = 2;
+                        if (gt == tag)
+                        {
+                            size = 8;
+                        }
+                        PointF pnt = new PointF((float)gt.X, (float)gt.Y);
+                        e.Graphics.DrawLine(Pens.Yellow, PointF.Add(pnt, new Size(-size, 0)), PointF.Add(pnt, new Size(size, 0)));
+                        e.Graphics.DrawLine(Pens.Yellow, PointF.Add(pnt, new Size(0, -size)), PointF.Add(pnt, new Size(0, size)));
+                    }
+                }
+
+                if (edge != null)
+                {
+                    SolveProjector left = GetSolveProjector(edge.Left);
+                    SolveProjector right = GetSolveProjector(edge.Right);
+
+                    foreach (EdgePoint ep in edge.Points)
+                    {
+                        {
+                            int size = 2;
+                            if (ep == tag)
+                            {
+                                size = 8;
+                            }
+
+                            PointF pnt = new PointF((float)ep.Left.X, (float)ep.Left.Y);
+                            e.Graphics.DrawLine(Pens.Red, PointF.Add(pnt, new Size(-size, 0)), PointF.Add(pnt, new Size(size, 0)));
+                            e.Graphics.DrawLine(Pens.Red, PointF.Add(pnt, new Size(0, -size)), PointF.Add(pnt, new Size(0, size)));
+                        }
+                        {
+                            int size = 2;
+                            if (ep == tag)
+                            {
+                                size = 8;
+                            }
+                            Vector2d pntRight = right.GetCoordinatesForScreenPoint(ep.Right.X, ep.Right.Y);
+                            PointF pnt = GetPointFromAltAz(new PointF((float)pntRight.X + 90, (float)pntRight.Y));
+                            e.Graphics.DrawLine(Pens.Green, PointF.Add(pnt, new Size(-size, 0)), PointF.Add(pnt, new Size(size, 0)));
+                            e.Graphics.DrawLine(Pens.Green, PointF.Add(pnt, new Size(0, -size)), PointF.Add(pnt, new Size(0, size)));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void calculateCorrespondencePointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Edge edge = PointTree.SelectedNode.Tag as Edge;
+            if (edge == null)
+            {
+                return;
+            }
+
+            ProjectorEntry peLeft = CalibrationInfo.Projectors.Find(delegate (ProjectorEntry p) { return p.ID == edge.Left; });
+            ProjectorEntry peRight = CalibrationInfo.Projectors.Find(delegate (ProjectorEntry p) { return p.ID == edge.Right; });
+
+            foreach(var gtPointLeft in peLeft.Constraints)
+            {
+                foreach(var gtPointRight in peRight.Constraints)
+                {
+                    if (gtPointLeft.Alt == gtPointRight.Alt && gtPointLeft.Az == gtPointRight.Az)
+                    {
+                        EdgePoint newEp = new EdgePoint();
+                        newEp.Left = gtPointLeft;
+                        newEp.Right = gtPointRight;
+                        edge.Points.Add(newEp);
+                    }
+                }
+            }
+
+            ReloadPointTree();
         }
     }
 }

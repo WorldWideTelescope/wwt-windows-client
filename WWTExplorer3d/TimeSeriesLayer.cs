@@ -780,8 +780,6 @@ namespace TerraViewer
             }
         }
 
-
-
         protected List<Vector3> positions = new List<Vector3>();
 
         protected LineList lineList;
@@ -797,7 +795,7 @@ namespace TerraViewer
         static Texture11 target1Texture = null;
         static Texture11 target2Texture = null;
 
-        static Texture11 CircleTexture
+        public static Texture11 CircleTexture
         {
             get
             {
@@ -863,8 +861,6 @@ namespace TerraViewer
 
         public override bool Draw(RenderContext11 renderContext, float opacity, bool flat)
         {
-    
-
             if (bufferIsFlat != flat)
             {
                 CleanUp();
@@ -882,7 +878,6 @@ namespace TerraViewer
                 double ecliptic = Coordinates.MeanObliquityOfEcliptic(SpaceTimeController.JNow) / 180.0 * Math.PI;
                 renderContext.World = Matrix3d.RotationX(ecliptic) * renderContext.World;
             }
-
 
             if (triangleList2d != null)
             {
@@ -946,7 +941,7 @@ namespace TerraViewer
 
             if (flat && astronomical && (markerScale == MarkerScales.World))
             {
-                adjustedScale = (float)(scaleFactor / (Earth3d.MainWindow.ZoomFactor / 360));
+                adjustedScale = (float)(scaleFactor / (RenderEngine.Engine.ZoomFactor / 360));
             }             
             
             Matrix matrixWVP = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;

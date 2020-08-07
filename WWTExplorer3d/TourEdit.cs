@@ -48,7 +48,7 @@ namespace TerraViewer
                 Overlay.DefaultAnchor = Tour.DomeMode ? OverlayAnchor.Dome : OverlayAnchor.Screen;
                 if (tour.TourStops.Count > 0)
                 {
-                    Earth3d.MainWindow.GotoTarget(tour.TourStops[0].Target, false, true, false);
+                    RenderEngine.Engine.GotoTarget(tour.TourStops[0].Target, false, true, false);
                     tour.CurrentTourstopIndex = 0;
                     tourStopList.SelectedItem = tour.CurrentTourstopIndex;
                     MusicTrack.Target = tour.CurrentTourStop;
@@ -207,7 +207,7 @@ namespace TerraViewer
                 tour.CurrentTourStop.SyncSettings();
                 SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
                 SpaceTimeController.SyncToClock = false;
-                Earth3d.MainWindow.GotoTarget(ts.Target, false, true, false);
+                RenderEngine.Engine.GotoTarget(ts.Target, false, true, false);
                 tour.CurrentTourStop.TweenPosition = 0f;
                 tour.CurrentTourStop.UpdateLayerOpacity();
                 LayerManager.SetVisibleLayerList(tour.CurrentTourStop.Layers);
@@ -604,7 +604,7 @@ namespace TerraViewer
         private void PlayFromCurrentTourstop()
         {
             playing = true;
-            Earth3d.MainWindow.GotoTarget(tour.CurrentTourStop.Target, false, Earth3d.NoUi ? false : true, false);
+            RenderEngine.Engine.GotoTarget(tour.CurrentTourStop.Target, false, Earth3d.NoUi ? false : true, false);
             //tour.CurrentTourStop.SyncSettings();
             SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
             SpaceTimeController.SyncToClock = false;
@@ -622,7 +622,7 @@ namespace TerraViewer
         {
             if (tour.CurrentTourStop != null)
             {
-                Earth3d.MainWindow.GotoTarget(tour.CurrentTourStop.Target, false, true, false);
+                RenderEngine.Engine.GotoTarget(tour.CurrentTourStop.Target, false, true, false);
                 tour.CurrentTourStop.SyncSettings();
                 SpaceTimeController.Now = tour.CurrentTourStop.StartTime;
                 SpaceTimeController.SyncToClock = false;
@@ -640,8 +640,8 @@ namespace TerraViewer
             if (tour.CurrentTourStop != null && tour.CurrentTourStop.EndTarget != null)
             {
                 //Earth3d.MainWindow.GotoTarget(tour.CurrentTourStop.EndTarget, false, false);
-                Earth3d.MainWindow.GotoTarget(false, true, tour.CurrentTourStop.EndTarget.CamParams, tour.CurrentTourStop.Target.StudyImageset, tour.CurrentTourStop.Target.BackgroundImageSet);
-                Earth3d.MainWindow.SolarSystemTrack = tour.CurrentTourStop.EndTarget.Target;
+                RenderEngine.Engine.GotoTarget(false, true, tour.CurrentTourStop.EndTarget.CamParams, tour.CurrentTourStop.Target.StudyImageset, tour.CurrentTourStop.Target.BackgroundImageSet);
+                RenderEngine.Engine.SolarSystemTrack = tour.CurrentTourStop.EndTarget.Target;
                 SpaceTimeController.Now = tour.CurrentTourStop.EndTime;
                 tour.CurrentTourStop.SyncSettings();
                 LayerManager.SetVisibleLayerList(tour.CurrentTourStop.Layers);
@@ -658,7 +658,7 @@ namespace TerraViewer
                 //todo localize
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(435, "Set End Camera Position"), tour));
 
-                TourPlace newPlace = new TourPlace("End Place", Earth3d.MainWindow.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.SolarSystemTrack);
+                TourPlace newPlace = new TourPlace("End Place", RenderEngine.Engine.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, RenderEngine.Engine.SolarSystemTrack);
                 tour.CurrentTourStop.EndTarget = newPlace;
                 tour.CurrentTourStop.EndTarget.Constellation = Earth3d.MainWindow.Constellation;
                 tour.CurrentTourStop.EndTime = SpaceTimeController.Now;
@@ -687,9 +687,9 @@ namespace TerraViewer
                 //todo localize
                 Undo.Push(new UndoTourStopChange(Language.GetLocalizedText(434, "Set Start Camera Position"), tour));
 
-                tour.CurrentTourStop.Target.Target = Earth3d.MainWindow.SolarSystemTrack;
+                tour.CurrentTourStop.Target.Target = RenderEngine.Engine.SolarSystemTrack;
                 tour.CurrentTourStop.Target.Type = Earth3d.MainWindow.CurrentImageSet.DataSetType;
-                tour.CurrentTourStop.Target.CamParams = Earth3d.MainWindow.viewCamera;
+                tour.CurrentTourStop.Target.CamParams = RenderEngine.Engine.viewCamera;
                 tour.CurrentTourStop.Target.Constellation = Earth3d.MainWindow.Constellation;
                 tour.CurrentTourStop.Target.StudyImageset = Earth3d.MainWindow.StudyImageset;
                 tour.CurrentTourStop.Target.Type = Earth3d.MainWindow.CurrentImageSet.DataSetType;
@@ -744,7 +744,7 @@ namespace TerraViewer
 
             Cursor.Current = Cursors.WaitCursor;
             string placeName = "Current Screen";
-            TourPlace newPlace = new TourPlace(placeName, Earth3d.MainWindow.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, Earth3d.MainWindow.SolarSystemTrack);
+            TourPlace newPlace = new TourPlace(placeName, RenderEngine.Engine.viewCamera, Classification.Unidentified, Earth3d.MainWindow.Constellation, Earth3d.MainWindow.CurrentImageSet.DataSetType, RenderEngine.Engine.SolarSystemTrack);
             newPlace.ThumbNail = null;
             newPlace.StudyImageset = Earth3d.MainWindow.StudyImageset;
             newPlace.BackgroundImageSet = Earth3d.MainWindow.CurrentImageSet.StockImageSet;
@@ -944,7 +944,7 @@ namespace TerraViewer
                         player.Dispose();
                     }
                     player = null;
-                    Earth3d.MainWindow.Mover = null;
+                    RenderEngine.Engine.Mover = null;
                     tourStopList.ShowAddButton = tour.EditMode;
                 }
             }
@@ -967,7 +967,7 @@ namespace TerraViewer
                 {
 
                     Earth3d.MainWindow.UiController = null;
-                    Earth3d.MainWindow.FreezeView();
+                    RenderEngine.Engine.FreezeView();
 
                     Preview.Image = global::TerraViewer.Properties.Resources.button_play_normal;
                     Preview.Text = Language.GetLocalizedText(441, "Play");
@@ -977,7 +977,7 @@ namespace TerraViewer
                         player.Dispose();
                     }
                     player = null;
-                    Earth3d.MainWindow.Mover = null;
+                    RenderEngine.Engine.Mover = null;
                     tourStopList.ShowAddButton = tour.EditMode;
                 }
             }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+#if WINDOWS_UWP
+using Color= TerraViewer.Color;
+#else
 using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Xml;
 using System.Windows.Forms;
+#endif
+
+
 
 
 namespace TerraViewer
@@ -16,6 +19,16 @@ namespace TerraViewer
         public SkyOverlays()
         {
 
+        }
+
+        public override object[] GetChildren()
+        {
+            return Children.ToArray();
+        }
+
+        public override bool HasChildren()
+        {
+            return Children.Count > 0;
         }
 
         public SkyOverlays(SkyOverlaysType overlayType)
@@ -421,7 +434,7 @@ namespace TerraViewer
                 items.Add(deleteFilter);
 
             }
-
+#if !WINDOWS_UWP
             if (so != null) //todo && we are editing a keyframe slide )
             {
                 if (Earth3d.MainWindow.TourEdit != null && Earth3d.MainWindow.TourEdit.Tour.EditMode && Earth3d.MainWindow.TourEdit.Tour.CurrentTourStop != null)
@@ -445,12 +458,15 @@ namespace TerraViewer
                     }
                 }
             }
+#endif
 
             return items;
         }
 
         void setupMenuL_MenuItemSelected(LayerUIMenuItem item)
         {
+#if !BASICWWT
+
             StockSkyOverlay sso = item.Tag as StockSkyOverlay;
 
             if (Earth3d.MainWindow.TourEdit != null && sso != null)
@@ -466,10 +482,12 @@ namespace TerraViewer
                     TimeLine.RefreshUi();
                 }
             }
+#endif
         }
 
         void setupMenuK_MenuItemSelected(LayerUIMenuItem item)
         {
+#if !BASICWWT
             StockSkyOverlay sso = item.Tag as StockSkyOverlay;
 
             if (Earth3d.MainWindow.TourEdit != null && sso != null)
@@ -496,10 +514,12 @@ namespace TerraViewer
                     TimeLine.RefreshUi();
                 }
             }
+#endif
         }
 
         void newFilterMenu_MenuItemSelected(LayerUIMenuItem item)
         {
+#if !BASICWWT
             SimpleInput input = new SimpleInput(Language.GetLocalizedText(1121, "Filter name"), Language.GetLocalizedText(238, "Name"), "", 32);
             bool retry = false;
             do
@@ -529,6 +549,7 @@ namespace TerraViewer
 
             ConstellationFilter.Families.Add(input.ResultText.Trim().Replace(";",""), newFilter);
             ConstellationFilter.SaveCustomFilters();
+#endif
         }
 
         private void AddFilterListApply(LayerUIMenuItem applyMenu)
@@ -628,24 +649,33 @@ namespace TerraViewer
 
         void Import_MenuItemSelected(LayerUIMenuItem item)
         {
+#if !WINDOWS_UWP
             Constellations.ImportArtFile();
+#endif
         }
 
         void setupMenuB_MenuItemSelected(LayerUIMenuItem item)
         {
+#if !WINDOWS_UWP
             ScreenBroadcast sb = new ScreenBroadcast();
             sb.Show();
+#endif
         }
 
         void setupMenu_MenuItemSelected(LayerUIMenuItem item)
         {
+#if !WINDOWS_UWP
             View.ShowFovSetup();
+#endif
         }
 
         void ColorMenu_MenuItemSelected(LayerUIMenuItem item)
         {
+
             SkyOverlay overlay = item.Tag as SkyOverlay;
 
+            //todo UWP make color picker for UWP
+#if !BASICWWT
 
             PopupColorPicker picker = new PopupColorPicker();
 
@@ -657,12 +687,45 @@ namespace TerraViewer
             {
                 overlay.Color = picker.Color;
             }
+#endif
         }
     }
 
 
-    public class SkyOverlay
+    public class SkyOverlay : IThumbnail
     {
+
+        string IThumbnail.Name => Name;
+
+        Bitmap IThumbnail.ThumbNail
+        {
+            get => UiTools.LoadThumbnailByName(Name);
+            set
+            {
+
+            }
+        }
+
+        Rectangle bounds = new Rectangle();
+        Rectangle IThumbnail.Bounds
+        {
+            get => bounds;
+            set => bounds = value;
+        }
+
+        bool IThumbnail.IsImage => false;
+
+        bool IThumbnail.IsTour => false;
+
+        bool IThumbnail.IsFolder => Children.Count > 0;
+
+        bool IThumbnail.IsCloudCommunityItem => false;
+
+        bool IThumbnail.ReadOnly => true;
+
+        object[] IThumbnail.Children =>Children.ToArray();
+
+
         public List<SkyOverlay> Children = new List<SkyOverlay>();
         public SkyOverlay()
         {
@@ -902,10 +965,10 @@ namespace TerraViewer
                     Grids.DrawPrecessionChart(renderContext, BlendState.Opacity * opacity, Color);
                     break;
                 case StockSkyOverlayTypes.ConstellationFigures:
-                    Earth3d.MainWindow.constellationsFigures.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, Earth3d.MainWindow.Constellation, renderContext.RenderType != ImageSetType.Sky);
+                    RenderEngine.Engine.constellationsFigures.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, RenderEngine.Engine.Constellation, renderContext.RenderType != ImageSetType.Sky);
                     break;
                 case StockSkyOverlayTypes.ConstellationBoundaries:
-                    Earth3d.MainWindow.constellationsBoundries.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, Earth3d.MainWindow.Constellation, renderContext.RenderType != ImageSetType.Sky);
+                    RenderEngine.Engine.constellationsBoundries.Draw3D(renderContext, Settings.Active.ShowConstellationSelection, BlendState.Opacity * opacity, RenderEngine.Engine.Constellation, renderContext.RenderType != ImageSetType.Sky);
                     break;
                 case StockSkyOverlayTypes.ConstellationFocusedOnly:
                     break;
@@ -1164,10 +1227,12 @@ namespace TerraViewer
                 switch (StockType)
                 {
                     case StockSkyOverlayTypes.FadeToBlack:
-                         enLocal = Earth3d.MainWindow.Fader.TargetState;
+                         enLocal = RenderEngine.Engine.Fader.TargetState;
                          break;
                     case StockSkyOverlayTypes.ScreenBroadcast:
+#if !WINDOWS_UWP
                         enLocal = ScreenBroadcast.Capturing;
+#endif
                         break;
                     case StockSkyOverlayTypes.FadeRemoteOnly:
                         enLocal = Properties.Settings.Default.FadeRemoteOnly;
@@ -1313,10 +1378,12 @@ namespace TerraViewer
                         Properties.Settings.Default.ShowConstellationPictures.TargetState = value;
                         break;
                     case StockSkyOverlayTypes.FadeToBlack:
-                        Earth3d.MainWindow.Fader.TargetState = value;
+                        RenderEngine.Engine.Fader.TargetState = value;
                         break;
                     case StockSkyOverlayTypes.ScreenBroadcast:
+#if !WINDOWS_UWP
                         ScreenBroadcast.Capturing = value;
+#endif
                         break;               
                     case StockSkyOverlayTypes.FadeRemoteOnly:
                         Properties.Settings.Default.FadeRemoteOnly = value;

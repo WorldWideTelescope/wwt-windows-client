@@ -195,7 +195,7 @@ namespace TerraViewer
         {
             if (platformInstalled && scope != null && scope.Connected && scope.CanSync && !scope.AtPark)
             {
-                scope.SyncToCoordinates(Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec);
+                scope.SyncToCoordinates(RenderEngine.Engine.RA, RenderEngine.Engine.Dec);
             }
             else
             {
@@ -251,7 +251,7 @@ namespace TerraViewer
                         scope.Tracking = true;
                     }
                 }
-                scope.SlewToCoordinatesAsync(Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec);
+                scope.SlewToCoordinatesAsync(RenderEngine.Engine.RA, RenderEngine.Engine.Dec);
             }
         }
 
@@ -259,7 +259,7 @@ namespace TerraViewer
         {
             if (platformInstalled && scope != null && scope.Connected)
             {
-                Earth3d.MainWindow.GotoTarget(false, false, new CameraParameters(scope.Declination, Earth3d.MainWindow.RAtoViewLng(scope.RightAscension), Earth3d.MainWindow.viewCamera.Zoom, Earth3d.MainWindow.viewCamera.Rotation, Earth3d.MainWindow.viewCamera.Angle, (float)Earth3d.MainWindow.viewCamera.Opacity), null, null);
+                RenderEngine.Engine.GotoTarget(false, false, new CameraParameters(scope.Declination, Earth3d.MainWindow.RAtoViewLng(scope.RightAscension), RenderEngine.Engine.viewCamera.Zoom, RenderEngine.Engine.viewCamera.Rotation, RenderEngine.Engine.viewCamera.Angle, (float)RenderEngine.Engine.viewCamera.Opacity), null, null);
 
             }
         }
@@ -308,7 +308,7 @@ namespace TerraViewer
 
                         if (TrackScope.Checked)
                         {
-                            Earth3d.MainWindow.GotoTarget(new TourPlace("None", TelescopeDec, TelescopeRa, Classification.BlackHole, Earth3d.MainWindow.Constellation, ImageSetType.Sky, 0), true, true, false);
+                            RenderEngine.Engine.GotoTarget(new TourPlace("None", TelescopeDec, TelescopeRa, Classification.BlackHole, Earth3d.MainWindow.Constellation, ImageSetType.Sky, 0), true, true, false);
                             //Earth3d.MainWindow.RA = TelescopeRa;
                             //Earth3d.MainWindow.Dec = TelescopeDec;
                         }

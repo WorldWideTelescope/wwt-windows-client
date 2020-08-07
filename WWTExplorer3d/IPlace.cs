@@ -1,8 +1,12 @@
 ﻿using System;
+#if !WINDOWS_UWP
+using System.Xml.Serialization;
+#endif
+
 namespace TerraViewer
 {
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    [SerializableAttribute()]
+    [XmlTypeAttribute(AnonymousType = true)]
     public enum Classification
     {
         Star = 1,
@@ -42,13 +46,14 @@ namespace TerraViewer
         Galactic = 133693440,
         Other = 436207616
     };
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public enum ProjectionType { Mercator, Equirectangular, Tangent, Tan = Tangent, Toast, Spherical, SkyImage, Plotted };
+    [SerializableAttribute()]
+    [XmlTypeAttribute(AnonymousType = true)]
+    public enum ProjectionType { Mercator, Equirectangular, Tangent, Tan = Tangent, Toast, Spherical, SkyImage, Plotted, Healpix };
+
  
-    
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+
+    [SerializableAttribute()]
+    [XmlTypeAttribute(AnonymousType = true)]
     public enum BandPass { Gamma, XRay, Ultraviolet, Visible, HydrogenAlpha, IR, Microwave, Radio, VisibleNight };
 
     public interface IPlace : IThumbnail
@@ -75,4 +80,30 @@ namespace TerraViewer
         SolarSystemObjects Target { get; set;}
         object Tag { get; set; }
     }
+
+    public enum SolarSystemObjects
+    {
+        Sun,
+        Mercury,
+        Venus,
+        Mars,
+        Jupiter,
+        Saturn,
+        Uranus,
+        Neptune,
+        Pluto,
+        Moon,
+        Io,
+        Europa,
+        Ganymede,
+        Callisto,
+        IoShadow,
+        EuropaShadow,
+        GanymedeShadow,
+        CallistoShadow,
+        SunEclipsed,
+        Earth,
+        Custom,
+        Undefined = 65536
+    };
 }

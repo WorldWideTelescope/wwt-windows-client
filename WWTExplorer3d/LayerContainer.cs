@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.IO;
-using System.Xml;
+#if WINDOWS_UWP
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
 
+using System.Xml;
+#endif
 
 
 namespace TerraViewer
@@ -99,7 +101,7 @@ namespace TerraViewer
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
-            XmlNode root = doc["LayerContainer"];
+            XmlNode root = doc.GetChildByName("LayerContainer");
             newDoc.id = root.Attributes["ID"].Value.ToString();
 
             XmlNode Layers = root["Layers"];
@@ -111,7 +113,7 @@ namespace TerraViewer
 
                 if (Frames != null)
                 {
-                    foreach (XmlNode frame in Frames)
+                    foreach (XmlNode frame in Frames.ChildNodes)
                     {
                         ReferenceFrame newFrame = new ReferenceFrame();
                         newFrame.InitializeFromXml(frame);
@@ -135,7 +137,7 @@ namespace TerraViewer
 
             if (Layers != null)
             {
-                foreach (XmlNode layer in Layers)
+                foreach (XmlNode layer in Layers.ChildNodes)
                 {
                     Layer newLayer = Layer.FromXml(layer, true);
                     string fileName = newDoc.WorkingDirectory + string.Format("{0}.txt", newLayer.ID.ToString());
@@ -145,6 +147,9 @@ namespace TerraViewer
                     {
                         if (!newDoc.CollisionChecked)
                         {
+#if WINDOWS_UWP
+                            newDoc.OverWrite = true;
+#else
                             if (UiTools.ShowMessageBox(Language.GetLocalizedText(958, "There are layers with the same name. Overwrite existing layers?"), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"), System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                             {
                                 newDoc.OverWrite = true;
@@ -154,6 +159,7 @@ namespace TerraViewer
                                 newDoc.OverWrite = false;
 
                             }
+#endif
                             newDoc.CollisionChecked = true;
                         }
 
@@ -431,7 +437,7 @@ namespace TerraViewer
             }
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -439,7 +445,7 @@ namespace TerraViewer
             ClearTempFiles();
         }
 
-        #endregion
+#endregion
     }
     
 }

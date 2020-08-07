@@ -2104,6 +2104,19 @@ namespace TerraViewer
             return mat;
         }
 
+        public static Matrix3d LookAtRH(Vector3d cameraPosition, Vector3d cameraTarget, Vector3d cameraUpVector)
+        {
+
+            Vector3d zaxis = cameraTarget - cameraPosition;
+            zaxis.Normalize();
+            Vector3d xaxis = Vector3d.Cross(cameraUpVector, zaxis);
+            xaxis.Normalize();
+            Vector3d yaxis = Vector3d.Cross(zaxis, xaxis);
+
+            Matrix3d mat = new Matrix3d(zaxis.X, yaxis.X, xaxis.X, 0, zaxis.Y, yaxis.Y, xaxis.Y, 0, zaxis.Z, yaxis.Z, xaxis.Z, 0, -Vector3d.Dot(xaxis, cameraPosition), -Vector3d.Dot(yaxis, cameraPosition), -Vector3d.Dot(zaxis, cameraPosition), 1);
+            return mat;
+        }
+
         private static Matrix3d CreateIdentity()
         {
             Matrix3d matrixd = new Matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);

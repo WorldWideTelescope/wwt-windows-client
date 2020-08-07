@@ -244,7 +244,7 @@ namespace TerraViewer
             lines[index] = lines[0];
 
         }
-        static public Dictionary<string, Bitmap> ConstellationThumbnails = new Dictionary<string, Bitmap>();
+        
 
         public void ThumbnailAllConstellations()
         {
@@ -259,8 +259,8 @@ namespace TerraViewer
                 DrawConstellationThumbnail(g);
                 g.Dispose();
 
-          
-                ConstellationThumbnails[kv.Value] = bmp;
+
+                ThumbnailCache.ConstellationThumbnails[kv.Value] = bmp;
             }
         }
     }

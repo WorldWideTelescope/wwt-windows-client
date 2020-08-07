@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
-using SharpDX;
-using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
+#if WINDOWS_UWP
+#else
+using SysColor = System.Drawing.Color;
+#endif
 
 namespace TerraViewer
 {
@@ -20,7 +19,9 @@ namespace TerraViewer
             get { return texture; }
             set { texture = value; }
         }
-        private ShaderResourceView resourceView;
+
+        private ShaderResourceView resourceView = null;
+
         public int Id = nextID++;
         public Texture11(Texture2D t)
         {
@@ -28,6 +29,52 @@ namespace TerraViewer
             resourceView = new ShaderResourceView(texture.Device, texture);
         }
 
+        public Texture11(Texture2D t, bool noResourceView)
+        {
+            texture = t;
+            if (!noResourceView)
+            {
+                resourceView = new ShaderResourceView(texture.Device, texture);
+            }
+        }
+
+#if WINDOWS_UWP
+        public Texture11(string filename)
+        {
+            if (String.IsNullOrWhiteSpace(filename))
+            {
+                int o = 0;
+            }
+            var t = Task.Run(() =>
+            {
+                using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, filename))
+                {
+                   texture = TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap);
+                   resourceView = new ShaderResourceView(texture.Device, texture);
+                }
+
+            });
+        }
+#endif
+
+#if WINDOWS_UWP
+        public Texture11(System.IO.Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new InvalidDataException("Stream can not be null");
+            }
+            var t = Task.Run(() =>
+            {
+                using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, stream))
+                {
+                    texture = TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap);
+                    resourceView = new ShaderResourceView(texture.Device, texture);
+                }
+
+            });
+        }
+#endif
         public ShaderResourceView ResourceView
         {
             get
@@ -40,7 +87,11 @@ namespace TerraViewer
         {
             get
             {
-                return texture.Description.Width;
+                if (texture != null)
+                {
+                    return texture.Description.Width;
+                }
+                return 0;
             }
         }
 
@@ -48,7 +99,11 @@ namespace TerraViewer
         {
             get
             {
-                return texture.Description.Height;
+                if (texture != null)
+                {
+                    return texture.Description.Height;
+                }
+                return 0;
             }
         }
 
@@ -71,10 +126,11 @@ namespace TerraViewer
 
         static public Texture11 FromFile(string fileName)
         {
-            
-            
-                return FromFile(RenderContext11.PrepDevice, fileName);
-           
+#if WINODWS_UWP
+            return new Texture11(filename);
+#else
+            return FromFile(RenderContext11.PrepDevice, fileName);
+#endif
         }
 
         static SharpDX.DXGI.Format promoteFormatToSRGB(SharpDX.DXGI.Format format)
@@ -124,8 +180,33 @@ namespace TerraViewer
             AssumeSRgb = 0x1,
         };
 
+        static public Texture11 FromFileImediate(Device device,string filename, LoadOptions options = LoadOptions.AssumeSRgb)
+        {
+#if WINDOWS_UWP
+            using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, filename))
+            {
+                if (bitmap != null)
+                {
+                    return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
+                }
+                return null;
+            }
+#else
+            return FromFile(device, filename, options);
+#endif
+        }
+
+
         static public Texture11 FromFile(Device device, string fileName, LoadOptions options = LoadOptions.AssumeSRgb)
         {
+#if WINDOWS_UWP
+            return new Texture11(fileName);
+            //using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, fileName))
+            //{
+            //    return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
+            //}
+#else
+
             try
             {
                 ImageLoadInformation loadInfo = new ImageLoadInformation();
@@ -209,22 +290,32 @@ namespace TerraViewer
                     return null;
                 }
             }
+#endif
         }
 
-        static public Texture11 FromBitmap(Bitmap bmp)
+        static public Texture11 FromBitmap(object bmp)
         {
             return FromBitmap(RenderContext11.PrepDevice, bmp);
 
         }
 
-        static public Texture11 FromBitmap(Bitmap bmp, uint transparentColor)
+        static public Texture11 FromBitmap(object bmp, uint transparentColor)
         {
-            bmp.MakeTransparent(System.Drawing.Color.FromArgb((int) transparentColor));
-            return FromBitmap(RenderContext11.PrepDevice, bmp);
+
+#if !WINDOWS_UWP
+            System.Drawing.Bitmap bitmap = (System.Drawing.Bitmap)bmp;
+            bitmap.MakeTransparent(SysColor.FromArgb((int) transparentColor));
+            return FromBitmap(RenderContext11.PrepDevice, bitmap);
+#else
+
+            return null;
+#endif
         }
 
-        static public Texture11 FromBitmap(Device device, Bitmap bmp)
+        static public Texture11 FromBitmap(Device device, object bitmap)
         {
+#if !WINDOWS_UWP
+            System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)bitmap;
             MemoryStream ms = new MemoryStream();
 
             bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
@@ -283,6 +374,10 @@ namespace TerraViewer
                 ms.Dispose();
                 return new Texture11(texture);
             }
+#else
+            //todo fix this 
+            return null;
+#endif
         }
 
         static bool IsPowerOf2(uint x)
@@ -308,6 +403,12 @@ namespace TerraViewer
 
         static public Texture11 FromStream(Device device, Stream stream)
         {
+#if WINDOWS_UWP
+            using (var bitmap = TextureLoader.LoadBitmap(RenderContext11.WicImagingFactory, stream))
+            {
+                return new Texture11(TextureLoader.CreateTexture2DFromBitmap(RenderContext11.PrepDevice, bitmap));
+            }
+#else
             byte[] data = null;
             if (SaveStream)
             {
@@ -348,6 +449,283 @@ namespace TerraViewer
             {
                 return null;
             }
+#endif
         }
     }
+
+#if WINDOWS_UWP
+    internal class TextureLoader
+    {
+        /// <summary>
+        /// Loads a bitmap using WIC.
+        /// </summary>
+        /// <param name="deviceManager"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static SharpDX.WIC.BitmapSource LoadBitmap(SharpDX.WIC.ImagingFactory2 factory, string filename)
+        {
+            if (File.Exists(filename))
+            {
+                return LoadBitmap(factory, new SharpDX.WIC.BitmapDecoder(
+                    factory,
+                    filename,
+                    SharpDX.WIC.DecodeOptions.CacheOnDemand));
+            }
+            return null;
+        }
+
+        public static SharpDX.WIC.BitmapSource LoadBitmap(SharpDX.WIC.ImagingFactory2 factory, System.IO.Stream stream)
+        {
+            return LoadBitmap(factory, new SharpDX.WIC.BitmapDecoder(
+                factory,
+                stream,
+                SharpDX.WIC.DecodeOptions.CacheOnDemand));
+        }
+
+        private static SharpDX.WIC.BitmapSource LoadBitmap(SharpDX.WIC.ImagingFactory2 factory, SharpDX.WIC.BitmapDecoder bitmapDecoder)
+        {
+            var formatConverter = new SharpDX.WIC.FormatConverter(factory);
+            formatConverter.Initialize(
+                bitmapDecoder.GetFrame(0),
+                SharpDX.WIC.PixelFormat.Format32bppPRGBA,
+                SharpDX.WIC.BitmapDitherType.None,
+                null,
+                0.0,
+                SharpDX.WIC.BitmapPaletteType.Custom);
+            return formatConverter;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="SharpDX.Direct3D11.Texture2D"/> from a WIC <see cref="SharpDX.WIC.BitmapSource"/>
+        /// </summary>
+        /// <param name="device">The Direct3D11 device</param>
+        /// <param name="bitmapSource">The WIC bitmap source</param>
+        /// <returns>A Texture2D</returns>
+
+        //public static SharpDX.Direct3D11.Texture2D CreateTexture2DFromBitmap(SharpDX.Direct3D11.Device device, SharpDX.WIC.BitmapSource bitmapSource)
+        //{
+        //    int width = bitmapSource.Size.Width;
+        //    int height = bitmapSource.Size.Height;
+        //    int levels = CountMips(width, height);
+        //    int size = CalculateMipSize(width, height);
+
+        //    // Allocate DataStream to receive the WIC image pixels
+        //    int stride = width * 4;
+
+        //    byte[] data = new byte[width * height * 4];
+        //    // Copy the content of the WIC to the buffer
+        //    //bitmapSource.CopyPixels(stride, buffer);
+        //    bitmapSource.CopyPixels(data, stride);
+
+        //    var tex = new SharpDX.Direct3D11.Texture2D(device, new SharpDX.Direct3D11.Texture2DDescription()
+        //    {
+        //        Width = width,
+        //        Height = height,
+        //        ArraySize = 1,
+        //        BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
+        //        Usage = SharpDX.Direct3D11.ResourceUsage.Default,
+        //        CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
+        //        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+        //        MipLevels = levels,
+        //        OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.GenerateMipMaps,
+        //        SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+        //    });
+
+        //    //device.ImmediateContext.UpdateSubresource(data, tex);
+
+        //    // size                    }, new SharpDX.DataRectangle(buffer.DataPointer, stride));         
+        //    var view = new ShaderResourceView(RenderContext11.PrepDevice, tex);
+
+        //    //device.ImmediateContext.GenerateMips(view);
+
+        //    view.Dispose();
+        //    return tex;
+
+        //}
+
+        public static unsafe SharpDX.Direct3D11.Texture2D CreateTexture2DFromBitmap(SharpDX.Direct3D11.Device device, SharpDX.WIC.BitmapSource bitmapSource)
+        {
+            int width = bitmapSource.Size.Width;
+            int height = bitmapSource.Size.Height;
+            int levels = CountMips(width, height);
+            int w = width;
+            int h = height;
+            int lw = width;
+            int lh = height;
+
+            SharpDX.DataBox[] boxes = new SharpDX.DataBox[levels];
+            SharpDX.DataStream[] ds = new SharpDX.DataStream[levels];
+            byte[][] data = new byte[levels][];
+
+            for (int i = 0; i < levels; i++)
+            {
+                if (i == 0)
+                {
+                    data[i] = new byte[w * h * 4];
+                    int stride = w * 4;
+                    bitmapSource.CopyPixels(data[i], stride);
+                }
+                else
+                {
+                    data[i] = new byte[w * h * 4];
+                    var po = data[i];
+                    var pi = (byte*)boxes[i - 1].DataPointer.ToPointer();
+                    var in1 = pi;
+                    var in2 = in1 + ((lw > 1) ? 4 : 0);
+                    var in3 = (h>1) ? (pi + 4 * lw) : in1;
+                    var in4 = in3 + ((lw > 1) ? 4 : 0);
+                    int index = 0;
+                    for(int y = 0; y < h; y++)
+                    {                     
+                        for(int x = 0; x < w; x++)
+                        {
+                            for(int c= 0; c< 4; c++)
+                            {
+                                po[index] = (byte)(((int)*in1 + (int)*in2 + (int)*in3 + (int)*in4) / 4);
+                                in1 += 1;
+                                in2 += 1;
+                                in3 += 1;
+                                in4 += 1;
+                                index++;
+                            }
+                            in1 += 4;
+                            in2 += 4;
+                            in3 += 4;
+                            in4 += 4;
+                        }
+
+                        in1 += (lw * 4);
+                        in2 += (lw * 4);
+                        in3 += (lw * 4);
+                        in4 += (lw * 4);
+                    }
+                }
+
+                ds[i] = new SharpDX.DataStream(data[i].Length, true, true);
+                ds[i].Write(data[i], 0, data[i].Length);
+
+                boxes[i].DataPointer = ds[i].DataPointer;
+
+                boxes[i].RowPitch = w * 4;
+                lh = h;
+                lw = w;
+
+
+                if (w > 1)
+                {
+                    w = w / 2;
+                }
+
+                if (h > 1)
+                {
+                    h = h / 2;
+                }
+            }
+
+
+            // Allocate DataStream to receive the WIC image pixels
+
+
+
+
+            var tex = new SharpDX.Direct3D11.Texture2D(device, new SharpDX.Direct3D11.Texture2DDescription()
+            {
+                Width = width,
+                Height = height,
+                ArraySize = 1,
+                BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource,
+                Usage = SharpDX.Direct3D11.ResourceUsage.Immutable,
+                CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
+                Format = RenderContext11.DefaultTextureFormat,
+                MipLevels = levels,
+                OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None,
+                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+            }, boxes);
+
+            for (int i = 0; i < levels; i++)
+            {
+                ds[i].Dispose();
+            }
+
+            return tex;
+
+        }
+
+
+        //static int CalculateMipSize(int width, int height)
+        //{
+        //    int size = 0;
+
+        //    int mipLevels = 1;
+
+        //    while (height > 1 || width > 1)
+        //    {
+        //        size += width * height;
+        //        if (height > 1)
+        //        {
+        //            height >>= 1;
+        //        }
+
+        //        if (width > 1)
+        //        {
+
+        //            width >>= 1;
+        //        }
+
+        //        mipLevels++;
+        //    }
+
+        //    return size;
+        //}
+
+
+        static int CountMips(int width, int height)
+        {
+            int mipLevels = 1;
+
+            while (height > 1 || width > 1)
+            {
+                if (height > 1)
+                {
+
+                    height >>= 1;
+                }
+
+                if (width > 1)
+                {
+
+                    width >>= 1;
+                }
+
+                mipLevels++;
+            }
+
+            return mipLevels;
+        }
+
+        public static SharpDX.Direct3D11.Texture2D CreateTexture2DFromBitmapNoMip(SharpDX.Direct3D11.Device device, SharpDX.WIC.BitmapSource bitmapSource)
+        {
+            // Allocate DataStream to receive the WIC image pixels
+            int stride = bitmapSource.Size.Width * 4;
+            using (var buffer = new SharpDX.DataStream(bitmapSource.Size.Height * stride, true, true))
+            {
+                // Copy the content of the WIC to the buffer
+                bitmapSource.CopyPixels(stride, buffer);
+                return new SharpDX.Direct3D11.Texture2D(device, new SharpDX.Direct3D11.Texture2DDescription()
+                {
+                    Width = bitmapSource.Size.Width,
+                    Height = bitmapSource.Size.Height,
+                    ArraySize = 1,
+                    BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource,
+                    Usage = SharpDX.Direct3D11.ResourceUsage.Immutable,
+                    CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
+                    Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                    MipLevels = 1,
+                    OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None,
+                    SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                }, new SharpDX.DataRectangle(buffer.DataPointer, stride));
+            }
+        }
+    }
+#endif
 }

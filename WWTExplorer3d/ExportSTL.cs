@@ -66,7 +66,7 @@ namespace TerraViewer
             double width = Rect.East - Rect.West;
             double height = Rect.North - Rect.South;
 
-            double altitude = 1 + Earth3d.MainWindow.GetScaledAltitudeForLatLong((Rect.North + Rect.South) / 2, (Rect.East + Rect.West) / 2);
+            double altitude = 1 + RenderEngine.Engine.GetScaledAltitudeForLatLong((Rect.North + Rect.South) / 2, (Rect.East + Rect.West) / 2);
 
             Vector3d topLeftA = Coordinates.GeoTo3dDouble(Rect.North - height / 20, Rect.West, altitude);
             Vector3d topLeftB = Coordinates.GeoTo3dDouble(Rect.North, Rect.West, altitude);
@@ -149,9 +149,9 @@ namespace TerraViewer
         LineList lines = null;
 
  
-        void IUiController.Render(Earth3d window)
+        void IUiController.Render(RenderEngine renderEngine)
         {
-            lines.DrawLines(window.RenderContext11, 1);
+            lines.DrawLines(renderEngine.RenderContext11, 1);
 
             return;
         }
@@ -418,7 +418,7 @@ namespace TerraViewer
         public GeoRect Rect;
 
 
-        public void PreRender(Earth3d window)
+        public void PreRender(RenderEngine renderEngine)
         {
             
         }
@@ -496,7 +496,7 @@ namespace TerraViewer
                     double lat = Rect.North - (yRate * y);
                     double lng = Rect.East + (xRate * x);
 
-                    double alt = Earth3d.MainWindow.GetAltitudeForLatLongNow(lat, lng);
+                    double alt = RenderEngine.Engine.GetAltitudeForLatLongNow(lat, lng);
                     altitude[x, y] = alt;
                     maxAltitude = Math.Max(alt, maxAltitude);
                     minAltitude = Math.Min(minAltitude, alt);

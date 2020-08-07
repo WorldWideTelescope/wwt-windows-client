@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
 using SharpDX.Direct3D11;
-using SharpDX.Direct3D;
 using SharpDX;
 using SharpDX.DXGI;
-using SharpDX.Windows;
-using System.Diagnostics;
 
+#if !WINDOWS_UWP
+//using SharpDX.Windows;
+#endif
+
+#if WINDOWS_UWP
+using SysColor = TerraViewer.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
+
+using System.Diagnostics;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
-using SharpDX.D3DCompiler;
-using System.Runtime.InteropServices;
 using System.IO;
 
 namespace TerraViewer
@@ -53,7 +54,7 @@ namespace TerraViewer
         {
             vertCount = numVerts;
             this.device = device;
-            
+
         }
 
         PositionNormalTexturedX2[] vertexArray = null;
@@ -113,12 +114,12 @@ namespace TerraViewer
                 bw.Write(vert.Tu1);
                 bw.Write(vert.Tv1);
             }
-
+#if !WINDOWS_UWP
             bw.Close();
+#endif
             bw.Dispose();
-        }
-
-        #region IDisposable Members
+        } 
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -219,7 +220,7 @@ namespace TerraViewer
             }
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -232,7 +233,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
 
@@ -298,7 +299,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -311,7 +312,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
 
@@ -375,7 +376,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -388,7 +389,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
     public class TimeSeriesLineVertexBuffer11 : IDisposable, IVertexBuffer11
     {
@@ -450,7 +451,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -463,7 +464,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
     public class TimeSeriesPointVertexBuffer11 : IDisposable, IVertexBuffer11
@@ -526,7 +527,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -539,7 +540,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
   
      public class KeplerVertexBuffer11 : IDisposable, IVertexBuffer11
@@ -592,7 +593,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -605,7 +606,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
   
     
@@ -660,7 +661,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -673,7 +674,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
     public class PositionColorTexturedVertexBuffer11 : IDisposable, IVertexBuffer11
     {
@@ -727,7 +728,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -740,7 +741,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
 
@@ -814,7 +815,7 @@ namespace TerraViewer
             vertexArray = null;
         }
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -827,7 +828,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
     public class IndexBuffer11 : IDisposable
@@ -923,7 +924,9 @@ namespace TerraViewer
                 }
             }
 
+#if !WINDOWS_UWP
             bw.Close();
+#endif
             bw.Dispose();        
         }
 
@@ -947,7 +950,7 @@ namespace TerraViewer
         }
 
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
@@ -959,7 +962,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
     public struct PositionTextured
@@ -1126,7 +1129,7 @@ namespace TerraViewer
             this.size = size;
         }
 
-        public PositionColorSize(Vector3d pos, System.Drawing.Color color, float size)
+        public PositionColorSize(Vector3d pos, SysColor color, float size)
         {
             X = (float)pos.X;
             Y = (float)pos.Y;
@@ -1172,11 +1175,11 @@ namespace TerraViewer
             }
         }
 
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {
@@ -1208,11 +1211,11 @@ namespace TerraViewer
 
         private uint color;
 
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color>>24), (byte)color, (byte)(color >>8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color>>24), (byte)color, (byte)(color >>8), (byte)(color >> 16));
             }
             set
             {
@@ -1250,7 +1253,7 @@ namespace TerraViewer
         //   v:
         //     Floating-point value that represents the PositionNormalTexturedX2.#ctor()
         //     component of the texture coordinate.
-        public PositionColoredTextured(Vector4 pos, System.Drawing.Color color, float u, float v)
+        public PositionColoredTextured(Vector4 pos, SysColor color, float u, float v)
         {
             X = pos.X;
             Y = pos.Y;
@@ -1293,7 +1296,7 @@ namespace TerraViewer
         //   v:
         //     Floating-point value that represents the PositionNormalTexturedX2.#ctor()
         //     component of the texture coordinate.
-        public PositionColoredTextured(float xvalue, float yvalue, float zvalue, System.Drawing.Color color, float wvalue, float u, float v)
+        public PositionColoredTextured(float xvalue, float yvalue, float zvalue, SysColor color, float wvalue, float u, float v)
         {
             X = xvalue;
             Y = yvalue;
@@ -1510,14 +1513,15 @@ namespace TerraViewer
  
         public int Width;
         public int Height;
-        public RenderTargetTexture(int width, int height)
+        public RenderTargetTexture(int width, int height, bool stereo = false)
         {
+            int count = stereo ? 2 : 1;
             this.Width = width;
             this.Height = height;
             RenderTexture = new Texture11(new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
-                Format = RenderContext11.DefaultColorFormat,
-                ArraySize = 1,
+                Format = stereo ? SharpDX.DXGI.Format.B8G8R8A8_Typeless : RenderContext11.DefaultColorFormat,
+                ArraySize = count,
                 MipLevels = 1,
                 Width = width,
                 Height = height,
@@ -1526,9 +1530,21 @@ namespace TerraViewer
                 BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
                 OptionFlags = ResourceOptionFlags.None
-            }));
+            }), true);
 
-            renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
+            if (stereo)
+            {
+                RenderTargetViewDescription description = new RenderTargetViewDescription();
+                description.Format = Format.B8G8R8A8_UNorm_SRgb;
+                description.Dimension = stereo ? RenderTargetViewDimension.Texture2DMultisampledArray : RenderTargetViewDimension.Texture2D;
+                description.Texture2DMSArray.ArraySize = stereo ? 2 : 0;
+                renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture, description);
+ 
+            }
+            else
+            {
+                renderView = new RenderTargetView(RenderContext11.PrepDevice, RenderTexture.Texture);
+            }
         }
 
         public RenderTargetTexture(int width, int height, Format format)
@@ -1599,14 +1615,15 @@ namespace TerraViewer
         public Texture2D DepthTexture;
         public int Width;
         public int Height;
-        public DepthBuffer(int width, int height)
+        public DepthBuffer(int width, int height, bool stereo = false)
         {
+            int count = stereo ? 2 : 1;
             this.Width = width;
             this.Height = height;
             DepthTexture = new Texture2D(RenderContext11.PrepDevice, new Texture2DDescription()
             {
                 Format = RenderContext11.DefaultDepthStencilFormat,
-                ArraySize = 1,
+                ArraySize = count,
                 MipLevels = 1,
                 Width = width,
                 Height = height,
@@ -1617,7 +1634,21 @@ namespace TerraViewer
                 OptionFlags = ResourceOptionFlags.None
             });
 
-            DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture);
+            if (stereo)
+            {
+                DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture);
+                var depthStencilViewDesc = DepthView.Description;
+                depthStencilViewDesc.Dimension = stereo ? DepthStencilViewDimension.Texture2DMultisampledArray : DepthStencilViewDimension.Texture2D;
+                depthStencilViewDesc.Texture2DMSArray.ArraySize = stereo ? 2 : 0;
+                DepthView.Dispose();
+                DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture, depthStencilViewDesc);
+            }
+            else
+
+            {
+                DepthView = new DepthStencilView(RenderContext11.PrepDevice, DepthTexture);
+
+            }
         }
 
         public void Dispose()
@@ -1851,11 +1882,11 @@ namespace TerraViewer
         static double degrad = Math.PI / 180;
 
 
-        public System.Drawing.Color Color
+        public SysColor Color
         {
             get
             {
-                return System.Drawing.Color.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
+                return SysColor.FromArgb((byte)(color >> 24), (byte)color, (byte)(color >> 8), (byte)(color >> 16));
             }
             set
             {
@@ -1890,32 +1921,32 @@ namespace TerraViewer
             PointSize = .1f;
             if (ee.a < 2.5)
             {
-                Color = System.Drawing.Color.White;
+                Color = SysColor.FromArgb(255, 255, 255, 255); //White
             }
             else if (ee.a < 2.83)
             {
-                Color = System.Drawing.Color.Red;
+                Color = SysColor.FromArgb(255, 255, 0, 0); //Red;
             }
             else if (ee.a < 2.96)
             {
-                Color = System.Drawing.Color.Green;
+                Color = SysColor.FromArgb(255, 0, 255, 0); //Green;
             }
             else if (ee.a < 3.3)
             {
-                Color = System.Drawing.Color.Magenta;
+                Color = SysColor.FromArgb(255, 255, 0, 255); //Magenta;
             }
             else if (ee.a < 5)
             {
-                Color = System.Drawing.Color.Cyan;
+                Color = SysColor.FromArgb(255, 0, 255, 255); //Cyan;
             }
             else if (ee.a < 10)
             {
-                Color = System.Drawing.Color.Yellow;
+                Color = SysColor.FromArgb(255, 255, 255, 0); //Yellow;
                 PointSize = .9f;
             }
             else
             {
-                Color = System.Drawing.Color.White;
+                Color = SysColor.FromArgb(255, 255, 255, 255); //White
                 PointSize = 8f;
             }
             w = (float)ee.w;

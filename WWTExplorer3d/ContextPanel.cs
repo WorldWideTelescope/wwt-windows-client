@@ -49,21 +49,7 @@ namespace TerraViewer
             this.bigSizeLabel.Text = Language.GetLocalizedText(579, "Large");
             this.actualSizeLabel.Text = Language.GetLocalizedText(580, "Actual");
         }
-        //protected override void OnPaintBackground(PaintEventArgs e)
-        //{
-        //    base.OnPaintBackground(e);
-        //    Graphics g = e.Graphics;
-        //    g.Clear(Color.Red);
 
-        //}
-
-        int level;
-
-        public int Level
-        {
-            get { return level; }
-            set { level = value; }
-        }
         double ra;
 
         public double RA
@@ -96,7 +82,9 @@ namespace TerraViewer
         }
         string constellation= " ";
 
-        bool contextAreaChanged = false;
+        static bool contextAreaChanged = false;
+
+        static public bool ContextAreaChanged { get => contextAreaChanged; set => contextAreaChanged = value; }
 
         public string Constellation
         {
@@ -229,12 +217,15 @@ namespace TerraViewer
 
             }
         }
+
+        static public int SearchGeneration = 0;
+
         static string lastTracking = "";
         bool autoRestore = false;
         private void searchTimer_Tick(object sender, EventArgs e)
         {
-            bool space = Earth3d.MainWindow.Space;
-            studyOpacity.Value = (int)Earth3d.MainWindow.StudyOpacity;
+            bool space = RenderEngine.Engine.Space;
+            studyOpacity.Value = (int)RenderEngine.Engine.StudyOpacity;
             UpdateVisibility(space);
 
             Rectangle rect = this.RectangleToScreen(this.ClientRectangle);
@@ -430,24 +421,24 @@ namespace TerraViewer
                 }
                 overview.Visible = (state != WindowsStates.StatusOnly) && !(solarSystem || !space);
 
-                if (Earth3d.MainWindow.Tracking && (Earth3d.MainWindow.Space))
+                if (RenderEngine.Engine.Tracking && (RenderEngine.Engine.Space))
                 {
                     trackingLabel.Visible = true;
-                    if (lastTracking != Earth3d.MainWindow.TrackingObject.Name)
+                    if (lastTracking != RenderEngine.Engine.TrackingObject.Name)
                     {
-                        trackingText.Text = Earth3d.MainWindow.TrackingObject.Name.Substring(0, Math.Min(40, Earth3d.MainWindow.TrackingObject.Name.Length));
-                        lastTracking = Earth3d.MainWindow.TrackingObject.Name;
+                        trackingText.Text = RenderEngine.Engine.TrackingObject.Name.Substring(0, Math.Min(40, RenderEngine.Engine.TrackingObject.Name.Length));
+                        lastTracking = RenderEngine.Engine.TrackingObject.Name;
                     }
                 }
                 else if (Earth3d.MainWindow.SolarSystemMode)
                 {
                     trackingLabel.Visible = true;
-                    if (Earth3d.MainWindow.TrackingObject != null && lastTracking != Earth3d.MainWindow.TrackingObject.Name)
+                    if (RenderEngine.Engine.TrackingObject != null && lastTracking != RenderEngine.Engine.TrackingObject.Name)
                     {
-                        trackingText.Text = Earth3d.MainWindow.TrackingObject.Name;
+                        trackingText.Text = RenderEngine.Engine.TrackingObject.Name;
                         lastTracking = trackingText.Text;
                         trackingTarget.Items.Clear();
-                        trackingTarget.Items.Add(Earth3d.MainWindow.TrackingObject);
+                        trackingTarget.Items.Add(RenderEngine.Engine.TrackingObject);
                         trackingTarget.Invalidate();
                     }
                     if (contextResults.Count == 0)
@@ -462,13 +453,6 @@ namespace TerraViewer
                     trackingText.Text = "";
                 }
 
-                // COmmented to add context search to planetary mode
-                //if (!(space || solarSystem) && state != WindowsStates.StatusOnly)
-                //{
-                //    autoRestore = true;
-                //    SetWindowState(WindowsStates.StatusOnly);
-                //}
-
                 if ((space || solarSystem) && state == WindowsStates.StatusOnly && autoRestore)
                 {
                     SetWindowState(WindowsStates.OneLine);
@@ -482,8 +466,8 @@ namespace TerraViewer
                 contextResults.Clear();
                 paginator1.CurrentPage = 1;
                 paginator1.TotalPages = 1;
-                float searchDistance = (float)Math.Min((0.4617486132350 * ((4.0 * (Earth3d.MainWindow.ZoomFactor / 180)) + 0.000001)), 1.4142135623730950488016887242097);
-                IPlace[] results = ContextSearch.FindConteallationObjectsInCone(planet, Earth3d.MainWindow.ViewLong/15, Earth3d.MainWindow.ViewLat, searchDistance, (Classification)FilterCombo.Tag);
+                float searchDistance = (float)Math.Min((0.4617486132350 * ((4.0 * (RenderEngine.Engine.ZoomFactor / 180)) + 0.000001)), 1.4142135623730950488016887242097);
+                IPlace[] results = ContextSearch.FindConteallationObjectsInCone(planet, RenderEngine.Engine.ViewLong/15, RenderEngine.Engine.ViewLat, searchDistance, (Classification)FilterCombo.Tag);
                 
                 if (results != null)
                 {
@@ -500,30 +484,27 @@ namespace TerraViewer
                 paginator1.CurrentPage = 1;
                 paginator1.TotalPages = 1;
 
-                //Place[] results = ContextSearch.FindConteallationObjects(Constellations.Abbreviation(constellation), cornersLast, (Classification)FilterCombo.Tag);
-
                 Vector3d cornerUl = Coordinates.RADecTo3d(cornersLast[0].RA, cornersLast[0].Dec,1);
                 Vector3d cornerLR = Coordinates.RADecTo3d(cornersLast[2].RA, cornersLast[2].Dec,1);
                 Vector3d dist = Vector3d.Subtract(cornerLR, cornerUl);
-                IPlace[] results = ContextSearch.FindConteallationObjectsInCone("SolarSystem", Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
+                IPlace[] results = ContextSearch.FindConteallationObjectsInCone("SolarSystem", RenderEngine.Engine.RA, RenderEngine.Engine.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
                 if (results != null)
                 {
                     contextResults.AddRange(results);
                 }
-                results = ContextSearch.FindConteallationObjectsInCone("Community", Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
+                results = ContextSearch.FindConteallationObjectsInCone("Community", RenderEngine.Engine.RA, RenderEngine.Engine.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
                 if (results != null)
                 {
                     contextResults.AddRange(results);
                 }
 
-                results = ContextSearch.FindConteallationObjectsInCone(Constellations.Abbreviation(constellation), Earth3d.MainWindow.RA, Earth3d.MainWindow.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
+                results = ContextSearch.FindConteallationObjectsInCone(Constellations.Abbreviation(constellation), RenderEngine.Engine.RA, RenderEngine.Engine.Dec, (float)dist.Length() / 2.0f, (Classification)FilterCombo.Tag);
                 if (results != null)
                 {
                     contextResults.AddRange(results);
                 }
+                SearchGeneration++;
                 contextResults.Invalidate();
-                //paginator1.CurrentPage = 0;
-                //paginator1.TotalPages = contextResults.PageCount;
             }
         }
 
@@ -672,7 +653,7 @@ namespace TerraViewer
             }
             ImageSetType target = (ImageSetType)Enum.Parse(typeof(ImageSetType),viewTarget.SelectedItem.ToString());
             ImageDataSetsCombo.Items.Clear();
-            foreach (IImageSet set in Earth3d.ImageSets)
+            foreach (IImageSet set in RenderEngine.ImageSets)
             {
                 if (set.DataSetType == target)
                 {
@@ -706,7 +687,7 @@ namespace TerraViewer
                 }
                 else
                 {
-                    Earth3d.MainWindow.GotoTarget((IPlace)e, false, false, true);
+                    RenderEngine.Engine.GotoTarget((IPlace)e, false, false, true);
                 }
             }
             else if (e is IImageSet)
@@ -719,7 +700,7 @@ namespace TerraViewer
         {
             if (e is IPlace)
             {
-                Earth3d.MainWindow.GotoTarget((IPlace)e, false, true, true);
+                RenderEngine.Engine.GotoTarget((IPlace)e, false, true, true);
             }
             else if (e is IImageSet)
             {
@@ -734,7 +715,7 @@ namespace TerraViewer
             if (e is IPlace)
             {
                 IPlace p = (IPlace)e;
-                Earth3d.MainWindow.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
+                RenderEngine.Engine.SetStudyImageset(p.StudyImageset, p.BackgroundImageSet);
 
             }
             else if (e is IImageSet)
@@ -759,7 +740,7 @@ namespace TerraViewer
                 {
                     if (!deferUpdate)
                     {
-                        Earth3d.MainWindow.SetViewMode((IImageSet)ImageDataSetsCombo.SelectedItem);
+                        RenderEngine.Engine.SetViewMode((IImageSet)ImageDataSetsCombo.SelectedItem);
                     }
                 }
                 else
@@ -777,7 +758,7 @@ namespace TerraViewer
                             catch
                             {
                             }
-                            Earth3d.MainWindow.SetViewMode(new ImageSetHelper(openFile.FileName, openFile.FileName, (ImageSetType)Enum.Parse(typeof(ImageSetType), (string)viewTarget.SelectedItem), BandPass.Visible, ProjectionType.Spherical, 999, 0, 0, 256, 256, ".tif", false, "", 0, 0, 0, false, "", false, false, 1, 0, 0, "", "", "", "", 0, ""));
+                            RenderEngine.Engine.SetViewMode(new ImageSetHelper(openFile.FileName, openFile.FileName, (ImageSetType)Enum.Parse(typeof(ImageSetType), (string)viewTarget.SelectedItem), BandPass.Visible, ProjectionType.Spherical, 999, 0, 0, 256, 256, ".tif", false, "", 0, 0, 0, false, "", false, false, 1, 0, 0, "", "", "", "", 0, ""));
                         }
                     }
                 }
@@ -817,12 +798,12 @@ namespace TerraViewer
 
                 if (imageset != null)
                 {
-                    Earth3d.MainWindow.PreviewImageset = imageset;
-                    Earth3d.MainWindow.PreviewBlend.TargetState = true;
+                    RenderEngine.Engine.PreviewImageset = imageset;
+                    RenderEngine.Engine.PreviewBlend.TargetState = true;
                 }
                 else
                 {
-                    Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                    RenderEngine.Engine.PreviewBlend.TargetState = false;
                 }
             }
             else
@@ -832,7 +813,7 @@ namespace TerraViewer
                     toolTips.SetToolTip(contextResults, ((IThumbnail)e).Name);
                 }
                 Earth3d.MainWindow.SetLabelText(null, false);
-                Earth3d.MainWindow.PreviewBlend.TargetState = false;
+                RenderEngine.Engine.PreviewBlend.TargetState = false;
 
             }
 
@@ -872,7 +853,7 @@ namespace TerraViewer
             Top += diff;
             Height -= diff;
             state = newState;
-            SkyBall.Space = Earth3d.MainWindow.Space;
+            SkyBall.Space = RenderEngine.Engine.Space;
             SkyBall.ShowSkyball = SkyBall.Space && state != WindowsStates.StatusOnly;
             SkyBall.RefreshHint();
             contextResults.Invalidate();
@@ -908,7 +889,7 @@ namespace TerraViewer
             if (!String.IsNullOrEmpty(constellation))
             {
                 IPlace target = Constellations.ConstellationCentroids[Constellations.Abbreviation(constellation)];
-                Earth3d.MainWindow.GotoTarget(target, false, false, true);
+                RenderEngine.Engine.GotoTarget(target, false, false, true);
             }
 
         }
@@ -933,7 +914,7 @@ namespace TerraViewer
 
         private void studyOpacity_Scroll(object sender, EventArgs e)
         {
-            Earth3d.MainWindow.StudyOpacity = studyOpacity.Value;
+            RenderEngine.Engine.StudyOpacity = studyOpacity.Value;
 
         }
 

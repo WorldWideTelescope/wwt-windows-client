@@ -43,7 +43,7 @@ namespace TerraViewer
                         {
                             if (places != null)
                             {
-                                ArrayList placeList = places.GetPlaceList();
+                                List<TourPlace> placeList = places.GetPlaceList();
                                 foreach (IPlace place in placeList)
                                 {
                                     if (place.StudyImageset != null && (place.StudyImageset.Projection == ProjectionType.Toast || place.StudyImageset.Projection == ProjectionType.Equirectangular))
@@ -61,15 +61,21 @@ namespace TerraViewer
 
         public static void AddFolderToSearch(Folder parent, bool sky)
         {
+            var children = parent.Children;
+           
+            if (children == null)
+            {
+                return;
+            }
 
             foreach (Object child in parent.Children)
             {
                 if (child is IImageSet)
                 {
                     IImageSet childImageset = (IImageSet)child;
-                    if (Earth3d.ProjectorServer)
+                    if (RenderEngine.ProjectorServer)
                     {
-                        Earth3d.AddImageSetToTable(childImageset.GetHash(), childImageset);
+                        RenderEngine.AddImageSetToTable(childImageset.GetHash(), childImageset);
                     }
                 }
                 if (child is IPlace)
@@ -77,16 +83,16 @@ namespace TerraViewer
                     IPlace place = (IPlace)child;
                     if (place.StudyImageset != null)
                     {
-                        if (Earth3d.ProjectorServer)
+                        if (RenderEngine.ProjectorServer)
                         {
-                            Earth3d.AddImageSetToTable(place.StudyImageset.GetHash(), place.StudyImageset);
+                            RenderEngine.AddImageSetToTable(place.StudyImageset.GetHash(), place.StudyImageset);
                         }
                     }
                     if (place.BackgroundImageSet != null)
                     {
-                        if (Earth3d.ProjectorServer)
+                        if (RenderEngine.ProjectorServer)
                         {
-                            Earth3d.AddImageSetToTable(place.BackgroundImageSet.GetHash(), place.BackgroundImageSet);
+                            RenderEngine.AddImageSetToTable(place.BackgroundImageSet.GetHash(), place.BackgroundImageSet);
                         }
                     }
 
@@ -164,8 +170,15 @@ namespace TerraViewer
             }
         }
 
+        public static bool Initialized = false;
+
         public static IPlace FindClosestMatch(string constellationID, double ra, double dec, double maxRadius)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
+
             if (!constellationObjects.ContainsKey(constellationID))
             {
                 return null;
@@ -341,6 +354,11 @@ namespace TerraViewer
 
         public static IPlace[] FindConteallationObjects(string constellationID, Coordinates[] corners, Classification type)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
+
             if (!constellationObjects.ContainsKey(constellationID))
             {
                 return null;
@@ -423,6 +441,11 @@ namespace TerraViewer
         }
         public static IPlace[] FindConteallationObjectsInCone(string constellationID, double ra, double dec, float distance, Classification type)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
+
             Vector3d center = Coordinates.RADecTo3d(ra, dec,1);
 
             if (!constellationObjects.ContainsKey(constellationID))
@@ -482,6 +505,10 @@ namespace TerraViewer
         }
         public static IPlace[] FindAllObjects(string constellationID, Classification type)
         {
+            if (!Initialized)
+            {
+                return null;
+            }
 
             if (!constellationObjects.ContainsKey(constellationID))
             {

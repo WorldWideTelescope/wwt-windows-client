@@ -1,13 +1,10 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Drawing;
-
-using System.Windows.Forms;
-
+#if WINDOWS_UWP
+using Color = TerraViewer.Color;
+#else
+using Color = System.Drawing.Color;
+#endif
 namespace TerraViewer
 {
     public class Orbit
@@ -134,8 +131,14 @@ namespace TerraViewer
 
             ellipseShader.UseShader(renderContext, semiMajorAxis, eccentricity, eccentricAnomaly, new SharpDX.Color(color.R, color.G, color.B, color.A), savedWorld, positionNow);
 
-            renderContext.devContext.Draw(ellipseVertexBuffer.Count, 0);
-            
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawInstanced(ellipseVertexBuffer.Count, 2, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.Draw(ellipseVertexBuffer.Count, 0);
+            }
             renderContext.World = savedWorld;
         }
 
@@ -161,9 +164,14 @@ namespace TerraViewer
             renderContext.SetVertexBuffer(ellipseWithoutStartPointVertexBuffer);
 
             ellipseShader.UseShader(renderContext, semiMajorAxis, eccentricity, eccentricAnomaly, new SharpDX.Color(color.R, color.G, color.B, color.A), savedWorld, new Vector3d(0.0, 0.0, 0.0));
-
-            renderContext.devContext.Draw(ellipseWithoutStartPointVertexBuffer.Count, 0);
-
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawInstanced(ellipseWithoutStartPointVertexBuffer.Count, 2, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.Draw(ellipseWithoutStartPointVertexBuffer.Count, 0);
+            }
             renderContext.World = savedWorld;
         }
 

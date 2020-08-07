@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+#if WINDOWS_UWP
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
 using System.Xml;
-using System.Drawing;
-using System.Net;
+#endif
 using System.IO;
 using System.Threading;
 
@@ -163,9 +167,10 @@ namespace TerraViewer
             }
 
             XmlDocument doc = new XmlDocument();
+#if !WINDOWS_UWP
             XmlNamespaceManager NamespaceManager = new XmlNamespaceManager(doc.NameTable);
             NamespaceManager.AddNamespace("atom", "http://www.w3.org/2005/Atom");
-
+#endif
             if (filename.ToLower().Contains(".kmz"))
             {
                 if (Uri.IsWellFormedUriString(filename, UriKind.Absolute))
@@ -208,7 +213,7 @@ namespace TerraViewer
                 {
                 }
             }
-            XmlNode kml = doc["kml"];
+            XmlNode kml = doc.GetChildByName("kml");
             if (kml == null)
             {
                 return;
@@ -637,7 +642,7 @@ namespace TerraViewer
         public DateTime EndTime = new DateTime(3999, 1, 1);
         public bool UnBoundedBegin = true;
         public bool UnBoundedEnd = true;
-        public void LoadDetails(XmlElement node, KmlRoot owner)
+        public void LoadDetails(XmlNode node, KmlRoot owner)
         {
             if (node["begin"] != null)
             {
@@ -1188,7 +1193,7 @@ namespace TerraViewer
     public class KmlPlacemark : KmlFeature
     {
         public KmlGeometry geometry = null;
-        public Rectangle hitTestRect = Rectangle.Empty;
+        public RectangleF hitTestRect = RectangleF.Empty;
         public KmlPoint Point = null;
         private bool selected = false;
 
@@ -1804,10 +1809,10 @@ namespace TerraViewer
             }
         }
 
-        private Stream GetStream()
-        {
-            return Owner.GetFileStream(Href);
-        }
+        //private Stream GetStream()
+        //{
+        //    return Owner.GetFileStream(Href);
+        //}
 
         // Icon Cache functions & Members
         static Dictionary<string, IconCacheEntry> IconCache = new Dictionary<string, IconCacheEntry>();
@@ -1839,8 +1844,11 @@ namespace TerraViewer
                 {
                     Requested = true;
                     // Do a background load on this
+#if !WINDOWS_UWP
                     ThreadPool.QueueUserWorkItem(new WaitCallback(LoadTexture), this);
+#else
 
+#endif
                 }
                 LastRequestFrame = CurrentFrame;
                 return texture;
@@ -1861,30 +1869,10 @@ namespace TerraViewer
                 {
                     Directory.CreateDirectory(dir);
                 }
-                // This is a expanded timeout version of WebClient
-                MyWebClient Client = new MyWebClient();
+                
                 
 
                 string filename = dir + ((uint)entry.Href.GetHashCode32()).ToString() + ".png";
-
-                //if (File.Exists(filename))
-                //{
-                //    FileInfo fi = new FileInfo(filename);
-
-                //    if (fi.Length != 8 && fi.Length < 100)
-                //    {
-                //        try
-                //        {
-                //            File.Delete(filename);
-                //        }
-                //        catch
-                //        {
-                //        }
-                //    }
-                //}
-
-			
-                //Client.DownloadFile(CacheProxy.GetCacheUrl(url), filename);
 
                 Stream stream = null;
                 if (entry.Owner == null)
@@ -1892,7 +1880,14 @@ namespace TerraViewer
 
                     if (Uri.IsWellFormedUriString(entry.Href, UriKind.Absolute))
                     {
+#if !WINDOWS_UWP
+                        // This is a expanded timeout version of WebClient
+                        MyWebClient Client = new MyWebClient();
                         byte[] data = Client.DownloadData(entry.Href);
+#else
+                        WebClient Client = new WebClient();
+                        byte[] data = Client.DownloadData(entry.Href);
+#endif
                         stream = new MemoryStream(data);
                     }
                     else

@@ -1,12 +1,22 @@
+using AstroCalc;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Xml.Serialization;
+
+#if WINDOWS_UWP
+using VoTable= System.Object;
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Drawing;
-using AstroCalc;
-
+#endif
 
 
 namespace TerraViewer
@@ -96,12 +106,20 @@ namespace TerraViewer
 
         public static Folder LoadFromFileStream(Stream stream, bool versionDependent)
         {
+#if !WINDOWS_UWP
             XmlSerializer serializer = new XmlSerializer(typeof(Folder));
             Folder newFolder = (Folder)serializer.Deserialize(stream);
             newFolder.dirty = false;
             newFolder.VersionDependent = versionDependent;
-
             return newFolder;
+#else
+            XmlSerializer serializer = new XmlSerializer(typeof(Folder));
+            Folder newFolder = (Folder)serializer.Deserialize(stream);
+            newFolder.dirty = false;
+            newFolder.VersionDependent = versionDependent;
+            return newFolder;
+#endif
+
         }
 
         public void Save()
@@ -119,6 +137,7 @@ namespace TerraViewer
 
         public void SaveToFile(string filename)
         {
+#if !WINDOWS_UWP
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
             ns.Add("", "");
             using (FileStream writer = File.Open(filename,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -126,8 +145,28 @@ namespace TerraViewer
                 XmlSerializer serializer = new XmlSerializer(typeof(Folder));
                 serializer.Serialize(writer, this, ns);
                 writer.Close();
-            }            
+            }
+#else
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
+            using (FileStream writer = File.Open(filename,FileMode.Create,FileAccess.Write,FileShare.None))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Folder));
+                serializer.Serialize(writer, this, ns);
+                writer.Close();
+            }
+#endif
         }
+
+        public void AddChildThumbnail(IThumbnail child)
+        {
+            if (child != null)
+            {
+                this.thumbnails.Add(child);
+                dirty = true;
+            }
+        }
+        
 
         public void AddChildFolder(Folder child)
         {
@@ -159,9 +198,14 @@ namespace TerraViewer
             dirty = true;
         }
 
+        public void AddChildImageSet(ImageSet child)
+        {
+            imagesets.Add(child);
+        }
+
         Bitmap thumbnail = null;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public System.Drawing.Bitmap ThumbNail
+        public Bitmap ThumbNail
         {
             get
             {
@@ -175,11 +219,12 @@ namespace TerraViewer
                     {
 
                     }
+
+                    //todo uwp impliment folder icon
                     if (thumbnail == null)
                     {
                         thumbnail = Properties.Resources.Folder;
                     }
-
                 }
                 return thumbnail;
             }
@@ -238,7 +283,7 @@ namespace TerraViewer
 
         public void Refresh()
         {
-            Folder temp = Folder.LoadFromUrl(Earth3d.MainWindow.PrepareUrl(urlField), VersionDependent);
+            Folder temp = Folder.LoadFromUrl(RenderEngine.Engine.PrepareUrl(urlField), VersionDependent);
             if (temp != null)
             {
                 proxyFolder = temp;
@@ -271,11 +316,15 @@ namespace TerraViewer
                     {
                         returnList.AddRange(this.Tour);
                     }
-
                     if (LineSet != null)
                     {
                         returnList.AddRange(this.LineSet);
                     }
+                    if (thumbnails != null)
+                    {
+                        returnList.AddRange(thumbnails);
+                    }
+
                     return returnList.ToArray();
                 }
                 else
@@ -308,7 +357,7 @@ namespace TerraViewer
     {
         Bitmap thumbnail = null;
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public System.Drawing.Bitmap ThumbNail
+        public Bitmap ThumbNail
         {
             get
             {
@@ -405,7 +454,7 @@ namespace TerraViewer
             get { return true; }
         }
 
-        #region ITourResult Members
+#region ITourResult Members
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public string AttributesAndCredits
@@ -550,7 +599,7 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
     }
 
     public partial class Place : IPlace
@@ -634,7 +683,7 @@ namespace TerraViewer
             get { return tour; }
             set { tour = value; }
         }
-        #region IPlace Members
+#region IPlace Members
 
         private string url;
 
@@ -839,9 +888,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
         Bitmap thumbNail = null;
 
@@ -875,21 +924,20 @@ namespace TerraViewer
                     {
                         if (!String.IsNullOrEmpty(constellationField))
                         {
-                            if (Overview.ConstellationThumbnails.ContainsKey(constellationField))
-                            {
-                                //todo clone this
-                                thumbNail = Overview.ConstellationThumbnails[constellationField];
-                            }
+                            thumbNail = ThumbnailCache.GetConstellationThumbnail(constellationField);
                         }
                     }
                     else
                     {
-                        thumbNail = WWTThumbnails.WWTThmbnail.GetThumbnail(Name.Replace(" ", ""));
+                        //todo uwp find anther way to do this.
+
+                        thumbNail = UiTools.LoadThumbnailByName(Name);
                         if (thumbNail == null)
                         {
-                            object obj = global::TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
-                            thumbNail = ((System.Drawing.Bitmap)(obj));
+                            object obj = TerraViewer.Properties.Resources.ResourceManager.GetObject(Enum.GetName(typeof(Classification), Classification), global::TerraViewer.Properties.Resources.Culture);
+                            thumbNail = ((Bitmap)(obj));
                         }
+
                     }
                 }
 
@@ -904,6 +952,8 @@ namespace TerraViewer
                 thumbNail = value;
             }
         }
+
+
         Rectangle bounds;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
@@ -952,9 +1002,9 @@ namespace TerraViewer
             get { return null; }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
 
         private double searchDistance = 0;
@@ -966,9 +1016,9 @@ namespace TerraViewer
             set { searchDistance = value; }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
@@ -997,9 +1047,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public IImageSet StudyImageset
@@ -1026,21 +1076,21 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IPlace Members
+#region IPlace Members
 
 
 
-        #endregion
+#endregion
     }
     public partial class ImageSet : IImageSet , IThumbnail
     {
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private WcsImage wcsImage;
+        private object wcsImage;
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public WcsImage WcsImage
+        public object WcsImage
         {
             get { return wcsImage; }
             set { wcsImage = value; }
@@ -1072,6 +1122,35 @@ namespace TerraViewer
             }
         }
 
+        private Dictionary<string, string> properties = new Dictionary<string, string>();
+
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public Dictionary<string, string> Properties
+        {
+            get
+            {
+                return properties;
+            }
+            set
+            {
+                properties = value;
+            }
+        }
+
+        private VoTable tableMetadata = null;
+
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public VoTable TableMetadata
+        {
+            get
+            {
+                return tableMetadata;
+            }
+            set
+            {
+                tableMetadata = value;
+            }
+        }
 
         int hash = 0;
 
@@ -1126,7 +1205,7 @@ namespace TerraViewer
             return newset;
         }
 
-        #region IImageSet Members
+#region IImageSet Members
 
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public int BaseLevel
@@ -1366,9 +1445,9 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+#endregion
 
-        #region IThumbnail Members
+#region IThumbnail Members
 
         Bitmap thumbnail = null;
 
@@ -1379,7 +1458,30 @@ namespace TerraViewer
             {
                 if (thumbnail == null)
                 {
+ 
+#if !WINDOWS_UWP
+                    thumbnail = UiTools.GetLoadingBitmap();
+                    var t = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        thumbnail = UiTools.LoadThumbnailFromWeb(thumbnailUrlField);
+                        if (thumbnail != null)
+                        {
+                            if (thumbnail.Height > 46)
+                            {
+                                var temp = UiTools.MakeThumbnail(thumbnail);
+                                thumbnail.Dispose();
+                                thumbnail = temp;
+                            }
+                        }
+                        else
+                        {
+                            thumbnail = TerraViewer.Properties.Resources.Unidentified;
+                        }
+                    });
+
+#else
                     thumbnail = UiTools.LoadThumbnailFromWeb(thumbnailUrlField);
+#endif
                 }
                 return thumbnail;
             }
@@ -1445,9 +1547,9 @@ namespace TerraViewer
             get { return null; }
         }
 
-        #endregion
+#endregion
 
-        #region IImageSet Members
+                    #region IImageSet Members
         private string demUrl;
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "anyURI")]
 
@@ -1467,6 +1569,6 @@ namespace TerraViewer
             }
         }
 
-        #endregion
+                    #endregion
     }
 }

@@ -564,7 +564,7 @@ namespace TerraViewer
                         AnimationTarget at = FindTarget(lineIds[index]);
                         if (at != null)
                         {
-                            TourEditor.CurrentEditor = at.Target.GetEditUI();
+                            TourEditor.CurrentEditor = at.Target.GetEditUI() as IUiController;
                         }
 
                     }
@@ -1039,7 +1039,7 @@ namespace TerraViewer
                 if (pos != TweenPosition)
                 {
                     SetTweenPosition(pos);
-                    Earth3d.MainWindow.Render();
+                    RenderEngine.Engine.Render();
                     int oldScroll = offset + (pixelsPerSecond * startSecond);
                     EnsureVisible();
                     int newScroll = offset + (pixelsPerSecond * startSecond);

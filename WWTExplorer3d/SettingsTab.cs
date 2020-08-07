@@ -168,14 +168,14 @@ namespace TerraViewer
             {
                 if (figureLibrary.SelectedItem != null)
                 {
-                    Earth3d.MainWindow.constellationsFigures = new Constellations(Language.GetLocalizedText(519, "Default Figures"), "http://www.worldwidetelescope.org/data/figures.txt", false, false);
+                    RenderEngine.Engine.constellationsFigures = new Constellations(Language.GetLocalizedText(519, "Default Figures"), "http://www.worldwidetelescope.org/data/figures.txt", false, false);
                 }
                 Delete.Enabled = false;
             }
             else
             {
                 Delete.Enabled = true;
-                Earth3d.MainWindow.constellationsFigures = new Constellations(figureLibrary.SelectedItem.ToString(), null, false, false);
+                RenderEngine.Engine.constellationsFigures = new Constellations(figureLibrary.SelectedItem.ToString(), null, false, false);
             }
 
             if (ignoreChanges)
@@ -218,10 +218,10 @@ namespace TerraViewer
                             }
                             else
                             {
-                                Earth3d.MainWindow.constellationsFigures.Save(input.ResultText);
+                                RenderEngine.Engine.constellationsFigures.Save(input.ResultText);
                                 figureLibrary.Items.Add(input.ResultText);
                                 figureLibrary.SelectedIndex = figureLibrary.Items.IndexOf(input.ResultText);
-                                Earth3d.MainWindow.ShowFigureEditorWindow(Earth3d.MainWindow.constellationsFigures);
+                                Earth3d.MainWindow.ShowFigureEditorWindow(RenderEngine.Engine.constellationsFigures);
                                 retry = false;
                             }
                         }
@@ -240,7 +240,7 @@ namespace TerraViewer
             }
             else
             {
-                Earth3d.MainWindow.ShowFigureEditorWindow(Earth3d.MainWindow.constellationsFigures);
+                Earth3d.MainWindow.ShowFigureEditorWindow(RenderEngine.Engine.constellationsFigures);
             }
 
         }
@@ -286,7 +286,7 @@ namespace TerraViewer
                                 figures = null;
                                 figureLibrary.Items.Add(input.ResultText);
                                 figureLibrary.SelectedIndex = figureLibrary.Items.IndexOf(input.ResultText);
-                                Earth3d.MainWindow.ShowFigureEditorWindow(Earth3d.MainWindow.constellationsFigures);
+                                Earth3d.MainWindow.ShowFigureEditorWindow(RenderEngine.Engine.constellationsFigures);
                                 retry = false;
                             }
                         }

@@ -1,44 +1,20 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 using AstroCalc;
+using System;
+using System.Collections.Generic;
+#if WINDOWS_UWP
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
+#endif
+using System.IO;
 using System.Threading;
 
 
 namespace TerraViewer
 {
-    public enum SolarSystemObjects
-    {
-        Sun,
-        Mercury,
-        Venus,
-        Mars,
-        Jupiter,
-        Saturn,
-        Uranus,
-        Neptune,
-        Pluto,
-        Moon,
-        Io,
-        Europa,
-        Ganymede,
-        Callisto,
-        IoShadow,
-        EuropaShadow,
-        GanymedeShadow,
-        CallistoShadow,
-        SunEclipsed,
-        Earth,
-        Custom,
-        Undefined = 65536
-    };
-
     public struct BodyAngles
     {
         public double poleDec;
@@ -128,7 +104,7 @@ namespace TerraViewer
             duration = pathDuration;
             if (vertexBuffer != null)
             {
-                double dt = coverageDuration / ((int) pointCount - 1);
+                double dt = coverageDuration / ((int)pointCount - 1);
                 double t0 = points[0].jd;
                 int firstPoint = (int)Math.Floor((t0 - jd) / dt);
                 firstPoint = Math.Max(0, firstPoint);
@@ -145,7 +121,14 @@ namespace TerraViewer
 
                 OrbitTraceShader.UseShader(renderContext, new SharpDX.Color(color.R, color.G, color.B, color.A), savedWorld, positionNow, timeOffset, 1.5);
                 renderContext.SetVertexBuffer(vertexBuffer);
-                renderContext.Device.ImmediateContext.Draw(drawCount, firstPoint);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.Device.ImmediateContext.DrawInstanced(drawCount, 2, firstPoint, 0);
+                }
+                else
+                {
+                    renderContext.Device.ImmediateContext.Draw(drawCount, firstPoint);
+                }
 
                 renderContext.World = savedWorld;
             }
@@ -222,8 +205,11 @@ namespace TerraViewer
             //temp = TextureLoader.FromStream(device, ms, bmp.Width, bmp.Height, 0, Usage.None, Format.Unknown, Pool.Managed, Filter.None, Filter.Box, 0);
             //ms.Dispose();
             //GC.SuppressFinalize(ms);
-
+#if WINDOWS_UWP
+            temp = new Texture11(bmp.FileName);
+#else
             temp = Texture11.FromBitmap(RenderContext11.PrepDevice, bmp);
+#endif
 
             return temp;
         }
@@ -293,16 +279,30 @@ namespace TerraViewer
             {
                 if (!loading8k)
                 {
+#if WINDOWS_UWP
+                    var t = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        LoadBackground8k();
+                    });
+#else
                     BackInitDelegate initBackground = LoadBackground8k;
                     initBackground.BeginInvoke(null, null);
+#endif
                 }
             }
             else
             {
                 if (!loading)
                 {
+#if WINDOWS_UWP
+                    var t = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        LoadBackground();
+                    });
+#else
                     BackInitDelegate initBackground = LoadBackground;
                     initBackground.BeginInvoke(null, null);
+#endif
                 }
             }
         }
@@ -1279,7 +1279,7 @@ namespace TerraViewer
                 DrawPlanet3d(renderContext, planetId, centerPoint, opacity);               
             }
 
-            double distss = UiTools.SolarSystemToMeters(Earth3d.MainWindow.SolarSystemCameraDistance);
+            double distss = UiTools.SolarSystemToMeters(RenderEngine.Engine.SolarSystemCameraDistance);
 
 
             //double val1 = Math.Log(200000000, 10)-7.3;
@@ -1767,7 +1767,14 @@ namespace TerraViewer
                 Matrix3d worldMatrix = renderContext.World;
                 Matrix3d viewMatrix = renderContext.View;
 
+
                 SharpDX.Matrix wvp = (worldMatrix * viewMatrix * renderContext.Projection).Matrix11;
+
+                if (RenderContext11.ExternalProjection)
+                {
+                    wvp = wvp * RenderContext11.ExternalScalingFactor;
+                }
+
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new SharpDX.Vector4(1.0f, 1.0f, 1.0f, opacity);
 
@@ -1871,7 +1878,7 @@ namespace TerraViewer
             KmlLabels kmlMarkers = null;
             if (planetID == (int)SolarSystemObjects.Earth)
             {
-                kmlMarkers = Earth3d.MainWindow.KmlMarkers;
+                kmlMarkers = RenderEngine.Engine.KmlMarkers;
                 if (kmlMarkers != null)
                 {
                     kmlMarkers.ClearGroundOverlays();
@@ -1920,6 +1927,15 @@ namespace TerraViewer
                 double p11 = renderContext.Projection.M11;
                 double p34 = renderContext.Projection.M34;
                 double p44 = renderContext.Projection.M44;
+
+                if (RenderContext11.ExternalProjection)
+                {
+                    p11 = Math.Abs(RenderContext11.ExternalProjectionLeft.M11);
+                    p34 = RenderContext11.ExternalProjectionLeft.M34;
+                    p44 = RenderContext11.ExternalProjectionLeft.M44;
+                }
+
+
                 double w = Math.Abs(p34) * dist + p44;
                 float pixelsPerUnit = (float)(p11 / w) * viewportHeight;
                 float planetRadiusInPixels = (float)(radius * pixelsPerUnit);
@@ -2267,7 +2283,7 @@ namespace TerraViewer
             renderContext.HemisphereLightColor = Color.Black;
             
             renderContext.World = matOld;
-            Earth3d.MainWindow.MakeFrustum();
+            RenderEngine.Engine.MakeFrustum();
             
             RestoreDefaultMaterialState(renderContext);
             renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
@@ -2374,7 +2390,7 @@ namespace TerraViewer
             matLocal.Multiply(orientationAtEpoch);
 
 
-            if (planetID == (int)Earth3d.MainWindow.viewCamera.Target)
+            if (planetID == (int)RenderEngine.Engine.viewCamera.Target)
             {
                 EarthMatrix = Matrix3d.Identity;
                 EarthMatrix.Multiply(Matrix3d.RotationY(-rotationCurrent));
@@ -2392,7 +2408,7 @@ namespace TerraViewer
 
             if (makeFrustum)
             {
-                Earth3d.MainWindow.MakeFrustum();
+                RenderEngine.Engine.MakeFrustum();
             }
             matNonRotating.Scale(new Vector3d(radius, radius, radius));
             matNonRotating.Multiply(orientationAtEpoch);
@@ -2436,7 +2452,13 @@ namespace TerraViewer
 
             if (PlanetShadow == null)
             {
+#if WINDOWS_UWP
+
+                PlanetShadow = Planets.LoadPlanetTexture(Properties.Resources.planetShadow);
+
+#else
                 PlanetShadow = Texture11.FromBitmap(device, Properties.Resources.planetShadow);
+#endif
             }
 
             Matrix3d invViewCam = renderContext.View;
@@ -2515,7 +2537,7 @@ namespace TerraViewer
 
             Texture11 currentPlanetTexture;
 
-            if (planetScales[planetID] < (Earth3d.MainWindow.ZoomFactor / 6.0) / 300)
+            if (planetScales[planetID] < (RenderEngine.Engine.ZoomFactor / 6.0) / 300)
             {
                 if (planetID < 14)
                 {
@@ -2803,7 +2825,7 @@ namespace TerraViewer
                     {
                         string planetName = GetNameFrom3dId(planetID);
                         string imageSetName = planetName == "Mars" ? "Visible Imagery" : planetName;
-                        planet = Earth3d.MainWindow.GetImagesetByName(imageSetName);
+                        planet = RenderEngine.Engine.GetImagesetByName(imageSetName);
                     }
 
                     if (planet != null)
@@ -2811,13 +2833,13 @@ namespace TerraViewer
                         SharpDX.Vector4 normColor = new SharpDX.Vector4(defaultLayerColor.R, defaultLayerColor.G, defaultLayerColor.B, defaultLayerColor.A) * (1.0f / 255.0f);
                         if (RenderContext11.sRGB)
                         {
-                            normColor.X = (float) Math.Pow(normColor.X, 2.2);
+                            normColor.X = (float)Math.Pow(normColor.X, 2.2);
                             normColor.Y = (float)Math.Pow(normColor.Y, 2.2);
                             normColor.Z = (float)Math.Pow(normColor.Z, 2.2);
                         }
                         renderContext.Shader.DiffuseColor = normColor;
                         renderContext.setRasterizerState(TriangleCullMode.CullClockwise);
-                        Earth3d.MainWindow.DrawTiledSphere(planet, 100, Color.White);
+                        RenderEngine.Engine.DrawTiledSphere(planet, 100, Color.White);
 
                         if (planetID == (int)SolarSystemObjects.Earth && Properties.Settings.Default.ShowClouds.State)
                         {
@@ -2868,7 +2890,14 @@ namespace TerraViewer
 
             renderContext.SetVertexBuffer(sphereVertexBuffers[sphereIndex]);
             renderContext.SetIndexBuffer(sphereIndexBuffers[sphereIndex]);
-            renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawIndexedInstanced(sphereIndexBuffers[sphereIndex].Count, 2, 0, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+            }
         }
 
 
@@ -2882,7 +2911,14 @@ namespace TerraViewer
                 renderContext.PreDraw();
                 renderContext.SetVertexBuffer(sphereVertexBuffers[sphereIndex]);
                 renderContext.SetIndexBuffer(sphereIndexBuffers[sphereIndex]);
-                renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+                if (RenderContext11.ExternalProjection)
+                {
+                    renderContext.devContext.DrawIndexedInstanced(sphereIndexBuffers[sphereIndex].Count, 2, 0, 0, 0);
+                }
+                else
+                {
+                    renderContext.devContext.DrawIndexed(sphereIndexBuffers[sphereIndex].Count, 0, 0);
+                }
             }
         }
 

@@ -1,14 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System.IO;
 using System.Net;
-using System.IO;	
-using System.Threading;
 using System.Text;
-using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TerraViewer
 {
@@ -45,7 +41,7 @@ namespace TerraViewer
 
 		public static void ClearCache()
 		{
-            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Clear Cache"); }
+            if (Utils.Logging) { Utils.WriteLogMessage("Clear Cache"); }
             tileMutex.WaitOne();
             queueMutex.WaitOne();
             WaitingTileQueueMutex.WaitOne();
@@ -84,7 +80,7 @@ namespace TerraViewer
 
 		public static void PurgeQueue()
 		{
-            if (Earth3d.Logging) { Earth3d.WriteLogMessage("Purging Queue"); }
+            if (Utils.Logging) { Utils.WriteLogMessage("Purging Queue"); }
             queueMutex.WaitOne();
             queue.Clear();
 			RequestCount = 0;
@@ -101,7 +97,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -118,7 +114,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("GetTile: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("GetTile: Exception"); }
             }
             finally
             {
@@ -139,7 +135,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -156,7 +152,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("GetTile: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("GetTile: Exception"); }
             }
             finally
             {
@@ -169,7 +165,7 @@ namespace TerraViewer
             if (!retTile.ReadyToRender)
             {
                 TileCache.GetTileFromWeb(retTile, false);
-                retTile.CreateGeometry(Earth3d.MainWindow.RenderContext11, false);
+                retTile.CreateGeometry(RenderEngine.Engine.RenderContext11, false);
             }
 
 
@@ -206,7 +202,7 @@ namespace TerraViewer
             }
 
             Tile retTile = null;
-            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y);
+            long tileKey = ImageSetHelper.GetTileKey(dataset, level, x, y, parent);
             try
             {
                 if (!tiles.ContainsKey(tileKey))
@@ -220,7 +216,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Initialize: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("Tile Initialize: Exception"); }
             }
             
 
@@ -472,11 +468,15 @@ namespace TerraViewer
         static DateTime lastLRUPurge = DateTime.Now;
 		public static void QueueThread()
 		{
-            
+ #if !WINDOWS_UWP
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
             bool fileOnly = fileOnlyThreadID == Thread.CurrentThread.ManagedThreadId;
-			while (running)
+#else
+            bool fileOnly = false;
+#endif
+            while (running)
 			{
+#if !WINDOWS_UWP
                 if (queue.Count < 1)
                 {
                     System.Threading.Thread.Sleep(50);
@@ -485,6 +485,10 @@ namespace TerraViewer
                 {
                     System.Threading.Thread.Sleep(1);
                 }
+#else
+                Task.Delay(TimeSpan.FromMilliseconds(30)).Wait();
+#endif
+
 
                 double minDistance = 1000000000000000000; 
                 bool overlayTile = false;
@@ -499,18 +503,23 @@ namespace TerraViewer
 					{
                         Vector3d vectTemp = new Vector3d(t.SphereCenter);
 
-                        vectTemp.TransformCoordinate(Earth3d.WorldMatrix);
+                        vectTemp.TransformCoordinate(RenderEngine.WorldMatrix);
 
-                        if (Earth3d.MainWindow.Space)
+                        if (RenderEngine.Engine.Space)
                         {
                             vectTemp.Subtract(new Vector3d(0.0f, 0.0f, -1.0f));
                         }
                         else
                         {
-                            vectTemp.Subtract(Earth3d.MainWindow.RenderContext11.CameraPosition);
+                            vectTemp.Subtract(RenderEngine.Engine.RenderContext11.CameraPosition);
                         }
 
                         double distTemp = Math.Max(0,vectTemp.Length()-t.SphereRadius);
+
+                        if (t.HighPriority)
+                        {
+                            distTemp = 0;
+                        }
 
                         bool thisIsOverlay = (t.Dataset.Projection == ProjectionType.Tangent) || (t.Dataset.Projection == ProjectionType.SkyImage);
                         if (distTemp < minDistance && (!overlayTile || thisIsOverlay))
@@ -522,17 +531,17 @@ namespace TerraViewer
 
                             if (!test.FileChecked)
                             {
-
-
-                                test.FileExists = File.Exists(test.FileName);
+                                test.FileExists = FileExists(test.FileName);
                                 test.FileChecked = true;
                                 if (test.Volitile)
                                 {
                                     test.FileExists = false;
                                 }
                             }
-
+                            //todo uwp Test this for sure... threads are not really same
+#if !WINDOWS_UWP
                             if (test.FileExists || (!test.FileExists && !fileOnly))
+#endif
                             {
                                 minDistance = distTemp;
                                 maxKey = t.Key;
@@ -601,7 +610,7 @@ namespace TerraViewer
             }
             catch
             {
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("DecimateQueue: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("DecimateQueue: Exception"); }
             }
             finally
             {
@@ -612,9 +621,32 @@ namespace TerraViewer
 
 		}
 
-
 		public static int THREAD_COUNT = 5;
-		static Thread[] queueThreads = new Thread[THREAD_COUNT];
+#if WINDOWS_UWP
+        public static void StartQueue()
+        {
+            if (!TileCache.running)
+            {
+                TileCache.running = true;
+                for (int i = 0; i < THREAD_COUNT; i++)
+                {
+                    var t = Task.Run(() => QueueThread());
+                }
+            }
+        }
+
+
+        public static void ShutdownQueue()
+        {
+            if (TileCache.running)
+            {
+                TileCache.running = false;
+            }
+            return;
+        }
+#else
+
+        static Thread[] queueThreads = new Thread[THREAD_COUNT];
         static int fileOnlyThreadID = 0;
 
 		public static void StartQueue()
@@ -653,8 +685,8 @@ namespace TerraViewer
 			}
 			return;
 		}
+#endif
 
-       
         public static void InitializeTile(Tile tile)
         {      
             bool loaded = false;
@@ -677,7 +709,7 @@ namespace TerraViewer
                 {
                     if (tile != null)
                     {
-                        tile.CreateGeometry(Earth3d.MainWindow.RenderContext11, false);
+                        tile.CreateGeometry(RenderEngine.Engine.RenderContext11, false);
                         tilesLoadedThisFrame++;
                     }
                 }
@@ -696,6 +728,11 @@ namespace TerraViewer
         public static Tile GetTileFromWeb(Tile retTile, bool Initialize)
 		{
             WebClient Client = null;
+ #if !WINDOWS_UWP
+            if (retTile.Dataset.Projection == ProjectionType.Healpix && retTile.Dataset.Properties.Count == 0)
+            {
+                HealpixTile.LoadProperties(retTile.Dataset);
+            }
             if (retTile.Dataset.Projection == ProjectionType.SkyImage && retTile.Dataset.Url.EndsWith("/screenshot.png"))
             {
                 SkyImageTile tile = retTile as SkyImageTile;
@@ -711,7 +748,7 @@ namespace TerraViewer
                 Client.Dispose();
                 return retTile;
             }
-
+#endif
             Tile parent = retTile.Parent;
 
             if (retTile.DemEnabled && (parent == null || (parent != null && parent.DemGeneration == 0)))
@@ -723,34 +760,38 @@ namespace TerraViewer
                 retTile.DemReady = true;
             }
 
+            //todo uwp enable fits images sometime
+#if !WINDOWS_UWP
             if (retTile.Dataset.WcsImage != null && retTile.Dataset.WcsImage is FitsImage)
             {
                 retTile.TextureReady = true;
                 InitializeTile(retTile);
                 return retTile;
             }
+#endif
 
-
-			string directory = retTile.Directory;
-	
+            string directory = retTile.Directory;
+#if !WINDOWS_UWP
 			if (!Directory.Exists(directory))
 			{
 				Directory.CreateDirectory(directory);
 			}
-
+#endif
 			string filename = retTile.FileName;
 			Client = new WebClient();
 
-            FileInfo fi = new FileInfo(filename);
+
+            FileInfo fi = GetFileInfo(filename);
             bool exists = fi.Exists;
 
+ 
             if (exists)
 			{
                 if (fi.Length != 8 && fi.Length < 100 || retTile.Volitile)
 				{
 					try
 					{
-						File.Delete(filename);
+						FileDelete(filename);
 					}
 					catch
 					{
@@ -768,7 +809,7 @@ namespace TerraViewer
                     if (retTile.Dataset.IsMandelbrot)
                     {
                         retTile.ComputeMandel();
-                        fi = new FileInfo(filename);
+                        fi = GetFileInfo(filename);
                         exists = fi.Exists;
                     }
                     else
@@ -788,20 +829,20 @@ namespace TerraViewer
                             Client.DownloadFile(CacheProxy.GetCacheUrl(url), dlFile);
                             try
                             {
-                                if (File.Exists(dlFile))
+                                if (FileExists(dlFile))
                                 {
-                                    if (File.Exists(filename))
+                                    if (FileExists(filename))
                                     {
-                                        File.Delete(filename);
+                                        FileDelete(filename);
                                     }
-                                    File.Move(dlFile, filename);
+                                    FileMove(dlFile, filename);
                                 }
                             }
                             catch
                             {
                              //   UiTools.ShowMessageBox("File Download collision catch");
                             }
-                            fi = new FileInfo(filename);
+                            fi = GetFileInfo(filename);
                             exists = fi.Exists;
                         }
                         // Code for drawing tile it onto tile for debuggin
@@ -822,7 +863,7 @@ namespace TerraViewer
                 catch 
                 {
                     //todo retry login on non - HTTP failuers.
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Download: Exception" ); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Tile Download: Exception" ); }
                     retTile.errored = true;
                 }
 			}
@@ -836,7 +877,7 @@ namespace TerraViewer
 						return retTile;
 					}			
 				}
-
+#if !WINDOWS_UWP
                 // todo 3d Cities remove support for 3d Cities for now
                 if (retTile.Dataset.Projection == ProjectionType.Mercator && Properties.Settings.Default.Show3dCities)
                 {
@@ -851,7 +892,7 @@ namespace TerraViewer
                         {
                             string meshFilename = retTile.FileName + ".mesh";
 
-                            if (!File.Exists(meshFilename))
+                            if (!FileExists(meshFilename))
                             {
                                 Client.Headers.Add("User-Agent", "Win8Microsoft.BingMaps.3DControl/2.214.2315.0 (;;;;x64 Windows RT)");
 
@@ -862,13 +903,13 @@ namespace TerraViewer
 
                                 try
                                 {
-                                    if (File.Exists(dlFile))
+                                    if (FileExists(dlFile))
                                     {
-                                        if (File.Exists(meshFilename))
+                                        if (FileExists(meshFilename))
                                         {
-                                            File.Delete(meshFilename);
+                                            FileDelete(meshFilename);
                                         }
-                                        File.Move(dlFile, meshFilename);
+                                        FileMove(dlFile, meshFilename);
                                     }
                                 }
                                 catch
@@ -882,6 +923,7 @@ namespace TerraViewer
                         }
                     }
                 }
+#endif
 
                 retTile.FileExists = true;
                 
@@ -895,12 +937,52 @@ namespace TerraViewer
 			}
 			catch (System.Exception)
 			{
-                if (Earth3d.Logging) { Earth3d.WriteLogMessage("Tile Initialize: Exception"); }
+                if (Utils.Logging) { Utils.WriteLogMessage("Tile Initialize: Exception"); }
 				retTile.errored = true;
 			}
 
 			return retTile;
 		}
+        public static FileInfo GetFileInfo(string filename)
+        {
+
+
+#if WINDOWS_UWP
+           // string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
+         //   filename = dir + filename;
+#endif
+            return new FileInfo(filename);
+        }
+
+        public static void FileDelete(string filename)
+        {
+
+
+#if WINDOWS_UWP
+          //  string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
+          //  filename = dir + filename;
+#endif
+            File.Delete(filename);
+        }
+
+        public static void FileMove(string source, string destination)
+        {
+
+
+#if WINDOWS_UWP
+          //  string dir = Windows.Storage.ApplicationData.Current.LocalFolder.Path + "\\";
+          //  source = dir + source;
+          //  destination = dir + destination;
+#endif
+            File.Move(source, destination);
+        }
+
+        public static bool FileExists(string filename)
+        {
+            return GetFileInfo(filename).Exists;
+        }
+
+
         static Mutex WaitingTileQueueMutex = new Mutex();
         static Queue<Tile> WaitingTileQueue = new Queue<Tile>();
         static double CountToLoad = 10;
@@ -926,7 +1008,7 @@ namespace TerraViewer
             }
 
             string filename = retTile.DemFilename;
-            FileInfo fi = new FileInfo(filename);
+            FileInfo fi = GetFileInfo(filename);
             bool exists = fi.Exists;
 
             if (exists)
@@ -935,16 +1017,14 @@ namespace TerraViewer
                 {
                     try
                     {
-                        File.Delete(filename);
+                        FileDelete(filename);
                     }
                     catch
                     {
                     }
                     exists = false;
                 }
-
             }
-
 
             if (!exists)
             {
@@ -958,25 +1038,25 @@ namespace TerraViewer
                     Client.DownloadFile(CacheProxy.GetCacheUrl(retTile.DemURL), dlFile);
                     try
                     {
-                        if (File.Exists(dlFile))
+                        if (FileExists(dlFile))
                         {
-                            if (File.Exists(filename))
+                            if (FileExists(filename))
                             {
-                                File.Delete(filename);
+                                FileDelete(filename);
                             }
-                            File.Move(dlFile, filename);
+                            FileMove(dlFile, filename);
                         }
                     }
                     catch
                     {
                        
                     }
-                    fi = new FileInfo(filename);
+                    fi = GetFileInfo(filename);
                     exists = fi.Exists;
                 }
                 catch
                 {
-                    if (Earth3d.Logging) { Earth3d.WriteLogMessage("Dem Download: Exception"); }
+                    if (Utils.Logging) { Utils.WriteLogMessage("Dem Download: Exception"); }
                     exists = false;
 
                 }
@@ -989,8 +1069,6 @@ namespace TerraViewer
 
             return;
         }
-
-        
     }
     public class FakeMutex
     {

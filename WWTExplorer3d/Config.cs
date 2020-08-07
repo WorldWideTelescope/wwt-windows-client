@@ -1,10 +1,8 @@
 
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Xml;
-using System.IO;
-using System.Windows.Forms;
 
 namespace TerraViewer
 {
@@ -13,7 +11,8 @@ namespace TerraViewer
     {
         public Config()
         {
-
+#if !WINDOWS_UWP
+            //We don't use this in UWP apps
             if (File.Exists(@"c:\wwtconfig\config.xml"))
             {
                 saveFilename = @"c:\wwtconfig\config.xml";
@@ -29,6 +28,7 @@ namespace TerraViewer
                 saveFilename = @"c:\wwtconfig\config.xml";
                 ReadFromXML(saveFilename);
             }
+#endif
         }
 
         public int MonitorCountX = 1;
@@ -43,6 +43,7 @@ namespace TerraViewer
         public string ConfigFile;
         public string BlendFile;
         public string DistortionGrid;
+        public string RenderHeadFile;
         public int DistortionGridWidth = 1;
         public int DistortionGridHeight = 1;
         public bool UsingSgcWarpMap = false;
@@ -77,7 +78,7 @@ namespace TerraViewer
         {
             get
             {
-                return !(String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
+                return (!String.IsNullOrEmpty(BlendFile) && ( !String.IsNullOrEmpty(ConfigFile) || !String.IsNullOrEmpty(DistortionGrid)) );
             }
         }
 
@@ -126,8 +127,10 @@ namespace TerraViewer
             }
             set { nodeDiplayName = value; }
         }
+        public Matrix3d ViewMatrix = Matrix3d.Identity;
 
-
+        public SharpDX.Matrix ProjectorMatrixSGC = SharpDX.Matrix.Identity;
+#if !WINDOWS_UWP
 
         public void ReadFromXML(string path)
         {
@@ -252,6 +255,11 @@ namespace TerraViewer
                     DistortionGrid = deviceNode.Attributes["DistortionGrid"].Value.ToString();
                 }
 
+                if (deviceNode.Attributes["RenderHeadFile"] != null)
+                {
+                    RenderHeadFile = deviceNode.Attributes["RenderHeadFile"].Value.ToString();
+                    SkySkanMode = !String.IsNullOrWhiteSpace(RenderHeadFile);
+                }
                 MultiProjector = !(String.IsNullOrEmpty(ConfigFile) || String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
                 // UseDistrotionAndBlend = !( String.IsNullOrEmpty(BlendFile) || String.IsNullOrEmpty(DistortionGrid));
                 // MultiProjector = true;
@@ -264,7 +272,6 @@ namespace TerraViewer
             return;
         }
 
-        public Matrix3d ViewMatrix = Matrix3d.Identity;
 
         private void ParseConfigFile()
         {
@@ -326,6 +333,8 @@ namespace TerraViewer
 
         }
 
+
+
         //It's a binary file with the following format
         //fileid: 3c
         //version: B
@@ -340,6 +349,8 @@ namespace TerraViewer
         //indices: I per index
 
         public Vector6[,] DistortionGridVertices = null;
+
+        
 
         void ReadSGCFile(string filename)
         {
@@ -371,14 +382,28 @@ namespace TerraViewer
 
             DistortionGridVertices = new Vector6[meshWidth, meshHeight];
 
+            SharpDX.Quaternion quatIn = new SharpDX.Quaternion(quat[0], quat[1], quat[2], quat[3]);
+
+            ProjectorMatrixSGC = SharpDX.Matrix.RotationQuaternion(quatIn);
+
+            SharpDX.Matrix mToggle_YZ = new SharpDX.Matrix(  -1, 0, 0, 0,
+                                                             0, -1, 0, 0,
+                                                             0, 0, 1, 0,
+                                                             0, 0, 0, 1);
+            ProjectorMatrixSGC =   mToggle_YZ * ProjectorMatrixSGC * mToggle_YZ;
+            ProjectorMatrixSGC.Invert();
+            
+           
+
             Vector4d quaternion = new Vector4d(quat[0], quat[1], quat[2], quat[3]);
 
+            
             double roll=0;
             double heading=0;
             double pitch=0;
 
             ToEulerianAngle(quaternion, out pitch, out roll, out heading);
-
+           
             float num2 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(up) / 180.0) * Math.PI))) / 2.0);
             float num3 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(down) / 180.0) * Math.PI))) / 2.0);
             float num4 = (float)(((2.0) / (1.0 / Math.Tan((Math.Abs(right) / 180.0) * Math.PI))) / 2.0);
@@ -394,7 +419,7 @@ namespace TerraViewer
 
             Heading = (float)heading;
             Pitch = (float)pitch;
-            Roll = -(float)roll;
+            Roll = (float)roll;
 
             DistortionGridWidth = meshWidth;
             DistortionGridHeight = meshHeight;
@@ -498,9 +523,11 @@ namespace TerraViewer
         }
 
         string saveFilename = @"c:\wwtconfig\config.xml";
-
+        internal bool SkySkanMode;
+#endif
         public bool SaveToXml()
         {
+#if !WINDOWS_UWP
             try
             {
                 StringBuilder sb = new StringBuilder();
@@ -509,8 +536,8 @@ namespace TerraViewer
                 sb.Append("<DeviceConfig>\r\n");
                 {
                     sb.Append("<Config>\r\n");
-                    sb.Append(String.Format("<Device ClusterID=\"{21}\" NodeID=\"{19}\" NodeDiplayName=\"{20}\" MonitorCountX=\"{0}\" MonitorCountY=\"{1}\" MonitorX=\"{2}\" MonitorY=\"{3}\" Master=\"{4}\" Width=\"{5}\" Height=\"{6}\" Bezel=\"{7}\" ConfigFile=\"{8}\" BlendFile=\"{9}\" DistortionGrid=\"{10}\" Heading=\"{11}\" Pitch=\"{12}\" Roll=\"{13}\" UpFov=\"{14}\" DownFov=\"{15}\" MultiChannelDome=\"{16}\" DomeTilt=\"{17}\" Aspect=\"{18}\" DiffTilt=\"{22}\" MultiChannelGlobe=\"{23}\" DomeAngle=\"{24}\"></Device>\r\n",
-                        MonitorCountX.ToString(), MonitorCountY.ToString(), MonitorX, MonitorY, Master.ToString(), Width.ToString(), Height.ToString(), Bezel.ToString(), ConfigFile, BlendFile, DistortionGrid, Heading, Pitch, Roll, UpFov, DownFov, MultiChannelDome.ToString(), DomeTilt, Aspect, NodeID.ToString(), NodeDiplayName, ClusterID.ToString(), DiffTilt.ToString(), MultiChannelGlobe.ToString(), DomeAngle.ToString()));
+                    sb.Append(String.Format("<Device ClusterID=\"{21}\" NodeID=\"{19}\" NodeDiplayName=\"{20}\" MonitorCountX=\"{0}\" MonitorCountY=\"{1}\" MonitorX=\"{2}\" MonitorY=\"{3}\" Master=\"{4}\" Width=\"{5}\" Height=\"{6}\" Bezel=\"{7}\" RenderHeadFile=\"{25}\" ConfigFile=\"{8}\" BlendFile=\"{9}\" DistortionGrid=\"{10}\" Heading=\"{11}\" Pitch=\"{12}\" Roll=\"{13}\" UpFov=\"{14}\" DownFov=\"{15}\" MultiChannelDome=\"{16}\" DomeTilt=\"{17}\" Aspect=\"{18}\" DiffTilt=\"{22}\" MultiChannelGlobe=\"{23}\" DomeAngle=\"{24}\"></Device>\r\n",
+                        MonitorCountX.ToString(), MonitorCountY.ToString(), MonitorX, MonitorY, Master.ToString(), Width.ToString(), Height.ToString(), Bezel.ToString(), ConfigFile, BlendFile, DistortionGrid, Heading, Pitch, Roll, UpFov, DownFov, MultiChannelDome.ToString(), DomeTilt, Aspect, NodeID.ToString(), NodeDiplayName, ClusterID.ToString(), DiffTilt.ToString(), MultiChannelGlobe.ToString(), DomeAngle.ToString(), RenderHeadFile));
                     sb.Append("</Config>\r\n");
                 }
                 sb.Append("</DeviceConfig>\r\n");
@@ -529,6 +556,8 @@ namespace TerraViewer
             {
                 return false;
             }
+#endif
+            return true;
         }
     }
     public struct Vector6

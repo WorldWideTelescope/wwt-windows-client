@@ -33,7 +33,7 @@
     <SignManifests>false</SignManifests>
     <OldToolsVersion>3.5</OldToolsVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -171,6 +171,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\DSMRender.dll</HintPath>
     </Reference>
+    <Reference Include="glTFLoader, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\glTF2Loader.1.1.0-alpha\lib\net452\glTFLoader.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Types.dll</HintPath>
@@ -179,9 +182,8 @@
     <Reference Include="MicrosoftAccount.WindowsForms">
       <HintPath>..\packages\MicrosoftAccount.WindowsForms.1.0.3.0\lib\net45\MicrosoftAccount.WindowsForms.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -234,6 +236,13 @@
     <Compile Include="Authentication\OAuthAuthenticator.cs" />
     <Compile Include="Authentication\OAuthTicket.cs" />
     <Compile Include="Authentication\UserObject.cs" />
+    <Compile Include="Callibration\GridCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Callibration\GridCreator.Designer.cs">
+      <DependentUpon>GridCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Catalogs.cs" />
     <Compile Include="CoverageMap.cs" />
     <Compile Include="ExportSTL.cs">
       <SubType>Form</SubType>
@@ -241,8 +250,30 @@
     <Compile Include="ExportSTL.Designer.cs">
       <DependentUpon>ExportSTL.cs</DependentUpon>
     </Compile>
+    <Compile Include="FinderPanel.cs" />
+    <Compile Include="FolderPanel.cs" />
+    <Compile Include="FolderUp.cs" />
+    <Compile Include="HandController.cs" />
+    <Compile Include="Healpix\FastMath.cs" />
+    <Compile Include="Healpix\Fxyf.cs" />
+    <Compile Include="Healpix\HealpixTables.cs" />
+    <Compile Include="Healpix\HealpixTile.cs" />
+    <Compile Include="Healpix\HealpixUtils.cs" />
+    <Compile Include="Healpix\Hploc.cs" />
+    <Compile Include="Healpix\Pointing.cs" />
+    <Compile Include="Healpix\Zphi.cs" />
+    <Compile Include="IUiController.cs" />
+    <Compile Include="KmlLabels.cs" />
+    <Compile Include="LayerInfo.cs" />
+    <Compile Include="LayerManagerCore.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LayerMap.cs" />
+    <Compile Include="OffScreenTarget.cs" />
     <Compile Include="Ovr\EyeTexture.cs" />
     <Compile Include="Ovr\SharpDXHelpers.cs" />
+    <Compile Include="PointerRay.cs" />
+    <Compile Include="PortableUtilities.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -365,8 +396,12 @@
       <DependentUpon>OverlayList.cs</DependentUpon>
     </Compile>
     <Compile Include="PointSpriteSet.cs" />
+    <Compile Include="RenderEngine.cs" />
     <Compile Include="Reticle.cs" />
+    <Compile Include="RingMenu.cs" />
+    <Compile Include="SearchCriteria.cs" />
     <Compile Include="SettingsAnimator.cs" />
+    <Compile Include="SettingsWrapper.cs" />
     <Compile Include="SpaceNavigator\3DxMouse.cs" />
     <Compile Include="Sprite2d.cs" />
     <Compile Include="ClearCache.cs">
@@ -722,6 +757,8 @@
       <DependentUpon>Tab.cs</DependentUpon>
     </Compile>
     <Compile Include="Table.cs" />
+    <Compile Include="ThumbnailCache.cs" />
+    <Compile Include="ThumbnailPanel.cs" />
     <Compile Include="TimeLine.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -729,6 +766,7 @@
       <DependentUpon>TimeLine.cs</DependentUpon>
     </Compile>
     <Compile Include="TimeSeriesLayer.cs" />
+    <Compile Include="ToastPlotTile.cs" />
     <Compile Include="ToastTools.cs" />
     <Compile Include="TrackButton.cs">
       <SubType>UserControl</SubType>
@@ -748,6 +786,9 @@
     <Compile Include="TransitionsPopup.Designer.cs">
       <DependentUpon>TransitionsPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="UiGraphics.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="VideoOutputType.cs" />
     <Compile Include="VisibleKey.cs" />
     <Compile Include="VoTableLayer.cs" />
     <Compile Include="WizardPropsBinding.cs" />
@@ -1199,6 +1240,7 @@
     <Compile Include="XBoxConfig.Designer.cs">
       <DependentUpon>XBoxConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="XmlAbstractions.cs" />
     <Compile Include="ZipArchive.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
@@ -1218,6 +1260,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CacheTilePyramid.resx">
       <DependentUpon>CacheTilePyramid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Callibration\GridCreator.resx">
+      <DependentUpon>GridCreator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ClientNodeList.resx">
       <DependentUpon>ClientNodeList.cs</DependentUpon>
@@ -1361,6 +1406,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\HandControllerRight.glb" />
     <None Include="Terms_of_use_Nov_2011.rtf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -2421,6 +2467,8 @@
     <None Include="Resources\point.png" />
     <None Include="Resources\target1.png" />
     <None Include="Resources\target2.png" />
+    <EmbeddedResource Include="Resources\RingMenu\Collections.png" />
+    <EmbeddedResource Include="Resources\RingMenu\Hubble.png" />
     <Content Include="Resources\TouchControlsNoHold.png" />
     <None Include="Resources\xbox360.png" />
     <None Include="Resources\xbox360Layour.jpg" />

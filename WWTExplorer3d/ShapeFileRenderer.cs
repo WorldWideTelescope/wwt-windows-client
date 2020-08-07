@@ -1,13 +1,25 @@
-﻿using System;
+﻿using ShapefileTools;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using ShapefileTools;
 
-using System.Drawing;
-using System.Data;
 using System.IO;
-using System.Windows.Forms;
+using System.Text;
+
 using Vector3 = SharpDX.Vector3;
+#if WINDOWS_UWP
+using XmlElement = Windows.Data.Xml.Dom.XmlElement;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
+using Color = System.Drawing.Color;
+using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
+using System.Xml;
+using System.Data;
+using System.Windows.Forms;
+#endif
+
 
 namespace TerraViewer
 {
@@ -100,12 +112,12 @@ namespace TerraViewer
             }
         }
 
-        public override void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public override void SaveToXml(XmlTextWriter xmlWriter)
         {
             base.SaveToXml(xmlWriter);
         }
 
-        public bool PointInboundingBox( Coordinates target, double[] bbox)
+        public bool PointInboundingBox(Coordinates target, double[] bbox)
         {
             if (bbox[0] > bbox[2])
             {
@@ -117,7 +129,7 @@ namespace TerraViewer
                 if (bbox[0] - 360 > target.Lng && bbox[1] < target.Lat && bbox[2] - 360 < target.Lng && bbox[3] > target.Lat)
                 {
                     return true;
-                }         
+                }
             }
             else
             {
@@ -135,6 +147,7 @@ namespace TerraViewer
             }
             return false;
         }
+
         public override IPlace FindClosest(Coordinates target, float distance, IPlace closestPlace, bool astronomical)
         {
             bool pointFound = false;
@@ -576,9 +589,9 @@ namespace TerraViewer
             //todo copy binary format
 
             string data = ToWellKnownText();
-
+#if !WINDOWS_UWP
             Clipboard.SetText(data);
-
+#endif
         }
 
 

@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using SharpDX;
+#if WINDOWS_UWP
+#else
 using Color = System.Drawing.Color;
 using RectangleF = System.Drawing.RectangleF;
+using PointF = System.Drawing.PointF;
+using SizeF = System.Drawing.SizeF;
+using System.Drawing;
 using System.Xml;
+#endif
+
 
 namespace TerraViewer
 {
-   
+
     public class Text3dBatch : IDisposable
     {
         public int Height = 128;
@@ -46,13 +49,19 @@ namespace TerraViewer
             }
 
 
-            Color col = Color.FromArgb((int)(color.A * opacity), (int)(color.R * opacity), (int)(color.G * opacity), (int)(color.B * opacity));
+            Color col = Color.FromArgb((byte)(color.A * opacity), (byte)(color.R * opacity), (byte)(color.G * opacity), (byte)(color.B * opacity));
 
 
             SimpleGeometryShader11.Color = col;
 
             SharpDX.Matrix mat = (renderContext.World * renderContext.View * renderContext.Projection).Matrix11;
+
+            if (RenderContext11.ExternalProjection)
+            {
+                mat = mat * RenderContext11.ExternalScalingFactor;
+            }
             mat.Transpose();
+
 
             SimpleGeometryShader11.WVPMatrix = mat;
 
@@ -74,8 +83,14 @@ namespace TerraViewer
  
             renderContext.SetVertexBuffer(vertexBuffer);
 
-            renderContext.devContext.Draw(vertexBuffer.Count, 0);
-
+            if (RenderContext11.ExternalProjection)
+            {
+                renderContext.devContext.DrawInstanced(vertexBuffer.Count, 2, 0, 0);
+            }
+            else
+            {
+                renderContext.devContext.Draw(vertexBuffer.Count, 0);
+            }
             renderContext.DepthStencilMode = dm;
 
             renderContext.BlendMode = bm;
@@ -111,66 +126,57 @@ namespace TerraViewer
             TextObject.Text = "";
             TextObject.FontSize = (float)Height*.50f;
 
-            System.Drawing.Font font = TextObject.Font;
-            StringFormat sf = new StringFormat();
-            sf.Alignment = StringAlignment.Near;
-
-            Bitmap bmp = new Bitmap(20, 20);
-            Graphics g = Graphics.FromImage(bmp);
             // Create Index Buffers
 
             List<PositionColoredTextured> verts = new List<PositionColoredTextured>();
             foreach (Text3d t3d in Items)
             {
-                float fntAdjust = font.Size / 128f;
                 String text = t3d.Text;
-                SizeF size = g.MeasureString(text, font);
-
-                float factor = .6666f;
-                t3d.width = size.Width * (float)t3d.scale * factor;
-                t3d.height = size.Height * (float)t3d.scale * factor;
                 float left = 0;
-                
-                int charsLeft = text.Length;
-                int index = 0;
-                // SetMeasurableCharacterRanges has a limit of 32 items per call;
-                while (charsLeft > 0)
+                float top = 0;
+                float fntAdjust = TextObject.FontSize / 128f;
+                float factor = .6666f;
+                float width = 0;
+                float height = 0;
+                for (int i = 0; i < text.Length; i++)
                 {
-                    int charsNow = Math.Min(32, charsLeft);
-                    charsLeft -= charsNow;
-
-                    CharacterRange[] ranges = new CharacterRange[charsNow];
-                    for (int i = 0; i < charsNow; i++)
+                    GlyphItem item = glyphCache.GetGlyphItem(text[i]);
+                    if (item != null)
                     {
-                        ranges[i] = new CharacterRange(i + index, 1);
+                        width += (float)(item.Extents.Width);
+                        height = Math.Max(item.Extents.Height, height);
                     }
+                }
 
-                    sf.SetMeasurableCharacterRanges(ranges);
+                Vector2d size = new Vector2d(width, height);
 
-                    Region[] reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
+                t3d.width = size.X * (float)t3d.scale * factor * fntAdjust;
+                t3d.height = size.Y * (float)t3d.scale * factor * fntAdjust;
 
+                float maxLength = (float)(t3d.TextLength/2 );
 
+                int charsLeft = text.Length;
 
-                   
-                    for (int i = 0; i < (charsNow); i++)
+                for (int i = 0; i < charsLeft; i++)
+                {
+                    GlyphItem item = glyphCache.GetGlyphItem(text[i]);
+                    if (item != null)
                     {
-                        GlyphItem item = glyphCache.GetGlyphItem(text[i+index]);
-                        RectangleF rectf = reg[i].GetBounds(g);
-                        RectangleF position = new RectangleF(rectf.Left * (float)t3d.scale * factor, rectf.Top * (float)t3d.scale * factor, rectf.Width * (float)t3d.scale * factor, rectf.Height * (float)t3d.scale * factor);
+                        RectangleF position = new RectangleF(left * (float)t3d.scale * factor, 0 * (float)t3d.scale * factor, item.Extents.Width * fntAdjust * (float)t3d.scale * factor, item.Extents.Height * fntAdjust * (float)t3d.scale * factor);
+                        left += (float)(item.Extents.Width * fntAdjust);
 
-                        position = new RectangleF(left * (float)t3d.scale * factor, 0 * (float)t3d.scale * factor, item.Extents.Width * fntAdjust * (float)t3d.scale * factor, item.Extents.Height * fntAdjust * (float)t3d.scale * factor);
-                        left += item.Extents.Width * fntAdjust;
+                        if (left > maxLength)
+                        {
+                            break;
+                        }
+                        //System.Diagnostics.Debug.WriteLine((position.Width/position1.Width).ToString() + ", " + (position.Height / position1.Height).ToString());
+
                         t3d.AddGlyphPoints(verts, item.Size, position, item.UVRect);
                     }
-
-                    index += charsNow;
                 }
             }
 
-            g.Dispose();
-            GC.SuppressFinalize(g);
-            bmp.Dispose();
-            font.Dispose();
+
 
             vertCount = verts.Count;
             vertexBuffer = new PositionColorTexturedVertexBuffer11(vertCount, RenderContext11.PrepDevice);
@@ -186,6 +192,104 @@ namespace TerraViewer
 
             glyphVersion = glyphCache.Version;
         }
+
+        //public void PrepareBatchOld()
+        //{
+        //    if (glyphCache == null)
+        //    {
+        //        glyphCache = GlyphCache.GetCache(Height);
+        //    }
+        //    // Add All Glyphs
+
+        //    foreach (Text3d t3d in Items)
+        //    {
+        //        foreach (char c in t3d.Text)
+        //        {
+        //            glyphCache.AddGlyph(c);
+        //        }
+        //    }
+
+        //    // Calculate Metrics
+
+        //    TextObject.Text = "";
+        //    TextObject.FontSize = (float)Height * .50f;
+
+        //    System.Drawing.Font font = TextObject.Font;
+        //    StringFormat sf = new StringFormat();
+        //    sf.Alignment = StringAlignment.Near;
+
+        //    Bitmap bmp = new Bitmap(20, 20);
+        //    Graphics g = Graphics.FromImage(bmp);
+        //    // Create Index Buffers
+
+        //    List<PositionColoredTextured> verts = new List<PositionColoredTextured>();
+        //    foreach (Text3d t3d in Items)
+        //    {
+        //        float fntAdjust = font.Size / 128f;
+        //        String text = t3d.Text;
+        //        SizeF size = g.MeasureString(text, font);
+
+        //        float factor = .6666f;
+        //        t3d.width = size.Width * (float)t3d.scale * factor;
+        //        t3d.height = size.Height * (float)t3d.scale * factor;
+        //        float left = 0;
+
+        //        int charsLeft = text.Length;
+        //        int index = 0;
+        //        // SetMeasurableCharacterRanges has a limit of 32 items per call;
+        //        while (charsLeft > 0)
+        //        {
+        //            int charsNow = Math.Min(32, charsLeft);
+        //            charsLeft -= charsNow;
+
+        //            CharacterRange[] ranges = new CharacterRange[charsNow];
+        //            for (int i = 0; i < charsNow; i++)
+        //            {
+        //                ranges[i] = new CharacterRange(i + index, 1);
+        //            }
+
+        //            sf.SetMeasurableCharacterRanges(ranges);
+
+        //            Region[] reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
+
+
+
+
+        //            for (int i = 0; i < (charsNow); i++)
+        //            {
+        //                GlyphItem item = glyphCache.GetGlyphItem(text[i + index]);
+        //                RectangleF rectf = reg[i].GetBounds(g);
+        //                RectangleF position = new RectangleF(rectf.Left * (float)t3d.scale * factor, rectf.Top * (float)t3d.scale * factor, rectf.Width * (float)t3d.scale * factor, rectf.Height * (float)t3d.scale * factor);
+
+        //                position = new RectangleF(left * (float)t3d.scale * factor, 0 * (float)t3d.scale * factor, item.Extents.Width * fntAdjust * (float)t3d.scale * factor, item.Extents.Height * fntAdjust * (float)t3d.scale * factor);
+        //                left += item.Extents.Width * fntAdjust;
+        //                t3d.AddGlyphPoints(verts, item.Size, position, item.UVRect);
+        //            }
+
+        //            index += charsNow;
+        //        }
+        //    }
+
+        //    g.Dispose();
+        //    GC.SuppressFinalize(g);
+        //    bmp.Dispose();
+        //    font.Dispose();
+
+        //    vertCount = verts.Count;
+        //    vertexBuffer = new PositionColorTexturedVertexBuffer11(vertCount, RenderContext11.PrepDevice);
+
+        //    PositionColoredTextured[] vertBuf = (PositionColoredTextured[])vertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
+
+        //    for (int i = 0; i < vertCount; i++)
+        //    {
+        //        vertBuf[i] = verts[i];
+        //    }
+
+        //    vertexBuffer.Unlock();
+
+        //    glyphVersion = glyphCache.Version;
+        //}
+
         int vertCount = 0;
 
         public void CleanUp()
@@ -228,182 +332,7 @@ namespace TerraViewer
         #endregion
 
     }
-    public class Text2dBatch : IDisposable
-    {
-        public int Height = 128;
-        public Text2dBatch()
-        {
-        }
 
-        public Text2dBatch(int height)
-        {
-            Height = (int)(height * 3f);
-        }
-
-        public Text2dBatch(GlyphCache glyphCache)
-        {
-            Height = glyphCache.Height;
-
-        }
-
-        public List<Text2d> Items = new List<Text2d>();
-
-        public void Add(Text2d newItem)
-        {
-            Items.Add(newItem);
-        }
-        int glyphVersion = -1;
-
-        private static SharpDX.Direct3D11.InputLayout layout = null;
-
-        public void Draw(RenderContext11 renderContext, float Opacity, Color drawColor)
-        {
-            if (glyphCache == null || glyphCache.Version > glyphVersion)
-            {
-                PrepareBatch();
-            }
-
-
-            //todo11 Use Shader 
-
-            renderContext.SetupBasicEffect(BasicEffect.TextureColorOpacity, Opacity, drawColor);
-            renderContext.MainTexture = glyphCache.Texture;
-            renderContext.devContext.InputAssembler.PrimitiveTopology = SharpDX.Direct3D.PrimitiveTopology.TriangleList;
-
-            renderContext.PreDraw();
-
-
-            if (layout == null)
-            {
-                layout = new SharpDX.Direct3D11.InputLayout(renderContext.Device, renderContext.Shader.InputSignature, new[]
-                           {
-                               new SharpDX.Direct3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float,     0, 0),
-                               new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float,       12, 0),
-                           });
-            }
-            renderContext.Device.ImmediateContext.InputAssembler.InputLayout = layout;
-
-
-            renderContext.SetVertexBuffer(vertexBuffer);
-
-            renderContext.devContext.Draw(vertexBuffer.Count, 0);
-
-        }
-
-        GlyphCache glyphCache;
-
-        TextObject TextObject = new TextObject();
-        PositionTexturedVertexBuffer11 vertexBuffer;
-        public void PrepareBatch()
-        {
-            if (glyphCache == null)
-            {
-                glyphCache = GlyphCache.GetCache(Height);
-            }
-            // Add All Glyphs
-
-            foreach (Text2d t3d in Items)
-            {
-                foreach (char c in t3d.Text)
-                {
-                    glyphCache.AddGlyph(c);
-                }
-            }
-
-            // Calculate Metrics
-
-            TextObject.Text = "";
-            TextObject.FontSize = (float)Height * .50f;
-
-            System.Drawing.Font font = TextObject.Font;
-            StringFormat sf = new StringFormat();
-            sf.Alignment = StringAlignment.Near;
-
-            Bitmap bmp = new Bitmap(20, 20);
-            Graphics g = Graphics.FromImage(bmp);
-            // Create Index Buffers
-
-            List<PositionTextured> verts = new List<PositionTextured>();
-            foreach (Text2d t2d in Items)
-            {
-                String text = t2d.Text;
-                SizeF size = g.MeasureString(text, font);
-
-                float factor = 1;
-                t2d.width = size.Width  * factor;
-                t2d.height = size.Height *  factor;
-
-                int charsLeft = text.Length;
-                int index = 0;
-                // SetMeasurableCharacterRanges has a limit of 32 items per call;
-                while (charsLeft > 0)
-                {
-                    int charsNow = Math.Min(32, charsLeft);
-                    charsLeft -= charsNow;
-
-                    CharacterRange[] ranges = new CharacterRange[charsNow];
-                    for (int i = 0; i < charsNow; i++)
-                    {
-                        ranges[i] = new CharacterRange(i + index, 1);
-                    }
-
-                    sf.SetMeasurableCharacterRanges(ranges);
-
-                    Region[] reg = g.MeasureCharacterRanges(text, font, new RectangleF(new PointF(0, 0), size), sf);
-
-
-
-                    for (int i = 0; i < (charsNow); i++)
-                    {
-                        GlyphItem item = glyphCache.GetGlyphItem(text[i + index]);
-                        RectangleF rectf = reg[i].GetBounds(g);
-                        RectangleF position = new RectangleF(rectf.Left  * factor, rectf.Top *  factor, rectf.Width *  factor, rectf.Height * factor);
-                        SizeF sizef = new SizeF(item.Size.Width  * factor, item.Size.Height *  factor);
-
-                        t2d.AddGlyphPoints(verts, item.Size, position, item.UVRect);
-                    }
-
-                    index += charsNow;
-                }
-            }
-
-            g.Dispose();
-            GC.SuppressFinalize(g);
-            bmp.Dispose();
-            font.Dispose();
-
-            vertCount = verts.Count;
-            vertexBuffer = new PositionTexturedVertexBuffer11(vertCount, RenderContext11.PrepDevice);
-
-            PositionTextured[] vertBuf = (PositionTextured[])vertexBuffer.Lock(0, 0); // Lock the buffer (which will return our structs)
-
-            for (int i = 0; i < vertCount; i++)
-            {
-                vertBuf[i] = verts[i];
-            }
-
-            vertexBuffer.Unlock();
-
-            glyphVersion = glyphCache.Version;
-        }
-        int vertCount = 0;
-
-
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            if (vertexBuffer != null)
-            {
-                vertexBuffer.Dispose();
-                GC.SuppressFinalize(vertexBuffer);
-                vertexBuffer = null;
-            }
-        }
-
-        #endregion
-
-    }
 
     public class GlyphItem
     {
@@ -436,7 +365,7 @@ namespace TerraViewer
         {
             ReferenceCount--;
         }
-
+#if !WINDOWS_UWP
         public void SaveToXml(XmlWriter xmlWriter)
         {
 
@@ -452,7 +381,29 @@ namespace TerraViewer
             xmlWriter.WriteAttributeString("ExtentsHeight", Extents.Height.ToString());
             xmlWriter.WriteEndElement();
         }
+#endif
+        internal static GlyphItem FromXML(XmlNode node)
+        {
+            char glyph = node.Attributes.GetNamedItem("Glyph").Value[0];
 
+            GlyphItem item = new GlyphItem(glyph);
+            item.UVRect = new  RectangleF(
+                float.Parse(node.Attributes.GetNamedItem("UVLeft").Value),
+                float.Parse(node.Attributes.GetNamedItem("UVTop").Value),
+                float.Parse(node.Attributes.GetNamedItem("UVWidth").Value),
+                float.Parse(node.Attributes.GetNamedItem("UVHeight").Value)
+                );
+
+            item.Size = new SizeF(
+                float.Parse(node.Attributes.GetNamedItem("SizeWidth").Value),
+                float.Parse(node.Attributes.GetNamedItem("SizeHeight").Value));
+
+            item.Extents = new SizeF(
+              float.Parse(node.Attributes.GetNamedItem("ExtentsWidth").Value),
+              float.Parse(node.Attributes.GetNamedItem("ExtentsHeight").Value));
+
+            return item;
+        }
 
         public char Glyph;
         public RectangleF UVRect;
@@ -507,6 +458,39 @@ namespace TerraViewer
         private GlyphCache(int height)
         {
             cellHeight = height;
+#if WINDOWS_UWP
+            Init();
+        }
+
+        public void Init()
+        {
+            bool big = cellHeight > 40;
+
+            string textureFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, big ? "UwpRenderEngine\\Resources\\glyphs1.png" : "UwpRenderEngine\\Resources\\glyphs2.png");
+            string xmlFilename = System.IO.Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, big ? "UwpRenderEngine\\Resources\\glyphs1.xml" : "UwpRenderEngine\\Resources\\glyphs2.xml");
+
+            texture = Texture11.FromFile(textureFilename);
+            var doc = new Windows.Data.Xml.Dom.XmlDocument();
+            doc.Load(xmlFilename);
+            LoadXmlGlyph(doc);
+        }
+
+        private void LoadXmlGlyph(Windows.Data.Xml.Dom.XmlDocument xml)
+        {
+            XmlNode nodes = xml.GetChildByName("GlyphItems");
+
+            foreach (XmlNode glyphItem in nodes.ChildNodes)
+            {
+                if ((string)glyphItem.LocalName == "GlyphItem")
+                {
+                    GlyphItem item = GlyphItem.FromXML(glyphItem);
+
+                    GlyphItems[item.Glyph] = item;
+                    allGlyphs = allGlyphs + item.Glyph;
+                }
+            }
+            Ready = true;
+#endif
         }
 
         public Texture11 Texture
@@ -552,7 +536,7 @@ namespace TerraViewer
 
         private void CalcOrMake(bool makeTexture)
         {
-
+#if !WINDOWS_UWP
             gridSize = 1;
 
             while ((gridSize * gridSize) < GlyphItems.Count)
@@ -649,7 +633,7 @@ namespace TerraViewer
             bmp.Dispose();
             GC.SuppressFinalize(bmp);
             dirty = false;
-
+#endif
         }
 
 
@@ -683,7 +667,7 @@ namespace TerraViewer
             }
         }
 
-
+#if !WINDOWS_UWP
         public void SaveToXML(string filename)
         {
 
@@ -696,7 +680,10 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
             xmlWriter.Close();
         }
+#endif
+        public bool Ready = false;
 
+      
 
         public void CleanUp()
         {
@@ -710,14 +697,14 @@ namespace TerraViewer
 
 
 
-        #region IDisposable Members
+#region IDisposable Members
 
         public void Dispose()
         {
             CleanUp();
         }
 
-        #endregion
+#endregion
      
         public bool Dirty
         {
@@ -752,6 +739,21 @@ namespace TerraViewer
             }
         }
 
+        public Text3d(Vector3d facing, Vector3d center, Vector3d up, string text, float fontsize, double scale)
+        {
+            Text = text;
+            this.up = up;
+            this.center = center;
+            this.scale = scale;
+            this.Facing = facing;
+            this.flat = true;
+            if (fontsize < 0)
+            {
+                sky = false;
+            }
+        }
+
+        public double TextLength = double.MaxValue;
         public double Rotation = 0;
         public double Tilt = 0;
         public double Bank = 0;
@@ -769,6 +771,11 @@ namespace TerraViewer
         public double width = 1;
         public double height = 1;
 
+        private bool flat = false;
+
+        // alternate baseline for flat text
+        public Vector3d Facing = new Vector3d();
+
         public enum Alignment
         {
             Center,
@@ -784,11 +791,23 @@ namespace TerraViewer
             Vector3d left = Vector3d.Cross(center, up);
             Vector3d right = Vector3d.Cross(up, center);
 
+            if (flat)
+            {
+                left = Vector3d.Cross(Facing, up);
+                right = Vector3d.Cross(up, Facing);
+            }
+
+
             left.Normalize();
             right.Normalize();
             up.Normalize();
 
             Vector3d upTan = Vector3d.Cross(center, right);
+
+            if (flat)
+            {
+                upTan = Vector3d.Cross(Facing, right);
+            }
 
             upTan.Normalize();
 
@@ -905,67 +924,4 @@ namespace TerraViewer
 
     }
 
-    public class Text2d
-    {
-        public Text2d()
-        {
-
-        }
-
-        System.Drawing.Rectangle rect;
-
-        public Text2d(System.Drawing.Rectangle drawRect, string text, float fontsize)
-        {
-            Text = text;
-            rect = drawRect;
-        }
-
-
-
-        public float Opacity = 1.0f;
-        public string Text = "";
-
-        public double width = 1;
-        public double height = 1;
-
-
-        public void AddGlyphPoints(List<PositionTextured> pointList, SizeF size, RectangleF position, RectangleF uv)
-        {
-            PositionTextured[] points = new PositionTextured[6];
-
-            Vector3d ul = new Vector3d(position.Left+rect.Left, position.Top+rect.Top, .9f);
-            Vector3d ur = new Vector3d(position.Right+rect.Left, position.Top+rect.Top, .9f);
-
-            Vector3d ll = new Vector3d(position.Left+rect.Left, position.Bottom+rect.Top, .9f);
-            Vector3d lr = new Vector3d(position.Right+rect.Left, position.Bottom+rect.Top, .9f);
-
-            points[0].Position = ul;
-            points[0].Tu = uv.Left;
-            points[0].Tv = uv.Top;
-
-            points[2].Tu = uv.Left;
-            points[2].Tv = uv.Bottom;
-            points[2].Position = ll;
-
-            points[1].Tu = uv.Right;
-            points[1].Tv = uv.Top;
-            points[1].Position = ur;
-
-            points[3].Tu = uv.Right;
-            points[3].Tv = uv.Bottom;
-            points[3].Position = lr;
-
-            points[5].Tu = uv.Right;
-            points[5].Tv = uv.Top;
-            points[5].Position = ur;
-
-            points[4].Tu = uv.Left;
-            points[4].Tv = uv.Bottom;
-            points[4].Position = ll;
-
-
-            pointList.AddRange(points);
-        }
-
-    }
 }

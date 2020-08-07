@@ -1,13 +1,16 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
-using System.Text;
-
-using System.Drawing;
 using System.IO;
-using SharpDX;
-using Color = System.Drawing.Color;
 using System.Reflection;
+using System.Text;
+#if WINDOWS_UWP
+using Color= TerraViewer.Color;
+using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
+#else
 using System.Xml;
+using Color = System.Drawing.Color;
+#endif
 
 namespace TerraViewer
 {
@@ -338,7 +341,7 @@ namespace TerraViewer
             }
         }
 
-        public virtual void SaveToXml(System.Xml.XmlTextWriter xmlWriter)
+        public virtual void SaveToXml(XmlTextWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("ReferenceFrame");
             xmlWriter.WriteAttributeString("Name", Name);
@@ -396,7 +399,7 @@ namespace TerraViewer
             xmlWriter.WriteEndElement();
         }
 
-        public virtual void InitializeFromXml(System.Xml.XmlNode node)
+        public virtual void InitializeFromXml(XmlNode node)
         {
             Name = node.Attributes["Name"].Value;
             Parent = node.Attributes["Parent"].Value;
@@ -453,7 +456,7 @@ namespace TerraViewer
             {
                 if (node["Trajectory"] != null)
                 {
-                    foreach (XmlNode child in node["Trajectory"])
+                    foreach (XmlNode child in node["Trajectory"].ChildNodes)
                     {
                         Trajectory.Add(new TrajectorySample(child.InnerText));
                     }
@@ -969,7 +972,7 @@ namespace TerraViewer
             PropertyInfo pi = thisType.GetProperty(name);
             bool safeToSet = false;
             Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
+            var attributes = pi.GetCustomAttributes(false);
             foreach (object var in attributes)
             {
                 if (var.GetType() == layerPropType)
@@ -982,7 +985,7 @@ namespace TerraViewer
             if (safeToSet)
             {
                 //Convert.ChangeType(
-                if (pi.PropertyType.BaseType == typeof(Enum))
+                if (pi.PropertyType.BaseType() == typeof(Enum))
                 {
                     pi.SetValue(this, Enum.Parse(pi.PropertyType, value, true), null);
                 }
@@ -1010,10 +1013,14 @@ namespace TerraViewer
             doc.LoadXml(xml);
 
 
-            XmlNode root = doc["LayerApi"];
+            XmlNode root = doc.GetChildByName("LayerApi");
 
             XmlNode LayerNode = root["Frame"];
+#if WINDOWS_UWP
+            foreach (var attrib in LayerNode.Attributes)
+#else
             foreach (XmlAttribute attrib in LayerNode.Attributes)
+#endif
             {
                 if (attrib.Name == "Class")
                 {
@@ -1035,7 +1042,7 @@ namespace TerraViewer
             PropertyInfo pi = thisType.GetProperty(name);
             bool safeToGet = false;
             Type layerPropType = typeof(LayerProperty);
-            object[] attributes = pi.GetCustomAttributes(false);
+            var attributes = pi.GetCustomAttributes(false);
             foreach (object var in attributes)
             {
                 if (var.GetType() == layerPropType)
@@ -1076,7 +1083,7 @@ namespace TerraViewer
                 {
                     bool safeToGet = false;
 
-                    object[] attributes = pi.GetCustomAttributes(false);
+                    var attributes = pi.GetCustomAttributes(false);
                     foreach (object var in attributes)
                     {
                         if (var.GetType() == layerPropType)
@@ -1099,7 +1106,6 @@ namespace TerraViewer
             }
             byte[] data = ms.GetBuffer();
             return Encoding.UTF8.GetString(data);
-
         }
 
         public double[] GetParams()
@@ -1118,6 +1124,10 @@ namespace TerraViewer
             paramList[9] = translation.X;
             paramList[10] = translation.Y;
             paramList[11] = translation.Z;
+            paramList[12] = representativeColor.R;
+            paramList[13] = representativeColor.G;
+            paramList[14] = representativeColor.B;
+            paramList[15] = representativeColor.A;
 
             return paramList;
         }
@@ -1137,7 +1147,11 @@ namespace TerraViewer
                 "Altitude",
                 "Translate.X",
                 "Translate.Y",
-                "Translate.Z"
+                "Translate.Z",
+                "Color.Red",
+                "Color.Green",
+                "Color.Blue",
+                "Color.Alpha"
             };
         }
 
@@ -1154,6 +1168,10 @@ namespace TerraViewer
                 BaseTweenType.Linear,
                 BaseTweenType.Linear, 
                 BaseTweenType.Linear, 
+                BaseTweenType.Linear,
+                BaseTweenType.Linear,
+                BaseTweenType.Linear,
+                BaseTweenType.Linear,
                 BaseTweenType.Linear,
                 BaseTweenType.Linear,
                 BaseTweenType.Linear
@@ -1175,11 +1193,16 @@ namespace TerraViewer
                 Altitude = paramList[8];
             }
 
-            if (paramList.Length == 12)
+            if (paramList.Length > 11)
             {
                 translation.X = paramList[9];
                 translation.Y = paramList[10];
                 translation.Z = paramList[11];
+            }
+
+            if (paramList.Length > 11)
+            {
+                representativeColor = Color.FromArgb((int)(paramList[12] * 255), (int)(paramList[13] * 255), (int)(paramList[14] * 255), (int)(paramList[15] * 255));
             }
         }
 
@@ -1193,7 +1216,7 @@ namespace TerraViewer
             return name;
         }
 
-        public IUiController GetEditUI()
+        public object GetEditUI()
         {
             return null;
         }
@@ -1257,7 +1280,6 @@ namespace TerraViewer
             {
                 return string.Format("{0} {1} {2} {3} {4} {5} {6}", Time, X, Y, Z, H, P, R);
             }
-
         }
     }
 }

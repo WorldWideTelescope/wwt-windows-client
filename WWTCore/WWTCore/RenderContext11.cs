@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+#if WINDOWS_UWP
+using SysColor = TerraViewer.Color;
+#else
+using SysColor = System.Drawing.Color;
+#endif
 using System.Text;
 using SharpDX.Direct3D11;
 using SharpDX.Direct3D;
@@ -41,9 +45,9 @@ namespace TerraViewer
 
     public struct Material
     {
-        public System.Drawing.Color Diffuse;
-        public System.Drawing.Color Ambient;
-        public System.Drawing.Color Specular;
+        public SysColor Diffuse;
+        public SysColor Ambient;
+        public SysColor Specular;
         public float SpecularSharpness;
         public float Opacity;
         public bool Default;
@@ -53,11 +57,16 @@ namespace TerraViewer
     {
         public static int MultiSampleCount = 4;
         public static SharpDX.DXGI.Format DefaultDepthStencilFormat = Format.D24_UNorm_S8_UInt;
-
-        SwapChainDescription desc;
+#if !WINDOWS_UWP
+        SwapChainDescription desc; 
         private Device device;
-
         public static Device PrepDevice = null;
+#else
+        SwapChainDescription1 desc;
+        private Device device;
+        public static Device PrepDevice = null;
+#endif
+
 
         public Device Device
         {
@@ -71,7 +80,11 @@ namespace TerraViewer
         }
 
         public DeviceContext devContext;
-        SwapChain swapChain;
+#if !WINDOWS_UWP     
+        public SwapChain swapChain;
+#else
+        public SwapChain2 swapChain;
+#endif
         Factory factory;
         Texture2D backBuffer;
 
@@ -109,6 +122,22 @@ namespace TerraViewer
             }
         }
 
+        public int Width
+        {
+            get
+            {
+                return (int)viewPort.Width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return (int)viewPort.Height;
+            }
+        }
+
         public Viewport DisplayViewport
         {
             get { return displayViewPort; }
@@ -123,7 +152,14 @@ namespace TerraViewer
 
         public static SharpDX.DXGI.Format DefaultColorFormat
         {
-            get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
+            get
+            {
+#if WINDOWS_UWP
+                return sRGB ? Format.B8G8R8A8_UNorm_SRgb : Format.B8G8R8A8_UNorm;
+#else
+                return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm;
+#endif
+            }
         }
 
         public static SharpDX.DXGI.Format DefaultTextureFormat
@@ -131,6 +167,7 @@ namespace TerraViewer
             get { return sRGB ? Format.R8G8B8A8_UNorm_SRgb : Format.R8G8B8A8_UNorm; }
         }
 
+#if !WINDOWS_UWP
         public RenderContext11(System.Windows.Forms.Control control, bool forceNoSRGB = false)
         {
 
@@ -271,31 +308,194 @@ namespace TerraViewer
 
             initializeStates();
         }
+#else
 
-        Device1 dv1 = null;
-
-        public void SetLatency(int frames)
+        
+        public RenderContext11(Device deviceIn, SharpDX.WIC.ImagingFactory2 wicImagingFactory, int width, int height)
         {
-            if (dv1 != null)
+            bool forceNoSRGB = false;
+
+            WicImagingFactory = wicImagingFactory;
+
+
+            if (deviceIn == null)
             {
-                dv1.MaximumFrameLatency = frames;
+                forceNoSRGB = true;
+                bool failed = true;
+                while (failed)
+                {
+                    try
+                    {
+                        using (Device defaultDevice = new Device(DriverType.Hardware, DeviceCreationFlags.Debug))
+                        {
+                            this.device = defaultDevice.QueryInterface<SharpDX.Direct3D11.Device2>();
+                        }
+
+
+                        // SwapChain description
+                        desc = new SwapChainDescription1()
+                        {
+                            AlphaMode = AlphaMode.Ignore,
+                            BufferCount = 2,
+                            Width = width,
+                            Height = height,
+                            Format = Format.R8G8B8A8_UNorm,
+                            SampleDescription = new SampleDescription(MultiSampleCount, 0),
+                            Scaling = Scaling.Stretch,
+                            Stereo = false,
+                            SwapEffect = SwapEffect.FlipSequential, //was discard?
+                            Usage = Usage.BackBuffer | Usage.RenderTargetOutput
+                        };
+
+                        FeatureLevel[] featureLevels = { FeatureLevel.Level_11_0, FeatureLevel.Level_10_1, FeatureLevel.Level_10_0, FeatureLevel.Level_9_3 };
+
+                        using (SharpDX.DXGI.Device3 dxgiDevice3 = this.device.QueryInterface<SharpDX.DXGI.Device3>())
+                        {
+                            // Get the DXGI factory automatically created when initializing the Direct3D device.
+                            using (Factory3 dxgiFactory3 = dxgiDevice3.Adapter.GetParent<Factory3>())
+                            {
+                                // Create the swap chain and get the highest version available.
+                                using (SwapChain1 swapChain1 = new SwapChain1(dxgiFactory3, this.device, ref desc))
+                                {
+                                    this.swapChain = swapChain1.QueryInterface<SwapChain2>();
+                                }
+                            }
+                        }
+
+                        // Create a Texture2D from the existing swap chain to use as 
+                        backBuffer = Texture2D.FromSwapChain<Texture2D>(this.swapChain, 0);
+                        renderView = new RenderTargetView(this.device, backBuffer);
+
+                        // Create Depth Buffer & View
+                        depthBuffer = new Texture2D(device, new Texture2DDescription()
+                        {
+                            Format = DefaultDepthStencilFormat,
+                            ArraySize = 1,
+                            MipLevels = 1,
+                            Width = width,
+                            Height = height,
+                            SampleDescription = new SampleDescription(MultiSampleCount, 0),
+                            Usage = ResourceUsage.Default,
+                            BindFlags = BindFlags.DepthStencil,
+                            CpuAccessFlags = CpuAccessFlags.None,
+                            OptionFlags = ResourceOptionFlags.None
+                        });
+
+                        depthView = new DepthStencilView(device, depthBuffer);
+
+                        failed = false;
+                    }
+                    catch
+                    {
+                        if (MultiSampleCount != 1)
+                        {
+                            MultiSampleCount = 1;
+                            AppSettings.SettingsBase["MultiSampling"] = 1;
+                        }
+                        else
+                        {
+                            throw new System.Exception("DX Init failed");
+                        }
+                        failed = true;
+                    }
+                }
             }
-        }
+            else
+            {
+                this.device = deviceIn;
+                externalViewport = new ViewportF(0, 0, width, height);
+            }
+
+            devContext = this.device.ImmediateContext;
+
+            PrepDevice = this.device;
+
+
+            if (device.FeatureLevel == FeatureLevel.Level_9_3)
+            {
+                PixelProfile = "ps_4_0_level_9_3";
+                VertexProfile = "vs_4_0_level_9_3";
+                Downlevel = true;
+            }
+            else if (device.FeatureLevel == FeatureLevel.Level_9_1)
+            {
+                PixelProfile = "ps_4_0_level_9_1";
+                VertexProfile = "vs_4_0_level_9_1";
+                Downlevel = true;
+            }
+
+           
+
+            if (!Downlevel)
+            {
+                if (!forceNoSRGB)
+                {
+                    sRGB = true;
+                }
+            }
+
+
+          
+                sampler = new SamplerState(device, new SamplerStateDescription()
+                {
+                    Filter = Filter.Anisotropic,
+                    AddressU = TextureAddressMode.Clamp,
+                    AddressV = TextureAddressMode.Clamp,
+                    AddressW = TextureAddressMode.Wrap,
+                    BorderColor = SharpDX.Color.Black,
+                    ComparisonFunction = Comparison.Never,
+                    MaximumAnisotropy = 16,
+                    MipLodBias = 0,
+                    MinimumLod = 0,
+                    MaximumLod = 16,
+                });
+ 
+            devContext.PixelShader.SetSampler(0, sampler);
+            // Prepare All the stages
+            displayViewPort = new Viewport(0, 0, width, height, 0.0f, 1.0f);
+            ViewPort = displayViewPort;
+            devContext.OutputMerger.SetTargets(depthView, renderView);
+
+            initializeStates();
+        }  
+        public static SharpDX.WIC.ImagingFactory2 WicImagingFactory = null;
+#endif
+
+
 
         private Viewport displayViewPort;
 
         public void SetDisplayRenderTargets()
         {
-            devContext.OutputMerger.ResetTargets();
-            ViewPort = displayViewPort;
-            devContext.OutputMerger.SetTargets(depthView, renderView);
-            currentTargetView = renderView;
-            currentDepthView = depthView;
+            devContext.Flush();
+
+            if (renderView != null)
+            {
+                devContext.OutputMerger.ResetTargets();
+                ViewPort = displayViewPort;
+                devContext.OutputMerger.SetTargets(depthView, renderView);
+                currentTargetView = renderView;
+                currentDepthView = depthView;
+            }
+            else if (externalTargetView != null)
+            {
+                devContext.OutputMerger.ResetTargets();
+                ViewPort = externalViewport;
+                devContext.OutputMerger.SetTargets(externalDepthView, externalTargetView);
+                currentTargetView = externalTargetView;
+                currentDepthView = externalDepthView;
+            }
+
+            //var views = devContext.OutputMerger.GetRenderTargets(2);
+            //currentTargetView = views[0];
 
         }
         RenderTargetView currentTargetView;
         DepthStencilView currentDepthView;
 
+        public static RenderTargetView externalTargetView;
+        public static DepthStencilView externalDepthView;
+        static ViewportF externalViewport;
 
         // Return true if this vertex instancing is supported
         public static bool SupportsInstancing
@@ -312,7 +512,7 @@ namespace TerraViewer
         {
             currentTargetView = targetTexture.renderView;
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 currentDepthView = depthBuffer.DepthView;
             }
@@ -324,7 +524,7 @@ namespace TerraViewer
             devContext.OutputMerger.ResetTargets();
             ViewPort = new Viewport(0, 0, targetTexture.Width, targetTexture.Height, 0.0f, 1.0f);
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 devContext.OutputMerger.SetTargets(depthBuffer.DepthView, targetTexture.renderView);
             }
@@ -340,7 +540,7 @@ namespace TerraViewer
         {
             currentTargetView = targetTextureView;
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 currentDepthView = depthBufferView;
             }
@@ -352,7 +552,7 @@ namespace TerraViewer
             devContext.OutputMerger.ResetTargets();
             ViewPort = new Viewport(0, 0, width, height, 0.0f, 1.0f);
 
-            if (depthBuffer != null)
+            if (depthBuffer != null || ExternalProjection)
             {
                 devContext.OutputMerger.SetTargets(depthBufferView, targetTextureView);
             }
@@ -364,7 +564,8 @@ namespace TerraViewer
 
         }
 
-        public Bitmap GetScreenBitmap()
+#if !WINDOWS_UWP
+        public System.Drawing.Bitmap GetScreenBitmap()
         {
             MemoryStream ms = new MemoryStream();
 
@@ -397,13 +598,14 @@ namespace TerraViewer
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            Bitmap bmp = new Bitmap(ms);
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms);
 
             ms.Close();
             ms.Dispose();
 
             return bmp;
         }
+#endif
 
         public Texture11 GetScreenTexture()
         {
@@ -433,7 +635,13 @@ namespace TerraViewer
             {
                 devContext.ClearDepthStencilView(currentDepthView, DepthStencilClearFlags.Depth, 1.0f, 0);
             }
-            devContext.ClearRenderTargetView(currentTargetView, color);
+
+            if (currentTargetView != null)
+            {
+                devContext.ClearRenderTargetView(currentTargetView, color);               
+                //for debug paint red
+                //devContext.ClearRenderTargetView(currentTargetView, new SharpDX.Color4(1,0,0,1));               
+            }
         }
 
         public void ClearStencilOnly()
@@ -445,9 +653,9 @@ namespace TerraViewer
             }
         }
 
-        public void Resize(System.Windows.Forms.Control control)
+        public void Resize(int height, int width)
         {
-            if (control.ClientSize.Width * control.ClientSize.Height == 0)
+            if (width * height == 0)
             {
                 return;
             }
@@ -476,7 +684,7 @@ namespace TerraViewer
                 depthBuffer = null;
 
 
-                swapChain.ResizeBuffers(1, control.ClientSize.Width, control.ClientSize.Height, DefaultColorFormat, SwapChainFlags.None);
+                swapChain.ResizeBuffers(1, width, height, DefaultColorFormat, SwapChainFlags.None);
 
                 // New RenderTargetView from the backbuffer
                 backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
@@ -488,8 +696,8 @@ namespace TerraViewer
                     Format = DefaultDepthStencilFormat,
                     ArraySize = 1,
                     MipLevels = 1,
-                    Width = control.ClientSize.Width,
-                    Height = control.ClientSize.Height,
+                    Width = width,
+                    Height = height,
                     SampleDescription = backBuffer.Description.SampleDescription,
                     Usage = ResourceUsage.Default,
                     BindFlags = BindFlags.DepthStencil,
@@ -502,7 +710,7 @@ namespace TerraViewer
                 devContext.OutputMerger.SetTargets(depthView, renderView);
 
 
-                displayViewPort = new Viewport(0, 0, control.ClientSize.Width, control.ClientSize.Height, 0.0f, 1.0f);
+                displayViewPort = new Viewport(0, 0, width, height, 0.0f, 1.0f);
                 ViewPort = displayViewPort;
             }
         }
@@ -567,6 +775,10 @@ namespace TerraViewer
             get { return shadersEnabled; }
         }
 
+        static public Matrix3d WorldMatrix;
+        static public Matrix3d ViewMatrix;
+        static public Matrix3d ProjMatrix;
+
         public Matrix3d View
         {
             get { return view; }
@@ -588,16 +800,30 @@ namespace TerraViewer
             }
         }
 
+        //used for Stereo rendering in Mixed Reality
+        public static bool ExternalProjection = false;
+
         private Matrix3d projection;
 
         public Matrix3d Projection
         {
-            get { return projection; }
+            get
+            {
+                if (ExternalProjection)
+                {
+                    return Matrix3d.Identity;
+                }
+                return projection;
+            }
             set
             {
                 projection = value;
                 frustumDirty = true;
                 transformStateDirty = true;
+                if (ExternalProjection)
+                {
+                    SetProjectionClippingPlanes();
+                }
             }
         }
         private Matrix3d world;
@@ -656,12 +882,12 @@ namespace TerraViewer
             }
         }
 
-
-
         public RenderContext11(Device device)
         {
             Device = device;
             devContext = device.ImmediateContext;
+
+
         }
 
 
@@ -686,8 +912,8 @@ namespace TerraViewer
 
         public Vector3d CameraPosition;
 
-        private System.Drawing.Color ambientLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color AmbientLightColor
+        private SysColor ambientLightColor = SysColor.Black;
+        public SysColor AmbientLightColor
         {
             get
             {
@@ -701,8 +927,8 @@ namespace TerraViewer
             }
         }
 
-        private System.Drawing.Color hemiLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color HemisphereLightColor
+        private SysColor hemiLightColor = SysColor.Black;
+        public SysColor HemisphereLightColor
         {
             get
             {
@@ -732,8 +958,8 @@ namespace TerraViewer
         }
 
 
-        private System.Drawing.Color sunlightColor = System.Drawing.Color.White;
-        public System.Drawing.Color SunlightColor
+        private SysColor sunlightColor = SysColor.White;
+        public SysColor SunlightColor
         {
             get
             {
@@ -762,8 +988,8 @@ namespace TerraViewer
             }
         }
 
-        private System.Drawing.Color reflectedLightColor = System.Drawing.Color.Black;
-        public System.Drawing.Color ReflectedLightColor
+        private SysColor reflectedLightColor = SysColor.Black;
+        public SysColor ReflectedLightColor
         {
             get
             {
@@ -931,6 +1157,8 @@ namespace TerraViewer
             return new Vector3((float)v.X, (float)v.Y, (float)v.Z);
         }
 
+                            
+        public static Matrix ExternalScalingFactor = Matrix.Scaling(10, 10, -10);
 
         private void updateShaderTransformLightingConstants()
         {
@@ -995,7 +1223,13 @@ ambientLightColor.B / 255.0f);
                     shader.WorldViewMatrix = worldViewMatrix.Matrix;
 
                     // Set the combined world/view/projection matrix in the shader
+
                     Matrix wvp = (worldViewMatrix * Projection).Matrix;
+                    if (RenderContext11.ExternalProjection)
+                    {
+                        wvp = wvp * ExternalScalingFactor;
+                    }
+
                     shader.WVPMatrix = wvp;
 
                     // For view-dependent lighting (e.g. specular), we need the position of the camera
@@ -1095,9 +1329,20 @@ ambientLightColor.B / 255.0f);
             }
         }
 
+        bool lastFrustumExternal = false;
         public void MakeFrustum()
         {
-            Matrix3d viewProjection = World * View * Projection;
+            Matrix3d viewProjection;
+            if (ExternalProjection)
+            {
+                viewProjection = (World * View * ExternalProjectionLeft);
+                lastFrustumExternal = true;
+            }
+            else
+            {
+                viewProjection = (World * View * Projection);
+                lastFrustumExternal = false;
+            }
 
             Matrix3d inverseWorld = World;
             inverseWorld.Invert();
@@ -1112,7 +1357,7 @@ ambientLightColor.B / 255.0f);
         public void SetMaterial(Material material, Texture11 diffuseTex, Texture11 specularTex, Texture11 normalMap, float opacity)
         {
             PlanetSurfaceStyle surfaceStyle = PlanetSurfaceStyle.Diffuse;
-            if (material.Specular != System.Drawing.Color.Black)
+            if (material.Specular != SysColor.FromArgb(255, 0, 0, 0))
             {
                 surfaceStyle = PlanetSurfaceStyle.Specular;
             }
@@ -1124,7 +1369,7 @@ ambientLightColor.B / 255.0f);
             }
 
             PlanetShaderKey key = new PlanetShaderKey(surfaceStyle, false, 0);
-            if (reflectedLightColor != System.Drawing.Color.Black)
+            if (reflectedLightColor != SysColor.FromArgb(255, 0, 0, 0))
             {
                 key.lightCount = 2;
             }
@@ -1186,7 +1431,7 @@ ambientLightColor.B / 255.0f);
             Device.ImmediateContext.PixelShader.Set(null);
         }
 
-        public void SetupBasicEffect(BasicEffect e, float opacity, System.Drawing.Color color)
+        public void SetupBasicEffect(BasicEffect e, float opacity, SysColor color)
         {
             Vector4 correctedColor;
             if (sRGB)
@@ -1261,8 +1506,13 @@ ambientLightColor.B / 255.0f);
                 // Set the combined world/view/projection matrix in the shader
                 Matrix3d worldMatrix = World;
                 Matrix3d viewMatrix = View;
-
                 Matrix wvp = (worldMatrix * viewMatrix * Projection).Matrix;
+                if (RenderContext11.ExternalProjection)
+                {
+                    wvp = wvp * ExternalScalingFactor;
+                }
+
+
                 shader.WVPMatrix = wvp;
                 shader.DiffuseColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -1297,7 +1547,7 @@ ambientLightColor.B / 255.0f);
         {
             swapChain.SetFullscreenState(fullScreen, null);
         }
-
+#if !WINDOWS_UWP
         public void SaveBackBuffer(string filename, ImageFileFormat format)
         {
             if (MultiSampleCount != 1)
@@ -1328,7 +1578,7 @@ ambientLightColor.B / 255.0f);
                 Texture2D.ToFile(devContext, backBuffer, format, filename);
             }
       }
-
+#endif
 
         public BlendMode BlendMode
         {
@@ -1599,5 +1849,148 @@ ambientLightColor.B / 255.0f);
                 return transparentBorderSampler;
             }
         }
+
+
+        //for external projection
+        public static SharpDX.Direct3D11.Buffer viewProjectionConstantBuffer;
+
+
+        public static bool ProjectAtInfinity = false;
+        public static Matrix3d ExternalProjectionLeft { get; set; }
+        public static Matrix3d ExternalProjectionRight { get; set; }
+
+        static Matrix3d externalViewLeft;
+
+        public static Matrix3d ExternalViewLeft
+        {
+            set
+            {
+                externalViewLeft = value;
+            }
+        }
+
+        static Matrix3d externalViewRight;
+        public static Matrix3d ExternalViewRight
+        {
+            set
+            {
+                externalViewRight = value;
+            }
+        }
+
+        static Matrix3d externalProjLeft;
+        public static Matrix3d ExternalProjLeft
+        {
+            set
+            {
+                externalProjLeft = value;
+            }
+        }
+
+        static Matrix3d externalProjRight;
+        public static Matrix3d ExternalProjRight
+        {
+            set
+            {
+                externalProjRight = value;
+            }
+        }
+
+
+        void SetProjectionClippingPlanes()
+        {
+            externalProjLeft.M33 = -projection.M33;
+            externalProjLeft.M43 = projection.M43;
+             
+            externalProjRight.M33 = -projection.M33;
+            externalProjRight.M43 = projection.M43;
+        }
+
+        Matrix3d SetNearAndFarPlanes(Matrix3d matrix, float near, float far)
+        {
+            float q = far / (far - near);
+            matrix.M43 = -q * near;
+            matrix.M33 = -q;
+            return matrix;
+        }
+
+        public static Matrix3d ExternalViewScale = Matrix3d.Identity;
+
+        public static void UpdateProjectionConstantBuffers()
+        {
+            if (ExternalProjection)
+            {
+                ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
+               // ExternalViewScale = Matrix3d.Identity;
+
+                var epl = externalProjLeft;
+                var epr = externalProjRight;
+                var evl = externalViewLeft;
+                var evr = externalViewRight;
+                double scaleT = ExternalViewScale.M11;
+                //scaleT = 0;
+
+                evl.M41 *= scaleT;
+                evl.M42 *= scaleT;
+                evl.M43 *= scaleT;
+
+                evr.M41 *= scaleT;
+                evr.M42 *= scaleT;
+                evr.M43 *= scaleT;
+
+
+
+                var left = evl  * epl;
+                var right = evr * epr;
+
+
+
+
+                //left.M41 = 0;
+                //left.M42 = 0;
+                //left.M43 = 0;
+                //right.M41 = 0;
+                //right.M42 = 0;
+                //right.M43 = 0;
+
+                var scale = TerraViewer.Matrix3d.Scaling(1, 1, -1);
+                scale.Matrix = ExternalScalingFactor;
+                TerraViewer.RenderContext11.ExternalProjectionLeft = scale * left;
+                TerraViewer.RenderContext11.ExternalProjectionRight = scale * right;
+
+                if (ProjectAtInfinity)
+                {
+                    left.M41 = 0;
+                    left.M42 = 0;
+                    left.M43 = 0;
+                    left.M44 = 0;
+                    right.M41 = 0;
+                    right.M42 = 0;
+                    right.M43 = 0;
+                    right.M44 = 0;
+                }
+                left.Transpose();
+                right.Transpose();
+
+                viewProjectionConstantBufferData.viewProjectionLeft = left.Matrix;
+                viewProjectionConstantBufferData.viewProjectionRight = right.Matrix;
+                PrepDevice.ImmediateContext.UpdateSubresource(ref viewProjectionConstantBufferData, viewProjectionConstantBuffer);
+            }
+            else
+            {
+                if (viewProjectionConstantBuffer != null)
+                {
+                    ViewProjectionConstantBuffer viewProjectionConstantBufferData = new ViewProjectionConstantBuffer();
+                    viewProjectionConstantBufferData.viewProjectionLeft = Matrix.Identity;
+                    viewProjectionConstantBufferData.viewProjectionRight = Matrix.Identity;
+                    PrepDevice.ImmediateContext.UpdateSubresource(ref viewProjectionConstantBufferData, viewProjectionConstantBuffer);
+                }
+            }
+        }
+    }
+    internal struct ViewProjectionConstantBuffer
+    {
+        public SharpDX.Matrix viewProjectionLeft;
+        public SharpDX.Matrix viewProjectionRight;
     }
 }

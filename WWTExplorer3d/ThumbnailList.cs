@@ -1,17 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TerraViewer
 {
-    public delegate void ItemClickedEventHandler(object sender, Object e);
 
-    public enum ThumbnailItemType { Category, Item };
-    public enum ThumbnailSize { Small, Big };
     public partial class ThumbnailList : UserControl
     {
         public event ItemClickedEventHandler ItemHover;
@@ -30,8 +24,26 @@ namespace TerraViewer
             }
             items = new List<Object>();
             SetStyle(ControlStyles.ResizeRedraw, true);
+            thumbNailDrawTimer.Enabled = true;
+            thumbNailDrawTimer.Interval = 200;
+            thumbNailDrawTimer.Tick += ThumbNailDrawTimer_Tick;
 
         }
+
+
+
+
+
+        Timer thumbNailDrawTimer = new Timer();
+        private void ThumbNailDrawTimer_Tick(object sender, EventArgs e)
+        {
+            if (StillLoading && !DesignMode)
+            {
+                Invalidate();
+            }
+        }
+
+
 
         public void AddRange( IEnumerable<Object>  addItems)
         {
@@ -225,6 +237,12 @@ namespace TerraViewer
             }
         }
 
+        Bitmap loading = null;
+
+        bool stillLoading = false;
+        public bool StillLoading { get => stillLoading; set => stillLoading = value; }
+
+
         int HorzSpacing = 110;
         int VertSpacing = 75;
         int ThumbHeight = 65;
@@ -233,6 +251,15 @@ namespace TerraViewer
 
         private void ThumbnailList_Paint(object sender, PaintEventArgs e)
         {
+            stillLoading = false;
+
+            if (loading == null)
+            {
+                loading = UiTools.GetLoadingBitmap();
+            }
+
+
+
             Graphics g = e.Graphics;
             RowCount = Math.Max(Height / ThumbHeight, 1);
             ColCount = Math.Max(Width / HorzSpacing, 1);
@@ -278,6 +305,11 @@ namespace TerraViewer
                     try
                     {
                         Bitmap bmpThumb = ((IThumbnail)items[index]).ThumbNail;
+                        if (bmpThumb == loading)
+                        {
+                            stillLoading = true;
+                        }
+
                         if (bmpThumb != null)
                         {
                             g.DrawImage(bmpThumb, new Rectangle((int)((float)x * horzMultiple) + 2, y * VertSpacing + 3,bmpThumb.Width,bmpThumb.Height), new Rectangle(0,0,bmpThumb.Width,bmpThumb.Height),GraphicsUnit.Pixel);

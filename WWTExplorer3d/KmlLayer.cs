@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+#if !WINDOWS_UWP
 using System.Drawing;
-
-using System.IO;
-
-using Vector3 = SharpDX.Vector3;
+using System.Xml;
+#endif
 using Matrix = SharpDX.Matrix;
+using Vector3 = SharpDX.Vector3;
 
 namespace TerraViewer
 {
@@ -80,11 +79,11 @@ namespace TerraViewer
         {
             base.AddFilesToCabinet(fc);
         }
-        public override void WriteLayerProperties(System.Xml.XmlTextWriter xmlWriter)
+        public override void WriteLayerProperties(XmlTextWriter xmlWriter)
         {
             base.WriteLayerProperties(xmlWriter);
         }
-        public override void InitializeFromXml(System.Xml.XmlNode node)
+        public override void InitializeFromXml(XmlNode node)
         {
             base.InitializeFromXml(node);
         }
@@ -251,6 +250,9 @@ namespace TerraViewer
 
         private void AddLines(bool sky, KmlLineList geo, float lineWidth, Color polyColor, Color lineColor, bool extrude)
         {
+#if !WINDOWS_UWP
+            //todo UWP port to UWP compatible version
+
             //todo can we save this work for later?
             List<Vector3d> vertexList = new List<Vector3d>();
             List<Vector3d> vertexListGround = new List<Vector3d>();
@@ -305,7 +307,7 @@ namespace TerraViewer
                 triangles.AddTriangle(vertexList[indexes[i]], vertexList[indexes[i + 1]], vertexList[indexes[i + 2]], polyColor, new Dates());
             }
 
-
+#endif
         }
         public void AddPlacemark(KmlPlacemark placemark)
         {
@@ -409,7 +411,9 @@ namespace TerraViewer
                     {
                         if (!string.IsNullOrEmpty(placemark.description))
                         {
+#if !WINDOWS_UWP
                             WebWindow.OpenHtmlString(placemark.description.Replace("&amp;", "&"));
+#endif
                         }
                     }
                 }
@@ -421,10 +425,10 @@ namespace TerraViewer
         public void DrawPlaceMarks()
         {
            // todo11 port this Maybe instancing later?
-            Matrix projection = Earth3d.MainWindow.RenderContext11.Projection.Matrix11;
-            Matrix view = Earth3d.MainWindow.RenderContext11.View.Matrix11;
-            Matrix world = Earth3d.MainWindow.RenderContext11.World.Matrix11;
-            Matrix3d worldD = Earth3d.MainWindow.RenderContext11.World;
+            Matrix projection = RenderEngine.Engine.RenderContext11.Projection.Matrix11;
+            Matrix view = RenderEngine.Engine.RenderContext11.View.Matrix11;
+            Matrix world = RenderEngine.Engine.RenderContext11.World.Matrix11;
+            Matrix3d worldD = RenderEngine.Engine.RenderContext11.World;
             Matrix wvp = (world * view * projection);
             try
             {
@@ -434,9 +438,9 @@ namespace TerraViewer
                 {
                     if (placemark.ShouldDisplay())
                     {
-                        SharpDX.ViewportF vp = Earth3d.MainWindow.RenderContext11.ViewPort;
+                        SharpDX.ViewportF vp = RenderEngine.Engine.RenderContext11.ViewPort;
                         double alt = placemark.Point.altitude + EGM96Geoid.Height(placemark.Point.latitude, placemark.Point.longitude);
-                        Vector3d point3d = Coordinates.GeoTo3dDouble(placemark.Point.latitude, placemark.Point.longitude, 1 + (alt / Earth3d.MainWindow.RenderContext11.NominalRadius));
+                        Vector3d point3d = Coordinates.GeoTo3dDouble(placemark.Point.latitude, placemark.Point.longitude, 1 + (alt / RenderEngine.Engine.RenderContext11.NominalRadius));
                         Vector3 point = Vector3.Project(point3d.Vector311, vp.X, vp.Y, vp.Width, vp.Height, 0, 1, wvp);
                         // point.Z = 1;
                         KmlStyle style = placemark.Style.GetStyle(placemark.Selected);
@@ -457,8 +461,8 @@ namespace TerraViewer
                         }
 
                         point3d.TransformCoordinate(worldD);
-                        Vector3d dist = Earth3d.MainWindow.RenderContext11.CameraPosition - point3d;
-                        double distance = dist.Length() * Earth3d.MainWindow.RenderContext11.NominalRadius;
+                        Vector3d dist = RenderEngine.Engine.RenderContext11.CameraPosition - point3d;
+                        double distance = dist.Length() * RenderEngine.Engine.RenderContext11.NominalRadius;
                         dist.Normalize();
                         double dot = Vector3d.Dot(point3d, dist);
                         // if (dot > -.2)
@@ -471,7 +475,7 @@ namespace TerraViewer
                             {
                                 center = new Vector3((float)texture.Width / 2f, (float)texture.Height / 2f, 0);
 
-                                Sprite2d.Draw2D(Earth3d.MainWindow.RenderContext11, texture, new SizeF(size, size), new PointF(center.X, center.Y), (float)(style.IconStyle.Heading * Math.PI / 180f), new PointF(point.X, point.Y), Color.White);
+                                Sprite2d.Draw2D(RenderEngine.Engine.RenderContext11, texture, new SizeF(size, size), new PointF(center.X, center.Y), (float)(style.IconStyle.Heading * Math.PI / 180f), new PointF(point.X, point.Y), Color.White);
                             }
 
                             if (style.LabelStyle.Color.A > 0 && style.LabelStyle.Scale > 0)
@@ -506,11 +510,11 @@ namespace TerraViewer
         {
             foreach (KmlGroundOverlay overlay in GroundOverlays)
             {
-                if (Earth3d.MainWindow.KmlMarkers != null)
+                if (RenderEngine.Engine.KmlMarkers != null)
                 {
                     if (overlay.ShouldDisplay())
                     {
-                        Earth3d.MainWindow.KmlMarkers.AddGroundOverlay(overlay);
+                        RenderEngine.Engine.KmlMarkers.AddGroundOverlay(overlay);
                     }
                 }
             }
@@ -554,9 +558,11 @@ namespace TerraViewer
                     {
                         center.Y = overlay.RotationSpot.Y * texture.Height;
                     }
-
+#if WINDOWS_UWP
+                    Rectangle clientRect = new Rectangle(0, 0, RenderEngine.Engine.RenderContext11.Width, RenderEngine.Engine.RenderContext11.Height);
+#else
                     Rectangle clientRect = Earth3d.MainWindow.ClearClientArea;
-
+#endif
                     Size clientSize = clientRect.Size;
 
                     if (overlay.ScreenSpot.UnitsX == KmlPixelUnits.Fraction)
@@ -807,7 +813,7 @@ namespace TerraViewer
                 {
                     if (feature.sky)
                     {
-                        Earth3d.MainWindow.GotoTarget(new TourPlace(feature.Name, feature.LookAt.latitude, (feature.LookAt.longitude + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
+                        RenderEngine.Engine.GotoTarget(new TourPlace(feature.Name, feature.LookAt.latitude, (feature.LookAt.longitude + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
                     }
                     else
                     {
@@ -822,11 +828,11 @@ namespace TerraViewer
                         KmlCoordinate point = placemark.geometry.GetCenterPoint();
                         if (placemark.sky)
                         {
-                            Earth3d.MainWindow.GotoTarget(new TourPlace(placemark.Name, point.Lat, (point.Lng + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
+                            RenderEngine.Engine.GotoTarget(new TourPlace(placemark.Name, point.Lat, (point.Lng + 180) / 15, Classification.Unidentified, "", ImageSetType.Sky, .8), false, false, true);
                         }
                         else
                         {
-                            Earth3d.MainWindow.GotoTarget(new TourPlace(placemark.Name, point.Lat, point.Lng, Classification.Unidentified, "", ImageSetType.Earth, .8), false, false, true);
+                            RenderEngine.Engine.GotoTarget(new TourPlace(placemark.Name, point.Lat, point.Lng, Classification.Unidentified, "", ImageSetType.Earth, .8), false, false, true);
                         }
                     }
                     //if (placemark.geometry is KmlPoint)
@@ -959,7 +965,7 @@ namespace TerraViewer
             camera.Angle = -feature.LookAt.tilt / 180 * Math.PI;
             camera.Zoom = UiTools.MetersToZoom(feature.LookAt.range);
             TourPlace p = new TourPlace(feature.Name, camera, Classification.Unidentified, "", ImageSetType.Earth, SolarSystemObjects.Earth);
-            Earth3d.MainWindow.GotoTarget(p, false, false, true);
+            RenderEngine.Engine.GotoTarget(p, false, false, true);
         }
 
 

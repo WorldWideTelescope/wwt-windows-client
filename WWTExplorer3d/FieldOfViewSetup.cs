@@ -18,7 +18,7 @@ namespace TerraViewer
             if (fovSetup == null)
             {
                 fovSetup = new FieldOfViewSetup();
-                fovSetup.Fov = Earth3d.MainWindow.Fov;
+                fovSetup.Fov = RenderEngine.Engine.Fov;
                 fovSetup.Owner = owner;
             }
             fovSetup.Show();
