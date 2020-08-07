@@ -3,7 +3,6 @@
 
 trigger:
 - master
-- pipelines-codesign  # TEMPORARY
 
 stages:
 - stage: Build
