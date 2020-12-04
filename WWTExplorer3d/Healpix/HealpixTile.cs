@@ -574,7 +574,10 @@ namespace TerraViewer
 
             if (!ReadyToRender)
             {
-                TileCache.AddTileToQueue(this);
+                if(this.errored == false)
+                {
+                    TileCache.AddTileToQueue(this);
+                }
 
                 return false;
             }
