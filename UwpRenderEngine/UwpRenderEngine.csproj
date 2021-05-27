@@ -2806,9 +2806,6 @@
     <Content Include="..\WWTExplorer3d\Resources\OpenCluster.jpg">
       <Link>Resources\OpenCluster.jpg</Link>
     </Content>
-    <Content Include="..\WWTExplorer3d\Resources\Pano Stitch small.png">
-      <Link>Resources\Pano Stitch small.png</Link>
-    </Content>
     <Content Include="..\WWTExplorer3d\Resources\PauseHS.png">
       <Link>Resources\PauseHS.png</Link>
     </Content>
