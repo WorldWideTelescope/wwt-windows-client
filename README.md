@@ -16,7 +16,11 @@ Most folks should download the official WWT releases here:
 
 You only need to clone this repository if you’re interested in hacking the
 source code to the WWT application yourself. If that describes you, WWT is a C#
-application buildable with Visual Studio 2018 or 2019.
+application buildable with Visual Studio 2018 or 2019. In order to build the
+installer, you’ll need to install the [Microsoft Visual Studio Installer
+Projects][mvsip] extension for Visual Studio.
+
+[mvsip]: https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2017InstallerProjects
 
 
 ## Getting involved
