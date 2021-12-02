@@ -6263,7 +6263,7 @@ namespace TerraViewer
 
             if (string.IsNullOrEmpty(Properties.Settings.Default.CahceDirectory))
             {
-                Properties.Settings.Default.CahceDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Microsoft\\WorldWideTelescope\\";
+                Properties.Settings.Default.CahceDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\American Astronomical Society\\WorldWideTelescope\\";
                 string tempString = Properties.Settings.Default.CahceDirectory;
             }
 
@@ -13183,7 +13183,7 @@ namespace TerraViewer
             {
                 try
                 {
-                    string path = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Microsoft\\WorldWideTelescope";
+                    string path = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\American Astronomical Society\\WorldWideTelescope";
 
                     FileCabinet cab = new FileCabinet(saveDialog.FileName, Properties.Settings.Default.CahceDirectory);
 

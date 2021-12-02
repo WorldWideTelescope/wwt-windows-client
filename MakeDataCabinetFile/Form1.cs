@@ -18,7 +18,7 @@ namespace MakeDataCabinetFile
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string path = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Microsoft\\WorldWideTelescope\\data";
+            string path = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\American Astronomical Society\\WorldWideTelescope\\data";
 
             FileCabinet cab = new FileCabinet(textBox1.Text, path);
 
