@@ -741,46 +741,51 @@ namespace TerraViewer
             return meters / SSMUnitConversion * UiTools.KilometersPerAu;
         }
 
-        public static double GetMeters(double distance, AltUnits units)
+        public static double GetScaleFactor(AltUnits AltUnit, double custom)
         {
-            double scaleFactor = 1.0;
+            double factor = 1;
 
-            switch (units)
+            switch (AltUnit)
             {
                 case AltUnits.Meters:
-                    scaleFactor = 1.0;
+                    factor = 1.0;
                     break;
                 case AltUnits.Feet:
-                    scaleFactor = 1.0 / 3.2808399;
+                    factor = 1.0 / 3.2808399;
                     break;
                 case AltUnits.Inches:
-                    scaleFactor = (1.0 / 3.2808399) / 12;
+                    factor = (1.0 / 3.2808399) / 12;
                     break;
                 case AltUnits.Miles:
-                    scaleFactor = 1609.344;
+                    factor = 1609.344;
                     break;
                 case AltUnits.Kilometers:
-                    scaleFactor = 1000;
+                    factor = 1000;
                     break;
                 case AltUnits.AstronomicalUnits:
-                    scaleFactor = UiTools.KilometersPerAu * 1000;
+                    factor = UiTools.KilometersPerAu * 1000;
                     break;
                 case AltUnits.LightYears:
-                    scaleFactor = UiTools.AuPerLightYear * UiTools.KilometersPerAu * 1000;
+                    factor = UiTools.AuPerLightYear * UiTools.KilometersPerAu * 1000;
                     break;
                 case AltUnits.Parsecs:
-                    scaleFactor = UiTools.AuPerParsec * UiTools.KilometersPerAu * 1000;
+                    factor = UiTools.AuPerParsec * UiTools.KilometersPerAu * 1000;
                     break;
                 case AltUnits.MegaParsecs:
-                    scaleFactor = UiTools.AuPerParsec * UiTools.KilometersPerAu * 1000 * 1000000;
+                    factor = UiTools.AuPerParsec * UiTools.KilometersPerAu * 1000 * 1000000;
                     break;
                 case AltUnits.Custom:
-                    scaleFactor = 1;
+                    factor = custom;
                     break;
                 default:
                     break;
             }
+            return factor;
+        }
 
+        public static double GetMeters(double distance, AltUnits units)
+        {
+            double scaleFactor = GetScaleFactor(units, 1);
             return distance * scaleFactor;
         }
 

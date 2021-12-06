@@ -208,7 +208,7 @@ namespace TerraViewer
                             double Zcoord = 0;
                             double alt = 1;
                             double altitude = 0;
-                            double factor = GetScaleFactor(AltUnit, 1);
+                            double factor = UiTools.GetScaleFactor(AltUnit, 1);
                             if (altColumn == -1 || AltType == AltTypes.SeaLevel || bufferIsFlat)
                             {
                                 if (astronomical & !bufferIsFlat)
@@ -278,7 +278,7 @@ namespace TerraViewer
                             }
                             else if (this.CoordinatesType == CoordinatesTypes.Rectangular)
                             {
-                                double xyzScale = GetScaleFactor(CartesianScale, CartesianCustomScale) / meanRadius;
+                                double xyzScale = UiTools.GetScaleFactor(CartesianScale, CartesianCustomScale) / meanRadius;
 
                                 if (ZAxisColumn > -1)
                                 {
@@ -466,48 +466,6 @@ namespace TerraViewer
         {
             return table.GetColumnByUcd("vox:image.title") != null && table.GetColumnByUcd("VOX:Image.AccessReference") != null;
  
-        }
-
-        public double GetScaleFactor(AltUnits AltUnit, double custom)
-        {
-            double factor = 1;
-
-            switch (AltUnit)
-            {
-                case AltUnits.Meters:
-                    factor = 1;
-                    break;
-                case AltUnits.Feet:
-                    factor = 1 * 0.3048;
-                    break;
-                case AltUnits.Inches:
-                    factor = (1.0 / 12.0) * 0.3048;
-                    break;
-                case AltUnits.Miles:
-                    factor = 5280 * 0.3048;
-                    break;
-                case AltUnits.Kilometers:
-                    factor = 1000;
-                    break;
-                case AltUnits.AstronomicalUnits:
-                    factor = 1000 * UiTools.KilometersPerAu;
-                    break;
-                case AltUnits.LightYears:
-                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerLightYear;
-                    break;
-                case AltUnits.Parsecs:
-                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec;
-                    break;
-                case AltUnits.MegaParsecs:
-                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec * 1000000;
-                    break;
-                case AltUnits.Custom:
-                    factor = custom;
-                    break;
-                default:
-                    break;
-            }
-            return factor;
         }
 
         public override string[] Header
