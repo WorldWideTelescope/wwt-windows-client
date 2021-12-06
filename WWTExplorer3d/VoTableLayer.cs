@@ -208,7 +208,6 @@ namespace TerraViewer
                             double Zcoord = 0;
                             double alt = 1;
                             double altitude = 0;
-                            double distParces = 0;
                             double factor = GetScaleFactor(AltUnit, 1);
                             if (altColumn == -1 || AltType == AltTypes.SeaLevel || bufferIsFlat)
                             {
@@ -230,7 +229,6 @@ namespace TerraViewer
                                 if (astronomical)
                                 {
                                     factor = factor / (1000 * UiTools.KilometersPerAu);
-                                    distParces = (alt * factor) / UiTools.AuPerParsec;
 
                                     altitude = (factor * alt);
                                     alt = (factor * alt);
@@ -309,8 +307,6 @@ namespace TerraViewer
                             }
 
 
-                            //lastItem.Position = Coordinates.GeoTo3dDouble(Ycoord, Xcoord).Vector311;
-                            //positions.Add(lastItem.Position);
                             lastItem.Color = color;
                             if (sizeColumn > -1)
                             {
@@ -372,7 +368,6 @@ namespace TerraViewer
                                 lastItem.Tu = (float)SpaceTimeController.UtcToJulian(dateTime);
                                 lastItem.Tv = 0;
                             }
-
 
                             vertList.Add(lastItem);
                             currentIndex++;
