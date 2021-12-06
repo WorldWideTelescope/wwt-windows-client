@@ -146,6 +146,8 @@ namespace TerraViewer
             return place;
         }
 
+        private double meanRadius = 6371000;
+
         protected override bool PrepVertexBuffer(float opacity)
         {
             VoColumn col = table.GetColumnByUcd("meta.id");
@@ -189,16 +191,126 @@ namespace TerraViewer
 
                 pointScaleType = PointScaleTypes.StellarMagnitude;
 
+                double mr = LayerManager.AllMaps[ReferenceFrame].Frame.MeanRadius;
+                if (mr != 0)
+                {
+                    meanRadius = mr;
+                }
+
                 foreach (VoRow row in table.Rows)
                 {
                     try
                     {
                         if (lngColumn > -1 && latColumn > -1)
                         {
-                            double Xcoord = Coordinates.ParseRA(row[this.LngColumn].ToString(), true) * 15 + 180;
-                            double Ycoord = Coordinates.ParseDec(row[this.LatColumn].ToString());
-                            lastItem.Position = Coordinates.GeoTo3dDouble(Ycoord, Xcoord).Vector311;
-                            positions.Add(lastItem.Position);
+                            double Xcoord = 0;
+                            double Ycoord = 0;
+                            double Zcoord = 0;
+                            double alt = 1;
+                            double altitude = 0;
+                            double distParces = 0;
+                            double factor = GetScaleFactor(AltUnit, 1);
+                            if (altColumn == -1 || AltType == AltTypes.SeaLevel || bufferIsFlat)
+                            {
+                                if (astronomical & !bufferIsFlat)
+                                {
+                                    alt = UiTools.AuPerLightYear * 100;
+                                }
+                            }
+                            else
+                            {
+                                if (AltType == AltTypes.Depth)
+                                {
+                                    factor = -factor;
+                                }
+                                if (!double.TryParse(row[this.altColumn].ToString(), out alt))
+                                {
+                                    alt = 0;
+                                }
+                                if (astronomical)
+                                {
+                                    factor = factor / (1000 * UiTools.KilometersPerAu);
+                                    distParces = (alt * factor) / UiTools.AuPerParsec;
+
+                                    altitude = (factor * alt);
+                                    alt = (factor * alt);
+                                }
+                                else if (AltType == AltTypes.Distance)
+                                {
+                                    altitude = (factor * alt);
+                                    alt = (factor * alt / meanRadius);
+                                }
+                                else
+                                {
+                                    altitude = (factor * alt);
+                                    alt = 1 + (factor * alt / meanRadius);
+                                }
+                            }
+
+
+                            if (CoordinatesType == CoordinatesTypes.Spherical && lngColumn > -1 && latColumn > -1)
+                            {
+
+                                Xcoord = Coordinates.ParseRA(row[this.LngColumn].ToString(), true);
+                                Ycoord = Coordinates.ParseDec(row[this.LatColumn].ToString());
+                                if (astronomical)
+                                {
+                                    if (RaUnits == RAUnits.Hours)
+                                    {
+                                        Xcoord *= 015;
+                                    }
+                                    if (bufferIsFlat)
+                                    {
+                                        Xcoord += 180;
+                                    }
+                                }
+                                if (!astronomical)
+                                {
+                                    double offset = EGM96Geoid.Height(Ycoord, Xcoord);
+
+                                    altitude += offset;
+                                    alt += offset / meanRadius;
+                                }
+                                Vector3d pos = Coordinates.GeoTo3dDouble(Ycoord, Xcoord, alt);
+
+                                lastItem.Position = pos.Vector311;
+
+                                positions.Add(lastItem.Position);
+
+                            }
+                            else if (this.CoordinatesType == CoordinatesTypes.Rectangular)
+                            {
+                                double xyzScale = GetScaleFactor(CartesianScale, CartesianCustomScale) / meanRadius;
+
+                                if (ZAxisColumn > -1)
+                                {
+                                    Zcoord = Convert.ToDouble(row[ZAxisColumn]);
+                                }
+
+                                Xcoord = Convert.ToDouble(row[XAxisColumn]);
+                                Ycoord = Convert.ToDouble(row[YAxisColumn]);
+
+                                if (XAxisReverse)
+                                {
+                                    Xcoord = -Xcoord;
+                                }
+                                if (YAxisReverse)
+                                {
+                                    Ycoord = -Ycoord;
+                                }
+                                if (ZAxisReverse)
+                                {
+                                    Zcoord = -Zcoord;
+                                }
+
+
+                                lastItem.Position = new Vector3((float)(Xcoord * xyzScale), (float)(Zcoord * xyzScale), (float)(Ycoord * xyzScale));
+                                positions.Add(lastItem.Position);
+                            }
+
+
+                            //lastItem.Position = Coordinates.GeoTo3dDouble(Ycoord, Xcoord).Vector311;
+                            //positions.Add(lastItem.Position);
                             lastItem.Color = color;
                             if (sizeColumn > -1)
                             {
@@ -359,6 +471,48 @@ namespace TerraViewer
         {
             return table.GetColumnByUcd("vox:image.title") != null && table.GetColumnByUcd("VOX:Image.AccessReference") != null;
  
+        }
+
+        public double GetScaleFactor(AltUnits AltUnit, double custom)
+        {
+            double factor = 1;
+
+            switch (AltUnit)
+            {
+                case AltUnits.Meters:
+                    factor = 1;
+                    break;
+                case AltUnits.Feet:
+                    factor = 1 * 0.3048;
+                    break;
+                case AltUnits.Inches:
+                    factor = (1.0 / 12.0) * 0.3048;
+                    break;
+                case AltUnits.Miles:
+                    factor = 5280 * 0.3048;
+                    break;
+                case AltUnits.Kilometers:
+                    factor = 1000;
+                    break;
+                case AltUnits.AstronomicalUnits:
+                    factor = 1000 * UiTools.KilometersPerAu;
+                    break;
+                case AltUnits.LightYears:
+                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerLightYear;
+                    break;
+                case AltUnits.Parsecs:
+                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec;
+                    break;
+                case AltUnits.MegaParsecs:
+                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec * 1000000;
+                    break;
+                case AltUnits.Custom:
+                    factor = custom;
+                    break;
+                default:
+                    break;
+            }
+            return factor;
         }
 
         public override string[] Header
