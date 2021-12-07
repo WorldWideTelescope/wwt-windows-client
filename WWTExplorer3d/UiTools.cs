@@ -796,6 +796,7 @@ namespace TerraViewer
 
         public static AltUnits GetAltUnitFromAbbreviation(String abbr, AltUnits defaultValue = AltUnits.Meters)
         {
+            abbr = abbr.ToLower();
             if (abbr == "m")
             {
                 return AltUnits.Meters;
