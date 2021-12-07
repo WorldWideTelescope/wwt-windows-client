@@ -794,6 +794,51 @@ namespace TerraViewer
             return ((meters / 1000 / SSMUnitConversion) - 0.000001) / 4 * 9;
         }
 
+        public static AltUnits GetAltUnitFromAbbreviation(String abbr, AltUnits defaultValue = AltUnits.Meters)
+        {
+            if (abbr == "m")
+            {
+                return AltUnits.Meters;
+            }
+            else if (abbr == "ft")
+            {
+                return AltUnits.Feet;
+            }
+            else if (abbr == "in")
+            {
+                return AltUnits.Inches;
+            }
+            else if (abbr == "mi")
+            {
+                return AltUnits.Miles;
+            }
+            else if (abbr == "km")
+            {
+                return AltUnits.Kilometers;
+            }
+            else if (abbr == "au")
+            {
+                return AltUnits.AstronomicalUnits;
+            }
+            else if (abbr == "ly")
+            {
+                return AltUnits.LightYears;
+            }
+            else if (abbr == "pc")
+            {
+                return AltUnits.Parsecs;
+            }
+            else if (abbr == "mpc")
+            {
+                return AltUnits.Parsecs;
+            }
+            else
+            {
+                return defaultValue;
+            }
+ 
+        }
+
         public static string FormatDistancePlain(double distance)
         {
             if (distance < .0001)
