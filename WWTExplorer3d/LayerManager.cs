@@ -2014,6 +2014,7 @@ namespace TerraViewer
             {
                 Earth3d.MainWindow.ShowLayersWindows = false;
             }
+            InsideLayerManagerRect = false;
             master = null;
         }
 
