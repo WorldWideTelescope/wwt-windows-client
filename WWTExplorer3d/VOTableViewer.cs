@@ -363,7 +363,8 @@ namespace TerraViewer
         private void distanceSource_SelectionChanged(object sender, EventArgs e)
         {
             layer.AltColumn = distanceSource.SelectedIndex - 1;
-            layer.AltUnit = AltUnits.LightYears;
+            VoColumn altVoColumn = table.Column[layer.AltColumn];
+            layer.AltUnit = UiTools.GetAltUnitFromAbbreviation(altVoColumn.Unit, AltUnits.LightYears);
             layer.AltType = TimeSeriesLayer.AltTypes.Distance;
             layer.CleanUp();
         }
