@@ -1395,7 +1395,7 @@ namespace TerraViewer
                         {
                             if (map.Frame.Orbit == null)
                             {
-                                map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, 1,/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
+                                map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, (float)ReferenceFrame.GetScaleFactor(map.Frame.SemiMajorAxisUnits, 1),/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
                             }
 
                             double dd = renderContext.NominalRadius;
@@ -1440,8 +1440,8 @@ namespace TerraViewer
                         }
                         else if (map.Frame.ReferenceFrameType == ReferenceFrameTypes.Trajectory)
                         {
-                            if (map.Frame.trajectoryLines == null)
-                            {
+                            //if (map.Frame.trajectoryLines == null)
+                            //{
                                 map.Frame.trajectoryLines = new LineList();
                                 map.Frame.trajectoryLines.ShowFarSide = true;
                                 map.Frame.trajectoryLines.UseNonRotatingFrame = true;
@@ -1455,7 +1455,7 @@ namespace TerraViewer
                                     pos2.Multiply(1 / renderContext.NominalRadius);
                                     map.Frame.trajectoryLines.AddLine(pos1, pos2, map.Frame.RepresentativeColor, new Dates());
                                 }
-                            }
+                            //}
                             Matrix3d matSaved = renderContext.World;
                             renderContext.World = thisMap.Frame.WorldMatrix * renderContext.WorldBaseNonRotating;
                             double distss = UiTools.SolarSystemToMeters(RenderEngine.Engine.SolarSystemCameraDistance);

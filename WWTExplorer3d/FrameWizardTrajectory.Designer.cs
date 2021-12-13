@@ -73,6 +73,7 @@
             this.SemiMajorAxisUnits.State = TerraViewer.State.Rest;
             this.SemiMajorAxisUnits.TabIndex = 10;
             this.SemiMajorAxisUnits.Type = TerraViewer.WwtCombo.ComboType.List;
+            this.SemiMajorAxisUnits.SelectionChanged += new TerraViewer.SelectionChangedEventHandler(this.SemiMajorAxisUnits_SelectionChanged);
             // 
             // Import
             // 

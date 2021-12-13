@@ -28,6 +28,48 @@ namespace TerraViewer
         // Serialized
         public string name;
 
+        public static double GetScaleFactor(AltUnits AltUnit, double custom)
+        {
+            double factor = 1;
+
+            switch (AltUnit)
+            {
+                case AltUnits.Meters:
+                    factor = 1;
+                    break;
+                case AltUnits.Feet:
+                    factor = 1 * 0.3048;
+                    break;
+                case AltUnits.Inches:
+                    factor = (1.0 / 12.0) * 0.3048;
+                    break;
+                case AltUnits.Miles:
+                    factor = 5280 * 0.3048;
+                    break;
+                case AltUnits.Kilometers:
+                    factor = 1000;
+                    break;
+                case AltUnits.AstronomicalUnits:
+                    factor = 1000 * UiTools.KilometersPerAu;
+                    break;
+                case AltUnits.LightYears:
+                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerLightYear;
+                    break;
+                case AltUnits.Parsecs:
+                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec;
+                    break;
+                case AltUnits.MegaParsecs:
+                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec * 1000000;
+                    break;
+                case AltUnits.Custom:
+                    factor = custom;
+                    break;
+                default:
+                    break;
+            }
+            return factor;
+        }
+
         [LayerProperty]
         public string Name
         {
@@ -256,7 +298,20 @@ namespace TerraViewer
         public AltUnits SemiMajorAxisUnits
         {
             get { return semiMajorAxisUnits; }
-            set { semiMajorAxisUnits = value; }
+            set {
+                if (semiMajorAxisUnits != value)
+                {
+                    semiMajorAxisUnits = value;
+                    //Scale = ReferenceFrame.GetScaleFactor(semiMajorAxisUnits, 1);
+                    if (referenceFrameType == ReferenceFrameTypes.Trajectory)
+                    {
+                        foreach (TrajectorySample sample in Trajectory) {
+                            sample.Unit = semiMajorAxisUnits;
+                        }
+                    }   
+                }
+                
+            }
         }
         public double eccentricity; // e
 
@@ -337,7 +392,7 @@ namespace TerraViewer
             string[] data = File.ReadAllLines(filename);
             foreach (string line in data)
             {
-                Trajectory.Add(new TrajectorySample(line));
+                Trajectory.Add(new TrajectorySample(line, semiMajorAxisUnits));
             }
         }
 
@@ -386,6 +441,8 @@ namespace TerraViewer
 
             if (ReferenceFrameType == ReferenceFrameTypes.Trajectory)
             {
+                xmlWriter.WriteAttributeString("SemiMajorAxis", SemiMajorAxis.ToString());
+                xmlWriter.WriteAttributeString("SemiMajorAxisScale", this.SemiMajorAxisUnits.ToString());
                 xmlWriter.WriteStartElement("Trajectory");
 
                 foreach (TrajectorySample sample in Trajectory)
@@ -407,6 +464,15 @@ namespace TerraViewer
             ReferenceFrameType = (ReferenceFrameTypes)Enum.Parse(typeof(ReferenceFrameTypes), node.Attributes["ReferenceFrameType"].Value);
 
             Reference = (ReferenceFrames)Enum.Parse(typeof(ReferenceFrames), node.Attributes["Reference"].Value);
+
+            if (node.Attributes["SemiMajorAxis"] != null)
+            {
+                SemiMajorAxis = Double.Parse(node.Attributes["SemiMajorAxis"].Value);
+            }
+            if (node.Attributes["SemiMajorAxisScale"] != null)
+            {
+                SemiMajorAxisUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["SemiMajorAxisScale"].Value);
+            }
 
             ParentsRoationalBase = Boolean.Parse(node.Attributes["ParentsRoationalBase"].Value);
             MeanRadius = Double.Parse(node.Attributes["MeanRadius"].Value);
@@ -440,9 +506,6 @@ namespace TerraViewer
 
             if (ReferenceFrameType == ReferenceFrameTypes.Orbital)
             {
-                SemiMajorAxis = Double.Parse(node.Attributes["SemiMajorAxis"].Value);
-                SemiMajorAxisUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["SemiMajorAxisScale"].Value);
-
                 Eccentricity = Double.Parse(node.Attributes["Eccentricity"].Value);
                 Inclination = Double.Parse(node.Attributes["Inclination"].Value);
                 ArgumentOfPeriapsis = Double.Parse(node.Attributes["ArgumentOfPeriapsis"].Value);
@@ -450,7 +513,8 @@ namespace TerraViewer
                 MeanAnomolyAtEpoch = Double.Parse(node.Attributes["MeanAnomolyAtEpoch"].Value);
                 MeanDailyMotion = Double.Parse(node.Attributes["MeanDailyMotion"].Value);
                 Epoch = Double.Parse(node.Attributes["Epoch"].Value);
-
+                SemiMajorAxis = Double.Parse(node.Attributes["SemiMajorAxis"].Value);
+                SemiMajorAxisUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["SemiMajorAxisScale"].Value);
             }
             if (ReferenceFrameType == ReferenceFrameTypes.Trajectory)
             {
@@ -458,7 +522,7 @@ namespace TerraViewer
                 {
                     foreach (XmlNode child in node["Trajectory"].ChildNodes)
                     {
-                        Trajectory.Add(new TrajectorySample(child.InnerText));
+                        Trajectory.Add(new TrajectorySample(child.InnerText, SemiMajorAxisUnits));
                     }
                 }
             }
@@ -1220,6 +1284,7 @@ namespace TerraViewer
         {
             return null;
         }
+
     }
 
     public class TrajectorySample
@@ -1231,23 +1296,37 @@ namespace TerraViewer
         public double H;
         public double P;
         public double R;
-        public TrajectorySample(double time, double x, double y, double z)
+        private double factor = 1;
+        public TrajectorySample(double time, double x, double y, double z, AltUnits unit = AltUnits.Meters)
         {
             X = x;
             Y = y;
             Z = z;
             Time = time;
+            Unit = unit;
         }
 
         public Vector3d Position
         {
             get
             {
-                return new Vector3d(X*1000, Z*1000, Y*1000);
+                Vector3d vec = new Vector3d(X*factor, Z*factor, Y*factor);
+                return vec;
             }
         }
 
-        public TrajectorySample(string line)
+        public AltUnits unit;
+        public AltUnits Unit
+        {
+            get { return unit; }
+            set
+            {
+                unit = value;
+                factor = ReferenceFrame.GetScaleFactor(unit, 1);
+            }
+        }
+
+        public TrajectorySample(string line, AltUnits unit = AltUnits.Meters)
         {
             line = line.Replace("  ", " ");
             line = line.Replace("  ", " ");
@@ -1268,6 +1347,7 @@ namespace TerraViewer
                 P = double.Parse(parts[5]);
                 R = double.Parse(parts[6]);
             }
+            Unit = unit;
         }
 
         public override string ToString()

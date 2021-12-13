@@ -71,6 +71,11 @@ namespace TerraViewer
                     UiTools.ShowMessageBox(Language.GetLocalizedText(947, "The File does not appear to be a Vaild Trajectory File."), Language.GetLocalizedText(3, "Microsoft WorldWide Telescope"));
                 }
             }
-        } 
+        }
+
+        private void SemiMajorAxisUnits_SelectionChanged(object sender, EventArgs e)
+        {
+            frame.SemiMajorAxisUnits = (AltUnits)SemiMajorAxisUnits.SelectedIndex;
+        }
     }
 }
