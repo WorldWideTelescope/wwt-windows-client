@@ -18,7 +18,7 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.altDepthLabel.Text = Language.GetLocalizedText(802, "Altitude (Meters)");
+            this.altDepthLabel.Text = Language.GetLocalizedText(802, "Altitude");
             this.LongitudeLabel.Text = Language.GetLocalizedText(803, "Longitude (Decimal Degrees)");
             this.LatitudeLabel.Text = Language.GetLocalizedText(804, "Latitude (Decimal Degrees)");
             this.label3.Text = Language.GetLocalizedText(801, "Select the Latitude, Longitude and Altitude");
@@ -48,7 +48,8 @@ namespace TerraViewer
             Longitude.Text = frame.Lng.ToString();
             Altitude.Text = frame.Altitude.ToString();
 
-
+            AltitudeUnits.Items.AddRange(Enum.GetNames(typeof(AltUnits)));
+            AltitudeUnits.SelectedIndex = (int)frame.AltUnits;
         }
 
         private void GetFromView_Click(object sender, EventArgs e)
@@ -59,6 +60,11 @@ namespace TerraViewer
             Lattitude.Text = Coordinates.FormatDMS(point.Y);
             Longitude.Text = Coordinates.FormatDMS(point.X);
             Altitude.Text = RenderEngine.Engine.GetEarthAltitude().ToString();
+        }
+
+        private void AltitudeUnits_SelectionChanged(object sender, EventArgs e)
+        {
+            frame.AltUnits = (AltUnits)AltitudeUnits.SelectedIndex;
         }
     }
 }
