@@ -360,7 +360,7 @@ namespace TerraViewer
             string[] data = File.ReadAllLines(filename);
             foreach (string line in data)
             {
-                Trajectory.Add(new TrajectorySample(line, semiMajorAxisUnits));
+                Trajectory.Add(new TrajectorySample(line, TrajectoryUnits));
             }
         }
 
