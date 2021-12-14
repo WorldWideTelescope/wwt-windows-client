@@ -1440,8 +1440,8 @@ namespace TerraViewer
                         }
                         else if (map.Frame.ReferenceFrameType == ReferenceFrameTypes.Trajectory)
                         {
-                            //if (map.Frame.trajectoryLines == null)
-                            //{
+                            if (map.Frame.trajectoryLines == null || map.Frame.trajectoryDirty)
+                            {
                                 map.Frame.trajectoryLines = new LineList();
                                 map.Frame.trajectoryLines.ShowFarSide = true;
                                 map.Frame.trajectoryLines.UseNonRotatingFrame = true;
@@ -1455,7 +1455,8 @@ namespace TerraViewer
                                     pos2.Multiply(1 / renderContext.NominalRadius);
                                     map.Frame.trajectoryLines.AddLine(pos1, pos2, map.Frame.RepresentativeColor, new Dates());
                                 }
-                            //}
+                                map.Frame.trajectoryDirty = false;
+                            }
                             Matrix3d matSaved = renderContext.World;
                             renderContext.World = thisMap.Frame.WorldMatrix * renderContext.WorldBaseNonRotating;
                             double distss = UiTools.SolarSystemToMeters(RenderEngine.Engine.SolarSystemCameraDistance);

@@ -302,12 +302,12 @@ namespace TerraViewer
                 if (semiMajorAxisUnits != value)
                 {
                     semiMajorAxisUnits = value;
-                    //Scale = ReferenceFrame.GetScaleFactor(semiMajorAxisUnits, 1);
                     if (referenceFrameType == ReferenceFrameTypes.Trajectory)
                     {
                         foreach (TrajectorySample sample in Trajectory) {
                             sample.Unit = semiMajorAxisUnits;
                         }
+                        trajectoryDirty = true;
                     }   
                 }
                 
@@ -381,6 +381,7 @@ namespace TerraViewer
             set { orbit = value; }
         }
         public LineList trajectoryLines = null;
+        public bool trajectoryDirty = false;
         CAAEllipticalObjectElements elements = new CAAEllipticalObjectElements();
 
 
