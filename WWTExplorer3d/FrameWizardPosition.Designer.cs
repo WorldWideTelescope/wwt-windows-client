@@ -111,7 +111,7 @@
             this.GetFromView.DialogResult = System.Windows.Forms.DialogResult.None;
             this.GetFromView.ImageDisabled = null;
             this.GetFromView.ImageEnabled = null;
-            this.GetFromView.Location = new System.Drawing.Point(380, 121);
+            this.GetFromView.Location = new System.Drawing.Point(94, 190);
             this.GetFromView.MaximumSize = new System.Drawing.Size(140, 33);
             this.GetFromView.Name = "GetFromView";
             this.GetFromView.Selected = false;

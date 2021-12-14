@@ -25,10 +25,20 @@ namespace TerraViewer
             this.GetFromView.Text = Language.GetLocalizedText(259, "Get From View");
         }
 
+        private void SetVisibilities()
+        {
+            if (this.frame.ReferenceFrameType == ReferenceFrameTypes.Synodic)
+            {
+                this.AltitudeUnitsLabel.Visible = false;
+                this.AltitudeUnits.Visible = false;
+            }
+        }
+
         ReferenceFrame frame = null;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
+            SetVisibilities();
         }
         public override bool Save()
         {
@@ -37,6 +47,14 @@ namespace TerraViewer
             frame.Lat = ParseAndValidateCoordinate(Lattitude, frame.Lat, ref failed);
             frame.Lng = ParseAndValidateCoordinate(Longitude, frame.Lng, ref failed);
             frame.Altitude = ParseAndValidateDouble(Altitude, frame.Altitude, ref failed);
+            try
+            {
+                frame.AltUnits = (AltUnits)Enum.Parse(typeof(AltUnits), AltitudeUnits.SelectedItem.ToString());
+            }
+            catch
+            {
+                failed = true;
+            }
          
             return !failed;
 
