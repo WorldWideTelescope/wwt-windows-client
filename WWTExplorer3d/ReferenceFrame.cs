@@ -430,13 +430,9 @@ namespace TerraViewer
                 Lat = Double.Parse(node.Attributes["Lat"].Value);
                 Lng = Double.Parse(node.Attributes["Lng"].Value);
                 Altitude = Double.Parse(node.Attributes["Altitude"].Value);
-                if (node.Attributes["AltUnits"].Value != null)
+                if (node.Attributes["AltUnits"] != null)
                 {
                     AltUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["AltUnits"].Value);
-                }
-                else
-                {
-                    AltUnits = AltUnits.Meters;
                 }
             }
 
