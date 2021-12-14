@@ -38,10 +38,8 @@ namespace TerraViewer
 
         private void FrameWizardTrajectory_Load(object sender, EventArgs e)
         {
-            SemiMajorAxisUnits.Items.AddRange(Enum.GetNames(typeof(AltUnits)));
-            SemiMajorAxisUnits.SelectedIndex = (int)frame.SemiMajorAxisUnits;
-
-
+            TrajectoryUnits.Items.AddRange(Enum.GetNames(typeof(AltUnits)));
+            TrajectoryUnits.SelectedIndex = (int)frame.TrajectoryUnits;
         }
 
         private void Import_Click(object sender, EventArgs e)
@@ -73,9 +71,9 @@ namespace TerraViewer
             }
         }
 
-        private void SemiMajorAxisUnits_SelectionChanged(object sender, EventArgs e)
+        private void TrajectoryUnits_SelectionChanged(object sender, EventArgs e)
         {
-            frame.SemiMajorAxisUnits = (AltUnits)SemiMajorAxisUnits.SelectedIndex;
+            frame.TrajectoryUnits = (AltUnits)TrajectoryUnits.SelectedIndex;
         }
     }
 }

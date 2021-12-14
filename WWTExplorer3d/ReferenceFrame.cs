@@ -256,19 +256,28 @@ namespace TerraViewer
         public AltUnits SemiMajorAxisUnits
         {
             get { return semiMajorAxisUnits; }
-            set {
-                if (semiMajorAxisUnits != value)
+            set { semiMajorAxisUnits = value; }
+        }
+        public AltUnits trajectoryUnits = AltUnits.Meters;
+
+        [LayerProperty]
+        public AltUnits TrajectoryUnits
+        {
+            get { return trajectoryUnits; }
+            set
+            {
+                if (trajectoryUnits != value)
                 {
-                    semiMajorAxisUnits = value;
+                    trajectoryUnits = value;
                     if (referenceFrameType == ReferenceFrameTypes.Trajectory)
                     {
-                        foreach (TrajectorySample sample in Trajectory) {
-                            sample.Unit = semiMajorAxisUnits;
+                        foreach (TrajectorySample sample in Trajectory)
+                        {
+                            sample.Unit = trajectoryUnits;
                         }
                         trajectoryDirty = true;
-                    }   
+                    }
                 }
-                
             }
         }
         public double eccentricity; // e
@@ -400,8 +409,7 @@ namespace TerraViewer
 
             if (ReferenceFrameType == ReferenceFrameTypes.Trajectory)
             {
-                xmlWriter.WriteAttributeString("SemiMajorAxis", SemiMajorAxis.ToString());
-                xmlWriter.WriteAttributeString("SemiMajorAxisScale", this.SemiMajorAxisUnits.ToString());
+                xmlWriter.WriteAttributeString("TrajectoryUnits", this.TrajectoryUnits.ToString());
                 xmlWriter.WriteStartElement("Trajectory");
 
                 foreach (TrajectorySample sample in Trajectory)
@@ -423,15 +431,6 @@ namespace TerraViewer
             ReferenceFrameType = (ReferenceFrameTypes)Enum.Parse(typeof(ReferenceFrameTypes), node.Attributes["ReferenceFrameType"].Value);
 
             Reference = (ReferenceFrames)Enum.Parse(typeof(ReferenceFrames), node.Attributes["Reference"].Value);
-
-            if (node.Attributes["SemiMajorAxis"] != null)
-            {
-                SemiMajorAxis = Double.Parse(node.Attributes["SemiMajorAxis"].Value);
-            }
-            if (node.Attributes["SemiMajorAxisScale"] != null)
-            {
-                SemiMajorAxisUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["SemiMajorAxisScale"].Value);
-            }
 
             ParentsRoationalBase = Boolean.Parse(node.Attributes["ParentsRoationalBase"].Value);
             MeanRadius = Double.Parse(node.Attributes["MeanRadius"].Value);
@@ -483,6 +482,10 @@ namespace TerraViewer
                     {
                         Trajectory.Add(new TrajectorySample(child.InnerText, SemiMajorAxisUnits));
                     }
+                }
+                if (node.Attributes["TrajectoryUnits"] != null)
+                {
+                    TrajectoryUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["TrajectoryUnits"].Value);
                 }
             }
 
