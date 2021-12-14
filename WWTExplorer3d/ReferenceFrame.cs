@@ -28,48 +28,6 @@ namespace TerraViewer
         // Serialized
         public string name;
 
-        public static double GetScaleFactor(AltUnits AltUnit, double custom)
-        {
-            double factor = 1;
-
-            switch (AltUnit)
-            {
-                case AltUnits.Meters:
-                    factor = 1;
-                    break;
-                case AltUnits.Feet:
-                    factor = 1 * 0.3048;
-                    break;
-                case AltUnits.Inches:
-                    factor = (1.0 / 12.0) * 0.3048;
-                    break;
-                case AltUnits.Miles:
-                    factor = 5280 * 0.3048;
-                    break;
-                case AltUnits.Kilometers:
-                    factor = 1000;
-                    break;
-                case AltUnits.AstronomicalUnits:
-                    factor = 1000 * UiTools.KilometersPerAu;
-                    break;
-                case AltUnits.LightYears:
-                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerLightYear;
-                    break;
-                case AltUnits.Parsecs:
-                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec;
-                    break;
-                case AltUnits.MegaParsecs:
-                    factor = 1000 * UiTools.KilometersPerAu * UiTools.AuPerParsec * 1000000;
-                    break;
-                case AltUnits.Custom:
-                    factor = custom;
-                    break;
-                default:
-                    break;
-            }
-            return factor;
-        }
-
         [LayerProperty]
         public string Name
         {
@@ -1323,7 +1281,7 @@ namespace TerraViewer
             set
             {
                 unit = value;
-                factor = ReferenceFrame.GetScaleFactor(unit, 1);
+                factor = UiTools.GetScaleFactor(unit, 1);
             }
         }
 

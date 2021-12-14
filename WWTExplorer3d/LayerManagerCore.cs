@@ -1395,7 +1395,7 @@ namespace TerraViewer
                         {
                             if (map.Frame.Orbit == null)
                             {
-                                map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, (float)ReferenceFrame.GetScaleFactor(map.Frame.SemiMajorAxisUnits, 1),/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
+                                map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, (float)UiTools.GetScaleFactor(map.Frame.SemiMajorAxisUnits, 1),/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
                             }
 
                             double dd = renderContext.NominalRadius;
