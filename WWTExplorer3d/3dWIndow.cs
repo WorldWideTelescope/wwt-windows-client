@@ -7758,7 +7758,7 @@ namespace TerraViewer
                 WebClient Client = new WebClient();
 
                 string yourVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                string url = String.Format("http://www.worldwidetelescope.org/wwtweb/login.aspx?user={0}&Version={1}&Equinox=true", Properties.Settings.Default.UserRatingGUID.ToString("D"), yourVersion);
+                string url = String.Format("http://www.worldwidetelescope.org/wwtweb/login6.aspx?user={0}&Version={1}", Properties.Settings.Default.UserRatingGUID.ToString("D"), yourVersion);
                 string data = Client.DownloadString(url);
 
                 string[] lines = data.Split(new char[] { '\n' });
