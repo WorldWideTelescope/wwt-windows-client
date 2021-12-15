@@ -368,7 +368,9 @@ namespace TerraViewer
             {
                 xmlWriter.WriteAttributeString("Lat", Lat.ToString());
                 xmlWriter.WriteAttributeString("Lng", Lng.ToString());
-                xmlWriter.WriteAttributeString("Altitude", Altitude.ToString());
+                double scaleFactor = UiTools.GetScaleFactor(AltUnits, 1);
+                double altInMeters = scaleFactor * Altitude;
+                xmlWriter.WriteAttributeString("Altitude", altInMeters.ToString());
                 xmlWriter.WriteAttributeString("AltUnits", AltUnits.ToString());
             }
             xmlWriter.WriteAttributeString("RotationalPeriod", RotationalPeriod.ToString());
@@ -429,11 +431,13 @@ namespace TerraViewer
             {
                 Lat = Double.Parse(node.Attributes["Lat"].Value);
                 Lng = Double.Parse(node.Attributes["Lng"].Value);
-                Altitude = Double.Parse(node.Attributes["Altitude"].Value);
+                double altInMeters = Double.Parse(node.Attributes["Altitude"].Value);
                 if (node.Attributes["AltUnits"] != null)
                 {
                     AltUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["AltUnits"].Value);
                 }
+                double scaleFactor = UiTools.GetScaleFactor(AltUnits, 1);
+                Altitude = altInMeters / scaleFactor;
             }
 
             RotationalPeriod = Double.Parse(node.Attributes["RotationalPeriod"].Value);
