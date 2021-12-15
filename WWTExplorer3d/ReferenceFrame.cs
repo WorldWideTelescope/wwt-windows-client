@@ -271,10 +271,6 @@ namespace TerraViewer
                     trajectoryUnits = value;
                     if (referenceFrameType == ReferenceFrameTypes.Trajectory)
                     {
-                        foreach (TrajectorySample sample in Trajectory)
-                        {
-                            sample.Unit = trajectoryUnits;
-                        }
                         trajectoryDirty = true;
                     }
                 }
@@ -360,7 +356,7 @@ namespace TerraViewer
             string[] data = File.ReadAllLines(filename);
             foreach (string line in data)
             {
-                Trajectory.Add(new TrajectorySample(line, TrajectoryUnits));
+                Trajectory.Add(new TrajectorySample(line));
             }
         }
 
@@ -480,7 +476,7 @@ namespace TerraViewer
                 {
                     foreach (XmlNode child in node["Trajectory"].ChildNodes)
                     {
-                        Trajectory.Add(new TrajectorySample(child.InnerText, SemiMajorAxisUnits));
+                        Trajectory.Add(new TrajectorySample(child.InnerText));
                     }
                 }
                 if (node.Attributes["TrajectoryUnits"] != null)
@@ -872,15 +868,15 @@ namespace TerraViewer
             {
                 if (current < 1)
                 {
-                    vector = Trajectory[0].Position - Trajectory[1].Position;
-                    return Trajectory[0].Position;
+                    vector = Trajectory[0].Position(TrajectoryUnits) - Trajectory[1].Position(TrajectoryUnits);
+                    return Trajectory[0].Position(TrajectoryUnits);
                 }
 
 
                 if (current == Trajectory.Count - 1)
                 {
-                    vector = Trajectory[current - 1].Position - Trajectory[current].Position;
-                    return Trajectory[current].Position;
+                    vector = Trajectory[current - 1].Position(TrajectoryUnits) - Trajectory[current].Position(TrajectoryUnits);
+                    return Trajectory[current].Position(TrajectoryUnits);
                 }
 
                 if ((Trajectory[current - 1].Time <= jNow) && (Trajectory[current].Time > jNow))
@@ -888,8 +884,8 @@ namespace TerraViewer
                     double denominator = Trajectory[current].Time - Trajectory[current - 1].Time;
                     double numerator = jNow - Trajectory[current - 1].Time;
                     double tween = numerator / denominator;
-                    vector = Trajectory[current - 1].Position - Trajectory[current].Position;
-                    point = Vector3d.Lerp(Trajectory[current - 1].Position, Trajectory[current].Position, tween);
+                    vector = Trajectory[current - 1].Position(TrajectoryUnits) - Trajectory[current].Position(TrajectoryUnits);
+                    point = Vector3d.Lerp(Trajectory[current - 1].Position(TrajectoryUnits), Trajectory[current].Position(TrajectoryUnits), tween);
                     return point;
                 }
 
@@ -1258,37 +1254,22 @@ namespace TerraViewer
         public double H;
         public double P;
         public double R;
-        private double factor = 1;
-        public TrajectorySample(double time, double x, double y, double z, AltUnits unit = AltUnits.Meters)
+        public TrajectorySample(double time, double x, double y, double z)
         {
             X = x;
             Y = y;
             Z = z;
             Time = time;
-            Unit = unit;
         }
 
-        public Vector3d Position
+        public Vector3d Position(AltUnits units)
         {
-            get
-            {
-                Vector3d vec = new Vector3d(X*factor, Z*factor, Y*factor);
-                return vec;
-            }
+            double factor = UiTools.GetScaleFactor(units, 1);
+            Vector3d vec = new Vector3d(X * factor, Z * factor, Y * factor);
+            return vec;
         }
 
-        public AltUnits unit;
-        public AltUnits Unit
-        {
-            get { return unit; }
-            set
-            {
-                unit = value;
-                factor = UiTools.GetScaleFactor(unit, 1);
-            }
-        }
-
-        public TrajectorySample(string line, AltUnits unit = AltUnits.Meters)
+        public TrajectorySample(string line)
         {
             line = line.Replace("  ", " ");
             line = line.Replace("  ", " ");
@@ -1309,7 +1290,6 @@ namespace TerraViewer
                 P = double.Parse(parts[5]);
                 R = double.Parse(parts[6]);
             }
-            Unit = unit;
         }
 
         public override string ToString()
