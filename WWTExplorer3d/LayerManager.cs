@@ -1875,6 +1875,14 @@ namespace TerraViewer
                 target.CleanUp();
                 LoadTree();
             }
+            else if (layerTree.SelectedNode.Tag is VoTableLayer)
+            {
+                VoTableLayer target = (VoTableLayer)layerTree.SelectedNode.Tag;
+                DataWizard.ShowPropertiesSheet(target);
+
+                target.CleanUp();
+                LoadTree();
+            }
             else if (layerTree.SelectedNode.Tag is SpreadSheetLayer || layerTree.SelectedNode.Tag is Object3dLayer)
             {
                 Object3dProperties props = new Object3dProperties();

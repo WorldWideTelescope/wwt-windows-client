@@ -307,7 +307,37 @@ namespace TerraViewer
                             }
 
 
-                            lastItem.Color = color;
+                            switch (ColorMap)
+                            {
+                                case ColorMaps.Same_For_All:
+                                    lastItem.Color = color;
+                                    break;
+                                case ColorMaps.Per_Column_Literal:
+                                    if (ColorMapColumn > -1)
+                                    {
+                                        lastItem.Color = UiTools.ParseColor(row[ColorMapColumn].ToString(), color);
+                                    }
+                                    else
+                                    {
+                                        lastItem.Color = color;
+                                    }
+                                    break;
+                                //case ColorMaps.Group_by_Range:
+                                //    break;
+                                //case ColorMaps.Gradients_by_Range:
+                                //    break;       
+                                case ColorMaps.Group_by_Values:
+                                    if (!ColorDomainValues.ContainsKey(row[ColorMapColumn].ToString()))
+                                    {
+                                        MakeColorDomainValues();
+                                    }
+                                    lastItem.Color = Color.FromArgb(ColorDomainValues[row[ColorMapColumn].ToString()].MarkerIndex);
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
                             if (sizeColumn > -1)
                             {
 
@@ -400,6 +430,23 @@ namespace TerraViewer
                 shapeFileVertex = new TimeSeriesPointSpriteSet(RenderContext11.PrepDevice, vertList.ToArray());
             }
             return true;
+        }
+
+        public override string[] GetDomainValues(int column)
+        {
+            List<string> domainValues = new List<String>();
+            if (column > -1)
+            {
+                foreach (VoRow row in table.Rows)
+                {
+                    if (!domainValues.Contains(row[column].ToString()))
+                    {
+                        domainValues.Add(row[column].ToString());
+                    }
+                }
+            }
+            domainValues.Sort();
+            return domainValues.ToArray();
         }
 
         private void AddSiapStcRow(string stcsColName, VoRow row, bool selected)

@@ -840,6 +840,52 @@ namespace TerraViewer
  
         }
 
+        public static Color ParseColor(string colorText, Color defaultColor)
+        {
+            try
+            {
+                int val = 0;
+
+                bool match = int.TryParse(colorText, System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out val);
+
+
+                if (match)
+                {
+                    return Color.FromArgb(val);
+                }
+            }
+            catch
+            {
+            }
+            try
+            {
+                float opacity = 1.0f;
+                int pos = colorText.IndexOf("%");
+                if (pos > -1)
+                {
+                    float opa = 0;
+                    if (float.TryParse(colorText.Substring(0, pos), out opa))
+                    {
+                        opacity = opa / 100f;
+                    }
+
+                    colorText = colorText.Substring(pos + 1);
+                }
+
+                Color foundColor = Color.FromName(colorText.Replace(" ", ""));
+
+                foundColor = Color.FromArgb((int)Math.Min(255, Math.Max(0, opacity * 255)), foundColor);
+
+                return foundColor;
+            }
+            catch
+            {
+
+            }
+
+            return defaultColor;
+        }
+
         public static string FormatDistancePlain(double distance)
         {
             if (distance < .0001)
