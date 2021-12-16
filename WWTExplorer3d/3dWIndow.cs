@@ -5194,7 +5194,7 @@ namespace TerraViewer
             // 
             this.hIPSProgressiveSurveyToolStripMenuItem.Name = "hIPSProgressiveSurveyToolStripMenuItem";
             this.hIPSProgressiveSurveyToolStripMenuItem.Size = new System.Drawing.Size(310, 34);
-            this.hIPSProgressiveSurveyToolStripMenuItem.Text = "HIPS Progrsesive Survey...";
+            this.hIPSProgressiveSurveyToolStripMenuItem.Text = "HIPS Progressive Survey...";
             this.hIPSProgressiveSurveyToolStripMenuItem.Click += new System.EventHandler(this.hIPSProgressiveSurveyToolStripMenuItem_Click);
             // 
             // Earth3d
@@ -13384,7 +13384,7 @@ namespace TerraViewer
         private void customGalaxyFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "Delimeted Text(*.csv;*.tdf;*.txt)|*.csv;*.tdf;*.txt";
+            openFile.Filter = "Delimited Text(*.csv;*.tdf;*.txt)|*.csv;*.tdf;*.txt";
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 string filename = openFile.FileName;
