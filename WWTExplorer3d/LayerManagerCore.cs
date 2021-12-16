@@ -1395,7 +1395,7 @@ namespace TerraViewer
                         {
                             if (map.Frame.Orbit == null)
                             {
-                                map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, 1,/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
+                                map.Frame.Orbit = new Orbit(map.Frame.Elements, 360, map.Frame.RepresentativeColor, (float)UiTools.GetScaleFactor(map.Frame.SemiMajorAxisUnits, 1),/* referenceFrame == "Sun" ? (float)(UiTools.KilometersPerAu*1000.0):*/ (float)renderContext.NominalRadius);
                             }
 
                             double dd = renderContext.NominalRadius;
@@ -1440,21 +1440,23 @@ namespace TerraViewer
                         }
                         else if (map.Frame.ReferenceFrameType == ReferenceFrameTypes.Trajectory)
                         {
-                            if (map.Frame.trajectoryLines == null)
+                            if (map.Frame.trajectoryLines == null || map.Frame.trajectoryDirty)
                             {
                                 map.Frame.trajectoryLines = new LineList();
                                 map.Frame.trajectoryLines.ShowFarSide = true;
                                 map.Frame.trajectoryLines.UseNonRotatingFrame = true;
 
                                 int count = map.Frame.Trajectory.Count - 1;
+                                AltUnits units = map.Frame.TrajectoryUnits;
                                 for (int i = 0; i < count; i++)
                                 {
-                                    Vector3d pos1 = map.Frame.Trajectory[i].Position;
-                                    Vector3d pos2 = map.Frame.Trajectory[i + 1].Position;
+                                    Vector3d pos1 = map.Frame.Trajectory[i].Position(units);
+                                    Vector3d pos2 = map.Frame.Trajectory[i + 1].Position(units);
                                     pos1.Multiply(1 / renderContext.NominalRadius);
                                     pos2.Multiply(1 / renderContext.NominalRadius);
                                     map.Frame.trajectoryLines.AddLine(pos1, pos2, map.Frame.RepresentativeColor, new Dates());
                                 }
+                                map.Frame.trajectoryDirty = false;
                             }
                             Matrix3d matSaved = renderContext.World;
                             renderContext.World = thisMap.Frame.WorldMatrix * renderContext.WorldBaseNonRotating;

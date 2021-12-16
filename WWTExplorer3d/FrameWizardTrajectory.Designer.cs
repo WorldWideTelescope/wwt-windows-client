@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameWizardTrajectory));
             this.label1 = new System.Windows.Forms.Label();
             this.UnitsLabel = new System.Windows.Forms.Label();
-            this.SemiMajorAxisUnits = new TerraViewer.WwtCombo();
+            this.TrajectoryUnits = new TerraViewer.WwtCombo();
             this.Import = new TerraViewer.WwtButton();
             this.endDateRangeEdit = new System.Windows.Forms.TextBox();
             this.EndDateRangeLabel = new System.Windows.Forms.Label();
@@ -44,7 +45,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(656, 38);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Trajectory Reference Frames are based on a time series table of Julian Date/Times and heliocentric X,Y,Z coordinates in the referenced units. The reference frame will orient itself on the path described based on interpolating positions for the current time.";
+            this.label1.Text = resources.GetString("label1.Text");
             // 
             // UnitsLabel
             // 
@@ -55,24 +56,25 @@
             this.UnitsLabel.TabIndex = 9;
             this.UnitsLabel.Text = "Units";
             // 
-            // SemiMajorAxisUnits
+            // TrajectoryUnits
             // 
-            this.SemiMajorAxisUnits.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(23)))), ((int)(((byte)(31)))));
-            this.SemiMajorAxisUnits.DateTimeValue = new System.DateTime(2010, 7, 6, 14, 22, 50, 802);
-            this.SemiMajorAxisUnits.Filter = TerraViewer.Classification.Unfiltered;
-            this.SemiMajorAxisUnits.FilterStyle = false;
-            this.SemiMajorAxisUnits.Location = new System.Drawing.Point(154, 72);
-            this.SemiMajorAxisUnits.Margin = new System.Windows.Forms.Padding(0);
-            this.SemiMajorAxisUnits.MasterTime = true;
-            this.SemiMajorAxisUnits.MaximumSize = new System.Drawing.Size(248, 33);
-            this.SemiMajorAxisUnits.MinimumSize = new System.Drawing.Size(35, 33);
-            this.SemiMajorAxisUnits.Name = "SemiMajorAxisUnits";
-            this.SemiMajorAxisUnits.SelectedIndex = -1;
-            this.SemiMajorAxisUnits.SelectedItem = null;
-            this.SemiMajorAxisUnits.Size = new System.Drawing.Size(139, 33);
-            this.SemiMajorAxisUnits.State = TerraViewer.State.Rest;
-            this.SemiMajorAxisUnits.TabIndex = 10;
-            this.SemiMajorAxisUnits.Type = TerraViewer.WwtCombo.ComboType.List;
+            this.TrajectoryUnits.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(23)))), ((int)(((byte)(31)))));
+            this.TrajectoryUnits.DateTimeValue = new System.DateTime(2010, 7, 6, 14, 22, 50, 802);
+            this.TrajectoryUnits.Filter = TerraViewer.Classification.Unfiltered;
+            this.TrajectoryUnits.FilterStyle = false;
+            this.TrajectoryUnits.Location = new System.Drawing.Point(154, 72);
+            this.TrajectoryUnits.Margin = new System.Windows.Forms.Padding(0);
+            this.TrajectoryUnits.MasterTime = true;
+            this.TrajectoryUnits.MaximumSize = new System.Drawing.Size(248, 33);
+            this.TrajectoryUnits.MinimumSize = new System.Drawing.Size(35, 33);
+            this.TrajectoryUnits.Name = "TrajectoryUnits";
+            this.TrajectoryUnits.SelectedIndex = -1;
+            this.TrajectoryUnits.SelectedItem = null;
+            this.TrajectoryUnits.Size = new System.Drawing.Size(139, 33);
+            this.TrajectoryUnits.State = TerraViewer.State.Rest;
+            this.TrajectoryUnits.TabIndex = 10;
+            this.TrajectoryUnits.Type = TerraViewer.WwtCombo.ComboType.List;
+            this.TrajectoryUnits.SelectionChanged += new TerraViewer.SelectionChangedEventHandler(this.TrajectoryUnits_SelectionChanged);
             // 
             // Import
             // 
@@ -137,7 +139,7 @@
             this.Controls.Add(this.beginDateRangeLabel);
             this.Controls.Add(this.Import);
             this.Controls.Add(this.UnitsLabel);
-            this.Controls.Add(this.SemiMajorAxisUnits);
+            this.Controls.Add(this.TrajectoryUnits);
             this.Controls.Add(this.label1);
             this.Name = "FrameWizardTrajectory";
             this.Load += new System.EventHandler(this.FrameWizardTrajectory_Load);
@@ -150,7 +152,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label UnitsLabel;
-        private WwtCombo SemiMajorAxisUnits;
+        private WwtCombo TrajectoryUnits;
         private WwtButton Import;
         private System.Windows.Forms.TextBox endDateRangeEdit;
         private System.Windows.Forms.Label EndDateRangeLabel;

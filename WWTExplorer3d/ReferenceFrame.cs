@@ -258,6 +258,24 @@ namespace TerraViewer
             get { return semiMajorAxisUnits; }
             set { semiMajorAxisUnits = value; }
         }
+        public AltUnits trajectoryUnits = AltUnits.Meters;
+
+        [LayerProperty]
+        public AltUnits TrajectoryUnits
+        {
+            get { return trajectoryUnits; }
+            set
+            {
+                if (trajectoryUnits != value)
+                {
+                    trajectoryUnits = value;
+                    if (referenceFrameType == ReferenceFrameTypes.Trajectory)
+                    {
+                        trajectoryDirty = true;
+                    }
+                }
+            }
+        }
         public double eccentricity; // e
 
         [LayerProperty]
@@ -326,6 +344,7 @@ namespace TerraViewer
             set { orbit = value; }
         }
         public LineList trajectoryLines = null;
+        public bool trajectoryDirty = false;
         CAAEllipticalObjectElements elements = new CAAEllipticalObjectElements();
 
 
@@ -386,6 +405,7 @@ namespace TerraViewer
 
             if (ReferenceFrameType == ReferenceFrameTypes.Trajectory)
             {
+                xmlWriter.WriteAttributeString("TrajectoryUnits", this.TrajectoryUnits.ToString());
                 xmlWriter.WriteStartElement("Trajectory");
 
                 foreach (TrajectorySample sample in Trajectory)
@@ -440,9 +460,6 @@ namespace TerraViewer
 
             if (ReferenceFrameType == ReferenceFrameTypes.Orbital)
             {
-                SemiMajorAxis = Double.Parse(node.Attributes["SemiMajorAxis"].Value);
-                SemiMajorAxisUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["SemiMajorAxisScale"].Value);
-
                 Eccentricity = Double.Parse(node.Attributes["Eccentricity"].Value);
                 Inclination = Double.Parse(node.Attributes["Inclination"].Value);
                 ArgumentOfPeriapsis = Double.Parse(node.Attributes["ArgumentOfPeriapsis"].Value);
@@ -450,7 +467,8 @@ namespace TerraViewer
                 MeanAnomolyAtEpoch = Double.Parse(node.Attributes["MeanAnomolyAtEpoch"].Value);
                 MeanDailyMotion = Double.Parse(node.Attributes["MeanDailyMotion"].Value);
                 Epoch = Double.Parse(node.Attributes["Epoch"].Value);
-
+                SemiMajorAxis = Double.Parse(node.Attributes["SemiMajorAxis"].Value);
+                SemiMajorAxisUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["SemiMajorAxisScale"].Value);
             }
             if (ReferenceFrameType == ReferenceFrameTypes.Trajectory)
             {
@@ -460,6 +478,10 @@ namespace TerraViewer
                     {
                         Trajectory.Add(new TrajectorySample(child.InnerText));
                     }
+                }
+                if (node.Attributes["TrajectoryUnits"] != null)
+                {
+                    TrajectoryUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["TrajectoryUnits"].Value);
                 }
             }
 
@@ -846,15 +868,15 @@ namespace TerraViewer
             {
                 if (current < 1)
                 {
-                    vector = Trajectory[0].Position - Trajectory[1].Position;
-                    return Trajectory[0].Position;
+                    vector = Trajectory[0].Position(TrajectoryUnits) - Trajectory[1].Position(TrajectoryUnits);
+                    return Trajectory[0].Position(TrajectoryUnits);
                 }
 
 
                 if (current == Trajectory.Count - 1)
                 {
-                    vector = Trajectory[current - 1].Position - Trajectory[current].Position;
-                    return Trajectory[current].Position;
+                    vector = Trajectory[current - 1].Position(TrajectoryUnits) - Trajectory[current].Position(TrajectoryUnits);
+                    return Trajectory[current].Position(TrajectoryUnits);
                 }
 
                 if ((Trajectory[current - 1].Time <= jNow) && (Trajectory[current].Time > jNow))
@@ -862,8 +884,8 @@ namespace TerraViewer
                     double denominator = Trajectory[current].Time - Trajectory[current - 1].Time;
                     double numerator = jNow - Trajectory[current - 1].Time;
                     double tween = numerator / denominator;
-                    vector = Trajectory[current - 1].Position - Trajectory[current].Position;
-                    point = Vector3d.Lerp(Trajectory[current - 1].Position, Trajectory[current].Position, tween);
+                    vector = Trajectory[current - 1].Position(TrajectoryUnits) - Trajectory[current].Position(TrajectoryUnits);
+                    point = Vector3d.Lerp(Trajectory[current - 1].Position(TrajectoryUnits), Trajectory[current].Position(TrajectoryUnits), tween);
                     return point;
                 }
 
@@ -1220,6 +1242,7 @@ namespace TerraViewer
         {
             return null;
         }
+
     }
 
     public class TrajectorySample
@@ -1239,12 +1262,11 @@ namespace TerraViewer
             Time = time;
         }
 
-        public Vector3d Position
+        public Vector3d Position(AltUnits units)
         {
-            get
-            {
-                return new Vector3d(X*1000, Z*1000, Y*1000);
-            }
+            double factor = UiTools.GetScaleFactor(units, 1);
+            Vector3d vec = new Vector3d(X * factor, Z * factor, Y * factor);
+            return vec;
         }
 
         public TrajectorySample(string line)
