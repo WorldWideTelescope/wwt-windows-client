@@ -18,28 +18,25 @@ namespace TerraViewer
 
         private void SetUiStrings()
         {
-            this.altDepthLabel.Text = Language.GetLocalizedText(802, "Altitude");
+            this.altDepthLabel.Text = Language.GetLocalizedText(763, "Altitude");
             this.LongitudeLabel.Text = Language.GetLocalizedText(803, "Longitude (Decimal Degrees)");
             this.LatitudeLabel.Text = Language.GetLocalizedText(804, "Latitude (Decimal Degrees)");
             this.label3.Text = Language.GetLocalizedText(801, "Select the Latitude, Longitude and Altitude");
             this.GetFromView.Text = Language.GetLocalizedText(259, "Get From View");
         }
 
-        private void SetVisibilities()
-        {
-            if (this.frame.ReferenceFrameType == ReferenceFrameTypes.Synodic)
-            {
-                this.AltitudeUnitsLabel.Visible = false;
-                this.AltitudeUnits.Visible = false;
-            }
-        }
-
         ReferenceFrame frame = null;
         public override void SetData(object data)
         {
             frame = data as ReferenceFrame;
-            SetVisibilities();
+            if (this.frame.ReferenceFrameType == ReferenceFrameTypes.Synodic)
+            {
+                this.AltitudeUnitsLabel.Visible = false;
+                this.AltitudeUnits.Visible = false;
+                this.altDepthLabel.Text = Language.GetLocalizedText(802, "Altitude (Meters)");
+            }
         }
+
         public override bool Save()
         {
             bool failed = false;
