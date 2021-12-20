@@ -36,6 +36,8 @@
             this.LatitudeLabel = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.GetFromView = new TerraViewer.WwtButton();
+            this.AltitudeUnitsLabel = new System.Windows.Forms.Label();
+            this.AltitudeUnits = new TerraViewer.WwtCombo();
             this.SuspendLayout();
             // 
             // Altitude
@@ -73,9 +75,9 @@
             this.altDepthLabel.AutoSize = true;
             this.altDepthLabel.Location = new System.Drawing.Point(192, 85);
             this.altDepthLabel.Name = "altDepthLabel";
-            this.altDepthLabel.Size = new System.Drawing.Size(83, 13);
+            this.altDepthLabel.Size = new System.Drawing.Size(42, 13);
             this.altDepthLabel.TabIndex = 23;
-            this.altDepthLabel.Text = "Altitude (Meters)";
+            this.altDepthLabel.Text = "Altitude";
             // 
             // LongitudeLabel
             // 
@@ -109,7 +111,7 @@
             this.GetFromView.DialogResult = System.Windows.Forms.DialogResult.None;
             this.GetFromView.ImageDisabled = null;
             this.GetFromView.ImageEnabled = null;
-            this.GetFromView.Location = new System.Drawing.Point(195, 144);
+            this.GetFromView.Location = new System.Drawing.Point(94, 190);
             this.GetFromView.MaximumSize = new System.Drawing.Size(140, 33);
             this.GetFromView.Name = "GetFromView";
             this.GetFromView.Selected = false;
@@ -118,10 +120,41 @@
             this.GetFromView.Text = "Get From View";
             this.GetFromView.Click += new System.EventHandler(this.GetFromView_Click);
             // 
+            // AltitudeUnitsLabel
+            // 
+            this.AltitudeUnitsLabel.AutoSize = true;
+            this.AltitudeUnitsLabel.Location = new System.Drawing.Point(192, 141);
+            this.AltitudeUnitsLabel.Name = "AltitudeUnitsLabel";
+            this.AltitudeUnitsLabel.Size = new System.Drawing.Size(69, 13);
+            this.AltitudeUnitsLabel.TabIndex = 29;
+            this.AltitudeUnitsLabel.Text = "Altitude Units";
+            // 
+            // AltitudeUnits
+            // 
+            this.AltitudeUnits.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(23)))), ((int)(((byte)(31)))));
+            this.AltitudeUnits.DateTimeValue = new System.DateTime(2010, 7, 6, 14, 22, 50, 802);
+            this.AltitudeUnits.Filter = TerraViewer.Classification.Unfiltered;
+            this.AltitudeUnits.FilterStyle = false;
+            this.AltitudeUnits.Location = new System.Drawing.Point(195, 154);
+            this.AltitudeUnits.Margin = new System.Windows.Forms.Padding(0);
+            this.AltitudeUnits.MasterTime = true;
+            this.AltitudeUnits.MaximumSize = new System.Drawing.Size(248, 33);
+            this.AltitudeUnits.MinimumSize = new System.Drawing.Size(35, 33);
+            this.AltitudeUnits.Name = "AltitudeUnits";
+            this.AltitudeUnits.SelectedIndex = -1;
+            this.AltitudeUnits.SelectedItem = null;
+            this.AltitudeUnits.Size = new System.Drawing.Size(139, 33);
+            this.AltitudeUnits.State = TerraViewer.State.Rest;
+            this.AltitudeUnits.TabIndex = 30;
+            this.AltitudeUnits.Type = TerraViewer.WwtCombo.ComboType.List;
+            this.AltitudeUnits.SelectionChanged += new TerraViewer.SelectionChangedEventHandler(this.AltitudeUnits_SelectionChanged);
+            // 
             // FrameWizardPosition
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.AltitudeUnits);
+            this.Controls.Add(this.AltitudeUnitsLabel);
             this.Controls.Add(this.GetFromView);
             this.Controls.Add(this.Altitude);
             this.Controls.Add(this.Longitude);
@@ -147,5 +180,7 @@
         private System.Windows.Forms.Label LatitudeLabel;
         private System.Windows.Forms.Label label3;
         private WwtButton GetFromView;
+        private System.Windows.Forms.Label AltitudeUnitsLabel;
+        private WwtCombo AltitudeUnits;
     }
 }

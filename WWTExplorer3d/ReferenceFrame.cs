@@ -158,7 +158,14 @@ namespace TerraViewer
             get { return altitude; }
             set { altitude = value; }
         }
+        public AltUnits altUnits;
 
+        [LayerProperty]
+        public AltUnits AltUnits
+        {
+            get { return altUnits; }
+            set { altUnits = value; }
+        }
 
         // For Rotating frames
         public double rotationalPeriod; // Days
@@ -380,7 +387,10 @@ namespace TerraViewer
             {
                 xmlWriter.WriteAttributeString("Lat", Lat.ToString());
                 xmlWriter.WriteAttributeString("Lng", Lng.ToString());
-                xmlWriter.WriteAttributeString("Altitude", Altitude.ToString());
+                double scaleFactor = UiTools.GetScaleFactor(AltUnits, 1);
+                double altInMeters = scaleFactor * Altitude;
+                xmlWriter.WriteAttributeString("Altitude", altInMeters.ToString());
+                xmlWriter.WriteAttributeString("AltUnits", AltUnits.ToString());
             }
             xmlWriter.WriteAttributeString("RotationalPeriod", RotationalPeriod.ToString());
             xmlWriter.WriteAttributeString("ZeroRotationDate", ZeroRotationDate.ToString());
@@ -441,7 +451,13 @@ namespace TerraViewer
             {
                 Lat = Double.Parse(node.Attributes["Lat"].Value);
                 Lng = Double.Parse(node.Attributes["Lng"].Value);
-                Altitude = Double.Parse(node.Attributes["Altitude"].Value);
+                double altInMeters = Double.Parse(node.Attributes["Altitude"].Value);
+                if (node.Attributes["AltUnits"] != null)
+                {
+                    AltUnits = (AltUnits)Enum.Parse(typeof(AltUnits), node.Attributes["AltUnits"].Value);
+                }
+                double scaleFactor = UiTools.GetScaleFactor(AltUnits, 1);
+                Altitude = altInMeters / scaleFactor;
             }
 
             RotationalPeriod = Double.Parse(node.Attributes["RotationalPeriod"].Value);
@@ -744,6 +760,7 @@ namespace TerraViewer
                 Lat = SpaceTimeController.Location.Lat;
                 Lng = SpaceTimeController.Location.Lng;
                 Altitude = SpaceTimeController.Altitude;
+                AltUnits = AltUnits.Meters;
             }
 
 
@@ -759,7 +776,8 @@ namespace TerraViewer
                 double rotationCurrent = (((SpaceTimeController.JNow - this.ZeroRotationDate) / RotationalPeriod) * Math.PI * 2) % (Math.PI * 2);
                 WorldMatrix.Multiply(Matrix3d.RotationX(-rotationCurrent));
             }
-            WorldMatrix.Translate(new Vector3d(1 + (Altitude / renderContext.NominalRadius), 0, 0));
+            double altFactor = UiTools.GetScaleFactor(AltUnits, 1);
+            WorldMatrix.Translate(new Vector3d(1 + (Altitude * altFactor / renderContext.NominalRadius), 0, 0));
             WorldMatrix.Multiply(Matrix3d.RotationZ(Lat / 180 * Math.PI));
             WorldMatrix.Multiply(Matrix3d.RotationY(-(Lng) / 180 * Math.PI));
         }
