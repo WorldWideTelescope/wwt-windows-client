@@ -1,6 +1,6 @@
 1	Select Your Language
 2	This will restore user settings to their default values. Are you sure you want to proceed?
-3	Microsoft WorldWide Telescope
+3	WorldWide Telescope
 4	You need 3d Graphics and DirectX installed to run this application
 5	Your tour has unsaved changes. Do you want to save the changes before closing?
 6	Tour Editor
@@ -629,7 +629,7 @@
 639	Size/Mag Source
 640	Save As...
 641	Marker Type
-642	Microsoft WorldWide Telescope - VO Table Viewer
+642	WorldWide Telescope - VO Table Viewer
 643	Undo:
 644	Redo:
 645	Add Collection as Tour Stops
@@ -851,7 +851,7 @@
 863	Histogram
 864	Ctrl+E               Toggle Edit Mode\nMouse Drag     Move Image\nShift+Drag        Scale Image\nCtrl+Drag          Rotate Image\nAlt+                   Fine Adjustment Scale/Rotate\nRight Click        Pick Pivot + Toggle Pivot Mode\nC                       Centers Image to View\n\nPivot Mode Instructions:\n* Align a star in both image and background.\n* Right Click on centroid of aligned star to select pivot.\n* Left Drag on a second star and align it to background.\n* Right Click to exit pivot mode.
 865	Image Alignment
-866	Microsoft WorldWide Telescope - Take it home with you at http://www.worldwidetelescope.org
+866	WorldWide Telescope - Take it home with you at http://www.worldwidetelescope.org
 867	Start DateTime
 868	End DateTime
 869	Fade In/Out Time
@@ -952,11 +952,11 @@
 964	Windows Live ID
 965	Password
 966	Windows Live ID Sign In
-967	Sign In to:     Microsoft WorldWide Telescope Communities
+967	Sign In to:     WorldWide Telescope Communities
 968	Remember me on this computer
 969	Forgot your password?
 970	Remember my Password
-971	You are logging into Microsoft WorldWide Telescope Communities which is a Microsoft Research Developed Application
+971	You are logging into WorldWide Telescope Communities
 972	Sign up for a Windows Live ID
 973	Login Canceled
 974	The Login Timed Out.

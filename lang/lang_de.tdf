@@ -488,4 +488,93 @@
 488	Willkommen
 489	Diesen Dialog nicht mehr anzeigen
 490	TBD
-626	** Not tranlated yet **
+491	TBD
+492	Touren
+493	Grenzen
+494	Figuren
+495	Nur im Fokus
+496	Gitternetz
+497	Ekliptik
+498	Sternbild-Linien
+499	Farbe der Grenze des Sternbildes im Fokus wählen
+500	Farbe der Sternbildgrenze wählen
+501	Farbe der Figur wählen
+502	Editieren
+503	Sternbild-Library
+504	Überblendungen
+505	Farbe des Sternbilds wählen
+506	Fadenkreuz
+507	Beobachtungsort
+508	Sicht von diesem Ort
+509	Bitte Ort auswählen
+510	Höhe:
+511	Beobachtungszeit
+512	Jetzt
+513	Echtzeit
+514	Möchten Sie dieses Sternbild der Sternbild-Library hinzufügen?
+515	Sternbild-Library-Name
+516	Name existiert bereits, bitte anderen auswählen
+517	Diese Datei ist keine gültige Sternbild-Library-Datei
+518	Name existiert bereits, bitte anderen auswählen
+519	Standard-Sternbilder
+520	Das Löschen dieser Sternbild-Library führt zum Löschen aller Ihrer darin angelegten Sternbilder. Möchten Sie fortsetzen?
+521	Zeit rückwärts laufen lassen
+522	: Angehalten
+523	X
+524	Musik entfernen
+525	Sprache entfernen
+526	Ton/Musik(*.MP3;*.WMA)|*.MP3;*.WMA
+527	Musik hinzufügen
+528	Sprache hinzufügen
+529	Lautstärke ändern
+530	Folie  an der Endposition wiederholen
+531	Slide Show zusammenfügen
+532	Anzeigedauer
+533	Master Slide editieren
+534	Folie löschen
+535	Folie einfügen
+536	Folie ausschneiden
+537	Größe ändern
+538	Drehen
+539	Kopieren/Verschieben
+540	Verschieben
+541	Hyperlink editieren
+542	URL
+543	Farbe editieren
+544	Objekt einfügen
+545	Text editieren
+546	Bild einfügen
+547	Text einfügen
+548	Umriss einfügen
+549	Eigenschaften editieren
+550	Folie verschieben
+551	Nichts rückgängig zu machen
+552	Als Vordergrund-Bilder festlegen
+553	Als Hintergrund-Bilder festlegen
+554	Tour speichern als...
+555	J2000
+556	Alt/Az
+557	galaktisch
+558	ekliptisch
+559	3d Solar System
+560	Sky Overlays
+561	Lighting
+562	Orbits
+563	Cosmos
+564	Show Stars
+565	Toggle Full Screen Mode
+566	VOTable...
+567	Stereo
+568	Disabled
+569	Anaglyph (Red-Cyan)
+570	Anaglyph (Yellow-Blue)
+571	Side by Side Projection
+572	Side by Side Cross-Eyed
+573	Expermental
+574	Full Dome
+575	Dome Setup
+576	VO Cone Search / Registry Lookup...
+577	Antialiased Lines
+578	Planet Size
+579	Large
+580	Actual
