@@ -1,6 +1,6 @@
 1	Selecteer uw taal
 2	Dit herstelt de oorspronkelijke gebruikersinstellingen. Weet je zeker dat je wilt doorgaan?
-3	Microsoft WorldWide Telescope
+3	AAS WorldWide Telescope
 4	Om deze applicatie te draaien, moet je 3d Graphics en DirectX hebben geïnstalleerd
 5	Je tour heeft niet-opgeslagen wijzigingen.  Wil je deze wijzigingen bewaren voordat je afsluit?
 6	Tour-deelnemer
@@ -628,7 +628,7 @@
 639	Grootte/Mag bron
 640	Bewaar als... 
 641	Marker type 
-642	Microsoft WorldWide Telescope - VO Tabel-viewer 
+642	AAS WorldWide Telescope - VO Tabel-viewer 
 643	Maak ongedaan: 
 644	Doe opnieuw: 
 645	Voeg collectie toe als tour stopt 
@@ -852,7 +852,7 @@
 863	Histogram 
 864	Ctrl+E               Schakel naar Edit-modus  nMuis verslepen    Beweeg afbeelding  nShift+sleep       Schaal afbeelding  nCtrl+sleep          Roteer afbeelding   nAlt+                   Fijnafstelling schaal/Roteer  nRechtermuisknop       kies Pivot + Schakel naar Pivot-modus  nC                       Centreert afbeelding in de view  n  nPivot-modus instructies:  n* Lijn een ster uit in zowel afbeelding als achtergrond.  n* Rechtermuisklik op centrum van uitgelijnde ster om de Pivot  te kiezen.  n* Sleep link op een tweede ster om op de achtergrond uit te lijnen.  n* Rechtermuisklik om Pivot-modus te verlaten. 
 865	Afbeelding uitlijnen 
-866	Microsoft WorldWide Telescope - Bekijk het thuis op http://www.worldwidetelescope.org 
+866	AAS WorldWide Telescope - Bekijk het thuis op http://www.worldwidetelescope.org 
 867	Startdatum/-tijd 
 868	Einddatum/-tijd 
 869	Fade-in/uit tijd 
@@ -953,11 +953,11 @@
 964	Windows Live ID
 965	Wachtwoord
 966	Inschrijven voor Windows Live ID 
-967	Schrijf in bij: Microsoft WorldWide Telescope Communities
+967	Schrijf in bij: AAS WorldWide Telescope Communities
 968	Onthoud mijn inloggegevens op deze computer
 969        Wachtwoord vergeten?
 970	Onthoud mijn wachtwoord
-971	Je logt in bij Microsoft WorldWide Telescope Communities, een door Microsoft Research ontwikkelde applicatie
+971	Je logt in bij AAS WorldWide Telescope Communities
 972	Schrijf in voor een Windows Live ID
 973	Login geannuleerd
 974	Login timeout

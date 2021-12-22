@@ -1,6 +1,6 @@
 1	Select Your Language
 2	This will restore user settings to their default values. Are you sure you want to proceed?
-3	WorldWide Telescope
+3	AAS WorldWide Telescope
 4	You need 3d Graphics and DirectX installed to run this application
 5	Your tour has unsaved changes. Do you want to save the changes before closing?
 6	Tour Editor
@@ -58,9 +58,9 @@
 58	Image...
 59	Show Finder
 60	Play Collection as Slide Show
-61	About WorldWide Telescope
+61	About AAS WorldWide Telescope
 62	Getting Started (Help)
-63	WorldWide Telescope Home Page
+63	AAS WorldWide Telescope Home Page
 64	E&xit
 65	Check for Updates...
 66	Product Support...
@@ -84,33 +84,33 @@
 84	  Tiles in View:
 85	 Triangles Rendered:
 86	 Moves Sent:
-87	WorldWide Telescope Tour
-88	WorldWide Telescope Media List
-89	WorldWide Telescope Constellation Figures
+87	AAS WorldWide Telescope Tour
+88	AAS WorldWide Telescope Media List
+89	AAS WorldWide Telescope Constellation Figures
 90	No Object
 91	Add Point to Constellation Figure
 92	Can't Launch Help
-93	The Imagery data file could not be downloaded or has been corrupted. WorldWide Telescope must close. You need a working internet connection to update this file. Try again later
-94	WorldWide Telescope Notification
-95	You must Update your client to connect to WorldWide Telescope.\n(Your version: {0}, Update version: {1})
+93	The Imagery data file could not be downloaded or has been corrupted. AAS WorldWide Telescope must close. You need a working internet connection to update this file. Try again later
+94	AAS WorldWide Telescope Notification
+95	You must Update your client to connect to AAS WorldWide Telescope.\n(Your version: {0}, Update version: {1})
 96	There is a new software update available.\n(Your version: {0}, Update version: {1})
 97	You have the latest version.\n(Your version: {0}, Server version: {1})
 98	No Internet connection was detected. Please ensure that you have internet connectivity. If you need a proxy make sure you have selected the correct proxy server and port in the Settings Tab. Only cached information is available and some functions will not be available. You may continue in off-line mode.
 99	There was a problem saving the downloaded FITS file. Please make sure you specified a path where you have permissions to save and that has free space.
 100	Download FITS Image File
-101	WorldWide Telescope Tours
+101	AAS WorldWide Telescope Tours
 102	This file does not seem to be a valid tour
 103	The tour file could not be downloaded and was not cached. Check you network connection.
 104	The tour file could not be downloaded and was not cached. Check you network connection.
 105	The tour file is invalid. Check you network connection.
 106	Could not load tour
-107	WorldWide Telescope Collection
+107	AAS WorldWide Telescope Collection
 109	This file does not seem to be a valid collection
 110	The file opened is a community registration file and this community is already registered.
 111	The file opened is a community registration file. Would you like to add this to your communities list?
 112	The image file did not contain valid AVM Metadata to position it in the sky
 113	Load Image
-114	Respect Copyright. Please respect the rights of artists and creators. Content such as music is protected by copyright. The music made available to you in WorldWide Telescope is protected by copyright and may be used for the sole purpose of creating tours in WorldWide Telescope. You may not share other people's content unless you own the rights or have permission from the owner.
+114	Respect Copyright. Please respect the rights of artists and creators. Content such as music is protected by copyright. The music made available to you in AAS WorldWide Telescope is protected by copyright and may be used for the sole purpose of creating tours in AAS WorldWide Telescope. You may not share other people's content unless you own the rights or have permission from the owner.
 115	There was a problem saving the tour.
 116	Submission Failed
 117	There was no author image. Please add one and submit again.
@@ -141,7 +141,7 @@
 143	End
 144	Out:
 145	Volume
-146	WorldWide Telescope keeps copies of the imagery, tours, and catalogs that you view. Keeping this data enables you to view tours and imagery again quickly even if your computer is not connected to the Internet. Selecting options and clicking Purge frees up disk space but the data is not available until it is downloaded again.
+146	AAS WorldWide Telescope keeps copies of the imagery, tours, and catalogs that you view. Keeping this data enables you to view tours and imagery again quickly even if your computer is not connected to the Internet. Selecting options and clicking Purge frees up disk space but the data is not available until it is downloaded again.
 147	Size : 
 148	Scanning Cache Size
 149	This will delete custom constellation figures as well as other selected data and close the application. Do you want to continue?
@@ -215,7 +215,7 @@
 217	File Download Progress
 218	The folder was not loaded from a file
 219	Select a Collection to explore...
-220	Could not connect to the WorldWide Telescope Server to download tours, and there was no available cached tour list. Please check your network or proxy settings and make sure you have a network connection.
+220	Could not connect to the AAS WorldWide Telescope Server to download tours, and there was no available cached tour list. Please check your network or proxy settings and make sure you have a network connection.
 221	The tour file could not be downloaded and is not in cache. Check you network connection.
 222	Open Images
 223	Open Collections
@@ -244,7 +244,7 @@
 247	South-West
 248	West
 249	North-West
-250	WorldWide Telescope can use a XBOX 360 Game controller or other compatible device to navigate the 3d viewport. Some controllers are not properly center calibrated and can cause the viewport to zoom or spin out of control. Having more than one type of controller can cause conflicts. If you have problems with the viewport, either disable the joystick control or unplug conflicting devices before launching WorldWide Telescope.
+250	AAS WorldWide Telescope can use a XBOX 360 Game controller or other compatible device to navigate the 3d viewport. Some controllers are not properly center calibrated and can cause the viewport to zoom or spin out of control. Having more than one type of controller can cause conflicts. If you have problems with the viewport, either disable the joystick control or unplug conflicting devices before launching AAS WorldWide Telescope.
 251	Use the controller
 252	Ignore the controller
 253	Latitude (Dec. deg.)
@@ -476,8 +476,8 @@
 483	Organization Name
 485	Please enter a title for the tour...
 486	Image Files
-487	Navigating in the WorldWide Telescope: \n\n    ● Move around the sky by clicking and dragging the Field of View. \n    ● Zoom in/out by scrolling the mouse wheel, pressing -/+ or Page Up/Page Down. \n    ● Drag with center mouse button or hold Ctrl while dragging to rotate and tilt view.\n    ● Navigate with a XBOX 360 controller by connecting it before launching.\n    ● Click an object’s thumbnail to pan to the object. Double-clicking the object’s\n        thumbnail jumps you to the object. \n    ● Page through multiple thumbnail panes with the scroll wheel \n    ● Right-click an object to display the contextual Finder Scope for more information. \n    ● Menu Tabs have two parts: click the tab’s top to open a pane,\n        click the tab’s bottom to open submenus with additional functionality.
-488	Welcome to WorldWide Telescope
+487	Navigating in AAS WorldWide Telescope:\n\n    ● Move around the sky by clicking and dragging the field of view.\n    ● Zoom in/out by scrolling the mouse wheel, pressing -/+ or Page Up/Page Down.\n    ● Drag with center mouse button or hold Ctrl while dragging to rotate and tilt view.\n    ● Navigate with a XBOX 360 controller by connecting it before launching.\n    ● Click an object’s thumbnail to pan to the object. Double-clicking the object’s\n        thumbnail jumps you to the object.\n    ● Page through multiple thumbnail panes with the scroll wheel\n    ● Right-click an object to display the contextual Finder Scope for more information.\n    ● Menu Tabs have two parts: click the tab’s top to open a pane;\n        click the tab’s bottom to open submenus with additional functionality.
+488	Welcome to AAS WorldWide Telescope
 489	Do not show me this dialog again
 492	Tours
 493	Boundaries
@@ -504,7 +504,7 @@
 514	Do you want to add these constellation figures to your Figure Library?
 515	Figure Library Name
 516	Name already exists, type a different name.
-517	The file is not a valid WorldWide Telescope Constellation Figure File
+517	The file is not a valid AAS WorldWide Telescope Constellation Figure File
 518	Name already exists, type a different name.
 519	Default Figures
 520	Deleting this figure library will delete the constellation figures you created. Do you want to continue?
@@ -629,7 +629,7 @@
 639	Size/Mag Source
 640	Save As...
 641	Marker Type
-642	WorldWide Telescope - VO Table Viewer
+642	AAS WorldWide Telescope - VO Table Viewer
 643	Undo:
 644	Redo:
 645	Add Collection as Tour Stops
@@ -674,16 +674,16 @@
 685	Move Up
 686	Move Down
 687	Move to Bottom
-688	WorldWide Telescope failed to complete the last startup attempt. Would you like WorldWide Telescope to attempt an auto reset of the data directory?
-689	WorldWide Telescope encountered an error starting up. Would you like WorldWide Telescope to attempt a reset of the data directory and restart?
-690	WorldWide Telescope has encountered an error. Click OK to restart or Cancel to attempt to ignore the error and continue
+688	AAS WorldWide Telescope failed to complete the last startup attempt. Would you like AAS WorldWide Telescope to attempt an auto reset of the data directory?
+689	AAS WorldWide Telescope encountered an error starting up. Would you like AAS WorldWide Telescope to attempt a reset of the data directory and restart?
+690	AAS WorldWide Telescope has encountered an error. Click OK to restart or Cancel to attempt to ignore the error and continue
 691	This Language Pack has an optional regional data cache that will allow improved performance when in that region. Do you wish to use it?
 692	Use Regional Data Cache
-693	WorldWide Telescope must restart to load a new language file. Do you want to restart now?
+693	AAS WorldWide Telescope must restart to load a new language file. Do you want to restart now?
 694	Restart Now?
 695	Could Not Open VO Table File. Please ensure it is valid
 696	That ID currently exists. Please choose a unique ID
-697	Could not open the file. Ensure it is a valid WorldWide Telescope configuration file.
+697	Could not open the file. Ensure it is a valid AAS WorldWide Telescope configuration file.
 698	Open Configuration File
 699	This will clear existing blend polygons for this projector and create new ones by transferring edge points from align. This operation cannot be undone, are you sure you want to proceed?
 700	Transfer from Edges
@@ -851,7 +851,7 @@
 863	Histogram
 864	Ctrl+E               Toggle Edit Mode\nMouse Drag     Move Image\nShift+Drag        Scale Image\nCtrl+Drag          Rotate Image\nAlt+                   Fine Adjustment Scale/Rotate\nRight Click        Pick Pivot + Toggle Pivot Mode\nC                       Centers Image to View\n\nPivot Mode Instructions:\n* Align a star in both image and background.\n* Right Click on centroid of aligned star to select pivot.\n* Left Drag on a second star and align it to background.\n* Right Click to exit pivot mode.
 865	Image Alignment
-866	WorldWide Telescope - Take it home with you at http://www.worldwidetelescope.org
+866	AAS WorldWide Telescope - Take it home with you at http://www.worldwidetelescope.org
 867	Start DateTime
 868	End DateTime
 869	Fade In/Out Time
@@ -944,7 +944,7 @@
 956	Add OData feed as Layer
 957	VO Table Viewer
 958	There are layers with the same name. Overwrite existing layers?
-959	WorldWide Telescope
+959	AAS WorldWide Telescope
 960	Save...
 961	
 962	Sign In
@@ -952,16 +952,16 @@
 964	Windows Live ID
 965	Password
 966	Windows Live ID Sign In
-967	Sign In to:     WorldWide Telescope Communities
+967	Sign In to:     AAS WorldWide Telescope Communities
 968	Remember me on this computer
 969	Forgot your password?
 970	Remember my Password
-971	You are logging into WorldWide Telescope Communities
+971	You are logging into AAS WorldWide Telescope Communities
 972	Sign up for a Windows Live ID
 973	Login Canceled
 974	The Login Timed Out.
 975	Login failed.
-976	WorldWide Telescope Layer File(*.wwtl)|*.wwtl
+976	AAS WorldWide Telescope Layer File(*.wwtl)|*.wwtl
 977	Separation: 
 978	Portable Network Graphics(*.png)|*.png|JPEG Image(*.jpg)|*.jpg
 979	Images(*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT)|*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT
@@ -977,8 +977,8 @@
 989	Import Orbital Elements
 990	Save Layers
 991	Publish Layers to Community
-992	WorldWide Telescope Layer File
-993	WorldWide Telescope Layer File(*.wwtl)
+992	AAS WorldWide Telescope Layer File
+993	AAS WorldWide Telescope Layer File(*.wwtl)
 994	Orbital Elements File (TLE)
 995	Show on Community Web Site
 996	Edit on Community Web Site
@@ -1028,13 +1028,13 @@
 1040	Align Right
 1041	Align Left
 1042	Align Bottoms
-1043	WorldWide Telescope must restart for new settings to take effect. Do you want to restart now?
+1043	AAS WorldWide Telescope must restart for new settings to take effect. Do you want to restart now?
 1044	Dome Master 8k
 1045	Downloading ({0} of {1})
 1046	Download Canceled
 1047	Download Complete
 1048	The imageset uses {0}MB of disk space.
-1049	WorldWide Telescope Layer
+1049	AAS WorldWide Telescope Layer
 1051	There was a problem capturing the screen contents
 1052	Overlay Item List
 1053	Overlay List
