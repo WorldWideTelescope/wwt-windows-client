@@ -1,7 +1,7 @@
 1	Selecteer uw taal
 2	Dit herstelt de oorspronkelijke gebruikersinstellingen. Weet je zeker dat je wilt doorgaan?
 3	Microsoft WorldWide Telescope
-4	Om deze applicatie te draaien, moet je 3d Graphics en DirectX hebben  geïnstalleerd
+4	Om deze applicatie te draaien, moet je 3d Graphics en DirectX hebben geÃ¯nstalleerd
 5	Je tour heeft niet-opgeslagen wijzigingen.  Wil je deze wijzigingen bewaren voordat je afsluit?
 6	Tour-deelnemer
 7	Naam: 
@@ -110,7 +110,7 @@
 111	De geopende file is een community registratiefile.  Wil je deze toevoegen aan je community-lijst? 
 112	De afbeeldings-file bevat geen geldige AVM Metadata om hem aan de hemel te plaatsen 
 113	Laad afbeelding 
-114	Respecteer Copyright. Respecteer het auteursrecht van artiesten en ontwerpers. Content zoals muziek is door auteursrecht beschermd. De muziek die beschikbaar is in WorldWide Telescope is beschermd door auteursrecht en mag alleen gebruikt worden voor het creëren van tours in WorldWide Telescope. Je mag content van anderen niet delen tenzij je de rechten daartoe hebt of toestemming hebt van de eigenaar.
+114	Respecteer Copyright. Respecteer het auteursrecht van artiesten en ontwerpers. Content zoals muziek is door auteursrecht beschermd. De muziek die beschikbaar is in WorldWide Telescope is beschermd door auteursrecht en mag alleen gebruikt worden voor het creÃ«ren van tours in WorldWide Telescope. Je mag content van anderen niet delen tenzij je de rechten daartoe hebt of toestemming hebt van de eigenaar.
 115	Er is een probleem opgetreden bij het opslaan van de tour. 
 116	Aanmelden mislukt 
 117	Er was geen afbeelding van de schrijver. Voeg er een toe en meld opnieuw aan. 
@@ -141,7 +141,7 @@
 143	Eind 
 144	Uit: 
 145	Volume 
-146	WorldWide Telescope bewaart kopieën van de afbeeldingen, tours en catalogi die je bekijkt. Door deze data te bewaren, kun je de tour en afbeeldingen opnieuw bekijken met een hogere snelheid, ook als je computer geen internetverbinding heeft. Door opties te selecteren en op leegmaken te klikken, maak je schijfruimte vrij, maar de gegevens zijn pas weer beschikbaar als ze zijn gedownload.  
+146	WorldWide Telescope bewaart kopieÃ«n van de afbeeldingen, tours en catalogi die je bekijkt. Door deze data te bewaren, kun je de tour en afbeeldingen opnieuw bekijken met een hogere snelheid, ook als je computer geen internetverbinding heeft. Door opties te selecteren en op leegmaken te klikken, maak je schijfruimte vrij, maar de gegevens zijn pas weer beschikbaar als ze zijn gedownload.  
 147	Grootte :  
 148	Cache-grootte scannen 
 149	Hiermee verwijder je de gekozen sterrenbeelden en andere geselecteerde data en sluit je de toepassing. Wil je doorgaan? 
@@ -254,7 +254,7 @@
 257	Regio 
 258	Hoogte (meters) 
 259	Verkrijg beeld 
-260	Categorieën 
+260	CategorieÃ«n 
 261	Waarneemlocatie-opties 
 262	Declinatie 
 263	Rechte klimming 
@@ -378,7 +378,7 @@
 384	Centreer 
 385	Kies 
 386	Verbind 
-387	Niet  geïnstalleerd 
+387	Niet  geÃ¯nstalleerd 
 388	Telescoop-status 
 389	Telescoop-control - niet verbonden 
 390	Verbreek verbinding 
@@ -393,8 +393,8 @@
 399	Telescoopstatus - draaien 
 400	Telescoopstatus - geparkeerd 
 401	Telescoopstatus - volgen
-402	Geïnstalleerd 
-403	Niet geïnstalleerd 
+402	GeÃ¯nstalleerd 
+403	Niet geÃ¯nstalleerd 
 404	Text editor 
 405	Lettergrootte 
 406	Vet 
@@ -686,7 +686,7 @@
 696	Deze ID bestaat al. Kies een unieke ID 
 697	Kan het bestand niet openen. Zorg ervoor dat het een geldig WorldWide Telescope configuratiebestand is. 
 698	Open configuratiebestand 
-699	Dit wist bestaande polygonen voor deze projector en creëert nieuwe, door nieuwe hoekpunten van een lijn te halen. Deze actie kan niet ongedaan gemaakt worden, weet je zeker dat je wilt doorgaan? 
+699	Dit wist bestaande polygonen voor deze projector en creÃ«ert nieuwe, door nieuwe hoekpunten van een lijn te halen. Deze actie kan niet ongedaan gemaakt worden, weet je zeker dat je wilt doorgaan? 
 700	Breng over van de hoeken 
 701	Projectoren 
 702	Punten 
@@ -802,16 +802,16 @@
 813	Een Kepleriaanse baan is een elliptische baan die wordt gedefinieerd door ten minste zes parameters. Er bestaan variaties in de manier waarop deze parameters worden beschreven, maar de meeste banen kunnen in de onderstaande termen worden vertaald. 
 814	Halflange as-eenheden 
 815	Plak TLE 
-816	Baanreferentie-frames zijn gebaseerd op een tijdtabel binnen de Juliaanse kalender en de heliocentrische X,Y, Z coördinaten  in de referentie-eenheden. Het referentie-frame zal zich op het beschreven pad oriënteren, gebaseerd op interpolerende posities van de huidige tijd. 
+816	Baanreferentie-frames zijn gebaseerd op een tijdtabel binnen de Juliaanse kalender en de heliocentrische X,Y, Z coÃ¶rdinaten  in de referentie-eenheden. Het referentie-frame zal zich op het beschreven pad oriÃ«nteren, gebaseerd op interpolerende posities van de huidige tijd. 
 817	Eenheden 
 818	Importeer pad 
 819	Eindig datumreeks 
 820	Begin datumreeks
 821	Baan-bestanden 
-822	Deze wizard leidt je door het proces van het maken van een nieuw referentie-frame. Een referentie-frame staat lokale coördinaten, schaal en tijd toe, ten opzichte van de rest van het heelal. De referentie kan worden gebaseerd op vaste beginwaarden, bolcoördinaten, Kepleriaanse banen of geïnterpoleerde waarden van een lijst van beginwaarden van datum/tijd en positie.
+822	Deze wizard leidt je door het proces van het maken van een nieuw referentie-frame. Een referentie-frame staat lokale coÃ¶rdinaten, schaal en tijd toe, ten opzichte van de rest van het heelal. De referentie kan worden gebaseerd op vaste beginwaarden, bolcoÃ¶rdinaten, Kepleriaanse banen of geÃ¯nterpoleerde waarden van een lijst van beginwaarden van datum/tijd en positie.
 823	Type beginwaarden 
 824	Naam referentieframe 
-825	Selecteer de kolommen voor Cartesische coördinaten voor X, Y en optioneel Z.  De omgekeerde checkbox kan worden gebruikt om de teken-vector voor elke as passend te maken. 
+825	Selecteer de kolommen voor Cartesische coÃ¶rdinaten voor X, Y en optioneel Z.  De omgekeerde checkbox kan worden gebruikt om de teken-vector voor elke as passend te maken. 
 826	Z-as kolom (optioneel) 
 827	Y-as kolom 
 828	X-as kolom 
@@ -822,8 +822,8 @@
 833	Gebruik de kleurenkaart om de kleur van een marker te veranderen op basis van een geselecteerde kolom die kleuren gebruikt voor afzonderlijke domeinwaarden, of gebruik een kleurengradient. 
 834	Type kleurenkaart 
 835	Kleurenkaart kolom 
-836	Gebruik de drop-downs om de kolommen te selecteren die de coördinaten specificeren, om het hoogte/diepte kaarttype te selecteren, en optioneel om de kolom die de hoogte/diepte en de eenheden waarin de data zijn gespecificeerd, te selecteren. Positieve diepte-beginwaarden naar beneden. Positieve hoogte-beginwaarden naar boven.  
-837	Ruimtelijke coördinaten  
+836	Gebruik de drop-downs om de kolommen te selecteren die de coÃ¶rdinaten specificeren, om het hoogte/diepte kaarttype te selecteren, en optioneel om de kolom die de hoogte/diepte en de eenheden waarin de data zijn gespecificeerd, te selecteren. Positieve diepte-beginwaarden naar beneden. Positieve hoogte-beginwaarden naar boven.  
+837	Ruimtelijke coÃ¶rdinaten  
 838	Hoogte / diepte / afstand 
 839	Breedtegraad  
 840	Lengtegraad 
@@ -839,12 +839,12 @@
 850	Marker kolom 
 851	Selecteer de manier waarop je markers en hun vormen wilt organiseren. Je kunt  een type marker gebruiken voor alle data, of een kolom selecteren die diverse markers toont voor reeksen van waarden of voor afzonderlijke waarden.  
 852	Toon markers aan de verre zijde 
-853	Gebruik het schaal-type  om aan te geven hoe de markers worden weergegeven.  Je kunt markers relatief t.o.v. het scherm weergeven, onafhankelijk van de zoom, of gekoppeld aan het coördinatensysteem. Je kunt optioneel een kolom selecteren om controle over de schaal te hebben.  Gebruik de schaal-factor om de relatieve kolomwaarden af te stellen op de markergrootte van de output.
+853	Gebruik het schaal-type  om aan te geven hoe de markers worden weergegeven.  Je kunt markers relatief t.o.v. het scherm weergeven, onafhankelijk van de zoom, of gekoppeld aan het coÃ¶rdinatensysteem. Je kunt optioneel een kolom selecteren om controle over de schaal te hebben.  Gebruik de schaal-factor om de relatieve kolomwaarden af te stellen op de markergrootte van de output.
 854	Schaalfactor 
 855	Schaaltype 
 856	Grootte/magnitude kolom 
 857	Schaal ten opzichte van 
-858	Deze wizzard leidt je door het proces om data te importeren voor visualisatie. Voer een naam in voor je laag. Deze verschijnt zo in de laag-manager. Selecteer een referentienaam voor de coördinaten in je data. Dit bepaalt hoe WWT je data zal plotten en waar. 
+858	Deze wizzard leidt je door het proces om data te importeren voor visualisatie. Voer een naam in voor je laag. Deze verschijnt zo in de laag-manager. Selecteer een referentienaam voor de coÃ¶rdinaten in je data. Dit bepaalt hoe WWT je data zal plotten en waar. 
 859	Kleurcorrectie:  
 860	Kleurcorrectie: (geen selectie) 
 861	Rotatie 
@@ -919,14 +919,14 @@
 930	Klaar 
 931	Afstand 
 932	Lat/Lng 
-933	Het gemiddelde staat je toe de primaire grenzen van je referentie-frame te specificeren, zoals de oppervlaktehoogte van een planeet, of de grenzen van de bol van een 3d-model van een ruimtescheepje. Rotatieperioden en 0-rotatie staan de specificatie toe van een roterend referentie-frame. Heading Pitch en Rol staan oriëntaties toe ten opzichte van het parent-referentie-frame. Station Keeping oriënteert automatisch het referentie-frame om de aarde te volgen in plaats van te tuimelen.	 
+933	Het gemiddelde staat je toe de primaire grenzen van je referentie-frame te specificeren, zoals de oppervlaktehoogte van een planeet, of de grenzen van de bol van een 3d-model van een ruimtescheepje. Rotatieperioden en 0-rotatie staan de specificatie toe van een roterend referentie-frame. Heading Pitch en Rol staan oriÃ«ntaties toe ten opzichte van het parent-referentie-frame. Station Keeping oriÃ«nteert automatisch het referentie-frame om de aarde te volgen in plaats van te tuimelen.	 
 934	Komt nooit op 
 935	Gaat nooit onder 
 936	Herstel standaardinstellingen
 937	Maak de cache leeg 
 938	Download-rij 
 939	laag-naam
-940	Soort coördinaten  
+940	Soort coÃ¶rdinaten  
 941	Hoogte / diepte kolom 
 942	Dome-hoek 
 943	Dome-type 
@@ -1262,7 +1262,7 @@
 1274	Alpha aflopend
 1275	Numeriek toenemend
 1276	Numeriek afnemend
-1277	Kopieer coördinaten
+1277	Kopieer coÃ¶rdinaten
 1278	Laden...
 1279	Verwijder uit tijdlijn
 1280	Voeg sleutelframe toe
@@ -1331,7 +1331,7 @@
 1343	Toon tijdlijn-editor
 1344	Toon slidenummers
 1345	Selecteer alles
-1346	Creëer tijdlijn
+1346	CreÃ«er tijdlijn
 1347	Toon tijdlijn
 1348	Transitiefunctie
 1349	Tijd

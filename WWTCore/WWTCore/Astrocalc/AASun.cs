@@ -4,7 +4,7 @@ using System;
 //Purpose: Implementation for the algorithms which obtain the position of the Sun
 //Created: PJN / 29-12-2003
 //History: PJN / 17-01-2007 1. Changed name of CAASun::ApparentEclipticLongtitude to 
-//                          CAASun::ApparentEclipticLongitude. Thanks to Mathieu Peyréga for reporting this
+//                          CAASun::ApparentEclipticLongitude. Thanks to Mathieu PeyrÃ©ga for reporting this
 //                          typo!.
 //
 //Copyright (c) 2003 - 2007 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)

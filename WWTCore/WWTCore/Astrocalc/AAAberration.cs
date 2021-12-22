@@ -9,7 +9,7 @@ public static partial class GlobalMembersStdafx
 //Purpose: Implementation for the algorithms for Aberration
 //Created: PJN / 29-12-2003
 //History: PJN / 21-04-2005 1. Renamed "AAAberation.cpp" to "AAAberration.cpp" so that all source code filenames 
-//                          match their corresponding header files. Thanks to Jürgen Schuck for suggesting this 
+//                          match their corresponding header files. Thanks to JÃ¼rgen Schuck for suggesting this 
 //                          update.
 //
 //Copyright (c) 2003 - 2007 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
