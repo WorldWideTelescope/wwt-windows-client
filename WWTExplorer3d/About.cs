@@ -1,6 +1,4 @@
 using System;
-using System.Drawing;
-using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -58,9 +56,9 @@ namespace TerraViewer
             // aboutText
             // 
             this.aboutText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(222)))), ((int)(((byte)(227)))));
-            this.aboutText.Location = new System.Drawing.Point(46, 279);
+            this.aboutText.Location = new System.Drawing.Point(12, 297);
             this.aboutText.Name = "aboutText";
-            this.aboutText.Size = new System.Drawing.Size(572, 271);
+            this.aboutText.Size = new System.Drawing.Size(594, 271);
             this.aboutText.TabIndex = 0;
             this.aboutText.Text = resources.GetString("aboutText.Text");
             this.aboutText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -77,7 +75,7 @@ namespace TerraViewer
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(222)))), ((int)(((byte)(227)))));
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.button1.Location = new System.Drawing.Point(413, 208);
+            this.button1.Location = new System.Drawing.Point(277, 270);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(60, 24);
             this.button1.TabIndex = 2;
@@ -93,7 +91,7 @@ namespace TerraViewer
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))));
             this.BackgroundImage = global::TerraViewer.Properties.Resources.betaSplash;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(618, 550);
+            this.ClientSize = new System.Drawing.Size(618, 577);
             this.ControlBox = false;
             this.Controls.Add(this.aboutText);
             this.Controls.Add(this.button1);
@@ -117,11 +115,9 @@ namespace TerraViewer
 
 		private void Form1_Load(object sender, System.EventArgs e)
 		{
-            aboutText.Text = "Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()+ "\r\n"+aboutText.Text;
+            aboutText.Text = "AAS WorldWide Telescope version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString() + "\r\n" + aboutText.Text;
  		}
-
-	
-        
+                
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             aboutState = AboutState.FadingOut;
