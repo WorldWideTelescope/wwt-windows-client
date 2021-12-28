@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("WWTCoreUWP")]
-[assembly: AssemblyDescription("WorldWide Telescope Core Math and Rendering Functions")]
+[assembly: AssemblyDescription("AAS WorldWide Telescope Core Math and Rendering Functions")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("American Astronomical Society")]
 [assembly: AssemblyProduct("WWTCoreUWP")]
-[assembly: AssemblyCopyright("Copyright 2018")]
+[assembly: AssemblyCopyright("Copyright .NET Foundation 2018-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

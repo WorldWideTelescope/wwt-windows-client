@@ -6,12 +6,12 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WorldWide Telescope")]
-[assembly: AssemblyDescription("Interactive 3D viewer for the WorldWide Telescope")]
+[assembly: AssemblyTitle("AAS WorldWide Telescope")]
+[assembly: AssemblyDescription("Interactive 3D viewer for AAS WorldWide Telescope")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("American Astronomical Society")]
-[assembly: AssemblyProduct("WorldWide Telescope")]
-[assembly: AssemblyCopyright("Copyright 2019 .Net Foundation")]
+[assembly: AssemblyProduct("AAS WorldWide Telescope")]
+[assembly: AssemblyCopyright("Copyright .NET Foundation 2019-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
