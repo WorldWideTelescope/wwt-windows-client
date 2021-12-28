@@ -3229,11 +3229,16 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ProjectExtensions>
+    <Cranko>
+      <CrankoInternalDepVersion>{c05266fe-6947-42f1-9863-7cdbeed60869}=manual:unused</CrankoInternalDepVersion> <!-- WWTCoreUwp -->
+    </Cranko>
+  </ProjectExtensions>
 </Project>
