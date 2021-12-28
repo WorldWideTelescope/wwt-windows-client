@@ -1,0 +1,55 @@
+[[project]]
+qnames = [
+    'WWTCoreUWP',
+    'csproj',
+]
+version = '6.0.1.0'
+
+[[project]]
+qnames = [
+    'MakeDataCabinetFile',
+    'csproj',
+]
+version = '1.0.0.0'
+
+[[project]]
+qnames = [
+    'WWTCore',
+    'csproj',
+]
+version = '6.0.13.0'
+
+[[project]]
+qnames = [
+    'OculusWrap',
+    'csproj',
+]
+version = '2.3.4.1'
+
+[[project]]
+qnames = [
+    'WWTExplorer',
+    'csproj',
+]
+version = '6.0.13.1'
+
+[[project]]
+qnames = [
+    'UwpRenderEngine',
+    'csproj',
+]
+version = '6.0.1.0'
+
+[[project]]
+qnames = [
+    'WWTHolographic',
+    'csproj',
+]
+version = '6.0.1.0'
+
+[[project]]
+qnames = [
+    'WorldWideTelescope',
+    'csproj',
+]
+version = '6.0.1.0'
