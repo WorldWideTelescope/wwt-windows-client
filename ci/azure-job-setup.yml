@@ -1,0 +1,81 @@
+# Copyright 2020-2022 the .NET Foundation
+# Licensed under the MIT License
+
+# Setup steps for the build and deployment processes.
+
+parameters:
+- name: setupCranko
+  type: boolean
+  default: false
+
+- name: setupGit
+  type: boolean
+  default: false
+
+steps:
+- download: current
+
+- checkout: self
+  submodules: recursive
+
+# Note that these commands must be able to run on our custom Windows builders,
+# which currently don't have bash or pwsh (but do have `powershell`)
+
+- ${{ if parameters.setupCranko }}:
+  - bash: |
+      set -euo pipefail
+      d="$(mktemp -d /tmp/cranko.XXXXXX)"
+      cd "$d"
+      curl --proto '=https' --tlsv1.2 -sSf https://pkgw.github.io/cranko/fetch-latest.sh | sh
+      echo "##vso[task.prependpath]$d"
+    displayName: Install latest Cranko (not Windows)
+    condition: and(succeeded(), ne(variables['Agent.OS'], 'Windows_NT'))
+
+  - powershell: |
+      $d = Join-Path $Env:Temp cranko-$(New-Guid)
+      [void][System.IO.Directory]::CreateDirectory($d)
+      cd $d
+      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+      iex ((New-Object System.Net.WebClient).DownloadString('https://pkgw.github.io/cranko/fetch-latest.ps1'))
+      echo "##vso[task.prependpath]$d"
+    displayName: Install latest Cranko (Windows)
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
+# work around https://github.com/microsoft/azure-pipelines-tasks/issues/10653
+# also note that `set -x` messes up `task.setvariable`
+- bash: |
+    set -xeuo pipefail
+
+    BASH_WORKSPACE="$(Pipeline.Workspace)"
+    ARTIFACT_STAGING="$(Build.ArtifactStagingDirectory)"
+
+    if [[ $AGENT_OS == Windows_NT ]] ; then
+      BASH_WORKSPACE=$(echo "$BASH_WORKSPACE" | sed -e 's|\\|\/|g' -e 's|^\([A-Za-z]\)\:/\(.*\)|/\L\1\E/\2|')
+      ARTIFACT_STAGING=$(echo "$ARTIFACT_STAGING" | sed -e 's|\\|\/|g' -e 's|^\([A-Za-z]\)\:/\(.*\)|/\L\1\E/\2|')
+    fi
+
+    set +x
+    echo "##vso[task.setvariable variable=BASH_WORKSPACE;]$BASH_WORKSPACE"
+    echo "##vso[task.setvariable variable=ARTIFACT_STAGING;]$ARTIFACT_STAGING"
+  displayName: Ensure bash-friendly variable names
+  condition: and(succeeded(), ne(variables['Agent.OS'], 'Windows_NT'))
+
+- bash: |
+    set -xeuo pipefail
+    git switch -c release
+    git pull --ff-only $BASH_WORKSPACE/git-release/release.bundle
+  displayName: Restore release commit (not Windows)
+  condition: and(succeeded(), ne(variables['Agent.OS'], 'Windows_NT'))
+
+- powershell: |
+    git switch -c release
+    git pull --ff-only $(Pipeline.Workspace)\git-release\release.bundle
+  displayName: Restore release commit (Windows)
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
+- ${{ if parameters.setupGit }}:
+  - bash: |
+      cranko github install-credential-helper
+    displayName: Set up Git pushes
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
