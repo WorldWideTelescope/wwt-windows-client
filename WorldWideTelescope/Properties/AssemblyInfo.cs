@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WorldWideTelescope")]
+[assembly: AssemblyTitle("AAS WorldWide Telescope")]
 [assembly: AssemblyDescription("AAS WorldWide Telescope")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("American Astronomical Society")]
-[assembly: AssemblyProduct("WorldWideTelescope")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("AAS WorldWide Telescope")]
+[assembly: AssemblyCopyright("Copyright .NET Foundation 2017-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -24,6 +24,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.0.1.0")]
-[assembly: AssemblyFileVersion("6.0.1.0")]
+[assembly: AssemblyVersion("6.99.0.0")]
+[assembly: AssemblyFileVersion("6.99.0.0")]
 [assembly: ComVisible(false)]

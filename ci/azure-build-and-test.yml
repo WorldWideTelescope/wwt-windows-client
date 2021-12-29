@@ -1,0 +1,86 @@
+# Copyright 2020-2022 the .NET Foundation
+# Licensed under the MIT License
+
+jobs:
+
+- job: build
+
+  # Custom agents are needed to build the installer MSI.
+  # (E.g.: https://developercommunity.visualstudio.com/idea/628434/azure-devops-cannot-build-msi-via-vdproj-project.html)
+  pool:
+    name: 'Custom Windows'
+
+  variables:
+    buildPlatform: 'AnyCPU'
+    buildConfiguration: 'Release'
+
+  steps:
+
+  - template: azure-job-setup.yml
+
+  # There is a known issue with building MSI installer projects that demands a
+  # registry hack: https://stackoverflow.com/a/41788791/3760486 . The hack is
+  # user-specific, and because we're using a VM Scale Set agent pool, which
+  # dynamically provisions the VMs with the Pipelines agent, we don't know
+  # which user account will be used for the build. So we have to apply this
+  # hack at runtime, rather than while constructing the VM image:
+  - powershell: |
+      cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild"
+      .\DisableOutOfProcBuild.exe
+    displayName: Work around HRESULT=8000000A vdproj error
+
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: 'WWTExplorer.sln'
+
+  - task: VSBuild@1
+    displayName: Build Explorer app
+    inputs:
+      solution: 'WWTExplorer3d/WWTExplorer.csproj'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSTest@2
+    inputs:
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSBuild@1
+    displayName: Build MakeDataCabinetFile app
+    inputs:
+      solution: 'MakeDataCabinetFile/MakeDataCabinetFile.csproj'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  # TODO: for tagged releases, download a fullsize / up-to-date package
+  - powershell: |
+      Invoke-WebRequest `
+        "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
+        -OutFile ".\Setup1\datafiles.cabinet"
+    displayName: Download installer data files bundle
+
+  - powershell: |
+      &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com" `
+        .\WWTExplorer.sln `
+        /Build "$(buildConfiguration)|$(buildPlatform)" `
+        /Project .\Setup1\Setup1.vdproj
+    displayName: Build installer
+
+  - task: CopyFiles@2
+    displayName: Copy build artifacts for staging
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb|*.msi)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish staged build artifacts
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactName: drop-unsigned
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish CI support files
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)/ci'
+      artifactName: ci-support

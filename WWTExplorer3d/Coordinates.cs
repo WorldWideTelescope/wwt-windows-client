@@ -1044,7 +1044,7 @@ namespace TerraViewer
             data = data.Trim().ToLower();
 
 
-            if (data.Contains("d") || data.Contains("°"))
+            if (data.Contains("d") || data.Contains("Â°"))
             {
                 degrees = true;
             }
@@ -1065,7 +1065,7 @@ namespace TerraViewer
             data = data.Trim().ToLower();
 
             bool degrees = false;
-            if (data.Contains("d") || data.Contains("°"))
+            if (data.Contains("d") || data.Contains("Â°"))
             {
                 degrees = true;
             }
@@ -1076,13 +1076,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("h ", "h").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
                 double val = 0;
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' }) > -1)
+                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', 'Â°' }) > -1)
                 {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
+                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', 'Â°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1143,13 +1143,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
                 double val = 0;
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'm', 's', '\'', '\"', '°' }) > -1)
+                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'm', 's', '\'', '\"', 'Â°' }) > -1)
                 {
                     double degrees = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'm', 's', '\'', '\"', '°' });
+                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'm', 's', '\'', '\"', 'Â°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1211,13 +1211,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("h ", "h").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
 
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' }) > -1)
+                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', 'Â°' }) > -1)
                 {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
+                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', 'Â°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))
@@ -1271,13 +1271,13 @@ namespace TerraViewer
 
                 data = data.Replace("d ", "d").Replace("h ", "h").Replace("m ", "m").Replace("s ", "s").Replace("\' ", "\'").Replace("\" ", "\"");
 
-                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"','°' }) > -1)
+                if (data.IndexOfAny(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"','Â°' }) > -1)
                 {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
                     double sign = 0;
-                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', '°' });
+                    string[] parts = data.Split(new char[] { ':', ' ', 'd', 'h', 'm', 's', '\'', '\"', 'Â°' });
                     if (parts.GetLength(0) > 0)
                     {
                         if (!String.IsNullOrEmpty(parts[0]))

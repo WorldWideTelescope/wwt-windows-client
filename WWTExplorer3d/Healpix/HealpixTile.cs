@@ -820,7 +820,7 @@ namespace TerraViewer
         protected Xyf pix2xyf(long ipix)
         {
             npface = nside * nside;
-            long pix = ipix & (npface - 1);//在具体某个面中的quadindex
+            long pix = ipix & (npface - 1);//鍦ㄥ叿浣撴煇涓潰涓殑quadindex
             return new Xyf(compress_bits(pix), compress_bits(unsignRM(pix, 1)),
                             (int)(unsignRM(ipix, (2 * nside2order(nside)))));
         }

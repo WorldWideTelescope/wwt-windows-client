@@ -1,0 +1,44 @@
+# Copyright 2021-2022 the .NET Foundation
+# Licensed under the MIT License
+#
+# First stage of CI: create the Cranko release commit.
+#
+# This could be on Windows too, but I'm going from a Linux template.
+
+jobs:
+
+- job: prep
+  pool:
+    vmImage: ubuntu-latest
+
+  steps:
+
+  - checkout: self
+
+  - bash: |
+      set -euo pipefail
+      d="$(mktemp -d /tmp/cranko.XXXXXX)"
+      cd "$d"
+      curl --proto '=https' --tlsv1.2 -sSf https://pkgw.github.io/cranko/fetch-latest.sh | sh
+      echo "##vso[task.prependpath]$d"
+    displayName: Install latest Cranko
+
+  - bash: |
+      set -xeuo pipefail
+      cranko release-workflow apply-versions
+      git add .
+      cranko release-workflow commit
+      git show
+    displayName: Make release commit
+
+  - bash: |
+      artifact_dir="$(Build.ArtifactStagingDirectory)/git-release"
+      mkdir -p "$artifact_dir"
+      git bundle create "$artifact_dir/release.bundle" origin/master..HEAD
+    displayName: Bundle release commit
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish release git bundle artifact
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/git-release'
+      artifactName: git-release

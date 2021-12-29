@@ -1,0 +1,1347 @@
+1	Selecteer uw taal
+2	Dit herstelt de oorspronkelijke gebruikersinstellingen. Weet je zeker dat je wilt doorgaan?
+3	AAS WorldWide Telescope
+4	Om deze applicatie te draaien, moet je 3d Graphics en DirectX hebben geïnstalleerd
+5	Je tour heeft niet-opgeslagen wijzigingen.  Wil je deze wijzigingen bewaren voordat je afsluit?
+6	Tour-deelnemer
+7	Naam: 
+8	Informatie 
+9	Kijk in SIMBAD 
+10	Kijk in SEDS 
+11	Kijk in Wikipedia 
+12	Kijk in publicaties op ADS 
+13	Beelden 
+14	Neem een DSS-afbeelding
+15	Neem een SDSS-afbeelding 
+16	Neem een DSS FITS 
+17	Zoeken in Virtueel Observatorium 
+18	Zoeken in USNO NVO kegel
+19	HLA-voetafdrukken 
+20	Eigenschappen 
+21	Kopieer shortcut 
+22	Voeg toe aan collectie 
+23	Nieuwe collectie... 
+24	Verwijder uit collectie 
+25	Bewerk... 
+26	Sluit je aan bij een community... 
+27	Update login-gegevens... 
+28	Log uit 
+29	Upload tour naar de community... 
+30	Upload waarneemlijst naar de community... 
+31	Upload afbeelding naar de community... 
+32	Zoek op de server 
+33	Catalogi... 
+34	Zoek in SIMBAD... 
+35	Tour Home 
+36	Tour Zoekpagina 
+37	Maak een nieuwe tour... 
+38	Meld je tour aan voor publicatie... 
+39	Auto repeat 
+40	Een 
+41	Allemaal 
+42	Uit 
+43	Bewerk tour 
+44	Draai naar object 
+45	Centreer in oculair
+46	Sync telescoop naar huidige locatie 
+47	Kies telescoop 
+48	Verbind 
+49	Volgen
+50	Parkeer 
+51	ASCOM-platform 
+52	Nieuw 
+53	Collectie... 
+54	Slide-gebaseerde tour... 
+55	Open 
+56	Tour... 
+57	Collectie... 
+58	Afbeelding... 
+59	Toon zoeker
+60	Speel collectie af als slideshow 
+61	Over WorldWide Telescope 
+62	Aan de slag (Help) 
+63	WorldWide Telescope home page 
+64	Sluiten
+65	Controleer op updates... 
+66	Productondersteuning... 
+67	Herstel default 
+68	Geavanceerd 
+69	Laat download-rij zien 
+70	Start rij 
+71	Stop rij 
+72	Laat performance data zien 
+73	Master controller 
+74	Cache leegmaken
+75	Reset camera 
+76	Kopieer huidige afbeelding 
+77	Kopieer shortcut naar dit beeld 
+78	Horizon panorama's... 
+79	Organiseer afbeeldings-lagen... 
+80	Geavanceerde beeld-opties... 
+81	Laat KML-browser zien 
+82	Verwijder uit afbeeldings-cache 
+83	Gebruik huidige beeld als Windows bureaublad-achtergrond 
+84	Tegels in beeld: 
+85	Gerenderde driehoeken: 
+86	Verzonden bewegingen: 
+87	WorldWide Telescope tour 
+88	WorldWide Telescope medialijst 
+89	WorldWide Telescope sterrenbeelden 
+90	Geen object 
+91	Voeg punt toe aan sterrenbeeld 
+92	Help doet het niet 
+93	Het bestand met afbeeldingen kan niet worden gedownload of is corrupt. WorldWide Telescope wordt afgesloten. Je hebt een internetverbinding nodig om het bestand te updaten. Probeer het later nog eens. 
+94	WorldWide Telescope melding 
+95	Update je client om te verbinden met WorldWide Telescope. Jouw versie:  {0 }, Update:  {1 }) 
+96	Er is een software-update beschikbaar. Jouw versie:  {0 }, Update:  {1 }) 
+97	Je hebt de nieuwste versie. Jouw versie:  {0 }, Server versie:  {1 }) 
+98	Er is geen internetverbinding gevonden. Zorg dat er een internetverbinding is. Als je een proxy nodig hebt, selecteer dan de correcte proxyserver en poort in het tabblad Instellingen. Alleen informatie in cache is beschikbaar en sommige functies zijn niet beschikbaar. Je kunt offline verder gaan. 
+99	Er is een probleem opgetreden bij het opslaan van de gedownloade FITS file. Zorg voor een specifiek pad, voor de juiste rechten om op te slaan en voor voldoende schijfruimte.  
+100	Download FITS afbeeldingenbestand 
+101	WorldWide Telescope tours 
+102	Dit bestand lijkt geen juiste tour 
+103	Het tour-bestand kon niet worden gedownload en was niet gecached. Check je netwerkverbinding. 
+104	Het tour-bestand kon niet worden gedownload en was niet gecached. Check je netwerkverbinding. 
+105	Het tour-bestand is ongeldig. Check je netwerkverbinding. 
+106	Tour kan niet worden geladen 
+107	WorldWide Telescope collectie 
+109	Dit bestand lijkt geen geldige collectie 
+110	De geopende file is een community registratiefile en deze community is al geregistreerd. 
+111	De geopende file is een community registratiefile.  Wil je deze toevoegen aan je community-lijst? 
+112	De afbeeldings-file bevat geen geldige AVM Metadata om hem aan de hemel te plaatsen 
+113	Laad afbeelding 
+114	Respecteer Copyright. Respecteer het auteursrecht van artiesten en ontwerpers. Content zoals muziek is door auteursrecht beschermd. De muziek die beschikbaar is in WorldWide Telescope is beschermd door auteursrecht en mag alleen gebruikt worden voor het creëren van tours in WorldWide Telescope. Je mag content van anderen niet delen tenzij je de rechten daartoe hebt of toestemming hebt van de eigenaar.
+115	Er is een probleem opgetreden bij het opslaan van de tour. 
+116	Aanmelden mislukt 
+117	Er was geen afbeelding van de schrijver. Voeg er een toe en meld opnieuw aan. 
+118	Er was een probleem bij het aanmelden van de tour. 
+119	De tour is met succes aangemeld voor publicatie. Na goedkeuring verschijnt de tour in de tour-directory. 
+120	Meld een tour aan voor publicatie 
+121	Er is een probleem opgetreden bij het aanmelden van de tour. Bekijk de inhoud en zorg ervoor dat alle velden correct zijn ingevuld en dat de totale grootte de maximale tour-grootte niet overschrijdt. 
+122	Haal uit de parkeerstand 
+123	Verbreek de verbinding 
+124	Er is geen verbinding met de server om te controleren op updates. Probeer het later nog eens. 
+125	SIMBAD search - niet gevonden 
+126	Geen verbinding met de SIMBAD Name Resolution Server. Check je internetverbinding 
+127	Geen afbeeldings-data in cache om leeg te maken. 
+128	De afbeeldingen-set is uit de cache verwijderd en  {0 }MB is vrij 
+129	Verwijder 
+130	Browse... 
+131	Kan de audio-file niet laden. Controleer of hij geldig is, ondersteund wordt en een redelijke grootte heeft. 
+132	Muziek:  
+133	Voice-over:  
+134	Onderzoek 
+135	Tour 
+137	Zoek 
+138	Community 
+139	Telescoop 
+140	Beeld 
+141	Instellingen 
+142	In: 
+143	Eind 
+144	Uit: 
+145	Volume 
+146	WorldWide Telescope bewaart kopieën van de afbeeldingen, tours en catalogi die je bekijkt. Door deze data te bewaren, kun je de tour en afbeeldingen opnieuw bekijken met een hogere snelheid, ook als je computer geen internetverbinding heeft. Door opties te selecteren en op leegmaken te klikken, maak je schijfruimte vrij, maar de gegevens zijn pas weer beschikbaar als ze zijn gedownload.  
+147	Grootte :  
+148	Cache-grootte scannen 
+149	Hiermee verwijder je de gekozen sterrenbeelden en andere geselecteerde data en sluit je de toepassing. Wil je doorgaan? 
+150	Dit verwijdert de cache-data en sluit de toepassing. Wil je doorgaan? 
+151	Cache leegmaken 
+152	Cache gebruik berekenen 
+153	Catalogi 
+154	Cached tours
+155	Afbeeldingen 
+156	OK 
+157	Annuleer 
+158	Maak leeg 
+159	Selecteer data om te verwijderen 
+160	Organiseer data cache 
+161	Voeg nieuw item toe 
+162	Geen resultaten 
+163	Selecteer een community... 
+164	Sterrenbeelden-editor 
+165	Klik met rechter muisknop op een ster om een punt toe te voegen 
+166	Voeg toe 
+167	Verwijder 
+168	Bewaar 
+169	Dit zal alle punten verwijderen uit het geselecteerde sterrenbeeld. Weet je zeker dat je dit wilt? 
+170	Bevestig verwijderen alle Sterrenbeeld-punten 
+171	Kijkhoogte in graden : boogminuten : boogseconden 
+172	Naam van het sterrenbeeld waar het kijkpunt zich bevindt. 
+173	Download voortgang 
+174	Vloeiende overgang van achtergrond- en voorgrond-afbeeldingen 
+175	Selecteer het type beeld, hemel, aarde, etc. 
+176	Selecteer de afbeeldingen die je wilt tonen 
+177	Filter context-resultaten 
+178	Context-search - Laat interessante plaatsen zien in het huidige beeld. 
+179	Sterrenbeelden-overzicht 
+180	Laat het blikveld zien ten opzichte van de hemelbol 
+181	Laat afbeelding overlopen 
+182	Het spoor volgen 
+183	Kijk naar 
+184	Context-zoekfilter 
+185	Het steden catalogus-bestand kan niet worden gedownload of is beschadigd. Herstart de applicatie met een netwerkverbinding en download opnieuw. 
+186	Het catalogus-bestand kan niet worden gedownload of is beschadigd. Herstart de applicatie met een netwerkverbinding en download opnieuw. 
+187	Datum- en tijdselectie 
+188	Jaar 
+189	Maand 
+190	Dag 
+191	Uur 
+192	Minuut 
+193	Seconde 
+194	UTC 
+195	Pas toe 
+491	Scan compleet 
+197	Lichtsterkte 
+198	Type montering 
+199	Diameter lens/spiegel
+200	Brandpuntsafstand 
+201	Camera 
+202	Oculair
+203	Organisatie 
+204	Camera-rotatie 
+205	Verticale pixels 
+206	Beeldoppervlakte  
+207	Horizontale pixels 
+208	Hoogte 
+209	Breedte 
+210	Fabrikant 
+211	Voor meer informatie: 
+212	Sluiten 
+213	Gezichtsveld-indicator 
+214	Een van de bestanden in de collectie ontbreekt, is beschadigd of is niet toegankelijk 
+215	Ongeldig bestandsformaat 
+216	Wacht terwijl het bestand wordt gedownload. 
+217	Voortgang bestandsdownload 
+218	De map wordt niet geladen vanuit een bestand 
+219	Kies een collectie om te bekijken... 
+220	Kan geen verbinding maken met de WorldWide Telescope Server om tours te downloaden, en er is geen tour-lijst in cache beschikbaar. Controleer je netwerk- en proxy-instellingen en zorg voor een netwerkverbinding. 
+221	Het tour-bestand kan niet worden gedownload en is niet in cache. Controleer je netwerkverbinding. 
+222	Open afbeeldingen 
+223	Open collecties 
+224	Verwijder map 
+225	Geef andere naam 
+226	Kopieer naar Mijn collecties 
+227	Bewaar map als 
+228	Nieuwe naam 
+229	Naam van de collectie bestaat al, kies een andere naam. 
+230	Maak nieuwe collectie 
+231	Een naam mag geen van de volgende karakters bevatten:
+232	Maak een nieuwe collectie 
+233	Naam bestaat al, kies een andere naam. 
+234	Geef andere naam 
+235	Mijn collecties 
+236	Mijn collecties 
+237	Mijn communities 
+238	Naam 
+239	Maak nieuwe map 
+240	Word lid van een community 
+241	Noord 
+242	Noordoost 
+243	Oost 
+245	Zuidoost 
+246	Zuid 
+247	Zuidwest 
+248	West 
+249	Noordwest 
+250	WorldWide Telescope kan een XBOX 360 game controller of een ander compatible device gebruiken voor de 3d viewport. Sommige controllers zijn niet juist afgesteld wat kan leiden tot ongecontroleerd in- of uitzoomen. Gebruik van meer dan  een type controller kan tot problemen leiden. Als je een probleem hebt met de viewport, zet de joystick-controller uit of schakel conflicterende devices uit voordat je WorldWide Telescope opstart. 
+251	Gebruik de controller 
+252	Negeer de controller 
+253	Breedtegraad (dec. deg.) 
+254	E. Lengtegraad (dec. deg.) 
+255	<Typ hier naam> 
+256	Data-set 
+257	Regio 
+258	Hoogte (meters) 
+259	Verkrijg beeld 
+260	Categorieën 
+261	Waarneemlocatie-opties 
+262	Declinatie 
+263	Rechte klimming 
+264	Namen: 
+265	Magnitude: 
+266	Dimensies: 
+267	Classificatie: 
+268	Az : 
+269	Hw :  
+270 	Dec :  
+271  	RK :    
+273	Opkomst
+274	Ondergang  
+275	Overgang
+276	Afbeeldingscredits: 
+277	Zoeker
+278	Laat object zien 
+279	Onderzoek 
+280	in  
+281	n/a 
+282	Overzicht beelden 
+283	van de aarde 
+284	van planeet/maan 
+285	van de hele sterrenhemel 
+286	Panorama 
+287	Bestudeer beelden 
+288	Geen informatie beschikbaar 
+289	Circumpolair 
+290	{0 } van  {1 } 
+291	Zon 
+292	Mercurius 
+293	Venus 
+294	Mars 
+295	Jupiter 
+296	Saturnus 
+297	Uranus 
+298	Neptunus 
+299	Pluto 
+300	Maan 
+301	Io 
+302	Europa 
+303	Ganymedes 
+304	Calisto 
+305	Opaciteit 
+306	Vlak in het gezichtsveld 
+307	Verwijder wachtrij 
+308	Typ hier je zoekopdracht 
+309	Vul je zoektermen hier in. 
+310	RK 
+311	Dec 
+312	Zoek beeld 
+313	Server 
+314	Plot resultaten 
+315	Ga 
+316	Toon de locatie van elk resultaat op de hemelkaart. 
+317	Zonnestelsel-opties 
+318	Toon zonnestelsel-objecten 
+319	Toon of verberg de zon, de planeten en de manen 
+320	Toon kleine manen als punten 
+321	Laat manen rond verre planeten pas zien op lagere zoom-niveaus 
+322	Toon werkelijke grootte van de planeten 
+323	Toont planeten in correcte hoekmaat in plaats van als iconen 
+324	Hoge-precisie update-modus 
+325	Berekent exacte planeet-posities in iedere frame-update 
+326	Aarde en planeten 
+327	Toon wolkenlaag aarde 
+328	Toont een gesimuleerde wolkenlaag 
+329	Toon oceaanbodem 
+330	Toont contouren van de oceaanbodem in plaats van het oppervlak 
+331	Toon hoogtemodel 
+332	Download en toon terrein-details van aarde en planeten indien beschikbaar 
+333	Ervaring 
+334	Selecteer de snelheid waarop de zoomniveaus veranderen 
+335	Staat toe dat de update-snelheid en de display-kwaliteit wisselen naar gelang de snelheid van de computer 
+336        Traag 
+337	Snel 
+338	Zoom-snelheid 
+339	Beeldkwaliteit 
+340	Hoog
+341	Laag
+342	Transparantie-tabs 
+343	Toon tabs en context-paneel met gedeeltelijke transparantie. 
+344	Verberg context 
+345	Vervaagt het context-paneel wanneer de muis op het vlak van de hoofdweergave staat 
+346	webbrowser 
+347	Lanceert een browser voor weblinks in plaats van een web-venster 
+348	Verberg tabs 
+349	Vervaagt tab-paneel als de muis in het kijkveld is 
+350	Zoom met de muis 
+351	Volgt de muis-cursor als het muis-wiel gebruikt wordt voor zoomen
+352	Vloeiend zwenken
+353	Selecteert vloeiend zwenken in plaats van reageren op de muisbeweging 
+355	Voer hier je proxyserver-naam in. 
+356	Proxyserver 
+357	Poort 
+358	Cache-limiet 
+359	Beheer data-cache 
+360	Gebruik joystick 
+362	Object-naam 
+363	SIMBAD zoek 
+364	RK :    
+365	Lng:    
+366	Dec :   
+367	Lat :   
+368	N 
+369	W 
+370	O 
+371	Z 
+372	Initialiseert data... 
+373	Zonnestelsel 
+374	Melkweg 
+375	Nabije heelal 
+376	Vroege heelal 
+377	Ongespecificeerd 
+378	Selecteer een telescoop... 
+379	Setup 
+380	Telescoop-control - niet verbonden 
+381	Volgen
+382	Sync 
+383	Draai 
+384	Centreer 
+385	Kies 
+386	Verbind 
+387	Niet  geïnstalleerd 
+388	Telescoop-status 
+389	Telescoop-control - niet verbonden 
+390	Verbreek verbinding 
+391	Telescoop-control - verbonden 
+392	De telescoop verbindt niet. Zorg ervoor dat de juiste telescoop is gekozen en dat de settings correct zijn. 
+393	Telescoop-control 
+394	Voordat je verbindt, moet je een telescoop kiezen. 
+395	Haal uit de parkeerstand 
+396	Je moet eerst het ASCOM-platform installeren en een telescoop-driver kiezen om je telescoop te kunnen besturen. Klik op het ASCOM-logo op het telescoop-paneel voor meer informatie. 
+397	De telescoop is geparkeerd. Haal uit de parkeerstand voor Sync 
+398	De telescoop ondersteunt geen syncing 
+399	Telescoopstatus - draaien 
+400	Telescoopstatus - geparkeerd 
+401	Telescoopstatus - volgen
+402	Geïnstalleerd 
+403	Niet geïnstalleerd 
+404	Text editor 
+405	Lettergrootte 
+406	Vet 
+407	Schuin 
+408	Tekstkleur 
+409	Achtergrondkleur preview 
+410	Tekst achtergrondopties 
+411	Achtergrondopties 
+412	Geen achtergrond 
+413	Strak passende achtergrond 
+414	Smalle rand 
+415	Bredere rand 
+416	Slides
+417	Tekst 
+418	Tour-eigenschappen 
+419	Vormen 
+420	Afbeelding 
+421	Video 
+422	Bewaar 
+423	Toon veilig gebied 
+424	Start/pauze
+425	Plak 
+426	Voeg nieuwe slide toe 
+427	Knip 
+428	Kopieer 
+429	Plak 
+431	Voeg nieuwe slide in 
+432	Preview tour vanaf hier 
+433	Pak nieuwe thumbnail 
+434	Bepaal start camerapositie 
+435	Bepaal einde camerapositie 
+436	Toon start camerapositie 
+437	Toon einde camerapositie 
+438	Bestuur slide 
+439	Track datum/tijd/locatie 
+440	Pauze 
+441	Speel af 
+442	Geluid/muziek 
+443	Afbeeldingen 
+444	Cirkel 
+445	Rechthoek 
+446	Open rechthoek 
+447	Ring 
+448	Lijn 
+449	Pijl 
+450	Ster 
+451	Slide-lijst 
+452	Breng naar voren 
+453	Breng naar achteren 
+454	Breng naar voren 
+455	Breng naar achteren 
+456	Gebeurtenissen 
+457	Volume 
+458	Kleur/lichtondoorlatendheid 
+459	Waardering: 
+460	Lengte run: 
+461	Gemiddelde waardering van gebruikers 
+462	Klik om je eigen waardering te bepalen. 
+463	Jouw waardering: 
+464	Sluit tour 
+465	Gerelateerde tour: 
+466	Kijk nogmaals 
+468	Auteursnaam 
+469	Tour-beschrijving 
+470	Importeer of vervang auteursafbeelding 
+471	Selecteer het niveau van de tour 
+472	Geavanceerd 
+473	Gemiddeld 
+474	Beginners 
+475	Tour-titel * 
+476	Organisatie URL 
+477	Classificatie taxonomie 
+478	* Verplicht veld 
+479	Auteurscontact e-mail 
+480	Catalogus-objecten en trefwoorden (gescheiden door puntkomma's) 
+481	Classificatie 
+482	Importeer afbeelding  
+483	Organisatienaam 
+485	Voer een titel in voor de tour... 
+486	Afbeeldingsbestanden 
+487	Navigeren in WorldWide Telescope: Beweeg langs de sterrenhemel door te klikken en het beeldveld te verslepen. Zoom in/uit door met het muiswiel te scrollen, met de  +/- knoppen of met Page Up/Page Down. Sleep met de middelste muisknop, of houdt Ctrl ingedrukt om het beeld te draaien en te kantelen. Navigeer met een XBOX 360 controller door die te verbinden voordat het programma start. Klik op de thumbnail van een object om eroverheen te bewegen. Dubbelklik op de thumbnail van een object en spring ernaartoe. Blader door meervoudige thumbnail-panelen met het muiswiel. Klik met de rechtermuisknop op een object om de bijbehorende zoektelescoop te tonen voor meer informatie. Menu-tabs hebben twee onderdelen: klik op de bovenkant van een tabblad om een werkbalk te openen, Klik op de onderkant van een tabblad om submenu's met extra functionaliteiten te openen. 
+488	Welkom bij WorldWide Telescope 
+489	Laat deze dialoog niet meer zien 
+492	Tour 
+493	Grenzen 
+494	Figuren 
+495	Alleen gericht 
+496	Equatoriaal raster 
+497	Ecliptica/banen 
+498	Sterrenbeelden-lijnen 
+499	Kies gerichte rand-kleur 
+500	Kies rand-kleur 
+501	Kies figuur-kleur 
+502	Bewerk 
+503	Figuren-bibliotheek 
+504	Lagen  
+505	Kies figuur-kleur 
+506	Kruisdraden 
+507	Waarneemlocatie 
+508	Kijk vanaf deze locatie 
+509	Kies een locatie 
+510	Hoogte: 
+511	Waarneemtijd 
+512	Nu 
+513	Real Time 
+514	Wil je deze sterrenbeelden-figuren toevoegen aan je figuren-bibliotheek? 
+515	Naam figuren-bibliotheek 
+516	Naam bestaat al, kies een andere naam. 
+517	Dit bestand is geen geldig bestand voor een WorldWide Telescope sterrenbeeld-figuur 
+518	Naam bestaat al, kies een andere naam. 
+519	Default figuren 
+520	Met het verwijderen van deze figuren-bibliotheek, verwijder je de sterrenbeeld-figuren die je hebt gemaakt. Wil je doorgaan? 
+521	Tijd terugdraaien 
+522	: gepauzeerd 
+523	X  
+524	Verwijder muziek 
+525	Verwijder voiceover 
+526	Geluid/Muziek(*.MP3;*.WMA)|*.MP3;*.WMA 
+527	Voeg muziek toe 
+528	Voeg voiceover toe 
+529	Wijzig volume 
+530	Dupliceer slide op de laatste positie 
+531	Voeg slide-show samen 
+532	Volg tijdsbewerking 
+533	Bestuur slide-bewerking 
+534	Verwijder slide 
+535	Plak slide
+536	Knip slide 
+537	Wijzig grootte 
+538	Roteer 
+539	Sleep kopie 
+540	Beweeg 
+541	Bewerk hyperlink 
+542	Url 
+543	Bewerk kleur 
+544	Plak object 
+545	Bewerk tekst 
+546	Voeg afbeelding in 
+547	Voeg tekst in 
+548	Voeg vorm in 
+549	Eigenschappen bewerken 
+550	Verplaats slide 
+551	Niets om ongedaan te maken 
+552	Stel in als voorgrond-afbeelding
+553	Stel in als achtergrond-afbeelding
+554	Bewaar tour als... 
+555	J2000 
+556	Hw/Az 
+557	Galactisch 
+558	Ecliptisch 
+559	3d zonnestelsel 
+560	Hemel-overlays 
+561	Belichting 
+562	Banen 
+563	Kosmos 
+564	Sterren 
+565	Schakel naar fullscreen-modus 
+566	VOTable... 
+567	Stereo 
+568	Buiten werking gesteld 
+569	Anaglyph (Rood-Cyaan) 
+570	Anaglyph (Geel-Blauw) 
+571	Projectie naast elkaar 
+572	Gespiegeld naast elkaar 
+573	Experimenteel 
+574	Full dome 
+575	Dome setup 
+576	VO-kegel zoeken / zoek-register... 
+577	Anti-aliasing lijnen 
+578	Planeet-grootte 
+579	Groot 
+580	Werkelijke grootte 
+581	Aarde 
+582	Planeet 
+583	Sterrenhemel 
+584	Laatste 
+585	Willekeurig 
+586	Muziek en andere tour-bronnen 
+587	Hyperlink 
+588	Animatie 
+589	Link naar slide 
+590	Stel volgende slide in 
+591	Start kijken naar 
+592	MultiRes zonnestelselobjecten 
+593	Raadpleeg NED 
+594	NED zoeken 
+595	SDSS zoeken 
+596	Stuur afbeelding naar 
+597	Laat zien
+598	zend tabel naar 
+599	Link naar slide (selecteer hieronder) 
+600	Link naar volgende slide 
+601	Selecteer link-navigatie 
+602	Keer terug naar caller 
+603	Basis-URL 
+604	Vanuit register
+605	NVO-register titel
+606	Zoek straal 
+607	Wijdlopigheid
+608	Vanuit Beeld 
+609	Geen link 
+610	Volgende slide 
+611	Titel 
+612	Servicetype 
+613	Type 
+614	Publisher 
+615	Golflengtegebied
+616	Identifier 
+617	Max straal
+618	Max rijen 
+619	Voer hierboven een trefwoord in om het US NVO-register te doorzoeken op kegel-zoekservices 
+620	NVO zoek-register
+621	VO-kegel doorzoeken / register browser 
+622	Stapel afbeeldingen 
+623	Voeg toe aan afbeeldingenstapel 
+624	Laag 
+625	Medium 
+626	Hoog 
+627	Dupliceer slide op laatste positie 
+628	Voeg tour samen na slide... 
+629	Slide-elementen in-faden
+630	Flipbook eigenschappen 
+631	Vorm bestand... 
+632	Kijk in SDSS 
+633	Afstand: 
+634	RK bron 
+635	Dec bron 
+636	Afstand bron 
+637	Plot type 
+638	Type bron 
+639	Grootte/Mag bron
+640	Bewaar als... 
+641	Marker type 
+642	AAS WorldWide Telescope - VO Tabel-viewer 
+643	Maak ongedaan: 
+644	Doe opnieuw: 
+645	Voeg collectie toe als tour stopt 
+646	Collecties 
+647	Deel op Facebook 
+648	Beide 
+649	Vergeet mij 
+650	Mijn wall 
+651	Hun wall 
+652	Vrienden ophalen, wacht... 
+653	Planetoiden 
+654	Planeten 
+655	Toon layer-manager 
+656	Start Listener 
+657	Breng hoofdweergave naar tweede scherm
+658	Regionale data cache... 
+659	Full-screen tours
+660	Cache-instellingen gedeelde data 
+661	Cache URL gedeelde data (leeglaten voor 'geen') 
+662	Nieuwe community 
+663	Reset 
+664	Lagen 
+665	Automatische loop 
+666	Tijdseries 
+667	Tijdbalk 
+668	Waarde 
+669	Multi-channel kalibratie 
+670	Stuur lagen naar projector-servers 
+671	Toon controleknoppen op het scherm 
+672	Bewaar huidige weergavebeeld... 
+673	Geef weer in video... 
+674	Nieuw referentie-frame 
+675	Nieuwe laag-groep 
+676	Voer naam in voor laag-groep 
+677	Laag-groep 
+678	Dit verwijdert het referentie-frame en alle frames en lagen hierin. Wil je doorgaan? 
+680	Verwijder referentie-frame  
+681	Dit verwijdert alle huidige referentie-frames en alle lagen, en reset de lagen naar de uitgangswaarden. Weet je zeker dat je dit wilt doen? 
+682	Reset lagen-manager 
+683	Levensduur 
+684	Beweeg helemaal naar boven 
+685	Beweeg omhoog 
+686	Beweeg omlaag 
+687	Beweeg helemaal naar beneden 
+688	WorldWide Telescope slaagde er niet in op te starten. Wil je dat WorldWide Telescope een poging doet de bestands-directory automatisch te resetten? 
+689	WorldWide Telescope ondervond een fout bij het opstarten. Wil je dat WorldWide Telescope een poging doet de bestands-directory te resetten, en te herstarten? 
+690	WorldWide Telescope ondervond een fout. Klik OK om te herstarten of Cancel om de fout te negeren en door te gaan 
+691	Deze taal-instelling heeft een optionele regionale data-cache, waarmee de prestatie in die regio wordt verbeterd. Wil je die gebruiken? 
+692	Gebruik regionale data-cache 
+
+693	WorldWide Telescope moet herstarten om het nieuwe taal-bestand te laden. Wil je nu herstarten? 
+694	Nu herstarten? 
+
+695	Kan VO-tabel-bestand niet openen. Zorg ervoor dat het een geldig bestand is 
+696	Deze ID bestaat al. Kies een unieke ID 
+697	Kan het bestand niet openen. Zorg ervoor dat het een geldig WorldWide Telescope configuratiebestand is. 
+698	Open configuratiebestand 
+699	Dit wist bestaande polygonen voor deze projector en creëert nieuwe, door nieuwe hoekpunten van een lijn te halen. Deze actie kan niet ongedaan gemaakt worden, weet je zeker dat je wilt doorgaan? 
+700	Breng over van de hoeken 
+701	Projectoren 
+702	Punten 
+703	Punt-gewicht 
+704	Vermengde punten  
+705	Iteraties		 
+706	Mate van onscherpte 
+707	Maak gemengde kaarten 
+708	Los Z op 
+709	Los Y op 
+710	Los X op 
+711	Los rol op 
+712	Los titel op 
+713	Los pitch op 
+714	Los aspect op
+715	Los Fov op 
+716	Lost radiale vervorming op 
+717	Maak krommings-kaarten 
+718	Gebruik beperkingen 
+719	Gemiddelde fout 
+720	Los uitlijning op 
+721	Schermtype 
+722	Software-update 
+723	Stuur nieuwe kaarten 
+724	Helling 
+725	Schermafmeting
+726	Contouren 
+727	Zwarte achtergrond 
+728	Dome-Raster 
+729	Kalibratie-schermen 
+730	Laad 
+731	Kleurcorrectie 
+732	Rood 
+733	Groen 
+734	Blauw 
+736	Beperkingen 
+737	Randen 
+738	Weet je zeker dat je deze rand wilt verwijderen inclusief alle punten? Deze actie kan niet ongedaan worden gemaakt. 
+739	Verwijder rand 
+740	Weet je zeker dat je alle beperkingen wilt verwijderen uit deze projector? Deze actie kan niet ongedaan worden gemaakt. 
+741	Verwijder beperkingen 
+742	Weet je zeker dat je alle punten wilt verwijderen uit het 'blended mask'?  Deze actie kan niet ongedaan worden gemaakt. 
+743	De huidige oplossing kan niet verder worden verbeterd  door verdere iteratie vanuit de huidige uitlijning. Reset de initieel geschatte parameters, anders blijft dit de beste uitlijning die mogelijk is. 
+744	Oplossing van de uitlijning 
+745	Wil je de opgeloste parameters van de projector gebruiken? Je kunt altijd de knop  'kopie opgelost'  gebruiken in de projector-edit om dit handmatig te doen. 
+746	Gebruik opgeloste parameters als projector-defaults 
+747	Kaarten bouwen 
+748	Krommings-kaarten maken
+749	Kromming
+750	Wil je nieuwe kaarten bouwen met de huidige parameters? Als het antwoord 'nee' is, worden de bestaande kaarten gestuurd 
+751	Bouw nieuwe kaarten 
+752	Blend-kaarten bouwen
+753	Blend bouwen
+754	Los vervorming op 
+755	Plak baanelementen uit TLE 
+756	Het klembord lijkt geen geldige TLE-set te bevatten. Kopieer en plak de inhoud van een Two Line Elements (TLE) set vanuit je bron naar het klembord in platte tekst 
+757	Je moet alle kolommen die van toepassing zijn selecteren voordat de data kunnen worden geplot 
+758	Check je waarden. Je moet geldige getallen en een bestandsnaam invoeren
+759	Ok 
+760	Linker projector 
+761	Rechter projector 
+762	Rand-eigenschappen 
+763	Hoogte 
+764	Beperkings-type 
+765	Azimut 
+766	Gewicht 
+767	Meetnetwerkeigenschappen  
+768	Af-as X 
+769	Af-as Y 
+770	FOV 
+771	Aspect 
+772	Projectie 
+773	X 
+774	Y 
+775	Z 
+776	Pos 
+777	Rot 
+778	Transformeer 
+779	Pitch 
+780	Titel 
+781	Roll 
+782	ID 
+783	Projector-lijst 
+784	Projector 
+785	Opgelost 
+786	Kopie opgelost 
+787	Kopieer beeld 
+788	Stuur update 
+789	Projectoreigenschappen 
+790	Lijn uit
+791	Vermeng 
+792	Rotatieperiode (dagen) 
+793	Geen rotatie (Juliaanse Dag) 
+794	Gemiddelde straal (meters) 
+795	Afplatting (percentage) 
+796	Baan/punt kleur 
+797	Toon als punt op afstand 
+798	Toon omloopbaan 
+799	Schaal (meters naar eenheden) 
+800	Station keeping 
+801	Selecteer de breedtegraad, lengtegraad en hoogte 
+802	Hoogte (meters) 
+803	Lengtegraad (decimale graden) 
+804	Breedtegraad (decimale graden) 
+805	Halflange as (a) 
+806	Excentriciteit (e) 
+807	Inclinatie 
+808	Argument van het periapsis 
+809	Lengte van de klimmende knoop  
+810	Gemiddelde anomalie op een bepaalde tijd 
+811	Tijd (Juliaanse kalender) 
+812	Gemiddelde dagelijkse beweging 
+813	Een Kepleriaanse baan is een elliptische baan die wordt gedefinieerd door ten minste zes parameters. Er bestaan variaties in de manier waarop deze parameters worden beschreven, maar de meeste banen kunnen in de onderstaande termen worden vertaald. 
+814	Halflange as-eenheden 
+815	Plak TLE 
+816	Baanreferentie-frames zijn gebaseerd op een tijdtabel binnen de Juliaanse kalender en de heliocentrische X,Y, Z coördinaten  in de referentie-eenheden. Het referentie-frame zal zich op het beschreven pad oriënteren, gebaseerd op interpolerende posities van de huidige tijd. 
+817	Eenheden 
+818	Importeer pad 
+819	Eindig datumreeks 
+820	Begin datumreeks
+821	Baan-bestanden 
+822	Deze wizard leidt je door het proces van het maken van een nieuw referentie-frame. Een referentie-frame staat lokale coördinaten, schaal en tijd toe, ten opzichte van de rest van het heelal. De referentie kan worden gebaseerd op vaste beginwaarden, bolcoördinaten, Kepleriaanse banen of geïnterpoleerde waarden van een lijst van beginwaarden van datum/tijd en positie.
+823	Type beginwaarden 
+824	Naam referentieframe 
+825	Selecteer de kolommen voor Cartesische coördinaten voor X, Y en optioneel Z.  De omgekeerde checkbox kan worden gebruikt om de teken-vector voor elke as passend te maken. 
+826	Z-as kolom (optioneel) 
+827	Y-as kolom 
+828	X-as kolom 
+829	Keer X om 
+830	Keer Y om 
+831	Keer Z om 
+832	Geen 
+833	Gebruik de kleurenkaart om de kleur van een marker te veranderen op basis van een geselecteerde kolom die kleuren gebruikt voor afzonderlijke domeinwaarden, of gebruik een kleurengradient. 
+834	Type kleurenkaart 
+835	Kleurenkaart kolom 
+836	Gebruik de drop-downs om de kolommen te selecteren die de coördinaten specificeren, om het hoogte/diepte kaarttype te selecteren, en optioneel om de kolom die de hoogte/diepte en de eenheden waarin de data zijn gespecificeerd, te selecteren. Positieve diepte-beginwaarden naar beneden. Positieve hoogte-beginwaarden naar boven.  
+837	Ruimtelijke coördinaten  
+838	Hoogte / diepte / afstand 
+839	Breedtegraad  
+840	Lengtegraad 
+841	De begin- en eindtijden binnen een bepaald tijdsverloop bieden de mogelijkheid tijdserie-data te visualiseren als een animatie, door de tijdcontrole te gebruiken. De vervaltijd controleert hoe lang het duurt voordat een gebeurtenis na ontstaan vervaagt. Selecteer de optionele start- en eind-tijdkolommen om deze functie aan te zetten en een preview te krijgen van de data-reeks in een kolom. 
+842	Einddatum/tijd 
+843	Startdatum/tijd 
+844	Tijdsverloop 
+845	Je data zijn nu klaar om te worden weergegeven. Als je nog opties wilt veranderen, klik dan met de rechtermuisknop op de laag en selecteer de optie eigenschappen in het context-menu. 
+846	Laat tekstkolom zweven 
+847	Je kunt selecteren welke data-kolom je wilt zien door over een marker te zweven, en je kunt optioneel een hyperlink toevoegen om een gebruiker toe te staan gerelateerde data van een webpagina te raadplegen. 
+848	Selecteer een marker 
+849	Marker mix 
+850	Marker kolom 
+851	Selecteer de manier waarop je markers en hun vormen wilt organiseren. Je kunt  een type marker gebruiken voor alle data, of een kolom selecteren die diverse markers toont voor reeksen van waarden of voor afzonderlijke waarden.  
+852	Toon markers aan de verre zijde 
+853	Gebruik het schaal-type  om aan te geven hoe de markers worden weergegeven.  Je kunt markers relatief t.o.v. het scherm weergeven, onafhankelijk van de zoom, of gekoppeld aan het coördinatensysteem. Je kunt optioneel een kolom selecteren om controle over de schaal te hebben.  Gebruik de schaal-factor om de relatieve kolomwaarden af te stellen op de markergrootte van de output.
+854	Schaalfactor 
+855	Schaaltype 
+856	Grootte/magnitude kolom 
+857	Schaal ten opzichte van 
+858	Deze wizzard leidt je door het proces om data te importeren voor visualisatie. Voer een naam in voor je laag. Deze verschijnt zo in de laag-manager. Selecteer een referentienaam voor de coördinaten in je data. Dit bepaalt hoe WWT je data zal plotten en waar. 
+859	Kleurcorrectie:  
+860	Kleurcorrectie: (geen selectie) 
+861	Rotatie 
+862	Basis-overlay eigenschappen 
+863	Histogram 
+864	Ctrl+E               Schakel naar Edit-modus  nMuis verslepen    Beweeg afbeelding  nShift+sleep       Schaal afbeelding  nCtrl+sleep          Roteer afbeelding   nAlt+                   Fijnafstelling schaal/Roteer  nRechtermuisknop       kies Pivot + Schakel naar Pivot-modus  nC                       Centreert afbeelding in de view  n  nPivot-modus instructies:  n* Lijn een ster uit in zowel afbeelding als achtergrond.  n* Rechtermuisklik op centrum van uitgelijnde ster om de Pivot  te kiezen.  n* Sleep link op een tweede ster om op de achtergrond uit te lijnen.  n* Rechtermuisklik om Pivot-modus te verlaten. 
+865	Afbeelding uitlijnen 
+866	AAS WorldWide Telescope - Bekijk het thuis op http://www.worldwidetelescope.org 
+867	Startdatum/-tijd 
+868	Einddatum/-tijd 
+869	Fade-in/uit tijd 
+870	Fade-type 
+871	Levensduur van de laag 
+872	Vertaling Y 
+873	Vertaling Z 
+874	Schaal Y 
+875	Vertaling X 
+876	Schaal Z 
+877	Schaal X 
+878	Maak normaalwaarden glad
+879	Spiegel textuur 
+880	Uniforme schaling 
+881	3D-model eigenschappen 
+882	Wacht op alle downloads 
+883	Bestandsnaam uit (gebruik  {NNNN } schrijfwijze voor auto-frame nummering) 
+884	Browse 
+885	Output-formaat 
+886	FPS 
+887	Render 
+888	Totaal frames 
+889	Start frame 
+890	Dome master 
+891	Render tour naar video 
+892	Standaard definitie 
+893	High Definition 720P 
+894	High Definition 1080P 
+895	Dome master 1k 
+896	Dome master 2k 
+897	Dome master 3k 
+998	Dome master 4k 
+899	Custom 
+900	Rendering frame  {0 } van  {1 }. 
+901	Voortgang rendering
+902	WMS-URL 
+903	Lagen en stijlen 
+904	Server-lijst 
+905	<Type server-naam hier> 
+906	Server-naam 
+907	Voeg server toe
+908	Verkrijg lagen 
+909	WMS-lagen 
+910	Niet geladen -  Klik op Verkrijg lagen om nu te downloaden 
+911	Rond af 
+912	Volgende 
+913	Terug 
+914	De URL lijkt niet goed te zijn 
+915	Momenteel geen toegang tot NVO-register 
+916	Welkom bij WWT  Mars 
+917	Data-visualisatie laag 
+918	Welkom 
+919	Positie 
+920	Schaal 
+921	Markers 
+922	Kleurenkaart 
+923	Datum tijd 
+924	Alt text 
+925	Je data zijn klaar om te zien 
+926	Referentie-frame 
+927	Baan 
+928	Algemene opties 
+929	Je referentie-frame is klaar 
+930	Klaar 
+931	Afstand 
+932	Lat/Lng 
+933	Het gemiddelde staat je toe de primaire grenzen van je referentie-frame te specificeren, zoals de oppervlaktehoogte van een planeet, of de grenzen van de bol van een 3d-model van een ruimtescheepje. Rotatieperioden en 0-rotatie staan de specificatie toe van een roterend referentie-frame. Heading Pitch en Rol staan oriëntaties toe ten opzichte van het parent-referentie-frame. Station Keeping oriënteert automatisch het referentie-frame om de aarde te volgen in plaats van te tuimelen.	 
+934	Komt nooit op 
+935	Gaat nooit onder 
+936	Herstel standaardinstellingen
+937	Maak de cache leeg 
+938	Download-rij 
+939	laag-naam
+940	Soort coördinaten  
+941	Hoogte / diepte kolom 
+942	Dome-hoek 
+943	Dome-type 
+944	Aangepaste krommings-bestandsnaam  
+945	Grote structuren 
+946	Niveau omhoog 
+947	Het bestand is geen geldig baan-bestand
+948	Astronomische afbeelding
+949	Lagen-manager
+950	Lng
+951	Lat
+952	Lat:
+953	Toon/Verberg Lagen-manager
+954	Deze URL is geen geldige OData-feed
+955	Vul URL OData-feed in
+956	Voeg OData-feed als laag toe
+957	VO Tabel-viewer
+958	Er zijn lagen met dezelfde naam. Wilt u bestaande lagen overschrijven?
+959	WorldWide Telescope
+960	Bewaar...
+961   
+962	Schrijf in
+963	Vergeet me
+964	Windows Live ID
+965	Wachtwoord
+966	Inschrijven voor Windows Live ID 
+967	Schrijf in bij: AAS WorldWide Telescope Communities
+968	Onthoud mijn inloggegevens op deze computer
+969        Wachtwoord vergeten?
+970	Onthoud mijn wachtwoord
+971	Je logt in bij AAS WorldWide Telescope Communities
+972	Schrijf in voor een Windows Live ID
+973	Login geannuleerd
+974	Login timeout
+975	Login mislukt
+976	WorldWide Telescope lagen-bestand(*.wwtl)|*.wwtl 
+977	Scheiding:
+978	Mobiel Netwerk Graphics(*.png)|*.png|JPEG Image(*.jpg)|*.jpg 
+979	Beelden(*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT)|*.JPG;*.PNG;*.TIF;*.TIFF;*.FITS;*.FIT
+980	Tour-lagen
+981	Uitklappen
+982	Inklappen
+983	In community publiceren...
+984	Dynamische data
+985	Automatisch verversen
+986	Ververs nu
+987	Nieuwe WMS-laag
+988	Nieuwe grootcirkel
+989	Importeer baanelementen
+990	Bewaar lagen
+991	Publiceer lagen in community
+992	WorldWide Telescope lagen-bestand
+993	WorldWide Telescope lagen-bestand (*.wwtl)
+994	Baanelementen-bestand (TLE)
+995	Toon op community-website
+996	Bewerk op community-website
+997	Verwijder van community-website
+998	Verwijder inschrijving van deze community
+999	Wil je dit item definitief item verwijderen uit je community?
+1000	Wil je de community-link op deze computer definitief uitschrijven?
+1001	Voeg 'nakomelingen' toe aan afbeeldingen-stapel
+1002	Kan geen verbinding maken met community-website
+1003	Het beeldbestand is niet gedownload of is ongeldig
+1004	Ook de lagen sluiten bij het afsluiten van de tour?
+1005	Percentage
+1006	Lijnbreedte
+1007	<< verkrijg in beeld
+1008	Eigenschappen grootcirkel
+1009	Databron URL
+1010	Laat scherm zien
+1011	Beeldjes per seconde
+1012	Wanneer gebruikt wordt gemaakt van de multi-channel omgeving, dan kun je de scherminhoud van toepassingen laten zien als een venster in het geprojecteerde beeld.
+1013	Schermuitzending	
+1014	10 Hz
+1015	5 Hz
+1016	2 Hz
+1017	1 Hz
+1018	2 sec.
+1019	5 sec.
+1020	10 sec.
+1021	Lagen...
+1022	Zend Tour naar community
+1023	Schermuitzending...
+1024	Afstandsbediening...
+1025	Log uit
+1026	Planetoidebanen
+1027	Laat dampkring zien
+1028	Auto update
+1029	Type tweening-animatie 
+1030	Lineair
+1031	Langzaam in/uit
+1032	Langzaam in
+1033	Langzaam uit
+1034	Exponentieel
+1035	Schuif naar standaardwaarde
+1036	Verticaal afstemmen
+1037	Horizontaal afstemmen
+1038	Centrum afstemmen
+1039	Boven afstemmen
+1040	Rechts afstemmen
+1041	Links afstemmen
+1042	Onder afstemmen
+1043	WorldWide Telescope moet herstarten om nieuwe instellingen te kunnen gebruiken. Wil je nu herstarten?
+1044	Dome master 8k
+1045	Downloaden ({0} of {1})
+1046	Downloaden afgebroken
+1047	Downloaden klaar
+1048	De beeldset gebruikt {0}MB schijfruimte
+1049	Worldwide Telescope laag
+1051	Er deed zich een probleem voor bij het vastleggen van de scherminhoud
+1052	Overlay item-lijst
+1053	Overlay lijst
+1054	Ontleed niet in delen
+1055	Fits image(*.FIT)|*.FIT
+1056	WWT cabinet-bestand(*.cabinet)|*.cabinet
+1057	Bekijk Overlay-lijst
+1058	Stuur tour naar projector-server
+1059	Automatische tour-synchronisatie met projector-server
+1060	Vind locatie op aarde
+1061	Multi-sample antialiasing
+1062	Vier voorbeelden
+1063	Acht voorbeelden
+1064	Zet verticale synchronisatie vast
+1065	Doel frame-rate
+1066	Onbeperkt
+1067	60 FPS
+1068	30 FPS
+1069	24 FPS
+1070	Monochroom beeld
+1071	Controller Setup...
+1072	Beeldje bij laden comprimeren
+1073	15 tps
+1074	30 tps
+1075	60 tps
+1076	120 tps
+1077	Bewaar cache als cabinet-bestand
+1078	Herstel cache van cabinet-bestand
+1079	Projector serverlijst
+1080	Raster
+1081	As-labels
+1082	Galactisch raster
+1083	AltAz-raster
+1084	Ecliptica-raster
+1085	Ecliptica-overzicht
+1086	Maand-labels
+1087	Precessie-kaart
+1088	Sterrenbeelden
+1089	Sterrenbeeld-figuren
+1090	Sterrenbeeld-grenzen
+1091	Sterrenbeeld-namen
+1092	Sterrenbeeld-plaatjes
+1093	Kosmos (SDSS sterrenstelsels)
+1094	Melkweg (Dr. R. Hurt)
+1095	Sterren (Hipparcos, ESA)
+1096	Planeten (NASA, ETAL)
+1097	Planeetbanen
+1098	Manen en Satellietbanen
+1099	Planetoiden
+1100	Licht en schaduw
+1101	2D hemel
+1102	Laat zonnestelsel zien
+1103	Veld van beeldindicatoren
+1104	Wolkenlaag
+1105	Gebruik 8k wolken-textuur
+1106	Hoogtemodel
+1107	Hemel en atmosfeer
+1108	Snij beeld weg
+1109	Dome
+1110	Overgang naar zwart
+1111	Overgang alleen voor dome
+1112	Overgang naar logo
+1113	Overgang naar gradient
+1114	Schermuitzending
+1115	Filter
+1116	Kleur
+1117	Importeer...
+1118	Insluiten
+1119	Uitsluiten
+1120	Nieuw filter...
+1121	Naam filter
+1122	A tijd
+1123	B tijd
+1124	Stop de tijd
+1125	Overgangen
+1126	Audiobestandsnaam
+1127       Fade out
+1128	Fade in
+1129	Begin
+1130	Audio-eigenschappen
+1131	Toon op console
+1132	Cluster ID:
+1133	Toon details
+1134	Projector-servers
+1135	Knoop ID:
+1136	Pauzeer renderen
+1137	Herstart
+1138	Sluit af
+1139	Start
+1140	Betegelde WMS
+1141	Voeg toe als laag
+1142	Samenvatting
+1143	Nieuwe dynamische laag
+1144	Grootcirkel-route
+1145	Plaatsnaam of adres
+1146	Locatie zoeken - Mogelijk gemaakt door Bing
+1147	Geen resultaten met de opgegeven zoektermen
+1148	Wijzig uw zoektermen en probeer opnieuw
+1149	Dubbelzijdig
+1150	Afbeeldingslink
+1151	Naam apparaat invullen
+1152	Apparaat-type
+1153	MIDI-controller
+1154	Status
+1155	Aangesloten
+1156	Statusupdate toestaan
+1157	Controller-eigenschappen
+1158	Niet gevonden
+1159	Control
+1160	Chan
+1161	Binding
+1162	MIDI-apparatuur 
+1163	Control-bindings
+1164	Binding doel-type
+1165	Bind-type
+1166	Eigenschap
+1167	Monitor
+1168	Herhaal
+1169	Controller setup
+1170	WWT MIDI controller -kaart (*.wwtmm)|*.wwtmm
+1171	Dit verwijdert de control-kaart Weet je het zeker dat je die wilt verwijderen?
+1172	Verwijder control-kaart
+1173	Zoeken naar andere controls: Activeer control nu.
+1174	Control type
+1175	Nieuwe control
+1176	WWT kalibratiebestanden (*.wtc)|*.wtc 
+1177	Stop met oplossen
+1178	Dome krommingsbestanden
+1179	Andromeda
+1180	Luchtpomp
+1181	Paradijsvogel
+1182	Waterman
+1183	Arend
+1184	Altaar
+1185	Ram
+1186	Voerman
+1187	Ossenhoeder
+1188	Graveerstift
+1189	Giraffe
+1190	Kreeft
+1191	Jachthonden
+1192	Grote Hond
+1193	Kleine Hond
+1194	Steenbok
+1195	Kiel
+1196	Cassiopeia
+1197	Centaur
+1198	Cepheus
+1199	Walvis
+1200	Kameleon
+1201	Passer
+1202	Duif
+1203	Hoofdhaar
+1204	Zuiderkroon
+1205	Noorderkroon
+1206	Raaf
+1207	Beker
+1208	Zuiderkruis
+1209	Zwaan
+1210	Dolfijn
+1211	Goudvis
+1212	Draak
+1213	Veulen
+1214	Eridanus
+1215	Oven
+1216	Tweelingen
+1217	Kraanvogel
+1218	Hercules
+1219	Slingeruurwerk
+1220	Waterslang
+1221	Kleine Waterslang
+1222	Indiaan
+1223	Hagedis
+1224	Leeuw
+1225	Kleine Leeuw
+1226	Haas
+1227	Weegschaal
+1228	Wolf
+1229	Lynx
+1230	Lier
+1231	Tafelberg
+1232	Microscoop
+1233	Eenhoorn
+1234	Vlieg
+1235	Winkelhaak
+1236	Octant
+1237	Slangendrager
+1238	Orion
+1239	Pauw
+1240	Pegasus
+1241	Perseus
+1242	Phoenix
+1243	Schilder
+1244	Vissen
+1245	Zuidervis
+1246	Achtersteven
+1247	Kompas
+1248	Net
+1249	Pijl
+1250	Boogschutter
+1251	Schorpioen
+1252	Beeldhouwer
+1253	Schild
+1254	Hoofd van de Slang
+1255	Staart van de Slang
+1256	Sextant
+1257	Stier
+1258	Telescoop
+1259	Driehoek
+1260	Zuiderdriehoek
+1261	Toekan
+1262	Grote Beer
+1263	Kleine Beer
+1264	Zeilen
+1265	Maagd
+1266	Vliegende Vis
+1267	Vosje
+1268	Geen aangepaste filters te verwijderen
+1269	Verwijder aangepaste filter
+1270	StaOnbeperktHellenToeGereedschapStripMenuItem 
+1271	Domeinkolom
+1272	Sorteer volgorde
+1273	Alpha oplopend
+1274	Alpha aflopend
+1275	Numeriek toenemend
+1276	Numeriek afnemend
+1277	Kopieer coördinaten
+1278	Laden...
+1279	Verwijder uit tijdlijn
+1280	Voeg sleutelframe toe
+1281	Verwijder sleutelframe
+1282	Sleep sleutel op de tijdlijn
+1283	Er is een sleutel overschreven, gebruik CTRL-Z om dit ongedaan te maken
+1284	voeg sleutelframe toe
+1285	Spring naar einde
+1286	Verwijder sleutel
+1287	Voeg sleutel toe
+1288	Spring naar begin
+1289	Spoel terug
+1290	Voeg toe aan tijdlijn
+1291	Schaal/histogram
+1292	Laat tekengereedschap zien
+1293	Staafgrafiek kolommen
+1294	Achtergrondafbeeldingen
+1295	Staafgrafiek volgens domeinwaarden
+1296	Tijdgrafiek
+1297	Huidige filters
+1298	Volg dit frame
+1299	Vlieg hierheen
+1300	Nieuw Lat/Lng raster
+1301	Voeg planetoide toe
+1302	Naam of aanduiding van planetoide
+1303	De aanduiding is niet gevonden of de MPC-service was niet beschikbaar
+1304	Dit bestand lijkt niet bruikbaar te zijn
+1305	Toon welkomsttips
+1306	Sta onbeperkt hellen toe
+1307	Wissel-lijnen even
+1308	Wissel-lijnen oneven
+1309	Oculus rift
+1310	Toon hoofdscherm op derde monitor
+1311	Full Dome-voorbeeld
+1312	Instellingen X-box-controller
+1313	Tijdlijn-editor
+1314	ISS-model (Toshiyuki Takahei)
+1315	Rechtshandig
+1316	Toets-type
+1317	Toets-eigenschappen
+1318	Linkerschouder
+1319	Linker trekker
+1320	Rechtertrekker
+1321	Rechterschouder
+1322	A-, B-, X-, Y-toetsen
+1323	Rechterduim
+1324	D-Pad
+1325	Linkerduim
+1326	Start
+1327	Modus
+1328	Exporteren
+1329	Importeren
+1330	Gebruik modus-afhankelijke mapping
+1331	Gebruik aangepaste mapping
+1332	Xbox 360-besturingsconfiguratie
+1333	Boven
+1334	Onder
+1335	Links
+1336	Rechts
+1337	Horizontaal
+1338	Verticaal
+1339	Gecentreerd
+1340	Slide
+1341	Zet Full Dome vast
+1342	Voeg Flipboek toe
+1343	Toon tijdlijn-editor
+1344	Toon slidenummers
+1345	Selecteer alles
+1346	Creëer tijdlijn
+1347	Toon tijdlijn
+1348	Transitiefunctie
+1349	Tijd
+1350	Sleutel-eigenschappen
+1351	Meerdere
+1352	Edit sleutel-eigenschappen 
+1353	Transformeer vanuit een vlak beeldveld
+1354	Dome Alt
+1355	Dome Az
+1356	Kijk noordelijk in Sky Mode
+1357	Programmeerbare parameters
+1358	Alt
+1359	Az

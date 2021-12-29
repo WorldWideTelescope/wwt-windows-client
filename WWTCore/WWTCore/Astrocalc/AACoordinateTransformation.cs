@@ -10,7 +10,7 @@ using System.Diagnostics;
 //         PJN / 02-06-2005 1. Most of the angular conversion functions have now been reimplemented as simply
 //                          numeric constants. All of the AA+ code has also been updated to use these new constants.
 //         PJN / 25-01-2007 1. Fixed a minor compliance issue with GCC in the AACoordinateTransformation.h to do
-//                          with the declaration of various methods. Thanks to Mathieu Peyréga for reporting this
+//                          with the declaration of various methods. Thanks to Mathieu PeyrÃ©ga for reporting this
 //                          issue.
 //
 //Copyright (c) 2003 - 2007 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)

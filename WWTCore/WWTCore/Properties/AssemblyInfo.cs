@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("WWTCore")]
-[assembly: AssemblyDescription("WorldWide Telescope Core math and rendering functions")]
+[assembly: AssemblyDescription("AAS WorldWide Telescope Core math and rendering functions")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("Microsoft WorldWide Telescope")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("American Astronomical Society")]
+[assembly: AssemblyProduct("WWTCore")]
+[assembly: AssemblyCopyright("Copyright .NET Foundation 2015-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.0.13.0")]
-[assembly: AssemblyFileVersion("6.0.13.0")]
+[assembly: AssemblyVersion("6.99.0.0")]
+[assembly: AssemblyFileVersion("6.99.0.0")]

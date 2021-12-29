@@ -1,0 +1,121 @@
+# Copyright 2020-2022 the .NET Foundation
+# Licensed under the MIT License
+
+parameters:
+- name: isMainDev
+  type: boolean
+  default: false
+
+- name: isRelease
+  type: boolean
+  default: false
+
+jobs:
+
+- job: code_sign
+  pool:
+    vmImage: windows-latest
+
+  variables:
+  - group: Sign Client Credentials
+
+  steps:
+  - download: current
+
+  - checkout: self
+    submodules: recursive
+
+  # TODO: need to install this somehow
+  # - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
+  #   displayName: AntiMalware Scan
+  #   inputs:
+  #     EnableServices: true
+  #     FileDirPath: $(Pipeline.Workspace)\drop-unsigned
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --tool-path . SignClient
+    displayName: Install SignTool tool
+
+  # See: https://github.com/dotnet/SignService#client-configuration
+  # and https://github.com/novotnyllc/CodeSigningDemo
+  - pwsh: |
+      .\SignClient "Sign" `
+      --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
+      --input "WWTExplorer3d\bin\Release\WWTExplorer.exe" `
+      --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
+      --user "$(SignClientUser)" `
+      --secret "$(SignClientSecret)" `
+      --name "AASWorldWideTelescopeWindowsClient" `
+      --description "AAS WorldWide Telescope Windows client" `
+      --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
+    displayName: Sign main executable
+
+  # Note: this command doesn't seem to sign the contents of the
+  # installer package as might be hoped, but that seems to be OK -- if
+  # you download and run the installer there aren't any complaints
+  # when launching the software.
+  - pwsh: |
+      .\SignClient "Sign" `
+      --baseDirectory "$(Pipeline.Workspace)\drop-unsigned" `
+      --input "Setup1\Release\WWTSetup.msi" `
+      --config "$(Pipeline.Workspace)\ci-support\sign-client.json" `
+      --filelist "$(Pipeline.Workspace)\ci-support\codesign-setup-filelist.txt" `
+      --user "$(SignClientUser)" `
+      --secret "$(SignClientSecret)" `
+      --name "AASWorldWideTelescopeWindowsClient" `
+      --description "AAS WorldWide Telescope Windows client" `
+      --descriptionUrl "https://github.com/WorldWideTelesope/wwt-windows-client/"
+    displayName: Sign installer
+
+  - publish: $(Pipeline.Workspace)/drop-unsigned
+    displayName: Publish Signed Packages
+    artifact: drop-signed
+
+# Deployment steps only for actual releases
+
+- ${{ if parameters.isRelease }}:
+  - job: branch_and_tag
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+    - group: Deployment Credentials
+    steps:
+    - template: azure-job-setup.yml
+      parameters:
+        setupCranko: true
+        setupGit: true
+    - bash: |
+        set -xeuo pipefail
+        cranko release-workflow tag
+        git push --tags origin release:release
+      displayName: Tag and push
+      env:
+        GITHUB_TOKEN: $(GITHUB_TOKEN)
+
+  - job: github_releases
+    dependsOn:
+    - branch_and_tag # otherwise, GitHub creates the tag itself
+    - code_sign
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+    - group: Deployment Credentials
+    steps:
+    - template: azure-job-setup.yml
+      parameters:
+        setupCranko: true
+        setupGit: true
+    - bash: |
+        set -xeuo pipefail
+        cranko github create-releases
+
+        if cranko show if-released --exit-code WWTExplorer; then
+          cranko github upload-artifacts WWTExplorer \
+            $(Pipeline.Workspace)/drop-signed/*
+        fi
+      displayName: Create GitHub releases
+      env:
+        GITHUB_TOKEN: $(GITHUB_TOKEN)
