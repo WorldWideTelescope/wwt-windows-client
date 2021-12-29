@@ -1,9 +1,8 @@
-# rc: micro bump
+# See elsewhere for changelog
 
-Another placeholder release since it turns out that forcing a release of an
-identical version doesn't work.
+This project’s release notes are curated from the Git history of its main
+branch. You can find them by looking at [the version of this file on the
+`release` branch][branch] or the [GitHub release history][gh-releases].
 
-
-# OculusWrap 2.3.4.1 (2021-12-29)
-
-Placeholder release to anchor this project's history with Cranko.
+[branch]: https://github.com/WorldWideTelescope/wwt-windows-client/blob/release/OculusWrap/CHANGELOG.md
+[gh-releases]: https://github.com/WorldWideTelescope/wwt-windows-client/releases
