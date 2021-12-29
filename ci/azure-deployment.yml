@@ -113,8 +113,9 @@ jobs:
         cranko github create-releases
 
         if cranko show if-released --exit-code WWTExplorer; then
-          cranko github upload-artifacts WWTExplorer \
-            $(Pipeline.Workspace)/drop-signed/*
+          f=wwtsetup-$(cranko show version WWTExplorer).msi
+          cp $(Pipeline.Workspace)/drop-signed/Setup1/Release/*.msi $f
+          cranko github upload-artifacts WWTExplorer $f
         fi
       displayName: Create GitHub releases
       env:

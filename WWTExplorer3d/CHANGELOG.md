@@ -1,3 +1,9 @@
+# WWTExplorer 6.0.901.0 (2021-12-29)
+
+No code changes from the previous release. Working on the continuous deployment
+infrastructure.
+
+
 # WWTExplorer 6.0.900.0 (2021-12-29)
 
 This is a trial release created using automated Azure Pipelines processing. Use
