@@ -8868,7 +8868,7 @@ namespace TerraViewer
 
         private void tourHomeMenuItem_Click(object sender, EventArgs e)
         {
-            WebWindow.OpenUrl("http://www.worldwidetelescope.org/Learn/Exploring#guidedtours", true);
+            WebWindow.OpenUrl("https://docs.worldwidetelescope.org/tour-authoring-guide/", true);
         }
 
         private void tourSearchWebPageMenuItem_Click(object sender, EventArgs e)
