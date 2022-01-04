@@ -1002,7 +1002,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1977,7 +1977,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AAS WorldWide Telescope"
         "ProductCode" = "8:{88C61DCA-577B-4E9F-A652-3B1E06746C0B}"
-        "PackageCode" = "8:{15A1E90C-C7F4-4CED-9BC6-49EB99D82FB7}"
+        "PackageCode" = "8:{7DEE0FFB-5A15-40D5-81E0-8CC58567A981}"
         "UpgradeCode" = "8:{543D9051-C7F5-4C6B-BEA5-6CA148C8487F}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
