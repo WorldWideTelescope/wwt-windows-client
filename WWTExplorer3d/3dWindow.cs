@@ -5729,7 +5729,7 @@ namespace TerraViewer
         {
             RegistryKey root = Registry.CurrentUser;
 
-            RegistryKey wwtKey = root.OpenSubKey("Software\\Microsoft\\WorldWide Telescope");
+            RegistryKey wwtKey = root.OpenSubKey("Software\\American Astronomical Society\\WorldWide Telescope");
             if (wwtKey == null)
             {
                 return true;

@@ -316,13 +316,13 @@
         "Entry"
         {
         "MsmKey" = "8:_B1E1599C1EC375FA5F6B8BD2A9A6209B"
-        "OwnerKey" = "8:_7A0724517FA139701A566AE40D76C644"
+        "OwnerKey" = "8:_E5F68E34CEB8EA5FE535F045159B7AEE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_B1E1599C1EC375FA5F6B8BD2A9A6209B"
-        "OwnerKey" = "8:_E5F68E34CEB8EA5FE535F045159B7AEE"
+        "OwnerKey" = "8:_7A0724517FA139701A566AE40D76C644"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -382,13 +382,13 @@
         "Entry"
         {
         "MsmKey" = "8:_BD7CD696A5BE0848CAD7F3B9072C273F"
-        "OwnerKey" = "8:_7A0724517FA139701A566AE40D76C644"
+        "OwnerKey" = "8:_E5F68E34CEB8EA5FE535F045159B7AEE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_BD7CD696A5BE0848CAD7F3B9072C273F"
-        "OwnerKey" = "8:_E5F68E34CEB8EA5FE535F045159B7AEE"
+        "OwnerKey" = "8:_7A0724517FA139701A566AE40D76C644"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -454,24 +454,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C305063D7284F2E125FDA62231473DBC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7A0724517FA139701A566AE40D76C644"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_401186DEB0B764955F8905E7143B092D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_C6F7E7997C41CCFC7CBA0824FCA04D47"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -484,7 +466,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C305063D7284F2E125FDA62231473DBC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E5F68E34CEB8EA5FE535F045159B7AEE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_7A0724517FA139701A566AE40D76C644"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -557,6 +551,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_6BEFB757EAFFC6FE6D0D49C0FBFADB0D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_401186DEB0B764955F8905E7143B092D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -2158,7 +2158,7 @@
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_55C5B77907524396A6BC84DB8726A532"
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_0D8DE7F4499E48B691BE427EDF927DFC"
                             {
                             "Name" = "8:Microsoft"
                             "Condition" = "8:"
@@ -2167,37 +2167,7 @@
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
-                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_AA994987B73A45E0A37452BA0E40E0CE"
-                                    {
-                                    "Name" = "8:WorldWide Telescope"
-                                    "Condition" = "8:"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "DeleteAtUninstall" = "11:FALSE"
-                                    "Transitive" = "11:FALSE"
-                                        "Keys"
-                                        {
-                                        }
-                                        "Values"
-                                        {
-                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_9325EF29FBD04D9BB5D8ECBF4590BFCB"
-                                            {
-                                            "Name" = "8:AutoUpdates"
-                                            "Condition" = "8:AUTOUPDATE==False"
-                                            "Transitive" = "11:FALSE"
-                                            "ValueTypes" = "3:3"
-                                            "Value" = "3:0"
-                                            }
-                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_E2766E3501FE4A54B48DE352D72A09BE"
-                                            {
-                                            "Name" = "8:AutoUpdates"
-                                            "Condition" = "8:AUTOUPDATE"
-                                            "Transitive" = "11:FALSE"
-                                            "ValueTypes" = "3:3"
-                                            "Value" = "3:1"
-                                            }
-                                        }
-                                    }
-                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_EDF924E286EB4CF98354F70EB3E36D3F"
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_32F203B9FD2D4396AAF9C786081CB149"
                                     {
                                     "Name" = "8:Windows"
                                     "Condition" = "8:"
@@ -2267,6 +2237,50 @@
                                         }
                                         "Values"
                                         {
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_55C5B77907524396A6BC84DB8726A532"
+                            {
+                            "Name" = "8:American Astronomical Society"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:FALSE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_AA994987B73A45E0A37452BA0E40E0CE"
+                                    {
+                                    "Name" = "8:WorldWide Telescope"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                        }
+                                        "Values"
+                                        {
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_9325EF29FBD04D9BB5D8ECBF4590BFCB"
+                                            {
+                                            "Name" = "8:AutoUpdates"
+                                            "Condition" = "8:AUTOUPDATE==False"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:3"
+                                            "Value" = "3:0"
+                                            }
+                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_E2766E3501FE4A54B48DE352D72A09BE"
+                                            {
+                                            "Name" = "8:AutoUpdates"
+                                            "Condition" = "8:AUTOUPDATE"
+                                            "Transitive" = "11:FALSE"
+                                            "ValueTypes" = "3:3"
+                                            "Value" = "3:1"
+                                            }
                                         }
                                     }
                                 }
