@@ -1984,7 +1984,7 @@
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:6.0.13"
+        "ProductVersion" = "8:6.99.0"
         "Manufacturer" = "8:American Astronomical Society"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
