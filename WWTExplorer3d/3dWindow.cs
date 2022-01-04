@@ -154,7 +154,6 @@ namespace TerraViewer
         private ToolStripMenuItem lastToolStripMenuItem;
         private ToolStripMenuItem randomToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem5;
-        private ToolStripMenuItem musicAndOtherTourResourceToolStripMenuItem;
         private ToolStripMenuItem lookUpOnSDSSToolStripMenuItem;
         private ToolStripMenuItem detachMainViewToSecondMonitor;
         private ToolStripMenuItem shapeFileToolStripMenuItem;
@@ -2961,7 +2960,6 @@ namespace TerraViewer
             solarSystemToolStripMenuItem.Text = Language.GetLocalizedText(373, "Solar System");
             lastToolStripMenuItem.Text = Language.GetLocalizedText(584, "Last");
             randomToolStripMenuItem.Text = Language.GetLocalizedText(585, "Random XX");
-            musicAndOtherTourResourceToolStripMenuItem.Text = Language.GetLocalizedText(586, "Music and other Tour Resource");
 
             startupToolStripMenuItem.Text = Language.GetLocalizedText(591, "Startup Look At");
             lookUpOnNEDToolStripMenuItem.Text = Language.GetLocalizedText(593, "Look up on NED");
@@ -3104,7 +3102,6 @@ namespace TerraViewer
             this.toursMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tourHomeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tourSearchWebPageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.musicAndOtherTourResourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.createANewTourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTourAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -3745,7 +3742,6 @@ namespace TerraViewer
             this.toursMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tourHomeMenuItem,
             this.tourSearchWebPageMenuItem,
-            this.musicAndOtherTourResourceToolStripMenuItem,
             this.toolStripSeparator6,
             this.createANewTourToolStripMenuItem,
             this.saveTourAsToolStripMenuItem,
@@ -3785,13 +3781,6 @@ namespace TerraViewer
             this.tourSearchWebPageMenuItem.Text = "Tour Search Web Page";
             this.tourSearchWebPageMenuItem.Visible = false;
             this.tourSearchWebPageMenuItem.Click += new System.EventHandler(this.tourSearchWebPageMenuItem_Click);
-            // 
-            // musicAndOtherTourResourceToolStripMenuItem
-            // 
-            this.musicAndOtherTourResourceToolStripMenuItem.Name = "musicAndOtherTourResourceToolStripMenuItem";
-            this.musicAndOtherTourResourceToolStripMenuItem.Size = new System.Drawing.Size(422, 32);
-            this.musicAndOtherTourResourceToolStripMenuItem.Text = "Music and other Tour Resource";
-            this.musicAndOtherTourResourceToolStripMenuItem.Click += new System.EventHandler(this.musicAndOtherTourResourceToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
@@ -5740,7 +5729,7 @@ namespace TerraViewer
         {
             RegistryKey root = Registry.CurrentUser;
 
-            RegistryKey wwtKey = root.OpenSubKey("Software\\Microsoft\\WorldWide Telescope");
+            RegistryKey wwtKey = root.OpenSubKey("Software\\American Astronomical Society\\WorldWide Telescope");
             if (wwtKey == null)
             {
                 return true;
@@ -7768,7 +7757,7 @@ namespace TerraViewer
                 string version = lines[0].Substring(lines[0].IndexOf(':') + 1).Trim();
                 string dataVersion = lines[1].Substring(lines[1].IndexOf(':') + 1).Trim();
                 string message = lines[2].Substring(lines[2].IndexOf(':') + 1).Trim();
-                string updateUrl = "http://www.worldwidetelescope.org/wwtweb/setup.aspx";
+                string updateUrl = "https://worldwidetelescope.org/support/wwtsetup-latest.msi";
                 string warnVersion = version;
                 if (lines.GetLength(0) > 3)
                 {
@@ -8729,7 +8718,7 @@ namespace TerraViewer
 
         private void homepageMenuItem_Click(object sender, EventArgs e)
         {
-            WebWindow.OpenUrl("http://www.worldwidetelescope.org/", true);
+            WebWindow.OpenUrl("https://worldwidetelescope.org/home/", true);
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e)
@@ -8868,7 +8857,7 @@ namespace TerraViewer
 
         private void tourHomeMenuItem_Click(object sender, EventArgs e)
         {
-            WebWindow.OpenUrl("http://www.worldwidetelescope.org/Learn/Exploring#guidedtours", true);
+            WebWindow.OpenUrl("https://docs.worldwidetelescope.org/tour-authoring-guide/", true);
         }
 
         private void tourSearchWebPageMenuItem_Click(object sender, EventArgs e)
@@ -11406,12 +11395,6 @@ namespace TerraViewer
             solarSystemToolStripMenuItem.Checked = Properties.Settings.Default.StartUpLookAt == (int)ImageSetType.SolarSystem;
             lastToolStripMenuItem.Checked = Properties.Settings.Default.StartUpLookAt == 5;
             randomToolStripMenuItem.Checked = Properties.Settings.Default.StartUpLookAt == 6;
-        }
-
-        private void musicAndOtherTourResourceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            WebWindow.OpenUrl("http://www.worldwidetelescope.org/Download/TourAssets", true);
-
         }
 
         private void lookUpOnSDSSToolStripMenuItem_Click(object sender, EventArgs e)
