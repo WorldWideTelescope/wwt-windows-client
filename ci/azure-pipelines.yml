@@ -15,6 +15,11 @@ stages:
 - stage: MainBuild
   jobs:
   - template: azure-build-and-test.yml
+    parameters:
+      ${{ if eq(variables['Build.SourceBranchName'], 'rc') }}:
+        cabinetBasename: datafiles_release
+      ${{ else }}:
+        cabinetBasename: datafiles_tiny
 
 - stage: Deploy
   condition: and(succeeded('MainBuild'), ne(variables['build.reason'], 'PullRequest'))

@@ -1,5 +1,20 @@
 # rc: micro bump
 
+This release contains only non-functionality updates as we test the continuous
+deployment infrastructure and release automation.
+
+- Update some URLs embedded in the app
+- Remove the "Tour Music/Resources" UI link, which we no longer (want to) support
+- Update the location of `AutoUpdates` registry key to not mislead people about
+  the creator of this software
+- Update and improve the software license text shown in the installer
+- Update the installer UI and metadata to try to be more correct
+- Update the release automation infrastructure to include a bigger complement of
+  preloaded data files in numbered releases (such as this one!)
+
+
+# WWTExplorer 6.0.901.0 (2021-12-29)
+
 No code changes from the previous release. Working on the continuous deployment
 infrastructure.
 

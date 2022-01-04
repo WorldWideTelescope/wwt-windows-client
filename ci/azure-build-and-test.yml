@@ -1,6 +1,11 @@
 # Copyright 2020-2022 the .NET Foundation
 # Licensed under the MIT License
 
+parameters:
+- name: cabinetBasename
+  type: string
+  default: datafiles_tiny
+
 jobs:
 
 - job: build
@@ -52,10 +57,9 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
-  # TODO: for tagged releases, download a fullsize / up-to-date package
   - powershell: |
       Invoke-WebRequest `
-        "https://wwtfiles.blob.core.windows.net/devops/datafiles_tiny.cabinet" `
+        "https://wwtfiles.blob.core.windows.net/devops/${{ parameters.cabinetBasename }}.cabinet" `
         -OutFile ".\Setup1\datafiles.cabinet"
     displayName: Download installer data files bundle
 
