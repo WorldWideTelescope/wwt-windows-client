@@ -7768,7 +7768,7 @@ namespace TerraViewer
                 string version = lines[0].Substring(lines[0].IndexOf(':') + 1).Trim();
                 string dataVersion = lines[1].Substring(lines[1].IndexOf(':') + 1).Trim();
                 string message = lines[2].Substring(lines[2].IndexOf(':') + 1).Trim();
-                string updateUrl = "http://www.worldwidetelescope.org/wwtweb/setup.aspx";
+                string updateUrl = "https://worldwidetelescope.org/support/wwtsetup-latest.msi";
                 string warnVersion = version;
                 if (lines.GetLength(0) > 3)
                 {
