@@ -8729,7 +8729,7 @@ namespace TerraViewer
 
         private void homepageMenuItem_Click(object sender, EventArgs e)
         {
-            WebWindow.OpenUrl("http://www.worldwidetelescope.org/", true);
+            WebWindow.OpenUrl("https://worldwidetelescope.org/home/", true);
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e)
