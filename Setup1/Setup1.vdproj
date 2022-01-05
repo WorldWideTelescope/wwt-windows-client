@@ -2255,7 +2255,7 @@
                                 {
                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_AA994987B73A45E0A37452BA0E40E0CE"
                                     {
-                                    "Name" = "8:WorldWide Telescope"
+                                    "Name" = "8:AAS WorldWide Telescope"
                                     "Condition" = "8:"
                                     "AlwaysCreate" = "11:FALSE"
                                     "DeleteAtUninstall" = "11:FALSE"
