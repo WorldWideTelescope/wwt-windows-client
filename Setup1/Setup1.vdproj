@@ -2000,7 +2000,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:cscript.exe \"$(ProjectDir)CustomAction_NoImpersonate.js\" \"$(BuiltOuputPath)\" \r\n"
+        "PostBuildEvent" = "8:cscript.exe \"$(ProjectDir)custom_actions.js\" \"$(BuiltOuputPath)\" \r\n"
         "RunPostBuildEvent" = "3:1"
         }
         "Registry"
