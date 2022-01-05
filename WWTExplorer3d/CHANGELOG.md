@@ -1,5 +1,19 @@
 # rc: micro bump
 
+- Attempt to fix the auto-updating functionality with current installers (#194,
+  @pkgw). The old method of launching `msiexec /i` doesn't seem to work anymore,
+  resulting in an error with a refusal to reinstall an already-installed
+  application. We'll put out an additional release so that we can exercise the
+  changed behavior (which now uses `msiexec /fvomus`).
+- Make it so that the auto-update setting can be controlled from the command
+  line, using `msiexec ... AUTOUPDATE=OFF` to disable auto-updates (#133, #194,
+  @pkgw). This should be helpful for scripted installations. (All settings
+  besides `OFF` should result in the default behavior of auto-updating being
+  enabled.)
+
+
+# WWTExplorer 6.0.902.0 (2022-01-04)
+
 This release contains only non-functionality updates as we test the continuous
 deployment infrastructure and release automation.
 

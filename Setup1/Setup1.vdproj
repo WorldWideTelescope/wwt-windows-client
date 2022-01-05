@@ -2000,7 +2000,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:cscript.exe \"$(ProjectDir)CustomAction_NoImpersonate.js\" \"$(BuiltOuputPath)\" \r\n"
+        "PostBuildEvent" = "8:cscript.exe \"$(ProjectDir)custom_actions.js\" \"$(BuiltOuputPath)\" \r\n"
         "RunPostBuildEvent" = "3:1"
         }
         "Registry"
@@ -2255,7 +2255,7 @@
                                 {
                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_AA994987B73A45E0A37452BA0E40E0CE"
                                     {
-                                    "Name" = "8:WorldWide Telescope"
+                                    "Name" = "8:AAS WorldWide Telescope"
                                     "Condition" = "8:"
                                     "AlwaysCreate" = "11:FALSE"
                                     "DeleteAtUninstall" = "11:FALSE"
@@ -2268,7 +2268,7 @@
                                             "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_9325EF29FBD04D9BB5D8ECBF4590BFCB"
                                             {
                                             "Name" = "8:AutoUpdates"
-                                            "Condition" = "8:AUTOUPDATE==False"
+                                            "Condition" = "8:NOT(AUTOUPDATE) OR AUTOUPDATE=\"OFF\""
                                             "Transitive" = "11:FALSE"
                                             "ValueTypes" = "3:3"
                                             "Value" = "3:0"
@@ -2276,7 +2276,7 @@
                                             "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_E2766E3501FE4A54B48DE352D72A09BE"
                                             {
                                             "Name" = "8:AutoUpdates"
-                                            "Condition" = "8:AUTOUPDATE"
+                                            "Condition" = "8:AUTOUPDATE AND AUTOUPDATE<>\"OFF\""
                                             "Transitive" = "11:FALSE"
                                             "ValueTypes" = "3:3"
                                             "Value" = "3:1"
@@ -2964,11 +2964,11 @@
                             "DisplayName" = "8:#1038"
                             "Description" = "8:#1138"
                             "Type" = "3:2"
-                            "ContextData" = "8:Unchecked=;Checked=1"
+                            "ContextData" = "8:Unchecked=;Checked=ON"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:1"
-                            "DefaultValue" = "8:"
+                            "Value" = "8:ON"
+                            "DefaultValue" = "8:ON"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "Checkbox1Visible"

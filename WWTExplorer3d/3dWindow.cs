@@ -5729,7 +5729,7 @@ namespace TerraViewer
         {
             RegistryKey root = Registry.CurrentUser;
 
-            RegistryKey wwtKey = root.OpenSubKey("Software\\American Astronomical Society\\WorldWide Telescope");
+            RegistryKey wwtKey = root.OpenSubKey("Software\\American Astronomical Society\\AAS WorldWide Telescope");
             if (wwtKey == null)
             {
                 return true;
@@ -7813,15 +7813,12 @@ namespace TerraViewer
 
                         if (RenderEngine.multiMonClient)
                         {
-                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /q", Path.GetTempPath()));
+                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi /q", Path.GetTempPath()));
                         }
                         else
                         {
-                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi", Path.GetTempPath()));
+                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi", Path.GetTempPath()));
                         }
-
-
-
 
                         return false;
                     }
@@ -7852,11 +7849,11 @@ namespace TerraViewer
 
                             if (RenderEngine.multiMonClient)
                             {
-                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /q", Path.GetTempPath()));
+                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi /q", Path.GetTempPath()));
                             }
                             else
                             {
-                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi", Path.GetTempPath()));
+                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi", Path.GetTempPath()));
                             }
 
                             return false;
