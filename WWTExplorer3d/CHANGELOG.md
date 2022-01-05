@@ -1,5 +1,11 @@
 # rc: micro bump
 
+No code changes from the previous release. Making a new release so that the
+auto-update functionality can be exercised.
+
+
+# WWTExplorer 6.0.903.0 (2022-01-05)
+
 - Attempt to fix the auto-updating functionality with current installers (#194,
   @pkgw). The old method of launching `msiexec /i` doesn't seem to work anymore,
   resulting in an error with a refusal to reinstall an already-installed
