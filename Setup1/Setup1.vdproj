@@ -2268,7 +2268,7 @@
                                             "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_9325EF29FBD04D9BB5D8ECBF4590BFCB"
                                             {
                                             "Name" = "8:AutoUpdates"
-                                            "Condition" = "8:AUTOUPDATE==False"
+                                            "Condition" = "8:NOT(AUTOUPDATE)"
                                             "Transitive" = "11:FALSE"
                                             "ValueTypes" = "3:3"
                                             "Value" = "3:0"
