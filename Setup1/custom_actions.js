@@ -23,26 +23,45 @@ var filespec = WScript.Arguments(0);
 var installer = WScript.CreateObject("WindowsInstaller.Installer");
 var database = installer.OpenDatabase(filespec, msiOpenDatabaseModeTransact);
 
-var sql;
-var view;
-var record;
-
-try {
-    // Change all deferred custom actions to NoImpersonate:
-
-    sql = "SELECT `Action`, `Type`, `Source`, `Target` FROM `CustomAction`";
-    view = database.OpenView(sql);
+function MakeActionsNoImpersonate() {
+    var sql = "SELECT `Action`, `Type`, `Source`, `Target` FROM `CustomAction`";
+    var view = database.OpenView(sql);
     view.Execute();
-    record = view.Fetch();
+
+    var record = view.Fetch();
+
     while (record) {
         if (record.IntegerData(2) & msidbCustomActionTypeInScript) {
             record.IntegerData(2) = record.IntegerData(2) | msidbCustomActionTypeNoImpersonate;
             view.Modify(msiViewModifyReplace, record);
         }
+
         record = view.Fetch();
     }
 
     view.Close();
+}
+
+function SetConditionOfAction(action, table, condition) {
+    var sql = "SELECT `Action`, `Condition`, `Sequence` FROM " + table + " WHERE `Action`='" + action + "'";
+    var view = database.OpenView(sql);
+    view.Execute();
+
+    var record = view.Fetch();
+
+    record.StringData(2) = condition;
+    view.Modify(msiViewModifyReplace, record);
+    view.Close();
+}
+
+try {
+    // Change all deferred custom actions to NoImpersonate:
+    MakeActionsNoImpersonate();
+
+    // Don't override AUTOUPDATE if it was specified on the command line:
+    SetConditionOfAction("CustomCheckA_SetProperty_CHECKBOX1", "InstallExecuteSequence", "NOT(AUTOUPDATE)");
+    SetConditionOfAction("CustomCheckA_SetProperty_CHECKBOX1", "InstallUISequence", "NOT(AUTOUPDATE)");
+
     database.Commit();
 } catch (e) {
     WScript.StdErr.WriteLine(e);
