@@ -1,17 +1,18 @@
-// NoImpersonate.js <msi-file>
-// Performs a post-build fixup of an msi to change all deferred custom actions to NoImpersonate
+// custom_actions.js <msi-file>
+//
+// Performs post-build fixups of our MSI.
 
-// Constant values from Windows Installer
+// Constant values from Windows Installer:
 var msiOpenDatabaseModeTransact = 1;
 
-var msiViewModifyInsert = 1
-var msiViewModifyUpdate = 2
-var msiViewModifyAssign = 3
-var msiViewModifyReplace = 4
-var msiViewModifyDelete = 6
+var msiViewModifyInsert = 1;
+var msiViewModifyUpdate = 2;
+var msiViewModifyAssign = 3;
+var msiViewModifyReplace = 4;
+var msiViewModifyDelete = 6;
 
 var msidbCustomActionTypeInScript = 0x00000400;
-var msidbCustomActionTypeNoImpersonate = 0x00000800
+var msidbCustomActionTypeNoImpersonate = 0x00000800;
 
 if (WScript.Arguments.Length != 1) {
     WScript.StdErr.WriteLine(WScript.ScriptName + " file");
@@ -22,11 +23,13 @@ var filespec = WScript.Arguments(0);
 var installer = WScript.CreateObject("WindowsInstaller.Installer");
 var database = installer.OpenDatabase(filespec, msiOpenDatabaseModeTransact);
 
-var sql
-var view
-var record
+var sql;
+var view;
+var record;
 
 try {
+    // Change all deferred custom actions to NoImpersonate:
+
     sql = "SELECT `Action`, `Type`, `Source`, `Target` FROM `CustomAction`";
     view = database.OpenView(sql);
     view.Execute();
@@ -41,8 +44,7 @@ try {
 
     view.Close();
     database.Commit();
-}
-catch (e) {
+} catch (e) {
     WScript.StdErr.WriteLine(e);
     WScript.Quit(1);
 }
