@@ -1,5 +1,11 @@
 # rc: micro bump
 
+No code changes from the previous release. Making a new release so that the
+auto-update functionality can be exercised.
+
+
+# WWTExplorer 6.0.905.0 (2022-01-06)
+
 - This is why we have the betas: the previous couple of releases didn't get the
   auto-update functionality right. In this iteration, we revert the `msiexec`
   changes but use a newer version of Cranko that ought to (more) correctly
