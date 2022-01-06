@@ -2241,7 +2241,15 @@ namespace TerraViewer
             foreach (XmlNode layer in layersNode)
             {
                 LayerInfo info = new LayerInfo();
-                info.ID = new Guid(layer.InnerText);
+
+                if (layer.Attributes["Id"] != null)
+                {
+                    info.ID = new Guid(layer.Attributes["Id"].Value);
+                }
+                else
+                {
+                    info.ID = new Guid(layer.InnerText);
+                }
                 info.StartOpacity = Convert.ToSingle(layer.Attributes["StartOpacity"].Value);
                 info.EndOpacity = Convert.ToSingle(layer.Attributes["EndOpacity"].Value);
 

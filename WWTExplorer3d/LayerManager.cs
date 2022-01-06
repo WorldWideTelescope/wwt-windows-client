@@ -1937,6 +1937,17 @@ namespace TerraViewer
             if (picker.ShowDialog() == DialogResult.OK)
             {
                 layer.Color = picker.Color;
+
+                // We're currently editing a tour stop, update the FrameParams for this layer
+                TourEditTab tourEdit = Earth3d.MainWindow.TourEdit;
+                if (tourEdit != null)
+                {
+                    TourDocument tour = tourEdit.Tour;
+                    if (tour != null && tour.CurrentTourStop != null)
+                    {
+                        tour.CurrentTourStop.Layers[layer.ID].FrameParams = layer.GetParams();
+                    }
+                }
             }
         }
 
