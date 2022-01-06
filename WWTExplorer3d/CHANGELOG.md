@@ -1,3 +1,9 @@
+# WWTExplorer 6.0.906.0 (2022-01-06)
+
+No code changes from the previous release. Making a new release so that the
+auto-update functionality can be exercised.
+
+
 # WWTExplorer 6.0.905.0 (2022-01-06)
 
 - This is why we have the betas: the previous couple of releases didn't get the

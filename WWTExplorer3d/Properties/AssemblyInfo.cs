@@ -30,8 +30,8 @@ using System.Resources;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("6.0.905.0")]
-[assembly: AssemblyFileVersion("6.0.905.0")]
+[assembly: AssemblyVersion("6.0.906.0")]
+[assembly: AssemblyFileVersion("6.0.906.0")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
 [assembly: System.Windows.Media.DisableDpiAwareness]
 
