@@ -7813,11 +7813,11 @@ namespace TerraViewer
 
                         if (RenderEngine.multiMonClient)
                         {
-                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi /q", Path.GetTempPath()));
+                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /l*vx {0}\wwtupdate.log /q", Path.GetTempPath()));
                         }
                         else
                         {
-                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi", Path.GetTempPath()));
+                            System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /l*vx {0}\wwtupdate.log", Path.GetTempPath()));
                         }
 
                         return false;
@@ -7849,11 +7849,11 @@ namespace TerraViewer
 
                             if (RenderEngine.multiMonClient)
                             {
-                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi /q", Path.GetTempPath()));
+                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /l*vx {0}\wwtupdate.log /q", Path.GetTempPath()));
                             }
                             else
                             {
-                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/fvomus {0}\wwtsetup.msi", Path.GetTempPath()));
+                                System.Diagnostics.Process.Start(@"msiexec.exe", string.Format(@"/i {0}\wwtsetup.msi /l*vx {0}\wwtupdate.log", Path.GetTempPath()));
                             }
 
                             return false;
