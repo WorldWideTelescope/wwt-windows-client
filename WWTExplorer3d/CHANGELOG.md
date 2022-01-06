@@ -1,5 +1,17 @@
 # rc: micro bump
 
+- This is why we have the betas: the previous couple of releases didn't get the
+  auto-update functionality right. In this iteration, we revert the `msiexec`
+  changes but use a newer version of Cranko that ought to (more) correctly
+  update some of the installer metadata when making releases, which I believe
+  will fix auto-update. With these changes the auto-update user experience isn't
+  as smooth as it could be, since you have to go through steps like to
+  re-confirming the installation directory, but it seems that there are
+  significant limitations to getting the "smoother" mode to work reliably.
+
+
+# WWTExplorer 6.0.904.0 (2022-01-05)
+
 No code changes from the previous release. Making a new release so that the
 auto-update functionality can be exercised.
 
