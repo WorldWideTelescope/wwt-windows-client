@@ -1945,7 +1945,15 @@ namespace TerraViewer
                     TourDocument tour = tourEdit.Tour;
                     if (tour != null && tour.CurrentTourStop != null)
                     {
-                        tour.CurrentTourStop.Layers[layer.ID].FrameParams = layer.GetParams();
+                        Dictionary<Guid, LayerInfo> layers = tour.CurrentTourStop.Layers;
+                        if (layers.ContainsKey(layer.ID))
+                        {
+                            LayerInfo info = tour.CurrentTourStop.Layers[layer.ID];
+                            double[] pars = layer.GetParams();
+                            info.FrameParams = pars;
+                            info.StartParams = pars;
+                            info.EndParams = pars;
+                        }
                     }
                 }
             }
