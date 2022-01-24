@@ -1,3 +1,13 @@
+# WWTExplorer 6.0.907.0 (2022-01-24)
+
+- Update the built-in data bundle to version 2022-01-20, deploying the WWT2022
+  data updates. This includes hundreds of new HiPS datasets; PR images from ESO,
+  NOIRLab, Hubble, SOFIA, Spitzer, WISE; new planetary maps and panoramas; and
+  much more!
+- Fix it so that if you edit the color of a spreadsheet data layer while
+  creating a tour, the change sticks (#197, @Carifio24).
+
+
 # WWTExplorer 6.0.906.0 (2022-01-06)
 
 No code changes from the previous release. Making a new release so that the

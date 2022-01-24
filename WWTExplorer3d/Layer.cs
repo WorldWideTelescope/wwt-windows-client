@@ -178,10 +178,10 @@ namespace TerraViewer
         public virtual double[] GetParams()
         {
             double[] paramList = new double[5];
-            paramList[0] = color.R/255;
-            paramList[1] = color.G/255;
-            paramList[2] = color.B/255;
-            paramList[3] = color.A/255;
+            paramList[0] = ((double)color.R) / 255;
+            paramList[1] = ((double)color.G) / 255;
+            paramList[2] = ((double)color.B) / 255;
+            paramList[3] = ((double)color.A) / 255;
             paramList[4] = opacity;
 
 
