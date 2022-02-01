@@ -41,6 +41,7 @@ namespace TerraViewer
         {
             bool failed = false;
 
+            double initialMeanRadius = frame.MeanRadius;
             frame.MeanRadius = ParseAndValidateDouble(MeanRadius, frame.MeanRadius, ref failed);
             frame.Oblateness = ParseAndValidateDouble(Oblateness, frame.Oblateness, ref failed);
             frame.Scale = ParseAndValidateDouble(Scale, frame.Scale, ref failed);
@@ -52,6 +53,18 @@ namespace TerraViewer
          
             frame.ShowAsPoint = ShowAsPoint.Checked;
             frame.ShowOrbitPath = ShowOrbitPath.Checked;
+
+            // If the mean radius changes, mark each of the frame's layers as dirty so that it is re-drawn
+            bool radiusChanged = initialMeanRadius != frame.MeanRadius;
+            if (radiusChanged && LayerManager.AllMaps.ContainsKey(frame.name))
+            {
+                LayerMap map = LayerManager.AllMaps[frame.name];
+                foreach (Layer layer in map.Layers)
+                {
+                    layer.CleanUp();
+                }
+            }
+
             return !failed;
         }
 
