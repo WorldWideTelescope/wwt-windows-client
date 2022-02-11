@@ -1,5 +1,37 @@
 # rc: micro bump
 
+We expect this to be the final beta release before 6.1.
+
+### Code changes
+
+- Update the built-in default WMS server URL to NASA's GIBS:
+  `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi` (#206, @pkgw,
+  @astrodavid10)
+- Add a query-string `?client=wwt6windows` to the end of HiPS tile URL requests,
+  to enable HiPS providers to do some analytics on their traffic (#206, @pkgw).
+  Considering just the Windows client, it would be nicer to change the
+  User-Agent header, but the web clients won't be able to do that. This approach
+  should allow us to be consistent across platforms.
+- When a reference frame's mean radius is changed in the UI, mark all of that
+  frame's layers as dirty, so that altitudes to properly recomputed (#205,
+  @Carifio24).
+- Add an explicit call to OnResize on app startup, as a workaround to remove
+  jagged lines in some HiDPI display setups (#204, @Carifio24).
+
+### Data updates
+
+This release updates the built-in data bundle to version 2022-02-15. We expect
+this to be the final data update before 6.1.
+
+- Remove some Crab studies with bad astrometry
+- Add a bunch of updated planet maps
+- Add the Curiosity rover Navarro Mountain panorama
+- Annotate that our built-in SDSS is DR7, and built-in DSS is based on DSS2
+- Update informational URLs for hundreds of Spitzer images
+
+
+# WWTExplorer 6.0.907.0 (2022-01-24)
+
 - Update the built-in data bundle to version 2022-01-20, deploying the WWT2022
   data updates. This includes hundreds of new HiPS datasets; PR images from ESO,
   NOIRLab, Hubble, SOFIA, Spitzer, WISE; new planetary maps and panoramas; and

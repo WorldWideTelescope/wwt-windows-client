@@ -1180,6 +1180,11 @@ namespace TerraViewer
                 {
                 }
             }
+
+            // On HiDPI displays, jagged lines can appear when the client starts up,
+            // but disappear on a window resize.
+            // So, to avoid this, we explicitly call OnResize here
+            OnResize(EventArgs.Empty);
         }
 
         public static void BackgroundInit()
