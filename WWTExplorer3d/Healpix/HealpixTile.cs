@@ -320,7 +320,7 @@ namespace TerraViewer
         static bool galMatInit = false;
         static Matrix3d galacticMatrix = Matrix3d.Identity;
 
-        public string GetDirectory(IImageSet dataset, int level, int x, int y)
+        public new string GetDirectory(IImageSet dataset, int level, int x, int y)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -345,7 +345,7 @@ namespace TerraViewer
 
         public string GetFilename()
         {
-            string extention = GetHipsFileExtention();
+            string extention = GetHipsFileExtension();
 
             StringBuilder sb = new StringBuilder();
             sb.Append(Properties.Settings.Default.CahceDirectory);
@@ -439,10 +439,9 @@ namespace TerraViewer
             }
         }
 
-        public string GetUrl(IImageSet dataset, int level, int x, int y)
+        public new string GetUrl(IImageSet dataset, int level, int x, int y)
         {
-            string returnUrl = "";
-            string extention = GetHipsFileExtention();
+            string extension = GetHipsFileExtension();
 
             int tileTextureIndex = -1;
             if (level == 0)
@@ -453,6 +452,7 @@ namespace TerraViewer
             {
                 tileTextureIndex = this.face * nside * nside / 4 + this.tileIndex;
             }
+
             StringBuilder sb = new StringBuilder();
 
             int subDirIndex = tileTextureIndex / 10000;
@@ -467,12 +467,18 @@ namespace TerraViewer
                 sb.Append("0");
             }
 
-            returnUrl = string.Format(dataset.Url, level.ToString(), sb.ToString(), tileTextureIndex.ToString() + extention);
-
-            return returnUrl;
+            // Add a query string component to help the HiPS services do analytics on their traffic.
+            // Here on Windows we could use a user-agent, but that isn't an option for the web-based
+            // client(s), and it'll keep things simpler to use the same mechanism across platforms.
+            return string.Format(
+                dataset.Url,
+                level.ToString(),
+                sb.ToString(),
+                tileTextureIndex.ToString() + extension + "?client=wwt6windows"
+            );
         }
 
-        private string GetHipsFileExtention()
+        private string GetHipsFileExtension()
         {
             // The extension will contain either a list of type or a single type
             // The imageset can be set to the perfrered file type if desired IE: FITS will never be chosen if others are avaialbe,

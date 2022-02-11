@@ -61,7 +61,7 @@
             this.wmsUrl.Name = "wmsUrl";
             this.wmsUrl.Size = new System.Drawing.Size(339, 20);
             this.wmsUrl.TabIndex = 3;
-            this.wmsUrl.Text = "http://svs.gsfc.nasa.gov/cgi-bin/wms";
+            this.wmsUrl.Text = "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi";
             this.wmsUrl.TextChanged += new System.EventHandler(this.wmsUrl_TextChanged);
             // 
             // label1

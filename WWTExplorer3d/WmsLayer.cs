@@ -227,7 +227,7 @@ namespace TerraViewer
             }
         }
 
-        string serviceUrl = "http://svs.gsfc.nasa.gov/cgi-bin/wms?";
+        string serviceUrl = "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?";
         
         [LayerProperty]
         public string ServiceUrl
