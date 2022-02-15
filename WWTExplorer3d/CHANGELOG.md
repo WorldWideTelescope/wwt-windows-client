@@ -1,3 +1,14 @@
+# WWTExplorer 6.1.0.0 (2022-02-15)
+
+No code changes from the previous version. This is the official, non-beta WWT
+6.x release! See the [WWT 2022 edition notes][en], especially the [Windows
+client release notes][rn], for a description of the changes in WWT since the 5.x
+series.
+
+[en]: https://worldwidetelescope.github.io/editions/2022/
+[rn]: https://worldwidetelescope.github.io/editions/2022/winclient/
+
+
 # WWTExplorer 6.0.908.0 (2022-02-11)
 
 We expect this to be the final beta release before 6.1.
