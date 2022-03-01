@@ -2566,8 +2566,8 @@ namespace TerraViewer
                                         if (FlipHandedness)
                                         {
                                             indexiesA = GetIndexies(parts[1]);
-                                            indexiesC = GetIndexies(parts[partIndex]);          
-                                            indexiesB = GetIndexies(parts[partIndex - 1]);
+                                            indexiesB = GetIndexies(parts[partIndex]);
+                                            indexiesC = GetIndexies(parts[partIndex - 1]);
                                         }
                                         else
                                         {
