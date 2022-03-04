@@ -862,6 +862,7 @@ namespace TerraViewer
             if (path.ToLower().EndsWith(".obj"))
             {
                 ObjType = true;
+                flipHandedness = true;
             }
 
             if (lightID == 0)
