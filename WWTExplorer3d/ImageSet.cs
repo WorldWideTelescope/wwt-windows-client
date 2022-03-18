@@ -327,6 +327,9 @@ namespace TerraViewer
                         case "skyimage":
                             projection = ProjectionType.SkyImage;
                             break;
+                        case "healpix":
+                            projection = ProjectionType.Healpix;
+                            break;
                     }
 
                     string fileType = node.Attributes["FileType"].Value.ToString();
