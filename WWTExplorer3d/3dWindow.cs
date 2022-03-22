@@ -13519,22 +13519,9 @@ namespace TerraViewer
             if (input.ShowDialog() == DialogResult.OK)
             {
                 string url = input.ResultText;
-                string baseUrl = "";
-
-                if (url.Contains("/Norder"))
-                {
-                    baseUrl = url.Substring(0, url.IndexOf("/Norder"));
-                }
-                else
-                {
-                    baseUrl = url;
-                }
-                if (!baseUrl.EndsWith("/"))
-                {
-                    baseUrl = baseUrl + "/";
-                }
-
-                url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
+                Tuple<String,String> urls = HipsProperties.GetUrlAndBase(url);
+                url = urls.Item1;
+                string baseUrl = urls.Item2;
 
                 HipsProperties hipsProperties = HipsProperties.GetProperties(url);
 
@@ -13542,44 +13529,11 @@ namespace TerraViewer
                 {
                     var props = hipsProperties.Properties;
 
-                    ImageSetHelper ish = ImageSetHelperFromHipsProperties(url, baseUrl, props);
+                    ImageSetHelper ish = ImageSetHelper.FromHipsProperties(url, baseUrl, props);
                     ish.TableMetadata = hipsProperties.VoTable;
                     LayerManager.AddImagesetLayer(ish, "Sky");
                 }
             }
-        }
-
-        private static ImageSetHelper ImageSetHelperFromHipsProperties(string url, string baseUrl, Dictionary<string, string> props)
-        {
-            ImageSetHelper ish = new ImageSetHelper(
-                props["obs_title"],
-                url,
-                ImageSetType.Sky,
-                GetBandPassFromString(props.ContainsKey("obs_regime") ? props["obs_regime"] : ""),
-                ProjectionType.Healpix,
-                Math.Abs(url.GetHashCode32()),
-                0,
-                int.Parse(props["hips_order"]),
-                props.ContainsKey("hips_tile_width") ? int.Parse(props["hips_tile_width"]) : 512,
-                180,
-                props["hips_tile_format"],
-                false,
-                "0123",
-                0, 0, 0, false,
-                baseUrl + "preview.jpg",
-                false,
-                false,
-                1,
-                0,
-                0,
-                props.ContainsKey("obs_copyright") ? props["obs_copyright"] : "",
-                props.ContainsKey("obs_copyright_url") ? props["obs_copyright_url"] : "",
-                "",
-                "",
-                1,
-                "Sky");
-            ish.Properties = props;
-            return ish;
         }
 
         private void GetMasterHipsListAsWtml()
@@ -13659,25 +13613,9 @@ namespace TerraViewer
                     isHeatmap = true;
                 }
 
-                string url = prop.Properties["hips_service_url"];
-                string baseUrl = "";
+                (string url, string baseUrl) = HipsProperties.GetUrlAndBase(prop.Properties["hips_service_url"]);
 
-                if (url.Contains("/Norder"))
-                {
-                    baseUrl = url.Substring(0, url.IndexOf("/Norder"));
-                }
-                else
-                {
-                    baseUrl = url;
-                }
-                if (!baseUrl.EndsWith("/"))
-                {
-                    baseUrl = baseUrl + "/";
-                }
-
-                url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
-
-                ImageSetHelper ish = ImageSetHelperFromHipsProperties(url, baseUrl, prop.Properties);
+                ImageSetHelper ish = ImageSetHelper.FromHipsProperties(url, baseUrl, prop.Properties);
 
                 if (ish.Extension == "tsv")
                 {
@@ -13707,33 +13645,6 @@ namespace TerraViewer
             folder.SaveToFile(@"c:\temp\allhips.wtml");
 
         }
-
-        private static BandPass GetBandPassFromString(string bandPass)
-        {
-            switch (bandPass)
-            {
-                case "Gamma-ray":
-                    return BandPass.Gamma;
-                case "IR":
-                case "Infrared,Infrared":
-                case "Infrared":
-                case "Infrared/AKARI-FIS": 
-                    return BandPass.IR;
-                case "Mlillimeter":
-                case "Radio":
-                    return BandPass.Radio;
-                case "UV":
-                    return BandPass.Ultraviolet;
-                case "X-ray":
-                    return BandPass.XRay;
-                case "Optical":
-                case "Optical,Infrared":
-                    return BandPass.Visible;
-                default:
-                    return BandPass.Visible;
-            }          
-        }
-    }
 
     [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
     public class DataMessageFilter : IMessageFilter

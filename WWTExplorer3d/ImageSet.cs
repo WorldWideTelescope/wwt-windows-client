@@ -414,8 +414,23 @@ namespace TerraViewer
                         referenceFrame = node.Attributes["ReferenceFrame"].Value;
                     }
 
+                    string url = node.Attributes["Url"].Value.ToString();
+                    if (projection == ProjectionType.Healpix && fileType == ".tsv")
+                    {
+                        Tuple<String,String> urls = HipsProperties.GetUrlAndBase(url);
+                        url = urls.Item1;
+                        string baseUrl = urls.Item2;
 
-                    return new ImageSetHelper(node.Attributes["Name"].Value.ToString(), node.Attributes["Url"].Value.ToString(), type, bandPass, projection, Math.Abs(node.Attributes["Url"].Value.GetHashCode32()), Convert.ToInt32(node.Attributes["BaseTileLevel"].Value), Convert.ToInt32(node.Attributes["TileLevels"].Value), 256, Convert.ToDouble(node.Attributes["BaseDegreesPerTile"].Value), fileType, Convert.ToBoolean(node.Attributes["BottomsUp"].Value.ToString()), node.Attributes["QuadTreeMap"].Value.ToString(), Convert.ToDouble(node.Attributes["CenterX"].Value), Convert.ToDouble(node.Attributes["CenterY"].Value), Convert.ToDouble(node.Attributes["Rotation"].Value), Convert.ToBoolean(node.Attributes["Sparse"].Value.ToString()), thumbnailUrl, stockSet, elevationModel, wf, offsetX, offsetY, creditText, creditsUrl, demUrl, alturl, meanRadius, referenceFrame);
+                        HipsProperties hipsProperties = HipsProperties.GetProperties(url);
+                        if (!hipsProperties.Properties.ContainsKey("dummy"))
+                        {
+                            ImageSetHelper ish = ImageSetHelper.FromHipsProperties(url, baseUrl, hipsProperties.Properties);
+                            ish.TableMetadata = hipsProperties.VoTable;
+                            return ish;
+                        }
+                    }
+
+                    return new ImageSetHelper(node.Attributes["Name"].Value.ToString(), url, type, bandPass, projection, Math.Abs(node.Attributes["Url"].Value.GetHashCode32()), Convert.ToInt32(node.Attributes["BaseTileLevel"].Value), Convert.ToInt32(node.Attributes["TileLevels"].Value), 256, Convert.ToDouble(node.Attributes["BaseDegreesPerTile"].Value), fileType, Convert.ToBoolean(node.Attributes["BottomsUp"].Value.ToString()), node.Attributes["QuadTreeMap"].Value.ToString(), Convert.ToDouble(node.Attributes["CenterX"].Value), Convert.ToDouble(node.Attributes["CenterY"].Value), Convert.ToDouble(node.Attributes["Rotation"].Value), Convert.ToBoolean(node.Attributes["Sparse"].Value.ToString()), thumbnailUrl, stockSet, elevationModel, wf, offsetX, offsetY, creditText, creditsUrl, demUrl, alturl, meanRadius, referenceFrame);
                 }
                 else
                 {
@@ -477,6 +492,65 @@ namespace TerraViewer
                 }
             }
             xmlWriter.WriteEndElement();
+        }
+
+        private static BandPass GetBandPassFromString(string bandPass)
+        {
+            switch (bandPass)
+            {
+                case "Gamma-ray":
+                    return BandPass.Gamma;
+                case "IR":
+                case "Infrared,Infrared":
+                case "Infrared":
+                case "Infrared/AKARI-FIS":
+                    return BandPass.IR;
+                case "Mlillimeter":
+                case "Radio":
+                    return BandPass.Radio;
+                case "UV":
+                    return BandPass.Ultraviolet;
+                case "X-ray":
+                    return BandPass.XRay;
+                case "Optical":
+                case "Optical,Infrared":
+                    return BandPass.Visible;
+                default:
+                    return BandPass.Visible;
+            }
+        }
+
+        public static ImageSetHelper FromHipsProperties(string url, string baseUrl, Dictionary<string, string> props)
+        {
+            ImageSetHelper ish = new ImageSetHelper(
+                props["obs_title"],
+                url,
+                ImageSetType.Sky,
+                GetBandPassFromString(props.ContainsKey("obs_regime") ? props["obs_regime"] : ""),
+                ProjectionType.Healpix,
+                Math.Abs(url.GetHashCode32()),
+                0,
+                int.Parse(props["hips_order"]),
+                props.ContainsKey("hips_tile_width") ? int.Parse(props["hips_tile_width"]) : 512,
+                180,
+                props["hips_tile_format"],
+                false,
+                "0123",
+                0, 0, 0, false,
+                baseUrl + "preview.jpg",
+                false,
+                false,
+                1,
+                0,
+                0,
+                props.ContainsKey("obs_copyright") ? props["obs_copyright"] : "",
+                props.ContainsKey("obs_copyright_url") ? props["obs_copyright_url"] : "",
+                "",
+                "",
+                1,
+                "Sky");
+            ish.Properties = props;
+            return ish;
         }
 
         public override string ToString()
