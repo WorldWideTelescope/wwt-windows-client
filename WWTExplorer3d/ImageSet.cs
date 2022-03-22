@@ -415,6 +415,7 @@ namespace TerraViewer
                     }
 
                     string url = node.Attributes["Url"].Value.ToString();
+#if !WINDOWS_UWP
                     if (projection == ProjectionType.Healpix && fileType == ".tsv")
                     {
                         Tuple<String,String> urls = HipsProperties.GetUrlAndBase(url);
@@ -429,6 +430,7 @@ namespace TerraViewer
                             return ish;
                         }
                     }
+#endif
 
                     return new ImageSetHelper(node.Attributes["Name"].Value.ToString(), url, type, bandPass, projection, Math.Abs(node.Attributes["Url"].Value.GetHashCode32()), Convert.ToInt32(node.Attributes["BaseTileLevel"].Value), Convert.ToInt32(node.Attributes["TileLevels"].Value), 256, Convert.ToDouble(node.Attributes["BaseDegreesPerTile"].Value), fileType, Convert.ToBoolean(node.Attributes["BottomsUp"].Value.ToString()), node.Attributes["QuadTreeMap"].Value.ToString(), Convert.ToDouble(node.Attributes["CenterX"].Value), Convert.ToDouble(node.Attributes["CenterY"].Value), Convert.ToDouble(node.Attributes["Rotation"].Value), Convert.ToBoolean(node.Attributes["Sparse"].Value.ToString()), thumbnailUrl, stockSet, elevationModel, wf, offsetX, offsetY, creditText, creditsUrl, demUrl, alturl, meanRadius, referenceFrame);
                 }
