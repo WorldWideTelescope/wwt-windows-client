@@ -418,7 +418,7 @@ namespace TerraViewer
 #if !WINDOWS_UWP
                     if (projection == ProjectionType.Healpix && fileType == ".tsv")
                     {
-                        Tuple<String,String> urls = HipsProperties.GetUrlAndBase(url);
+                        Tuple<string,string> urls = HipsProperties.GetUrlAndBase(url);
                         url = urls.Item1;
                         string baseUrl = urls.Item2;
 

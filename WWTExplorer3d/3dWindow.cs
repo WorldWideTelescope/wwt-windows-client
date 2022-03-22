@@ -13519,7 +13519,7 @@ namespace TerraViewer
             if (input.ShowDialog() == DialogResult.OK)
             {
                 string url = input.ResultText;
-                Tuple<String,String> urls = HipsProperties.GetUrlAndBase(url);
+                Tuple<string,string> urls = HipsProperties.GetUrlAndBase(url);
                 url = urls.Item1;
                 string baseUrl = urls.Item2;
 
@@ -13613,7 +13613,9 @@ namespace TerraViewer
                     isHeatmap = true;
                 }
 
-                (string url, string baseUrl) = HipsProperties.GetUrlAndBase(prop.Properties["hips_service_url"]);
+                Tuple<string,string> urls = HipsProperties.GetUrlAndBase(prop.Properties["hips_service_url"]);
+                string url = urls.Item1;
+                string baseUrl = urls.Item2;
 
                 ImageSetHelper ish = ImageSetHelper.FromHipsProperties(url, baseUrl, prop.Properties);
 
@@ -13645,6 +13647,7 @@ namespace TerraViewer
             folder.SaveToFile(@"c:\temp\allhips.wtml");
 
         }
+    }
 
     [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
     public class DataMessageFilter : IMessageFilter
