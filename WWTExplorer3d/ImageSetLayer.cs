@@ -48,6 +48,10 @@ namespace TerraViewer
             imageSet = set;
 #if !WINDOWS_UWP
             GetDefaultColumns();
+            if (set.Projection == ProjectionType.Healpix && set.Extension == "tsv")
+            {
+                this.ID = GuidUtils.CreateV5(set.Name);
+            }
 #endif
         }
 
