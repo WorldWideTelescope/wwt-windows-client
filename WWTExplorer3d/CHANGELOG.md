@@ -1,3 +1,28 @@
+# WWTExplorer 6.1.1.0 (2022-03-31)
+
+### Code changes
+
+- Tweaks to how tour files are created to ensure interoperability with the web
+  client when including progressive HiPS catalog data sets (#208, @Carifio24).
+- Fix mirror-imaging of `.OBJ` 3D model files (#207, @Carifio24).
+
+### Date updates
+
+- Add six new Mercury planetary maps (@astrodavid10)
+  - Mercury MESSENGER MDIS Global Basemap BDR 166m
+  - Mercury MESSENGER MDIS Global Basemap LOI 166m
+  - Mercury MESSENGER MDIS Basemap MD3 Color Global Mosaic 665m
+  - Mercury MESSENGER MDIS Global Color Mosaic 665m v3
+  - Mercury MESSENGER MDIS Basemap Enhanced Color Global Mosaic 665m
+  - Mercury MESSENGER MDIS DEM Global Color Shaded Relief 2km v1
+- Add “constellation” information to all of the core catalog records (@pkgw). This
+  is mostly a matter of tidyness but should be helpful for updating the search
+  indices used by the web client.
+- Remove a smattering of images with bad astrometry with no clear path to
+  recovering the correct coordinates (@pkgw). Fix up negative zoom levels for
+  some other images
+
+
 # WWTExplorer 6.1.0.0 (2022-02-15)
 
 No code changes from the previous version. This is the official, non-beta WWT
