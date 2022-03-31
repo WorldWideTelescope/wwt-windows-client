@@ -1772,6 +1772,27 @@ namespace TerraViewer
             return props;
         }
 
+        public static Tuple<String,String> GetUrlAndBase(string url)
+        {
+            string baseUrl = "";
+            if (url.Contains("/Norder"))
+            {
+                baseUrl = url.Substring(0, url.IndexOf("/Norder"));
+            }
+            else
+            {
+                baseUrl = url;
+            }
+            if (!baseUrl.EndsWith("/"))
+            {
+                baseUrl = baseUrl + "/";
+            }
+
+            url = baseUrl + "Norder{0}/Dir{1}/Npix{2}";
+
+            return Tuple.Create(url, baseUrl);
+        }
+
         public static HipsProperties GetProperties(string url)
         {
             HipsProperties props = new HipsProperties();

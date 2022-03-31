@@ -243,6 +243,7 @@
       <DependentUpon>GridCreator.cs</DependentUpon>
     </Compile>
     <Compile Include="Catalogs.cs" />
+    <Compile Include="GuidUtils.cs" />
     <Compile Include="CoverageMap.cs" />
     <Compile Include="ExportSTL.cs">
       <SubType>Form</SubType>
@@ -2551,8 +2552,10 @@
   <Import Project="..\packages\SharpDX.Toolkit.2.6.3\build\SharpDX.Toolkit.targets" Condition="Exists('..\packages\SharpDX.Toolkit.2.6.3\build\SharpDX.Toolkit.targets')" />
   <ProjectExtensions>
     <Cranko>
-      <CrankoInternalDepVersion>{737a81a8-553c-49a9-8f17-5adf691a56b2}=manual:unused</CrankoInternalDepVersion> <!-- OculusWrap -->
-      <CrankoInternalDepVersion>{6c205caa-423d-48b8-813b-e586e105c71b}=manual:unused</CrankoInternalDepVersion> <!-- WWTCore -->
+      <CrankoInternalDepVersion>{737a81a8-553c-49a9-8f17-5adf691a56b2}=manual:unused</CrankoInternalDepVersion>
+      <!-- OculusWrap -->
+      <CrankoInternalDepVersion>{6c205caa-423d-48b8-813b-e586e105c71b}=manual:unused</CrankoInternalDepVersion>
+      <!-- WWTCore -->
     </Cranko>
   </ProjectExtensions>
 </Project>
