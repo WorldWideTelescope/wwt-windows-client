@@ -4,12 +4,18 @@ using System.Security.Cryptography;
 
 namespace TerraViewer
 {
-    // This code is adapted from https://github.com/Faithlife/FaithlifeUtility/blob/master/src/Faithlife.Utility/GuidUtility.cs
+    
     class GuidUtils
     {
 
+        // The value 1420736a-a637-40a7-813a-ba692e72204e is a UUID (generated using the uuid CLI)
+        // that serves as a 'namespace' for our GUIDs.
+        // The WWT WebGL engine uses the same namespace, so this application and the WebGL engine
+        // will generate the same UUID from the same input string
         private static Guid wwtNamespace = new Guid("1420736a-a637-40a7-813a-ba692e72204e");
 
+        // This code is adapted from https://github.com/Faithlife/FaithlifeUtility/blob/master/src/Faithlife.Utility/GuidUtility.cs
+        // which is licensed under the MIT License
         public static Guid Create(string name, int version)
         {
             if (name == null)
