@@ -2,11 +2,24 @@
 
 ### Code changes
 
+- Update the version of the Newtonsoft.Json library. This should not change
+  anything.
+
+### Data updates
+
+- Add today’s JWST image release! The new data are available in a new
+  top-level “JWST” folder in the Explore ribbon.
+
+
+# WWTExplorer 6.1.1.0 (2022-03-31)
+
+### Code changes
+
 - Tweaks to how tour files are created to ensure interoperability with the web
   client when including progressive HiPS catalog data sets (#208, @Carifio24).
 - Fix mirror-imaging of `.OBJ` 3D model files (#207, @Carifio24).
 
-### Date updates
+### Data updates
 
 - Add six new Mercury planetary maps (@astrodavid10)
   - Mercury MESSENGER MDIS Global Basemap BDR 166m
