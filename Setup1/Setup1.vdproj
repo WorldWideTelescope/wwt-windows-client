@@ -1912,7 +1912,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_8994134A3002496B9ACD2171AA6B2439"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder]American Astronomical Society\\AAS WorldWide Telescope"
+            "DefaultLocation" = "8:[ProgramFilesFolder]American Astronomical Society\\WorldWide Telescope"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -1975,7 +1975,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:AAS WorldWide Telescope"
+        "ProductName" = "8:WorldWide Telescope"
         "ProductCode" = "8:{88C61DCA-577B-4E9F-A652-3B1E06746C0B}"
         "PackageCode" = "8:{7DEE0FFB-5A15-40D5-81E0-8CC58567A981}"
         "UpgradeCode" = "8:{543D9051-C7F5-4C6B-BEA5-6CA148C8487F}"
@@ -1988,11 +1988,11 @@
         "Manufacturer" = "8:American Astronomical Society"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:AAS WorldWide Telescope"
+        "Title" = "8:WorldWide Telescope"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:wwt@aas.org"
+        "ARPCONTACT" = "8:hello@worldwidetelescope.org"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:AAS WorldWide Telescope"
+        "ARPCOMMENTS" = "8:WorldWide Telescope"
         "ARPURLINFOABOUT" = "8:"
         "ARPPRODUCTICON" = "8:_130FB70F0CAB4A4DB846B7DFC33D4C1F"
         "ARPIconIndex" = "3:0"
@@ -2255,7 +2255,7 @@
                                 {
                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_AA994987B73A45E0A37452BA0E40E0CE"
                                     {
-                                    "Name" = "8:AAS WorldWide Telescope"
+                                    "Name" = "8:WorldWide Telescope"
                                     "Condition" = "8:"
                                     "AlwaysCreate" = "11:FALSE"
                                     "DeleteAtUninstall" = "11:FALSE"
