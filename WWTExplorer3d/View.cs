@@ -227,14 +227,14 @@ namespace TerraViewer
             UpdateSpeed();
         }
 
-        private void UpdateSpeed()
+        public void UpdateSpeed()
         {
 
             if (SpaceTimeController.TimeRate == 1.0)
             {
                 TimeMode.Text = Language.GetLocalizedText(513, "Real Time");
             }
-            else if (SpaceTimeController.TimeRate == -2.0)
+            else if (SpaceTimeController.TimeRate == -1.0)
             {
                 TimeMode.Text = Language.GetLocalizedText(521, "Reverse Time");
             }

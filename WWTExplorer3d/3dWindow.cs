@@ -6942,9 +6942,17 @@ namespace TerraViewer
                         break;
                     case Keys.F:
                         SpaceTimeController.Faster();
+                        if (viewPane != null)
+                        {
+                            viewPane.UpdateSpeed();
+                        }
                         break;
                     case Keys.S:
                         SpaceTimeController.Slower();
+                        if (viewPane != null)
+                        {
+                            viewPane.UpdateSpeed();
+                        }
                         break;
                     case Keys.H:
                         // turn friction on and off
