@@ -18,7 +18,7 @@ namespace TerraViewer
                 if (timeRate != 1.0)
                 {
                     TimeSpan ts = justNow - last;
-                    long ticks = (long)(ts.Ticks * timeRate);
+                    long ticks = (long)(ts.Ticks * (timeRate - 1));
                     offset = offset.Add(new TimeSpan(ticks));
                 }
                 last = justNow;
