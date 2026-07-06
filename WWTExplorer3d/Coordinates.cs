@@ -11,6 +11,23 @@ namespace TerraViewer
         const double RC = (Math.PI / 180.0);
         const double RCRA = (Math.PI / 12.0);
         const float radius = 1;
+
+        private static double[3][] _GalacticRotationMatrix = null;
+
+        public static double[3][] GalacticRotationMatrix {
+            get
+            {
+                if (_GalacticRotationMatrix == null)
+                {
+                    _GalacticRotationMatrix = new double[3][];
+                    _GalacticRotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
+                    _GalacticRotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
+                    _GalacticRotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
+                }
+                return _GalacticRotationMatrix;
+            }
+        }
+
         static public Vector3 GeoTo3d(double lat, double lng)
         {
             return new Vector3((float)(Math.Cos(lng * RC) * Math.Cos(lat * RC) * radius), (float)(Math.Sin(lat * RC) * radius), (float)(Math.Sin(lng * RC) * Math.Cos(lat * RC) * radius));
@@ -1451,26 +1468,14 @@ namespace TerraViewer
                                                + DMSToDegrees(0, 0, 2.45) * U10;
         }
 
-        static double[][] RotationMatrix = null;
-
         public static double[] J2000toGalactic(double J2000RA, double J2000DEC)
         {
             double[] J2000pos = new double[] { Math.Cos(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000RA / 180.0 * Math.PI) * Math.Cos(J2000DEC / 180.0 * Math.PI), Math.Sin(J2000DEC / 180.0 * Math.PI) };
 
-            if (RotationMatrix == null)
-            {
-                RotationMatrix = new double[3][];
-                RotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
-                RotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
-                RotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
-            }
-
-
-
             double[] Galacticpos = new double[3];
             for (int i = 0; i < 3; i++)
             {
-                Galacticpos[i] = J2000pos[0] * RotationMatrix[i][0] + J2000pos[1] * RotationMatrix[i][1] + J2000pos[2] * RotationMatrix[i][2];
+                Galacticpos[i] = J2000pos[0] * Coordinates.GalacticRotationMatrix[i][0] + J2000pos[1] * Coordinates.GalacticRotationMatrix[i][1] + J2000pos[2] * Coordinates.GalacticRotationMatrix[i][2];
             }
 
             double GalacticL2 = Math.Atan2(Galacticpos[1], Galacticpos[0]);
@@ -1489,23 +1494,14 @@ namespace TerraViewer
         }
 
 
-
-
         public static double[] GalactictoJ2000(double GalacticL2, double GalacticB2)
         {
             double[] Galacticpos = new double[] { Math.Cos(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticL2 / 180.0 * Math.PI) * Math.Cos(GalacticB2 / 180.0 * Math.PI), Math.Sin(GalacticB2 / 180.0 * Math.PI) };
-            if (RotationMatrix == null)
-            {
-                RotationMatrix = new double[3][];
-                RotationMatrix[0] = new double[] { -.0548755604, -.8734370902, -.4838350155 };
-                RotationMatrix[1] = new double[] { .4941094279, -.4448296300, .7469822445 };
-                RotationMatrix[2] = new double[] { -.8676661490, -.1980763734, .4559837762 };
-            }
 
             double[] J2000pos = new double[3];
             for (int i = 0; i < 3; i++)
             {
-                J2000pos[i] = Galacticpos[0] * RotationMatrix[0][i] + Galacticpos[1] * RotationMatrix[1][i] + Galacticpos[2] * RotationMatrix[2][i];
+                J2000pos[i] = Galacticpos[0] * GalacticRotationMatrix[0][i] + Galacticpos[1] * GalacticRotationMatrix[1][i] + Galacticpos[2] * GalacticRotationMatrix[2][i];
             }
 
             double J2000RA = Math.Atan2(J2000pos[1], J2000pos[0]);
