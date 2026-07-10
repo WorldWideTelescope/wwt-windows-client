@@ -2134,6 +2134,31 @@ namespace TerraViewer
         bool galMatInit = false;
         Matrix3d galacticMatrix = Matrix3d.Identity;
 
+        private void SetupGalacticMatrix()
+        {
+            galacticMatrix = new Matrix3d(
+                -Coordinates.GalacticRotationMatrix[1][0],
+                -Coordinates.GalacticRotationMatrix[2][0],
+                Coordinates.GalacticRotationMatrix[0][0],
+                0,
+
+                Coordinates.GalacticRotationMatrix[1][2],
+                Coordinates.GalacticRotationMatrix[2][2],
+                -Coordinates.GalacticRotationMatrix[0][2],
+                0,
+
+                -Coordinates.GalacticRotationMatrix[1][1],
+                -Coordinates.GalacticRotationMatrix[2][1],
+                Coordinates.GalacticRotationMatrix[0][1],
+                0,
+
+                0, 0, 0, 1
+            );
+            galMatInit = true;
+        }
+
+
+
         private void SetupMatricesSpace11(double localZoomFactor, RenderTypes renderType )
         {
             //todo uwp do we user MultiChannel for MR Headset?
@@ -2147,16 +2172,10 @@ namespace TerraViewer
 
             if ((Settings.Active.GalacticMode && !Settings.Active.LocalHorizonMode) && currentImageSetfield.DataSetType == ImageSetType.Sky)
             {
-                // Show in galactic coordinates
                 if (!galMatInit)
                 {
-                    galacticMatrix = Matrix3d.Identity;
-                    galacticMatrix.Multiply(Matrix3d.RotationY(-(90 - (17.7603329867975 * 15)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationX(-((-28.9361739586894)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783) - 90) / 180.0 * Math.PI));
-                    galMatInit = true;
+                    SetupGalacticMatrix();
                 }
-
                 WorldMatrix = galacticMatrix;
                 WorldMatrix.Multiply(Matrix3d.RotationY(((az)) / 180.0 * Math.PI));
                 WorldMatrix.Multiply(Matrix3d.RotationX(-((alt)) / 180.0 * Math.PI));
@@ -2405,13 +2424,8 @@ namespace TerraViewer
             {
                 if (!galMatInit)
                 {
-                    galacticMatrix = Matrix3d.Identity;
-                    galacticMatrix.Multiply(Matrix3d.RotationY(-(90 - (17.7603329867975 * 15)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationX(-((-28.9361739586894)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783) - 90) / 180.0 * Math.PI));
-                    galMatInit = true;
+                    SetupGalacticMatrix();
                 }
-
                 WorldMatrix = galacticMatrix;
                 WorldMatrix.Multiply(Matrix3d.RotationY(((az)) / 180.0 * Math.PI));
                 WorldMatrix.Multiply(Matrix3d.RotationX(-((alt)) / 180.0 * Math.PI));
@@ -3918,13 +3932,8 @@ namespace TerraViewer
             {
                 if (!galMatInit)
                 {
-                    galacticMatrix = Matrix3d.Identity;
-                    galacticMatrix.Multiply(Matrix3d.RotationY(-(90 - (17.7603329867975 * 15)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationX(-((-28.9361739586894)) / 180.0 * Math.PI));
-                    galacticMatrix.Multiply(Matrix3d.RotationZ(((31.422052860102041270114993238783) - 90) / 180.0 * Math.PI));
-                    galMatInit = true;
+                    SetupGalacticMatrix();
                 }
-
                 WorldMatrix = galacticMatrix;
                 WorldMatrix.Multiply(Matrix3d.RotationY(((az)) / 180.0 * Math.PI));
                 WorldMatrix.Multiply(Matrix3d.RotationX(-((alt)) / 180.0 * Math.PI));
